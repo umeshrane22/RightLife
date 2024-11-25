@@ -34,6 +34,8 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Login is in this
+
     ImageButton googleButton;
     EditText phoneInput,phoneInputOption;
     ImageView img_getotp,imgGetOtpBtn,imgSignupOtpBtn;
