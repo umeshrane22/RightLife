@@ -33,6 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
+
     ImageButton googleButton;
     EditText phoneInput,phoneInputOption;
     ImageView img_getotp,imgGetOtpBtn,imgSignupOtpBtn;
