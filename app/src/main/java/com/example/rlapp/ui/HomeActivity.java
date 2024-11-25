@@ -300,7 +300,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getRightlifeEdit("");
         // getUpcomingEvents("");
          getWelnessPlaylist("");
-        // getLiveEvents("");
+        //-- getLiveEvents("");
          getCuratedContent("");
          getModuleContent("");
 

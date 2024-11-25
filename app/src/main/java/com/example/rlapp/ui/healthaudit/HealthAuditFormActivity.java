@@ -12,7 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
@@ -28,23 +27,20 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HealthAuditFormActivity extends AppCompatActivity implements OnNextFragmentClickListener{
+public class HealthAuditFormActivity extends AppCompatActivity implements OnNextFragmentClickListener {
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
     private Button prevButton, nextButton, submitButton;
     private FormPagerAdapter adapter;
-    private static List<Map<String, ArrayList<String>>> formData = new ArrayList<>();
+    private static ArrayList<Answer> formData = new ArrayList<>();
     private ProgressBar progressBar;
-    private FormViewModel formViewModel;
-
+    public static final String ARG_QUESTION = "QUESTION";
     QuestionListHealthAudit ResponseObj;
 
 
@@ -56,7 +52,6 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
 
-        formViewModel = new ViewModelProvider(this).get(FormViewModel.class);
         viewPager = findViewById(R.id.viewPager);
         prevButton = findViewById(R.id.prevButton);
         nextButton = findViewById(R.id.nextButton);
@@ -73,10 +68,6 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage());
         submitButton.setOnClickListener(v -> submitFormData());
-        submitButton.setOnClickListener(view -> {
-            Intent intent = new Intent(HealthAuditFormActivity.this, AccessPaymentActivity.class);
-            startActivity(intent);
-        });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -86,7 +77,6 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
                 updateProgress(position);
             }
         });
-
 
 
         ic_back_dialog.setOnClickListener(view -> {
@@ -114,8 +104,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         close_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //finish();
-               // showExitDialog();
+
             }
         });
     }
@@ -133,25 +122,22 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
     }
 
     private void submitFormData() {
-
-        Toast.makeText(this, "Form Submitted Successfully!", Toast.LENGTH_SHORT).show();
+        callAnswerRequest();
     }
 
 
     private void updateButtonVisibility(int position) {
-       /* prevButton.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
-        nextButton.setVisibility(position == adapter.getItemCount() - 1 ? View.GONE : View.VISIBLE);*/
         submitButton.setVisibility(position == adapter.getItemCount() - 1 ? View.VISIBLE : View.GONE);
     }
 
     private void updateProgress(int fragmentIndex) {
         // Set progress percentage based on the current fragment (out of 8)
-        int progressPercentage = (int) (((fragmentIndex + 1) / (double)adapter.getItemCount()) * 100);
+        int progressPercentage = (int) (((fragmentIndex + 1) / (double) adapter.getItemCount()) * 100);
         progressBar.setProgress(progressPercentage);
     }
 
 
-    void submitAnswerRequest(UserAnswerRequest requestAnswer){
+    void submitAnswerRequest(UserAnswerRequest requestAnswer) {
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
@@ -163,7 +149,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         //SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91"+mobileNumber,OTP,"ABC123","Asus ROG 6","hp","ABC123");
 
         // Make the API call
-        Call<JsonElement> call = apiService.postAnswerRequest(accessToken,"HEALTH_REPORT",requestAnswer);
+        Call<JsonElement> call = apiService.postAnswerRequest(accessToken, "HEALTH_REPORT", requestAnswer);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -176,6 +162,10 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body().toString());
                     Log.d("API Response body", "Success: " + jsonResponse);
+
+                    Intent intent = new Intent(HealthAuditFormActivity.this, AccessPaymentActivity.class);
+                    startActivity(intent);
+
                /*     if (loginResponse.isSuccess()) {
                         Toast.makeText(HealthAuditFormActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                         Toast.makeText(HealthAuditFormActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
@@ -209,35 +199,39 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
 
     }
 
-    void callAnswerRequest(){
+    void callAnswerRequest() {
 
+        List<Answer> answers = new ArrayList<>(formData);
 
-        List<Answer> answers = new ArrayList<>();
+        for (int i = 0; i < answers.size(); i++) {
+            Log.d("Submit Request = ", "Question : " + formData.get(i).getQuestion());
 
-        answers.add(new Answer("dob", List.of(new Option("14/11/2002"))));
-        answers.add(new Answer("height", List.of(new Option("165.1"))));
-        answers.add(new Answer("weight", List.of(new Option("66"))));
-        answers.add(new Answer("waist", List.of(new Option("30"))));
-        answers.add(new Answer("bp_systolic", List.of(new Option("120"))));
-        answers.add(new Answer("gender", List.of(new Option("0"))));
-        answers.add(new Answer("smoking", List.of(new Option("smoking_formerly"))));
-        answers.add(new Answer("drinking", List.of(new Option("drinking_no"))));
-        answers.add(new Answer("sleep", List.of(new Option("sleep_5_7"))));
-        answers.add(new Answer("basic_food_habit", List.of(new Option("food_habit_vegan"))));
-        answers.add(new Answer("exercise_habit", List.of(new Option("exercise_no"))));
-        answers.add(new Answer("strenuous_work", List.of(new Option("strenuous_yes"))));
-        answers.add(new Answer("active_medical_condition", List.of(new Option("active_med_none"))));
-        answers.add(new Answer("cured_medical_condition", List.of(new Option("cured_med_none"))));
-        answers.add(new Answer("current_medication", List.of(new Option("current_med_blood_thin"))));
-        answers.add(new Answer("hypertensive_diabetic_family_members", List.of(new Option("hypertensive_diabetic_family_none"))));
-        answers.add(new Answer("dbr_history", List.of(new Option("dbr_history_none"))));
+            Log.d("Submit Request = ", "Answer : " + formData.get(i).getAnswer().get(0));
+        }
+
+        List<Answer> answers1 = new ArrayList<>();
+
+        answers1.add(new Answer("dob", List.of(new Option("14/11/2002"))));
+        answers1.add(new Answer("height", List.of(new Option("165.1"))));
+        answers1.add(new Answer("weight", List.of(new Option("66"))));
+        answers1.add(new Answer("waist", List.of(new Option("30"))));
+        answers1.add(new Answer("bp_systolic", List.of(new Option("120"))));
+        answers1.add(new Answer("gender", List.of(new Option("0"))));
+        answers1.add(new Answer("smoking", List.of(new Option("smoking_formerly"))));
+        answers1.add(new Answer("drinking", List.of(new Option("drinking_no"))));
+        answers1.add(new Answer("sleep", List.of(new Option("sleep_5_7"))));
+        answers1.add(new Answer("basic_food_habit", List.of(new Option("food_habit_vegan"))));
+        answers1.add(new Answer("exercise_habit", List.of(new Option("exercise_no"))));
+        answers1.add(new Answer("strenuous_work", List.of(new Option("strenuous_yes"))));
+        answers1.add(new Answer("active_medical_condition", List.of(new Option("active_med_none"))));
+        answers1.add(new Answer("cured_medical_condition", List.of(new Option("cured_med_none"))));
+        answers1.add(new Answer("current_medication", List.of(new Option("current_med_blood_thin"))));
+        answers1.add(new Answer("hypertensive_diabetic_family_members", List.of(new Option("hypertensive_diabetic_family_none"))));
+        answers1.add(new Answer("dbr_history", List.of(new Option("dbr_history_none"))));
 
         // Make sure to replace the empty string with actual data if needed
+        //ResponseObj.getQuestionData().getId()
         UserAnswerRequest request = new UserAnswerRequest("", "00000003e59b29e618efed1b", answers);
-
-
-
-
 
 
         //  answers.add(new Answer("diet_conditions", null, dietConditionsSubQuestions));
@@ -261,8 +255,6 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
     }
 
 
-
-
     //"THINK_RIGHT", "CATEGORY", "ygjh----g"
     private void getQuestionerList(String s) {
         //-----------
@@ -275,7 +267,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getsubmoduletest(accessToken,"HEALTH_REPORT");
+        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "HEALTH_REPORT");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -285,8 +277,8 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                     ResponseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
-                     adapter.setData(ResponseObj.getQuestionData());
+                    ResponseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
+                    adapter.setData(ResponseObj.getQuestionData());
                     viewPager.setAdapter(adapter);
                     Log.d("API Response body", "Success:Questionllist " + ResponseObj.getQuestionData().getQuestionList().size());
                     //callAnswerRequest();
@@ -308,11 +300,13 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
 
     @Override
     public void getDataFromFragment(String questionNumber, ArrayList<String> answer) {
-        Toast.makeText(this, "Answer =  "+answer, Toast.LENGTH_SHORT).show();
-        Map<String,ArrayList<String>> map=new HashMap<>();
-        map.put(questionNumber,answer);
-        formData.add(map);
-        Log.d("AAAAA","Map Data = "+formData);
+        List<Option> options = new ArrayList<>();
+        for (String ans : answer) {
+            Option option = new Option(ans);
+            options.add(option);
+        }
+        Answer answerToSubmit = new Answer(questionNumber, options);
+        formData.add(answerToSubmit);
     }
 }
 
