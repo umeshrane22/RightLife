@@ -1,0 +1,546 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".ui.rlpagemain.RLPageActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="77dp"
+            android:background="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical"
+                tools:context=".ui.rlpagemain.RLPageActivity">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp">
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:background="@color/bg_edittext"
+                        android:layout_height="match_parent"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Coming Soon"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="@dimen/textsize_small" />
+
+
+
+                </RelativeLayout>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_health_cam"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="5dp"
+                        android:background="@color/color_lightpink_myhealth"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp">
+                            <!-- Image Background -->
+                            <ImageView
+                                android:id="@+id/banner_image"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_healthcam_logo"
+                                app:tint="@color/white"
+                                android:background="@color/color_pink_myhealth"
+                                />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp">
+
+
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginStart="32dp"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginEnd="30dp"
+                                    android:gravity="center_vertical">
+
+                                    <ImageView
+                                        android:id="@+id/img_lvclass_date"
+                                        android:layout_width="21dp"
+                                        android:layout_height="21dp"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="5dp"
+
+                                        android:background="@drawable/health_cam_iconrl"
+                                        android:backgroundTint="@color/black"
+                                        android:visibility="visible" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="@dimen/textsize_small"
+                                        android:layout_toRightOf="@+id/img_lvclass_date"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:text="HealthCam"
+                                        android:textColor="#0B1215"
+                                        android:textSize="@dimen/textsize_small" />
+
+
+                                    <ImageView
+                                        android:layout_width="21dp"
+                                        android:layout_height="21dp"
+                                        android:layout_centerVertical="true"
+
+                                        android:layout_toLeftOf="@+id/tv_classrating1"
+                                        android:src="@drawable/ic_rightarrow" />
+
+                                    <TextView
+                                        android:id="@+id/tv_classrating1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_centerVertical="true"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:text=" "
+                                        android:textColor="#0B1215"
+                                        android:textSize="@dimen/textsize_extrasmall" />
+
+                                </RelativeLayout>
+
+
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_voice_scan"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="5dp"
+                        android:background="@color/color_lightpink_myhealth"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp">
+                            <!-- Image Background -->
+                            <ImageView
+                                android:id="@+id/banner_image_vc"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+
+                                android:src="@drawable/ic_voicescan_logo"
+                                app:tint="@color/white"
+                                android:background="@color/color_pink_myhealth"
+                                />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp">
+
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="32dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:id="@+id/img_icon_hc"
+                                    android:layout_width="21dp"
+                                    android:layout_height="21dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="5dp"
+
+                                    android:background="@drawable/ic_banner_t_voicescan"
+                                    android:backgroundTint="@color/black"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:layout_toRightOf="@+id/img_icon_hc"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Voice scan"
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_small" />
+
+
+                                <ImageView
+                                    android:layout_width="21dp"
+                                    android:layout_height="21dp"
+                                    android:layout_centerVertical="true"
+
+                                    android:layout_toLeftOf="@+id/tv_string1"
+                                    android:src="@drawable/ic_rightarrow" />
+
+                                <TextView
+                                    android:id="@+id/tv_string1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text=" "
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_extrasmall" />
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_health_audit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="5dp"
+                        android:background="@color/color_lightpink_myhealth"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp">
+                            <!-- Image Background -->
+                            <ImageView
+                                android:id="@+id/banner_image_ha"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+
+                                android:background="@color/color_pink_myhealth"
+                                android:src="@drawable/ic_healthaudit_logo"
+                                app:tint="@color/white" />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp">
+
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="32dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:id="@+id/img_icon_ha"
+                                    android:layout_width="21dp"
+                                    android:layout_height="21dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="5dp"
+
+                                    android:background="@drawable/healthmenu"
+                                    android:backgroundTint="@color/black"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:layout_toRightOf="@+id/img_icon_ha"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Health Audit"
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_small" />
+
+
+                                <ImageView
+                                    android:layout_width="25dp"
+                                    android:layout_height="25dp"
+                                    android:layout_centerVertical="true"
+
+                                    android:layout_toLeftOf="@+id/tv_string2"
+                                    android:src="@drawable/ic_rightarrow" />
+
+                                <TextView
+                                    android:id="@+id/tv_string2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text=" "
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_extrasmall" />
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_mind_audit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="5dp"
+                        android:background="@color/color_lightpink_myhealth"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="180dp">
+                            <!-- Image Background -->
+                            <ImageView
+                                android:id="@+id/banner_image_ma"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/img_mindaudit"
+                                app:tint="@color/white"
+                                android:background="@color/color_pink_myhealth"
+                                />
+
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp">
+
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="32dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:id="@+id/img_icon_ma"
+                                    android:layout_width="21dp"
+                                    android:layout_height="21dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="5dp"
+
+                                    android:background="@drawable/ic_banner_t_mindaudit"
+                                    android:backgroundTint="@color/black"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:layout_toRightOf="@+id/img_icon_ma"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Mind Audit"
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_small" />
+
+
+                                <ImageView
+                                    android:layout_width="21dp"
+                                    android:layout_height="21dp"
+                                    android:layout_centerVertical="true"
+
+                                    android:layout_toLeftOf="@+id/tv_string3"
+                                    android:src="@drawable/ic_rightarrow" />
+
+                                <TextView
+                                    android:id="@+id/tv_string3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text=" "
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_extrasmall" />
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+        </ScrollView>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent">
+
+
+            <!-- Bottom Navigation Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="77dp"
+                android:layout_gravity="bottom"
+                android:backgroundTint="@color/white"
+                android:background="@drawable/toproundedcornershape">
+
+                <!-- Left Button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:id="@+id/ll_homemenuclick"
+                        android:layout_width="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="15dp"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:id="@+id/img_homemenu"
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/homemenu"
+                            android:padding="2dp"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="Home"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:textSize="12dp"
+                            android:textColor="@color/txt_color_header"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/ll_homehealthclick"
+                        android:layout_width="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="15dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/img_healthmenu"
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/healthmenu"
+                            android:padding="2dp"
+                            android:background="@drawable/homeselected"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="My Health"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="12dp"
+                            android:textColor="@color/menuselected"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_google"
+                android:visibility="gone"
+                android:layout_gravity="center_horizontal|bottom"
+                android:layout_marginBottom="30dp"
+                android:elevation="8dp" />-->
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@drawable/rlmenu"
+                android:id="@+id/rlmenu"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="23dp"
+                android:layout_height="wrap_content"/>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </RelativeLayout>
+</LinearLayout>
+

@@ -1,0 +1,682 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context=".ui.rlpagemain.RLPageActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="60dp">
+        <ImageView
+            android:id="@+id/ic_back_dialog"
+            android:layout_width="25dp"
+            android:src="@drawable/ic_leftarrow"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="20dp"
+            android:layout_height="25dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/tv_header_htw"
+            android:text="Choose your access"
+            android:textSize="@dimen/textsize_medium"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/ic_close_dialog"
+            android:layout_width="25dp"
+            android:src="@drawable/closebtncircle"
+            android:layout_marginEnd="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_height="25dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+
+        android:background="@color/color_lightpink_myhealth"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:background="@android:color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:orientation="vertical"
+                tools:context=".ui.rlpagemain.RLPageActivity">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:background="@color/bg_edittext"
+                        android:src="@drawable/ic_healthaudit_logo"
+                        android:backgroundTint="@color/color_lightpink_myhealth"
+                        android:layout_height="350dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="250dp"
+                        android:orientation="vertical">
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="4dp">
+
+                            <LinearLayout
+                                android:id="@+id/ll_mind_audit2"
+                                android:layout_width="match_parent"
+                                android:layout_height="200dp"
+                                android:elevation="5dp"
+                                android:background="@color/black"
+                                android:orientation="vertical">
+                                <!-- Image Section with Overlay Tag -->
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:text="Save upto 40% on access to My Health"
+                                    android:textColor="@color/white"
+                                    android:textSize="16dp"
+                                    android:padding="10dp"
+                                    android:visibility="visible"
+                                    android:gravity="center"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:layout_height="wrap_content"/>
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/color_pink_myhealth"
+                                    android:layout_height="match_parent">
+                                    <ImageView
+                                        android:layout_width="100dp"
+                                        android:src="@drawable/myhealthcard"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_alignParentBottom="true"
+                                        android:scaleType="fitXY"
+                                        android:layout_height="100dp"/>
+
+                                    <TextView
+                                        android:id="@+id/tv_cardtype2"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="20dp"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:text="MyHealth Card"
+                                        android:textColor="@color/white"
+                                        android:textSize="@dimen/textsize_large"
+                                        android:drawableEnd="@drawable/ic_arrow_right_affirm"
+                                        android:drawablePadding="3dp"
+                                        android:layout_marginTop="30dp"
+                                        />
+                                    <TextView
+                                        android:id="@+id/tv_cardvalue2"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="@dimen/textsize_small"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:text="$ 999"
+                                        android:layout_alignParentEnd="true"
+                                        android:textColor="@color/white"
+                                        android:textSize="30dp"
+                                        android:layout_marginTop="20dp"
+                                        android:layout_marginEnd="30dp"
+                                        />
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_marginBottom="@dimen/textsize_large"
+                                        android:layout_alignParentBottom="true"
+                                        android:orientation="vertical"
+                                        android:gravity="center_vertical"
+                                        android:layout_marginStart="20dp"
+                                        android:layout_height="wrap_content">
+
+                                        <TextView
+                                            android:id="@+id/tv_cardcontent2"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+
+                                            android:layout_marginStart="@dimen/textsize_small"
+                                            android:fontFamily="@font/dmsans_bold"
+                                            android:text="Scans + Content + Reports"
+                                            android:layout_margin="5dp"
+                                            android:textColor="@color/white"
+                                            android:textSize="@dimen/textsize_medium" />
+
+                                        <TextView
+                                            android:id="@+id/tv_numberofoffers2"
+                                            android:layout_below="@+id/tv_cardcontent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:visibility="visible"
+
+                                            android:fontFamily="@font/dmsans_bold"
+                                            android:text="5 Offers Available"
+                                            android:background="@drawable/rect_payment"
+                                            android:backgroundTint="@color/white"
+                                            android:textColor="@color/black"
+                                            android:padding="10dp"
+                                            android:textSize="@dimen/textsize_small" />
+
+                                    </LinearLayout>
+                                    <TextView
+                                        android:id="@+id/btn_howitworks2"
+                                        android:layout_width="80dp"
+                                        android:layout_height="35dp"
+                                        android:backgroundTint="@color/white"
+                                        android:gravity="center"
+                                        android:textSize="@dimen/textsize_medium"
+                                        android:layout_centerVertical="true"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_alignParentBottom="true"
+                                        android:layout_marginBottom="30dp"
+                                        android:layout_marginEnd="20dp"
+                                        android:background="@drawable/roundedcornershape"
+                                        android:text="Buy" />
+                                </RelativeLayout>
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>
+
+                        <!--<androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16dp"
+                            app:cardCornerRadius="12dp"
+                            android:visibility="visible"
+                            app:cardElevation="4dp">
+
+                            <LinearLayout
+                                android:id="@+id/ll_health_cam"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:elevation="5dp"
+                                android:background="@color/color_lightpink_myhealth"
+                                android:orientation="vertical">
+                                &lt;!&ndash; Image Section with Overlay Tag &ndash;&gt;
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="180dp">
+                                    &lt;!&ndash; Image Background &ndash;&gt;
+                                    <ImageView
+                                        android:id="@+id/banner_image"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:src="@drawable/ic_healthcam_logo"
+                                        app:tint="@color/white"
+                                        android:background="@color/color_pink_myhealth"
+                                        />
+
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="15dp"
+                                    android:layout_marginBottom="15dp">
+
+
+
+                                    <RelativeLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center_vertical"
+                                        android:layout_marginStart="32dp"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginEnd="30dp"
+                                        android:gravity="center_vertical">
+
+                                        <ImageView
+                                            android:id="@+id/img_lvclass_date"
+                                            android:layout_width="21dp"
+                                            android:layout_height="21dp"
+                                            android:layout_centerVertical="true"
+                                            android:layout_marginStart="5dp"
+
+                                            android:background="@drawable/health_cam_iconrl"
+                                            android:backgroundTint="@color/black"
+                                            android:visibility="visible" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_centerVertical="true"
+                                            android:layout_marginStart="@dimen/textsize_small"
+                                            android:layout_toRightOf="@+id/img_lvclass_date"
+                                            android:fontFamily="@font/dmsans_bold"
+                                            android:text="HealthCam"
+                                            android:textColor="#0B1215"
+                                            android:textSize="@dimen/textsize_small" />
+
+
+                                        <ImageView
+                                            android:layout_width="21dp"
+                                            android:layout_height="21dp"
+                                            android:layout_centerVertical="true"
+
+                                            android:layout_toLeftOf="@+id/tv_classrating1"
+                                            android:src="@drawable/ic_rightarrow" />
+
+                                        <TextView
+                                            android:id="@+id/tv_classrating1"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_alignParentEnd="true"
+                                            android:layout_centerVertical="true"
+                                            android:fontFamily="@font/dmsans_bold"
+                                            android:text=" "
+                                            android:textColor="#0B1215"
+                                            android:textSize="@dimen/textsize_extrasmall" />
+
+                                    </RelativeLayout>
+
+
+
+                                </RelativeLayout>
+
+                            </LinearLayout>
+
+                        </androidx.cardview.widget.CardView>-->
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+
+
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_mind_audit"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:elevation="5dp"
+                        android:background="@color/black"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="Save upto 40% on access to My Health"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            android:padding="10dp"
+                            android:visibility="visible"
+                            android:gravity="center"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:layout_height="wrap_content"/>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/color_pink_myhealth"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:src="@drawable/myhealthcard"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:scaleType="fitXY"
+                                android:layout_height="100dp"/>
+
+                            <TextView
+                                android:id="@+id/tv_cardtype"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="MyHealth Card"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/textsize_large"
+                                android:drawableEnd="@drawable/ic_arrow_right_affirm"
+                                android:drawablePadding="3dp"
+                                android:layout_marginTop="30dp"
+                                />
+                            <TextView
+                                android:id="@+id/tv_cardvalue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/textsize_small"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="$ 999"
+                                android:layout_alignParentEnd="true"
+                                android:textColor="@color/white"
+                                android:textSize="30dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginEnd="30dp"
+                                />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_marginBottom="@dimen/textsize_large"
+                                android:layout_alignParentBottom="true"
+                                android:orientation="vertical"
+                                android:gravity="center_vertical"
+                                android:layout_marginStart="20dp"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/tv_cardcontent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Scans + Content + Reports"
+                                    android:layout_margin="5dp"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                                <TextView
+                                    android:id="@+id/tv_numberofoffers"
+                                    android:layout_below="@+id/tv_cardcontent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="visible"
+
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="5 Offers Available"
+                                    android:background="@drawable/rect_payment"
+                                    android:backgroundTint="@color/white"
+                                    android:textColor="@color/black"
+                                    android:padding="10dp"
+                                    android:textSize="@dimen/textsize_small" />
+
+                            </LinearLayout>
+                            <TextView
+                                android:id="@+id/btn_howitworks"
+                                android:layout_width="80dp"
+                                android:layout_height="35dp"
+                                android:backgroundTint="@color/white"
+                                android:gravity="center"
+                                android:textSize="@dimen/textsize_medium"
+                                android:layout_centerVertical="true"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="30dp"
+                                android:layout_marginEnd="20dp"
+                                android:background="@drawable/roundedcornershape"
+                                android:text="Buy" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_mind_audit3"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:elevation="5dp"
+                        android:background="@color/black"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="Save upto 40% on access to My Health"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            android:padding="10dp"
+                            android:visibility="visible"
+                            android:gravity="center"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:layout_height="wrap_content"/>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/color_pink_myhealth"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:src="@drawable/myhealthcard"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:scaleType="fitXY"
+                                android:layout_height="100dp"/>
+
+                            <TextView
+                                android:id="@+id/tv_cardtype3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="MyHealth Card"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/textsize_large"
+                                android:drawableEnd="@drawable/ic_arrow_right_affirm"
+                                android:drawablePadding="3dp"
+                                android:layout_marginTop="30dp"
+                                />
+                            <TextView
+                                android:id="@+id/tv_cardvalue3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/textsize_small"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="$ 999"
+                                android:layout_alignParentEnd="true"
+                                android:textColor="@color/white"
+                                android:textSize="30dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginEnd="30dp"
+                                />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_marginBottom="@dimen/textsize_large"
+                                android:layout_alignParentBottom="true"
+                                android:orientation="vertical"
+                                android:gravity="center_vertical"
+                                android:layout_marginStart="20dp"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/tv_cardcontent3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Scans + Content + Reports"
+                                    android:layout_margin="5dp"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                                <TextView
+                                    android:id="@+id/tv_numberofoffers3"
+                                    android:layout_below="@+id/tv_cardcontent"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="visible"
+
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="5 Offers Available"
+                                    android:background="@drawable/rect_payment"
+                                    android:backgroundTint="@color/white"
+                                    android:textColor="@color/black"
+                                    android:padding="10dp"
+                                    android:textSize="@dimen/textsize_small" />
+
+                            </LinearLayout>
+                            <TextView
+                                android:id="@+id/btn_howitworks3"
+                                android:layout_width="80dp"
+                                android:layout_height="35dp"
+                                android:backgroundTint="@color/white"
+                                android:gravity="center"
+                                android:textSize="@dimen/textsize_medium"
+                                android:layout_centerVertical="true"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="30dp"
+                                android:layout_marginEnd="20dp"
+                                android:background="@drawable/roundedcornershape"
+                                android:text="Buy" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_mind_audit4"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:elevation="5dp"
+                        android:background="@color/black"
+                        android:orientation="vertical">
+                        <!-- Image Section with Overlay Tag -->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:text="Save upto 40% on access to My Health"
+                            android:textColor="@color/white"
+                            android:textSize="16dp"
+                            android:padding="10dp"
+                            android:visibility="visible"
+                            android:gravity="center"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:layout_height="wrap_content"/>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/color_pink_myhealth"
+                            android:layout_height="match_parent">
+                            <ImageView
+                                android:layout_width="100dp"
+                                android:src="@drawable/myhealthcard"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:scaleType="fitXY"
+                                android:layout_height="100dp"/>
+
+                            <TextView
+                                android:id="@+id/tv_cardtype4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="20dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="MyHealth Card"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/textsize_large"
+                                android:drawableEnd="@drawable/ic_arrow_right_affirm"
+                                android:drawablePadding="3dp"
+                                android:layout_marginTop="30dp"
+                                />
+                            <TextView
+                                android:id="@+id/tv_cardvalue4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/textsize_small"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="$ 999"
+                                android:layout_alignParentEnd="true"
+                                android:textColor="@color/white"
+                                android:textSize="30dp"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginEnd="30dp"
+                                />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_marginBottom="@dimen/textsize_large"
+                            android:layout_alignParentBottom="true"
+                            android:orientation="vertical"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="20dp"
+                            android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/tv_cardcontent4"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Scans + Content + Reports"
+                                    android:layout_margin="5dp"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                            <TextView
+                                android:id="@+id/tv_numberofoffers4"
+                                android:layout_below="@+id/tv_cardcontent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:visibility="visible"
+
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="5 Offers Available"
+                                android:background="@drawable/rect_payment"
+                                android:backgroundTint="@color/white"
+                                android:textColor="@color/black"
+                                android:padding="10dp"
+                                android:textSize="@dimen/textsize_small" />
+
+                        </LinearLayout>
+                            <TextView
+                                android:id="@+id/btn_howitworks4"
+                                android:layout_width="80dp"
+                                android:layout_height="35dp"
+                                android:backgroundTint="@color/white"
+                                android:gravity="center"
+                                android:textSize="@dimen/textsize_medium"
+                                android:layout_centerVertical="true"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true"
+                                android:layout_marginBottom="30dp"
+                                android:layout_marginEnd="20dp"
+                                android:background="@drawable/roundedcornershape"
+                                android:text="Buy" />
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+        </ScrollView>
+
+
+
+    </RelativeLayout>
+</LinearLayout>
+

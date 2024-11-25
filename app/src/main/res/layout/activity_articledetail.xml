@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="center">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <ImageView
+                android:id="@+id/ic_back_dialog"
+                android:layout_width="25dp"
+                android:src="@drawable/ic_back_articlepage"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="20dp"
+                android:layout_height="25dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/tv_header_htw"
+                android:text="How This Works"
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content"/>
+        <com.zhpan.indicator.IndicatorView
+            android:id="@+id/indicator_view"
+            android:layout_width="wrap_content"
+            android:layout_below="@+id/tv_header_htw"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+            app:vpi_slide_mode="smooth"
+            app:vpi_style="round_rect"
+            app:vpi_slider_checked_color="#A0A3BD"
+            app:vpi_slider_normal_color="#EFF0F6"
+            android:layout_margin="@dimen/textsize_medium" />
+            <ImageView
+                android:id="@+id/ic_close_dialog"
+                android:layout_width="25dp"
+                android:src="@drawable/ic_save_article"
+                android:layout_marginEnd="20dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_height="25dp"/>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Magnesium: Get Your Mag-Nificent Boost!"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_large24sp"
+                android:gravity="center"
+                android:padding="@dimen/textsize_extralarge"
+                android:layout_height="wrap_content"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/author_image"
+                    android:layout_width="41dp"
+                    android:layout_height="41dp"
+                    android:src="@drawable/imageprofileniks"
+                    android:contentDescription="Author" />
+
+                <TextView
+                    android:id="@+id/author_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Namrataa Sehggal"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/merriweather_regular"
+                    android:textSize="@dimen/textsize_large"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/image_tag"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:src="@drawable/ic_tag"
+                    app:tint="@color/color_tag_article"
+                    android:contentDescription="Author" />
+
+                <TextView
+                    android:id="@+id/txt_topic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Food &amp; body"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/dmsans_medium"
+                    android:textSize="@dimen/textsize_small"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="|"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txt_article_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="15 Aug, 2024"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/dmsans_medium"
+                    android:textSize="@dimen/textsize_small"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="|"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/txt_readtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5 min read"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="@font/dmsans_medium"
+                    android:textSize="@dimen/textsize_small"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:src="@drawable/img_article"
+                android:scaleType="fitXY"
+                android:layout_marginTop="23dp"
+                android:layout_height="200dp"/>
+
+            <TextView
+                android:id="@+id/txt_inthisarticle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="In This Article"
+                android:drawableEnd="@drawable/icon_arrow_article"
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_regular"
+                android:textSize="@dimen/textsize_medium"
+                android:gravity="center_vertical"
+                android:paddingStart="32dp"
+                android:background="@drawable/roundedcornerbutton"
+                android:backgroundTint="#E6F0FE"
+                android:paddingEnd="30dp"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:id="@+id/txt_article_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Consuming adequate magnesium may enhance mood and promote healthy sleep. Additionally, it might lessen your chance of migraines and cardiovascular problems. Magnesium is necessary for your body to carry out over 300 enzymatic activities. A lack of magnesium in the body could have a significant negative impact on your health. \n\nEven though a wide range of foods contain magnesium, taking supplements can be beneficial, especially for those with low intake. However, selecting a magnesium supplement can be challenging because they come in a multitude of shapes and sizes. \n \n This article describes the many kinds and dosages of magnesium supplements and examines their advantages and disadvantages."
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_regular"
+                android:textSize="@dimen/textsize_medium"
+                android:gravity="center_vertical"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="What is magnesium?"
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_bold"
+                android:textSize="22sp"
+                android:gravity="center_vertical"
+                android:layout_margin="16dp"/>
+
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/article"
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_regular"
+                android:textSize="@dimen/textsize_medium"
+                android:gravity="center_vertical"
+                android:layout_margin="16dp"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:src="@drawable/img_article"
+                android:scaleType="fitXY"
+                android:layout_marginTop="23dp"
+                android:layout_height="220dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Health Benefits:"
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_bold"
+                android:textSize="22sp"
+                android:gravity="center_vertical"
+                android:layout_margin="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/article"
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_regular"
+                android:textSize="@dimen/textsize_medium"
+                android:gravity="center_vertical"
+                android:layout_margin="16dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp">
+
+
+                        <ImageView
+                            android:id="@+id/rlimg12"
+                            android:layout_width="120dp"
+                            android:layout_height="90dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/text_margin"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/image5_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg12"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+                            android:layout_marginTop="@dimen/text_margin"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center"
+                            android:layout_below="@+id/rlimg12"
+                            android:orientation="horizontal">
+
+
+                            <TextView
+                                android:id="@+id/txt_topic11"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Aishwarya Narayanan"
+                                android:textColor="@color/txt_color_header"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textSize="@dimen/textsize_small"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="16dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="|"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:id="@+id/txt_article_date1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="15 Aug, 2024"
+                                android:textColor="@android:color/black"
+                                android:fontFamily="@font/dmsans_medium"
+                                android:textSize="@dimen/textsize_small"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="16dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="|"
+                                android:layout_height="wrap_content"/>
+
+                            <TextView
+                                android:id="@+id/txt_readtime1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="5 min read"
+                                android:textColor="@android:color/black"
+                                android:fontFamily="@font/dmsans_medium"
+                                android:textSize="@dimen/textsize_small"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="16dp"/>
+
+                        </LinearLayout>
+
+
+                    </RelativeLayout>
+
+
+
+
+
+
+
+
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+        <Button
+            android:id="@+id/btn_howitworks"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/buttoncolorhealth"
+            android:layout_marginBottom="28dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="Take Assessment" />
+
+    </LinearLayout>
+</ScrollView>
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_margin="16dp"
+            android:background="@drawable/roundedcornershape"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/image_tag2"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tag"
+                app:tint="@color/color_tag_article"
+                android:contentDescription="Author" />
+
+            <TextView
+                android:id="@+id/txt_topic2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Food &amp; body"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_small"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="|"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/image_tag1"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/ic_tag"
+                android:layout_marginStart="16dp"
+                app:tint="@color/color_tag_article"
+                android:contentDescription="Author" />
+
+            <TextView
+                android:id="@+id/txt_topic1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Food &amp; body"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_small"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"/>
+
+        </LinearLayout>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_margin="16dp"
+            android:background="@drawable/roundedcornershape"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/image_tag2"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/like"
+                app:tint="@color/black"
+                android:contentDescription="Author" />
+
+            <TextView
+                android:id="@+id/txt_topic2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="233 Likes"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_small"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="|"
+                android:layout_height="wrap_content"/>
+            <ImageView
+                android:id="@+id/image_tag1"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/share"
+                android:layout_marginStart="16dp"
+
+                android:contentDescription="Author" />
+
+            <TextView
+                android:id="@+id/txt_topic1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Share"
+                android:textColor="@android:color/black"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="@dimen/textsize_small"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+    </LinearLayout>

@@ -1,0 +1,213 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <!-- Add any content you want for the first page -->
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        android:backgroundTint="@color/buttoncolorvc"
+        android:layout_marginBottom="28dp"
+        android:text="Next" />
+
+    <RelativeLayout
+        android:layout_width="320dp"
+        android:id="@+id/rl1"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/buttoncolormind"
+        android:background="@drawable/roundedcornerbutton"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="@color/buttoncolormind"
+            android:textColor="@color/txt_color_mind"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Step 1"
+            />
+        <TextView
+            android:id="@+id/txtdec1"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/txt1"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="#F7F7FC"
+            android:textColor="@color/txt_color_mind"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Fill in your Basic Details."
+            />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimationView1"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_below="@+id/txt1"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:scaleType="fitXY"
+            app:lottie_rawRes="@raw/mindaudit2" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl2"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/buttoncolormind"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/roundedcornerbutton"
+        android:layout_below="@+id/rl1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt2"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="@color/buttoncolormind"
+            android:textColor="@color/txt_color_mind"
+            android:text="Step 2"
+            />
+        <TextView
+            android:id="@+id/txtdec2"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/txt2"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="#F7F7FC"
+            android:textColor="@color/txt_color_mind"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Make sure you are in ample light."
+            />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottieAnimationView2"
+            android:layout_width="match_parent"
+            android:layout_height="190dp"
+            android:layout_below="@+id/txt2"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:scaleType="fitXY"
+            app:lottie_rawRes="@raw/mindaudit1" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl3"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/buttoncolormind"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/roundedcornerbutton"
+        android:layout_below="@+id/rl1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt3"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="@color/buttoncolormind"
+            android:textColor="@color/txt_color_mind"
+            android:text="Step 2"
+            />
+        <TextView
+            android:id="@+id/txtdec3"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/txt3"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="#F7F7FC"
+            android:textColor="@color/txt_color_mind"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Hold your phone as steady as possible."
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl4"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="visible"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/buttoncolormind"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/roundedcornerbutton"
+        android:layout_below="@+id/rl1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt4"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="@color/buttoncolormind"
+            android:textColor="@color/txt_color_mind"
+            android:text="Step 2"
+            />
+        <TextView
+            android:id="@+id/txtdec4"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@+id/txt4"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            android:paddingStart="10dp"
+            android:backgroundTint="#F7F7FC"
+            android:textColor="@color/txt_color_mind"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Scan your face and check your results."
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>

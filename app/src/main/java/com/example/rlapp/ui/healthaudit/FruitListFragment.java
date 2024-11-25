@@ -1,0 +1,182 @@
+package com.example.rlapp.ui.healthaudit;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.rlapp.R;
+import com.example.rlapp.ui.healthaudit.questionlist.Option;
+import com.example.rlapp.ui.healthaudit.questionlist.Question;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public class FruitListFragment extends Fragment {
+
+    private TextView txt_question;
+    private TextView txt_question_desc;
+    private RecyclerView recyclerView;
+    private FruitAdapter adapter;
+    private OptionsAdapter optionsAdapter;
+    private ArrayList<Option> selectedOptions = new ArrayList<>();
+    private ArrayList<String> selectedOptionsString = new ArrayList<>();
+    ArrayList<Fruit> selectedfruitList = new ArrayList<>();
+    private static final String ARG_PAGE_INDEX = "page_index";
+    private static final String ARG_QUESTION = "QUESTION";
+    private int pageIndex;
+
+    private FormViewModel formViewModel;
+    private Question question;
+    private ArrayList<Option> optionsList = new ArrayList<>();
+    boolean isMultipleSelection = true;
+    private OnNextFragmentClickListener onNextFragmentClickListener;
+    private Button btnOK;
+
+
+    public static FruitListFragment newInstance(int pageIndex, Question question) {
+        FruitListFragment fragment = new FruitListFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PAGE_INDEX, pageIndex);
+        args.putSerializable(ARG_QUESTION, question);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
+            question = (Question) getArguments().getSerializable(ARG_QUESTION);
+        }
+
+        formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        onNextFragmentClickListener = (OnNextFragmentClickListener) context;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_fruit_list, container, false);
+
+        recyclerView = view.findViewById(R.id.recyclerView);
+        txt_question = view.findViewById(R.id.txt_question);
+        txt_question_desc = view.findViewById(R.id.txt_question_desc);
+        btnOK = view.findViewById(R.id.btn_ok);
+
+
+        txt_question.setText(question.getQuestionTxt());
+
+        ArrayList<Fruit> fruitList = new ArrayList<>();
+        // Add fruits to the list
+
+        optionsList.addAll(question.getOptions());
+
+        fruitList.add(new Fruit("Apple", false));
+        fruitList.add(new Fruit("Banana", false));
+        fruitList.add(new Fruit("Orange", false));
+        fruitList.add(new Fruit("Grapes", false));
+        fruitList.add(new Fruit("Mango", false));
+        fruitList.add(new Fruit("Pineapple", false));
+
+
+
+        int spanCount = 1;
+        if (optionsList.size() >= 4)
+            spanCount = 2;
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), spanCount);
+        recyclerView.setLayoutManager(gridLayoutManager);
+
+        if (question.getInputType().equals("RADIO")) {
+            isMultipleSelection = false;
+        } else if (question.getInputType().equals("SELECT") && !question.getMultiple()) {
+            isMultipleSelection = false;
+        }
+
+        optionsAdapter = new OptionsAdapter(optionsList, option -> {
+
+            if (isMultipleSelection) {
+                if (option.isSelected()) {
+                    selectedOptions.add(option);
+                    selectedOptionsString.add(option.getOptionText());
+                } else {
+                    selectedOptions.remove(option);
+                    selectedOptionsString.remove(option.getOptionText());
+                }
+            }else {
+                if (!option.isSelected()) {
+                    selectedOptions.add(option);
+                    selectedOptionsString.add(option.getOptionText());
+                } else {
+                    selectedOptions.remove(option);
+                    selectedOptionsString.remove(option.getOptionText());
+                }
+                navigateNext();
+            }
+        }, isMultipleSelection);
+
+        if (isMultipleSelection)
+            btnOK.setVisibility(View.VISIBLE);
+        else btnOK.setVisibility(View.GONE);
+
+        btnOK.setOnClickListener(view1 -> navigateNext());
+
+
+        adapter = new FruitAdapter(fruitList, fruit -> {
+            // Handle fruit selection here
+            Log.d("FruitSelection", "Fruit clicked: " + fruit.getName());
+
+            if (fruit.isSelected()) {
+                // Add to favorites
+                Log.d("FruitSelection", "Added to favorites: " + fruit.getName());
+                selectedfruitList.add(fruit);
+            } else {
+                // Remove from favorites
+                Log.d("FruitSelection", "Removed from favorites: " + fruit.getName());
+                selectedfruitList.remove(fruit);
+            }
+            saveData();
+        });
+
+        recyclerView.setAdapter(optionsAdapter);
+
+        return view;
+    }
+
+    private void navigateNext() {
+        onNextFragmentClickListener.getDataFromFragment(question.getQuestion(), selectedOptionsString);
+        ((HealthAuditFormActivity) requireActivity()).navigateToNextPage();
+    }
+
+    public Map<String, ArrayList> collectData() {
+        Map<String, ArrayList> data = new HashMap<>();
+        // Add values from views in this fragment to the data map
+        data.put("fruit", selectedfruitList);
+        return data;
+    }
+
+    private void saveData() {
+        FormData data = new FormData();
+        data.setAnswer("User Fruit");
+        data.setSelected(true);
+        formViewModel.saveFormData(pageIndex, data); // Replace `getPageIndex()` with the actual page number
+    }
+}

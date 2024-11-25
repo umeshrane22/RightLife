@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/ic_back_dialog"
+            android:layout_width="25dp"
+            android:src="@drawable/ic_leftarrow"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="20dp"
+            android:layout_height="25dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/tv_header_htw"
+            android:text="How This Works"
+            android:textSize="@dimen/textsize_medium"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"/>
+    <com.zhpan.indicator.IndicatorView
+        android:id="@+id/indicator_view"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/tv_header_htw"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
+        app:vpi_slide_mode="smooth"
+        app:vpi_style="round_rect"
+        app:vpi_slider_checked_color="#A0A3BD"
+        app:vpi_slider_normal_color="#EFF0F6"
+        android:layout_margin="@dimen/textsize_medium" />
+        <ImageView
+            android:id="@+id/ic_close_dialog"
+            android:layout_width="25dp"
+            android:src="@drawable/closebtncircle"
+            android:layout_marginEnd="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_height="25dp"/>
+    </RelativeLayout>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/indicator"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"/>
+
+
+
+    <Button
+        android:id="@+id/btn_howitworks"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/buttoncolorhealth"
+        android:layout_marginBottom="28dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:text="Take Assessment" />
+
+</LinearLayout>
+</LinearLayout>

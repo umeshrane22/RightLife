@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <!-- Date of Birth Prompt -->
+        <com.example.rlapp.ui.utility.DmSansBoldTextview
+            android:id="@+id/dobPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/healthauditgreen"
+            android:padding="16dp"
+            android:text="@string/str_enter_your_dob"
+            android:textColor="@color/txt_color_health"
+
+            android:textSize="16sp" />
+
+        <!-- Date Picker Container -->
+        <RelativeLayout
+            android:id="@+id/dateContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dobPrompt"
+            android:layout_marginTop="50dp"
+
+            android:background="#F3F4F6"
+            android:padding="16dp">
+
+            <!-- Date TextView -->
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dd/mm/yyyy"
+                android:layout_centerVertical="true"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <!-- Calendar Icon Button -->
+            <ImageView
+                android:id="@+id/calendarButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/calandar_black" />
+
+        </RelativeLayout>
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/buttoncolorhealth"
+        android:layout_marginBottom="10dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="36dp"
+        android:text="Next" />
+
+    </RelativeLayout>
+
+<!--
+
+    <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:background="@color/healthauditgreen"
+    android:layout_height="70dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="@color/txt_color_health"
+        android:text="Enter your date of birth?" />
+</RelativeLayout>
+
+</LinearLayout>-->

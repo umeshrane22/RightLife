@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/roundedcornerbutton"
+        android:backgroundTint="@color/buttoncolorvc"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/txt_title_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Daily Check"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_extralarge" />
+
+        <TextView
+            android:id="@+id/txt_title_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:text="Thu . 07 April . 00:01 pm"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_small" />
+
+        <RelativeLayout
+            android:id="@+id/rl_main_feeling"
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/roundedcornerbutton"
+            android:backgroundTint="#F9DB84"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/txt_title_feeling_selected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_margin="16dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Prepare to record today’s topic"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_extralarge" />
+
+        </RelativeLayout>
+
+        <!--Sad-->
+
+        <RelativeLayout
+            android:id="@+id/rl_main_feeling_sad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
+            android:background="@drawable/toproundedvoicescan"
+            android:backgroundTint="#F7E6B7"
+            android:orientation="vertical"
+            android:visibility="visible">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="250dp">
+            <TextView
+                android:id="@+id/txt_title_feeling"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+
+                android:layout_margin="16dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Unsure"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_extralarge" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:src="@drawable/img_record_feeling_woman"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="50dp"
+                android:layout_height="match_parent"/>
+            </RelativeLayout>
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/txt_title_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rl_main_feeling_sad"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Describe your perfect day"
+            android:textColor="@color/txt_color_header"
+            android:textSize="@dimen/textsize_extralarge" />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/tv_school"
+            android:layout_width="wrap_content"
+            android:text="Get a different topic"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/txt_color_header"
+            android:textSize="@dimen/textsize_large"
+            android:drawableStart="@drawable/repeat"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:id="@+id/tv_money"
+            android:layout_width="wrap_content"
+            android:text="I’ll use my own topic"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/txt_color_header"
+            android:textSize="@dimen/textsize_large"
+            android:drawableStart="@drawable/repeat"
+            android:drawablePadding="10dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:id="@+id/tv_relationship"
+            android:layout_width="wrap_content"
+            android:text="Remember to find a quiet place \nto record your 30 seconds "
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="#6E7191"
+            android:textSize="@dimen/textsize_large"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_regular"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"/>
+
+
+    </RelativeLayout>
+
+</LinearLayout>

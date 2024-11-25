@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- Date of Birth Prompt -->
+    <TextView
+        android:id="@+id/dobPrompt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="In the last 30 days, I have been feeling..."
+        android:textColor="@color/txt_color_health"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_below="@id/dobPrompt"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:gravity="center_horizontal"
+            android:text="Don't Hold Back– Check all that make sense"
+            android:layout_marginTop="1dp"
+            android:textColor="#A0A3BD"
+            android:textSize="@dimen/textsize_small"
+            android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/llmain"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp">
+
+        <LinearLayout
+            android:id="@+id/ll_thinkright_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F7F7F7"
+            android:backgroundTint="@color/bg_edittext"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/ll_thinkright_category1"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/color_lightpink_myhealth"
+                    android:elevation="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:src="@drawable/img_mindau_low" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".2"
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:text="Low"
+                        android:textAlignment="center"
+                        android:textColor="@color/txt_color_header"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:textSize="@dimen/textsize_medium" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_thinkright_category2"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/color_lightpink_myhealth"
+                    android:elevation="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:src="@drawable/img_mindau_anxious" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".2"
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:text="Anxious"
+                        android:textAlignment="center"
+                        android:textColor="@color/txt_color_header"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:textSize="@dimen/textsize_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/ll_thinkright_category3"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/color_lightpink_myhealth"
+                    android:elevation="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:src="@drawable/img_mindau_irritable" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".2"
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:text="Irritable"
+                        android:textAlignment="center"
+                        android:textColor="@color/txt_color_header"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:textSize="@dimen/textsize_medium" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_thinkright_category4"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/color_lightpink_myhealth"
+                    android:elevation="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:contentDescription="dsha"
+                        android:src="@drawable/img_mindau_fatigue" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".2"
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:text="Fatigued"
+                        android:textAlignment="center"
+                        android:textColor="@color/txt_color_header"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:textSize="@dimen/textsize_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/ll_thinkright_category5"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/color_lightpink_myhealth"
+                    android:elevation="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:src="@drawable/img_mindau_stressed" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".2"
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:text="Stressed"
+                        android:textAlignment="center"
+                        android:textColor="@color/txt_color_header"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:textSize="@dimen/textsize_medium" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_thinkright_category6"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_margin="15dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/color_lightpink_myhealth"
+                    android:elevation="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".4"
+                        android:contentDescription="dsha"
+                        android:src="@drawable/img_mindau_unfulfilled" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight=".2"
+                        android:layout_margin="3dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:text="Unfulfilled"
+                        android:textAlignment="center"
+                        android:textColor="@color/txt_color_header"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:textSize="@dimen/textsize_medium" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

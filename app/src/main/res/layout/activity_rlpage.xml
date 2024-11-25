@@ -1,0 +1,3190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".ui.rlpagemain.RLPageActivity"
+    tools:ignore="HardcodedText">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_weight="1"
+        android:background="@android:color/transparent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:orientation="vertical"
+            tools:context=".ui.rlpagemain.RLPageActivity">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_toLeftOf="@+id/txtuserName"
+                            android:src="@drawable/imageprofileniks" />
+
+
+
+                        <TextView
+                            android:id="@+id/txtuserName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_centerHorizontal="true"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:paddingStart="10dp"
+                            android:text="Hi Adit,"
+                            android:textSize="22sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_toLeftOf="@+id/txt_verification"
+                            android:src="@drawable/ic_verified" />
+
+                        <com.example.rlapp.ui.utility.UnderlinedTextView
+                            android:id="@+id/txt_verification"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="10dp"
+
+                            android:text="To become a verified member, \nComplete Your Profile."
+                            android:textSize="12sp" />
+
+                        <RelativeLayout
+                            android:layout_width="40dp"
+                            android:layout_height="18dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_toRightOf="@+id/txt_verification"
+                            android:background="@drawable/ic_verified_rightarrow">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/ic_arrow_right_affirm" />
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_margin="20dp"
+                        android:background="@color/txt_color_mind" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center_horizontal"
+                        android:text="You’ve been living the RightLife for"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <RelativeLayout
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="15dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="#EFF5FF">
+
+                        <TextView
+                            android:id="@+id/txt_rldays"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="1"
+                            android:textSize="34dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txt_rldays"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="10dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Day"
+                            android:textSize="10sp" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/merriweather_bold"
+                android:text="Not Sure Where To Start?"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_extralarge" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16sp"
+                        android:fontFamily="@font/merriweather_bold"
+                        android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="16sp" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        app:cardCornerRadius="20dp">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="188dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="188dp"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/img_notsurevideo" />
+
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:layout_alignParentRight="true"
+                                android:layout_alignParentBottom="true"
+                                android:src="@drawable/ic_music" />
+                        </RelativeLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/txt_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Listen to a 5 min audio specially curated for you."
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:drawableLeft="@drawable/ic_play"
+                        android:gravity="center"
+                        android:paddingStart="75dp"
+                        android:paddingEnd="75dp"
+                        android:text="Listen Now"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#F7F7F7"
+                        android:drawableLeft="@drawable/ic_completed"
+                        android:gravity="center"
+                        android:paddingStart="75dp"
+                        android:paddingEnd="75dp"
+                        android:text="Completed"
+                        android:textColor="#0B1215" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_report"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            tools:ignore="DuplicateIds"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_healthcamrl">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/health_cam_iconrl" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_titl1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16sp"
+                            android:layout_toRightOf="@+id/rl_report"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="Health Cam."
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/txt_titl2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_margin="16sp"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="View All Past Reports"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:orientation="horizontal"
+                        app:cardCornerRadius="0dp">
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/buttoncolorvc"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="3dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:id="@+id/img_run"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+                                    android:layout_gravity="center"
+                                    android:gravity="center"
+                                    android:src="@drawable/rl_manhealth_hcam" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="10dp"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:gravity="center"
+                                    android:text="78"
+                                    android:textSize="50dp" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginTop="10dp"
+                                    android:fontFamily="@font/dmsans_regular"
+                                    android:gravity="center"
+                                    android:text="General Wellness\nScore"
+                                    android:textSize="10dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/rightlife">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/bg_edittext">
+
+                                    <ImageView
+                                        android:id="@+id/img1"
+                                        android:layout_width="50dp"
+                                        android:layout_height="50dp"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="15dp"
+                                        android:src="@drawable/rl_heart_hcam" />
+
+                                    <TextView
+                                        android:id="@+id/txt1_rl_hcam"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_toRightOf="@+id/img1"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="166/67"
+                                        android:textSize="18dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt1_rl_hcam"
+                                        android:layout_margin="10dp"
+                                        android:layout_toRightOf="@+id/img1"
+                                        android:gravity="center"
+                                        android:text="Blood Pressure"
+                                        android:textSize="10dp" />
+
+                                </RelativeLayout>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/buttoncolorvc">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/bg_edittext">
+
+                                    <ImageView
+                                        android:id="@+id/img2"
+                                        android:layout_width="50dp"
+                                        android:layout_height="50dp"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="15dp"
+                                        android:src="@drawable/rl_stress_hcam" />
+
+                                    <TextView
+                                        android:id="@+id/txt2_stressindex"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_toRightOf="@+id/img2"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="3.8"
+                                        android:textSize="18dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt2_stressindex"
+                                        android:layout_margin="10dp"
+                                        android:layout_toRightOf="@+id/img2"
+                                        android:gravity="center"
+                                        android:text="Stress Index"
+                                        android:textSize="10dp" />
+
+                                </RelativeLayout>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/buttoncolorhealth">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/bg_edittext">
+
+                                    <ImageView
+                                        android:id="@+id/img3"
+                                        android:layout_width="50dp"
+                                        android:layout_height="50dp"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="15dp"
+                                        android:src="@drawable/rl_hearttwo_hcam" />
+
+                                    <TextView
+                                        android:id="@+id/txt3_rl_hcam"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_toRightOf="@+id/img3"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="1.3%"
+                                        android:textSize="18dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt3_rl_hcam"
+                                        android:layout_margin="10dp"
+                                        android:layout_toRightOf="@+id/img3"
+                                        android:gravity="center"
+                                        android:text="CVD Risk"
+                                        android:textSize="10dp" />
+
+                                </RelativeLayout>
+                            </RelativeLayout>
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:gravity="center"
+                        android:text="8 Aug, 2024 | View Detailed Report"
+                        android:textColor="#0B1215"
+                        app:backgroundTint="#F7F7F7" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:drawableLeft="@drawable/ic_upload"
+                        android:gravity="center"
+                        android:paddingStart="80dp"
+                        android:paddingEnd="80dp"
+                        android:text="Update Your Vitals Now" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <!--complete your healthcam-->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:gravity="center_horizontal">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_report1"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_healthcamrl"
+                            tools:ignore="DuplicateIds">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/health_cam_iconrl" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_titl10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16sp"
+                            android:layout_toRightOf="@+id/rl_report1"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="Health Cam."
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="16sp"
+                            tools:ignore="DuplicateIds" />
+
+
+                    </RelativeLayout>
+
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:fontFamily="@font/merriweather_bold"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:text="Almost there! Complete your HealthCam for a full health picture. Essential vitals are just a tap away"
+                        android:textColor="#0B1215"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:gravity="center"
+                        android:paddingStart="80dp"
+                        android:paddingEnd="80dp"
+                        android:text="Continue Now" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!--//RL Mind Audit -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp">
+
+                        <RelativeLayout
+                            android:id="@+id/rl_report2"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/img_mindaudit_rlpage" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_titl3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16sp"
+                            android:layout_toRightOf="@+id/rl_report2"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="Mind Audit"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/txt_titl4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_margin="16sp"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="View All Past Reports"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_eatright_category"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="12dp"
+                        android:background="@color/white"
+                        android:orientation="vertical"
+
+                        android:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:src="@drawable/rl_phq9" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="PHQ - 9"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:src="@drawable/rl_gad7" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="GAD-7"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:src="@drawable/rl_dass2" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="DASS-2"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="150dp"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:contentDescription="dsha"
+                                    android:src="@drawable/rl_ohq" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="OHQ"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:gravity="center"
+                        android:text="8 Aug, 2024 | View Detailed Report"
+                        android:textColor="#0B1215"
+                        app:backgroundTint="#F7F7F7" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:drawableLeft="@drawable/rlpage_md_checkbox"
+                        android:gravity="center"
+                        android:paddingStart="50dp"
+                        android:paddingEnd="50dp"
+                        android:text="Reassess Your Mental Health" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!--Health Audit-->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp">
+
+                        <RelativeLayout
+                            android:id="@+id/layout_rl_healthaudit"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/rl_healthaudit" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_titl1_health"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16sp"
+                            android:layout_toRightOf="@+id/layout_rl_healthaudit"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="Health Audit."
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/txt_titl2_health"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_margin="16sp"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="View All Past Reports"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:orientation="horizontal"
+                        app:cardCornerRadius="0dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/buttoncolorvc">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginTop="3dp"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+
+                                <TextView
+                                    android:id="@+id/txt2_rl_hcam"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_toRightOf="@+id/img2"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:gravity="center"
+                                    android:text="50%"
+                                    android:textSize="44sp"
+                                    tools:ignore="DuplicateIds" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/txt2_rl_hcam"
+                                    android:layout_margin="10dp"
+                                    android:layout_toRightOf="@+id/img2"
+                                    android:gravity="center"
+                                    android:text="Blood Pressure"
+                                    android:textSize="@dimen/textsize_extrasmall" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/txt2_rl_hcam"
+
+                                    android:layout_toRightOf="@+id/img2"
+                                    android:gravity="center"
+                                    android:text="Blood Pressure"
+                                    android:textSize="10dp" />
+
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <!--<LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:orientation="vertical">
+
+                            <ImageView
+                                android:id="@+id/img_run2"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:visibility="gone"
+                                android:src="@drawable/rl_manhealth_hcam" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:gravity="center"
+                                android:text="50"
+                                android:textSize="50dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:gravity="center"
+                                android:text="Diabetic Risk \n (ideal < 30%)"
+                                android:textSize="10dp" />
+                        </LinearLayout>-->
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/rlpagegreen">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/bg_edittext"
+                                    android:orientation="vertical">
+
+
+                                    <TextView
+                                        android:id="@+id/txt1_rl_hcam1"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_toRightOf="@+id/img1"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="4.5%"
+                                        android:textSize="30dp"
+                                        tools:ignore="DuplicateIds" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt1_rl_hcam1"
+                                        android:layout_margin="10dp"
+                                        android:layout_toRightOf="@+id/img1"
+                                        android:gravity="center"
+                                        android:text="Hypertension Risk"
+                                        android:textSize="10dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt1_rl_hcam1"
+                                        android:layout_marginBottom="10dp"
+                                        android:layout_toRightOf="@+id/img1"
+                                        android:gravity="center"
+                                        android:text="Hypertension Risk"
+                                        android:textSize="10dp" />
+
+                                </LinearLayout>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="#FDD3D2">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="3dp"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/bg_edittext"
+                                    android:orientation="vertical">
+
+
+                                    <TextView
+                                        android:id="@+id/txt2_rl_hcam11"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_toRightOf="@+id/img2"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="8.8%"
+                                        android:textSize="30dp"
+                                        tools:ignore="DuplicateIds" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt2_rl_hcam11"
+                                        android:layout_margin="10dp"
+                                        android:layout_toRightOf="@+id/img2"
+                                        android:gravity="center"
+                                        android:text="Blood Pressure"
+                                        android:textSize="10dp" />
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt2_rl_hcam11"
+                                        android:layout_marginBottom="10dp"
+                                        android:layout_toRightOf="@+id/img2"
+                                        android:gravity="center"
+                                        android:text="Blood Pressure"
+                                        android:textSize="10dp" />
+
+                                </LinearLayout>
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:gravity="center"
+                        android:text="8 Aug, 2024 | View Detailed Report"
+                        android:textColor="#0B1215"
+                        app:backgroundTint="#F7F7F7" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:drawableLeft="@drawable/rlpage_refreshicon"
+                        android:gravity="center"
+                        android:paddingStart="50dp"
+                        android:paddingEnd="50dp"
+                        android:text="Recheck Your Risk Levels" />
+
+                    <!--<Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:drawableLeft="@drawable/ic_upload"
+                        android:gravity="center"
+                        android:paddingStart="60dp"
+                        android:paddingEnd="60dp"
+                        android:text="Recheck Your Risk Levels" />-->
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <!--RL voice Audit-->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp">
+
+                        <RelativeLayout
+                            android:id="@+id/layout_rl_mindaudit"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_healthcamrl"
+                            tools:ignore="DuplicateIds">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/rlpage_voice_scan" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_title_mindaudit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="16sp"
+                            android:layout_toRightOf="@+id/layout_rl_mindaudit"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="Voice Scan"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="14sp"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:id="@+id/txt_title2_mindaudit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_margin="16sp"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="View All Past Reports"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_rl_mindaudit1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:orientation="vertical"
+                        android:visibility="visible"
+                        tools:ignore="DuplicateIds">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="160dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
+
+                                    android:layout_gravity="center_horizontal|bottom"
+                                    android:src="@drawable/rlpage_relaxed" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Food &amp; Body"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="bottom"
+                                android:orientation="vertical"
+                                android:padding="5dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:gravity="bottom|center_horizontal"
+                                    android:src="@drawable/rl_gad7"
+                                    android:text="54"
+                                    android:textSize="44dp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/dmsans_medium"
+                                        android:gravity="top"
+                                        android:paddingBottom="5dp"
+                                        android:text="Score"
+                                        android:textColor="#00553A"
+                                        android:textSize="16dp"/>
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/dmsans_regular"
+                                        android:gravity="center"
+                                        android:text="Voice Scan"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="10dp" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="160dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:src="@drawable/rl_dass2" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Food &amp; Body"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:contentDescription="dsha"
+                                    android:src="@drawable/rl_ohq" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Food &amp; Body"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:gravity="center"
+                        android:text="8 Aug, 2024 | View Detailed Report"
+                        android:textColor="#0B1215"
+                        app:backgroundTint="#F7F7F7" />
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:backgroundTint="#FD6967"
+                        android:drawableLeft="@drawable/ic_upload"
+                        android:gravity="center"
+                        android:paddingStart="50dp"
+                        android:paddingEnd="50dp"
+                        android:text="Re-Record For Daily Insights" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/merriweather_bold"
+                android:text="Continue"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_extralarge" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg1"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            android:src="@drawable/image1_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv101"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg1"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/tv101"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg1"
+                            android:drawableStart="@drawable/rlpage_thinkright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/tv101"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#FFE18D"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg1">
+
+                            <TextView
+                                android:id="@+id/tv201"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv301"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv201"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg201"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            android:src="@drawable/image2_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txtv1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg201"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/txtv1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg201"
+                            android:drawableStart="@drawable/rlpage_eatright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/txtv1"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#8CD5BE"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg201">
+
+                            <TextView
+                                android:id="@+id/tv202"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv302"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv202"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                tools:ignore="DuplicateIds"
+                                android:textSize="@dimen/textsize_small" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg202"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            tools:ignore="DuplicateIds"
+                            android:src="@drawable/image3_rlpage_edit" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/txtv2"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg202"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/txtv2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg202"
+                            tools:ignore="DuplicateIds"
+                            android:drawableStart="@drawable/rlpage_sleepright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/txtv2"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#A2CFFF"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg202">
+
+                            <TextView
+                                android:id="@+id/tv203"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                tools:ignore="DuplicateIds"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv304"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv203"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                tools:ignore="DuplicateIds"
+                                android:textSize="@dimen/textsize_small" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg203"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            tools:ignore="DuplicateIds"
+                            android:src="@drawable/image4_rlpage_edit" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv1001"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg203"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/tv1001"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg203"
+                            android:drawableStart="@drawable/rlpage_moveright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            tools:ignore="DuplicateIds"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/tv1001"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#FFBFBD"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg203">
+
+                            <TextView
+                                android:id="@+id/tv204"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                tools:ignore="DuplicateIds"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv305"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv204"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                tools:ignore="DuplicateIds"
+                                android:textSize="@dimen/textsize_small" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="View more"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/merriweather_bold"
+                android:text="Your Events"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_extralarge" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="5dp"
+                    android:orientation="vertical">
+
+
+                    <!-- Image Section with Overlay Tag -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp">
+
+                        <!-- Image Background -->
+                        <ImageView
+                            android:id="@+id/banner_image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/liveclassbanner" />
+
+                        <!-- Workshop Tag on Top of Image -->
+                        <TextView
+                            android:id="@+id/workshop_tag1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_margin="12dp"
+                            android:background="@drawable/workshoprectangle"
+                            android:drawableStart="@drawable/workshop"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="4dp"
+                            android:text="Workshop"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/textsize_extrasmall" />
+
+                        <RelativeLayout
+                            android:id="@+id/rl_lvclass_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentBottom="true"
+                            android:layout_margin="12dp"
+                            android:layout_marginStart="@dimen/textsize_small"
+                            android:layout_marginTop="2dp"
+                            android:background="@drawable/bg_calender">
+
+                            <TextView
+                                android:id="@+id/month"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_centerHorizontal="true"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:gravity="center_horizontal"
+                                android:paddingTop="2dp"
+                                android:text="AUG"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/textsize_extrasmall" />
+
+                            <TextView
+                                android:id="@+id/date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/month"
+                                android:layout_centerHorizontal="true"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="12"
+                                android:textColor="@color/white"
+                                android:textSize="23dp" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:fontFamily="@font/merriweather_bold"
+                        android:text="Live Interactive Sessions And Events To"
+                        android:textAlignment="center"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_large" />
+
+
+                    <!--story2 -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/white"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginEnd="30dp">
+
+                                <ImageView
+                                    android:id="@+id/img_lvclass_host"
+                                    android:layout_width="46dp"
+                                    android:layout_height="46dp"
+                                    android:src="@drawable/imgliveclass" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="@dimen/textsize_medium"
+                                    android:layout_toRightOf="@+id/img_lvclass_host"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Rodi Saravan"
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_medium" />
+
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="20dp"
+                                    android:layout_toLeftOf="@+id/tv_classrating"
+                                    android:src="@drawable/ic_star" />
+
+                                <TextView
+                                    android:id="@+id/tv_classrating"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginEnd="10dp"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="4.5"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginStart="32dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:gravity="center_vertical">
+                                <!--<RelativeLayout
+                                    android:layout_width="36dp"
+                                    android:id="@+id/rl_lvclass_date"
+                                    android:layout_marginTop="2dp"
+                                    android:layout_marginStart="@dimen/textsize_small"
+                                    android:background="@drawable/ic_calender"
+                                    android:layout_height="36dp">
+                                    <TextView
+                                        android:id="@+id/month"
+                                        android:layout_width="wrap_content"
+                                        android:text="AUG"
+                                        android:textSize="7dp"
+                                        android:paddingTop="2dp"
+                                        android:layout_alignParentTop="true"
+                                        android:gravity="center_horizontal"
+                                        android:layout_centerHorizontal="true"
+                                        android:textColor="@color/white"
+                                        android:fontFamily="@font/poppins_bold"
+                                        android:layout_height="wrap_content"/>
+                                    <TextView
+                                        android:id="@+id/date"
+                                        android:layout_width="wrap_content"
+                                        android:text="12"
+                                        android:fontFamily="@font/poppins_bold"
+                                        android:layout_below="@+id/month"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_height="wrap_content"/>
+                                </RelativeLayout>-->
+                                <ImageView
+                                    android:id="@+id/img_lvclass_date"
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="5dp"
+                                    android:src="@drawable/ic_clock"
+                                    android:visibility="visible" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginStart="@dimen/textsize_medium"
+                                    android:layout_toRightOf="@+id/img_lvclass_date"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="7.30 AM"
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_large" />
+
+
+                                <ImageView
+                                    android:layout_width="45dp"
+                                    android:layout_height="45dp"
+                                    android:layout_centerVertical="true"
+                                    android:layout_marginRight="10dp"
+                                    android:layout_toLeftOf="@+id/tv_classrating1"
+                                    android:src="@drawable/attending" />
+
+                                <TextView
+                                    android:id="@+id/tv_classrating1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_centerVertical="true"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:text="Filled"
+                                    android:textColor="#0B1215"
+                                    android:textSize="@dimen/textsize_extrasmall" />
+
+                            </RelativeLayout>
+
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <!-- <androidx.cardview.widget.CardView
+                         android:layout_width="match_parent"
+                         android:text="Enroll Now ₹1,999"
+                         app:cardCornerRadius="25dp"
+                         android:background="@color/cardview_light_background"
+                         android:backgroundTint="#FD6967"
+                         android:layout_marginEnd="30dp"
+                         android:layout_marginStart="30dp"
+                         android:layout_marginTop="5dp"
+                         android:textSize="@dimen/textsize_medium"
+                         android:fontFamily="@font/dmsans_bold"
+                         android:gravity="center"
+                         android:layout_gravity="center"
+                         android:layout_marginBottom="5dp"
+                         android:layout_height="50dp">-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginBottom="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <Button
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_margin="3dp"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#F7F7F7"
+                                android:drawableLeft="@drawable/ic_completed"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:gravity="center"
+                                android:text="Subscribed"
+                                android:textColor="#0B1215"
+                                android:textSize="@dimen/textsize_small" />
+
+                            <Button
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_margin="3dp"
+                                android:layout_weight="1"
+                                android:backgroundTint="#FD6967"
+                                android:drawableLeft="@drawable/rlpage_share"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:gravity="center"
+                                android:text="Invite Friends"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/textsize_small" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <!--RL voice Audit-->
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="@dimen/textsize_small">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle"
+                    android:backgroundTint="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp">
+
+                        <RelativeLayout
+                            android:id="@+id/layout_rl_mindaudit1"
+                            android:layout_width="38dp"
+                            android:layout_height="22dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginEnd="20dp"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="#FD6967"
+                            tools:ignore="DuplicateIds">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:src="@drawable/ic_arrow_right_affirm" />
+                        </RelativeLayout>
+
+                        <TextView
+                            android:id="@+id/txt_title_mindaudit11"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="Last Entry"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="16sp"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:id="@+id/txt_title2_mindaudit1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:layout_below="@+id/txt_title_mindaudit11"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="15 Aug, 2024 |   10 pm"
+                            tools:ignore="DuplicateIds"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_rl_mindaudit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:orientation="vertical"
+                        tools:ignore="DuplicateIds"
+                        android:visibility="visible">
+                        <View
+                            android:layout_width="match_parent"
+                            android:background="#707070"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_height="1dp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:textSize="14sp"
+                            android:textColor="@color/txt_color_header"
+                            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:fontFamily="@font/merriweather_regular"
+                            android:textSize="14sp"
+                            android:textColor="@color/txt_color_header"
+                            android:layout_marginTop="10dp"
+                            android:text="Update your journal consistently and \ntry new toolkits to improve your mental health."
+                            android:layout_height="wrap_content"/>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:background="#707070"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_height="1dp"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:fontFamily="@font/dmsans_medium"
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:textColor="#0B1215"
+                            android:layout_marginBottom="10dp"
+                            android:text="Update your journal consistently and \ntry new toolkits to improve your mental health."
+                            android:layout_height="wrap_content"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/normal"
+                                android:elevation="5dp"
+                                android:gravity="bottom"
+                                android:orientation="vertical">
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="bottom"
+
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_marginBottom="20dp"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Normal"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="140dp"
+                                android:layout_margin="5dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/normal"
+                                android:elevation="5dp"
+                                android:gravity="bottom"
+                                android:orientation="vertical">
+
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="bottom"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:layout_marginBottom="20dp"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Guided"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="160dp"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:src="@drawable/rl_dass2" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Food &amp; Body"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="10dp"
+                                android:layout_weight="1"
+                                android:background="@drawable/roundedcornerbutton"
+                                android:backgroundTint="@color/bg_edittext"
+                                android:elevation="5dp"
+                                android:gravity="center"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".4"
+                                    android:contentDescription="dsha"
+                                    android:src="@drawable/rl_ohq" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight=".6"
+                                    android:gravity="center"
+
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:drawablePadding="-10dp"
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:gravity="center"
+                                        android:padding="5dp"
+                                        android:text="Food &amp; Body"
+                                        android:textAlignment="center"
+                                        android:textColor="#00553A"
+                                        android:textSize="@dimen/textsize_large" />
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:padding="5dp"
+                                        android:src="@drawable/rlpage_info_icon" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:fontFamily="@font/merriweather_bold"
+                android:text="Recently Viewed"
+                android:textColor="@color/txt_color_header"
+                android:textSize="@dimen/textsize_extralarge" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg12"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            android:src="@drawable/image5_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvv1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg12"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/tvv1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg12"
+                            android:drawableStart="@drawable/rlpage_thinkright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/tvv1"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#FFE18D"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg12">
+
+                            <TextView
+                                android:id="@+id/tv205"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv306"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv205"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg204"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            android:src="@drawable/image6_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv4"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg204"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/tv4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg204"
+                            android:drawableStart="@drawable/rlpage_eatright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/tv4"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#8CD5BE"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg204">
+
+                            <TextView
+                                android:id="@+id/tv5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv307"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv5"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg205"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            android:src="@drawable/image7_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_1"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg205"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/tv_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg205"
+                            android:drawableStart="@drawable/rlpage_sleepright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/tv_1"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#A2CFFF"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg205">
+
+                            <TextView
+                                android:id="@+id/tv_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv308"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv_2"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:paddingBottom="10dp">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:background="@color/border" />
+
+                        <ImageView
+                            android:id="@+id/rlimg206"
+                            android:layout_width="84dp"
+                            android:layout_height="84dp"
+                            android:layout_alignParentStart="true"
+                            android:layout_margin="@dimen/textsize_medium"
+                            android:src="@drawable/image8_rlpage_edit"
+                            tools:ignore="DuplicateIds" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tv_12"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginEnd="@dimen/textsize_extrasmall"
+                            android:layout_toEndOf="@id/rlimg206"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_medium" />
+
+                        <TextView
+                            android:id="@+id/tv_12"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg206"
+                            android:drawableStart="@drawable/rlpage_moveright_svg"
+                            android:drawablePadding="5dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:paddingStart="5dp"
+                            android:text="MoveRight   |"
+                            android:textSize="@dimen/textsize_small"
+                            tools:ignore="DuplicateIds" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@+id/tv_12"
+                            android:drawableStart="@drawable/ic_tag"
+                            android:drawablePadding="5dp"
+                            android:drawableTint="#FFBFBD"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="Yoga"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_alignParentBottom="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:layout_toRightOf="@id/rlimg206">
+
+                            <TextView
+                                android:id="@+id/tv_21"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="5dp"
+                                android:text="Ventak swami muthu s…   |"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="20dp"
+                                android:layout_alignParentBottom="true"
+                                android:background="@color/rightlife"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv_31"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentBottom="true"
+                                android:layout_toRightOf="@+id/tv_21"
+                                android:drawablePadding="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:paddingStart="15dp"
+                                android:text="2 min left"
+                                android:textSize="@dimen/textsize_small"
+                                tools:ignore="DuplicateIds" />
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginBottom="20dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="View more"
+                            android:textSize="14sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/close"
+        app:tint="@color/white"
+        android:backgroundTint="@color/rightlife"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:visibility="visible"
+        app:fabSize="normal"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
