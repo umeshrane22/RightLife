@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     // Login is in this
     // test dev branch 2
 
+
     ImageButton googleButton;
     EditText phoneInput,phoneInputOption;
     ImageView img_getotp,imgGetOtpBtn,imgSignupOtpBtn;
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String otp=pinView.getText().toString();
-                Log.d("API OTP ", "Success: --" + otp);
+                Log.d("API OTP ", "Success: ---" + otp);
                 Toast.makeText(MainActivity.this, otp, Toast.LENGTH_SHORT).show();
 
                // CallSubmitOtpSignup(otp);
