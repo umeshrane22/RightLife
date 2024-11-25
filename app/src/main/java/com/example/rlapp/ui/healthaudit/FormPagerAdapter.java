@@ -23,18 +23,18 @@ public class FormPagerAdapter extends FragmentStateAdapter {
         String questionType = question.getQuestion();
 
         switch (questionType) {
-            case "dob" :
-                return FormPageFragment.newInstance(position);
+            case "dob":
+                return FormPageFragment.newInstance(position, question);
             case "height":
-            return HAFormHeighFragment.newInstance(position);
+                return HAFormHeighFragment.newInstance(position, question);
             case "weight":
-                return HAFromWeightFragment.newInstance(position);
+                return HAFromWeightFragment.newInstance(position, question);
             case "waist":
-                return HAFromWaistFragment.newInstance(position);
+                return HAFromWaistFragment.newInstance(position, question);
             case "bp_systolic":
-                return HAFromBPFragment.newInstance(position);
+                return HAFromBPFragment.newInstance(position, question);
             default:
-                return FruitListFragment.newInstance(position,question);
+                return FruitListFragment.newInstance(position, question);
         }
 
         /*switch (position) {

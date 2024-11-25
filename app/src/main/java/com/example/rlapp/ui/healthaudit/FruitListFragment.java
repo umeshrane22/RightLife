@@ -2,7 +2,6 @@ package com.example.rlapp.ui.healthaudit;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,15 +19,12 @@ import com.example.rlapp.ui.healthaudit.questionlist.Option;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FruitListFragment extends Fragment {
 
     private TextView txt_question;
     private TextView txt_question_desc;
     private RecyclerView recyclerView;
-    private FruitAdapter adapter;
     private OptionsAdapter optionsAdapter;
     private ArrayList<Option> selectedOptions = new ArrayList<>();
     private ArrayList<String> selectedOptionsString = new ArrayList<>();
@@ -38,7 +33,6 @@ public class FruitListFragment extends Fragment {
     private static final String ARG_QUESTION = "QUESTION";
     private int pageIndex;
 
-    private FormViewModel formViewModel;
     private Question question;
     private ArrayList<Option> optionsList = new ArrayList<>();
     boolean isMultipleSelection = true;
@@ -62,8 +56,6 @@ public class FruitListFragment extends Fragment {
             pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
             question = (Question) getArguments().getSerializable(ARG_QUESTION);
         }
-
-        formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
     }
 
     @Override
@@ -98,7 +90,6 @@ public class FruitListFragment extends Fragment {
         fruitList.add(new Fruit("Pineapple", false));
 
 
-
         int spanCount = 1;
         if (optionsList.size() >= 4)
             spanCount = 2;
@@ -116,18 +107,18 @@ public class FruitListFragment extends Fragment {
             if (isMultipleSelection) {
                 if (option.isSelected()) {
                     selectedOptions.add(option);
-                    selectedOptionsString.add(option.getOptionText());
+                    selectedOptionsString.add(option.getOptionPosition());
                 } else {
                     selectedOptions.remove(option);
-                    selectedOptionsString.remove(option.getOptionText());
+                    selectedOptionsString.remove(option.getOptionPosition());
                 }
-            }else {
+            } else {
                 if (!option.isSelected()) {
                     selectedOptions.add(option);
-                    selectedOptionsString.add(option.getOptionText());
+                    selectedOptionsString.add(option.getOptionPosition());
                 } else {
                     selectedOptions.remove(option);
-                    selectedOptionsString.remove(option.getOptionText());
+                    selectedOptionsString.remove(option.getOptionPosition());
                 }
                 navigateNext();
             }
@@ -139,23 +130,6 @@ public class FruitListFragment extends Fragment {
 
         btnOK.setOnClickListener(view1 -> navigateNext());
 
-
-        adapter = new FruitAdapter(fruitList, fruit -> {
-            // Handle fruit selection here
-            Log.d("FruitSelection", "Fruit clicked: " + fruit.getName());
-
-            if (fruit.isSelected()) {
-                // Add to favorites
-                Log.d("FruitSelection", "Added to favorites: " + fruit.getName());
-                selectedfruitList.add(fruit);
-            } else {
-                // Remove from favorites
-                Log.d("FruitSelection", "Removed from favorites: " + fruit.getName());
-                selectedfruitList.remove(fruit);
-            }
-            saveData();
-        });
-
         recyclerView.setAdapter(optionsAdapter);
 
         return view;
@@ -166,17 +140,4 @@ public class FruitListFragment extends Fragment {
         ((HealthAuditFormActivity) requireActivity()).navigateToNextPage();
     }
 
-    public Map<String, ArrayList> collectData() {
-        Map<String, ArrayList> data = new HashMap<>();
-        // Add values from views in this fragment to the data map
-        data.put("fruit", selectedfruitList);
-        return data;
-    }
-
-    private void saveData() {
-        FormData data = new FormData();
-        data.setAnswer("User Fruit");
-        data.setSelected(true);
-        formViewModel.saveFormData(pageIndex, data); // Replace `getPageIndex()` with the actual page number
-    }
 }
