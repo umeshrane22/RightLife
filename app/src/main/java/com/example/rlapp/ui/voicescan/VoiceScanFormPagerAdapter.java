@@ -5,14 +5,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.rlapp.ui.healthaudit.FormPageFragment;
-import com.example.rlapp.ui.healthaudit.FormPagerAdapter;
-import com.example.rlapp.ui.healthaudit.FruitListFragment;
+import com.example.rlapp.apimodel.UserAuditAnswer.Answer;
+import com.example.rlapp.ui.healthaudit.questionlist.Question;
+import com.example.rlapp.ui.healthaudit.questionlist.QuestionData;
+
+import java.util.ArrayList;
 
 
 public class VoiceScanFormPagerAdapter extends FragmentStateAdapter {
 
     private String feelings = "Sad";
+    private QuestionData questionData;
 
     public VoiceScanFormPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -21,19 +24,25 @@ public class VoiceScanFormPagerAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        switch (position) {
-            case 0:
-                return FeelingListFragment.newInstance(position);
-            case 1:
-                return FeelingReasonsFragment.newInstance(position,feelings);
-            case 2:
-                return VoiceRecordFragment.newInstance(position);
+        Question question = questionData.getQuestionList().get(position);
+        String questionType = question.getQuestion();
+        switch (questionType) {
+            case "feeling":
+                return FeelingListFragment.newInstance(position,question);
+            case "reason":
+                return FeelingReasonsFragment.newInstance(position, feelings,question);
+            case "audio":
+                return VoiceRecordFragment.newInstance(position,question);
             // Continue for each page up to
 
             default:
-                return  FeelingListFragment.newInstance(position);
+                return FeelingListFragment.newInstance(position, question);
             //throw new IllegalArgumentException("Invalid page position");
         }
+    }
+
+    public void setData(QuestionData data) {
+        this.questionData = data;
     }
 
     public void setFeelings(String feelings) {
@@ -42,7 +51,10 @@ public class VoiceScanFormPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 3; // Number of pages in the form
+        if (questionData != null)
+            return questionData.getQuestionList().size(); // Number of pages in the form
+        else
+            return 0;
     }
 }
 

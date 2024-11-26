@@ -1,20 +1,26 @@
 package com.example.rlapp.ui.voicescan;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rlapp.R;
+import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
+import com.example.rlapp.ui.healthaudit.questionlist.Question;
+
+import java.util.ArrayList;
 
 public class FeelingReasonsFragment extends Fragment {
 
@@ -23,17 +29,22 @@ public class FeelingReasonsFragment extends Fragment {
     private int pageIndex;
     private String feelings;
 
-    private TextView txtFeelingsTitle, tvWork, tvSchool, tvFamily, tvHealth, tvMoney, tvFriends, tvRelationships;
+    private TextView txtFeelingsTitle, txtFeelingReason;
     private ImageView imgFeelings;
-    private boolean isWorkSelected = false, isSchoolSelected = false, isFamilySelected = false,
-            isHealthSelected = false, isMoneySelected = false, isFriendsSelected = false, isRelationshipSelected = false;
+    private RelativeLayout relativeLayoutFeeling;
+    private Question question;
+    private RecyclerView recyclerView;
+    private FeelingReasonsListAdapter adapter;
+    private ArrayList<String> selectedOptionString = new ArrayList<>();
+    private OnNextVoiceScanFragmentClickListener onNextVoiceScanFragmentClickListener;
 
 
-    public static FeelingReasonsFragment newInstance(int pageIndex, String feelings) {
+    public static FeelingReasonsFragment newInstance(int pageIndex, String feelings, Question question) {
         FeelingReasonsFragment fragment = new FeelingReasonsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_INDEX, pageIndex);
         args.putString(ARG_FEELINGS, feelings);
+        args.putSerializable(HealthAuditFormActivity.ARG_QUESTION, question);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,9 +55,15 @@ public class FeelingReasonsFragment extends Fragment {
         if (getArguments() != null) {
             pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
             feelings = getArguments().getString(ARG_FEELINGS);
-            Log.d("AAAAA", "Feelings = " + feelings);
+            question = (Question) getArguments().getSerializable(HealthAuditFormActivity.ARG_QUESTION);
         }
 
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        onNextVoiceScanFragmentClickListener = (OnNextVoiceScanFragmentClickListener) context;
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -56,119 +73,56 @@ public class FeelingReasonsFragment extends Fragment {
         View view = inflater.inflate(R.layout.page_feelings_reasons, container, false);
 
         txtFeelingsTitle = view.findViewById(R.id.txt_title_feeling);
+        txtFeelingReason = view.findViewById(R.id.txt_title_reason);
         imgFeelings = view.findViewById(R.id.icon_feelings);
         txtFeelingsTitle.setText(feelings);
+        txtFeelingReason.setText(question.getQuestionTxt());
+        relativeLayoutFeeling = view.findViewById(R.id.rl_main_feeling_1);
 
+        recyclerView = view.findViewById(R.id.recycler_view_reason);
+
+        ((VoiceScanFromActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
+
+        ((VoiceScanFromActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
+            onNextVoiceScanFragmentClickListener.onNextFragmentClick(question.getQuestion(), selectedOptionString);
+            ((VoiceScanFromActivity) requireActivity()).navigateToNextPage("");
+        });
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 3);
+        recyclerView.setLayoutManager(gridLayoutManager);
+
+        adapter = new FeelingReasonsListAdapter(requireContext(), question.getOptions(), option -> {
+            if (option.isSelected()) {
+                selectedOptionString.add(option.getOptionText());
+            } else {
+                selectedOptionString.remove(option.getOptionText());
+            }
+        });
+
+        recyclerView.setAdapter(adapter);
 
         switch (feelings) {
             case "Sad":
                 imgFeelings.setImageResource(R.drawable.vociesscan_sad);
+                relativeLayoutFeeling.setBackground(requireContext().getDrawable(R.drawable.toproundedvoicescan_sad));
                 break;
             case "Stressed":
                 imgFeelings.setImageResource(R.drawable.voicescan_stressed);
+                relativeLayoutFeeling.setBackground(requireContext().getDrawable(R.drawable.toproundedvoicescan_stressed));
                 break;
             case "Unsure":
                 imgFeelings.setImageResource(R.drawable.voicescan_unsure);
+                relativeLayoutFeeling.setBackground(requireContext().getDrawable(R.drawable.toproundedvoicescan_unsure));
                 break;
             case "Relaxed":
                 imgFeelings.setImageResource(R.drawable.voicescan_relaxed);
+                relativeLayoutFeeling.setBackground(requireContext().getDrawable(R.drawable.toproundedvoicescan_relaxed));
                 break;
             case "Happy":
                 imgFeelings.setImageResource(R.drawable.voicescan_happy);
+                relativeLayoutFeeling.setBackground(requireContext().getDrawable(R.drawable.toproundedvoicescan_happy));
                 break;
         }
-
-        tvWork = view.findViewById(R.id.tv_work);
-        tvSchool = view.findViewById(R.id.tv_school);
-        tvFamily = view.findViewById(R.id.tv_family);
-        tvHealth = view.findViewById(R.id.tv_health);
-        tvMoney = view.findViewById(R.id.tv_money);
-        tvFriends = view.findViewById(R.id.tv_friends);
-        tvRelationships = view.findViewById(R.id.tv_relationship);
-
-        tvWork.setOnClickListener(view1 -> {
-            if (isWorkSelected) {
-                isWorkSelected = false;
-                tvWork.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvWork.setTextColor(Color.BLACK);
-            } else {
-                isWorkSelected = true;
-                tvWork.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvWork.setTextColor(Color.WHITE);
-            }
-        });
-
-        tvSchool.setOnClickListener(view1 -> {
-            if (isSchoolSelected) {
-                isSchoolSelected = false;
-                tvSchool.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvSchool.setTextColor(Color.BLACK);
-            } else {
-                isSchoolSelected = true;
-                tvSchool.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvSchool.setTextColor(Color.WHITE);
-            }
-        });
-
-        tvFamily.setOnClickListener(view1 -> {
-            if (isFamilySelected) {
-                isFamilySelected = false;
-                tvFamily.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvFamily.setTextColor(Color.BLACK);
-            } else {
-                isFamilySelected = true;
-                tvFamily.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvFamily.setTextColor(Color.WHITE);
-            }
-        });
-
-        tvHealth.setOnClickListener(view1 -> {
-            if (isHealthSelected) {
-                isHealthSelected = false;
-                tvHealth.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvHealth.setTextColor(Color.BLACK);
-            } else {
-                isHealthSelected = true;
-                tvHealth.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvHealth.setTextColor(Color.WHITE);
-            }
-        });
-
-        tvMoney.setOnClickListener(view1 -> {
-            if (isMoneySelected) {
-                isMoneySelected = false;
-                tvMoney.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvMoney.setTextColor(Color.BLACK);
-            } else {
-                isMoneySelected = true;
-                tvMoney.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvMoney.setTextColor(Color.WHITE);
-            }
-        });
-
-        tvFriends.setOnClickListener(view1 -> {
-            if (isFriendsSelected) {
-                isFriendsSelected = false;
-                tvFriends.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvFriends.setTextColor(Color.BLACK);
-            } else {
-                isFriendsSelected = true;
-                tvFriends.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvFriends.setTextColor(Color.WHITE);
-            }
-        });
-
-        tvRelationships.setOnClickListener(view1 -> {
-            if (isRelationshipSelected) {
-                isRelationshipSelected = false;
-                tvRelationships.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape));
-                tvRelationships.setTextColor(Color.BLACK);
-            } else {
-                isRelationshipSelected = true;
-                tvRelationships.setBackground(requireActivity().getDrawable(R.drawable.roundedcornershape_selected));
-                tvRelationships.setTextColor(Color.WHITE);
-            }
-        });
 
         return view;
     }

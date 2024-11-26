@@ -16,28 +16,6 @@
         android:orientation="vertical"
         android:visibility="visible">
 
-        <TextView
-            android:id="@+id/txt_title_check"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_margin="16dp"
-            android:fontFamily="@font/dmsans_bold"
-            android:text="Daily Check"
-            android:textColor="@color/white"
-            android:textSize="@dimen/textsize_extralarge" />
-
-        <TextView
-            android:id="@+id/txt_title_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="16dp"
-            android:fontFamily="@font/dmsans_regular"
-            android:text="Thu . 07 April . 00:01 pm"
-            android:textColor="@color/white"
-            android:textSize="@dimen/textsize_small" />
-
         <RelativeLayout
             android:id="@+id/rl_main_feeling"
             android:layout_width="match_parent"
@@ -62,47 +40,68 @@
 
         </RelativeLayout>
 
-        <!--Sad-->
-
         <RelativeLayout
-            android:id="@+id/rl_main_feeling_sad"
+            android:id="@+id/rl_main_feeling_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
-            android:background="@drawable/toproundedvoicescan"
-            android:backgroundTint="#A6E0CE"
+            android:background="@drawable/toproundedvoicescan_sad"
             android:orientation="vertical"
             android:visibility="visible">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="250dp">
-            <TextView
-                android:id="@+id/txt_title_feeling"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/dmsans_bold"
-                android:text="Unsure"
-                android:textColor="@color/txt_color_header"
-                android:textSize="@dimen/textsize_extralarge" />
 
-            <ImageView
-                android:id="@+id/icon_feelings"
-                android:layout_width="100dp"
-                android:src="@drawable/voicescan_unsure"
-                android:layout_centerInParent="true"
-                android:layout_height="100dp"/>
+                <ImageView
+                    android:id="@+id/icon_feelings"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/voicescan_unsure" />
+
+                <TextView
+                    android:id="@+id/txt_title_feeling"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="16dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Unsure"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="@dimen/textsize_extralarge" />
             </RelativeLayout>
         </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txt_title_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Daily Check"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_extralarge" />
+
+        <TextView
+            android:id="@+id/txt_title_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:text="Thu . 07 April . 00:01 pm"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_small" />
 
 
         <TextView
             android:id="@+id/txt_title_reason"
-            android:layout_below="@+id/rl_main_feeling_sad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/rl_main_feeling_1"
             android:layout_alignParentStart="true"
             android:layout_margin="16dp"
             android:fontFamily="@font/dmsans_medium"
@@ -113,140 +112,10 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_reason"
         android:layout_width="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/tv_work"
-            android:layout_width="wrap_content"
-            android:text="Work"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_toLeftOf="@+id/tv_school"
-            android:layout_marginEnd="30dp"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/tv_school"
-            android:layout_width="wrap_content"
-            android:text="School"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content"/>
-
-
-        <TextView
-            android:id="@+id/tv_family"
-            android:layout_width="wrap_content"
-            android:text="Family"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_toRightOf="@+id/tv_school"
-            android:layout_marginStart="30dp"
-            android:layout_height="wrap_content"/>
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/tv_health"
-            android:layout_width="wrap_content"
-            android:text="Health"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_toLeftOf="@+id/tv_money"
-            android:layout_marginEnd="30dp"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/tv_money"
-            android:layout_width="wrap_content"
-            android:text="Money"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content"/>
-
-
-        <TextView
-            android:id="@+id/tv_friends"
-            android:layout_width="wrap_content"
-            android:text="Friends"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_toRightOf="@+id/tv_money"
-            android:layout_marginStart="30dp"
-            android:layout_height="wrap_content"/>
-
-    </RelativeLayout>
-
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_marginTop="30dp"
-        android:layout_height="wrap_content">
-
-
-
-        <TextView
-            android:id="@+id/tv_relationship"
-            android:layout_width="wrap_content"
-            android:text="Relationships"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_large"
-            android:background="@drawable/roundedcornershape"
-            android:fontFamily="@font/dmsans_bold"
-            android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content"/>
-
-
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        android:layout_margin="16dp" />
 
 </LinearLayout>

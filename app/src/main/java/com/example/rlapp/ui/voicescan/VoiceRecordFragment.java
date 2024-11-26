@@ -1,5 +1,6 @@
 package com.example.rlapp.ui.voicescan;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,18 +11,29 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.rlapp.R;
+import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
+import com.example.rlapp.ui.healthaudit.questionlist.Question;
 
 public class VoiceRecordFragment extends Fragment {
 
     private static final String ARG_PAGE_INDEX = "page_index";
     private int pageIndex;
+    private Question question;
+    private OnNextVoiceScanFragmentClickListener onNextVoiceScanFragmentClickListener;
 
-    public static VoiceRecordFragment newInstance(int pageIndex) {
+    public static VoiceRecordFragment newInstance(int pageIndex, Question question) {
         VoiceRecordFragment fragment = new VoiceRecordFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_INDEX, pageIndex);
+        args.putSerializable(HealthAuditFormActivity.ARG_QUESTION, question);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        onNextVoiceScanFragmentClickListener = (OnNextVoiceScanFragmentClickListener) context;
     }
 
     @Override
@@ -29,24 +41,14 @@ public class VoiceRecordFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
+            question = (Question) getArguments().getSerializable(HealthAuditFormActivity.ARG_QUESTION);
         }
-
-        //formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.page_feelings_record, container, false);
-
-        //formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
-/*
-        ImageView button1 = view.findViewById(R.id.calendarButton);
-        dateText = view.findViewById(R.id.dateText);*/
-
-        // Set up listeners and interactions for views specific to this page
-        //button1.setOnClickListener(v -> handleButtonClick());
-
 
         return view;
     }

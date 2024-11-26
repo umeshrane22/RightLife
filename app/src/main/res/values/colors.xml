@@ -51,6 +51,12 @@
     <color name="eatright">#A6E0CE</color>
     <color name="sleepright">#A0CEFF</color>
 
+    <color name="color_sad">#EFF0F6</color>
+    <color name="color_stressed">#C5DEF9</color>
+    <color name="color_unsure">#A6E0CE</color>
+    <color name="color_relaxed">#D5C6ED</color>
+    <color name="color_happy">#F7E6B7</color>
+
 
 
 </resources>

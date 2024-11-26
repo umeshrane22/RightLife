@@ -65,12 +65,12 @@
         <!--Sad-->
 
         <RelativeLayout
-            android:id="@+id/rl_main_feeling_sad"
+            android:id="@+id/rl_main_feeling_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="100dp"
-            android:background="@drawable/toproundedvoicescan"
+            android:background="@drawable/toproundedvoicescan_sad"
             android:backgroundTint="#F7E6B7"
             android:orientation="vertical"
             android:visibility="visible">
@@ -103,7 +103,7 @@
             android:id="@+id/txt_title_reason"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_main_feeling_sad"
+            android:layout_below="@+id/rl_main_feeling_1"
             android:layout_centerHorizontal="true"
             android:layout_margin="16dp"
             android:fontFamily="@font/dmsans_bold"
