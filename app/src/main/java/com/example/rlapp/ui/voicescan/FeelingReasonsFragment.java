@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
+import com.example.rlapp.ui.utility.DateTimeUtils;
 
 import java.util.ArrayList;
 
@@ -80,6 +81,9 @@ public class FeelingReasonsFragment extends Fragment {
         relativeLayoutFeeling = view.findViewById(R.id.rl_main_feeling_1);
 
         recyclerView = view.findViewById(R.id.recycler_view_reason);
+
+        TextView tvDateTime = view.findViewById(R.id.txt_title_date);
+        tvDateTime.setText(DateTimeUtils.getDateTime());
 
         ((VoiceScanFromActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
 

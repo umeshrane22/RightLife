@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +15,9 @@ import androidx.fragment.app.Fragment;
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
+import com.example.rlapp.ui.utility.DateTimeUtils;
+
+import java.util.ArrayList;
 
 public class VoiceRecordFragment extends Fragment {
 
@@ -20,6 +25,11 @@ public class VoiceRecordFragment extends Fragment {
     private int pageIndex;
     private Question question;
     private OnNextVoiceScanFragmentClickListener onNextVoiceScanFragmentClickListener;
+    private int selectedPosition = 0;
+
+    private ArrayList<String> voiceScanTopic = new ArrayList<>();
+    private TextView tvGetDifferentTopics, tvSelectedTopic;
+    private RadioButton radioButton;
 
     public static VoiceRecordFragment newInstance(int pageIndex, Question question) {
         VoiceRecordFragment fragment = new VoiceRecordFragment();
@@ -49,6 +59,58 @@ public class VoiceRecordFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.page_feelings_record, container, false);
+
+        voiceScanTopic.add("How do you feel today?");
+        voiceScanTopic.add("Can you describe your perfect day?");
+        voiceScanTopic.add("What inspires you?");
+        voiceScanTopic.add("Describe the things that make you happy.");
+        voiceScanTopic.add("What advice would you give to someone going through a hard time?");
+        voiceScanTopic.add("What makes you feel fulfilled?");
+        voiceScanTopic.add("What things are you avoiding dealing with?");
+        voiceScanTopic.add("What is your favorite way to spend the day?");
+        voiceScanTopic.add("Describe the things that make you smile.");
+        voiceScanTopic.add("What couldn’t you imagine living without?");
+        voiceScanTopic.add("What do you love about life?");
+        voiceScanTopic.add("What can you learn from your biggest mistakes?");
+        voiceScanTopic.add("When do you feel most energized?");
+        voiceScanTopic.add("How has your week been so far?");
+        voiceScanTopic.add("How is your work or school going, and how do you think it will go in the future?");
+        voiceScanTopic.add("What would you say are some of your best qualities?");
+        voiceScanTopic.add("What are some things that usually put you in a good mood?");
+        voiceScanTopic.add("Describe how you’ve been feeling during the past week.");
+        voiceScanTopic.add("What are you looking forward to this week?");
+
+        tvGetDifferentTopics = view.findViewById(R.id.tv_get_different_topic);
+        tvSelectedTopic = view.findViewById(R.id.txt_describe_day);
+
+        TextView tvDateTime = view.findViewById(R.id.txt_title_date);
+        tvDateTime.setText(DateTimeUtils.getDateTime());
+
+        tvSelectedTopic.setText(voiceScanTopic.get(selectedPosition));
+        tvGetDifferentTopics.setOnClickListener(view1 -> {
+            if (selectedPosition < voiceScanTopic.size() - 1) {
+                selectedPosition = selectedPosition + 1;
+            } else {
+                selectedPosition = 0;
+            }
+            tvSelectedTopic.setText(voiceScanTopic.get(selectedPosition));
+        });
+
+        radioButton = view.findViewById(R.id.radio_use_my_own_topic);
+
+        radioButton.setOnClickListener(view12 -> {
+            tvGetDifferentTopics.setEnabled(radioButton.isSelected());
+            if (!radioButton.isSelected()) {
+                radioButton.setChecked(true);
+                radioButton.setSelected(true);
+                tvSelectedTopic.setText("My own topic");
+            } else {
+                radioButton.setChecked(false);
+                radioButton.setSelected(false);
+                tvSelectedTopic.setText(voiceScanTopic.get(selectedPosition));
+            }
+        });
+
 
         return view;
     }

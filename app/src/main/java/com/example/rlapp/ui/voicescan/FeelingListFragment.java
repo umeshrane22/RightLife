@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
+import com.example.rlapp.ui.utility.DateTimeUtils;
 
 import java.util.ArrayList;
 
@@ -56,6 +58,10 @@ public class FeelingListFragment extends Fragment {
         View view = inflater.inflate(R.layout.page_feelings_list, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.recycler_view_feelings);
+
+        TextView tvDateTime = view.findViewById(R.id.txt_title_date);
+        tvDateTime.setText(DateTimeUtils.getDateTime());
+
         adapter = new FeelingListAdapter(requireContext(), question.getOptions(), option -> {
             ArrayList<String> data = new ArrayList<>();
             data.add(option.getOptionText());
