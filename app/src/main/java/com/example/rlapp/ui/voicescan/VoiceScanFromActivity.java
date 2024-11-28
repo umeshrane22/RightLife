@@ -1,7 +1,10 @@
 package com.example.rlapp.ui.voicescan;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,17 +19,36 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.UserAuditAnswer.Answer;
+import com.example.rlapp.apimodel.UserAuditAnswer.Option;
 import com.example.rlapp.ui.healthaudit.FormPagerAdapter;
 import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
+import com.example.rlapp.ui.healthaudit.questionlist.Question;
+import com.example.rlapp.ui.healthaudit.questionlist.QuestionData;
+import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
 import com.example.rlapp.ui.payment.AccessPaymentActivity;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
-public class VoiceScanFromActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVoiceScanFragmentClickListener{
 
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
-    private Button prevButton, nextButton, submitButton;
+    public Button prevButton, nextButton, submitButton;
     private VoiceScanFormPagerAdapter adapter;
     private ProgressBar progressBar;
+    private QuestionListHealthAudit responseObj;
+    private ArrayList<Answer> answerVoiceScanData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +66,17 @@ public class VoiceScanFromActivity extends AppCompatActivity {
 
         progressBar = findViewById(R.id.progressBar);
 
+        getQuestionerList();
+
         adapter = new VoiceScanFormPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage("Sad"));
         submitButton.setOnClickListener(v -> submitFormData());
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
-                startActivity(intent);
-            }
+        submitButton.setOnClickListener(view -> {
+            Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
+            startActivity(intent);
         });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -68,19 +89,16 @@ public class VoiceScanFromActivity extends AppCompatActivity {
         });
 
 
-        ic_back_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int currentItem = viewPager.getCurrentItem();
-                int totalItems = adapter.getItemCount();
+        ic_back_dialog.setOnClickListener(view -> {
+            int currentItem = viewPager.getCurrentItem();
+            int totalItems = adapter.getItemCount();
 
-                if (currentItem == 0) {
-                    finish();
-                }
-                // If on any other page, move to the previous page
-                else {
-                    viewPager.setCurrentItem(currentItem - 1);
-                }
+            if (currentItem == 0) {
+                finish();
+            }
+            // If on any other page, move to the previous page
+            else {
+                viewPager.setCurrentItem(currentItem - 1);
             }
         });
 
@@ -121,24 +139,69 @@ public class VoiceScanFromActivity extends AppCompatActivity {
     }
 
     public void navigateToNextPage(String feelings) {
-        /*if (viewPager.getCurrentItem() < adapter.getItemCount() - 1) {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-        }*/
 
         int currentItem = viewPager.getCurrentItem();
         int totalItems = adapter.getItemCount();
-        // Go to the next page if it's not the last one
         if (currentItem < totalItems - 1) {
             adapter.setFeelings(feelings);
             viewPager.setCurrentItem(currentItem + 1);
         } else {
-            // If it's the last page, got to scan
-             //Toast.makeText(VoiceScanFromActivity.this, "strat Recording", Toast.LENGTH_SHORT).show();
-            //showBirthDayDialog();
             Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
-            // Optionally pass data
-            //intent.putExtra("key", "value");
             startActivity(intent);
         }
+    }
+
+    private void getQuestionerList() {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "CHECK_IN");
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("AAAA API Response", "SUB subModule list - : " + response);
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    responseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
+                    adapter.setData(removeQuestionDOB(responseObj.getQuestionData()));
+                    adapter.notifyDataSetChanged();
+                }else {
+                    Toast.makeText(VoiceScanFromActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                Toast.makeText(VoiceScanFromActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API ERROR", "onFailure: " + t.getMessage());
+                t.printStackTrace();  // Print the full stack trace for more details
+            }
+        });
+    }
+
+    private QuestionData removeQuestionDOB(QuestionData questionData){
+        ArrayList<Question> questionsList = new ArrayList<>();
+        for (Question question : questionData.getQuestionList()){
+            if (question.getQuestion().equals("dob")){
+                questionsList.remove(question);
+            }else {
+                questionsList.add(question);
+            }
+        }
+        questionData.setQuestionList(questionsList);
+        return questionData;
+    }
+
+    @Override
+    public void onNextFragmentClick(String questionType, ArrayList<String> answer) {
+        List<Option> options = new ArrayList<>();
+        for (String ans : answer) {
+            Option option = new Option(ans);
+            options.add(option);
+        }
+        Answer answerToSubmit = new Answer(questionType, options);
+        answerVoiceScanData.add(answerToSubmit);
+        Log.d("AAAA", "Answer data = "+answer.size());
     }
 }

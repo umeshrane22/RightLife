@@ -36,22 +36,6 @@ public class FormPagerAdapter extends FragmentStateAdapter {
             default:
                 return FruitListFragment.newInstance(position, question);
         }
-
-        /*switch (position) {
-            case 0:
-                return FormPageFragment.newInstance(position);
-            case 1:
-                return HAFormHeighFragment.newInstance(position);
-            case 2:
-                return HAFromWeightFragment.newInstance(position);
-            case 3:
-                return HAFromWaistFragment.newInstance(position);
-            case 4:
-                return HAFromBPFragment.newInstance(position);
-
-            default:
-                return FruitListFragment.newInstance(position);
-        }*/
     }
 
     public void setData(QuestionData data) {

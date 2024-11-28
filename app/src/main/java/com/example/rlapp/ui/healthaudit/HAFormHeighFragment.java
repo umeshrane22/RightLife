@@ -14,33 +14,32 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HAFormHeighFragment extends Fragment {
 
-    TextView dateText;
+    TextView dateText,edtSpinner;
     private TextView txtFt, txtInch;
-    private EditText edtFt, edtInch, edtCms, edtSpinner;
+    private EditText edtFt, edtInch, edtCms;
     private Button btnOK;
 
-    private FormViewModel formViewModel;
     private static final String ARG_PAGE_INDEX = "page_index";
     private int pageIndex;
     private OnNextFragmentClickListener onNextFragmentClickListener;
     private Question question;
+    private DecimalFormat decimalFormatFtInch = new DecimalFormat("##.##");
+    private DecimalFormat decimalFormatCm = new DecimalFormat("###.##");
 
     public static HAFormHeighFragment newInstance(int pageIndex, Question question) {
         HAFormHeighFragment fragment = new HAFormHeighFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_INDEX, pageIndex);
-        args.putSerializable(HealthAuditFormActivity.ARG_QUESTION,question);
+        args.putSerializable(HealthAuditFormActivity.ARG_QUESTION, question);
         fragment.setArguments(args);
         return fragment;
     }
@@ -52,8 +51,6 @@ public class HAFormHeighFragment extends Fragment {
             pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
             question = (Question) getArguments().getSerializable(HealthAuditFormActivity.ARG_QUESTION);
         }
-
-        formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
     }
 
     @Override
@@ -82,6 +79,9 @@ public class HAFormHeighFragment extends Fragment {
         edtSpinner = view.findViewById(R.id.edt_spinner);
         btnOK = view.findViewById(R.id.btn_ok);
 
+        TextView txtQuestionText = view.findViewById(R.id.dobPrompt);
+        txtQuestionText.setText(question.getQuestionTxt());
+
         edtSpinner.setOnClickListener(view1 -> {
             openPopUp();
         });
@@ -99,7 +99,7 @@ public class HAFormHeighFragment extends Fragment {
                 if (edtInch.getText().toString().isEmpty() && edtFt.getText().toString().isEmpty()) {
                     Toast.makeText(getContext(), requireActivity().getString(R.string.height_error), Toast.LENGTH_SHORT).show();
                 } else {
-                    data.add(edtFt.getText().toString() + "." + edtInch.getText().toString());
+                    data.add(convertFeetToCentimeter(edtFt.getText().toString() + "." + edtInch.getText().toString()));
                     navigateNext(data);
                 }
             }
@@ -115,24 +115,60 @@ public class HAFormHeighFragment extends Fragment {
         PopupMenu popupMenu = new PopupMenu(getActivity(), edtSpinner);
         popupMenu.getMenuInflater().inflate(R.menu.popup_menu_ft_inch_cms, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(menuItem -> {
-            if (requireActivity().getString(R.string.str_cms).equals(menuItem.toString())) {
-                edtCms.setVisibility(View.VISIBLE);
-                edtInch.setVisibility(View.GONE);
-                edtFt.setVisibility(View.GONE);
-                txtInch.setVisibility(View.GONE);
-                txtFt.setVisibility(View.GONE);
-            } else {
-                edtCms.setVisibility(View.GONE);
-                edtInch.setVisibility(View.VISIBLE);
-                edtFt.setVisibility(View.VISIBLE);
-                txtInch.setVisibility(View.VISIBLE);
-                txtFt.setVisibility(View.VISIBLE);
+            if (!edtSpinner.getText().toString().equals(menuItem.toString())) {
+                if (requireActivity().getString(R.string.str_cms).equals(menuItem.toString())) {
+                    edtCms.setVisibility(View.VISIBLE);
+                    edtInch.setVisibility(View.GONE);
+                    edtFt.setVisibility(View.GONE);
+                    txtInch.setVisibility(View.GONE);
+                    txtFt.setVisibility(View.GONE);
+
+                    String ftInch = edtFt.getText().toString() + "." + edtInch.getText().toString();
+                    edtCms.setText(convertFeetToCentimeter(ftInch));
+
+
+                } else {
+                    edtCms.setVisibility(View.GONE);
+                    edtInch.setVisibility(View.VISIBLE);
+                    edtFt.setVisibility(View.VISIBLE);
+                    txtInch.setVisibility(View.VISIBLE);
+                    txtFt.setVisibility(View.VISIBLE);
+
+                    String cms = convertCentimeterToFtInch(edtCms.getText().toString());
+                    String[] strings = cms.split("\\.");
+                    edtFt.setText(strings[0]);
+                    if (strings.length > 1) {
+                        edtInch.setText(strings[1]);
+                    }
+
+                }
             }
             edtSpinner.setText(menuItem.toString());
             return true;
         });
 
         popupMenu.show();
+    }
+
+    private String convertFeetToCentimeter(String ftInch) {
+        try {
+            double feetInch = Double.parseDouble(ftInch);
+            double centimeter = feetInch * 30.48;
+            return decimalFormatCm.format(centimeter);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String convertCentimeterToFtInch(String centimeter) {
+        try {
+            double cms = Double.parseDouble(centimeter);
+            double ftInch = cms / 30.48;
+            return decimalFormatFtInch.format(ftInch);
+        } catch (Exception e) {
+            return "";
+        }
+
     }
 }
 

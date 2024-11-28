@@ -82,6 +82,7 @@
                     android:backgroundTint="@color/bdayedittextcolor"
                     android:gravity="center"
                     android:hint="dd"
+                    android:text="11"
                     android:inputType="phone"
                     android:maxLength="2"
                     android:padding="5dp" />
@@ -96,6 +97,7 @@
                     android:backgroundTint="@color/bdayedittextcolor"
                     android:gravity="center"
                     android:hint="mm"
+                    android:text="11"
                     android:inputType="phone"
                     android:maxLength="2"
                     android:padding="5dp" />
@@ -110,6 +112,7 @@
                     android:backgroundTint="@color/bdayedittextcolor"
                     android:gravity="center"
                     android:hint="yyyy"
+                    android:text="2002"
                     android:inputType="phone"
                     android:maxLength="4"
                     android:padding="5dp" />

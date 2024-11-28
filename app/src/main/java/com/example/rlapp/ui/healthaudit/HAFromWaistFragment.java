@@ -1,16 +1,12 @@
 package com.example.rlapp.ui.healthaudit;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,33 +14,31 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HAFromWaistFragment extends Fragment {
 
-    TextView dateText;
+    private TextView dateText, edtSpinnerWaist;
 
     private static final String ARG_PAGE_INDEX = "page_index";
     private int pageIndex;
 
-    private EditText edtSpinnerWaist, edtWaist;
+    private EditText edtWaist;
     private Button btnOK;
     private OnNextFragmentClickListener onNextFragmentClickListener;
     private Question question;
+    private DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
     public static HAFromWaistFragment newInstance(int pageIndex, Question question) {
         HAFromWaistFragment fragment = new HAFromWaistFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_INDEX, pageIndex);
-        args.putSerializable(HealthAuditFormActivity.ARG_QUESTION,question);
+        args.putSerializable(HealthAuditFormActivity.ARG_QUESTION, question);
         fragment.setArguments(args);
         return fragment;
     }
@@ -80,6 +74,9 @@ public class HAFromWaistFragment extends Fragment {
         edtSpinnerWaist = view.findViewById(R.id.edt_spinner_waist);
         btnOK = view.findViewById(R.id.btn_ok);
 
+        TextView txtQuestionText = view.findViewById(R.id.dobPrompt);
+        txtQuestionText.setText(question.getQuestionTxt());
+
         edtSpinnerWaist.setOnClickListener(view1 -> {
             openPopupForWaist();
         });
@@ -101,10 +98,39 @@ public class HAFromWaistFragment extends Fragment {
         popupMenu.getMenuInflater().inflate(R.menu.popup_menu_waist, popupMenu.getMenu());
 
         popupMenu.setOnMenuItemClickListener(menuItem -> {
+            if (!edtSpinnerWaist.getText().toString().equals(menuItem.toString())) {
+                String waist;
+                if (requireActivity().getString(R.string.str_inches).equals(menuItem.toString())) {
+                    waist = convertInchesToCentimeter(edtWaist.getText().toString());
+                } else {
+                    waist = convertCentimeterToInches(edtWaist.getText().toString());
+                }
+                edtWaist.setText(waist);
+            }
             edtSpinnerWaist.setText(menuItem.toString());
             return true;
         });
         popupMenu.show();
+    }
+
+    private String convertInchesToCentimeter(String inch) {
+        try {
+            double in = Double.parseDouble(inch);
+            double centimeter = in / 2.54;
+            return decimalFormat.format(centimeter);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String convertCentimeterToInches(String centimeter) {
+        try {
+            double cms = Double.parseDouble(centimeter);
+            double inch = cms * 2.54;
+            return decimalFormat.format(inch);
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
 
