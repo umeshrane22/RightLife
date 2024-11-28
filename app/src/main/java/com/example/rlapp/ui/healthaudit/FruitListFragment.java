@@ -28,7 +28,6 @@ public class FruitListFragment extends Fragment {
     private OptionsAdapter optionsAdapter;
     private ArrayList<Option> selectedOptions = new ArrayList<>();
     private ArrayList<String> selectedOptionsString = new ArrayList<>();
-    ArrayList<Fruit> selectedfruitList = new ArrayList<>();
     private static final String ARG_PAGE_INDEX = "page_index";
     private static final String ARG_QUESTION = "QUESTION";
     private int pageIndex;
@@ -77,17 +76,7 @@ public class FruitListFragment extends Fragment {
 
         txt_question.setText(question.getQuestionTxt());
 
-        ArrayList<Fruit> fruitList = new ArrayList<>();
-        // Add fruits to the list
-
         optionsList.addAll(question.getOptions());
-
-        fruitList.add(new Fruit("Apple", false));
-        fruitList.add(new Fruit("Banana", false));
-        fruitList.add(new Fruit("Orange", false));
-        fruitList.add(new Fruit("Grapes", false));
-        fruitList.add(new Fruit("Mango", false));
-        fruitList.add(new Fruit("Pineapple", false));
 
 
         int spanCount = 1;
@@ -102,6 +91,14 @@ public class FruitListFragment extends Fragment {
             isMultipleSelection = false;
         }
 
+        if (isMultipleSelection) {
+            txt_question_desc.setText("Choose all that apply to you");
+            btnOK.setVisibility(View.VISIBLE);
+        } else {
+            txt_question_desc.setText("Choose any one option");
+            btnOK.setVisibility(View.GONE);
+        }
+
         optionsAdapter = new OptionsAdapter(optionsList, option -> {
 
             if (isMultipleSelection) {
@@ -112,6 +109,9 @@ public class FruitListFragment extends Fragment {
                     selectedOptions.remove(option);
                     selectedOptionsString.remove(option.getOptionPosition());
                 }
+
+                btnOK.setEnabled(!selectedOptions.isEmpty());
+
             } else {
                 if (!option.isSelected()) {
                     selectedOptions.add(option);

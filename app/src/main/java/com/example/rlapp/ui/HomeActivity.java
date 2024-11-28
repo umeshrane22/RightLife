@@ -311,11 +311,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getUserDetails("");
         getPromotionList("");
         getPromotionList2(""); // Service pane
-        getAffirmations("");
         getRightlifeEdit("");
+         getAffirmations("");
         // getUpcomingEvents("");
         getWelnessPlaylist("");
-        //-- getLiveEvents("");
         getCuratedContent("");
         getModuleContent("");
 

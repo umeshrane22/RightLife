@@ -38,7 +38,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
     private ViewPager2 viewPager;
     private Button prevButton, nextButton, submitButton;
     private FormPagerAdapter adapter;
-    private static ArrayList<Answer> formData = new ArrayList<>();
+    private ArrayList<Answer> formData = new ArrayList<>();
     private ProgressBar progressBar;
     public static final String ARG_QUESTION = "QUESTION";
     QuestionListHealthAudit ResponseObj;
@@ -61,6 +61,8 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
 
         //call to
         getQuestionerList("");
+
+        //viewPager.setUserInputEnabled(false);
 
         adapter = new FormPagerAdapter(this);
         viewPager.setAdapter(adapter);
@@ -100,12 +102,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
             }
         });
 
-
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
+        close_dialog.setOnClickListener(view -> {
         });
     }
 
@@ -166,16 +163,6 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
                     Intent intent = new Intent(HealthAuditFormActivity.this, AccessPaymentActivity.class);
                     startActivity(intent);
 
-               /*     if (loginResponse.isSuccess()) {
-                        Toast.makeText(HealthAuditFormActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(HealthAuditFormActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                        //saveAccessToken(loginResponse.getAccessToken());
-                        startActivity(new Intent(HealthAuditFormActivity.this, HomeActivity.class));
-                        finish();
-                    } else {
-                        Toast.makeText(HealthAuditFormActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
-                    }*/
-
                 } else {
                     try {
                         if (response.errorBody() != null) {
@@ -202,44 +189,9 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
     void callAnswerRequest() {
 
         List<Answer> answers = new ArrayList<>(formData);
-
-        for (int i = 0; i < answers.size(); i++) {
-            Log.d("Submit Request = ", "Question : " + formData.get(i).getQuestion());
-
-            Log.d("Submit Request = ", "Answer : " + formData.get(i).getAnswer().get(0));
-        }
-
-        List<Answer> answers1 = new ArrayList<>();
-
-        answers1.add(new Answer("dob", List.of(new Option("14/11/2002"))));
-        answers1.add(new Answer("height", List.of(new Option("165.1"))));
-        answers1.add(new Answer("weight", List.of(new Option("66"))));
-        answers1.add(new Answer("waist", List.of(new Option("30"))));
-        answers1.add(new Answer("bp_systolic", List.of(new Option("120"))));
-        answers1.add(new Answer("gender", List.of(new Option("0"))));
-        answers1.add(new Answer("smoking", List.of(new Option("smoking_formerly"))));
-        answers1.add(new Answer("drinking", List.of(new Option("drinking_no"))));
-        answers1.add(new Answer("sleep", List.of(new Option("sleep_5_7"))));
-        answers1.add(new Answer("basic_food_habit", List.of(new Option("food_habit_vegan"))));
-        answers1.add(new Answer("exercise_habit", List.of(new Option("exercise_no"))));
-        answers1.add(new Answer("strenuous_work", List.of(new Option("strenuous_yes"))));
-        answers1.add(new Answer("active_medical_condition", List.of(new Option("active_med_none"))));
-        answers1.add(new Answer("cured_medical_condition", List.of(new Option("cured_med_none"))));
-        answers1.add(new Answer("current_medication", List.of(new Option("current_med_blood_thin"))));
-        answers1.add(new Answer("hypertensive_diabetic_family_members", List.of(new Option("hypertensive_diabetic_family_none"))));
-        answers1.add(new Answer("dbr_history", List.of(new Option("dbr_history_none"))));
-
         // Make sure to replace the empty string with actual data if needed
-        //ResponseObj.getQuestionData().getId()
-        UserAnswerRequest request = new UserAnswerRequest("", "00000003e59b29e618efed1b", answers);
+        UserAnswerRequest request = new UserAnswerRequest("", ResponseObj.getQuestionData().getId(), answers);
 
-
-        //  answers.add(new Answer("diet_conditions", null, dietConditionsSubQuestions));
-
-        // Create the ApiRequest with question ID and the list of answers
-        //AuditAnswerRequest apiRequest = new AuditAnswerRequest("00000003e59b29e618efed1b", answers);
-        //AuditAnswerRequest apiRequest = new AuditAnswerRequest("00000003e59b29e618efed1a", answers);
-        //AuditAnswerRequest apiRequest = new AuditAnswerRequest(ResponseObj.getQuestionData().getId(), answers);
 
         // Use Retrofit to send the ApiRequest (implementation shown below)
         Log.d("API REQuest Answer", "API REQuest - : " + request.toString());
@@ -279,9 +231,8 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
 
                     ResponseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
                     adapter.setData(ResponseObj.getQuestionData());
-                    viewPager.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                     Log.d("API Response body", "Success:Questionllist " + ResponseObj.getQuestionData().getQuestionList().size());
-                    //callAnswerRequest();
                 } else {
                     Toast.makeText(HealthAuditFormActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <!-- Date of Birth Prompt -->
+    <com.example.rlapp.ui.utility.DmSansBoldTextview
+        android:id="@+id/dobPrompt"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:background="@color/healthauditgreen"
+        android:padding="16dp"
+        android:text="@string/str_waist"
+        android:textColor="@color/txt_color_health"
+        android:textSize="16sp" />
 
-
-
-        <!-- Date of Birth Prompt -->
-        <com.example.rlapp.ui.utility.DmSansBoldTextview
-            android:id="@+id/dobPrompt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:background="@color/healthauditgreen"
-            android:padding="16dp"
-            android:text="@string/str_waist"
-            android:textColor="@color/txt_color_health"
-            android:textSize="16sp" />
-
-        <!-- Date Picker Container -->
+    <!-- Date Picker Container -->
 
     <LinearLayout
         android:id="@+id/dateContainer"
@@ -27,6 +27,7 @@
         android:layout_marginTop="50dp"
 
         android:orientation="horizontal">
+
         <LinearLayout
             android:id="@+id/dateContainer1"
             android:layout_width="match_parent"
@@ -46,24 +47,24 @@
                 android:gravity="center"
                 android:inputType="number"
                 android:visibility="visible"
-                android:layout_height="50dp"/>
+                android:layout_height="50dp" />
 
 
         </LinearLayout>
-        <EditText
+
+        <TextView
             android:id="@+id/edt_spinner_waist"
             android:layout_width="100dp"
             android:background="@drawable/roundedcornerbutton"
             android:backgroundTint="@color/bg_edittext"
             android:textColor="@color/black"
             android:text="inches"
-            android:drawableEnd="@drawable/icon_arrow_article"
-            android:drawableTint="@color/black"
             android:layout_marginEnd="@dimen/textsize_medium"
             android:layout_marginStart="20dp"
             android:gravity="center"
-            android:editable="false"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"
+            app:drawableEndCompat="@drawable/icon_arrow_article"
+            app:drawableTint="@color/black" />
     </LinearLayout>
 
 

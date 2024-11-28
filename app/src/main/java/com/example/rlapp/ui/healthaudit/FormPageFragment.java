@@ -69,6 +69,9 @@ public class FormPageFragment extends Fragment {
         button1.setOnClickListener(v -> handleButtonClick());
         btnOK = view.findViewById(R.id.btn_ok);
 
+        TextView txtQuestionText = view.findViewById(R.id.dobPrompt);
+        txtQuestionText.setText(question.getQuestionTxt());
+
         btnOK.setOnClickListener(view1 -> {
             int age = getAge(dateText.getText().toString());
             if (age >= 15) {

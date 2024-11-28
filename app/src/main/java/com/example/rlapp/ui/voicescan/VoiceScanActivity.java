@@ -1,11 +1,14 @@
 package com.example.rlapp.ui.voicescan;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,6 +24,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.zhpan.indicator.IndicatorView;
 
 import java.text.ParseException;
@@ -29,12 +38,15 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import me.relex.circleindicator.CircleIndicator3;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VoiceScanActivity extends AppCompatActivity {
 
-    ImageView ic_back_dialog, close_dialog;
-    VoiceScanPagerAdapter adapter;
-    Button btn_howitworks;
+    private ImageView ic_back_dialog, close_dialog;
+    private VoiceScanPagerAdapter adapter;
+    private Button btn_howitworks;
 
     /**
      * {@inheritDoc}
@@ -99,12 +111,8 @@ public class VoiceScanActivity extends AppCompatActivity {
         });
 
 
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //finish();
-                showExitDialog();
-            }
+        close_dialog.setOnClickListener(view -> {
+            showExitDialog();
         });
 
         btn_howitworks.setOnClickListener(new View.OnClickListener() {
@@ -116,8 +124,7 @@ public class VoiceScanActivity extends AppCompatActivity {
                 if (currentItem < totalItems - 1) {
                     viewPager.setCurrentItem(currentItem + 1);
                 } else {
-                    // If it's the last page, got to scan 
-                    // Toast.makeText(VoiceScanActivity.this, "Scan is Coming Soon", Toast.LENGTH_SHORT).show();
+                    // If it's the last page, got to scan
                     showBirthDayDialog();
                 }
             }
@@ -199,7 +206,7 @@ public class VoiceScanActivity extends AppCompatActivity {
         EditText edtYYYY = dialog.findViewById(R.id.date_yy);
 
         // Optional: Set dynamic content
-        dialogText.setText("Please find a quiet and comfortable place before starting");
+        dialogText.setText("Tell us when you were born");
 
         edtDD.addTextChangedListener(new TextWatcher() {
             @Override
@@ -267,21 +274,14 @@ public class VoiceScanActivity extends AppCompatActivity {
             }
         });
 
-        // Set button click listener
         dialogButton.setOnClickListener(v -> {
-
-            String date = edtDD.getText().toString() + "-" + edtMM.getText().toString() + "-" + edtYYYY.getText().toString();
-
+            String date = edtDD.getText().toString() + "/" + edtMM.getText().toString() + "/" + edtYYYY.getText().toString();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!checkDateFormat(date)) {
                     Toast.makeText(VoiceScanActivity.this, "Please enter valid date", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Perform your action
                     dialog.dismiss();
-                    Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(VoiceScanActivity.this, VoiceScanFromActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
                     startActivity(intent);
                 }
             }
@@ -290,14 +290,13 @@ public class VoiceScanActivity extends AppCompatActivity {
             dialog.dismiss();
         });
 
-        // Show the dialog
         dialog.show();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean checkDateFormat(String date) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate localDate = LocalDate.parse(date, formatter);
             if (!formatter.format(localDate).equals(date)) {
                 return false;
@@ -315,35 +314,22 @@ public class VoiceScanActivity extends AppCompatActivity {
         dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         Window window = dialog.getWindow();
-        // Set the dim amount
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
         window.setAttributes(layoutParams);
 
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
         Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
         Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
 
-        // Optional: Set dynamic content
-        // dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
         dialogButtonStay.setOnClickListener(v -> {
-            // Perform your action
             dialog.dismiss();
-            //Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-
-
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
             this.finish();
         });
 
-        // Show the dialog
         dialog.show();
     }
+
 }

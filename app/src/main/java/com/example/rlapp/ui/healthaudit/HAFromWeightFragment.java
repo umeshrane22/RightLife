@@ -18,19 +18,21 @@ import androidx.fragment.app.Fragment;
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class HAFromWeightFragment extends Fragment {
 
-    TextView dateText;
+    private TextView dateText, edtSpinnerKgsLbs;
 
     private static final String ARG_PAGE_INDEX = "page_index";
     private int pageIndex;
 
-    private EditText edtSpinnerKgsLbs, edtWeight;
+    private EditText edtWeight;
     private Button btnOk;
     private OnNextFragmentClickListener onNextFragmentClickListener;
     private Question question;
+    private DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
     public static HAFromWeightFragment newInstance(int pageIndex, Question question) {
         HAFromWeightFragment fragment = new HAFromWeightFragment();
@@ -73,9 +75,10 @@ public class HAFromWeightFragment extends Fragment {
         edtSpinnerKgsLbs = view.findViewById(R.id.edt_spinner_kgs_lbs);
         btnOk = view.findViewById(R.id.btn_ok);
 
-        edtSpinnerKgsLbs.setOnClickListener(view1 -> {
-            openPopupForWeight();
-        });
+        TextView txtQuestionText = view.findViewById(R.id.dobPrompt);
+        txtQuestionText.setText(question.getQuestionTxt());
+
+        edtSpinnerKgsLbs.setOnClickListener(view1 -> openPopupForWeight());
 
         btnOk.setOnClickListener(view12 -> {
 
@@ -95,11 +98,41 @@ public class HAFromWeightFragment extends Fragment {
         popupMenu.getMenuInflater().inflate(R.menu.popup_menu_weight, popupMenu.getMenu());
 
         popupMenu.setOnMenuItemClickListener(menuItem -> {
+            if (!edtSpinnerKgsLbs.getText().toString().equals(menuItem.toString())) {
+                String weight;
+                if (requireActivity().getString(R.string.str_kgs).equals(menuItem.toString())) {
+                    weight = convertKgToLbs(edtWeight.getText().toString());
+                } else {
+                    weight = convertLbsToKgs(edtWeight.getText().toString());
+                }
+                edtWeight.setText(weight);
+            }
             edtSpinnerKgsLbs.setText(menuItem.toString());
             return true;
         });
         popupMenu.show();
     }
+
+    private String convertKgToLbs(String kgs) {
+        try {
+            double kg = Double.parseDouble(kgs);
+            double lbs = kg / 2.20462;
+            return decimalFormat.format(lbs);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String convertLbsToKgs(String lbs) {
+        try {
+            double lb = Double.parseDouble(lbs);
+            double kgs = lb * 2.20462;
+            return decimalFormat.format(kgs);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 }
 
 
