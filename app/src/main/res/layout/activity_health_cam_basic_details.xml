@@ -72,12 +72,14 @@
                 android:textSize="@dimen/textsize_extralarge" />
 
             <TextView
+                android:id="@+id/tv_first_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:text="First Name *"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/edt_first_name"
@@ -90,15 +92,18 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:inputType="textPersonName"
                 android:imeOptions="actionNext"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <TextView
+                android:id="@+id/tv_last_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
                 android:text="Last Name *"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/edt_last_name"
@@ -111,21 +116,77 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:inputType="textPersonName"
                 android:imeOptions="actionNext"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <TextView
+                android:id="@+id/tv_height"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
                 android:text="Your Height *"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
             <LinearLayout
+                android:id="@+id/ll_height"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/ll_height_ft_inch"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:gravity="center_vertical"
+                    android:layout_weight="7"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+                    <EditText
+                        android:id="@+id/edt_ft"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:gravity="center"
+                        android:maxLength="2"
+                        android:inputType="number"
+                        android:layout_weight="1"
+                        android:hint="5"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/txt_ft"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="FT"
+                        android:textColor="@color/black" />
+
+                    <EditText
+                        android:id="@+id/edt_inch"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:gravity="center"
+                        android:inputType="number"
+                        android:layout_weight="1"
+                        android:maxLength="2"
+                        android:hint="2"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/txt_inch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:text="INCH"
+                        android:textColor="@color/black" />
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/edt_height"
@@ -139,8 +200,8 @@
                     android:layout_marginEnd="4dp"
                     android:imeOptions="actionNext"
                     android:textColor="@color/black"
-                    android:layout_weight="7"/>
-                <EditText
+                    android:layout_weight="7" />
+                <TextView
                     android:id="@+id/edt_spinnerheight"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
@@ -152,24 +213,27 @@
                     android:drawableEnd="@drawable/icon_arrow_article"
                     android:drawableTint="@color/black"
                     android:gravity="center"
-                    android:text="@string/str_cms"
-                    android:editable="false"
+                    android:text="CM"
                     android:textColor="@color/black" />
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
                 android:text="Your Weight *"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
             <LinearLayout
+                android:id="@+id/ll_weight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="4dp"
+                android:visibility="gone">
 
                 <EditText
                     android:id="@+id/edt_weight"
@@ -184,7 +248,7 @@
                     android:imeOptions="actionNext"
                     android:textColor="@color/black"
                     android:layout_weight="7"/>
-                <EditText
+                <TextView
                     android:id="@+id/edt_spinner_weight"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
@@ -196,18 +260,19 @@
                     android:drawableEnd="@drawable/icon_arrow_article"
                     android:drawableTint="@color/black"
                     android:gravity="center"
-                    android:text="@string/str_kgs"
-                    android:editable="false"
+                    android:text="KGS"
                     android:textColor="@color/black" />
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_age"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
                 android:text="Your Age *"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
             <EditText
                 android:id="@+id/edt_age"
@@ -220,17 +285,20 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:inputType="number"
                 android:imeOptions="actionNext"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <TextView
+                android:id="@+id/tv_gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
                 android:text="Gender at Birth"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/edt_spinner_gender"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -242,8 +310,8 @@
                 android:drawableTint="@color/black"
                 android:gravity="center"
                 android:text="Male"
-                android:editable="false"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -254,14 +322,16 @@
                 android:textSize="@dimen/textsize_extralarge" />
 
             <TextView
+                android:id="@+id/tv_smoke"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
                 android:text="Do you smoke?"
-                android:textSize="@dimen/textsize_medium" />
+                android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/edt_spinner_smoke"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -273,18 +343,20 @@
                 android:drawableTint="@color/black"
                 android:gravity="center"
                 android:hint="Select an option"
-                android:editable="false"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <TextView
+                android:id="@+id/tv_bp_medication"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"
             android:layout_marginTop="8dp"
             android:text="Are you taking blood pressure medication?"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/edt_spinner_bp_medication"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -296,17 +368,19 @@
                 android:drawableTint="@color/black"
                 android:gravity="center"
                 android:hint="Select an option"
-                android:editable="false"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
             <TextView
+                android:id="@+id/tv_diabetic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"
             android:layout_marginTop="8dp"
             android:text="Are you diabetic"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="@dimen/textsize_medium"
+                android:visibility="gone"/>
 
-            <EditText
+            <TextView
                 android:id="@+id/edt_spinner_diabetic"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -319,7 +393,8 @@
                 android:gravity="center"
                 android:hint="Select an option"
                 android:editable="false"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/btn_start_scan"
