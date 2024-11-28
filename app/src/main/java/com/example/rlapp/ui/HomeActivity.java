@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,6 +35,7 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
+import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
@@ -72,12 +74,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public SubModuleResponse EatRSubModuleResponse;
     public SubModuleResponse SleepRSubModuleResponse;
 
+    //Button
+    private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
     ImageView img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
-    RelativeLayout relative_wellness1,relative_wellness2,relative_wellness3,relative_wellness4;
+    RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
 
     TextView tv_header_rledit, tv_description_rledit, tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
     LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
@@ -88,9 +92,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout ll_eatright_category1, ll_eatright_category2, ll_eatright_category3, ll_eatright_category4;
     LinearLayout ll_sleepright_category1, ll_sleepright_category2, ll_sleepright_category3;
     ImageView rlmenu, img_homemenu, img_healthmenu;
-    ImageView img1,img2,img3,img4,img5,img6,img7,img8;
-    TextView  tv1_header,tv1,tv2_header,tv2,tv3_header,tv3,tv4_header,tv4;
-    TextView tv1_viewcount,tv2_viewcount,tv3_viewcount,tv4_viewcount;
+    ImageView img1, img2, img3, img4, img5, img6, img7, img8;
+    TextView tv1_header, tv1, tv2_header, tv2, tv3_header, tv3, tv4_header, tv4;
+    TextView tv1_viewcount, tv2_viewcount, tv3_viewcount, tv4_viewcount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,9 +116,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         count1 = findViewById(R.id.count1);
         count2 = findViewById(R.id.count2);
 
-        relative_rledit3  = findViewById(R.id.relative_rledit3);
-        relative_rledit2  = findViewById(R.id.relative_rledit2);
-        relative_rledit1  = findViewById(R.id.relative_rledit1);
+        relative_rledit3 = findViewById(R.id.relative_rledit3);
+        relative_rledit2 = findViewById(R.id.relative_rledit2);
+        relative_rledit1 = findViewById(R.id.relative_rledit1);
 
         relative_rledit3.setOnClickListener(this);
         relative_rledit2.setOnClickListener(this);
@@ -131,7 +135,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         relative_wellness4.setOnClickListener(this);
 
 
-                img_rledit = findViewById(R.id.img_rledit);
+        img_rledit = findViewById(R.id.img_rledit);
         img_rledit1 = findViewById(R.id.img_rledit1);
         img_rledit2 = findViewById(R.id.img_rledit2);
         img_contenttype_rledit = findViewById(R.id.img_contenttype_rledit);
@@ -156,6 +160,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ll_sleepright_category2 = findViewById(R.id.ll_sleepright_category2);
         ll_sleepright_category3 = findViewById(R.id.ll_sleepright_category3);
 
+        btn_tr_explore = findViewById(R.id.btn_tr_explore);
+        btn_mr_explore = findViewById(R.id.btn_mr_explore);
+        btn_er_explore = findViewById(R.id.btn_er_explore);
+        btn_sr_explore = findViewById(R.id.btn_sr_explore);
+
+
         // set click listener
 
         ll_thinkright_category1.setOnClickListener(this);
@@ -175,6 +185,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ll_sleepright_category1.setOnClickListener(this);
         ll_sleepright_category2.setOnClickListener(this);
         ll_sleepright_category3.setOnClickListener(this);
+
+        btn_sr_explore.setOnClickListener(this);
+        btn_tr_explore.setOnClickListener(this);
+        btn_er_explore.setOnClickListener(this);
+        btn_mr_explore.setOnClickListener(this);
 
 
         // MENU
@@ -265,7 +280,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 page.setScaleX(scaleFactor);
 
                 // Adjust translation for left/right stacking
-                page.setTranslationX(-position * page.getWidth() / 1.9f);
+                page.setTranslationX(-position * page.getWidth() / 5.9f);
 
 
             }
@@ -295,14 +310,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // calls for APIs
         getUserDetails("");
         getPromotionList("");
-         getPromotionList2(""); // Service pane
-         getAffirmations("");
+        getPromotionList2(""); // Service pane
+        getAffirmations("");
         getRightlifeEdit("");
         // getUpcomingEvents("");
-         getWelnessPlaylist("");
+        getWelnessPlaylist("");
         //-- getLiveEvents("");
-         getCuratedContent("");
-         getModuleContent("");
+        getCuratedContent("");
+        getModuleContent("");
 
 
         getSubModuleContent("THINK_RIGHT");
@@ -312,7 +327,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         //getQuestionerList("");
 
-         getContentlist("");   // api to get module
+        getContentlist("");   // api to get module
         getContentlistdetails("");
         getContentlistdetailsfilter("");
 
@@ -428,7 +443,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
                 } else {
-                  //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -457,7 +472,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getButtonName(),
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getCategory(),
                     String.valueOf(promotionResponse.getPromotiondata().getPromotionList().get(i).getViews())
-                    );
+            );
             cardItems.add(i, cardItem);
         }
         Log.e("API image List", "list : " + cardItems.size());
@@ -482,11 +497,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private List<CardItem> getCardItems() {
         List<CardItem> items = new ArrayList<>();
         // Add your CardItem instances here
-        items.add(new CardItem("Card 1", R.drawable.facialconcept, "", "", "scan now","",""));
-        items.add(new CardItem("Card 2", R.drawable.facialconcept, "", "", "scan now","",""));
-        items.add(new CardItem("Card 3", R.drawable.facialconcept, "", "", "scan now","",""));
-        items.add(new CardItem("Card 4", R.drawable.facialconcept, "", "", "scan now","",""));
-        items.add(new CardItem("Card 5", R.drawable.facialconcept, "", "", "scan now","",""));
+        items.add(new CardItem("Card 1", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("Card 2", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("Card 3", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("Card 4", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("Card 5", R.drawable.facialconcept, "", "", "scan now", "", ""));
         return items;
     }
 
@@ -540,7 +555,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 } else {
-                   // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -556,13 +571,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void handleServicePaneResponse(ServicePaneResponse responseObj) {
-      //  tv_header_rledit.setText(responseObj.getData().getTitle());
-       // tv_description_rledit.setText(responseObj.getData().getSubtitle());
+        //  tv_header_rledit.setText(responseObj.getData().getTitle());
+        // tv_description_rledit.setText(responseObj.getData().getSubtitle());
         if (!responseObj.getData().getHomeServices().isEmpty()) {
             for (int i = 0; i < responseObj.getData().getHomeServices().size(); i++) {
                 switch (i) {
                     case 0:
-                      //  tv_header_servcepane1.setText(responseObj.getData().getHomeServices().get(i).getTitle());
+                        //  tv_header_servcepane1.setText(responseObj.getData().getHomeServices().get(i).getTitle());
                         break;
                     case 1:
                         //tv_header_servcepane2.setText(responseObj.getData().getHomeServices().get(i).getTitle());
@@ -636,7 +651,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getRightlifeEdit(accessToken);
+        Call<JsonElement> call = apiService.getRightlifeEdit(accessToken, "HOME");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -660,7 +675,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         e.printStackTrace();
                     }
 
-                  //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -750,7 +765,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("API Response body eVEnt", "Success:RLEventComing " + ResponseObj.getData().get(0).getEventDate().getDate() + ResponseObj.getData().get(0).getTitle());
 
                 } else {
-                   // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -764,7 +779,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         });
 
     }
-
 
 
     //WElness PlayList
@@ -779,7 +793,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getWelnessPlaylist(accessToken,"SERIES", "WELLNESS");
+        Call<JsonElement> call = apiService.getWelnessPlaylist(accessToken, "SERIES", "WELLNESS");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -789,12 +803,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                     wellnessApiResponse = gson.fromJson(jsonResponse, WellnessApiResponse.class);
+                    wellnessApiResponse = gson.fromJson(jsonResponse, WellnessApiResponse.class);
                     Log.d("API Response body", "Wellness:RLEdit " + wellnessApiResponse.getData().getContentList().get(0).getTitle());
                     setupWellnessContent(wellnessApiResponse.getData().getContentList());
 
                 } else {
-                   // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -810,29 +824,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
-
-
     private void setupWellnessContent(List<ContentWellness> contentList) {
         if (contentList == null || contentList.size() < 4) return;
 
         // Bind data for item 1
-        bindContentToView(contentList.get(0), tv1_header, tv1, img1,tv1_viewcount,img5);
+        bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5);
 
         // Bind data for item 2
-        bindContentToView(contentList.get(1), tv2_header, tv2, img2,tv2_viewcount, img6);
+        bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6);
 
         // Bind data for item 3
-        bindContentToView(contentList.get(2), tv3_header, tv3, img3,tv3_viewcount, img7);
+        bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7);
 
         // Bind data for item 4
-        bindContentToView(contentList.get(3), tv4_header, tv4, img4,tv4_viewcount, img8);
+        bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8);
     }
+
     //Bind Wellnes content
     private void bindContentToView(ContentWellness content, TextView header, TextView category, ImageView thumbnail, TextView viewcount, ImageView imgcontenttype) {
         // Set title in the header TextView
         header.setText(content.getTitle());
-        viewcount.setText(""+content.getViewCount());
+        viewcount.setText("" + content.getViewCount());
         // Set categoryName in the category TextView
         category.setText(content.getCategoryName());
 
@@ -873,7 +885,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
 
                 } else {
-                  //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -915,7 +927,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     //Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
 
                 } else {
-                   // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -956,7 +968,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     //Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
 
                 } else {
-                  //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -998,7 +1010,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     //Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
 
                 } else {
-                   // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -1103,6 +1115,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("Categorytype", SleepRSubModuleResponse.getData().get(0).getCategoryId());
             intent.putExtra("moduleId", SleepRSubModuleResponse.getData().get(0).getModuleId());
             startActivity(intent);
+
         } else if (viewId == R.id.ll_sleepright_category2) {
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
             intent.putExtra("Categorytype", SleepRSubModuleResponse.getData().get(1).getCategoryId());
@@ -1113,12 +1126,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("Categorytype", SleepRSubModuleResponse.getData().get(2).getCategoryId());
             intent.putExtra("moduleId", SleepRSubModuleResponse.getData().get(2).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.relative_rledit3 ) {
+        } else if (viewId == R.id.relative_rledit3) {
             CallRlEditDetailActivity(2);
-        }
-        else if (viewId == R.id.relative_rledit2 ) {
+        } else if (viewId == R.id.relative_rledit2) {
             CallRlEditDetailActivity(1);
-        } else if (viewId == R.id.relative_rledit1 ) {
+        } else if (viewId == R.id.relative_rledit1) {
             CallRlEditDetailActivity(0);
         } else if (viewId == R.id.relative_wellness1) {
             CallWellnessDetailActivity(0);
@@ -1128,12 +1140,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             CallWellnessDetailActivity(2);
         } else if (viewId == R.id.relative_wellness4) {
             CallWellnessDetailActivity(3);
+        } else if (viewId == R.id.btn_tr_explore) {
+            CallExploreModuleActivity(ThinkRSubModuleResponse);
+        } else if (viewId == R.id.btn_mr_explore) {
+            CallExploreModuleActivity(MoveRSubModuleResponse);
+        } else if (viewId == R.id.btn_er_explore) {
+            CallExploreModuleActivity(EatRSubModuleResponse);
+        } else if (viewId == R.id.btn_sr_explore) {
+            CallExploreModuleActivity(SleepRSubModuleResponse);
         }
 
 
     }
 
-    private void CallRlEditDetailActivity(int position){
+    private void CallRlEditDetailActivity(int position) {
         Gson gson = new Gson();
         String json = gson.toJson(rightLifeEditResponse);
         Intent intent = new Intent(HomeActivity.this, RLEditDetailViewActivity.class);
@@ -1142,14 +1162,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
-    private void CallWellnessDetailActivity(int position){
+    private void CallWellnessDetailActivity(int position) {
         Gson gson = new Gson();
         String json = gson.toJson(wellnessApiResponse);
         Intent intent = new Intent(HomeActivity.this, WellnessDetailViewActivity.class);
-        intent.putExtra("Categorytype", json);
+        intent.putExtra("responseJson", json);
         intent.putExtra("position", position);
         startActivity(intent);
     }
+
+    private void CallExploreModuleActivity(SubModuleResponse responseJson) {
+        Gson gson = new Gson();
+        String json = gson.toJson(responseJson);
+        Intent intent = new Intent(HomeActivity.this, ExploreModuleListActivity.class);
+        intent.putExtra("responseJson", json);
+        //intent.putExtra("position", position);
+        startActivity(intent);
+    }
+
     // ----- Test API
 
     private void getSubModuleContent(String moduleid) {
@@ -1189,7 +1219,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 } else {
-                   // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -1237,7 +1267,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 } else {
-                  //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -1305,7 +1335,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                  //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                     Log.d("API Response 2", "Success: " + response.code());
                 }
             }

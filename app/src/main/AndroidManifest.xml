@@ -57,6 +57,7 @@
         <activity android:name="com.example.rlapp.ui.Wellness.WellnessDetailViewActivity" />
         <activity android:name="com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity" />
         <activity android:name="com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity" />
+        <activity android:name="com.example.rlapp.ui.exploremodule.ExploreModuleListActivity" />
     </application>
 
 </manifest>
