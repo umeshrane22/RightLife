@@ -90,7 +90,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
         Intent intent = getIntent();
-        String categoryType = intent.getStringExtra("Categorytype");
+        String categoryType = intent.getStringExtra("responseJson");
         position = intent.getIntExtra("position", 0);
         contentId = intent.getStringExtra("contentId");
 

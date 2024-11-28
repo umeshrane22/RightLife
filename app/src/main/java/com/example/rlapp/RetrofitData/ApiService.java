@@ -89,7 +89,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("content/top") // Assume the API endpoint is /login
     Call<JsonElement> getRightlifeEdit(
-            @Header("Authorization") String authToken // Dynamic Authorization Header
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("pageType") String pageType
     );
 
 
@@ -230,6 +231,25 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Path("seriesId") String seriesId,
             @Query("listEpisodes") boolean listEpisodes
+    );
+
+    //Explore details page
+    // more like this content rl Edit
+    @GET("content/suggestion")
+    Call<ResponseBody> getMightLikeContent(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("appId") String appId
+    );
+
+    // Curated/recomended this content
+    @GET("content/recommended")
+    Call<ResponseBody> getRecommendedLikeContent(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("appId") String appId
     );
 
 }

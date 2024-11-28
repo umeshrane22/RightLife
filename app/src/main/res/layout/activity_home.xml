@@ -1752,7 +1752,7 @@
                         </androidx.cardview.widget.CardView>
 
                         <Button
-                            android:id="@+id/btn_mr_explore1"
+                            android:id="@+id/btn_mr_explore"
                             android:layout_width="158dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
@@ -1980,7 +1980,7 @@
                                 </LinearLayout>
 
                                 <Button
-                                    android:id="@+id/btn_tr_explore1"
+                                    android:id="@+id/btn_er_explore"
                                     android:layout_width="158dp"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentBottom="true"
@@ -2219,7 +2219,7 @@
                 </RelativeLayout>
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_sr_explore2"
+                    android:id="@+id/btn_sr_explore"
                     android:layout_width="158dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
