@@ -18,12 +18,14 @@ import androidx.fragment.app.Fragment;
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import static com.example.rlapp.ui.utility.ConversionUtils.convertCentimeterToFtInch;
+import static com.example.rlapp.ui.utility.ConversionUtils.convertFeetToCentimeter;
 
 public class HAFormHeighFragment extends Fragment {
 
-    TextView dateText,edtSpinner;
+    TextView dateText, edtSpinner;
     private TextView txtFt, txtInch;
     private EditText edtFt, edtInch, edtCms;
     private Button btnOK;
@@ -32,8 +34,6 @@ public class HAFormHeighFragment extends Fragment {
     private int pageIndex;
     private OnNextFragmentClickListener onNextFragmentClickListener;
     private Question question;
-    private DecimalFormat decimalFormatFtInch = new DecimalFormat("##.##");
-    private DecimalFormat decimalFormatCm = new DecimalFormat("###.##");
 
     public static HAFormHeighFragment newInstance(int pageIndex, Question question) {
         HAFormHeighFragment fragment = new HAFormHeighFragment();
@@ -148,27 +148,6 @@ public class HAFormHeighFragment extends Fragment {
         });
 
         popupMenu.show();
-    }
-
-    private String convertFeetToCentimeter(String ftInch) {
-        try {
-            double feetInch = Double.parseDouble(ftInch);
-            double centimeter = feetInch * 30.48;
-            return decimalFormatCm.format(centimeter);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    private String convertCentimeterToFtInch(String centimeter) {
-        try {
-            double cms = Double.parseDouble(centimeter);
-            double ftInch = cms / 30.48;
-            return decimalFormatFtInch.format(ftInch);
-        } catch (Exception e) {
-            return "";
-        }
-
     }
 }
 

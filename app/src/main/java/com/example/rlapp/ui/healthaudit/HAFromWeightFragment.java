@@ -21,6 +21,9 @@ import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import static com.example.rlapp.ui.utility.ConversionUtils.convertKgToLbs;
+import static com.example.rlapp.ui.utility.ConversionUtils.convertLbsToKgs;
+
 public class HAFromWeightFragment extends Fragment {
 
     private TextView dateText, edtSpinnerKgsLbs;
@@ -32,7 +35,6 @@ public class HAFromWeightFragment extends Fragment {
     private Button btnOk;
     private OnNextFragmentClickListener onNextFragmentClickListener;
     private Question question;
-    private DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
     public static HAFromWeightFragment newInstance(int pageIndex, Question question) {
         HAFromWeightFragment fragment = new HAFromWeightFragment();
@@ -111,26 +113,6 @@ public class HAFromWeightFragment extends Fragment {
             return true;
         });
         popupMenu.show();
-    }
-
-    private String convertKgToLbs(String kgs) {
-        try {
-            double kg = Double.parseDouble(kgs);
-            double lbs = kg / 2.20462;
-            return decimalFormat.format(lbs);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    private String convertLbsToKgs(String lbs) {
-        try {
-            double lb = Double.parseDouble(lbs);
-            double kgs = lb * 2.20462;
-            return decimalFormat.format(kgs);
-        } catch (Exception e) {
-            return "";
-        }
     }
 
 }
