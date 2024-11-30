@@ -1,43 +1,58 @@
 package com.example.rlapp.ui.mindaudit;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rlapp.R;
-import com.example.rlapp.ui.healthaudit.FormData;
-import com.example.rlapp.ui.healthaudit.FormViewModel;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.healthaudit.Fruit;
-import com.example.rlapp.ui.healthaudit.FruitAdapter;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MindAuditReasonsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private MindAuditReasonslistAdapter adapter;
-    ArrayList<Fruit> selectedfruitList = new ArrayList<>();
     private static final String ARG_PAGE_INDEX = "page_index";
+    private static final String ARG_EMOTION = "emotion";
+    private static final String ARG_EMOTION_REASONS = "emotion_reasons";
     private int pageIndex;
+    private ArrayList<String> selectedEmotionReasons = new ArrayList<>();
+    private ArrayList<String> emotionReasons = new ArrayList<>();
+    private String emotion;
+    private ArrayList<Fruit> fruitList = new ArrayList<>();
+    private TextView tvHeader;
+    private static ArrayList<String> userEmotionsString = new ArrayList<>();
 
-    private FormViewModel formViewModel;
 
-
-    public static MindAuditReasonsFragment newInstance(int pageIndex) {
+    public static MindAuditReasonsFragment newInstance(int pageIndex, ArrayList<String> emotionReasons, String emotion) {
         MindAuditReasonsFragment fragment = new MindAuditReasonsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_INDEX, pageIndex);
+        args.putString(ARG_EMOTION, emotion);
+        args.putStringArrayList(ARG_EMOTION_REASONS, emotionReasons);
         fragment.setArguments(args);
         return fragment;
     }
@@ -47,9 +62,9 @@ public class MindAuditReasonsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
+            emotion = getArguments().getString(ARG_EMOTION);
+            emotionReasons.addAll(getArguments().getStringArrayList(ARG_EMOTION_REASONS));
         }
-
-        formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
     }
 
     @Nullable
@@ -58,55 +73,73 @@ public class MindAuditReasonsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_mindaudit_reason_list, container, false);
 
         recyclerView = view.findViewById(R.id.recyclerView);
+        tvHeader = view.findViewById(R.id.dobPrompt);
+        tvHeader.setText("Any specific reason you feel " + emotion + "?");
+        userEmotionsString.add(emotion);
 
-
-        ArrayList<Fruit> fruitList = new ArrayList<>();
-        // Add fruits to the list
-
-        fruitList.add(new Fruit("Fluctuating Mood", false));
-        fruitList.add(new Fruit("Crying Spells", false));
-        fruitList.add(new Fruit("Excessive Tiredness", false));
-        fruitList.add(new Fruit("Loss of Zeal", false));
-        fruitList.add(new Fruit("Low Confidence", false));
-
-
-        int spanCount = fruitList.size() > 6 ? 2 : 1;
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), spanCount);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
 
+        for (String emotionReason : emotionReasons) {
+            fruitList.add(new Fruit(emotionReason, false));
+        }
 
         adapter = new MindAuditReasonslistAdapter(fruitList, fruit -> {
-            // Handle fruit selection here
-            Log.d("FruitSelection", "Fruit clicked: " + fruit.getName());
 
             if (fruit.isSelected()) {
-                // Add to favorites
-                Log.d("FruitSelection", "Added to favorites: " + fruit.getName());
-                selectedfruitList.add(fruit);
+                selectedEmotionReasons.add(fruit.getName());
             } else {
-                // Remove from favorites
-                Log.d("FruitSelection", "Removed from favorites: " + fruit.getName());
-                selectedfruitList.remove(fruit);
+                selectedEmotionReasons.remove(fruit.getName());
             }
-            saveData();
         });
-
         recyclerView.setAdapter(adapter);
+
+        ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
+            if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
+                UserEmotions userEmotions = new UserEmotions(userEmotionsString);
+                getSuggestedAssessment(userEmotions);
+            } else {
+                ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
+            }
+
+        });
 
         return view;
     }
 
-    public Map<String, ArrayList> collectData() {
-        Map<String, ArrayList> data = new HashMap<>();
-        // Add values from views in this fragment to the data map
-        data.put("fruit", selectedfruitList);
-        return data;
-    }
+    private void getSuggestedAssessment(UserEmotions userEmotions) {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-    private void saveData() {
-        FormData data = new FormData();
-        data.setAnswer("User Fruit");
-        data.setSelected(true);
-        formViewModel.saveFormData(pageIndex, data); // Replace `getPageIndex()` with the actual page number
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getSuggestedAssessment(accessToken, userEmotions);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Gson gson = new Gson();
+                        Assessments assessments = gson.fromJson(jsonString, Assessments.class);
+
+                        Intent intent = new Intent(requireActivity(), MASuggestedAssessmentActivity.class);
+                        intent.putExtra("AssessmentData", assessments);
+                        startActivity(intent);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(requireContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

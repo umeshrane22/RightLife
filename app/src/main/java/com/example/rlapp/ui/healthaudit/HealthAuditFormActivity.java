@@ -62,7 +62,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         //call to
         getQuestionerList("");
 
-        //viewPager.setUserInputEnabled(false);
+        viewPager.setUserInputEnabled(false);
 
         adapter = new FormPagerAdapter(this);
         viewPager.setAdapter(adapter);

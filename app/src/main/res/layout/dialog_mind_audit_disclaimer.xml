@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/topcolorhealthcam"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <ImageView
+            android:id="@+id/ic_close_dialog"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/closebtncircle" />
+
+        <TextView
+            android:id="@+id/tv_selected_assessment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:paddingLeft="16dp"
+            android:text="ABC"
+            android:textColor="@color/black"
+            android:textSize="@dimen/textsize_large" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/item_text1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:text="The Clinical Anger Scale is a self-administered questionnaire that stands as a pivotal instrument assessing and quantifying the serverity of anger-related emotions and behaviors."/>
+
+            <TextView
+                android:id="@+id/item_text2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/gray"
+                android:fontFamily="@font/dmsans_regular"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:text="Consisting of 21 questions, the CAS score range from 0 to 63. This scale empowers mental health professionals"/>
+
+            <TextView
+                android:id="@+id/item_text3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:padding="16dp"
+                android:textColor="@color/black"
+                android:text="Snell, W. E. Jr"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+            <Button
+                android:id="@+id/btn_take_assessment"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/buttoncolormind"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Take Assessment" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
