@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -18,17 +17,14 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
-import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
-import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
 import com.example.rlapp.ui.payment.AccessPaymentActivity;
-import com.example.rlapp.ui.voicescan.VoiceScanFormPagerAdapter;
-import com.example.rlapp.ui.voicescan.VoiceScanFromActivity;
 
 public class MindAuditFromActivity extends AppCompatActivity {
 
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
-    private Button prevButton, nextButton, submitButton;
+    private Button prevButton, submitButton;
+    public Button nextButton;
     private MindAuditFormPagerAdapter adapter;
     private ProgressBar progressBar;
 
@@ -53,12 +49,9 @@ public class MindAuditFromActivity extends AppCompatActivity {
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage());
         submitButton.setOnClickListener(v -> submitFormData());
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MindAuditFromActivity.this, AccessPaymentActivity.class);
-                startActivity(intent);
-            }
+        submitButton.setOnClickListener(view -> {
+            Intent intent = new Intent(MindAuditFromActivity.this, AccessPaymentActivity.class);
+            startActivity(intent);
         });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -71,29 +64,22 @@ public class MindAuditFromActivity extends AppCompatActivity {
         });
 
 
-        ic_back_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int currentItem = viewPager.getCurrentItem();
-                int totalItems = adapter.getItemCount();
+        ic_back_dialog.setOnClickListener(view -> {
+            int currentItem = viewPager.getCurrentItem();
+            int totalItems = adapter.getItemCount();
 
-                if (currentItem == 0) {
-                    finish();
-                }
-                // If on any other page, move to the previous page
-                else {
-                    viewPager.setCurrentItem(currentItem - 1);
-                }
+            if (currentItem == 0) {
+                finish();
+            }
+            // If on any other page, move to the previous page
+            else {
+                viewPager.setCurrentItem(currentItem - 1);
             }
         });
 
 
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                // showExitDialog();
-            }
+        close_dialog.setOnClickListener(view -> {
+            finish();
         });
 
     }
@@ -119,9 +105,6 @@ public class MindAuditFromActivity extends AppCompatActivity {
     }
 
     private void navigateToNextPage() {
-        /*if (viewPager.getCurrentItem() < adapter.getItemCount() - 1) {
-            viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-        }*/
 
         int currentItem = viewPager.getCurrentItem();
         int totalItems = adapter.getItemCount();
@@ -130,8 +113,6 @@ public class MindAuditFromActivity extends AppCompatActivity {
             viewPager.setCurrentItem(currentItem + 1);
         } else {
             // If it's the last page, got to scan
-             //Toast.makeText(VoiceScanFromActivity.this, "strat Recording", Toast.LENGTH_SHORT).show();
-            //showBirthDayDialog();
             showDisclaimerDialog();
 
         }
@@ -139,9 +120,10 @@ public class MindAuditFromActivity extends AppCompatActivity {
 
     private void updateProgress(int fragmentIndex) {
         // Set progress percentage based on the current fragment (out of 8)
-        int progressPercentage = (int) (((fragmentIndex + 1) / (double)adapter.getItemCount()) * 100);
+        int progressPercentage = (int) (((fragmentIndex + 1) / (double) adapter.getItemCount()) * 100);
         progressBar.setProgress(progressPercentage);
     }
+
     private void showDisclaimerDialog() {
         // Create the dialog
         Dialog dialog = new Dialog(this);
@@ -162,7 +144,7 @@ public class MindAuditFromActivity extends AppCompatActivity {
         Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
 
         // Optional: Set dynamic content
-         dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");
+        dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");
 
         ColorStateList colorStateList = ContextCompat.getColorStateList(MindAuditFromActivity.this, R.color.color_pink_myhealth);
         dialogButtonStay.setBackgroundTintList(colorStateList);

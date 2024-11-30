@@ -1,37 +1,44 @@
 package com.example.rlapp.ui.mindaudit;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rlapp.R;
-import com.example.rlapp.ui.healthaudit.FormData;
-import com.example.rlapp.ui.healthaudit.FormViewModel;
-import com.example.rlapp.ui.healthaudit.Fruit;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MindAuditFeelingsFragment extends Fragment {
 
-    private LinearLayout ll_thinkright_category1,ll_thinkright_category2,ll_thinkright_category3,
-            ll_thinkright_category4,ll_thinkright_category5,ll_thinkright_category6;
-    private MindAuditReasonslistAdapter adapter;
-    ArrayList<Fruit> selectedfruitList = new ArrayList<>();
     private static final String ARG_PAGE_INDEX = "page_index";
+    public static final String ARG_BASIC_QUESTION = "BASIC_QUESTION";
     private int pageIndex;
-    private FormViewModel formViewModel;
+    private GetEmotions getEmotions;
+    private RecyclerView recyclerView;
+    private EmotionsAdapter emotionsAdapter;
+    private ArrayList<Emotions> emotionsList = new ArrayList<>();
+    private ArrayList<String> selectedEmotions = new ArrayList<>();
 
 
     public static MindAuditFeelingsFragment newInstance(int pageIndex) {
@@ -48,11 +55,6 @@ public class MindAuditFeelingsFragment extends Fragment {
         if (getArguments() != null) {
             pageIndex = getArguments().getInt(ARG_PAGE_INDEX, -1);
         }
-        /*for (int i = 0; i < 5; i++) {
-            SelectedList.set(i,false);
-        }*/
-
-        formViewModel = new ViewModelProvider(requireActivity()).get(FormViewModel.class);
     }
 
     @Nullable
@@ -60,62 +62,103 @@ public class MindAuditFeelingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_mindaudit_feeling_list, container, false);
 
-        //recyclerView = view.findViewById(R.id.recyclerView);
-        ll_thinkright_category1 = view.findViewById(R.id.ll_thinkright_category1);
-        ll_thinkright_category2 = view.findViewById(R.id.ll_thinkright_category2);
-        ll_thinkright_category3 = view.findViewById(R.id.ll_thinkright_category3);
-        ll_thinkright_category4 = view.findViewById(R.id.ll_thinkright_category4);
-        ll_thinkright_category5 = view.findViewById(R.id.ll_thinkright_category5);
-        ll_thinkright_category6 = view.findViewById(R.id.ll_thinkright_category6);
+        recyclerView = view.findViewById(R.id.recycler_view_emotions);
 
-
-        ArrayList<Fruit> fruitList = new ArrayList<>();
-        // Add fruits to the list
-
-        fruitList.add(new Fruit("Fluctuating Mood", false));
-        fruitList.add(new Fruit("Crying Spells", false));
-        fruitList.add(new Fruit("Excessive Tiredness", false));
-        fruitList.add(new Fruit("Loss of Zeal", false));
-        fruitList.add(new Fruit("Low Confidence", false));
-
-
-       /* int spanCount = fruitList.size() > 6 ? 2 : 1;
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), spanCount);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 2);
         recyclerView.setLayoutManager(gridLayoutManager);
 
+        getAllEmotions();
 
-        adapter = new MindAuditReasonslistAdapter(fruitList, fruit -> {
-            // Handle fruit selection here
-            Log.d("FruitSelection", "Fruit clicked: " + fruit.getName());
-
-            if (fruit.isSelected()) {
-                // Add to favorites
-                Log.d("FruitSelection", "Added to favorites: " + fruit.getName());
-                selectedfruitList.add(fruit);
-            } else {
-                // Remove from favorites
-                Log.d("FruitSelection", "Removed from favorites: " + fruit.getName());
-                selectedfruitList.remove(fruit);
-            }
-            saveData();
+        ((MindAuditFromActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
+            UserEmotions userEmotions = new UserEmotions(selectedEmotions);
+            getBasicScreeningQuestions(userEmotions);
         });
 
-        recyclerView.setAdapter(adapter);
-*/
         return view;
     }
 
-    public Map<String, ArrayList> collectData() {
-        Map<String, ArrayList> data = new HashMap<>();
-        // Add values from views in this fragment to the data map
-        data.put("fruit", selectedfruitList);
-        return data;
+    private void getAllEmotions() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getAllEmotions(accessToken);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+
+                        Gson gson = new Gson();
+                        getEmotions = gson.fromJson(jsonString, GetEmotions.class);
+
+                        for (String s : getEmotions.getEmotions()) {
+                            emotionsList.add(new Emotions(s, false));
+                        }
+
+                        emotionsAdapter = new EmotionsAdapter(requireContext(), emotionsList, emotion -> {
+                            if (emotion.isSelected()) {
+                                selectedEmotions.add(emotion.getEmotion());
+                            } else {
+                                selectedEmotions.remove(emotion.getEmotion());
+                            }
+                        });
+
+                        recyclerView.setAdapter(emotionsAdapter);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(requireContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void saveData() {
-        FormData data = new FormData();
-        data.setAnswer("User Fruit");
-        data.setSelected(true);
-        formViewModel.saveFormData(pageIndex, data); // Replace `getPageIndex()` with the actual page number
+
+    private void getBasicScreeningQuestions(UserEmotions emotions) {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.getBasicScreeningQuestions(accessToken, emotions);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Gson gson = new Gson();
+                        BasicScreeningQuestion basicScreeningQuestion = gson.fromJson(jsonString, BasicScreeningQuestion.class);
+                        Intent intent = new Intent(requireActivity(), MindAuditBasicScreeningQuestionsActivity.class);
+                        intent.putExtra(ARG_BASIC_QUESTION, basicScreeningQuestion);
+                        startActivity(intent);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(requireContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
+
 }

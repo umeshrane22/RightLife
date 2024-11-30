@@ -3,6 +3,7 @@ package com.example.rlapp.ui.mindaudit;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,6 +40,7 @@ public class MindAuditActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mindaudit);
+        Log.d("AAAA","MindAuditActivity");
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -53,7 +55,6 @@ public class MindAuditActivity extends AppCompatActivity {
         int[] layouts = {
                 R.layout.page_one_mind, // Define these layout files in your res/layout directory
                 R.layout.page_two_mind,
-
         };
 
         // Set up the adapter
@@ -63,30 +64,17 @@ public class MindAuditActivity extends AppCompatActivity {
         indicator.setViewPager(viewPager);
         indicator_view.setupWithViewPager(viewPager);
 
-       // showCustomDialog();
 
+        ic_back_dialog.setOnClickListener(view -> {
+            int currentItem = viewPager.getCurrentItem();
+            int totalItems = adapter.getItemCount();
 
-        ic_back_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int currentItem = viewPager.getCurrentItem();
-                int totalItems = adapter.getItemCount();
-
-                // Go to the next page if it's not the last one
-               /* if (currentItem < totalItems - 1) {
-                    viewPager.setCurrentItem(currentItem + 1);
-                } else {
-                    // If it's the last page, go back to the first page
-                    viewPager.setCurrentItem(0);
-                }*/
-
-                if (currentItem == 0) {
-                    finish();
-                }
-                // If on any other page, move to the previous page
-                else {
-                    viewPager.setCurrentItem(currentItem - 1);
-                }
+            if (currentItem == 0) {
+                finish();
+            }
+            // If on any other page, move to the previous page
+            else {
+                viewPager.setCurrentItem(currentItem - 1);
             }
         });
 
@@ -99,24 +87,15 @@ public class MindAuditActivity extends AppCompatActivity {
             }
         });
 
-        btn_howitworks.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int currentItem = viewPager.getCurrentItem();
-                int totalItems = adapter.getItemCount();
-                // Go to the next page if it's not the last one
-                if (currentItem < totalItems - 1) {
-                    viewPager.setCurrentItem(currentItem + 1);
-                } else {
-                    // If it's the last page, got to scan 
-                    Toast.makeText(MindAuditActivity.this, "Coming Soon", Toast.LENGTH_SHORT).show();
-                  //  showDisclaimerDialog();
-                    Intent intent = new Intent(MindAuditActivity.this, MindAuditFromActivity.class);
-                    // Optionally pass data
-                    //intent.putExtra("key", "value");
-                    startActivity(intent);
-
-                }
+        btn_howitworks.setOnClickListener(view -> {
+            int currentItem = viewPager.getCurrentItem();
+            int totalItems = adapter.getItemCount();
+            // Go to the next page if it's not the last one
+            if (currentItem < totalItems - 1) {
+                viewPager.setCurrentItem(currentItem + 1);
+            } else {
+                Intent intent = new Intent(MindAuditActivity.this, MindAuditFromActivity.class);
+                startActivity(intent);
             }
         });
 
