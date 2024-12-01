@@ -9,6 +9,8 @@ import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.apimodel.auditanswer.AuditAnswerRequest;
+import com.example.rlapp.ui.mindaudit.UserEmotions;
+import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.google.gson.JsonElement;
 
 import okhttp3.ResponseBody;
@@ -250,6 +252,37 @@ public interface ApiService {
             @Query("limit") int limit,
             @Query("skip") int skip,
             @Query("appId") String appId
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("mind-audit/q/get-all-emotions")
+    Call<ResponseBody> getAllEmotions(@Header("Authorization") String authToken);
+
+    @Headers("Content-Type: application/json")
+    @POST("mind-audit/q/get-basic-screening-questions")
+    Call<ResponseBody> getBasicScreeningQuestions(
+            @Header("Authorization") String authToken,
+            @Body UserEmotions emotions
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("mind-audit/q/get-suggested-assessments")
+    Call<ResponseBody> getSuggestedAssessment(
+            @Header("Authorization") String authToken,
+            @Body UserEmotions emotions
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("recommendations")
+    Call<ResponseBody> getCuratedAssessment(
+            @Header("Authorization") String authToken,
+            @Body CuratedUserData curatedUserData
+    );
+
+    @GET("mind-audit/q/get-assessment-questionnaires")
+    Call<ResponseBody> getAssessmentByType(
+            @Header("Authorization") String authToken,
+            @Query("assessment") String assessment
     );
 
 }

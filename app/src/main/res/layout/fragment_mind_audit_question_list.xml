@@ -2,46 +2,38 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- Date of Birth Prompt -->
+
     <TextView
-        android:id="@+id/dobPrompt"
+        android:id="@+id/txt_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:background="@color/topcolorhealthcam"
         android:padding="16dp"
-        android:text="In the last 30 days, I have been feeling..."
+        android:text="Do any of your direct blood relatives currently have or have had medical conditions from the same below?"
         android:textColor="@color/txt_color_health"
         android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_below="@id/dobPrompt"
+        android:layout_below="@id/txt_question"
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/txt_question_desc"
             android:layout_width="match_parent"
             android:gravity="center_horizontal"
-            android:text="Don't Hold Back– Check all that make sense"
-            android:layout_marginTop="1dp"
-            android:textColor="#A0A3BD"
-            android:textSize="@dimen/textsize_small"
+            android:text="Choose any one option"
+            android:layout_marginTop="30dp"
             android:layout_height="wrap_content"/>
 
-    <LinearLayout
-        android:id="@+id/llmain"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginTop="30dp">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_emotions"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="16dp"/>
-    </LinearLayout>
-
+        android:layout_marginBottom="56dp"
+        android:layout_marginTop="30dp" />
     </LinearLayout>
 
 </RelativeLayout>

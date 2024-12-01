@@ -52,6 +52,9 @@
         <activity android:name=".ui.payment.AccessPaymentActivity" />
         <activity android:name=".ui.Articles.ArticlesDetailActivity" />
         <activity android:name="com.example.rlapp.ui.mindaudit.MindAuditFromActivity" />
+        <activity android:name="com.example.rlapp.ui.mindaudit.MindAuditBasicScreeningQuestionsActivity" />
+        <activity android:name="com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity" />
+        <activity android:name="com.example.rlapp.ui.mindaudit.MAAssessmentQuestionaireActivity" />
         <activity android:name="com.example.rlapp.ui.therledit.RLEditDetailViewActivity" />
         <activity android:name="com.example.rlapp.ui.Articles.ReceipeDetailActivity" />
         <activity android:name="com.example.rlapp.ui.Wellness.WellnessDetailViewActivity" />
