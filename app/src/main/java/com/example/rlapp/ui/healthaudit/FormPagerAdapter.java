@@ -33,6 +33,8 @@ public class FormPagerAdapter extends FragmentStateAdapter {
                 return HAFromWaistFragment.newInstance(position, question);
             case "bp_systolic":
                 return HAFromBPFragment.newInstance(position, question);
+            case "audio":
+                return HAAudioURLFragment.newInstance(question);
             default:
                 return FruitListFragment.newInstance(position, question);
         }
