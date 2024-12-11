@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,6 +19,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
@@ -35,6 +39,11 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
+import com.example.rlapp.ui.drawermenu.FavouritesActivity;
+import com.example.rlapp.ui.drawermenu.ProfileActivity;
+import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
+import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
+import com.example.rlapp.ui.drawermenu.SettingsActivity;
 import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
@@ -45,6 +54,7 @@ import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.example.rlapp.ui.voicescan.VoiceScanActivity;
+import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.zhpan.bannerview.BannerViewPager;
@@ -59,7 +69,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     private ViewPager2 viewPager;
     private CircularCardAdapter adapter;
     private List<CardItem> cardItems;  // Replace with your data model
@@ -73,6 +83,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public SubModuleResponse MoveRSubModuleResponse;
     public SubModuleResponse EatRSubModuleResponse;
     public SubModuleResponse SleepRSubModuleResponse;
+    private DrawerLayout drawer;
 
     //Button
     private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
@@ -103,6 +114,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_home);
 
         SetupviewsIdWellness();
+
+        ImageView profileImage = findViewById(R.id.profileImage);
+        profileImage.setOnClickListener(view -> {
+            if(!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
+            else drawer.closeDrawer(Gravity.RIGHT);
+        });
+
+        drawer = findViewById(R.id.drawer_layout);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
 
         // RL Edit
@@ -312,7 +334,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList("");
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
-         getAffirmations("");
+        getAffirmations("");
         // getUpcomingEvents("");
         getWelnessPlaylist("");
         getCuratedContent("");
@@ -1453,6 +1475,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 System.out.println("Request failed: " + t.getMessage());
             }
         });
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_profile) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_refer_friend) {
+            Intent intent = new Intent(this, ReferAFriendActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.nav_favourites) {
+            Intent intent = new Intent(this, FavouritesActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.nav_purchase) {
+            Intent intent = new Intent(this, PurchaseHistoryTypesActivity.class);
+            startActivity(intent);
+        }else if (id == R.id.nav_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
 
