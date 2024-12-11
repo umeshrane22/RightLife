@@ -5,9 +5,7 @@
     <!-- shape property for the view based on the value particular view would be drawn -->
     <corners
         android:radius="25dp" />
-    <stroke android:width="2dp"
-        android:color="@color/mindauditpink" />
-    <solid android:color="@color/bg_edittext"/>
+    <solid android:color="@color/mindauditpink"/>
     <!--  stroke for defining a border for view -->
 
 <!--    <size-->
