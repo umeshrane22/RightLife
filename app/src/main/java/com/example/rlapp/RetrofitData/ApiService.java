@@ -3,7 +3,6 @@ package com.example.rlapp.RetrofitData;
 import com.example.rlapp.apimodel.LoginRequest;
 import com.example.rlapp.apimodel.LoginResponse;
 import com.example.rlapp.apimodel.LoginResponseMobile;
-import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
@@ -33,33 +32,38 @@ public interface ApiService {
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("auth/mobile/generate-otp?type=signup") // Assume the API endpoint is /login
+    @POST("auth/mobile/generate-otp?type=signup")
+        // Assume the API endpoint is /login
     Call<LoginResponse> generateOtpSignup(@Body SignupOtpRequest request); // Send the request body
 
 
-
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("auth/mobile/generate-otp?type=login") // Assume the API endpoint is /login
+    @POST("auth/mobile/generate-otp?type=login")
+        // Assume the API endpoint is /login
     Call<LoginResponse> generateOtpLogin(@Body SignupOtpRequest request); // Send the request body
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("user/signup?signupType=phoneNumber") // Assume the API endpoint is /login
+    @POST("user/signup?signupType=phoneNumber")
+        // Assume the API endpoint is /login
     Call<LoginResponse> submitOtpSignup(@Body SubmitOtpRequest request); // Send the request body
 
-// submit OTP Login
+    // submit OTP Login
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("auth/mobile/login") // Assume the API endpoint is /login
+    @POST("auth/mobile/login")
+    // Assume the API endpoint is /login
     Call<LoginResponseMobile> submitOtpLogin(@Body SubmitLoginOtpRequest request); // Send the request body
 
     //Home Page
     // submit OTP Login
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("promotions?appId=THINK_RIGHT&position=TOP") // Assume the API endpoint is /login
+    @GET("promotions?appId=THINK_RIGHT&position=TOP")
+    // Assume the API endpoint is /login
     Call<LoginResponse> getPromotionsList(); // Send the request body
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("promotions") // Assume the API endpoint is /login   //?appId=THINK_RIGHT&position=TOP
+    @GET("promotions")
+        // Assume the API endpoint is /login   //?appId=THINK_RIGHT&position=TOP
     Call<JsonElement> getPromotionList(
             @Header("Authorization") String authToken,
             @Query("appId") String appId,
@@ -69,21 +73,24 @@ public interface ApiService {
 
     //Service Pane
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("user") // Assume the API endpoint is /login
+    @GET("user")
+    // Assume the API endpoint is /login
     Call<JsonElement> getUserDetais(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
 
     //Service Pane
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("service-pane") // Assume the API endpoint is /login
+    @GET("service-pane")
+    // Assume the API endpoint is /login
     Call<JsonElement> getPromotionList2(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
 
     //Affrimation List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("affirmation") // Assume the API endpoint is /login
+    @GET("affirmation")
+    // Assume the API endpoint is /login
     Call<JsonElement> getAffirmationList(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Query("userId") String userId,
@@ -106,7 +113,8 @@ public interface ApiService {
 
     //RightkLife Edit List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("content/top") // Assume the API endpoint is /login
+    @GET("content/top")
+    // Assume the API endpoint is /login
     Call<JsonElement> getRightlifeEdit(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Query("pageType") String pageType
@@ -115,7 +123,8 @@ public interface ApiService {
 
     // Upcoming Event List  -
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("upcomingEvent") // Assume the API endpoint is /login
+    @GET("upcomingEvent")
+    // Assume the API endpoint is /login
     Call<JsonElement> getUpcomingEvent(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
@@ -123,7 +132,8 @@ public interface ApiService {
 
     // Welness PlayList - wellnessPlaylist
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("wellnessPlaylist") // Assume the API endpoint is /login
+    @GET("wellnessPlaylist")
+    // Assume the API endpoint is /login
     Call<JsonElement> getWelnessPlaylistold(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
@@ -150,7 +160,8 @@ public interface ApiService {
     // Curated List
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("curated") // Assume the API endpoint is /login
+    @GET("curated")
+        // Assume the API endpoint is /login
     Call<JsonElement> getCuratedContent(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
@@ -164,33 +175,35 @@ public interface ApiService {
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("subModule") //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
+    @GET("subModule")
+    //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
     Call<JsonElement> getsubmodule(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
-    @Query("moduleId") String moduleId, @Query("type") String type); //, @Query("categoryId") String categoryId
-
+            @Query("moduleId") String moduleId, @Query("type") String type); //, @Query("categoryId") String categoryId
 
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("questionaries/list/") //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
+    @GET("questionaries/list/")
+    //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
     Call<JsonElement> getsubmoduletest1(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Query("moduleId") String moduleId);
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("questionaries/list/{Module}") //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
+    @GET("questionaries/list/{Module}")
+    //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
     Call<JsonElement> getsubmoduletest(
-            @Header("Authorization") String authToken,@Path("Module") String category);
-
+            @Header("Authorization") String authToken, @Path("Module") String category);
 
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("questionaries/useranswer/{type}") //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
+    @POST("questionaries/useranswer/{type}")
+    //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
     Call<JsonElement> postAnswerRequest(
-            @Header("Authorization") String authToken,@Path("type") String category,@Body UserAnswerRequest request);
+            @Header("Authorization") String authToken, @Path("type") String category, @Body UserAnswerRequest request);
 
 
     // get module content
@@ -313,8 +326,26 @@ public interface ApiService {
             @Query("assessment") String assessment
     );
 
-}
+    @GET("user/purchasehistory")
+    Call<ResponseBody> getPurchaseHistory(
+            @Header("Authorization") String authToken,
+            @Query("status") String status,
+            @Query("type") String type,
+            @Query("skip") int skip,
+            @Query("limit") int limit,
+            @Query("sortBy") String sortBy,
+            @Query("orderBy") String orderBy
+    );
 
+    @GET("content/favourite")
+    Call<ResponseBody> getFavouritesList(
+            @Header("Authorization") String authToken,
+            @Query("appId") String appId,
+            @Query("skip") int skip,
+            @Query("limit") int limit
+    );
+
+}
 
 
 //private static final String BASE_URL = "https://qa.rightlife.com/api/app/api/"; // Your API URL
