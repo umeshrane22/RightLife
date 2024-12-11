@@ -26,9 +26,9 @@ import retrofit2.http.Query;
 public interface ApiService {
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("auth/user/check-registration") // Assume the API endpoint is /login
+    @POST("auth/user/check-registration")
+        // Assume the API endpoint is /login
     Call<LoginResponse> loginUser(@Body LoginRequest request); // Send the request body
-
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -244,9 +244,10 @@ public interface ApiService {
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("content/{id}") // Rl edit details content
+    @GET("content/{id}")
+        // Rl edit details content
     Call<ResponseBody> getRLDetailpage(
-            @Header("Authorization") String authToken,@Path("id") String id);
+            @Header("Authorization") String authToken, @Path("id") String id);
 
 
     // more like this content rl Edit

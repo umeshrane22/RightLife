@@ -25,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
@@ -95,6 +97,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView liveclass_banner_image, img_attending_filled, img_lvclass_host;
     private TextView liveclass_workshop_tag1, liveclass_tv_classattending, tv_classtime, tv_classrating, txt_lvclass_host, tv_title_liveclass, lvclass_date, lvclass_month;
 
+    private DrawerLayout drawer;
 
     //Button
     private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
@@ -363,6 +366,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
 
+        getAffirmations("");
         // getUpcomingEvents("");
         getLiveEvents("");
          getUpcomingLiveEvents("");
