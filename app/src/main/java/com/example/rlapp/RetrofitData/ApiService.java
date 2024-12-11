@@ -8,6 +8,7 @@ import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
+import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
 import com.example.rlapp.apimodel.auditanswer.AuditAnswerRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
@@ -84,8 +85,24 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("affirmation") // Assume the API endpoint is /login
     Call<JsonElement> getAffirmationList(
-            @Header("Authorization") String authToken // Dynamic Authorization Header
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("userId") String userId,
+            @Query("isSuggested") boolean isSuggested
     );
+
+    //Affrimation create
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("affirmation") // Assume the API endpoint is /login
+    Call<ResponseBody> postAffirmation(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Body AffirmationRequest affirmationRequest);
+
+
+    /*Call<JsonElement> UpdateAffirmationList(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("userId") String userId,
+            @Query("isSuggested") boolean isSuggested
+    );*/
 
     //RightkLife Edit List
     @Headers("Content-Type: application/json") // Set content-type as application/json

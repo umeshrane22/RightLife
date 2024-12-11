@@ -23,9 +23,12 @@ import com.example.rlapp.apimodel.LoginResponseMobile;
 import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
+import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 
 import retrofit2.Call;
@@ -177,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                  String jsonResponse = gson.toJson(response.body());
                  Log.d("API Response body", "Success: " + jsonResponse);
                  if (loginResponse.isSuccess()) {
-                     Toast.makeText(MainActivity.this, "Success: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+           //          Toast.makeText(MainActivity.this, "Success: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                  } else {
                      Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                  }
@@ -297,8 +300,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                         Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                         saveAccessToken(loginResponse.getAccessToken());
-                        startActivity(new Intent(MainActivity.this, HomeActivity.class));
-                        finish();
+                        getUserDetails("");
+
                     } else {
                         Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                     }
@@ -334,5 +337,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //-----------
+// get user details
+    private void getUserDetails(String s) {
+        //-----------
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
+
+        // Make the API call
+        Call<JsonElement> call = apiService.getUserDetais(accessToken);
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonElement promotionResponse2 = response.body();
+                    Log.d("API Response", "User Details: " + promotionResponse2.toString());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+
+                    UserProfileResponse ResponseObj = gson.fromJson(jsonResponse, UserProfileResponse.class);
+                    Log.d("API Response body", "Success: User Details" + ResponseObj.getUserdata().getId());
+                    //handleServicePaneResponse(ResponseObj);
+                    //saveUserId(ResponseObj.getUserdata().getId());
+                    SharedPreferenceManager.getInstance(getApplicationContext()).saveUserId(ResponseObj.getUserdata().getId());
+
+                    Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
+
+                    startActivity(new Intent(MainActivity.this, HomeActivity.class));
+                    finish();
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API ERROR", "onFailure: " + t.getMessage());
+                t.printStackTrace();  // Print the full stack trace for more details
+
+            }
+        });
+
+    }
 }

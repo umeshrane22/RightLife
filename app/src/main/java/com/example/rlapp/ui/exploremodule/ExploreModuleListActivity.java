@@ -58,6 +58,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
     SubModuleResponse subModuleResponse;
     ThinkRightCardResponse thinkRightCardResponse;
     String moduleId;
+    TextView tv_header_htw;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,6 +66,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exploremodulelist);
 
         //get views
+        tv_header_htw = findViewById(R.id.tv_header_htw);
         txt_morelikethis_section = findViewById(R.id.txt_morelikethis_section);
         txt_categories_section = findViewById(R.id.txt_categories_section);
         txt_curated_section = findViewById(R.id.txt_curated_section);
@@ -83,6 +85,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
             subModuleResponse = gson.fromJson(categoryType, SubModuleResponse.class);
             Log.d("Exploremodule", "Received Module type: " + subModuleResponse.getData().get(0).getModuleId());
             moduleId = subModuleResponse.getData().get(0).getModuleId();
+            tv_header_htw.setText(moduleId);
         } else {
             // Handle the case where the extra is not present
             Log.d("CategoryListActivity", "Category type not found in intent");
@@ -392,7 +395,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         recycler_view_suggestions.setAdapter(adapter);
 
         setupModuleListData(subModuleResponse.getData());
-        setStaticCardListData(thinkRightCardResponse.getThinkRightCard());
+      //  setStaticCardListData(thinkRightCardResponse.getThinkRightCard());
 
         recyclerView.post(new Runnable() {
             @Override
