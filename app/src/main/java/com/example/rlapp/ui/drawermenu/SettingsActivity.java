@@ -1,19 +1,20 @@
 package com.example.rlapp.ui.drawermenu;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.rlapp.MainActivity;
 import com.example.rlapp.R;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 
 public class SettingsActivity extends AppCompatActivity {
     private LinearLayout llAboutUs, llNotifications, llFAQ, llContactUs, llManageSubscription, llTheme, llTermsAndConditions,
@@ -74,12 +75,11 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(intent);
         });
         llLogOut.setOnClickListener(view -> {
-            Intent intent = new Intent(SettingsActivity.this, AboutUsActivity.class);
-            startActivity(intent);
+            dialogLogout();
         });
     }
 
-    private void dialogLogout(){
+    private void dialogLogout() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_alert);
         dialog.setCancelable(false);
@@ -89,19 +89,23 @@ public class SettingsActivity extends AppCompatActivity {
         layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
         window.setAttributes(layoutParams);
 
-        Button btnStay = dialog.findViewById(R.id.btn_stay);
-        btnStay.setOnClickListener(view -> {
-            dialog.dismiss();
-        });
+        dialog.findViewById(R.id.iv_dialog_close).setOnClickListener(view -> dialog.dismiss());
 
-        Button btnLogout = dialog.findViewById(R.id.btn_logout);
-        btnLogout.setOnClickListener(view -> {
-           logOut();
-        });
+        dialog.findViewById(R.id.btn_stay).setOnClickListener(view -> dialog.dismiss());
+
+        dialog.findViewById(R.id.btn_logout).setOnClickListener(view -> logOut());
         dialog.show();
     }
 
     private void logOut() {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
 
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+
+        finishAffinity();
     }
 }
