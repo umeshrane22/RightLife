@@ -27,9 +27,12 @@ import com.example.rlapp.apimodel.exploremodules.ExploreSuggestionResponse;
 import com.example.rlapp.apimodel.exploremodules.Suggested;
 import com.example.rlapp.apimodel.exploremodules.curated.ExploreRecomendedResponse;
 import com.example.rlapp.apimodel.exploremodules.curated.Recommended;
+import com.example.rlapp.apimodel.exploremodules.topcards.ThinkRightCard;
+import com.example.rlapp.apimodel.exploremodules.topcards.ThinkRightCardResponse;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.submodule.SubModuleData;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
+import com.example.rlapp.ui.utility.JsonUtil;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
@@ -47,13 +50,15 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
     TextView txt_morelikethis_section, txt_categories_section, txt_curated_section;
     ImageView ic_back_dialog, close_dialog;
-    private RecyclerView recyclerView, recycler_view_suggestions,recycler_view_curated;
+    private RecyclerView recyclerView, recycler_view_suggestions,recycler_view_curated,recycler_view_cards;
     private ChipGroup chipGroup;
     String[] itemNames;
     int[] itemImages;
     ModuleChipCategory ResponseObj;
     SubModuleResponse subModuleResponse;
+    ThinkRightCardResponse thinkRightCardResponse;
     String moduleId;
+    TextView tv_header_htw;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,6 +66,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exploremodulelist);
 
         //get views
+        tv_header_htw = findViewById(R.id.tv_header_htw);
         txt_morelikethis_section = findViewById(R.id.txt_morelikethis_section);
         txt_categories_section = findViewById(R.id.txt_categories_section);
         txt_curated_section = findViewById(R.id.txt_curated_section);
@@ -79,6 +85,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
             subModuleResponse = gson.fromJson(categoryType, SubModuleResponse.class);
             Log.d("Exploremodule", "Received Module type: " + subModuleResponse.getData().get(0).getModuleId());
             moduleId = subModuleResponse.getData().get(0).getModuleId();
+            tv_header_htw.setText(moduleId);
         } else {
             // Handle the case where the extra is not present
             Log.d("CategoryListActivity", "Category type not found in intent");
@@ -87,6 +94,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recycler_view_suggestions = findViewById(R.id.recycler_view_suggestions);
         recycler_view_curated = findViewById(R.id.recycler_view_curated);
+        recycler_view_cards = findViewById(R.id.recycler_view_cards);
 
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -142,6 +150,18 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         for (String tag : tags) {
             //addChip(tag); // Add each tag as a chip
         }
+
+
+         thinkRightCardResponse = JsonUtil.fetchJsonFromRaw(this);
+        if (thinkRightCardResponse != null && thinkRightCardResponse.getThinkRightCard() != null) {
+            for (ThinkRightCard card : thinkRightCardResponse.getThinkRightCard()) {
+                // Use the card data System.out.println("ID: " + card.getId());
+                System.out.println("Title: " + card.getTitle());
+                System.out.println("Icon URL: " + card.getIconUrl());
+                System.out.println("Background URL: " + card.getBgUrl());
+            }
+        }
+
 
     }
 
@@ -349,6 +369,11 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
     }
 
+    private void setStaticCardListData(List<ThinkRightCard> contentList) {
+        ExploreTRStaticCardsAdapter adapter = new ExploreTRStaticCardsAdapter(this, itemNames, itemImages, thinkRightCardResponse.getThinkRightCard());
+        recycler_view_cards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
+        recycler_view_cards.setAdapter(adapter);
+    }
     private void setupModuleListData(List<SubModuleData> contentList) {
         ExploreModuleRecyclerAdapter adapter = new ExploreModuleRecyclerAdapter(this, itemNames, itemImages, subModuleResponse.getData());
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
@@ -370,7 +395,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         recycler_view_suggestions.setAdapter(adapter);
 
         setupModuleListData(subModuleResponse.getData());
-
+      //  setStaticCardListData(thinkRightCardResponse.getThinkRightCard());
 
         recyclerView.post(new Runnable() {
             @Override

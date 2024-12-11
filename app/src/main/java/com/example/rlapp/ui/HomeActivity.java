@@ -1,5 +1,8 @@
 package com.example.rlapp.ui;
 
+import static com.example.rlapp.ui.utility.DateConverter.convertToDate;
+import static com.example.rlapp.ui.utility.DateConverter.convertToTime;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
@@ -26,6 +30,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.Affirmations;
 import com.example.rlapp.apimodel.PromotionResponse;
+import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
 import com.example.rlapp.apimodel.servicepane.ServicePaneResponse;
@@ -74,6 +79,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public SubModuleResponse EatRSubModuleResponse;
     public SubModuleResponse SleepRSubModuleResponse;
 
+    // Live Classes /workshop
+    private CardView liveclasscardview;
+    private ImageView liveclass_banner_image, img_attending_filled, img_lvclass_host;
+    private TextView liveclass_workshop_tag1, liveclass_tv_classattending, tv_classtime, tv_classrating, txt_lvclass_host, tv_title_liveclass, lvclass_date, lvclass_month;
+
+
     //Button
     private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
     //RLEdit
@@ -83,7 +94,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
 
-    TextView tv_header_rledit, tv_description_rledit, tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
+    TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
+            tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
     LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
     LinearLayout ll_thinkright_category, ll_moveright_category, ll_eatright_category, ll_sleepright_category,
             ll_homehealthclick, ll_homemenuclick;
@@ -214,6 +226,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         tv_header_servcepane3 = findViewById(R.id.tv_header_servcepane3);
         tv_header_servcepane4 = findViewById(R.id.tv_header_servcepane4);
 
+        //live Class
+        tv_header_lvclass = findViewById(R.id.tv_header_lvclass);
+        tv_desc_lvclass = findViewById(R.id.tv_desc_lvclass);
+        liveclasscardview = findViewById(R.id.liveclasscardview);
+        liveclass_banner_image = findViewById(R.id.banner_image);
+        img_attending_filled = findViewById(R.id.img_attending_filled);
+        img_lvclass_host = findViewById(R.id.img_lvclass_host);
+        lvclass_month = findViewById(R.id.lvclass_month);
+        lvclass_date = findViewById(R.id.lvclass_date);
+
+        liveclass_workshop_tag1 = findViewById(R.id.workshop_tag1);
+        tv_title_liveclass = findViewById(R.id.tv_title_liveclass);
+        liveclass_tv_classattending = findViewById(R.id.tv_classattending);
+        tv_classtime = findViewById(R.id.tv_classtime);
+        tv_classrating = findViewById(R.id.tv_classrating);
+        txt_lvclass_host = findViewById(R.id.txt_lvclass_host);
+
 
         ll_voice_scan = findViewById(R.id.ll_voice_scan);
         ll_health_cam = findViewById(R.id.ll_health_cam);
@@ -237,7 +266,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         });*/
         viewPager.setAdapter(adapter);
-        testAdapter = new TestAdapter(cardItems);
 
 
         // Set up the initial position for circular effect
@@ -304,7 +332,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         sliderHandler.postDelayed(sliderRunnable, 5000);  // Start sliding after 3 seconds
 
 
-        setupViewPager();
+        //setupViewPager();
 
 
         // calls for APIs
@@ -312,8 +340,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList("");
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
-         getAffirmations("");
+
         // getUpcomingEvents("");
+        getLiveEvents("");
+         getUpcomingLiveEvents("");
+
         getWelnessPlaylist("");
         getCuratedContent("");
         getModuleContent("");
@@ -607,7 +638,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getAffirmationList(accessToken);
+        Call<JsonElement> call = apiService.getAffirmationList(accessToken, SharedPreferenceManager.getInstance(getApplicationContext()).getUserId(), true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -617,8 +648,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                    Affirmations ResponseObj = gson.fromJson(jsonResponse, Affirmations.class);
-                    Log.d("API Response body", "Success: " + ResponseObj.getAffirmationList().get(0).getTitle());
+                    AffirmationResponse ResponseObj = gson.fromJson(jsonResponse, AffirmationResponse.class);
+                    Log.d("API Response Affrimation", "Success: " + ResponseObj.getData().getSortedServices().get(0).getCtaName());
+                    setupAfirmationContent(ResponseObj);
 
                 } else {
                     //Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -633,6 +665,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+
+    }
+
+    private void setupAfirmationContent(AffirmationResponse responseObj) {
+        //setupViewPager();
+        mViewPager = findViewById(R.id.banner_viewpager);
+
+        // Set up the ViewPager
+        testAdapter = new TestAdapter(responseObj.getData().getSortedServices());
+        mViewPager.setAdapter(testAdapter);
+        // mViewPager.setLifecycleRegistry(getLifecycle());
+        mViewPager.setPageStyle(PageStyle.MULTI_PAGE);
+        mViewPager.create(responseObj.getData().getSortedServices());
 
     }
 
@@ -739,7 +784,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //Upcoming Event List -
-    private void getUpcomingEvents(String s) {
+    private void getUpcomingLiveEvents(String s) {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -750,7 +795,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getUpcomingEvent(accessToken);
+        Call<JsonElement> call = apiService.getUpcomingLiveEvent(accessToken, "LIVE_EVENT", "UPCOMING", "HOME");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -870,7 +915,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getLiveEvent(accessToken);
+        Call<JsonElement> call = apiService.getLiveEvent(accessToken, "HOME");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -881,8 +926,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     String jsonResponse = gson.toJson(response.body());
 
                     LiveEventResponse ResponseObj = gson.fromJson(jsonResponse, LiveEventResponse.class);
-                    Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
-
+                    Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().getEvents().get(0).getEventType());
+                    setupLiveEvent(ResponseObj);
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -896,6 +941,37 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+
+    }
+
+    private void setupLiveEvent(LiveEventResponse responseObj) {
+        liveclass_workshop_tag1.setText(responseObj.getData().getEvents().get(0).getEventType());
+        tv_title_liveclass.setText(responseObj.getData().getEvents().get(0).getTitle());
+        txt_lvclass_host.setText(String.format("%s %s", responseObj.getData().getEvents().get(0).getInstructor().getFirstName(),
+                responseObj.getData().getEvents().get(0).getInstructor().getLastName()));
+        liveclass_tv_classattending.setText(String.valueOf(responseObj.getData().getEvents().get(0).getParticipantsCount()));
+        String formattedDate = convertToDate(responseObj.getData().getEvents().get(0).getStartDateTime());
+        //tv_classrating.setText(String.valueOf(responseObj.getData().getEvents().get(1).getRating()));
+        if (formattedDate != null) {
+            String[] dateParts = formattedDate.split(" ");
+
+            // Set the day and month in separate TextViews
+            lvclass_date.setText(dateParts[0]);   // "20"
+            lvclass_month.setText(dateParts[1]); // "Nov"
+        }
+        String formattedtime = convertToTime(responseObj.getData().getEvents().get(0).getStartDateTime());
+        tv_classtime.setText(formattedtime);
+
+        Glide.with(getApplicationContext())
+                .load(ApiClient.CDN_URL_QA + responseObj.getData().getEvents().get(0).getThumbnail().getUrl())
+                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .into(liveclass_banner_image);
+
+        tv_header_lvclass.setText(responseObj.getData().getSectionTitle());
+        tv_desc_lvclass.setText(responseObj.getData().getSectionSubtitle());
+        liveclasscardview.setVisibility(View.VISIBLE);
+        tv_header_lvclass.setVisibility(View.VISIBLE);
+        tv_desc_lvclass.setVisibility(View.VISIBLE);
 
     }
 //getCuratedContent
@@ -1264,7 +1340,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
 
-
+                    getAffirmations("");
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

@@ -8,6 +8,7 @@ import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
+import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
 import com.example.rlapp.apimodel.auditanswer.AuditAnswerRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
@@ -84,8 +85,24 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("affirmation") // Assume the API endpoint is /login
     Call<JsonElement> getAffirmationList(
-            @Header("Authorization") String authToken // Dynamic Authorization Header
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("userId") String userId,
+            @Query("isSuggested") boolean isSuggested
     );
+
+    //Affrimation create
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("affirmation") // Assume the API endpoint is /login
+    Call<ResponseBody> postAffirmation(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Body AffirmationRequest affirmationRequest);
+
+
+    /*Call<JsonElement> UpdateAffirmationList(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("userId") String userId,
+            @Query("isSuggested") boolean isSuggested
+    );*/
 
     //RightkLife Edit List
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -114,11 +131,22 @@ public interface ApiService {
 
     // Live Event List  -
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("liveEvent") // Assume the API endpoint is /login
+    @GET("event") // Assume the API endpoint is /login
     Call<JsonElement> getLiveEvent(
-            @Header("Authorization") String authToken // Dynamic Authorization Header
+            @Header("Authorization") String authToken,
+            @Query("pageType") String pageType
     );
 
+
+    // Live Event List  -
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("event") // Assume the API endpoint is /login
+    Call<JsonElement> getUpcomingLiveEvent(
+            @Header("Authorization") String authToken,
+            @Query("eventType") String eventType,
+            @Query("status") String status,
+            @Query("pageType") String pageType
+    );
     // Curated List
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -129,7 +157,7 @@ public interface ApiService {
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("module") // Assume the API endpoint is /login
+    @GET("app/module") // Assume the API endpoint is /login
     Call<JsonElement> getmodule(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
