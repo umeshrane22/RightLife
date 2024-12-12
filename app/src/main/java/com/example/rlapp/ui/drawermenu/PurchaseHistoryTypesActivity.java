@@ -2,7 +2,6 @@ package com.example.rlapp.ui.drawermenu;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
@@ -37,7 +36,7 @@ public class PurchaseHistoryTypesActivity extends AppCompatActivity {
     }
 
     private void startNextActivity(String type) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(this, PurchaseHistoryActivity.class);
         intent.putExtra("TYPE", type);
         startActivity(intent);
     }
