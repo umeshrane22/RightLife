@@ -1,5 +1,6 @@
 package com.example.rlapp.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +18,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -117,6 +120,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
     private ImageView profileImage;
     private TextView tvUserName;
+
+    private ActivityResultLauncher<Intent> profileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            getUserDetails("");
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1586,7 +1595,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
         if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
+            profileActivityLauncher.launch(intent);
         } else if (id == R.id.nav_refer_friend) {
             Intent intent = new Intent(this, ReferAFriendActivity.class);
             startActivity(intent);

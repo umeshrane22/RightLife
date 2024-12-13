@@ -78,11 +78,19 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_profile_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
             android:src="@drawable/baseline_face_24"
             android:layout_centerInParent="true"
             android:background="@drawable/circle_shape"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_edit_image"
+            android:layout_alignEnd="@+id/iv_profile_image"
+            android:layout_alignBottom="@id/iv_profile_image"/>
+
         <TextView
             android:id="@+id/tv_take_photo"
             android:layout_width="wrap_content"

@@ -16,7 +16,7 @@ public class DateTimeUtils {
     }
 
     public static String convertAPIDate(String date) {
-        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         try {
             Date newDate = spf.parse(date);
             spf = new SimpleDateFormat("dd/MM/yyyy");
@@ -31,7 +31,7 @@ public class DateTimeUtils {
         SimpleDateFormat spf = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date newDate = spf.parse(date);
-            spf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            spf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
             date = spf.format(newDate);
         } catch (ParseException e) {
             e.printStackTrace();

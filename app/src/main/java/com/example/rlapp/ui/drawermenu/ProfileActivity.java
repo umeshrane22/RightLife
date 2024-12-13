@@ -2,10 +2,13 @@ package com.example.rlapp.ui.drawermenu;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -27,6 +30,7 @@ import com.example.rlapp.apimodel.UploadImage;
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.utility.DateTimeUtils;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
@@ -81,7 +85,8 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         getViews();
 
-        token = SharedPreferenceManager.getInstance(this).getAccessToken();
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
         apiService = ApiClient.getClient().create(ApiService.class);
 
         setData();
@@ -150,7 +155,7 @@ public class ProfileActivity extends AppCompatActivity {
         edtEmail.setText(userdata.getEmail());
         edtPhoneNumber.setText(userdata.getPhoneNumber());
         tvDate.setText(DateTimeUtils.convertAPIDate(userdata.getDateofbirth()));
-        Glide.with(this).load(ApiClient.CDN_URL_QA+userdata.getProfilePicture()).into(ivProfileImage);
+        Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).into(ivProfileImage);
 
         if (userdata.getGender().equals("M") || userdata.getGender().equalsIgnoreCase("Male"))
             tvGenderSpinner.setText("Male");
@@ -341,16 +346,31 @@ public class ProfileActivity extends AppCompatActivity {
         } else if (age < 13) {
             Toast.makeText(this, "User must be at least 13 years old", Toast.LENGTH_SHORT).show();
         } else {
+
             userdata.setFirstName(firstName);
             userdata.setLastName(lastName);
-            userdata.setGender(gender);
             userdata.setEmail(email);
+            userdata.setNewEmail(email);
             userdata.setPhoneNumber(phoneNumber);
-            userdata.setWeight(Integer.parseInt(weight));
-            userdata.setWeightUnit(tvWeightSpinner.getText().toString());
-            userdata.setHeight(Integer.parseInt(height));
-            userdata.setHeightUnit(tvHeightSpinner.getText().toString());
             userdata.setDateofbirth(DateTimeUtils.convert_ddMMyyyy_toAPIDate(dob));
+            if (gender.equalsIgnoreCase("Male")) {
+                userdata.setGender("M");
+            } else {
+                userdata.setGender("F");
+            }
+            userdata.setWeight(Integer.parseInt(edtWeight.getText().toString()));
+            if ("Kgs".equalsIgnoreCase(tvWeightSpinner.getText().toString())){
+                userdata.setWeightUnit("KG");
+            }else {
+                userdata.setWeightUnit("LBS");
+            }
+
+            userdata.setHeight(Integer.parseInt(edtHeightCms.getText().toString()));
+            userdata.setHeightUnit("CM");
+            userdata.setPhoneNumber(phoneNumber);
+
+
+            updateUserData(userdata);
         }
     }
 
@@ -360,8 +380,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
+                    setResult(RESULT_OK);
+                    finish();
                 } else {
                     Toast.makeText(ProfileActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
