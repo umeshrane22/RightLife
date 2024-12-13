@@ -12,8 +12,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_profile_image"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="94dp"
+            android:layout_height="94dp"
             android:layout_alignParentStart="true"
             android:layout_margin="8dp"
             android:background="@drawable/circle_shape"
@@ -76,14 +76,15 @@
             android:background="@drawable/roundedcornerbutton"
             android:backgroundTint="@color/moveright"
             android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="16dp">
 
             <RelativeLayout
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_margin="16dp"
                 android:background="@drawable/roundedcornerbutton"
-                android:backgroundTint="@color/chip_selected_background_color">
+                android:backgroundTint="@color/sleepright">
 
                 <ImageView
                     android:layout_width="40dp"
@@ -91,7 +92,7 @@
                     android:layout_below="@id/tv_wellness_days_text"
                     android:layout_margin="16dp"
                     android:layout_toEndOf="@id/tv_wellness_days"
-                    android:src="@drawable/attending" />
+                    android:src="@drawable/wellness_days" />
 
                 <TextView
                     android:id="@+id/tv_wellness_days"
@@ -117,8 +118,8 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="110dp"
-                android:layout_height="110dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_margin="16dp"
                 android:background="@drawable/roundedcornerbutton"
                 android:backgroundTint="@color/color_lightpink_myhealth">
@@ -129,7 +130,7 @@
                     android:layout_below="@id/tv_health_checkins_text"
                     android:layout_margin="16dp"
                     android:layout_toEndOf="@id/tv_health_checkins"
-                    android:src="@drawable/attending" />
+                    android:src="@drawable/health_checkins" />
 
                 <TextView
                     android:id="@+id/tv_health_checkins"

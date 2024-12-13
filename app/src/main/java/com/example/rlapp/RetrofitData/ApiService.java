@@ -21,6 +21,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -362,7 +363,7 @@ public interface ApiService {
             @Body UploadImage uploadImage);
 
     @Headers("Content-Type: application/json")
-    @POST("s3/presigned-url-generate")
+    @PUT("user")
     Call<ResponseBody> updateUser(
             @Header("Authorization") String authToken,
             @Body Userdata userdata);

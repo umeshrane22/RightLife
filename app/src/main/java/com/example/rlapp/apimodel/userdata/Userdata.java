@@ -6,9 +6,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import javax.annotation.processing.Generated;
-
-@Generated("jsonschema2pojo")
 public class Userdata {
     @SerializedName("_id")
     @Expose
