@@ -3,6 +3,9 @@ package com.example.rlapp.ui.utility;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.rlapp.apimodel.userdata.UserProfileResponse;
+import com.google.gson.Gson;
+
 public class SharedPreferenceManager {
 
     private static final String PREF_NAME = "app_shared_prefs"; // File name for SharedPreferences
@@ -51,6 +54,21 @@ public class SharedPreferenceManager {
         editor.remove(SharedPreferenceConstants.ACCESS_TOKEN);
         editor.remove(SharedPreferenceConstants.USER_ID);
         editor.apply();
+    }
+
+    public void saveUserProfile(UserProfileResponse userProfileResponse) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(userProfileResponse);
+        prefsEditor.putString(SharedPreferenceConstants.USER_PROFILE, json);
+        prefsEditor.apply();
+    }
+
+    public UserProfileResponse getUserProfile() {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(SharedPreferenceConstants.USER_PROFILE, "");
+        UserProfileResponse obj = gson.fromJson(json, UserProfileResponse.class);
+        return obj;
     }
 }
 

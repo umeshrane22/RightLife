@@ -6,9 +6,10 @@ import com.example.rlapp.apimodel.LoginResponseMobile;
 import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
+import com.example.rlapp.apimodel.UploadImage;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
-import com.example.rlapp.apimodel.auditanswer.AuditAnswerRequest;
+import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.google.gson.JsonElement;
@@ -99,7 +100,8 @@ public interface ApiService {
 
     //Affrimation create
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("affirmation") // Assume the API endpoint is /login
+    @POST("affirmation")
+    // Assume the API endpoint is /login
     Call<ResponseBody> postAffirmation(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Body AffirmationRequest affirmationRequest);
@@ -141,7 +143,8 @@ public interface ApiService {
 
     // Live Event List  -
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("event") // Assume the API endpoint is /login
+    @GET("event")
+    // Assume the API endpoint is /login
     Call<JsonElement> getLiveEvent(
             @Header("Authorization") String authToken,
             @Query("pageType") String pageType
@@ -150,7 +153,8 @@ public interface ApiService {
 
     // Live Event List  -
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("event") // Assume the API endpoint is /login
+    @GET("event")
+    // Assume the API endpoint is /login
     Call<JsonElement> getUpcomingLiveEvent(
             @Header("Authorization") String authToken,
             @Query("eventType") String eventType,
@@ -168,7 +172,8 @@ public interface ApiService {
 
     // Module List
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("app/module") // Assume the API endpoint is /login
+    @GET("app/module")
+    // Assume the API endpoint is /login
     Call<JsonElement> getmodule(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
@@ -321,12 +326,14 @@ public interface ApiService {
             @Body CuratedUserData curatedUserData
     );
 
+    @Headers("Content-Type: application/json")
     @GET("mind-audit/q/get-assessment-questionnaires")
     Call<ResponseBody> getAssessmentByType(
             @Header("Authorization") String authToken,
             @Query("assessment") String assessment
     );
 
+    @Headers("Content-Type: application/json")
     @GET("user/purchasehistory")
     Call<ResponseBody> getPurchaseHistory(
             @Header("Authorization") String authToken,
@@ -338,6 +345,7 @@ public interface ApiService {
             @Query("orderBy") String orderBy
     );
 
+    @Headers("Content-Type: application/json")
     @GET("content/favourite")
     Call<ResponseBody> getFavouritesList(
             @Header("Authorization") String authToken,
@@ -345,6 +353,19 @@ public interface ApiService {
             @Query("skip") int skip,
             @Query("limit") int limit
     );
+
+
+    @Headers("Content-Type: application/json")
+    @POST("s3/presigned-url-generate")
+    Call<ResponseBody> getPreSignedUrl(
+            @Header("Authorization") String authToken,
+            @Body UploadImage uploadImage);
+
+    @Headers("Content-Type: application/json")
+    @POST("s3/presigned-url-generate")
+    Call<ResponseBody> updateUser(
+            @Header("Authorization") String authToken,
+            @Body Userdata userdata);
 
 }
 

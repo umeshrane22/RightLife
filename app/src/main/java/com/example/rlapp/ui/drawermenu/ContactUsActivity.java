@@ -14,11 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.rlapp.R;
+import com.example.rlapp.ui.utility.Utils;
 
 public class ContactUsActivity extends AppCompatActivity {
     private EditText edtName, edtEmail, edtPhoneNumber, edtMotive, edtMessage;
     private Button btnSend;
-    String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class ContactUsActivity extends AppCompatActivity {
             Toast.makeText(this, "Name is required", Toast.LENGTH_SHORT).show();
         } else if (email.isEmpty()) {
             Toast.makeText(this, "Email is required", Toast.LENGTH_SHORT).show();
-        } else if (!email.matches(emailPattern)) {
+        } else if (!email.matches(Utils.emailPattern)) {
             Toast.makeText(this, "Invalid Email format", Toast.LENGTH_SHORT).show();
         } else if (phoneNumber.isEmpty()) {
             Toast.makeText(this, "Phone Number is required", Toast.LENGTH_SHORT).show();
