@@ -32,7 +32,7 @@
     <color name="chip_selected_background_color">#2196F3</color>
     <color name="chip_selected_text_color">#FFFFFF</color>
 
-        <!--My health-->
+    <!--My health-->
     <color name="color_pink_myhealth">#FF7FC0</color>
     <color name="color_lightpink_myhealth">#FDE6FF</color>
 
@@ -59,6 +59,24 @@
     <color name="color_relaxed">#D5C6ED</color>
     <color name="color_happy">#F7E6B7</color>
 
+    <color name="light_pink">#FDE6FF</color>
+    <color name="dark_pink">#FF7FC0</color>
+    <color name="medium_pink">#FFC1E1</color>
 
+    <color name="light_yellow">#F7E6B7</color>
+    <color name="dark_yellow">#E5B62D</color>
+    <color name="medium_yellow">#F9DB84</color>
+
+    <color name="light_blue">#C5DEF9</color>
+    <color name="medium_blue">#93C4FB</color>
+    <color name="dark_blue">#4593FB</color>
+
+    <color name="light_red">#FDD3D2</color>
+    <color name="medium_red">#FFA8A5</color>
+    <color name="dark_red">#FD6967</color>
+
+    <color name="light_green">#A6E0CE</color>
+    <color name="medium_green">#4ED6AC</color>
+    <color name="dark_green">#17B471</color>
 
 </resources>

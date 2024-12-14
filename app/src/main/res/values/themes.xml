@@ -35,4 +35,9 @@
         <item name="fontFamily">@font/dmsans_bold</item>
         <item name="android:textSize">@dimen/textsize_large</item>
     </style>
+
+    <style name="CustomCheckboxYellow" parent="@style/Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/circular_checkbox</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 </resources>
