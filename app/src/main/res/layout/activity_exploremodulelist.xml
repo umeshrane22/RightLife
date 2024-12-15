@@ -38,7 +38,7 @@
             android:src="@drawable/menucategory" />
     </RelativeLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#F7F7F7">
@@ -47,23 +47,147 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
 
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        <!-- Curated Section -->
+            android:visibility="visible"
+            android:layout_height="wrap_content">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:background="@color/gray"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            android:layout_height="300dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Coming soon"
+                android:textSize="@dimen/textsize_medium"
+                android:textColor="@color/txt_color_header"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="120dp"
+                android:layout_height="wrap_content"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/rl_cards_layout"
+            android:layout_marginTop="200dp"
+            android:visibility="gone"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:id="@+id/ll_voice_scan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="5dp"
+                    android:background="@color/sleepright"
+                    android:orientation="vertical">
+                    <!-- Image Section with Overlay Tag -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp">
+                        <!-- Image Background -->
+                        <ImageView
+                            android:id="@+id/banner_image_vc"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+
+                            android:src="@drawable/sleep_sound_banner_svg"
+                            app:tint="@color/white"
+                            android:background="@color/sleep_right_blue"
+                            />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp">
+
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="32dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="30dp"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:id="@+id/img_icon_hc"
+                                android:layout_width="21dp"
+                                android:layout_height="21dp"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="5dp"
+
+                                android:background="@drawable/ic_sleep_sound_banner"
+                                android:backgroundTint="@color/black"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="@dimen/textsize_small"
+                                android:layout_toRightOf="@+id/img_icon_hc"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="My Sleep Sounds"
+                                android:textColor="#0B1215"
+                                android:textSize="@dimen/textsize_small" />
+
+
+                            <ImageView
+                                android:layout_width="21dp"
+                                android:layout_height="21dp"
+                                android:layout_centerVertical="true"
+
+                                android:layout_toLeftOf="@+id/tv_string1"
+                                android:src="@drawable/ic_rightarrow" />
+
+                            <TextView
+                                android:id="@+id/tv_string1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text=" "
+                                android:textColor="#0B1215"
+                                android:textSize="@dimen/textsize_extrasmall" />
+
+                        </RelativeLayout>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_cards"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_margin="16dp"
                 />
+        </RelativeLayout>
+
+        </RelativeLayout>
+
+
         <TextView
             android:id="@+id/txt_curated_section"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/recycler_view_cards"
+            android:layout_below="@+id/rl_cards_layout"
             android:text="Curated for You"
             android:textSize="16sp"
             android:layout_marginTop="16dp"
@@ -78,6 +202,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/txt_curated_section"
             android:layout_margin="16dp"
+            android:visibility="visible"
              />
 
         <!-- categories Section -->
@@ -124,7 +249,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/txt_morelikethis_section"
             android:layout_centerHorizontal="true" />
-        </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -170,6 +294,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

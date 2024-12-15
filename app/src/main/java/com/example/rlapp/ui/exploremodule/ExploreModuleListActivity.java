@@ -11,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rlapp.MainActivity;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
@@ -32,6 +34,7 @@ import com.example.rlapp.apimodel.exploremodules.topcards.ThinkRightCardResponse
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.submodule.SubModuleData;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
+import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.utility.JsonUtil;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.material.chip.ChipGroup;
@@ -59,6 +62,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
     ThinkRightCardResponse thinkRightCardResponse;
     String moduleId;
     TextView tv_header_htw;
+    private RelativeLayout rl_cards_layout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,6 +70,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exploremodulelist);
 
         //get views
+        rl_cards_layout = findViewById(R.id.rl_cards_layout);
         tv_header_htw = findViewById(R.id.tv_header_htw);
         txt_morelikethis_section = findViewById(R.id.txt_morelikethis_section);
         txt_categories_section = findViewById(R.id.txt_categories_section);
@@ -136,7 +141,8 @@ public class ExploreModuleListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //finish();
-                showExitDialog();
+                //showExitDialog();
+                startActivity(new Intent(ExploreModuleListActivity.this, ExploreSleepSoundsActivity.class));
             }
         });
         ArrayList<String> tags = new ArrayList<>();
@@ -162,7 +168,16 @@ public class ExploreModuleListActivity extends AppCompatActivity {
             }
         }
 
-
+        if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
+            rl_cards_layout.setVisibility(View.GONE);
+        }
+        else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
+            rl_cards_layout.setVisibility(View.VISIBLE);
+        } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
+            rl_cards_layout.setVisibility(View.GONE);
+        }else if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
+            rl_cards_layout.setVisibility(View.GONE);
+        }
     }
 
 
@@ -381,7 +396,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
     }
 
     private void setupCuratedList(List<Recommended> contentList){
-
+        recycler_view_curated.setVisibility(View.VISIBLE);
         ExploreRecommendedAdapter adapter1 = new ExploreRecommendedAdapter(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager1 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recycler_view_curated.setLayoutManager(horizontalLayoutManager1);
@@ -400,7 +415,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
-                recyclerView.requestLayout();
+               recyclerView.requestLayout();
             }
         });
     }

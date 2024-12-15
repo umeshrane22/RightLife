@@ -505,13 +505,13 @@
                         <ImageView
                             android:id="@+id/img_healthmenu"
                             android:layout_width="wrap_content"
-                            android:src="@drawable/healthmenu"
+                            android:src="@drawable/ic_myrl_menu"
                             android:padding="2dp"
                             android:background="@drawable/homeselected"
                             android:layout_height="wrap_content"/>
                         <TextView
                             android:layout_width="wrap_content"
-                            android:text="My Health"
+                            android:text="My RL"
                             android:fontFamily="@font/dmsans_bold"
                             android:textSize="12dp"
                             android:textColor="@color/menuselected"
@@ -533,10 +533,11 @@
                 android:elevation="8dp" />-->
             <ImageView
                 android:layout_width="wrap_content"
-                android:src="@drawable/rlmenu"
+                android:src="@drawable/quicklink_selector"
                 android:id="@+id/rlmenu"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="23dp"
+                android:scaleType="fitXY"
                 android:layout_height="wrap_content"/>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

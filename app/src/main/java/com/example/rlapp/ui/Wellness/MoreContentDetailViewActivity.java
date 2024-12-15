@@ -92,7 +92,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         img_contentview = findViewById(R.id.img_contentview);
         Intent intent = getIntent();
         String categoryType = intent.getStringExtra("Categorytype");
-        position  = 0;//= intent.getIntExtra("position", 0);
+        position  = intent.getIntExtra("position", 0);
         contentId = intent.getStringExtra("contentId");
 
 // Now you can use the categoryType variable to perform actions or set up the UI

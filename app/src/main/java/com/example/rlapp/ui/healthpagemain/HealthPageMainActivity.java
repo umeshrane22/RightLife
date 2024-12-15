@@ -92,6 +92,7 @@ public class HealthPageMainActivity extends AppCompatActivity implements View.On
             // Optionally pass data
             //intent.putExtra("key", "value");
             startActivity(intent);
+            view.setSelected(!view.isSelected());
         } else if (viewId == R.id.img_healthmenu) {
             //Toast.makeText(HealthPageMainActivity.this, "Health Menu clicked", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(HealthPageMainActivity.this, HealthPageMainActivity.class);

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        android:background="@drawable/roundedcornershape_selected"
+        app:cardElevation="4dp">
+
+        <LinearLayout
+            android:id="@+id/ll_voice_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="5dp"
+            android:background="@color/white"
+            android:orientation="vertical">
+            <!-- Image Section with Overlay Tag -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="280dp">
+                <!-- Image Background -->
+                <ImageView
+                    android:id="@+id/banner_image_affirmation"
+                    android:layout_width="match_parent"
+                    android:scaleType="fitXY"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp">
+
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="30dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/img_icon_hc"
+                        android:layout_width="21dp"
+                        android:layout_height="21dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="5dp"
+
+                        android:background="@drawable/ic_banner_t_voicescan"
+                        android:backgroundTint="@color/black"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/txt_title_affirmation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/textsize_small"
+                        android:layout_toRightOf="@+id/img_icon_hc"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Voice scan"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_small" />
+
+
+                    <ImageView
+                        android:layout_width="21dp"
+                        android:layout_height="21dp"
+                        android:layout_centerVertical="true"
+
+                        android:layout_toLeftOf="@+id/tv_string1"
+                        android:src="@drawable/affirmation_bookmark" />
+
+                    <TextView
+                        android:id="@+id/tv_string1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text=" "
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_extrasmall" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

@@ -111,12 +111,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
     LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
     LinearLayout ll_thinkright_category, ll_moveright_category, ll_eatright_category, ll_sleepright_category,
-            ll_homehealthclick, ll_homemenuclick;
+            ll_homehealthclick, ll_homemenuclick,rlmenu;
     LinearLayout ll_thinkright_category1, ll_thinkright_category2, ll_thinkright_category3, ll_thinkright_category4;
     LinearLayout ll_moveright_category1, ll_moveright_category2, ll_moveright_category3;
     LinearLayout ll_eatright_category1, ll_eatright_category2, ll_eatright_category3, ll_eatright_category4;
     LinearLayout ll_sleepright_category1, ll_sleepright_category2, ll_sleepright_category3;
-    ImageView rlmenu, img_homemenu, img_healthmenu;
+    ImageView  img_homemenu, img_healthmenu,quicklinkmenu;
     ImageView img1, img2, img3, img4, img5, img6, img7, img8;
     TextView tv1_header, tv1, tv2_header, tv2, tv3_header, tv3, tv4_header, tv4;
     TextView tv1_viewcount, tv2_viewcount, tv3_viewcount, tv4_viewcount;
@@ -237,8 +237,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         img_healthmenu = findViewById(R.id.img_healthmenu);
         //img_healthmenu.setOnClickListener(this);
 
-        ll_homehealthclick = findViewById(R.id.ll_homehealthclick);
-        ll_homehealthclick.setOnClickListener(this);
+        quicklinkmenu = findViewById(R.id.quicklinkmenu);
+        quicklinkmenu.setOnClickListener(this);
         ll_homemenuclick = findViewById(R.id.ll_homemenuclick);
         ll_homemenuclick.setOnClickListener(this);
 
@@ -365,10 +365,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
 
-        getAffirmations("");
+      //  getAffirmations("");
         // getUpcomingEvents("");
-        getLiveEvents("");
-         getUpcomingLiveEvents("");
+       // getLiveEvents("");
+       //  getUpcomingLiveEvents("");
 
         getWelnessPlaylist("");
         getCuratedContent("");
@@ -1365,7 +1365,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
 
-                    getAffirmations("");
+                  //  getAffirmations("");
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

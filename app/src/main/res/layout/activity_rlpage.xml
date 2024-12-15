@@ -13,6 +13,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:layout_marginBottom="77dp"
     android:orientation="vertical">
 
     <ScrollView
@@ -3171,20 +3172,210 @@
 
 </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_fab"
-        android:layout_width="wrap_content"
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_alignParentBottom="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="210dp"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:padding="16dp"
+        android:visibility="gone"
+        android:background="@drawable/roundedcornershape">
+
+    <LinearLayout
+        android:id="@+id/ll_journal"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_weight="1"
+        android:background="@drawable/roundedcornershape"
+        android:layout_margin="5dp"
+        android:padding="@dimen/textsize_small"
+        android:orientation="vertical"
+        android:backgroundTint="@color/thinkright"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_quick_journey" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Journal"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="@dimen/textsize_extrasmall"
+            android:layout_marginTop="14dp"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_affirmations"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/roundedcornershape"
+            android:layout_margin="5dp"
+            android:padding="@dimen/textsize_small"
+            android:orientation="vertical"
+            android:backgroundTint="@color/moveright"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_quick_affirmation" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Affirmation"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="@dimen/textsize_extrasmall"
+                android:layout_marginTop="14dp"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_sleepsounds"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/roundedcornershape"
+            android:layout_margin="5dp"
+            android:padding="@dimen/textsize_small"
+            android:orientation="vertical"
+            android:backgroundTint="@color/sleepright"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_quick_sleepsound" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sleep Sounds"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="@dimen/textsize_extrasmall"
+                android:layout_marginTop="14dp"
+                android:textAlignment="center" />
+        </LinearLayout>
+    </LinearLayout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/close"
-        app:tint="@color/white"
-        android:backgroundTint="@color/rightlife"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:visibility="visible"
-        app:fabSize="normal"/>
+        android:background="@android:color/transparent">
+
+
+
+        <!-- Bottom Navigation Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="77dp"
+            android:layout_gravity="bottom"
+            android:backgroundTint="@color/white"
+
+            android:background="@drawable/toproundedcornershape">
+
+            <!-- Left Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/ll_homemenuclick"
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="25dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/img_homemenu"
+                        android:layout_width="wrap_content"
+                        android:src="@drawable/homemenu"
+                        android:padding="2dp"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="Home"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="12dp"
+                        android:textColor="@color/txt_color_header"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/rlmenu"
+                    android:layout_width="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="25dp"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/img_healthmenu"
+                        android:layout_width="wrap_content"
+                        android:src="@drawable/ic_myrl_menu"
+                        android:padding="2dp"
+                        android:background="@drawable/homeselected"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:text="My RL"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="12dp"
+                        android:textColor="@color/menuselected"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_google"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="30dp"
+            android:elevation="8dp" />-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:src="@drawable/quicklink_selector"
+            android:id="@+id/quicklinkmenu"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="23dp"
+            android:scaleType="fitXY"
+            android:layout_height="wrap_content"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

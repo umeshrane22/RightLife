@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +19,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.exploremodule.ExploreSleepSoundsActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.voicescan.VoiceScanFromActivity"
             android:exported="false" />
@@ -43,23 +55,21 @@
         <activity android:name=".ui.mindaudit.MindAuditActivity" />
         <activity android:name=".ui.healthcam.HealthCamActivity" />
         <activity android:name=".ui.healthcam.HealthCamBasicDetailsActivity" />
-
         <activity android:name=".ui.CategoryListActivity" />
         <activity android:name=".ui.healthaudit.HealthAuditFormActivity" />
         <activity android:name=".ui.healthpagemain.HealthPageMainActivity" />
         <activity android:name=".ui.payment.AccessPaymentActivity" />
         <activity android:name=".ui.Articles.ArticlesDetailActivity" />
-        <activity android:name="com.example.rlapp.ui.mindaudit.MindAuditFromActivity" />
-        <activity android:name="com.example.rlapp.ui.mindaudit.MindAuditBasicScreeningQuestionsActivity" />
-        <activity android:name="com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity" />
-        <activity android:name="com.example.rlapp.ui.mindaudit.MAAssessmentQuestionaireActivity" />
-        <activity android:name="com.example.rlapp.ui.therledit.RLEditDetailViewActivity" />
-        <activity android:name="com.example.rlapp.ui.Articles.ReceipeDetailActivity" />
-        <activity android:name="com.example.rlapp.ui.Wellness.WellnessDetailViewActivity" />
-        <activity android:name="com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity" />
-        <activity android:name="com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity" />
-        <activity android:name="com.example.rlapp.ui.exploremodule.ExploreModuleListActivity" />
-
+        <activity android:name=".ui.mindaudit.MindAuditFromActivity" />
+        <activity android:name=".ui.mindaudit.MindAuditBasicScreeningQuestionsActivity" />
+        <activity android:name=".ui.mindaudit.MASuggestedAssessmentActivity" />
+        <activity android:name=".ui.mindaudit.MAAssessmentQuestionaireActivity" />
+        <activity android:name=".ui.therledit.RLEditDetailViewActivity" />
+        <activity android:name=".ui.Articles.ReceipeDetailActivity" />
+        <activity android:name=".ui.Wellness.WellnessDetailViewActivity" />
+        <activity android:name=".ui.Wellness.MoreContentDetailViewActivity" />
+        <activity android:name=".ui.moduledetail.ModuleContentDetailViewActivity" />
+        <activity android:name=".ui.exploremodule.ExploreModuleListActivity" />
         <activity android:name=".ui.drawermenu.ProfileActivity" />
         <activity android:name=".ui.drawermenu.ReferAFriendActivity" />
         <activity android:name=".ui.drawermenu.PurchaseHistoryTypesActivity" />
@@ -84,15 +94,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
         </provider>
-
     </application>
-
-    <uses-feature android:name="android.hardware.camera" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>

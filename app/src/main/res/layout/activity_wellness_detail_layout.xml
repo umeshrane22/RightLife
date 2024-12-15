@@ -51,7 +51,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_back_articlepage">
+            >
 
             <!-- ExoPlayer View with controls -->
             <com.google.android.exoplayer2.ui.PlayerView

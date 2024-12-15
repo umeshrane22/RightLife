@@ -2313,7 +2313,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/ll_homehealthclick"
+                        android:id="@+id/rlmenu"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -2324,13 +2324,13 @@
                             android:id="@+id/img_healthmenu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/healthmenu" />
+                            android:src="@drawable/ic_myrl_menu" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/dmsans_regular"
-                            android:text="My Health"
+                            android:text="My RL"
                             android:textSize="12dp" />
                     </LinearLayout>
 
@@ -2348,12 +2348,12 @@
                 android:layout_marginBottom="30dp"
                 android:elevation="8dp" />-->
             <ImageView
-                android:id="@+id/rlmenu"
+                android:id="@+id/quicklinkmenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="23dp"
-                android:src="@drawable/rlmenu" />
+                android:src="@drawable/quicklink_selector" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -8,7 +8,7 @@ import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
-import com.example.rlapp.apimodel.auditanswer.AuditAnswerRequest;
+import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.google.gson.JsonElement;
@@ -346,7 +346,30 @@ public interface ApiService {
             @Query("limit") int limit
     );
 
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("sleep-aids") // Assume the API endpoint is /login
+    Call<ResponseBody> postSleepAids(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Body SleepAidsRequest sleepAidsRequest);
+
+
+    @Headers("Content-Type: application/json")
+    @GET("sleep-aid-category")
+    Call<ResponseBody> getSleepAidCategory(@Header("Authorization") String authToken);
+
+
+    //Affirmation list Screen API
+    // Curated/recomended this content
+    @GET("content/affirmation")
+    Call<ResponseBody> getAffrimationsListQuicklinks(
+            @Header("Authorization") String authToken,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("isSuggested") boolean isSuggested
+    );
+
 }
+
 
 
 //private static final String BASE_URL = "https://qa.rightlife.com/api/app/api/"; // Your API URL
