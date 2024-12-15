@@ -6,7 +6,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
     tools:ignore="HardcodedText">
 <LinearLayout
     android:layout_width="match_parent"
@@ -39,7 +38,7 @@
                     android:layout_marginTop="40dp">
 
                     <!-- Profile Image -->
-                    <ImageView
+                    <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profileImage"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
@@ -2430,7 +2429,8 @@
         app:itemVerticalPadding="8dp"
         android:isScrollContainer="true"
         app:itemTextAppearance="@style/NavTextViewStyle"
-        app:itemIconSize="40dp"
+        android:scrollbars="none"
+        app:itemIconSize="30dp"
         app:itemIconPadding="16dp"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

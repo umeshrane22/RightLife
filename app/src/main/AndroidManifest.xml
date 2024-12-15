@@ -84,6 +84,8 @@
         <activity android:name=".ui.drawermenu.PrivacyPolicyActivity" />
         <activity android:name=".ui.drawermenu.AccountActivity" />
         <activity android:name=".ui.drawermenu.DeleteAccountActivity" />
+        <activity android:name=".ui.drawermenu.PreferencesLayer1Activity" />
+        <activity android:name=".ui.drawermenu.PreferencesLayer2Activity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

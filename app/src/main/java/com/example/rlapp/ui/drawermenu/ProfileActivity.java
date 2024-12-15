@@ -2,23 +2,38 @@ package com.example.rlapp.ui.drawermenu;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.UploadImage;
+import com.example.rlapp.apimodel.userdata.UserProfileResponse;
+import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.ui.utility.DateTimeUtils;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.Utils;
+import com.google.gson.Gson;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +41,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.example.rlapp.ui.utility.ConversionUtils.convertCentimeterToFtInch;
 import static com.example.rlapp.ui.utility.ConversionUtils.convertFeetToCentimeter;
@@ -35,34 +55,41 @@ import static com.example.rlapp.ui.utility.ConversionUtils.convertLbsToKgs;
 public class ProfileActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 100;
     private static final int PICK_IMAGE_REQUEST = 101;
+    UserProfileResponse data;
+    Userdata userdata;
+    String token;
+    ApiService apiService;
     private int requestCode = 100;
     private ImageView ivProfileImage, ivSave, calendarButton, nextArrow, backArrow;
+    ActivityResultLauncher<Intent> cameraActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            if (requestCode == CAMERA_REQUEST) {
+                Intent data = result.getData();
+                assert data != null;
+                Bitmap photo = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
+                ivProfileImage.setImageBitmap(photo);
+            } else {
+                assert result.getData() != null;
+                Uri selectedImage = result.getData().getData();
+                ivProfileImage.setImageURI(selectedImage);
+            }
+        }
+    });
     private EditText edtFirstName, edtLastName, edtFt, edtInch, edtHeightCms, edtWeight, edtPhoneNumber, edtEmail;
     private TextView tvDate, tvGenderSpinner, tvHeightSpinner, tvWeightSpinner, tvUploadPhoto, tvTakePhoto;
     private LinearLayout llHeightFtInch;
-
-    ActivityResultLauncher<Intent> cameraActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    if (requestCode == CAMERA_REQUEST) {
-                        Intent data = result.getData();
-                        assert data != null;
-                        Bitmap photo = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-                        ivProfileImage.setImageBitmap(photo);
-                    } else {
-                        assert result.getData() != null;
-                        Uri selectedImage = result.getData().getData();
-                        ivProfileImage.setImageURI(selectedImage);
-                    }
-                }
-            });
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         getViews();
+
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+        apiService = ApiClient.getClient().create(ApiService.class);
+
+        setData();
 
         ivSave.setOnClickListener(view -> saveData());
 
@@ -115,6 +142,44 @@ public class ProfileActivity extends AppCompatActivity {
         tvTakePhoto = findViewById(R.id.tv_take_photo);
         edtFirstName = findViewById(R.id.edt_first_name);
         edtLastName = findViewById(R.id.edt_last_name);
+
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
+    }
+
+    private void setData() {
+        data = SharedPreferenceManager.getInstance(this).getUserProfile();
+        userdata = data.getUserdata();
+
+        edtFirstName.setText(userdata.getFirstName());
+        edtLastName.setText(userdata.getLastName());
+        edtEmail.setText(userdata.getEmail());
+        edtPhoneNumber.setText(userdata.getPhoneNumber());
+        tvDate.setText(DateTimeUtils.convertAPIDate(userdata.getDateofbirth()));
+        Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).into(ivProfileImage);
+
+        if (userdata.getGender().equals("M") || userdata.getGender().equalsIgnoreCase("Male"))
+            tvGenderSpinner.setText("Male");
+        else tvGenderSpinner.setText("Female");
+
+        if (userdata.getWeightUnit().equals("KG")) {
+            tvWeightSpinner.setText("Kgs");
+        }
+        edtWeight.setText(userdata.getWeight().toString());
+        if (userdata.getHeightUnit().equals("CM")) {
+            tvHeightSpinner.setText("cms");
+            edtHeightCms.setVisibility(View.VISIBLE);
+            llHeightFtInch.setVisibility(View.GONE);
+
+            edtHeightCms.setText(userdata.getHeight().toString());
+        } else {
+            String cms = userdata.getHeight().toString();
+            String[] strings = cms.split("\\.");
+            edtFt.setText(strings[0]);
+            if (strings.length > 1) {
+                edtInch.setText(strings[1]);
+            }
+        }
+
     }
 
     private void openHeightPopUp() {
@@ -189,13 +254,12 @@ public class ProfileActivity extends AppCompatActivity {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                (view, year1, month1, dayOfMonth) -> {
-                    String selectedDate = dayOfMonth + "/" + (month1 + 1) + "/" + year1;
-                    tvDate.setText(selectedDate);
-                    ArrayList<String> data = new ArrayList<>();
-                    data.add(selectedDate);
-                }, year - 15, month, day);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year1, month1, dayOfMonth) -> {
+            String selectedDate = dayOfMonth + "/" + (month1 + 1) + "/" + year1;
+            tvDate.setText(selectedDate);
+            ArrayList<String> data = new ArrayList<>();
+            data.add(selectedDate);
+        }, year - 15, month, day);
         Calendar calendar1 = Calendar.getInstance();
         calendar1.set(year - 15, month, day);
         datePickerDialog.getDatePicker().setMaxDate(calendar1.getTimeInMillis());
@@ -229,6 +293,27 @@ public class ProfileActivity extends AppCompatActivity {
         return today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
     }
 
+    private void getPreSignedUrl(UploadImage uploadImage) {
+        Call<ResponseBody> call = apiService.getPreSignedUrl(token, uploadImage);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                } else {
+                    Toast.makeText(ProfileActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void saveData() {
         String firstName = edtFirstName.getText().toString();
         String lastName = edtLastName.getText().toString();
@@ -238,7 +323,74 @@ public class ProfileActivity extends AppCompatActivity {
         String dob = tvDate.getText().toString();
         String phoneNumber = edtPhoneNumber.getText().toString();
         String email = edtEmail.getText().toString();
+        int age = getAge(dob);
+
+        if (firstName.isEmpty()) {
+            Toast.makeText(this, "First Name is required", Toast.LENGTH_SHORT).show();
+        } else if (lastName.isEmpty()) {
+            Toast.makeText(this, "Last Name is required", Toast.LENGTH_SHORT).show();
+        } else if (height.isEmpty()) {
+            Toast.makeText(this, "Height is required", Toast.LENGTH_SHORT).show();
+        } else if (weight.isEmpty()) {
+            Toast.makeText(this, "Weight is required", Toast.LENGTH_SHORT).show();
+        } else if (gender.isEmpty()) {
+            Toast.makeText(this, "Please select gender", Toast.LENGTH_SHORT).show();
+        } else if (phoneNumber.isEmpty()) {
+            Toast.makeText(this, "Phone Number is required", Toast.LENGTH_SHORT).show();
+        } else if (phoneNumber.length() != 10) {
+            Toast.makeText(this, "Phone Number contains 10 digits", Toast.LENGTH_SHORT).show();
+        } else if (email.isEmpty()) {
+            Toast.makeText(this, "Email is required", Toast.LENGTH_SHORT).show();
+        } else if (!email.matches(Utils.emailPattern)) {
+            Toast.makeText(this, "Invalid Email format", Toast.LENGTH_SHORT).show();
+        } else if (age < 13) {
+            Toast.makeText(this, "User must be at least 13 years old", Toast.LENGTH_SHORT).show();
+        } else {
+
+            userdata.setFirstName(firstName);
+            userdata.setLastName(lastName);
+            userdata.setEmail(email);
+            userdata.setNewEmail(email);
+            userdata.setPhoneNumber(phoneNumber);
+            userdata.setDateofbirth(DateTimeUtils.convert_ddMMyyyy_toAPIDate(dob));
+            if (gender.equalsIgnoreCase("Male")) {
+                userdata.setGender("M");
+            } else {
+                userdata.setGender("F");
+            }
+            userdata.setWeight(Integer.parseInt(edtWeight.getText().toString()));
+            if ("Kgs".equalsIgnoreCase(tvWeightSpinner.getText().toString())){
+                userdata.setWeightUnit("KG");
+            }else {
+                userdata.setWeightUnit("LBS");
+            }
+
+            userdata.setHeight(Integer.parseInt(edtHeightCms.getText().toString()));
+            userdata.setHeightUnit("CM");
+            userdata.setPhoneNumber(phoneNumber);
 
 
+            updateUserData(userdata);
+        }
+    }
+
+    private void updateUserData(Userdata userdata) {
+        Call<ResponseBody> call = apiService.updateUser(token, userdata);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    setResult(RESULT_OK);
+                    finish();
+                } else {
+                    Toast.makeText(ProfileActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

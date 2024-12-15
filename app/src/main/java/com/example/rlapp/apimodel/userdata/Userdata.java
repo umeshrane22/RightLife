@@ -1,24 +1,21 @@
 package com.example.rlapp.apimodel.userdata;
 
-import java.util.List;
-
+import com.example.rlapp.apimodel.ProfilePicture;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import javax.annotation.processing.Generated;
+import java.util.List;
 
-@Generated("jsonschema2pojo")
 public class Userdata {
-
-    @SerializedName("gender")
-    @Expose
-    private String gender;
     @SerializedName("_id")
     @Expose
     private String id;
     @SerializedName("phoneNumber")
     @Expose
     private String phoneNumber;
+    @SerializedName("gender")
+    @Expose
+    private String gender;
     @SerializedName("weightUnit")
     @Expose
     private String weightUnit;
@@ -39,7 +36,7 @@ public class Userdata {
     private Boolean syncGoogleCalendar;
     @SerializedName("profilePictures")
     @Expose
-    private List<Object> profilePictures;
+    private List<ProfilePicture> profilePictures;
     @SerializedName("address")
     @Expose
     private List<Object> address;
@@ -52,14 +49,30 @@ public class Userdata {
     @SerializedName("updatedAt")
     @Expose
     private Long updatedAt;
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+    @SerializedName("newEmail")
+    @Expose
+    private String newEmail;
+    @SerializedName("email")
+    @Expose
+    private String email;
+    @SerializedName("dateofbirth")
+    @Expose
+    private String dateofbirth;
+    @SerializedName("firstName")
+    @Expose
+    private String firstName;
+    @SerializedName("height")
+    @Expose
+    private Integer height;
+    @SerializedName("lastName")
+    @Expose
+    private String lastName;
+    @SerializedName("weight")
+    @Expose
+    private Integer weight;
+    @SerializedName("profilePicture")
+    @Expose
+    private String profilePicture;
 
     public String getId() {
         return id;
@@ -75,6 +88,14 @@ public class Userdata {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getWeightUnit() {
@@ -125,11 +146,11 @@ public class Userdata {
         this.syncGoogleCalendar = syncGoogleCalendar;
     }
 
-    public List<Object> getProfilePictures() {
+    public List<ProfilePicture> getProfilePictures() {
         return profilePictures;
     }
 
-    public void setProfilePictures(List<Object> profilePictures) {
+    public void setProfilePictures(List<ProfilePicture> profilePictures) {
         this.profilePictures = profilePictures;
     }
 
@@ -164,5 +185,70 @@ public class Userdata {
     public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public String getNewEmail() {
+        return newEmail;
+    }
+
+    public void setNewEmail(String newEmail) {
+        this.newEmail = newEmail;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDateofbirth() {
+        return dateofbirth;
+    }
+
+    public void setDateofbirth(String dateofbirth) {
+        this.dateofbirth = dateofbirth;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
 
 }

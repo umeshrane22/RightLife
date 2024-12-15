@@ -3,38 +3,38 @@
 
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_profile"
         android:title="Profile" />
 
     <item
         android:id="@+id/nav_refer_friend"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_address"
         android:title="Refer a Friend" />
 
     <item
         android:id="@+id/nav_preferences"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_preferences"
         android:title="Preferences" />
     <item
         android:id="@+id/nav_favourites"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_fav"
         android:title="Favourites" />
     <item
         android:id="@+id/nav_purchase"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_purchase_history"
         android:title="Purchase History" />
     <item
         android:id="@+id/nav_my_stats"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_stat"
         android:title="My Stats" />
     <item
         android:id="@+id/nav_settings"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/menu_settings"
         android:title="Settings" />
 
     <item
         android:id="@+id/navigation_notifications"
-        android:icon="@drawable/attending"
+        android:icon="@drawable/ic_notifications_black_24dp"
         android:title="Notifications" />
 
 </menu>

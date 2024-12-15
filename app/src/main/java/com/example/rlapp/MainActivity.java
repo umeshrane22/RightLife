@@ -329,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveAccessToken(String accessToken) {
+        SharedPreferenceManager.getInstance(this).saveAccessToken(accessToken);
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SharedPreferenceConstants.ACCESS_TOKEN, accessToken);

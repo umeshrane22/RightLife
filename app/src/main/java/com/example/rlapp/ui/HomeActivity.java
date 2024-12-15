@@ -1,8 +1,6 @@
 package com.example.rlapp.ui;
 
-import static com.example.rlapp.ui.utility.DateConverter.convertToDate;
-import static com.example.rlapp.ui.utility.DateConverter.convertToTime;
-
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,10 +18,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -34,7 +32,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.apimodel.Affirmations;
 import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
@@ -43,10 +40,12 @@ import com.example.rlapp.apimodel.servicepane.ServicePaneResponse;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
 import com.example.rlapp.apimodel.upcomingevents.UpcomingEventResponse;
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
+import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
+import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
 import com.example.rlapp.ui.drawermenu.ProfileActivity;
 import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
@@ -76,37 +75,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.rlapp.ui.utility.DateConverter.convertToDate;
+import static com.example.rlapp.ui.utility.DateConverter.convertToTime;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
-    private ViewPager2 viewPager;
-    private CircularCardAdapter adapter;
-    private List<CardItem> cardItems;  // Replace with your data model
-    private Handler sliderHandler;     // Handler for scheduling auto-slide
-    private Runnable sliderRunnable;   // Runnable for auto-slide logic
-    BannerViewPager mViewPager;
-    private TestAdapter testAdapter;
     public WellnessApiResponse wellnessApiResponse;
     public RightLifeEditResponse rightLifeEditResponse;
     public SubModuleResponse ThinkRSubModuleResponse;
     public SubModuleResponse MoveRSubModuleResponse;
     public SubModuleResponse EatRSubModuleResponse;
     public SubModuleResponse SleepRSubModuleResponse;
-    private DrawerLayout drawer;
-
-    // Live Classes /workshop
-    private CardView liveclasscardview;
-    private ImageView liveclass_banner_image, img_attending_filled, img_lvclass_host;
-    private TextView liveclass_workshop_tag1, liveclass_tv_classattending, tv_classtime, tv_classrating, txt_lvclass_host, tv_title_liveclass, lvclass_date, lvclass_month;
-
-
-    //Button
-    private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
+    BannerViewPager mViewPager;
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
     ImageView img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
-
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
             tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
     LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
@@ -120,6 +105,28 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     ImageView img1, img2, img3, img4, img5, img6, img7, img8;
     TextView tv1_header, tv1, tv2_header, tv2, tv3_header, tv3, tv4_header, tv4;
     TextView tv1_viewcount, tv2_viewcount, tv3_viewcount, tv4_viewcount;
+    private ViewPager2 viewPager;
+    private CircularCardAdapter adapter;
+    private List<CardItem> cardItems;  // Replace with your data model
+    private Handler sliderHandler;     // Handler for scheduling auto-slide
+    private Runnable sliderRunnable;   // Runnable for auto-slide logic
+    private TestAdapter testAdapter;
+    private DrawerLayout drawer;
+    private NavigationView navigationView;
+    // Live Classes /workshop
+    private CardView liveclasscardview;
+    private ImageView liveclass_banner_image, img_attending_filled, img_lvclass_host;
+    private TextView liveclass_workshop_tag1, liveclass_tv_classattending, tv_classtime, tv_classrating, txt_lvclass_host, tv_title_liveclass, lvclass_date, lvclass_month;
+    //Button
+    private Button btn_tr_explore, btn_mr_explore, btn_er_explore, btn_sr_explore;
+    private ImageView profileImage;
+    private TextView tvUserName;
+
+    private ActivityResultLauncher<Intent> profileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            getUserDetails("");
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,15 +136,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         SetupviewsIdWellness();
 
-        ImageView profileImage = findViewById(R.id.profileImage);
+        profileImage = findViewById(R.id.profileImage);
+        tvUserName = findViewById(R.id.userName);
+
         profileImage.setOnClickListener(view -> {
-            if(!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
+            if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
             else drawer.closeDrawer(Gravity.RIGHT);
         });
 
         drawer = findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -365,10 +374,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
 
-      //  getAffirmations("");
+        //getAffirmations("");
         // getUpcomingEvents("");
-       // getLiveEvents("");
-       //  getUpcomingLiveEvents("");
+        // getLiveEvents("");
+        // getUpcomingLiveEvents("");
 
         getWelnessPlaylist("");
         getCuratedContent("");
@@ -429,6 +438,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         printAccessToken();
 
+
+    }
+
+    private void setDrawerHeader(View view) {
+
+        UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
+        Userdata userdata = userProfileResponse.getUserdata();
+
+
+        ImageView ivProfileImage = view.findViewById(R.id.iv_profile_image);
+        TextView tvUserName = view.findViewById(R.id.tv_name);
+        TextView tvAddress = view.findViewById(R.id.tv_address);
+        TextView tvWellnessDays = view.findViewById(R.id.tv_wellness_days);
+        TextView tvHealthCheckins = view.findViewById(R.id.tv_health_checkins);
+
+        ImageView ivClose = view.findViewById(R.id.iv_close);
+        ivClose.setOnClickListener(view1 -> drawer.close());
+
+        Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).into(ivProfileImage);
+
+        tvAddress.setText(userdata.getCountry());
+
+        tvUserName.setText(userdata.getFirstName() + " " + userdata.getLastName());
 
     }
 
@@ -1359,9 +1391,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     UserProfileResponse ResponseObj = gson.fromJson(jsonResponse, UserProfileResponse.class);
                     Log.d("API Response body", "Success: User Details" + ResponseObj.getUserdata().getId());
-                    //handleServicePaneResponse(ResponseObj);
-                    //saveUserId(ResponseObj.getUserdata().getId());
                     SharedPreferenceManager.getInstance(getApplicationContext()).saveUserId(ResponseObj.getUserdata().getId());
+                    SharedPreferenceManager.getInstance(getApplicationContext()).saveUserProfile(ResponseObj);
+
+                    setDrawerHeader(navigationView.getHeaderView(0));
+                    Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).into(profileImage);
+                    tvUserName.setText(ResponseObj.getUserdata().getFirstName());
 
                     Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
 
@@ -1561,18 +1596,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
         if (id == R.id.nav_profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
+            profileActivityLauncher.launch(intent);
         } else if (id == R.id.nav_refer_friend) {
             Intent intent = new Intent(this, ReferAFriendActivity.class);
             startActivity(intent);
-        }else if (id == R.id.nav_favourites) {
+        } else if (id == R.id.nav_favourites) {
             Intent intent = new Intent(this, FavouritesActivity.class);
             startActivity(intent);
-        }else if (id == R.id.nav_purchase) {
+        } else if (id == R.id.nav_purchase) {
             Intent intent = new Intent(this, PurchaseHistoryTypesActivity.class);
             startActivity(intent);
-        }else if (id == R.id.nav_settings) {
+        } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_preferences){
+            Intent intent = new Intent(this, PreferencesLayer1Activity.class);
             startActivity(intent);
         }
         drawer.closeDrawer(GravityCompat.START);
