@@ -16,6 +16,8 @@ public class DateTimeUtils {
     }
 
     public static String convertAPIDate(String date) {
+        if (date ==null)
+            return date;
         SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         try {
             Date newDate = spf.parse(date);
@@ -28,6 +30,8 @@ public class DateTimeUtils {
     }
 
     public static String convert_ddMMyyyy_toAPIDate(String date) {
+        if (date ==null)
+            return date;
         SimpleDateFormat spf = new SimpleDateFormat("dd/MM/yyyy");
         try {
             Date newDate = spf.parse(date);
