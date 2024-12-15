@@ -10,6 +10,7 @@ import com.example.rlapp.apimodel.UploadImage;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.google.gson.JsonElement;
@@ -367,6 +368,19 @@ public interface ApiService {
     Call<ResponseBody> updateUser(
             @Header("Authorization") String authToken,
             @Body Userdata userdata);
+
+
+    @Headers("Content-Type: application/json")
+    @GET("prompts")
+    Call<JsonElement> getPreferences(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @PUT("prompts")
+    Call<ResponseBody> updatePreference(
+            @Header("Authorization") String authToken,
+            @Body PreferenceAnswer preferenceAnswer);
 
 }
 

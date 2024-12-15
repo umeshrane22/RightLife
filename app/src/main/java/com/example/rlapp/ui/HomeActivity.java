@@ -45,6 +45,7 @@ import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
+import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
 import com.example.rlapp.ui.drawermenu.ProfileActivity;
 import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
@@ -373,7 +374,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
 
-        getAffirmations("");
+        //getAffirmations("");
         // getUpcomingEvents("");
         // getLiveEvents("");
         // getUpcomingLiveEvents("");
@@ -1399,7 +1400,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
 
-                    getAffirmations("");
+                   // getAffirmations("");
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -1607,6 +1608,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_preferences){
+            Intent intent = new Intent(this, PreferencesLayer1Activity.class);
             startActivity(intent);
         }
         drawer.closeDrawer(GravityCompat.START);
