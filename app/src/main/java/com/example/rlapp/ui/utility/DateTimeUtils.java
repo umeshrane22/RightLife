@@ -16,7 +16,7 @@ public class DateTimeUtils {
     }
 
     public static String convertAPIDate(String date) {
-        if (date ==null)
+        if (date == null)
             return date;
         SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         try {
@@ -30,7 +30,7 @@ public class DateTimeUtils {
     }
 
     public static String convert_ddMMyyyy_toAPIDate(String date) {
-        if (date ==null)
+        if (date == null)
             return date;
         SimpleDateFormat spf = new SimpleDateFormat("dd/MM/yyyy");
         try {

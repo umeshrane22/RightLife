@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -164,19 +163,22 @@ public class ProfileActivity extends AppCompatActivity {
         if (userdata.getWeightUnit().equals("KG")) {
             tvWeightSpinner.setText("Kgs");
         }
-        edtWeight.setText(userdata.getWeight().toString());
+        if (userdata.getWeight() != null)
+            edtWeight.setText(userdata.getWeight().toString());
         if (userdata.getHeightUnit().equals("CM")) {
             tvHeightSpinner.setText("cms");
             edtHeightCms.setVisibility(View.VISIBLE);
             llHeightFtInch.setVisibility(View.GONE);
-
-            edtHeightCms.setText(userdata.getHeight().toString());
+            if (userdata.getHeight() != null)
+                edtHeightCms.setText(userdata.getHeight().toString());
         } else {
-            String cms = userdata.getHeight().toString();
-            String[] strings = cms.split("\\.");
-            edtFt.setText(strings[0]);
-            if (strings.length > 1) {
-                edtInch.setText(strings[1]);
+            if (userdata.getHeight() != null) {
+                String cms = userdata.getHeight().toString();
+                String[] strings = cms.split("\\.");
+                edtFt.setText(strings[0]);
+                if (strings.length > 1) {
+                    edtInch.setText(strings[1]);
+                }
             }
         }
 
@@ -359,9 +361,9 @@ public class ProfileActivity extends AppCompatActivity {
                 userdata.setGender("F");
             }
             userdata.setWeight(Integer.parseInt(edtWeight.getText().toString()));
-            if ("Kgs".equalsIgnoreCase(tvWeightSpinner.getText().toString())){
+            if ("Kgs".equalsIgnoreCase(tvWeightSpinner.getText().toString())) {
                 userdata.setWeightUnit("KG");
-            }else {
+            } else {
                 userdata.setWeightUnit("LBS");
             }
 

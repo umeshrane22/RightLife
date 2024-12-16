@@ -11,11 +11,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
@@ -23,8 +19,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.UserAuditAnswer.Answer;
 import com.example.rlapp.apimodel.UserAuditAnswer.Option;
-import com.example.rlapp.ui.healthaudit.FormPagerAdapter;
-import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
+import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionData;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
@@ -40,11 +35,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVoiceScanFragmentClickListener{
+public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVoiceScanFragmentClickListener {
 
+    public Button prevButton, nextButton, submitButton;
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
-    public Button prevButton, nextButton, submitButton;
     private VoiceScanFormPagerAdapter adapter;
     private ProgressBar progressBar;
     private QuestionListHealthAudit responseObj;
@@ -73,11 +68,11 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage("Sad"));
-        submitButton.setOnClickListener(v -> submitFormData());
-        submitButton.setOnClickListener(view -> {
+        submitButton.setOnClickListener(v -> callAnswerRequest());
+        /*submitButton.setOnClickListener(view -> {
             Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
             startActivity(intent);
-        });
+        });*/
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -103,21 +98,19 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
         });
 
 
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //finish();
-                // showExitDialog();
-            }
+        close_dialog.setOnClickListener(view -> {
+            //finish();
+            // showExitDialog();
         });
 
     }
 
     private void updateProgress(int fragmentIndex) {
         // Set progress percentage based on the current fragment (out of 8)
-        int progressPercentage = (int) (((fragmentIndex + 1) / (double)adapter.getItemCount()) * 100);
+        int progressPercentage = (int) (((fragmentIndex + 1) / (double) adapter.getItemCount()) * 100);
         progressBar.setProgress(progressPercentage);
     }
+
     private void updateButtonVisibility(int position) {
         int totalItems = adapter.getItemCount();
 
@@ -128,7 +121,65 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
         }
     }
 
-    private void submitFormData() {
+    void callAnswerRequest() {
+
+        List<Answer> answers = new ArrayList<>(answerVoiceScanData);
+        // Make sure to replace the empty string with actual data if needed
+        UserAnswerRequest request = new UserAnswerRequest("", responseObj.getQuestionData().getId(), answers);
+
+        submitAnswerRequest(request);
+    }
+
+    void submitAnswerRequest(UserAnswerRequest requestAnswer) {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        Log.d("Access Token", "Token: " + accessToken);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        //SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91"+mobileNumber,OTP,"ABC123","Asus ROG 6","hp","ABC123");
+
+        // Make the API call
+        Call<JsonElement> call = apiService.postAnswerRequest(accessToken, "CHECK_IN", requestAnswer);
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    //LoginResponseMobile loginResponse = response.body();
+                    JsonElement affirmationsResponse = response.body();
+                    Log.d("API Response", "Success: " + response.body().toString());
+                    Log.d("API Response 2", "Success: " + response.body().toString());
+
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body().toString());
+                    Log.d("API Response body", "Success: " + jsonResponse);
+
+                    Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
+                    startActivity(intent);
+
+                } else {
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorMessage = response.errorBody().string();
+                            System.out.println("Request failed with error: " + errorMessage);
+                            Log.d("API Response 2", "Success: " + errorMessage);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Toast.makeText(VoiceScanFromActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                Toast.makeText(VoiceScanFromActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 
@@ -146,8 +197,9 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
             adapter.setFeelings(feelings);
             viewPager.setCurrentItem(currentItem + 1);
         } else {
-            Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
-            startActivity(intent);
+            /*Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
+            startActivity(intent);*/
+            callAnswerRequest();
         }
     }
 
@@ -166,7 +218,7 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
                     responseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
                     adapter.setData(removeQuestionDOB(responseObj.getQuestionData()));
                     adapter.notifyDataSetChanged();
-                }else {
+                } else {
                     Toast.makeText(VoiceScanFromActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -180,12 +232,12 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
         });
     }
 
-    private QuestionData removeQuestionDOB(QuestionData questionData){
+    private QuestionData removeQuestionDOB(QuestionData questionData) {
         ArrayList<Question> questionsList = new ArrayList<>();
-        for (Question question : questionData.getQuestionList()){
-            if (question.getQuestion().equals("dob")){
+        for (Question question : questionData.getQuestionList()) {
+            if (question.getQuestion().equals("dob")) {
                 questionsList.remove(question);
-            }else {
+            } else {
                 questionsList.add(question);
             }
         }
@@ -202,6 +254,6 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
         }
         Answer answerToSubmit = new Answer(questionType, options);
         answerVoiceScanData.add(answerToSubmit);
-        Log.d("AAAA", "Answer data = "+answer.size());
+        Log.d("AAAA", "Answer data = " + answer.size());
     }
 }
