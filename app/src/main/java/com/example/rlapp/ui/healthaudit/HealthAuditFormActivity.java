@@ -219,7 +219,7 @@ public class HealthAuditFormActivity extends AppCompatActivity implements OnNext
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
-        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "CHECK_IN");
+        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "HEALTH_REPORT");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
