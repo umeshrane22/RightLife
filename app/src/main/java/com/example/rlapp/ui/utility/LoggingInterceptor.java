@@ -15,7 +15,7 @@ public class LoggingInterceptor implements Interceptor {
         okhttp3.Response response = chain.proceed(request);
 
         // Log request
-        Log.d("Retrofit", "Request: " + request.url());
+        Log.d("Retrofit ", "Request: " + request.url());
         Log.d("Retrofit", "Headers: " + request.headers());
 
         // Log response

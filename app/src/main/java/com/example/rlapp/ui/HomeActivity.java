@@ -34,6 +34,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
+import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
 import com.example.rlapp.apimodel.servicepane.ServicePaneResponse;
@@ -51,6 +52,7 @@ import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
 import com.example.rlapp.ui.drawermenu.SettingsActivity;
 import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
+import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
@@ -86,6 +88,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public SubModuleResponse EatRSubModuleResponse;
     public SubModuleResponse SleepRSubModuleResponse;
     BannerViewPager mViewPager;
+    //
+    LinearLayout bottom_sheet;
+    LinearLayout ll_journal, ll_affirmations, ll_sleepsounds;
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
@@ -149,6 +154,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // bottom pop menu
+        bottom_sheet = findViewById(R.id.bottom_sheet);
+        ll_journal = findViewById(R.id.ll_journal);
+        ll_journal.setOnClickListener(this);
+        ll_affirmations = findViewById(R.id.ll_affirmations);
+        ll_affirmations.setOnClickListener(this);
+        ll_sleepsounds = findViewById(R.id.ll_sleepsounds);
+        ll_sleepsounds.setOnClickListener(this);
 
         // RL Edit
         tv_rledt_cont_title1 = findViewById(R.id.tv_rledt_cont_title1);
@@ -1280,6 +1293,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             CallExploreModuleActivity(EatRSubModuleResponse);
         } else if (viewId == R.id.btn_sr_explore) {
             CallExploreModuleActivity(SleepRSubModuleResponse);
+        } else if (viewId == R.id.quicklinkmenu) {
+           /* if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+            } else {
+                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            }*/
+            if (bottom_sheet.getVisibility() == View.VISIBLE) {
+                bottom_sheet.setVisibility(View.GONE);
+            } else {
+                bottom_sheet.setVisibility(View.VISIBLE);
+            }
+            view.setSelected(!view.isSelected());
+        } else if (viewId == R.id.ll_journal) {
+            Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
+
+        } else if (viewId == R.id.ll_affirmations) {
+            Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(HomeActivity.this, ExploreAffirmationsListActivity.class));
+        } else if (viewId == R.id.ll_sleepsounds) {
+            Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
         }
 
 
@@ -1608,9 +1642,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_preferences){
-            Intent intent = new Intent(this, PreferencesLayer1Activity.class);
             startActivity(intent);
         }
         drawer.closeDrawer(GravityCompat.START);

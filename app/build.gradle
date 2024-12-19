@@ -14,6 +14,17 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+
+        buildConfigField 'String', 'MOENGAGE_ID', "\"92IVJGEL525OCZB74IUIHYHS\""
+        buildConfigField 'String', 'DFX_REST_URL', "\"https://api.deepaffex.ai\""
+        buildConfigField 'String', 'DFX_WS_URL', "\"wss://api.deepaffex.ai\""
+        buildConfigField 'String', 'DFX_LICENSE_KEY', "\"f39ff2b6-d684-4340-8e71-701aa9d9ea49\""
+        buildConfigField 'String', 'DFX_STUDY_ID', "\"6cb2f729-0e32-4130-aa2f-074947cf1747\""
+        buildConfigField 'String', 'VISAGE_LICENSE_KEY', "\"460-467-877-379-682-055-647-030-442-638-069\""
+        buildConfigField 'String', 'CLIENT_ID_SONDE', "\"5gddl3l0humu4713j46mntkbp6\""
+        buildConfigField 'String', 'CLIENT_SECRET_SONDE', "\"1d2ac04h1m40pig9qi3ekhh0830q9vsn1kof0jtoc9dvbadmm7hc\""
+        buildConfigField 'Boolean', 'hasFullFeature', "true"
     }
 
     buildTypes {
@@ -28,6 +39,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true // Enable BuildConfig feature
     }
 }
 

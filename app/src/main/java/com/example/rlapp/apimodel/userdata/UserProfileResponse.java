@@ -30,6 +30,17 @@ public class UserProfileResponse {
     @SerializedName("data")
     @Expose
     private Userdata userdata;
+
+    @SerializedName("daysCount")
+    @Expose
+    private Integer daysCount;
+    @SerializedName("profileCompletion")
+    @Expose
+    private Integer profileCompletion;
+    @SerializedName("wellnessStreak")
+    @Expose
+    private Integer wellnessStreak;
+
     @SerializedName("homeServices")
     @Expose
     private List<HomeService> homeServices;
@@ -69,6 +80,30 @@ public class UserProfileResponse {
 
     public void setSuccessMessage(String successMessage) {
         this.successMessage = successMessage;
+    }
+
+    public Integer getDaysCount() {
+        return daysCount;
+    }
+
+    public void setDaysCount(Integer daysCount) {
+        this.daysCount = daysCount;
+    }
+
+    public Integer getProfileCompletion() {
+        return profileCompletion;
+    }
+
+    public void setProfileCompletion(Integer profileCompletion) {
+        this.profileCompletion = profileCompletion;
+    }
+
+    public Integer getWellnessStreak() {
+        return wellnessStreak;
+    }
+
+    public void setWellnessStreak(Integer wellnessStreak) {
+        this.wellnessStreak = wellnessStreak;
     }
 
 }

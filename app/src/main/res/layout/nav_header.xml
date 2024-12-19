@@ -80,15 +80,15 @@
             android:padding="16dp">
 
             <RelativeLayout
-                android:layout_width="120dp"
+                android:layout_width="100dp"
                 android:layout_height="120dp"
-                android:layout_margin="16dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/roundedcornerbutton"
                 android:backgroundTint="@color/sleepright">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_below="@id/tv_wellness_days_text"
                     android:layout_margin="16dp"
                     android:layout_toEndOf="@id/tv_wellness_days"
@@ -113,20 +113,21 @@
                     android:layout_margin="16dp"
                     android:fontFamily="@font/dmsans_regular"
                     android:text="Wellness days"
+                    android:layout_centerHorizontal="true"
                     android:textColor="@color/black"
                     android:textSize="@dimen/textsize_small" />
             </RelativeLayout>
 
             <RelativeLayout
-                android:layout_width="120dp"
+                android:layout_width="100dp"
                 android:layout_height="120dp"
-                android:layout_margin="16dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/roundedcornerbutton"
                 android:backgroundTint="@color/color_lightpink_myhealth">
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_below="@id/tv_health_checkins_text"
                     android:layout_margin="16dp"
                     android:layout_toEndOf="@id/tv_health_checkins"
@@ -150,7 +151,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     android:fontFamily="@font/dmsans_regular"
-                    android:text="Wellness days"
+                    android:text="Health check-ins"
+                    android:layout_centerHorizontal="true"
                     android:textColor="@color/black"
                     android:textSize="@dimen/textsize_small" />
             </RelativeLayout>

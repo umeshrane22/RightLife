@@ -161,6 +161,7 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
+                                    android:visibility="gone"
                                     android:orientation="horizontal">
 
                                     <LinearLayout
@@ -173,12 +174,13 @@
                                         android:backgroundTint="#A6E0CE"
                                         android:elevation="5dp"
                                         android:gravity="center"
-                                        android:orientation="horizontal">
+                                        android:orientation="vertical">
 
                                         <ImageView
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:layout_weight=".4"
+                                            android:layout_gravity="center_horizontal"
                                             android:src="@drawable/ic_healthaudit_logo" />
 
                                         <TextView
@@ -189,14 +191,13 @@
                                             android:fontFamily="@font/merriweather_regular"
                                             android:gravity="center"
                                             android:text="Health\nAudit"
-                                            android:textAlignment="textStart"
                                             android:textColor="@color/txt_color_header"
                                             android:textSize="@dimen/textsize_medium" />
 
 
                                     </LinearLayout>
 
-                                    <LinearLayout
+                            <!--        <LinearLayout
                                         android:id="@+id/ll_voice_scan"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
@@ -222,13 +223,12 @@
                                             android:fontFamily="@font/merriweather_regular"
                                             android:gravity="center"
                                             android:text="Voice\nScan"
-                                            android:textAlignment="textStart"
                                             android:textColor="@color/txt_color_header"
                                             android:textSize="@dimen/textsize_medium" />
 
 
                                     </LinearLayout>
-
+-->
                                 </LinearLayout>
 
                                 <LinearLayout
@@ -236,7 +236,38 @@
                                     android:layout_height="match_parent"
                                     android:orientation="horizontal">
 
+                                    <LinearLayout
+                                        android:id="@+id/ll_voice_scan"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:layout_margin="10dp"
+                                        android:layout_weight="1"
+                                        android:background="@drawable/roundedcornerbutton"
+                                        android:backgroundTint="#F7E6B7"
+                                        android:elevation="5dp"
+                                        android:gravity="center"
+                                        android:orientation="vertical">
 
+                                        <ImageView
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight=".4"
+                                            android:src="@drawable/ic_voicescan_logo" />
+
+                                        <TextView
+                                            android:id="@+id/tv_header_servcepane2"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight=".6"
+                                            android:fontFamily="@font/merriweather_regular"
+                                            android:gravity="center"
+                                            android:text="Voice\nScan"
+                                            android:textColor="@color/txt_color_header"
+                                            android:padding="15dp"
+                                            android:textSize="@dimen/textsize_medium" />
+
+
+                                    </LinearLayout>
                                     <LinearLayout
                                         android:id="@+id/ll_mind_audit"
                                         android:layout_width="match_parent"
@@ -247,7 +278,7 @@
                                         android:backgroundTint="#FDE6FF"
                                         android:elevation="5dp"
                                         android:gravity="center"
-                                        android:orientation="horizontal">
+                                        android:orientation="vertical">
 
                                         <ImageView
                                             android:layout_width="match_parent"
@@ -264,10 +295,10 @@
                                             android:fontFamily="@font/merriweather_regular"
                                             android:gravity="center"
                                             android:text="Mind\nAudit"
-                                            android:textAlignment="textStart"
                                             android:textColor="@color/txt_color_header"
+                                            android:padding="15dp"
                                             android:textSize="@dimen/textsize_medium" />
-                                        android:textSize="@dimen/textsize_medium" />
+
 
                                     </LinearLayout>
 
@@ -281,7 +312,7 @@
                                         android:backgroundTint="#FFBFBD"
                                         android:elevation="5dp"
                                         android:gravity="center"
-                                        android:orientation="horizontal">
+                                        android:orientation="vertical">
 
                                         <ImageView
                                             android:layout_width="match_parent"
@@ -297,8 +328,8 @@
                                             android:fontFamily="@font/merriweather_regular"
                                             android:gravity="center"
                                             android:text="Health\nCam"
-                                            android:textAlignment="textStart"
                                             android:textColor="@color/txt_color_header"
+                                            android:padding="15dp"
                                             android:textSize="@dimen/textsize_medium" />
 
                                     </LinearLayout>
@@ -2255,6 +2286,98 @@
             </LinearLayout>
         </ScrollView>
 
+        <LinearLayout
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="210dp"
+            android:layout_margin="16dp"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:padding="16dp"
+            android:visibility="gone"
+            android:background="@drawable/roundedcornershape">
+
+            <LinearLayout
+                android:id="@+id/ll_journal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/roundedcornershape"
+                android:layout_margin="5dp"
+                android:padding="@dimen/textsize_small"
+                android:orientation="vertical"
+                android:backgroundTint="@color/thinkright"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_quick_journey" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Journal"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textSize="@dimen/textsize_extrasmall"
+                    android:layout_marginTop="14dp"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_affirmations"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/roundedcornershape"
+                android:layout_margin="5dp"
+                android:padding="@dimen/textsize_small"
+                android:orientation="vertical"
+                android:backgroundTint="@color/moveright"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_quick_affirmation" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Affirmation"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textSize="@dimen/textsize_extrasmall"
+                    android:layout_marginTop="14dp"
+                    android:textAlignment="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_sleepsounds"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/roundedcornershape"
+                android:layout_margin="5dp"
+                android:padding="@dimen/textsize_small"
+                android:orientation="vertical"
+                android:backgroundTint="@color/sleepright"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_marginTop="5dp"
+                    android:src="@drawable/ic_quick_sleepsound" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sleep Sounds"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textSize="@dimen/textsize_extrasmall"
+                    android:layout_marginTop="14dp"
+                    android:textAlignment="center" />
+            </LinearLayout>
+        </LinearLayout>
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
