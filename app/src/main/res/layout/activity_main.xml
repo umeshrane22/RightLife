@@ -111,6 +111,8 @@
         android:inputType="textEmailAddress"
         android:padding="16dp"
         android:gravity="center"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:background="@drawable/roundedcornerbutton"
         android:layout_marginTop="10dp"
         android:layout_marginStart="30dp"
@@ -213,6 +215,57 @@
 
     </LinearLayout>
 
+    <!--Login Option 2 Email  -->
+    <LinearLayout
+        android:id="@+id/ll_loginoption_email"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+
+        android:background="@drawable/toproundedcornershape"
+        android:backgroundTint="@color/white"
+        android:visibility="visible"
+        android:layout_height="match_parent">
+
+        <!-- Phone Number Input -->
+        <EditText
+            android:id="@+id/emailInputOption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:padding="16dp"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            app:layout_constraintTop_toBottomOf="@id/getStartedText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"/>
+
+
+
+        <ImageView
+            android:id="@+id/imgGetEmailOtpBtn"
+            android:layout_width="match_parent"
+            android:src="@drawable/ic_rightarrow"
+            android:layout_margin="20dp"
+            android:layout_height="wrap_content"/>
+        <!-- Divider Line -->
+        <!--    <View-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:background="@drawable/img_ortext"-->
+        <!--        app:layout_constraintTop_toBottomOf="@id/emailInput"-->
+        <!--        app:layout_constraintStart_toStartOf="parent"-->
+        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        android:layout_marginTop="20dp"/>-->
+
+        <!-- Social Media Buttons -->
+
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/ll_loginoption_otp"
         android:layout_width="match_parent"
@@ -253,78 +306,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 />
-<!--
-            &lt;!&ndash; OTP Input Fields &ndash;&gt;
-            <EditText
-                android:id="@+id/otp_input_1"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:background="@drawable/roundedcornerbutton" />
 
-            <EditText
-                android:id="@+id/otp_input_2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/roundedcornerbutton" />
-
-            <EditText
-                android:id="@+id/otp_input_3"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/roundedcornerbutton" />
-
-            <EditText
-                android:id="@+id/otp_input_4"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/roundedcornerbutton" />
-
-            <EditText
-                android:id="@+id/otp_input_5"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/roundedcornerbutton" />
-
-            <EditText
-                android:id="@+id/otp_input_6"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:inputType="number"
-                android:maxLength="1"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginLeft="8dp"
-                android:background="@drawable/roundedcornerbutton" />-->
 
         </LinearLayout>
 

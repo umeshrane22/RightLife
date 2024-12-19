@@ -9,6 +9,9 @@ import com.example.rlapp.apimodel.SubmitOtpRequest;
 import com.example.rlapp.apimodel.UploadImage;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
+import com.example.rlapp.apimodel.emaillogin.EmailLoginRequest;
+import com.example.rlapp.apimodel.emaillogin.EmailOtpRequest;
+import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
@@ -46,6 +49,19 @@ public interface ApiService {
         // Assume the API endpoint is /login
     Call<LoginResponse> generateOtpLogin(@Body SignupOtpRequest request); // Send the request body
 
+
+    //generate otp for Email signup
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("auth/email/generate-otp")
+    // Assume the API endpoint is /login
+    Call<LoginResponse> generateOtpEmail(@Body EmailOtpRequest request); // Send the request body
+
+
+    // submit OTP Email
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("auth/email/verify-otp")
+    // Assume the API endpoint is /login
+    Call<LoginResponseMobile> submitOtpEmail(@Body SubmitEmailOtpRequest request); // Send the request body
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("user/signup?signupType=phoneNumber")
@@ -405,6 +421,56 @@ public interface ApiService {
             @Query("isSuggested") boolean isSuggested
     );
 
+
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("auth/email/login?userType=user")
+        // Assume the API endpoint is /login
+    Call<LoginResponseMobile> EmailPasswordLogin(@Body EmailLoginRequest request); // Send the request body
+
+
+    // RL page APIs
+    @Headers("Content-Type: application/json")
+    @GET("myRLContent")
+    Call<ResponseBody> getMyRLContent(@Header("Authorization") String authToken);
+
+    // RL page APIs - health Audit
+    @Headers("Content-Type: application/json")
+    @GET("first-look-report")
+    Call<ResponseBody> getMyRLFirstLookReport(@Header("Authorization") String authToken);
+
+    // RL page APIs continue
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("continue")
+    Call<ResponseBody> getMyRLContinueWatching(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("pageType") String pageType,
+            @Query("limit") int limit,
+            @Query("skip") int skip
+
+    );
+
+    // RL page APIs journal
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("continue")
+    Call<ResponseBody> getMyRLJournal(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("skip") int skip,
+            @Query("limit") int limit
+
+    );
+
+    // RL page APIs - Health Cam Result
+    @Headers("Content-Type: application/json")
+    @GET("facial-scan")
+    Call<ResponseBody> getMyRLHealthCamResult(@Header("Authorization") String authToken);
+
+    // RL page APIs - mind audit next assessment date
+    @Headers("Content-Type: application/json")
+    @GET("user/get-mind-audit-details")
+    Call<ResponseBody> getMyRLGetMindAuditDate(@Header("Authorization") String authToken);
 }
 
 
