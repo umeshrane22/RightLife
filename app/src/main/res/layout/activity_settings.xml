@@ -59,9 +59,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_about_us"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -70,8 +71,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="About Us"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -82,9 +82,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_notification"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -93,8 +94,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Notifications"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge"/>
 
             </LinearLayout>
 
@@ -105,9 +105,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_faq"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -116,8 +117,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="FAQ"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -128,9 +128,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_contact_us"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -139,8 +140,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Contact Us"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -151,9 +151,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_subscriptions"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -162,8 +163,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Manage Subscriptions"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -174,9 +174,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_theme"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -185,8 +186,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Theme"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge"/>
 
             </LinearLayout>
 
@@ -197,9 +197,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_t_a_c"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -208,8 +209,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Terms and Conditions"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -220,9 +220,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_privacy_policy"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -231,8 +232,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Privacy Policy"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -243,9 +243,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_about_us"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -254,8 +255,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Account"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
@@ -266,9 +266,10 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:src="@drawable/arrow_drop_up" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_logout"
+                    android:layout_margin="6dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -277,8 +278,7 @@
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/dmsans_bold"
                     android:text="Log Out"
-                    android:textSize="@dimen/textsize_extralarge"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/textsize_extralarge" />
 
             </LinearLayout>
 
