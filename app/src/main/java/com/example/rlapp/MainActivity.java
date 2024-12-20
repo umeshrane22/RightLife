@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -43,11 +44,11 @@ public class MainActivity extends AppCompatActivity {
     // Login is in this
     // test dev branch 2
 
-
+    Button btn_email_login;
     ImageButton googleButton;
-    EditText phoneInput,phoneInputOption,emailInput,emailInputOption;
+    EditText phoneInput,phoneInputOption,emailInput,emailInputOption,PasswordInputOptionlogin,emailInputOptionlogin;
     ImageView img_getotp,imgGetOtpBtn,imgSignupOtpBtn,imgGetEmailOtpBtn;
-    LinearLayout ll_loginoption_mobile,ll_loginoption_email ,ll_loginoption,ll_loginoption_otp;
+    LinearLayout ll_loginoption_mobile,ll_loginoption_email ,ll_loginoption,ll_loginoption_otp,ll_loginoption_email_password;
     PinView pinView;
     public static String mobileNumber,emailId;
     public static String loginType = "mobile";
@@ -58,11 +59,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        btn_email_login = findViewById(R.id.btn_email_login);
         googleButton  = findViewById(R.id.googleButton);
         phoneInput = findViewById(R.id.phoneInput);
         phoneInputOption = findViewById(R.id.phoneInputOption);
         emailInput  = findViewById(R.id.emailInput);
         emailInputOption = findViewById(R.id.emailInputOption);
+        PasswordInputOptionlogin = findViewById(R.id.PasswordInputOptionlogin);
+        emailInputOptionlogin = findViewById(R.id.emailInputOptionlogin);
         imgGetOtpBtn = findViewById(R.id.imgGetOtpBtn);
         imgGetEmailOtpBtn = findViewById(R.id.imgGetEmailOtpBtn);
         imgSignupOtpBtn = findViewById(R.id.imgSignupOtpBtn);
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         ll_loginoption_email = findViewById(R.id.ll_loginoption_email);
         ll_loginoption = findViewById(R.id.ll_loginoption);
         ll_loginoption_otp = findViewById(R.id.ll_loginoption_otp);
+        ll_loginoption_email_password = findViewById(R.id.ll_loginoption_email_password);
 
         googleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,12 +123,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please Enter Email Id", Toast.LENGTH_SHORT).show();
                 }else {
                     loginType = "email";
-                    callForOtpEmail(emailId);
+
                     ll_loginoption.setVisibility(View.GONE);
                     ll_loginoption_mobile.setVisibility(View.GONE);
                     ll_loginoption_email.setVisibility(View.GONE);
-
-                    ll_loginoption_otp.setVisibility(View.VISIBLE);
+                    if (false) {
+                        ll_loginoption_otp.setVisibility(View.VISIBLE);
+                        callForOtpEmail(emailId);
+                    }else {
+                        ll_loginoption_email_password.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         });
@@ -162,6 +171,28 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        btn_email_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // String email = "nakoda0701@gmail.com";
+                String password = "123456";
+                emailId = emailInputOptionlogin.getText().toString();
+                password = PasswordInputOptionlogin.getText().toString();
+
+                try {
+                    password = EncryptionUtil.getEncryptedPassword(password);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                if (!emailId.isEmpty() && !password.isEmpty()) {
+                    Log.d("Email id ", "Success: ---" + emailId);
+                    Log.d("Email password ", "Success: ---" + password);
+                    submitEmailPasswordLogin(emailId, password);
+                }
+            }
+        });
+
        /* imgGetOtpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

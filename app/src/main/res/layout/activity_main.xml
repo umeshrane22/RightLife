@@ -266,6 +266,74 @@
 
     </LinearLayout>
 
+    <!--Email login with password -->
+    <LinearLayout
+        android:id="@+id/ll_loginoption_email_password"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+
+        android:background="@drawable/toproundedcornershape"
+        android:backgroundTint="@color/white"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+
+        <!-- Email Input -->
+        <EditText
+            android:id="@+id/emailInputOptionlogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:padding="16dp"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            app:layout_constraintTop_toBottomOf="@id/getStartedText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"/>
+
+        <EditText
+            android:id="@+id/PasswordInputOptionlogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="text"
+            android:padding="16dp"
+            android:gravity="center"
+            android:background="@drawable/roundedcornerbutton"
+            app:layout_constraintTop_toBottomOf="@id/getStartedText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="40dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"/>
+
+
+
+        <Button
+            android:id="@+id/btn_email_login"
+            android:layout_width="match_parent"
+            android:text="Login"
+            android:layout_margin="20dp"
+            android:background="@color/rightlife"
+            android:layout_height="wrap_content"/>
+        <!-- Divider Line -->
+        <!--    <View-->
+        <!--        android:layout_width="match_parent"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:background="@drawable/img_ortext"-->
+        <!--        app:layout_constraintTop_toBottomOf="@id/emailInput"-->
+        <!--        app:layout_constraintStart_toStartOf="parent"-->
+        <!--        app:layout_constraintEnd_toEndOf="parent"-->
+        <!--        android:layout_marginTop="20dp"/>-->
+
+        <!-- Social Media Buttons -->
+
+    </LinearLayout>
+
     <LinearLayout
         android:id="@+id/ll_loginoption_otp"
         android:layout_width="match_parent"
