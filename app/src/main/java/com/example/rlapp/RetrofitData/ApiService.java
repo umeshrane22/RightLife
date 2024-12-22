@@ -14,6 +14,7 @@ import com.example.rlapp.apimodel.emaillogin.EmailOtpRequest;
 import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
@@ -471,6 +472,12 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("user/get-mind-audit-details")
     Call<ResponseBody> getMyRLGetMindAuditDate(@Header("Authorization") String authToken);
+
+    @Headers("Content-Type: application/json")
+    @PUT("common/changepassword")
+    Call<ResponseBody> changePassword(
+            @Header("Authorization") String authToken,
+            @Body ChangePassword changePassword);
 }
 
 
