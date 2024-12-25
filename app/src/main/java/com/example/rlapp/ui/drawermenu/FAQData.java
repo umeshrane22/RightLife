@@ -1,38 +1,21 @@
 package com.example.rlapp.ui.drawermenu;
 
-import java.util.ArrayList;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
 
 public class FAQData {
-    private String header;
-    private ArrayList<QuestionAns> questionAns;
-    private boolean isExpanded = false;
 
-    public FAQData(String header, ArrayList<QuestionAns> questionAns) {
-        this.header = header;
-        this.questionAns = questionAns;
+    @SerializedName("faqs")
+    @Expose
+    private List<Faq> faqs;
+
+    public List<Faq> getFaqs() {
+        return faqs;
     }
 
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    public boolean isExpanded() {
-        return isExpanded;
-    }
-
-    public void setExpanded(boolean expanded) {
-        isExpanded = expanded;
-    }
-
-    public ArrayList<QuestionAns> getQuestionAns() {
-        return questionAns;
-    }
-
-    public void setQuestionAns(ArrayList<QuestionAns> questionAns) {
-        this.questionAns = questionAns;
+    public void setFaqs(List<Faq> faqs) {
+        this.faqs = faqs;
     }
 }

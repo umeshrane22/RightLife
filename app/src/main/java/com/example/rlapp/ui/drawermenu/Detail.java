@@ -1,13 +1,16 @@
 package com.example.rlapp.ui.drawermenu;
 
-public class QuestionAns {
-    private String question;
-    private String answer;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
-    public QuestionAns(String question, String answer) {
-        this.question = question;
-        this.answer = answer;
-    }
+public class Detail {
+
+    @SerializedName("question")
+    @Expose
+    private String question;
+    @SerializedName("answer")
+    @Expose
+    private String answer;
 
     public String getQuestion() {
         return question;
@@ -24,4 +27,5 @@ public class QuestionAns {
     public void setAnswer(String answer) {
         this.answer = answer;
     }
+
 }
