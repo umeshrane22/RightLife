@@ -8,13 +8,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rlapp.R;
+import com.google.gson.Gson;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class FAQActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FAQAdapter faqAdapter;
-    private ArrayList<FAQData> faqDataArrayList = new ArrayList<>();
+    private FAQData faqData;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -24,38 +26,33 @@ public class FAQActivity extends AppCompatActivity {
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
         recyclerView = findViewById(R.id.rv_faq_list);
 
-        ArrayList<QuestionAns> questionAnsGeneral = new ArrayList<>();
-        ArrayList<QuestionAns> questionAnsUsage = new ArrayList<>();
-        ArrayList<QuestionAns> questionAnsSubscription = new ArrayList<>();
-        ArrayList<QuestionAns> questionAnsTechnical = new ArrayList<>();
-        ArrayList<QuestionAns> questionAnsPrivacy = new ArrayList<>();
-        ArrayList<QuestionAns> questionAnsContent = new ArrayList<>();
-        ArrayList<QuestionAns> questionAnsUser = new ArrayList<>();
+        Gson gson = new Gson();
+        faqData = gson.fromJson(loadJSONFromAsset(), FAQData.class);
 
-        questionAnsGeneral.add(new QuestionAns("Question : How is RightLife different from other apps?",
-                "RightLife stands out by blending technology and content, offering unique features like diagnostic "));
-        questionAnsUsage.add(new QuestionAns("Question : 111","Answer 1111"));
-        questionAnsUsage.add(new QuestionAns("Question : 222","Answer 222"));
-        questionAnsSubscription.add(new QuestionAns("Question : How is RightLife different from other apps?",
-                "RightLife stands out by blending technology and content, offering unique features like diagnostic "));
-        questionAnsSubscription.add(new QuestionAns("Question : ","Answer"));
-        questionAnsPrivacy.add(new QuestionAns("Question : ","Answer"));
-        questionAnsContent.add(new QuestionAns("Question : ","Answer"));
-        questionAnsUser.add(new QuestionAns("Question : ","Answer"));
-        questionAnsUser.add(new QuestionAns("Question : ","Answer"));
-
-        faqDataArrayList.add(new FAQData("General", questionAnsGeneral));
-        faqDataArrayList.add(new FAQData("Usage", questionAnsUsage));
-        faqDataArrayList.add(new FAQData("Suscription & Pricing", questionAnsSubscription));
-        faqDataArrayList.add(new FAQData("Technical & Compactibility", questionAnsTechnical));
-        faqDataArrayList.add(new FAQData("Privacy & Security", questionAnsPrivacy));
-        faqDataArrayList.add(new FAQData("Content & Learning", questionAnsContent));
-        faqDataArrayList.add(new FAQData("User Account & Personalization", questionAnsUser));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        faqAdapter = new FAQAdapter(this, faqDataArrayList);
+        faqAdapter = new FAQAdapter(this, faqData);
 
         recyclerView.setAdapter(faqAdapter);
 
     }
+
+
+    private String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getResources().openRawResource(R.raw.faq_model);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+
 }

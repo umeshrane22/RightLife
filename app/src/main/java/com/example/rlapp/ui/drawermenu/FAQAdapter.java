@@ -16,10 +16,10 @@ import com.example.rlapp.R;
 import java.util.ArrayList;
 
 public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
-    private ArrayList<FAQData> faqData;
+    private FAQData faqData;
     private Context context;
 
-    public FAQAdapter(Context context, ArrayList<FAQData> faqData) {
+    public FAQAdapter(Context context, FAQData faqData) {
         this.context = context;
         this.faqData = faqData;
     }
@@ -33,9 +33,9 @@ public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull FAQViewHolder holder, int position) {
-        FAQData item = faqData.get(position);
-        holder.tvHeader.setText(item.getHeader());
-        ArrayList<QuestionAns> questionAns = item.getQuestionAns();
+        Faq item = faqData.getFaqs().get(position);
+        holder.tvHeader.setText(item.getTitle());
+        ArrayList<Detail> questionAns = (ArrayList<Detail>) item.getDetail();
         if (questionAns.size() == 1) {
             holder.llFAQ1.setVisibility(View.VISIBLE);
             holder.llFAQ2.setVisibility(View.GONE);
@@ -80,7 +80,7 @@ public class FAQAdapter extends RecyclerView.Adapter<FAQAdapter.FAQViewHolder> {
 
     @Override
     public int getItemCount() {
-        return faqData.size();
+        return faqData.getFaqs().size();
     }
 
     static class FAQViewHolder extends RecyclerView.ViewHolder {

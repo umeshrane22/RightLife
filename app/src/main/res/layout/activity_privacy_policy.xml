@@ -42,9 +42,9 @@
             app:vpi_style="round_rect" />
     </RelativeLayout>
 
-    <ScrollView
+    <WebView
+        android:id="@+id/wv_privacy_policy"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </ScrollView>
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"/>
 </LinearLayout>
