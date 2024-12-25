@@ -75,7 +75,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     });
     private EditText edtFirstName, edtLastName, edtFt, edtInch, edtHeightCms, edtWeight, edtPhoneNumber, edtEmail;
-    private TextView tvDate, tvGenderSpinner, tvHeightSpinner, tvWeightSpinner, tvUploadPhoto, tvTakePhoto;
+    private TextView tvDate, tvGenderSpinner, tvHeightSpinner, tvWeightSpinner, tvUploadPhoto, tvTakePhoto, tvChangePassword;
     private LinearLayout llHeightFtInch;
 
     @Override
@@ -141,7 +141,13 @@ public class ProfileActivity extends AppCompatActivity {
         tvTakePhoto = findViewById(R.id.tv_take_photo);
         edtFirstName = findViewById(R.id.edt_first_name);
         edtLastName = findViewById(R.id.edt_last_name);
+        tvChangePassword = findViewById(R.id.tv_change_password);
 
+
+        tvChangePassword.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
+        });
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
     }
 
@@ -180,6 +186,12 @@ public class ProfileActivity extends AppCompatActivity {
                     edtInch.setText(strings[1]);
                 }
             }
+        }
+
+        if (userdata.getLoginType().equals("EMAIL")) {
+            tvChangePassword.setVisibility(View.VISIBLE);
+        } else {
+            tvChangePassword.setVisibility(View.GONE);
         }
 
     }
@@ -339,9 +351,9 @@ public class ProfileActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select gender", Toast.LENGTH_SHORT).show();
         } else if (phoneNumber.isEmpty()) {
             Toast.makeText(this, "Phone Number is required", Toast.LENGTH_SHORT).show();
-        } else if (phoneNumber.length() != 10) {
+        } /*else if (phoneNumber.length() != 10) {
             Toast.makeText(this, "Phone Number contains 10 digits", Toast.LENGTH_SHORT).show();
-        } else if (email.isEmpty()) {
+        }*/ else if (email.isEmpty()) {
             Toast.makeText(this, "Email is required", Toast.LENGTH_SHORT).show();
         } else if (!email.matches(Utils.emailPattern)) {
             Toast.makeText(this, "Invalid Email format", Toast.LENGTH_SHORT).show();

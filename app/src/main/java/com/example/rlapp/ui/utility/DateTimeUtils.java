@@ -42,4 +42,21 @@ public class DateTimeUtils {
         }
         return date;
     }
+
+    public static String getWishingMessage() {
+        Calendar c = Calendar.getInstance();
+        int timeOfDay = c.get(Calendar.HOUR_OF_DAY);
+        String message = "";
+
+        if (timeOfDay >= 0 && timeOfDay < 12) {
+            message = "Morning";
+        } else if (timeOfDay >= 12 && timeOfDay < 16) {
+            message = "Afternoon";
+        } else if (timeOfDay >= 16 && timeOfDay < 21) {
+            message = "Evening";
+        } else if (timeOfDay >= 21 && timeOfDay < 24) {
+            message = "Night";
+        }
+        return message;
+    }
 }
