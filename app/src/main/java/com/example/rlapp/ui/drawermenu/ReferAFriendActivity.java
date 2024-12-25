@@ -113,11 +113,11 @@ public class ReferAFriendActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         String strResponseBody = response.body().string();
-                        Log.d("Umesh ", "referral Code = " + strResponseBody);
+                        Log.d("AAAA ", "referral Code = " + strResponseBody);
 
                         JSONObject jsonObject = new JSONObject(strResponseBody);
                         String code = jsonObject.getString("referralCode");
-                        Log.d("Umesh A", "referral Code = " + strResponseBody);
+                        Log.d("AAAA", "referral Code = " + strResponseBody);
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
