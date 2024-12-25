@@ -2,22 +2,38 @@ package com.example.rlapp.ui.drawermenu;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ReferAFriendActivity extends AppCompatActivity {
     private ImageView ivImageRefer;
@@ -30,6 +46,8 @@ public class ReferAFriendActivity extends AppCompatActivity {
         ivImageRefer = findViewById(R.id.iv_refer_image);
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
+
+        getReferralCode();
 
         Button btnCopyLink = findViewById(R.id.btn_copy_link);
 
@@ -81,5 +99,41 @@ public class ReferAFriendActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return uri;
+    }
+
+    private void getReferralCode() {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getUserReferralCode(accessToken);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String strResponseBody = response.body().string();
+                        Log.d("Umesh ", "referral Code = " + strResponseBody);
+
+                        JSONObject jsonObject = new JSONObject(strResponseBody);
+                        String code = jsonObject.getString("referralCode");
+                        Log.d("Umesh A", "referral Code = " + strResponseBody);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else {
+                    Toast.makeText(ReferAFriendActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ReferAFriendActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

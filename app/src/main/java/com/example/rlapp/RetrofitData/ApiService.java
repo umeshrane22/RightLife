@@ -401,7 +401,8 @@ public interface ApiService {
             @Body PreferenceAnswer preferenceAnswer);
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @POST("sleep-aids") // Assume the API endpoint is /login
+    @POST("sleep-aids")
+        // Assume the API endpoint is /login
     Call<ResponseBody> postSleepAids(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Body SleepAidsRequest sleepAidsRequest);
@@ -421,7 +422,6 @@ public interface ApiService {
             @Query("skip") int skip,
             @Query("isSuggested") boolean isSuggested
     );
-
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -478,8 +478,13 @@ public interface ApiService {
     Call<ResponseBody> changePassword(
             @Header("Authorization") String authToken,
             @Body ChangePassword changePassword);
-}
 
+    @Headers("Content-Type: application/json")
+    @GET("user/referral-code")
+    Call<ResponseBody> getUserReferralCode(@Header("Authorization") String authToken);
+
+
+}
 
 
 //private static final String BASE_URL = "https://qa.rightlife.com/api/app/api/"; // Your API URL
