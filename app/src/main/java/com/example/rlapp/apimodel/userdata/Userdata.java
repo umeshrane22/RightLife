@@ -63,13 +63,13 @@ public class Userdata {
     private String firstName;
     @SerializedName("height")
     @Expose
-    private Integer height;
+    private Double height;
     @SerializedName("lastName")
     @Expose
     private String lastName;
     @SerializedName("weight")
     @Expose
-    private Integer weight;
+    private Double weight;
     @SerializedName("profilePicture")
     @Expose
     private String profilePicture;
@@ -218,11 +218,11 @@ public class Userdata {
         this.firstName = firstName;
     }
 
-    public Integer getHeight() {
+    public Double getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
@@ -234,11 +234,11 @@ public class Userdata {
         this.lastName = lastName;
     }
 
-    public Integer getWeight() {
+    public Double getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight) {
+    public void setWeight(double weight) {
         this.weight = weight;
     }
 
