@@ -34,7 +34,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -45,26 +44,34 @@ import retrofit2.Response;
 public class CategoryListActivity extends AppCompatActivity {
 
     ImageView ic_back_dialog, close_dialog;
-    private RecyclerView recyclerView;
-    private ChipGroup chipGroup;
     String[] itemNames;
     int[] itemImages;
     ModuleChipCategory ResponseObj;
-    String moduleId;
+    private RecyclerView recyclerView;
+    private ChipGroup chipGroup;
+    private int mLimit = 10;
+    private int mSkip = 0;
+    private Button btnLoadMore;
+    private String selectedModuleId = "";
+    private String selectedCategoryId = "";
+    private GridRecyclerViewAdapter adapter;
+    private List<Content> contentList = new ArrayList<>();
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categorylist);
 
         Intent intent = getIntent();
-        String categoryType = intent.getStringExtra("Categorytype");
-         moduleId = intent.getStringExtra("moduleId");
+        selectedCategoryId = intent.getStringExtra("Categorytype");
+        selectedModuleId = intent.getStringExtra("moduleId");
 
 // Now you can use the categoryType variable to perform actions or set up the UI
-        if (categoryType != null) {
+        if (selectedCategoryId != null) {
             // Do something with the category type
-            Log.d("CategoryListActivity", "Received category type: " + categoryType);
-            Log.d("CategoryListActivity", "Received Module type: " + moduleId);
+            Log.d("CategoryListActivity", "Received category type: " + selectedCategoryId);
+            Log.d("CategoryListActivity", "Received Module type: " + selectedModuleId);
             // For example, set a TextView's text or load data based on the category type
         } else {
             // Handle the case where the extra is not present
@@ -74,61 +81,36 @@ public class CategoryListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         chipGroup = findViewById(R.id.filter_chip_group);
 
+        btnLoadMore = findViewById(R.id.btn_load_more);
+        btnLoadMore.setOnClickListener(view -> {
+            getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
+        });
 
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
 
-        itemNames = new String[]{"Sleep Right with sounds", "Move right", "Sleep music", "Video category", "Audio 1", "Audio 2", "Audio 2", "Audio 2", "Audio 2", "Audio 2"};
+        /*itemNames = new String[]{"Sleep Right with sounds", "Move right", "Sleep music", "Video category", "Audio 1", "Audio 2", "Audio 2", "Audio 2", "Audio 2", "Audio 2"};
         itemImages = new int[]{R.drawable.contents, R.drawable.eat_home, R.drawable.facial_scan,
                 R.drawable.first_look, R.drawable.generic_02, R.drawable.meal_plan, R.drawable.generic_02,
-                R.drawable.meal_plan, R.drawable.generic_02, R.drawable.meal_plan};
+                R.drawable.meal_plan, R.drawable.generic_02, R.drawable.meal_plan};*/
 
 
+        setupListData();
         //API Call
-        getContentlistdetails(categoryType,moduleId);
+        getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
 
-        getContentlist(moduleId);   // api to get module
+        getContentlist(selectedModuleId);   // api to get module
 
+        ic_back_dialog.setOnClickListener(view -> finish());
 
+        ic_back_dialog.setOnClickListener(view -> finish());
 
-
-        List<Content> contentList = Collections.emptyList();
-        GridRecyclerViewAdapter adapter = new GridRecyclerViewAdapter(this, itemNames, itemImages, contentList);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
-        recyclerView.setAdapter(adapter);
-
-       // showCustomDialog();
-
-
-
-
-        ic_back_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            finish();
-            }
+        close_dialog.setOnClickListener(view -> {
+            //finish();
+            showExitDialog();
         });
 
-        
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //finish();
-                showExitDialog();
-            }
-        });
-        ArrayList<String> tags = new ArrayList<>();
-        tags.add("technology");
-        tags.add("programming");
-        tags.add("Java");
-        tags.add("web development");
-        tags.add("data science");
-        tags.add("machine learning");
-        tags.add("artificial intelligence");
-        for (String tag : tags) {
-            //addChip(tag); // Add each tag as a chip
-        }
         setupChipListeners();
     }
 
@@ -140,7 +122,7 @@ public class CategoryListActivity extends AppCompatActivity {
         chip.setCheckable(true);
         chip.setChecked(false);
         chip.setChipCornerRadius(50);
-        chip.setChipStrokeColor(ContextCompat.getColorStateList(this,R.color.chip_selected_background_color));
+        chip.setChipStrokeColor(ContextCompat.getColorStateList(this, R.color.chip_selected_background_color));
         chip.setChipBackgroundColorResource(R.color.white);
         chip.setTextColor(ContextCompat.getColorStateList(this, R.color.black));
 
@@ -176,12 +158,13 @@ public class CategoryListActivity extends AppCompatActivity {
         chip.setTextColor(textColorStateList);
         chipGroup.addView(chip);
     }
+
     private void setupChipListeners() {
         chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             Chip chip = group.findViewById(checkedId);
             if (chip != null) {
                 String category = chip.getText().toString();
-                Toast.makeText(this, "this is "+category, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "this is " + category, Toast.LENGTH_SHORT).show();
                 //filterList(category.equals("All") ? "all" : category.toLowerCase());
 
 
@@ -198,18 +181,18 @@ public class CategoryListActivity extends AppCompatActivity {
                 if (position != -1) {
                     // Do something with the position
                     Log.d("ChipGroup", "Checked chip position: " + position);
-                    Toast.makeText(this, "this is "+
-                            ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
                     //API Call
-                    getContentlistdetails(ResponseObj.getData().getResult().get(position).getCategoryId(),moduleId);
+                    selectedCategoryId = ResponseObj.getData().getResult().get(position).getCategoryId();
+                    selectedModuleId = ResponseObj.getData().getResult().get(position).getModuleId();
+                    Toast.makeText(this, "this is " +
+                            ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
+                    contentList.clear();
+                    mSkip = 0;
+                    getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
                 }
-
             }
         });
     }
-
-
-
 
 
     private void showExitDialog() {
@@ -231,16 +214,10 @@ public class CategoryListActivity extends AppCompatActivity {
         Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
         Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
 
-        // Optional: Set dynamic content
-       // dialogText.setText("Please find a quiet and comfortable place before starting");
-
         // Set button click listener
         dialogButtonStay.setOnClickListener(v -> {
             // Perform your action
             dialog.dismiss();
-            //Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-
-
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
@@ -252,22 +229,18 @@ public class CategoryListActivity extends AppCompatActivity {
     }
 
 
-    private void getContentlistdetails(String categoryId, String moduleId) {
+    private void getContentlistdetails(String categoryId, String moduleId, int skip, int limit) {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
         // Make the GET request
         Call<ResponseBody> call = apiService.getContentdetailslist(
                 accessToken,
                 categoryId,
-                10,
-                0,
+                mLimit,
+                skip,
                 moduleId
         );
 
@@ -280,14 +253,18 @@ public class CategoryListActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             String successMessage = response.body().string();
                             System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
                             Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "User Details: " + successMessage);
                             ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-                            Log.d("API Response", "User Details: " + ResponseObj.getData().getContentList().size()
-                                    +" "+ResponseObj.getData().getContentList().get(0).getTitle());
-                            setupListData(ResponseObj.getData().getContentList());
+                            contentList.addAll(ResponseObj.getData().getContentList());
+                            adapter.notifyDataSetChanged();
+
+                            if (ResponseObj.getData().getCount() > adapter.getItemCount()) {
+                                btnLoadMore.setVisibility(View.VISIBLE);
+                                mSkip = mSkip + limit;
+                            } else {
+                                btnLoadMore.setVisibility(View.GONE);
+                            }
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -312,19 +289,11 @@ public class CategoryListActivity extends AppCompatActivity {
 
     }
 
-
-
-
-
-    private void setupListData(List<Content> contentList) {
-        GridRecyclerViewAdapter adapter = new GridRecyclerViewAdapter(this, itemNames, itemImages,contentList);
+    private void setupListData() {
+        adapter = new GridRecyclerViewAdapter(this, itemNames, itemImages, contentList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerView.setAdapter(adapter);
     }
-
-
-
-
 
     // get module content chip list
     private void getContentlist(String moduleId) {
@@ -357,7 +326,7 @@ public class CategoryListActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                     ResponseObj = gson.fromJson(jsonResponse,ModuleChipCategory.class);
+                    ResponseObj = gson.fromJson(jsonResponse, ModuleChipCategory.class);
                     Log.d("API Response body", "Success:chip name " + ResponseObj.getData().getResult().get(0).getName());
                     for (int i = 0; i < ResponseObj.getData().getResult().size(); i++) {
                         addChip(ResponseObj.getData().getResult().get(i).getName());

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:id="@+id/ic_back_dialog"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_leftarrow" />
+
+        <EditText
+            android:id="@+id/edt_search"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_toEndOf="@+id/ic_back_dialog"
+            android:layout_centerVertical="true"
+            android:background="@drawable/roundedcornerpinkborder"
+            android:textSize="@dimen/textsize_medium" />
+
+        <ImageView
+            android:id="@+id/image_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="35dp"/>
+
+        <com.zhpan.indicator.IndicatorView
+            android:id="@+id/indicator_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/edt_search"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="@dimen/textsize_medium"
+            app:vpi_slide_mode="smooth"
+            app:vpi_slider_checked_color="#A0A3BD"
+            app:vpi_slider_normal_color="#EFF0F6"
+            app:vpi_style="round_rect" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="RightLife Top 10"
+                android:textSize="@dimen/textsize_large" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_rightlife_top_10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Popular Categories"
+                android:layout_marginTop="12dp"
+                android:textSize="@dimen/textsize_large" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_popular_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -471,7 +471,7 @@ public interface ApiService {
 
     );
 
-    // RL page APIs - Health Cam Result
+    // RL page APIs - Health Cam SearchResult
     @Headers("Content-Type: application/json")
     @GET("facial-scan")
     Call<ResponseBody> getMyRLHealthCamResult(@Header("Authorization") String authToken);
