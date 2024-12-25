@@ -46,6 +46,8 @@ import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
+import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
+import com.example.rlapp.ui.drawermenu.PreferencesLayer2Activity;
 import com.example.rlapp.ui.drawermenu.ProfileActivity;
 import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
@@ -390,7 +392,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getPromotionList2(""); // Service pane
         getRightlifeEdit("");
 
-        //getAffirmations("");
+        getAffirmations("");
         // getUpcomingEvents("");
         // getLiveEvents("");
         // getUpcomingLiveEvents("");
@@ -477,6 +479,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         tvAddress.setText(userdata.getCountry());
 
         tvUserName.setText(userdata.getFirstName() + " " + userdata.getLastName());
+        tvWellnessDays.setText(userProfileResponse.getWellnessStreak().toString());
+        tvHealthCheckins.setText(userProfileResponse.getDaysCount().toString());
 
 
     }
@@ -1441,9 +1445,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).into(profileImage);
                     tvUserName.setText(ResponseObj.getUserdata().getFirstName());
 
-                    Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
 
-                    //  getAffirmations("");
+                    Log.d("UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(getApplicationContext()).getUserId());
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -1652,6 +1655,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+        } else if (id == R.id.nav_preferences){
+            Intent intent = new Intent(this, PreferencesLayer1Activity.class);
+            startActivity(intent);
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -1681,7 +1687,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     String jsonResponse = gson.toJson(response.body());
                     Log.d("API Response body", "Success Search Content:"+jsonResponse);
 
-                    //  getAffirmations("");
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
