@@ -94,7 +94,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
-    ImageView img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
+    ImageView searchIcon,img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
@@ -194,7 +194,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         relative_wellness3.setOnClickListener(this);
         relative_wellness4.setOnClickListener(this);
 
-
+        searchIcon = findViewById(R.id.searchIcon);
+        searchIcon.setOnClickListener(this);
         img_rledit = findViewById(R.id.img_rledit);
         img_rledit1 = findViewById(R.id.img_rledit1);
         img_rledit2 = findViewById(R.id.img_rledit2);
@@ -1177,6 +1178,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
 
         int viewId = view.getId();
+
+        if (viewId == R.id.searchIcon) {
+            Toast.makeText(HomeActivity.this, "Search clicked", Toast.LENGTH_SHORT).show();
+            getSearchContent("");
+        }else
         if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
@@ -1649,6 +1655,47 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    // get search content
+    private void getSearchContent(String s) {
+        //-----------
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
+
+        // Make the API call
+        Call<ResponseBody> call = apiService.getSearchContent(accessToken);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ResponseBody promotionResponse2 = response.body();
+                    Log.d("API Response", "User Details: " + promotionResponse2.toString());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("API Response body", "Success Search Content:"+jsonResponse);
+
+                    //  getAffirmations("");
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API ERROR", "onFailure: " + t.getMessage());
+                t.printStackTrace();  // Print the full stack trace for more details
+
+            }
+        });
+
     }
 }
 

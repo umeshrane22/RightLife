@@ -33,7 +33,7 @@ public class SharedPreferenceManager {
 
     // Method to retrieve the access token
     public String getAccessToken() {
-        return sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+        return sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, "");
     }
 
     // Method to save the user ID

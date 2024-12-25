@@ -3,7 +3,9 @@ package com.example.rlapp;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,8 +20,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.chaos.view.PinView;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.CheckRegistrationResponse;
+import com.example.rlapp.apimodel.LoginRequest;
 import com.example.rlapp.apimodel.LoginResponse;
 import com.example.rlapp.apimodel.LoginResponseMobile;
+import com.example.rlapp.apimodel.SetPasswordRequest;
 import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
@@ -28,6 +33,7 @@ import com.example.rlapp.apimodel.emaillogin.EmailOtpRequest;
 import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.ui.HomeActivity;
+import com.example.rlapp.ui.utility.EmailValidator;
 import com.example.rlapp.ui.utility.EncryptionUtil;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
@@ -43,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Login is in this
     // test dev branch 2
-
+    String deviceName,deviceId;
     Button btn_email_login;
     ImageButton googleButton;
-    EditText phoneInput,phoneInputOption,emailInput,emailInputOption,PasswordInputOptionlogin,emailInputOptionlogin;
-    ImageView img_getotp,imgGetOtpBtn,imgSignupOtpBtn,imgGetEmailOtpBtn;
+    EditText phoneInput,phoneInputOption,emailInput,emailInputOption,PasswordInputOptionlogin,confirmPasswordInputOptionlogin,emailInputOptionlogin;
+    ImageView img_backicon,img_getotp,imgGetOtpBtn,imgSignupOtpBtn,imgGetEmailOtpBtn;
     LinearLayout ll_loginoption_mobile,ll_loginoption_email ,ll_loginoption,ll_loginoption_otp,ll_loginoption_email_password;
     PinView pinView;
     public static String mobileNumber,emailId;
@@ -65,12 +71,14 @@ public class MainActivity extends AppCompatActivity {
         phoneInputOption = findViewById(R.id.phoneInputOption);
         emailInput  = findViewById(R.id.emailInput);
         emailInputOption = findViewById(R.id.emailInputOption);
-        PasswordInputOptionlogin = findViewById(R.id.PasswordInputOptionlogin);
+        PasswordInputOptionlogin = findViewById(R.id.passwordInputOptionlogin);
+        confirmPasswordInputOptionlogin = findViewById(R.id.confirmPasswordInputOptionlogin);
         emailInputOptionlogin = findViewById(R.id.emailInputOptionlogin);
         imgGetOtpBtn = findViewById(R.id.imgGetOtpBtn);
         imgGetEmailOtpBtn = findViewById(R.id.imgGetEmailOtpBtn);
         imgSignupOtpBtn = findViewById(R.id.imgSignupOtpBtn);
         pinView = findViewById(R.id.pinview);
+        img_backicon = findViewById(R.id.img_backicon);
 
         ll_loginoption_mobile = findViewById(R.id.ll_loginoption_mobile);
         ll_loginoption_email = findViewById(R.id.ll_loginoption_email);
@@ -119,20 +127,12 @@ public class MainActivity extends AppCompatActivity {
                 emailId = emailInputOption.getText().toString();
                 Log.d("API OTP ", "Success: --" + emailId);
               //  Toast.makeText(MainActivity.this, emailId, Toast.LENGTH_SHORT).show();
-                if (emailId.isEmpty()){
+                if (!EmailValidator.isValidEmail(emailId)){
                     Toast.makeText(MainActivity.this, "Please Enter Email Id", Toast.LENGTH_SHORT).show();
                 }else {
                     loginType = "email";
+                    checkRegistrationApi(emailId,loginType,"");
 
-                    ll_loginoption.setVisibility(View.GONE);
-                    ll_loginoption_mobile.setVisibility(View.GONE);
-                    ll_loginoption_email.setVisibility(View.GONE);
-                    if (false) {
-                        ll_loginoption_otp.setVisibility(View.VISIBLE);
-                        callForOtpEmail(emailId);
-                    }else {
-                        ll_loginoption_email_password.setVisibility(View.VISIBLE);
-                    }
                 }
             }
         });
@@ -188,7 +188,11 @@ public class MainActivity extends AppCompatActivity {
                 if (!emailId.isEmpty() && !password.isEmpty()) {
                     Log.d("Email id ", "Success: ---" + emailId);
                     Log.d("Email password ", "Success: ---" + password);
-                    submitEmailPasswordLogin(emailId, password);
+                    if (confirmPasswordInputOptionlogin.getVisibility() == View.VISIBLE){
+                        setPasswordApi(emailId, password);
+                    }else {
+                        submitEmailPasswordLogin(emailId, password);
+                    }
                 }
             }
         });
@@ -242,6 +246,11 @@ public class MainActivity extends AppCompatActivity {
 
       //  getPromotionList("");
 
+         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        Log.d("DeviceInfo", "Device ID: " + deviceId);
+
+         deviceName = Build.MANUFACTURER + " " + Build.MODEL;
+        Log.d("DeviceInfo", "Device Name: " + deviceName);
 
     }
     //get otp for signup
@@ -382,9 +391,12 @@ public class MainActivity extends AppCompatActivity {
                     if (loginResponse.isSuccess()) {
                         Toast.makeText(MainActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                         Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                      //  saveAccessToken(loginResponse.getAccessToken());
-                       // getUserDetails("");
-
+                       saveAccessToken(loginResponse.getAccessToken());
+                     //  getUserDetails("");
+                        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+                        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, "");
+                        Log.d("API Response body", "Success:Token " + accessToken);
+                        checkRegistrationApi(emailId,loginType,"");
                     } else {
                         Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                     }
@@ -477,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
     private void getUserDetails(String s) {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, "");
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -531,9 +543,9 @@ public class MainActivity extends AppCompatActivity {
 
         EmailLoginRequest emailLoginRequest = new EmailLoginRequest( email,
                 password,
-                "TP1A.220905.001",
+                "TP1A.220905.010",
                 "IV2201",
-                "cA5akcnzTfGpbQr7wEVuf3:APA91bEJYJNwJ-PJcEJ8Cpe95PWCJxMVGV7oT_CNtuo7xOjVecfTMjflleBu-m38h46gOcoegID68FQVTuMVLQLF4xA7o_ehNu49fNi2eNGg4Co9jzXimdo",
+                "cA5akcnzTfGpbQr7wEVuf3:APA91bEJYJNwJ-PJcEJ8Cpe95PWCJxMVGV7oT_CNtuo7xOjVecfTMjflleBu-m38h46gOcoegID68FQVTuMVLQLF4xA7o_",
                 "android"
         );
 
@@ -621,5 +633,126 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    // Check Registration API
+
+    void checkRegistrationApi(String emailId, String loginType, String phoneNumber){
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        //LoginRequest request = new LoginRequest("", "phoneNumber", "9021335118");
+        LoginRequest request = new LoginRequest(emailId, "email", phoneNumber);
+
+        // Make the API call
+        Call<CheckRegistrationResponse> call = apiService.checkUserRegistration(request);
+        call.enqueue(new Callback<CheckRegistrationResponse>() {
+            @Override
+            public void onResponse(Call<CheckRegistrationResponse> call, Response<CheckRegistrationResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    CheckRegistrationResponse loginResponse = response.body();
+                    Log.d("API Response", "Success: " + loginResponse.getStatusCode());
+                    Log.d("API Response 2", "Success: " + loginResponse.getMessage());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("API Response body", "Success: " + jsonResponse);
+                    if (loginResponse.getSuccess()) {
+                        Toast.makeText(MainActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                    }
+                    setupRegistrationView(loginResponse);
+                } else {
+                    Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CheckRegistrationResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupRegistrationView(CheckRegistrationResponse loginResponse) {
+
+        if (!loginResponse.getIsRegistered()){
+            ll_loginoption_otp.setVisibility(View.VISIBLE);
+            callForOtpEmail(emailId);
+        }else if (loginResponse.getIsRegistered() && loginResponse.getIsPasswordSet()){
+            ll_loginoption_email_password.setVisibility(View.VISIBLE);
+            confirmPasswordInputOptionlogin.setVisibility(View.GONE);
+            setEmailidField(emailId);
+        } else if (loginResponse.getIsRegistered() && !loginResponse.getIsPasswordSet()){
+            if (getAcceesToken().isEmpty()){
+                ll_loginoption_otp.setVisibility(View.VISIBLE);
+                callForOtpEmail(emailId);
+            }else {
+                ll_loginoption_email_password.setVisibility(View.VISIBLE);
+                confirmPasswordInputOptionlogin.setVisibility(View.VISIBLE);
+            }
+
+        }
+        ll_loginoption.setVisibility(View.GONE);
+        ll_loginoption_mobile.setVisibility(View.GONE);
+        ll_loginoption_email.setVisibility(View.GONE);
+       /* if (false) {
+            ll_loginoption_otp.setVisibility(View.VISIBLE);
+            callForOtpEmail(emailId);
+        }else {
+            ll_loginoption_email_password.setVisibility(View.VISIBLE);
+        }*/
+    }
+
+    private void setEmailidField(String emailId) {
+        emailInputOption.setText(emailId);
+        emailInputOptionlogin.setText(emailId);
+    }
+
+
+    // set password
+    void setPasswordApi(String email,String password){
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        //-----------
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+        SetPasswordRequest request = new SetPasswordRequest(password);
+
+        // Make the API call
+        Call<CheckRegistrationResponse> call = apiService.SetEmailPassword(accessToken,request);
+        call.enqueue(new Callback<CheckRegistrationResponse>() {
+            @Override
+            public void onResponse(Call<CheckRegistrationResponse> call, Response<CheckRegistrationResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    CheckRegistrationResponse loginResponse = response.body();
+                    Log.d("API Response", "Success: " + loginResponse.getStatusCode());
+                    Log.d("API Response 2", "Success: " + loginResponse.getMessage());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("API Response body", "Success: " + jsonResponse);
+                    if (loginResponse.getSuccess()) {
+                        Toast.makeText(MainActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                    }
+                    setupRegistrationView(loginResponse);
+                } else {
+                    Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CheckRegistrationResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public String getAcceesToken(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        return sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, "");
     }
 }

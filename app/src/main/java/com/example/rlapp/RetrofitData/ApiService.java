@@ -1,8 +1,10 @@
 package com.example.rlapp.RetrofitData;
 
+import com.example.rlapp.apimodel.CheckRegistrationResponse;
 import com.example.rlapp.apimodel.LoginRequest;
 import com.example.rlapp.apimodel.LoginResponse;
 import com.example.rlapp.apimodel.LoginResponseMobile;
+import com.example.rlapp.apimodel.SetPasswordRequest;
 import com.example.rlapp.apimodel.SignupOtpRequest;
 import com.example.rlapp.apimodel.SubmitLoginOtpRequest;
 import com.example.rlapp.apimodel.SubmitOtpRequest;
@@ -36,7 +38,13 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("auth/user/check-registration")
         // Assume the API endpoint is /login
-    Call<LoginResponse> loginUser(@Body LoginRequest request); // Send the request body
+    Call<CheckRegistrationResponse> checkUserRegistration(@Body LoginRequest request); // Send the request body
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @PUT("user/set-password")
+        // Assume the API endpoint is /login
+    Call<CheckRegistrationResponse> SetEmailPassword(  @Header("Authorization") String authToken,@Body SetPasswordRequest request); // Send the request body
+
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -472,6 +480,12 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("user/get-mind-audit-details")
     Call<ResponseBody> getMyRLGetMindAuditDate(@Header("Authorization") String authToken);
+
+    // Search Response  - home screen
+    @Headers("Content-Type: application/json")
+    @GET("app/type/category")
+    Call<ResponseBody> getSearchContent(@Header("Authorization") String authToken);
+}
 
     @Headers("Content-Type: application/json")
     @PUT("common/changepassword")
