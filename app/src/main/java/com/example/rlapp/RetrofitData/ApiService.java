@@ -485,7 +485,7 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("app/type/category")
     Call<ResponseBody> getSearchContent(@Header("Authorization") String authToken);
-}
+
 
     @Headers("Content-Type: application/json")
     @PUT("common/changepassword")
