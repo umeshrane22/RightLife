@@ -1,10 +1,9 @@
 package com.example.rlapp.ui.search;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -18,8 +17,7 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.CategoryListActivity;
-import com.example.rlapp.ui.HomeActivity;
-import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -35,6 +33,7 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageView imageSearch;
     private EditText edtSearch;
+    private SearchQueryResponse searchQueryResponse;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,14 +52,33 @@ public class SearchActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
 
         getSearchContent();
+
+        edtSearch.setOnFocusChangeListener((view, b) -> {
+            if (b) {
+                getSearchHistory();
+            }
+        });
+
+        edtSearch.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                String query = edtSearch.getText().toString();
+                if (!query.isEmpty())
+                    performSearch(edtSearch.getText().toString());
+                return true;
+            }
+            return false;
+        });
+
+        imageSearch.setOnClickListener(view -> {
+            String query = edtSearch.getText().toString();
+            if (!query.isEmpty())
+                performSearch(query);
+        });
     }
 
 
     private void getSearchContent() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Make the API call
@@ -95,9 +113,61 @@ public class SearchActivity extends AppCompatActivity {
                 Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("API ERROR", "onFailure: " + t.getMessage());
                 t.printStackTrace();  // Print the full stack trace for more details
-
             }
         });
+    }
 
+    private void getSearchHistory() {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Make the API call
+        Call<ResponseBody> call = apiService.getSearchHistory(accessToken);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("AAAA", "Search History response : " + jsonResponse);
+                } else {
+                    Toast.makeText(SearchActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void performSearch(String query) {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Make the API call
+        Call<ResponseBody> call = apiService.searchQuery(accessToken, query);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    try {
+                        searchQueryResponse = gson.fromJson(response.body().string(), SearchQueryResponse.class);
+                        Log.d("AAAA", "searchQueryResponse = " + searchQueryResponse.getResults().getContents().size());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(SearchActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -32,7 +32,9 @@
             android:layout_toEndOf="@+id/ic_back_dialog"
             android:layout_centerVertical="true"
             android:background="@drawable/roundedcornerpinkborder"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="@dimen/textsize_medium"
+            android:imeOptions="actionSearch"
+            android:inputType="text"/>
 
         <ImageView
             android:id="@+id/image_search"

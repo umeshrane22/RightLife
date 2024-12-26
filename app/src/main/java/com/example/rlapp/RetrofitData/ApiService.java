@@ -497,6 +497,16 @@ public interface ApiService {
     @GET("user/referral-code")
     Call<ResponseBody> getUserReferralCode(@Header("Authorization") String authToken);
 
+    @Headers("Content-Type: application/json")
+    @GET("search/history")
+    Call<ResponseBody> getSearchHistory(@Header("Authorization") String authToken);
+
+    @Headers("Content-Type: application/json")
+    @GET("search")
+    Call<ResponseBody> searchQuery(
+            @Header("Authorization") String authToken,
+            @Query("query") String query
+    );
 
 }
 
