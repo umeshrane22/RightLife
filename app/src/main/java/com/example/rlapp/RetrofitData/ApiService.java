@@ -508,6 +508,14 @@ public interface ApiService {
             @Query("query") String query
     );
 
+    @Headers("Content-Type: application/json")
+    @GET("search")
+    Call<ResponseBody> searchQuery(
+            @Header("Authorization") String authToken,
+            @Query("query") String query,
+            @Query("modules") String[] modules
+    );
+
 }
 
 

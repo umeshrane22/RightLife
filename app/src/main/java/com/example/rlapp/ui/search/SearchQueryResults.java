@@ -9,7 +9,7 @@ public class SearchQueryResults {
 
     @SerializedName("artists")
     @Expose
-    private List<Object> artists;
+    private List<Artist> artists;
     @SerializedName("contents")
     @Expose
     private List<Content> contents;
@@ -23,11 +23,11 @@ public class SearchQueryResults {
     @Expose
     private List<Service> services;
 
-    public List<Object> getArtists() {
+    public List<Artist> getArtists() {
         return artists;
     }
 
-    public void setArtists(List<Object> artists) {
+    public void setArtists(List<Artist> artists) {
         this.artists = artists;
     }
 

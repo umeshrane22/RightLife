@@ -61,9 +61,11 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -102,4 +104,191 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/tv_start_typing"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="@font/dmsans_bold"
+        android:gravity="center"
+        android:text="Start Typing to Search..."
+        android:textSize="@dimen/textsize_extralarge"
+        android:visibility="gone" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filter_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:padding="5dp"
+            app:chipSpacingHorizontal="10dp"
+            app:chipSpacingVertical="10dp"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/ll_modules"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="16dp"
+        android:background="@color/gray"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/rl_move_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp">
+            <TextView
+                android:id="@+id/tv_move_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MoveRight"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="@dimen/textsize_large"/>
+
+            <RadioButton
+                android:id="@+id/rd_move_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
+        <RelativeLayout
+            android:id="@+id/rl_sleep_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+            <TextView
+                android:id="@+id/tv_sleep_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SleepRight"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="@dimen/textsize_large"/>
+
+            <RadioButton
+                android:id="@+id/rd_sleep_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
+        <RelativeLayout
+            android:id="@+id/rl_think_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+            <TextView
+                android:id="@+id/tv_think_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ThinkRight"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="@dimen/textsize_large"/>
+
+            <RadioButton
+                android:id="@+id/rd_think_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
+        <RelativeLayout
+            android:id="@+id/rl_eat_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+            <TextView
+                android:id="@+id/tv_eat_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EatRight"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="@dimen/textsize_large"/>
+
+            <RadioButton
+                android:id="@+id/rd_eat_right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
+        <RelativeLayout
+            android:id="@+id/rl_my_health_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+            <TextView
+                android:id="@+id/tv_my_health"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Health"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="@dimen/textsize_large"/>
+
+            <RadioButton
+                android:id="@+id/rd_my_health"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/dark_gray" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_search_query_result"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
 </LinearLayout>
