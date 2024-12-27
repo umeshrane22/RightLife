@@ -2,12 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.camera" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -87,6 +81,7 @@
         <activity android:name=".ui.drawermenu.PreferencesLayer1Activity" />
         <activity android:name=".ui.drawermenu.PreferencesLayer2Activity" />
         <activity android:name=".ui.drawermenu.ChangePasswordActivity" />
+        <activity android:name=".ui.search.SearchActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -98,5 +93,11 @@
                 android:resource="@xml/paths" />
         </provider>
     </application>
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>

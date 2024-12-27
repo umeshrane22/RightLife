@@ -471,7 +471,7 @@ public interface ApiService {
 
     );
 
-    // RL page APIs - Health Cam Result
+    // RL page APIs - Health Cam SearchResult
     @Headers("Content-Type: application/json")
     @GET("facial-scan")
     Call<ResponseBody> getMyRLHealthCamResult(@Header("Authorization") String authToken);
@@ -497,6 +497,16 @@ public interface ApiService {
     @GET("user/referral-code")
     Call<ResponseBody> getUserReferralCode(@Header("Authorization") String authToken);
 
+    @Headers("Content-Type: application/json")
+    @GET("search/history")
+    Call<ResponseBody> getSearchHistory(@Header("Authorization") String authToken);
+
+    @Headers("Content-Type: application/json")
+    @GET("search")
+    Call<ResponseBody> searchQuery(
+            @Header("Authorization") String authToken,
+            @Query("query") String query
+    );
 
 }
 

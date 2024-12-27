@@ -59,6 +59,7 @@ import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
+import com.example.rlapp.ui.search.SearchActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
@@ -727,7 +728,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     String jsonResponse = gson.toJson(response.body());
 
                     AffirmationResponse ResponseObj = gson.fromJson(jsonResponse, AffirmationResponse.class);
-                    Log.d("API Response Affrimation", "Success: " + ResponseObj.getData().getSortedServices().get(0).getCtaName());
                     setupAfirmationContent(ResponseObj);
 
                 } else {
@@ -1184,8 +1184,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            Toast.makeText(HomeActivity.this, "Search clicked", Toast.LENGTH_SHORT).show();
-            getSearchContent("");
+            startActivity(new Intent(this, SearchActivity.class));
         }else
         if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
@@ -1661,46 +1660,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-
-    // get search content
-    private void getSearchContent(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<ResponseBody> call = apiService.getSearchContent(accessToken);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ResponseBody promotionResponse2 = response.body();
-                    Log.d("API Response", "User Details: " + promotionResponse2.toString());
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-                    Log.d("API Response body", "Success Search Content:"+jsonResponse);
-
-                } else {
-                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
-            }
-        });
-
     }
 }
 
