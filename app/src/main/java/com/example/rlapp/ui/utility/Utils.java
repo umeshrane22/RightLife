@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.core.content.ContextCompat;
 
 import com.example.rlapp.R;
+import android.app.Activity;
+import android.view.inputmethod.InputMethodManager;
 
 public class Utils {
     public static final String LOGIN_TYPE_PHONE_NUMBER = "PHONE_NUMBER";
@@ -75,6 +77,15 @@ public class Utils {
             default:
                 // If no match, return a default color (e.g., transparent or a predefined color)
                 return ContextCompat.getColor(context, android.R.color.darker_gray);
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if(inputMethodManager.isAcceptingText()){
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(),
+                    0
+            );
         }
     }
 }
