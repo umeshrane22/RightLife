@@ -27,15 +27,11 @@ import java.util.List;
 
 public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMoreAdapter.ViewHolder> {
 
-    private String[] itemNames;
-    private int[] itemImages;
     private LayoutInflater inflater;
     private Context ctx;
     List<Like> contentList;
-    public RLEditDetailMoreAdapter(Context context, String[] itemNames, int[] itemImages, List<Like> contentList) {
+    public RLEditDetailMoreAdapter(Context context, List<Like> contentList) {
         this.ctx = context;
-        this.itemNames = itemNames;
-        this.itemImages = itemImages;
         this.contentList = contentList;
         this.inflater = LayoutInflater.from(context);
 
@@ -63,17 +59,14 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
         }else {
             holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
-                Gson gson = new Gson();
-                String json = gson.toJson(contentList);
-                Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
-                intent.putExtra("Categorytype", json);
-                intent.putExtra("position", position);
-                holder.itemView.getContext().startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+            Gson gson = new Gson();
+            String json = gson.toJson(contentList);
+            Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
+            intent.putExtra("Categorytype", json);
+            intent.putExtra("position", position);
+            holder.itemView.getContext().startActivity(intent);
         });
     }
 

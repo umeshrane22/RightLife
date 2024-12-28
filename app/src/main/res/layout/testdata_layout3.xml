@@ -150,16 +150,31 @@
         </LinearLayout>
 
         <!-- More Like This Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="More Like This"
-            android:textSize="16sp"
-            android:fontFamily="@font/dmsans_bold"
-            android:textColor="@android:color/black"
-            android:padding="16dp"
-             />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:padding="16dp"
+                android:text="More Like This"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:layout_alignParentStart="true"/>
+
+            <TextView
+                android:id="@+id/tv_view_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_regular"
+                android:padding="16dp"
+                android:text="View All"
+                android:textSize="12sp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
+        </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
