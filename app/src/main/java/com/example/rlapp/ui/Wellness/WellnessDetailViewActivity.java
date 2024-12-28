@@ -133,12 +133,12 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         getSeriesWithEpisodes(wellnessApiResponse.getData().getContentList().get(position).get_id());
 
         List<Like> contentList = Collections.emptyList();
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerView.setAdapter(adapter);
 
 
-        RLEditDetailMoreAdapter episideAdapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList);
+        RLEditDetailMoreAdapter episideAdapter = new RLEditDetailMoreAdapter(this, contentList);
         recyclerViewEpisode.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerViewEpisode.setAdapter(episideAdapter);
         // showCustomDialog();
@@ -505,7 +505,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
 
 
     private void setupListData(List<Like> contentList) {
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);

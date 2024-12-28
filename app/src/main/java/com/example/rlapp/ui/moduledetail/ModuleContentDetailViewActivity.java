@@ -124,12 +124,12 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
        // getSeriesWithEpisodes(contentList.get(position).getId());
 
         List<Like> contentList1 = Collections.emptyList();
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList1);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerView.setAdapter(adapter);
 
 
-        RLEditDetailMoreAdapter episideAdapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList1);
+        RLEditDetailMoreAdapter episideAdapter = new RLEditDetailMoreAdapter(this, contentList1);
         recyclerViewEpisode.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerViewEpisode.setAdapter(episideAdapter);
         // showCustomDialog();
@@ -477,7 +477,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
 
     private void setupListData(List<Like> contentList) {
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);

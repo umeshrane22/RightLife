@@ -4,8 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,14 +13,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,30 +26,20 @@ import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.apimodel.chipsmodulefilter.ModuleChipCategory;
-import com.example.rlapp.apimodel.modulecontentlist.Content;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
-import com.example.rlapp.ui.GridRecyclerViewAdapter;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -66,13 +51,13 @@ import retrofit2.Response;
 public class RLEditDetailViewActivity extends AppCompatActivity {
 
     ImageView ic_back_dialog, close_dialog;
-    private RecyclerView recyclerView;
     TextView txt_desc, tv_header_htw;
     String[] itemNames;
     int[] itemImages;
     RightLifeEditResponse rightLifeEditResponse;
     int position;
     String contentUrl = "";
+    private RecyclerView recyclerView;
     private VideoView videoView;
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
@@ -83,7 +68,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     private ImageButton fullscreenButton;
     private ImageButton playPauseButton;
     private ImageView img_contentview, img_artist;
-    private TextView tv_artistname;
+    private TextView tv_artistname, tvViewAll;
     private boolean isFullscreen = false;
 
     @Override
@@ -99,6 +84,13 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String categoryType = intent.getStringExtra("Categorytype");
         position = intent.getIntExtra("position", 0);
+
+        tvViewAll = findViewById(R.id.tv_view_all);
+        tvViewAll.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ViewAllActivity.class);
+            intent1.putExtra("ContentId", rightLifeEditResponse.getData().getTopList().get(position).getId());
+            startActivity(intent1);
+        });
 
 // Now you can use the categoryType variable to perform actions or set up the UI
         if (categoryType != null) {
@@ -133,31 +125,23 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         //getContendetails("");
 
         // get morelike content
-        getMoreLikeContent("");
+        getMoreLikeContent(rightLifeEditResponse.getData().getTopList().get(position).getId());
 
 
         List<Like> contentList = Collections.emptyList();
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerView.setAdapter(adapter);
 
         // showCustomDialog();
 
 
-        ic_back_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        ic_back_dialog.setOnClickListener(view -> finish());
 
 
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //finish();
-                showExitDialog();
-            }
+        close_dialog.setOnClickListener(view -> {
+            //finish();
+            showExitDialog();
         });
 
         txt_desc.setText(rightLifeEditResponse.getData().getTopList().get(position).getDesc());
@@ -392,7 +376,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     }
 
     // more like this content
-    private void getMoreLikeContent(String categoryId) {
+    private void getMoreLikeContent(String contentId) {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -401,7 +385,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
 // Create an instance of the ApiService
 
-        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, "667bfc3d1f1d92afd12e0df0", 0, 5);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, contentId, 0, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -411,44 +395,44 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
                         Log.d("API_RESPONSE", "more like content: " + jsonString);
-                    /*LikeResponse likeResponse = gson.fromJson(jsonString, LikeResponse.class);
-
-                    // Use the parsed object
-                    Log.d("API_RESPONSE", "Status: " + likeResponse.getStatus());
-                    for (LikeResponse.Content content : likeResponse.getData()) {
-                        Log.d("API_RESPONSE", "Content Title: " + content.getTitle());
-                        Log.d("API_RESPONSE", "Like Count: " + content.getLikeCount());
-                    }*/
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
                         Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
                                 + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
                         setupListData(ResponseObj.getData().getLikeList());
 
+                        if (ResponseObj.getData().getLikeList().size() < 5) {
+                            tvViewAll.setVisibility(View.GONE);
+                        }else{
+                            tvViewAll.setVisibility(View.VISIBLE);
+                        }
+
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
+                        tvViewAll.setVisibility(View.GONE);
                     }
                 } else {
                     Log.e("API_ERROR", "Error: " + response.errorBody());
+                    tvViewAll.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                tvViewAll.setVisibility(View.GONE);
             }
         });
 
     }
 
     private void setupListData(List<Like> contentList) {
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, itemNames, itemImages, contentList);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);
 
     }
-
 
 
     // play video

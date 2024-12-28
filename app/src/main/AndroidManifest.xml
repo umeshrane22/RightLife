@@ -82,6 +82,7 @@
         <activity android:name=".ui.drawermenu.PreferencesLayer2Activity" />
         <activity android:name=".ui.drawermenu.ChangePasswordActivity" />
         <activity android:name=".ui.search.SearchActivity" />
+        <activity android:name=".ui.therledit.ViewAllActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
