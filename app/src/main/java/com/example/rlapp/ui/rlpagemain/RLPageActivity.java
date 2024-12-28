@@ -10,9 +10,11 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
 import com.example.rlapp.apimodel.rlpagemain.nextdate.MindAuditNextDate;
+import com.example.rlapp.apimodel.rlpagemodels.continuemodela.RlPageContinueWatchResponse;
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.HomeActivity;
+import com.example.rlapp.ui.Wellness.EpisodesListAdapter;
 import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
 import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
@@ -34,6 +36,8 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -60,7 +64,7 @@ import retrofit2.Response;
 public class RLPageActivity extends AppCompatActivity implements View.OnClickListener {
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
-
+    private RecyclerView recyclerViewContinue;
     private FloatingActionButton add_fab;
     private RelativeLayout rl_verify_view;
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
@@ -74,6 +78,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rlpage);
+        recyclerViewContinue = findViewById(R.id.recyclerViewContinue);
         rl_verify_view = findViewById(R.id.rl_verify_view);
         rlmenu = findViewById(R.id.rlmenu);
         rlmenu.setOnClickListener(this);
@@ -227,9 +232,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                         String jsonString = response.body().string();
                         Log.d("Response Body"," My RL Continue watching - "+jsonString);
                         Gson gson = new Gson();
-                        //getEmotions = gson.fromJson(jsonString, GetEmotions.class);
+                        RlPageContinueWatchResponse rlPageContinueWatchResponse = gson.fromJson(jsonString, RlPageContinueWatchResponse.class);
 
-
+                        HandleContinueWatchUI(rlPageContinueWatchResponse);
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
@@ -244,6 +249,13 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                 Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void HandleContinueWatchUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
+        RLContinueListAdapter adapter = new RLContinueListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
+        recyclerViewContinue.setAdapter(adapter);
     }
 
     //getMyRLHealthCamResult
