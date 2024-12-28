@@ -158,11 +158,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void searchFilter() {
-        /*SearchQueryResults resultsMoveRight = new SearchQueryResults();
-        SearchQueryResults resultsThinkRight = new SearchQueryResults();
-        SearchQueryResults resultsSleepRight = new SearchQueryResults();
-        SearchQueryResults resultsEatRight = new SearchQueryResults();
-        SearchQueryResults resultsMyHealth = new SearchQueryResults();*/
 
         ArrayList<String> modules = new ArrayList<>();
 
@@ -193,60 +188,6 @@ public class SearchActivity extends AppCompatActivity {
             performSearchByModule(edtSearch.getText().toString(), modulesArray);
         }
 
-        /*filerResults.setContents(resultsMyHealth.getContents());
-        filerResults.setContents(resultsMoveRight.getContents());
-        filerResults.setContents(resultsSleepRight.getContents());
-        filerResults.setContents(resultsThinkRight.getContents());
-        filerResults.setContents(resultsEatRight.getContents());
-
-        filerResults.setArtists(resultsMyHealth.getArtists());
-        filerResults.setArtists(resultsMoveRight.getArtists());
-        filerResults.setArtists(resultsSleepRight.getArtists());
-        filerResults.setArtists(resultsThinkRight.getArtists());
-        filerResults.setArtists(resultsEatRight.getArtists());
-
-        filerResults.setInstructorProfiles(resultsMyHealth.getInstructorProfiles());
-        filerResults.setInstructorProfiles(resultsMoveRight.getInstructorProfiles());
-        filerResults.setInstructorProfiles(resultsSleepRight.getInstructorProfiles());
-        filerResults.setInstructorProfiles(resultsThinkRight.getInstructorProfiles());
-        filerResults.setInstructorProfiles(resultsEatRight.getInstructorProfiles());
-
-        filerResults.setServices(resultsMyHealth.getServices());
-        filerResults.setServices(resultsMoveRight.getServices());
-        filerResults.setServices(resultsSleepRight.getServices());
-        filerResults.setServices(resultsThinkRight.getServices());
-        filerResults.setServices(resultsEatRight.getServices());
-
-        setAdapter("contents", filerResults);*/
-
-    }
-
-    private SearchQueryResults searchFilerByModule(String name) {
-        SearchQueryResults results = new SearchQueryResults();
-        List<Content> contents = new ArrayList<>();
-        List<Service> services = new ArrayList<>();
-        List<InstructorProfile> instructorProfiles = new ArrayList<>();
-        for (Content content : searchQueryResponse.getResults().getContents()) {
-            if (content.getModule().equals(name)) {
-                contents.add(content);
-            }
-        }
-
-        for (Service service : searchQueryResponse.getResults().getServices()) {
-            if (service.getModule().equals(name)) {
-                services.add(service);
-            }
-        }
-
-        for (InstructorProfile profile : searchQueryResponse.getResults().getInstructorProfiles()) {
-            if (profile.getModule().equals(name)) {
-                instructorProfiles.add(profile);
-            }
-        }
-        results.setContents(contents);
-        results.setServices(services);
-        results.setInstructorProfiles(instructorProfiles);
-        return results;
     }
 
     private void addChip(String category) {
