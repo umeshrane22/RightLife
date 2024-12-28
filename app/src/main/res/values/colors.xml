@@ -9,6 +9,7 @@
     <color name="txt_color_health">#14142B</color>
 
     <color name="gray">#D3D3D3</color>
+    <color name="dark_gray">#A9A9A9</color>
 
     <color name="border">#DDDDDD</color>
     <color name="menuselected">#FD6967</color>
