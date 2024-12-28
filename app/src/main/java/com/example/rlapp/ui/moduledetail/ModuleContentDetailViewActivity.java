@@ -36,6 +36,7 @@ import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.EpisodesListAdapter;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
+import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -76,7 +77,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
     private ImageButton fullscreenButton;
     private ImageButton playPauseButton;
     private ImageView img_contentview, img_artist;
-    private TextView tv_artistname;
+    private TextView tv_artistname, tvViewAll;
     private boolean isFullscreen = false;
 
     List<Like> contentList = Collections.emptyList();
@@ -95,6 +96,13 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         String categoryType = intent.getStringExtra("Categorytype");
         position  = 0;//= intent.getIntExtra("position", 0);
         contentId = intent.getStringExtra("contentId");
+
+        tvViewAll = findViewById(R.id.tv_view_all);
+        tvViewAll.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ViewAllActivity.class);
+            intent1.putExtra("ContentId", contentId);
+            startActivity(intent1);
+        });
 
 // Now you can use the categoryType variable to perform actions or set up the UI
 
@@ -401,21 +409,17 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
                         // Parse the raw JSON into the LikeResponse class
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
-                        Log.d("API_RESPONSE", "more like content: " + jsonString);
-                    /*LikeResponse likeResponse = gson.fromJson(jsonString, LikeResponse.class);
-
-                    // Use the parsed object
-                    Log.d("API_RESPONSE", "Status: " + likeResponse.getStatus());
-                    for (LikeResponse.Content content : likeResponse.getData()) {
-                        Log.d("API_RESPONSE", "Content Title: " + content.getTitle());
-                        Log.d("API_RESPONSE", "Like Count: " + content.getLikeCount());
-                    }*/
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
                         Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
                                 + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
                         setupListData(ResponseObj.getData().getLikeList());
-                      //  setupEpisodeListData(ResponseObj.getData().getLikeList());
+
+                        if (ResponseObj.getData().getLikeList().size() < 5) {
+                            tvViewAll.setVisibility(View.GONE);
+                        }else{
+                            tvViewAll.setVisibility(View.VISIBLE);
+                        }
 
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
