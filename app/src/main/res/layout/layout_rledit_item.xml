@@ -43,7 +43,7 @@
             android:layout_height="wrap_content">
             <RelativeLayout
                 android:layout_width="wrap_content"
-
+                android:id="@+id/rl_modulename"
                 android:background="@drawable/roundedcornerbutton"
                 android:backgroundTint="@color/chip_selected_background_color"
                 android:layout_gravity="center"
