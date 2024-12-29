@@ -59,4 +59,19 @@ public class DateTimeUtils {
         }
         return message;
     }
+
+
+    public static String convertAPIDateMonthFormat(String date) {
+        if (date == null)
+            return date;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        try {
+            Date newDate = spf.parse(date);
+            spf = new SimpleDateFormat("dd MMM yyyy");
+            date = spf.format(newDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
 }

@@ -11,6 +11,7 @@ import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
 import com.example.rlapp.apimodel.rlpagemain.nextdate.MindAuditNextDate;
 import com.example.rlapp.apimodel.rlpagemodels.continuemodela.RlPageContinueWatchResponse;
+import com.example.rlapp.apimodel.rlpagemodels.journal.RLpageJournalResponse;
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.HomeActivity;
@@ -64,7 +65,7 @@ import retrofit2.Response;
 public class RLPageActivity extends AppCompatActivity implements View.OnClickListener {
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private RecyclerView recyclerViewContinue;
+    private RecyclerView recyclerViewContinue,recyclerViewrecent;
     private FloatingActionButton add_fab;
     private RelativeLayout rl_verify_view;
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
@@ -79,6 +80,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rlpage);
         recyclerViewContinue = findViewById(R.id.recyclerViewContinue);
+        recyclerViewrecent = findViewById(R.id.recyclerViewrecent);
         rl_verify_view = findViewById(R.id.rl_verify_view);
         rlmenu = findViewById(R.id.rlmenu);
         rlmenu.setOnClickListener(this);
@@ -126,7 +128,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
          ArrayList<String> userEmotionsString = new ArrayList<>();
         UserEmotions userEmotions = new UserEmotions(userEmotionsString);
         getSuggestedAssessment(userEmotions);
-
+        MyRLRecentlyWatched();
 
         //--
         ImageView ivProfileImage = findViewById(R.id.iv_profile_image);
@@ -258,6 +260,51 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         recyclerViewContinue.setAdapter(adapter);
     }
 
+    // Get Recently Watched Content List here
+    private void MyRLRecentlyWatched() {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getMyRLRecentlyWatched(accessToken,"recently",4,0);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Log.d("Response Body"," My RL Continue watching - "+jsonString);
+                        Gson gson = new Gson();
+                        RlPageContinueWatchResponse rlPageContinueWatchResponse = gson.fromJson(jsonString, RlPageContinueWatchResponse.class);
+
+                        HandleRecentlyWatchedUI(rlPageContinueWatchResponse);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void HandleRecentlyWatchedUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
+        RLRecentlyWatchedListAdapter adapter = new RLRecentlyWatchedListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewrecent.setLayoutManager(horizontalLayoutManager);
+        recyclerViewrecent.setAdapter(adapter);
+    }
+
     //getMyRLHealthCamResult
     private void getMyRLHealthCamResult() {
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
@@ -353,8 +400,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                         String jsonString = response.body().string();
                         Log.d("Response Body"," My RL journal - "+jsonString);
                         Gson gson = new Gson();
-                        //getEmotions = gson.fromJson(jsonString, GetEmotions.class);
-
+                        RLpageJournalResponse getEmotions = gson.fromJson(jsonString, RLpageJournalResponse.class);
+                        Log.d("Response Body"," My RL journal - "+jsonString);
 
 
                     } catch (IOException e) {
@@ -413,7 +460,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
     }
     private void setMindAuditDate(MindAuditNextDate mindAuditNextDate) {
-        txt_next_date.setText(DateTimeUtils.convertAPIDate(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate())+" "+"|"+" "+"View Detailed Report"
+        txt_next_date.setText(DateTimeUtils.convertAPIDateMonthFormat(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate())+" "+"|"+" "+"View Detailed Report"
         );
         txt_mindaudit_days_count.setText("Next Scan In "+mindAuditNextDate.getData().getMindAuditDateCount()+" Days");
     }

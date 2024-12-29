@@ -1684,6 +1684,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
                         android:id="@+id/recyclerViewContinue"
+                        android:nestedScrollingEnabled="false"
                         android:layout_height="wrap_content"/>
 
                     <LinearLayout
@@ -2789,11 +2790,16 @@
                     android:layout_margin="16dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp">
-
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:id="@+id/recyclerViewrecent"
+                        android:nestedScrollingEnabled="false"
+                        android:layout_height="wrap_content"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:visibility="gone"
                         android:orientation="vertical">
 
                         <RelativeLayout
