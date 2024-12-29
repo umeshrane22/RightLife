@@ -35,6 +35,7 @@ import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.EpisodesListAdapter;
+import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
@@ -57,21 +58,20 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ModuleContentDetailViewActivity extends AppCompatActivity {
-    private ModuleContentDetail ContentResponseObj;
+    public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    private RecyclerView recyclerView,recyclerViewEpisode;
     TextView txt_desc, tv_header_htw;
     String[] itemNames;
     int[] itemImages;
-    public WellnessApiResponse wellnessApiResponse;
     int position;
     String contentId = "";
     String contentUrl = "";
+    List<Like> contentList = Collections.emptyList();
+    private ModuleContentDetail ContentResponseObj;
+    private RecyclerView recyclerView, recyclerViewEpisode;
     private VideoView videoView;
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
-
-
     private PlayerView playerView;
     private ExoPlayer player;
     private ImageButton fullscreenButton;
@@ -79,8 +79,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname, tvViewAll;
     private boolean isFullscreen = false;
-
-    List<Like> contentList = Collections.emptyList();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,7 +92,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         img_contentview = findViewById(R.id.img_contentview);
         Intent intent = getIntent();
         String categoryType = intent.getStringExtra("Categorytype");
-        position  = 0;//= intent.getIntExtra("position", 0);
+        position = 0;//= intent.getIntExtra("position", 0);
         contentId = intent.getStringExtra("contentId");
 
         tvViewAll = findViewById(R.id.tv_view_all);
@@ -129,7 +127,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         // get morelike content
         getMoreLikeContent(contentId);
 
-       // getSeriesWithEpisodes(contentList.get(position).getId());
+        // getSeriesWithEpisodes(contentList.get(position).getId());
 
         List<Like> contentList1 = Collections.emptyList();
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
@@ -160,7 +158,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         });
 
 
-
         // Handle play/pause button click
         playPauseButton.setOnClickListener(v -> {
             if (isPlaying) {
@@ -188,9 +185,9 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         }
     }
 
-   private void setContentDetails(ModuleContentDetail responseObj){
+    private void setContentDetails(ModuleContentDetail responseObj) {
         txt_desc.setText(responseObj.getData().getDesc());
-        setModuleColor(txt_desc,responseObj.getData().getModuleId());
+        setModuleColor(txt_desc, responseObj.getData().getModuleId());
 
         tv_header_htw.setText(responseObj.getData().getTitle());
 //if (false)
@@ -222,6 +219,11 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
                 .circleCrop()
                 .into(img_artist);
 
+        tv_artistname.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ArtistsDetailsActivity.class);
+            intent1.putExtra("ArtistId", responseObj.getData().getArtist().get(0).getId());
+            startActivity(intent1);
+        });
 
         playButton = findViewById(R.id.playButton);
 
@@ -364,8 +366,8 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
                             Gson gson = new Gson();
                             String jsonResponse = gson.toJson(response.body().toString());
                             Log.d("API Response", "Content Details: " + jsonResponse);
-                              ContentResponseObj = gson.fromJson(successMessage, ModuleContentDetail.class);
-                             setContentDetails(ContentResponseObj);
+                            ContentResponseObj = gson.fromJson(successMessage, ModuleContentDetail.class);
+                            setContentDetails(ContentResponseObj);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -417,7 +419,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
                         if (ResponseObj.getData().getLikeList().size() < 5) {
                             tvViewAll.setVisibility(View.GONE);
-                        }else{
+                        } else {
                             tvViewAll.setVisibility(View.VISIBLE);
                         }
 
@@ -449,7 +451,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
-        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken,seriesId, true);
+        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -486,6 +488,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);
     }
+
     private void setupEpisodeListData(List<Like> contentList) {
         EpisodesListAdapter adapter = new EpisodesListAdapter(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -496,7 +499,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
     // play video
     private void initializePlayer() {
-        if (!ContentResponseObj.getData().getContentType().equalsIgnoreCase("VIDEO") ||ContentResponseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
+        if (!ContentResponseObj.getData().getContentType().equalsIgnoreCase("VIDEO") || ContentResponseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
             return;
         }
         // Create a new ExoPlayer instance
@@ -506,7 +509,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
         // Set media source (video URL)
         //Uri videoUri = Uri.parse("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
-        Uri videoUri = Uri.parse(ApiClient.CDN_URL_QA +ContentResponseObj.getData().getPreviewUrl());// responseObj.getPreviewUrl()
+        Uri videoUri = Uri.parse(ApiClient.CDN_URL_QA + ContentResponseObj.getData().getPreviewUrl());// responseObj.getPreviewUrl()
         //MediaItem mediaItem = MediaItem.fromUri(videoUri);
         //player.setMediaItem(mediaItem);
         Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA + ""); //responseObj.getUrl()
@@ -538,7 +541,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (Util.SDK_INT >= 24) {
-          //  initializePlayer();
+            //  initializePlayer();
         }
     }
 

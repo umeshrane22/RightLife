@@ -31,6 +31,7 @@ import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -40,6 +41,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,13 +52,11 @@ import retrofit2.Response;
 
 public class RLEditDetailViewActivity extends AppCompatActivity {
 
-    ImageView ic_back_dialog, close_dialog;
-    TextView txt_desc, tv_header_htw;
-    String[] itemNames;
-    int[] itemImages;
     RightLifeEditResponse rightLifeEditResponse;
     int position;
     String contentUrl = "";
+    private ImageView ic_back_dialog, close_dialog;
+    private TextView txt_desc, tv_header_htw;
     private RecyclerView recyclerView;
     private VideoView videoView;
     private ImageButton playButton;
@@ -92,6 +92,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             startActivity(intent1);
         });
 
+
 // Now you can use the categoryType variable to perform actions or set up the UI
         if (categoryType != null) {
             // Do something with the category type
@@ -113,16 +114,6 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         close_dialog = findViewById(R.id.ic_close_dialog);
         txt_desc = findViewById(R.id.txt_desc);
         tv_header_htw = findViewById(R.id.tv_header_htw);
-
-        itemNames = new String[]{"Sleep Right with sounds", "Move right", "Sleep music", "Video category", "Audio 1", "Audio 2", "Audio 2", "Audio 2", "Audio 2", "Audio 2"};
-        itemImages = new int[]{R.drawable.contents, R.drawable.eat_home, R.drawable.facial_scan,
-                R.drawable.first_look, R.drawable.generic_02, R.drawable.meal_plan, R.drawable.generic_02,
-                R.drawable.meal_plan, R.drawable.generic_02, R.drawable.meal_plan};
-
-
-        //API Call
-        //getContentlistdetails(categoryType);
-        //getContendetails("");
 
         // get morelike content
         getMoreLikeContent(rightLifeEditResponse.getData().getTopList().get(position).getId());
@@ -167,6 +158,12 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
                 .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
                 .circleCrop()
                 .into(img_artist);
+
+        tv_artistname.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ArtistsDetailsActivity.class);
+            intent1.putExtra("ArtistId", rightLifeEditResponse.getData().getTopList().get(position).getArtist().get(0).getId());
+            startActivity(intent1);
+        });
 
 
         playButton = findViewById(R.id.playButton);
@@ -214,6 +211,10 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         });
 
         player.setPlayWhenReady(true);
+        ViewCountRequest viewCountRequest = new ViewCountRequest();
+        viewCountRequest.setId(rightLifeEditResponse.getData().getTopList().get(position).getId());
+        viewCountRequest.setUserId(SharedPreferenceManager.getInstance(this).getUserId());
+        updateViewCount(viewCountRequest);
     }
 
 
@@ -403,7 +404,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
                         if (ResponseObj.getData().getLikeList().size() < 5) {
                             tvViewAll.setVisibility(View.GONE);
-                        }else{
+                        } else {
                             tvViewAll.setVisibility(View.VISIBLE);
                         }
 
@@ -495,5 +496,58 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         }
     }
 
+    private void updateViewCount(ViewCountRequest viewCountRequest) {
+        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.updateViewCount(authToken, viewCountRequest);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = jsonString = response.body().string();
+                        Log.d("API_RESPONSE", "more like content: " + jsonString);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Log.e("API_ERROR", "Error: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+            }
+        });
+    }
+
+    private void updateStaticticsRecord(StatiticsRequest statiticsRequest) {
+        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.updateStatiticsRecord(authToken, statiticsRequest);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = jsonString = response.body().string();
+                        Log.d("API_RESPONSE", "more like content: " + jsonString);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Log.e("API_ERROR", "Error: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+            }
+        });
+    }
 
 }

@@ -20,6 +20,8 @@ import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
+import com.example.rlapp.ui.therledit.StatiticsRequest;
+import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.google.gson.JsonElement;
 
 import okhttp3.ResponseBody;
@@ -514,6 +516,25 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Query("query") String query,
             @Query("modules") String[] modules
+    );
+
+    @Headers("Content-Type: application/json")
+    @PUT("rightLife/viewCount")
+    Call<ResponseBody> updateViewCount(
+            @Header("Authorization") String authToken,
+            @Body ViewCountRequest viewCountRequest);
+
+    @Headers("Content-Type: application/json")
+    @PUT("statitics")
+    Call<ResponseBody> updateStatiticsRecord(
+            @Header("Authorization") String authToken,
+            @Body StatiticsRequest statiticsRequest);
+
+    @Headers("Content-Type: application/json")
+    @GET("artist/{artistId}")
+    Call<ResponseBody> getArtistDetails(
+            @Header("Authorization") String authToken,
+            @Path("artistId") String artistId
     );
 
 }

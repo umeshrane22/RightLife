@@ -35,6 +35,7 @@ import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
+import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -57,15 +58,15 @@ import retrofit2.Response;
 
 public class WellnessDetailViewActivity extends AppCompatActivity {
 
+    public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    private RecyclerView recyclerView,recyclerViewEpisode;
     TextView txt_desc, tv_header_htw;
     String[] itemNames;
     int[] itemImages;
-    public WellnessApiResponse wellnessApiResponse;
     int position;
     String contentId = "";
     String contentUrl = "";
+    private RecyclerView recyclerView, recyclerViewEpisode;
     private VideoView videoView;
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
@@ -161,7 +162,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         });
 
         txt_desc.setText(wellnessApiResponse.getData().getContentList().get(position).getDesc());
-        setModuleColor(txt_desc,wellnessApiResponse.getData().getContentList().get(position).getModuleId());
+        setModuleColor(txt_desc, wellnessApiResponse.getData().getContentList().get(position).getModuleId());
 
         tv_header_htw.setText(wellnessApiResponse.getData().getContentList().get(position).getTitle());
 //if (false)
@@ -186,6 +187,11 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
                 .circleCrop()
                 .into(img_artist);
 
+        tv_artistname.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ArtistsDetailsActivity.class);
+            intent1.putExtra("ArtistId", wellnessApiResponse.getData().getContentList().get(position).getArtist().get(0).get_id());
+            startActivity(intent1);
+        });
 
         playButton = findViewById(R.id.playButton);
 
@@ -442,7 +448,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
                         Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
                                 + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
                         setupListData(ResponseObj.getData().getLikeList());
-                       // setupEpisodeListData(ResponseObj.getData().getLikeList());
+                        // setupEpisodeListData(ResponseObj.getData().getLikeList());
 
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
@@ -472,7 +478,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
-        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken,seriesId, true);
+        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -510,6 +516,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);
     }
+
     private void setupEpisodeListData(List<EpisodeModel> contentList) {
         EpisodesListAdapter2 adapter = new EpisodesListAdapter2(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
