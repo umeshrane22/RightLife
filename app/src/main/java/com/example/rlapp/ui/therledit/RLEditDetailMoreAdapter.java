@@ -2,11 +2,13 @@ package com.example.rlapp.ui.therledit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -54,11 +57,7 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
         }
         //holder.imageView.setImageResource(itemImages[position]);
-        if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")){
-            holder.img_iconview.setImageResource(R.drawable.ic_read_category);
-        }else {
-            holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
-        }
+
         holder.itemView.setOnClickListener(view -> {
             Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             Gson gson = new Gson();
@@ -68,6 +67,23 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             intent.putExtra("position", position);
             holder.itemView.getContext().startActivity(intent);
         });
+        holder.txt_modulename.setText(Utils.getModuleText(contentList.get(position).getModuleId()));
+        int color = Utils.getModuleColor(ctx, contentList.get(position).getModuleId());
+        holder.rl_modulename.setBackgroundTintList(ColorStateList.valueOf(color));
+        if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")) {
+            holder.img_iconview.setImageResource(R.drawable.ic_read_category);
+            holder.item_type_text.setVisibility(View.GONE);
+        } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")) {
+            holder.img_iconview.setImageResource(R.drawable.play);
+            holder.item_type_text.setVisibility(View.GONE);
+        } else if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
+            holder.img_iconview.setImageResource(R.drawable.play);
+            holder.item_type_text.setVisibility(View.VISIBLE);
+            holder.item_type_text.setText(". 0 . videos");
+        } else {
+            holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
+            holder.item_type_text.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -77,14 +93,18 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView,favorite_image,img_iconview;
-        TextView textView;
+        TextView textView,item_type_text,txt_modulename;
+        RelativeLayout rl_modulename;
 
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.item_image);
             textView = itemView.findViewById(R.id.item_text);
+            txt_modulename = itemView.findViewById(R.id.txt_modulename);
+            item_type_text = itemView.findViewById(R.id.item_type_text);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
+            rl_modulename = itemView.findViewById(R.id.rl_modulename);
             favorite_image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
