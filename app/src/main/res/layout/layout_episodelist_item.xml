@@ -1,9 +1,8 @@
 <!-- res/layout/grid_item.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:gravity="center"
     android:layout_margin="10dp"
@@ -11,141 +10,117 @@
     android:background="@color/white"
     android:padding="0dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible"
-        android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:paddingBottom="10dp">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_toRightOf="@id/rlimg1"
-    android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-    <View
-        android:layout_width="1dp"
-        android:id="@+id/centerlineview"
-        android:background="@color/black"
-        android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true"
-        android:layout_height="14dp"/>
-    <TextView
-        android:id="@+id/tv_modulename"
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:layout_toLeftOf="@+id/centerlineview"
-        android:layout_marginBottom="5dp"
+        android:backgroundTint="@color/white"
+        android:elevation="5dp"
+        android:gravity="center"
+        android:weightSum="1"
+        android:visibility="visible"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:layout_margin="16dp"
+            android:layout_weight="0.4"
+            android:visibility="visible"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:visibility="gone"
+                android:background="@drawable/roundedcornerbutton"
+                android:backgroundTint="@color/chip_selected_background_color"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgid"
+                    android:layout_width="10dp"
+                    android:background="@drawable/sleeprightsvg"
+                    android:backgroundTint="@color/white"
+                    android:layout_margin="5dp"
+                    android:layout_height="10dp"/>
+                <TextView
+                    android:id="@+id/txt_modulename"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:visibility="visible"
+                    android:text="SleepRight"
+                    android:layout_toRightOf="@+id/imgid"
+                    android:padding="3dp"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/textsize_small" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_height="wrap_content">
 
-        android:drawableStart="@drawable/rlpage_thinkright_svg"
-        android:drawablePadding="5dp"
-        android:fontFamily="@font/dmsans_regular"
-        android:paddingStart="5dp"
-        android:text="MoveRight"
-        android:textSize="@dimen/textsize_small"
-        tools:ignore="DuplicateIds" />
+                <ImageView
+                    android:id="@+id/img_iconview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_sound_category" />
 
-    <ImageView
-        android:id="@+id/imgtag"
-        android:layout_width="wrap_content"
-        android:src="@drawable/ic_tag"
-        android:layout_marginStart="10dp"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/centerlineview"
-        android:layout_centerVertical="true"
-        app:tint="@color/black" />
+                <TextView
+                    android:id="@+id/item_type_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_category"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:layout_toRightOf="@+id/imgtag"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/img_iconview"
+                    android:text="video"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"/>
+            </RelativeLayout>
 
-        android:drawablePadding="5dp"
-        android:drawableTint="#FFE18D"
-        android:fontFamily="@font/dmsans_regular"
-        android:text="Yoga"
-        android:textSize="@dimen/textsize_small" />
-</RelativeLayout>
+            <TextView
+                android:id="@+id/item_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Category title"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/rlimg1"
-            android:layout_width="104dp"
-            android:layout_height="104dp"
-            android:layout_alignParentStart="true"
-
-            android:scaleType="fitXY"
-            android:src="@drawable/image1_rlpage_edit"
-            tools:ignore="DuplicateIds" />
-
-
-        <TextView
+            android:id="@+id/item_image"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_modulename"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_toEndOf="@id/rlimg1"
-            android:fontFamily="@font/merriweather_bold"
-            android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
-            android:id="@+id/item_text"
-            android:layout_centerVertical="true"
-            android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_medium" />
+            android:layout_height="90dp"
+            android:layout_weight="0.5"
+            android:scaleType="centerCrop"
+            android:src="@drawable/facial_scan" />
 
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_toRightOf="@id/rlimg1">
-
-            <TextView
-                android:id="@+id/tv_artistname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:drawablePadding="5dp"
-                android:fontFamily="@font/dmsans_regular"
-                android:paddingStart="5dp"
-                android:text="Ventak swami muthu s…   |"
-                android:textSize="@dimen/textsize_small"
-                tools:ignore="DuplicateIds" />
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="20dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/rightlife"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tvTimeLeft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_toRightOf="@+id/tv_artistname"
-                android:drawablePadding="5dp"
-                android:fontFamily="@font/dmsans_regular"
-                android:paddingStart="15dp"
-                android:text="2 min left"
-                android:textSize="@dimen/textsize_small"
-                tools:ignore="DuplicateIds" />
-        </RelativeLayout>
+    </LinearLayout>
 
     </RelativeLayout>
-    </LinearLayout>
-</LinearLayout>
+    <ImageView
+        android:id="@+id/favorite_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_margin="5dp"
+        android:scaleType="fitXY"
+        android:layout_gravity="end"
+        android:src="@drawable/favstarsolid" />
+</androidx.cardview.widget.CardView>

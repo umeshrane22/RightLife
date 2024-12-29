@@ -20,20 +20,19 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.rlpagemodels.continuemodela.ContentDetail;
-import com.example.rlapp.ui.utility.AppConstants;
+import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.Utils;
-
 
 import java.util.List;
 
-public class RLContinueListAdapter extends RecyclerView.Adapter<RLContinueListAdapter.ViewHolder> {
+public class RLRecentlyWatchedListAdapter extends RecyclerView.Adapter<RLRecentlyWatchedListAdapter.ViewHolder> {
 
     private String[] itemNames;
     private int[] itemImages;
     private LayoutInflater inflater;
     private Context ctx;
     List<ContentDetail> contentList;
-    public RLContinueListAdapter(Context context, List<ContentDetail> contentList) {
+    public RLRecentlyWatchedListAdapter(Context context, List<ContentDetail> contentList) {
         this.ctx = context;
 
         this.contentList = contentList;
@@ -43,13 +42,13 @@ public class RLContinueListAdapter extends RecyclerView.Adapter<RLContinueListAd
 
     @NonNull
     @Override
-    public RLContinueListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.layout_continuelist_item, parent, false);
-        return new RLContinueListAdapter.ViewHolder(view);
+    public RLRecentlyWatchedListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.layout_recentlywatchedlist_item, parent, false);
+        return new RLRecentlyWatchedListAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RLContinueListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RLRecentlyWatchedListAdapter.ViewHolder holder, int position) {
         holder.textView.setText(contentList.get(position).getTitle());
 
         holder.tv_modulename.setText(Utils.getModuleText(contentList.get(position).getModuleId()));
@@ -89,7 +88,7 @@ public class RLContinueListAdapter extends RecyclerView.Adapter<RLContinueListAd
         if ("SERIES".equals(contentList.get(position).getContentType())) {
             text = (contentList.get(position).getLeftDuration()) + " videos/audios";
         } else {
-            text = contentList.get(position).getLeftDuration() + " left";
+            text = DateTimeUtils.convertAPIDateMonthFormat(contentList.get(position).getDate());//contentList.get(position).getLeftDuration() + " left";
         }
         holder.tvTimeLeft.setText(text);
     }

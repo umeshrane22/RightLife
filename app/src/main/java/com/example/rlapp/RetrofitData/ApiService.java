@@ -462,10 +462,22 @@ public interface ApiService {
 
     );
 
-    // RL page APIs journal
+    // RL page APIs continue
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("continue")
+    Call<ResponseBody> getMyRLRecentlyWatched(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("pageType") String pageType,
+            @Query("limit") int limit,
+            @Query("skip") int skip
+
+    );
+
+    // RL page APIs journal
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("journal")
     Call<ResponseBody> getMyRLJournal(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Query("skip") int skip,
