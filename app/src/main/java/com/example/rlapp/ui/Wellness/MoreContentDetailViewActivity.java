@@ -33,6 +33,7 @@ import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
+import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -56,20 +57,19 @@ import retrofit2.Response;
 
 public class MoreContentDetailViewActivity extends AppCompatActivity {
 
+    public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    private RecyclerView recyclerView,recyclerViewEpisode;
     TextView txt_desc, tv_header_htw;
     String[] itemNames;
     int[] itemImages;
-    public WellnessApiResponse wellnessApiResponse;
     int position;
     String contentId = "";
     String contentUrl = "";
+    List<Like> contentList = Collections.emptyList();
+    private RecyclerView recyclerView, recyclerViewEpisode;
     private VideoView videoView;
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
-
-
     private PlayerView playerView;
     private ExoPlayer player;
     private ImageButton fullscreenButton;
@@ -77,8 +77,6 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname;
     private boolean isFullscreen = false;
-
-    List<Like> contentList = Collections.emptyList();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,14 +90,15 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         img_contentview = findViewById(R.id.img_contentview);
         Intent intent = getIntent();
         String categoryType = intent.getStringExtra("Categorytype");
-        position  = intent.getIntExtra("position", 0);
+        position = intent.getIntExtra("position", 0);
         contentId = intent.getStringExtra("contentId");
 
 // Now you can use the categoryType variable to perform actions or set up the UI
         if (categoryType != null) {
             // Do something with the category type
             Gson gson = new Gson();
-            contentList = gson.fromJson(categoryType, new TypeToken<List<Like>>() {}.getType());
+            contentList = gson.fromJson(categoryType, new TypeToken<List<Like>>() {
+            }.getType());
             //Gson gson = new Gson();
             //wellnessApiResponse = gson.fromJson(categoryType, WellnessApiResponse.class);
             Log.d("CategoryListActivity", "Received category type: " + categoryType);
@@ -133,7 +132,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         // get morelike content
         getMoreLikeContent(contentList.get(position).getId());
 
-       // getSeriesWithEpisodes(contentList.get(position).getId());
+        // getSeriesWithEpisodes(contentList.get(position).getId());
 
         List<Like> contentList1 = Collections.emptyList();
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
@@ -164,7 +163,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         });
 
         txt_desc.setText(contentList.get(position).getDesc());
-        setModuleColor(txt_desc,contentList.get(position).getModuleId());
+        setModuleColor(txt_desc, contentList.get(position).getModuleId());
 
         tv_header_htw.setText(contentList.get(position).getTitle());
 //if (false)
@@ -195,6 +194,12 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
                 .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
                 .circleCrop()
                 .into(img_artist);
+
+        tv_artistname.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ArtistsDetailsActivity.class);
+            intent1.putExtra("ArtistId", contentList.get(position).getArtist().get(0).getId());
+            startActivity(intent1);
+        });
 
 
         playButton = findViewById(R.id.playButton);
@@ -228,8 +233,6 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
             // Start video playback
            // videoView.start();
         });*/
-
-
 
 
         // Handle play/pause button click
@@ -481,7 +484,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
-        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken,seriesId, true);
+        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -513,11 +516,12 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
 
 
     private void setupListData(List<Like> contentList) {
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this,  contentList);
+        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);
     }
+
     private void setupEpisodeListData(List<Like> contentList) {
         EpisodesListAdapter adapter = new EpisodesListAdapter(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);

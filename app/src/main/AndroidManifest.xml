@@ -83,6 +83,7 @@
         <activity android:name=".ui.drawermenu.ChangePasswordActivity" />
         <activity android:name=".ui.search.SearchActivity" />
         <activity android:name=".ui.therledit.ViewAllActivity"/>
+        <activity android:name=".ui.therledit.ArtistsDetailsActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
