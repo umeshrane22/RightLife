@@ -24,6 +24,8 @@ import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.google.gson.JsonElement;
 
+import java.util.Map;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -548,6 +550,14 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Path("artistId") String artistId
     );
+
+
+    // create journal
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("journal")
+    // Assume the API endpoint is /login
+    Call<ResponseBody> createJournal( @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Body Map<String, String> requestData);
 
 }
 

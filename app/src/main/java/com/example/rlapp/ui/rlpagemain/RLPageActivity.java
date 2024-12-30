@@ -21,6 +21,7 @@ import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
+import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.AllAssessment;
 import com.example.rlapp.ui.mindaudit.Assessments;
 import com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity;
@@ -74,7 +75,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private CardView cardview_healthcam;
     private TextView txtuserName,txt_rldays,txt_well_streak_count,txt_next_date,txt_mindaudit_days_count;
     private Button btn_continue_healthcam,btn_recheck_health,btn_rerecord_voicescan;
-
+    private TextView tv_title_journal,tv_journal_desc,txt_journal_date;
+    private LinearLayout ll_journal_main,ll_normal_journal,ll_guided_journal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +117,16 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         txt_well_streak_count = findViewById(R.id.txt_well_streak_count);
         txt_next_date = findViewById(R.id.txt_next_date);
         txt_mindaudit_days_count = findViewById(R.id.txt_mindaudit_days_count);
+
+        //journal card
+        tv_title_journal = findViewById(R.id.tv_title_journal);
+        tv_journal_desc = findViewById(R.id.tv_journal_desc);
+        txt_journal_date = findViewById(R.id.txt_journal_date);
+        ll_journal_main = findViewById(R.id.ll_journal_main);
+        ll_guided_journal = findViewById(R.id.ll_guided_journal);
+        ll_normal_journal = findViewById(R.id.ll_normal_journal);
+        ll_guided_journal.setOnClickListener(this);
+        ll_normal_journal.setOnClickListener(this);
 
 
         // Api Calls
@@ -400,10 +412,10 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                         String jsonString = response.body().string();
                         Log.d("Response Body"," My RL journal - "+jsonString);
                         Gson gson = new Gson();
-                        RLpageJournalResponse getEmotions = gson.fromJson(jsonString, RLpageJournalResponse.class);
+                        RLpageJournalResponse rLpageJournalResponse = gson.fromJson(jsonString, RLpageJournalResponse.class);
                         Log.d("Response Body"," My RL journal - "+jsonString);
-
-
+                        HandleJournalUI(rLpageJournalResponse);
+                        
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -417,6 +429,17 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                 Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void HandleJournalUI(RLpageJournalResponse rLpageJournalResponse) {
+        if (rLpageJournalResponse.getData().getJournalsList().isEmpty()) {
+            ll_journal_main.setVisibility(View.GONE);
+            return;
+        }else {
+            txt_journal_date.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(rLpageJournalResponse.getData().getJournalsList().get(0).getUpdatedAt()));
+            tv_title_journal.setText(rLpageJournalResponse.getData().getJournalsList().get(0).getTitle());
+            tv_journal_desc.setText(rLpageJournalResponse.getData().getJournalsList().get(0).getJournal());
+        }
     }
 
 
@@ -513,13 +536,17 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
             Toast.makeText(RLPageActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
-
+            startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
             Toast.makeText(RLPageActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(RLPageActivity.this, ExploreAffirmationsListActivity.class));
         } else if (viewId == R.id.ll_sleepsounds) {
             Toast.makeText(RLPageActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(RLPageActivity.this, ExploreSleepSoundsActivity.class));
+        } else if (viewId == R.id.ll_guided_journal) {
+            startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
+        }else if (viewId == R.id.ll_normal_journal) {
+            startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
         }
     }
 }
