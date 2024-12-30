@@ -18,11 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
-import com.example.rlapp.apimodel.modulecontentlist.Content;
 import com.example.rlapp.apimodel.morelikecontent.Like;
-import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
-import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
@@ -30,9 +27,10 @@ import java.util.List;
 
 public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMoreAdapter.ViewHolder> {
 
+    List<Like> contentList;
     private LayoutInflater inflater;
     private Context ctx;
-    List<Like> contentList;
+
     public RLEditDetailMoreAdapter(Context context, List<Like> contentList) {
         this.ctx = context;
         this.contentList = contentList;
@@ -52,14 +50,14 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
         holder.textView.setText(contentList.get(position).getTitle());
 
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
-            Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
+            Glide.with(ctx).load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
+            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl());
             Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
         }
         //holder.imageView.setImageResource(itemImages[position]);
 
         holder.itemView.setOnClickListener(view -> {
-            Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             Gson gson = new Gson();
             String json = gson.toJson(contentList);
             Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
@@ -85,11 +83,33 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             holder.item_type_text.setVisibility(View.GONE);
         }
 
-        if (contentList.get(position).getIsFavourited()){
+        if (contentList.get(position).getIsFavourited()) {
             holder.favorite_image.setImageResource(R.drawable.favstarsolid);
-        }else {
+        } else {
             holder.favorite_image.setImageResource(R.drawable.unfavorite);
         }
+
+        holder.favorite_image.setOnClickListener(view -> {
+            FavouriteRequest favouriteRequest = new FavouriteRequest();
+            favouriteRequest.setFavourite(!contentList.get(position).getIsFavourited());
+            favouriteRequest.setEpisodeId("");
+            Utils.addToFavourite(ctx, contentList.get(position).getId(), favouriteRequest, new OnFavouriteClickListener() {
+                @Override
+                public void onSuccess(boolean isSuccess, String message) {
+                    Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+                    if (isSuccess) {
+                        contentList.get(position).setIsFavourited(!contentList.get(position).getIsFavourited());
+                        notifyItemChanged(position);
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(ctx, error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
     }
 
     @Override
@@ -98,8 +118,8 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView,favorite_image,img_iconview;
-        TextView textView,item_type_text,txt_modulename;
+        ImageView imageView, favorite_image, img_iconview;
+        TextView textView, item_type_text, txt_modulename;
         RelativeLayout rl_modulename;
 
         public ViewHolder(View itemView) {
@@ -111,12 +131,6 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
             rl_modulename = itemView.findViewById(R.id.rl_modulename);
-            favorite_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(itemView.getContext(), "position - "+getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                }
-            });
 
             //img_iconview.setImageResource(R.drawable.ic_read_category);
         }

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.ui.utility.Utils;
 
 class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAdapter.ArtistContentViewHolder> {
 
@@ -58,10 +60,33 @@ class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAda
             holder.tvContentType.setVisibility(View.GONE);
         }
 
+        if (list.getIsFavourited()) {
+            holder.imageFavorite.setImageResource(R.drawable.favstarsolid);
+        } else {
+            holder.imageFavorite.setImageResource(R.drawable.unfavorite);
+        }
+
         holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(list, position));
 
         holder.imageFavorite.setOnClickListener(view -> {
+            FavouriteRequest favouriteRequest = new FavouriteRequest();
+            favouriteRequest.setFavourite(!list.getIsFavourited());
+            favouriteRequest.setEpisodeId("");
+            Utils.addToFavourite(context, list.getId(), favouriteRequest, new OnFavouriteClickListener() {
+                @Override
+                public void onSuccess(boolean isSuccess, String message) {
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    if (isSuccess) {
+                        content.getList().get(position).setIsFavourited(!list.getIsFavourited());
+                        notifyItemChanged(position);
+                    }
+                }
 
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

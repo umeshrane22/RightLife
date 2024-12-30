@@ -28,7 +28,7 @@ import retrofit2.Response;
 
 public class ViewAllActivity extends AppCompatActivity {
 
-    RLEditDetailMoreAdapter adapter;
+    private RLEditDetailMoreAdapter adapter;
     private RecyclerView rvViewAll;
     private int mLimit = 10;
     private int mSkip = 0;
@@ -59,7 +59,6 @@ public class ViewAllActivity extends AppCompatActivity {
 
 
     private void getMoreLikeContent(String contentId, int skip, int limit) {
-        //-----------
         String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);

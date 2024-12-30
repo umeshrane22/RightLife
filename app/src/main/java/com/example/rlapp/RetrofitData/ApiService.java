@@ -20,6 +20,7 @@ import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.google.gson.JsonElement;
@@ -47,8 +48,7 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @PUT("user/set-password")
         // Assume the API endpoint is /login
-    Call<CheckRegistrationResponse> SetEmailPassword(  @Header("Authorization") String authToken,@Body SetPasswordRequest request); // Send the request body
-
+    Call<CheckRegistrationResponse> SetEmailPassword(@Header("Authorization") String authToken, @Body SetPasswordRequest request); // Send the request body
 
 
     @Headers("Content-Type: application/json") // Set content-type as application/json
@@ -556,8 +556,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("journal")
     // Assume the API endpoint is /login
-    Call<ResponseBody> createJournal( @Header("Authorization") String authToken, // Dynamic Authorization Header
-            @Body Map<String, String> requestData);
+    Call<ResponseBody> createJournal(@Header("Authorization") String authToken, // Dynamic Authorization Header
+                                     @Body Map<String, String> requestData);
 
     @GET("content/contentListByArtistId")
     Call<ResponseBody> getMoreLikeContentByArtistId(
@@ -566,6 +566,13 @@ public interface ApiService {
             @Query("skip") int skip,
             @Query("limit") int limit
     );
+
+    @Headers("Content-Type: application/json")
+    @PUT("content/{contentId}/favourite")
+    Call<ResponseBody> updateFavourite(
+            @Header("Authorization") String authToken,
+            @Path("contentId") String contentId,
+            @Body FavouriteRequest favouriteRequest);
 }
 
 
