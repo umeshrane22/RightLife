@@ -57,6 +57,7 @@ import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
+import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
@@ -1319,7 +1320,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
             Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
-
+            startActivity(new Intent(HomeActivity.this, JournalingActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
             Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreAffirmationsListActivity.class));
