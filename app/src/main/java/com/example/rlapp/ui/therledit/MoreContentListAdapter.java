@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
-import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
@@ -79,14 +78,31 @@ public class MoreContentListAdapter extends RecyclerView.Adapter<MoreContentList
             holder.item_type_text.setVisibility(View.GONE);
         }
 
-        if (contentList.get(position).getIsFavourited()){
+        if (contentList.get(position).getIsFavourited()) {
             holder.favorite_image.setImageResource(R.drawable.favstarsolid);
-        }else {
+        } else {
             holder.favorite_image.setImageResource(R.drawable.unfavorite);
         }
 
         holder.favorite_image.setOnClickListener(view -> {
-            Toast.makeText(context, "position - " + position, Toast.LENGTH_SHORT).show();
+            FavouriteRequest favouriteRequest = new FavouriteRequest();
+            favouriteRequest.setFavourite(!contentList.get(position).getIsFavourited());
+            favouriteRequest.setEpisodeId("");
+            Utils.addToFavourite(context, contentList.get(position).getId(), favouriteRequest, new OnFavouriteClickListener() {
+                @Override
+                public void onSuccess(boolean isSuccess, String message) {
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    if (isSuccess) {
+                        contentList.get(position).setIsFavourited(!contentList.get(position).getIsFavourited());
+                        notifyItemChanged(position);
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

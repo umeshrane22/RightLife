@@ -2,11 +2,26 @@ package com.example.rlapp.ui.utility;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.ui.therledit.FavouriteErrorResponse;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
+import com.example.rlapp.ui.therledit.FavouriteResponse;
+import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.google.gson.Gson;
+
+import java.io.IOException;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Utils {
     public static final String LOGIN_TYPE_PHONE_NUMBER = "PHONE_NUMBER";
@@ -90,8 +105,42 @@ public class Utils {
         }
     }
 
-    public static void AddToFavourite(Context context){
+    public static void addToFavourite(Context context, String contentId, FavouriteRequest favouriteRequest, OnFavouriteClickListener onFavouriteClickListener) {
         String authToken = SharedPreferenceManager.getInstance(context).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.updateFavourite(authToken, contentId, favouriteRequest);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Gson gson = new Gson();
+                String jsonString = null;
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        jsonString = response.body().string();
+                        Log.d("API_RESPONSE", "Favourite response: " + jsonString);
+                        FavouriteResponse favouriteResponse = gson.fromJson(jsonString, FavouriteResponse.class);
+                        onFavouriteClickListener.onSuccess(favouriteResponse.getSuccess(), favouriteResponse.getSuccessMessage());
 
+                    } catch (IOException e) {
+                        Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
+                        onFavouriteClickListener.onError(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    try {
+                        jsonString = response.errorBody().string();
+                        FavouriteErrorResponse favouriteErrorResponse = gson.fromJson(jsonString, FavouriteErrorResponse.class);
+                        onFavouriteClickListener.onError(favouriteErrorResponse.getDisplayMessage());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                onFavouriteClickListener.onError(t.getMessage());
+            }
+        });
     }
 }
