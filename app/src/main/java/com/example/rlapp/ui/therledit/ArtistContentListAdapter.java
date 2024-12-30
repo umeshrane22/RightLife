@@ -60,7 +60,9 @@ class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAda
 
         holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(list, position));
 
-        holder.imageFavorite.setOnClickListener(view -> onItemClickListener.onFavouriteClick(list));
+        holder.imageFavorite.setOnClickListener(view -> {
+
+        });
     }
 
     @Override
@@ -70,8 +72,6 @@ class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAda
 
     public interface OnItemClickListener {
         void onItemClick(List list, int position);
-
-        void onFavouriteClick(List list);
     }
 
     static class ArtistContentViewHolder extends RecyclerView.ViewHolder {

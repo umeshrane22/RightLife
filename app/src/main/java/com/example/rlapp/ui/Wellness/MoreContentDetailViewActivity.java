@@ -35,6 +35,7 @@ import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
+import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -77,6 +78,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname;
     private boolean isFullscreen = false;
+    private TextView tvViewAll;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +111,13 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
             // Handle the case where the extra is not present
             Log.d("CategoryListActivity", "Category type not found in intent");
         }
+
+        tvViewAll = findViewById(R.id.tv_view_all);
+        tvViewAll.setOnClickListener(view -> {
+            Intent intent1 = new Intent(this, ViewAllActivity.class);
+            intent1.putExtra("ContentId", contentId);
+            startActivity(intent1);
+        });
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerViewEpisode = findViewById(R.id.recycler_view_episode);
@@ -455,6 +464,12 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
                                 + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
                         setupListData(ResponseObj.getData().getLikeList());
                         setupEpisodeListData(ResponseObj.getData().getLikeList());
+
+                        if (ResponseObj.getData().getLikeList().size() < 5) {
+                            tvViewAll.setVisibility(View.GONE);
+                        } else {
+                            tvViewAll.setVisibility(View.VISIBLE);
+                        }
 
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());

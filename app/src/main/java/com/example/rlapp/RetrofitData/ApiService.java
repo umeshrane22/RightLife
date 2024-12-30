@@ -559,6 +559,13 @@ public interface ApiService {
     Call<ResponseBody> createJournal( @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Body Map<String, String> requestData);
 
+    @GET("content/contentListByArtistId")
+    Call<ResponseBody> getMoreLikeContentByArtistId(
+            @Header("Authorization") String authToken,
+            @Query("artistId") String artistId,
+            @Query("skip") int skip,
+            @Query("limit") int limit
+    );
 }
 
 

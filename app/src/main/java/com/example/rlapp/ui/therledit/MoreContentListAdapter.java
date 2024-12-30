@@ -18,32 +18,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
-import com.example.rlapp.apimodel.modulecontentlist.Content;
-import com.example.rlapp.apimodel.morelikecontent.Like;
-import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
-import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
+import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
 
-public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMoreAdapter.ViewHolder> {
+public class MoreContentListAdapter extends RecyclerView.Adapter<MoreContentListAdapter.ViewHolder> {
+    private Context context;
+    private List<MoreContentList> contentList;
 
-    private LayoutInflater inflater;
-    private Context ctx;
-    List<Like> contentList;
-    public RLEditDetailMoreAdapter(Context context, List<Like> contentList) {
-        this.ctx = context;
+    public MoreContentListAdapter(Context context, List<MoreContentList> contentList) {
+        this.context = context;
         this.contentList = contentList;
-        this.inflater = LayoutInflater.from(context);
-
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.layout_rledit_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_rledit_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -52,23 +46,23 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
         holder.textView.setText(contentList.get(position).getTitle());
 
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
-            Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
+            Glide.with(context).load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
+            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl());
             Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
         }
         //holder.imageView.setImageResource(itemImages[position]);
 
         holder.itemView.setOnClickListener(view -> {
-            Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             Gson gson = new Gson();
             String json = gson.toJson(contentList);
-            Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
-            intent.putExtra("Categorytype", json);
+            Intent intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);
+            intent.putExtra("Categorytype", contentList.get(position).getId());
             intent.putExtra("position", position);
+            intent.putExtra("contentId", contentList.get(position).getId());
             holder.itemView.getContext().startActivity(intent);
         });
         holder.txt_modulename.setText(Utils.getModuleText(contentList.get(position).getModuleId()));
-        int color = Utils.getModuleColor(ctx, contentList.get(position).getModuleId());
+        int color = Utils.getModuleColor(context, contentList.get(position).getModuleId());
         holder.rl_modulename.setBackgroundTintList(ColorStateList.valueOf(color));
         if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")) {
             holder.img_iconview.setImageResource(R.drawable.ic_read_category);
@@ -90,6 +84,10 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
         }else {
             holder.favorite_image.setImageResource(R.drawable.unfavorite);
         }
+
+        holder.favorite_image.setOnClickListener(view -> {
+            Toast.makeText(context, "position - " + position, Toast.LENGTH_SHORT).show();
+        });
     }
 
     @Override
@@ -98,8 +96,8 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView,favorite_image,img_iconview;
-        TextView textView,item_type_text,txt_modulename;
+        ImageView imageView, favorite_image, img_iconview;
+        TextView textView, item_type_text, txt_modulename;
         RelativeLayout rl_modulename;
 
         public ViewHolder(View itemView) {
@@ -111,15 +109,7 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
             rl_modulename = itemView.findViewById(R.id.rl_modulename);
-            favorite_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(itemView.getContext(), "position - "+getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                }
-            });
 
-            //img_iconview.setImageResource(R.drawable.ic_read_category);
         }
     }
 }
-
