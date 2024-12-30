@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -25,19 +26,250 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="@font/dmsans_bold"
             android:layout_height="wrap_content"/>
-
-
-
-
     </RelativeLayout>
+
+    <!--journal type Selection-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/ll_journal_selection"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardCornerRadius="@dimen/textsize_small">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rectangle"
+                android:id="@+id/ll_journal_selection_normal"
+                android:backgroundTint="@color/white"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:backgroundTint="@color/bg_edittext"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:background="@color/dark_yellow"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/ll_normal_journal_card"
+                            android:layout_width="140dp"
+                            android:layout_height="140dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/normal"
+                            android:elevation="5dp"
+                            android:gravity="bottom"
+                            android:orientation="vertical">
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginBottom="20dp"
+                                    android:drawablePadding="-10dp"
+                                    android:fontFamily="@font/merriweather_bold"
+                                    android:gravity="center"
+                                    android:padding="5dp"
+                                    android:text="Normal"
+                                    android:textAlignment="center"
+                                    android:textColor="#00553A"
+                                    android:textSize="@dimen/textsize_large" />
+
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:background="#F7E6B7"
+                        android:layout_height="wrap_content">
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:text="Normal"
+                            android:paddingStart="10dp"
+                            android:layout_marginStart="16dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="@dimen/textsize_large"
+                            android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:fontFamily="@font/poppins_medium"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginBottom="10dp"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="@dimen/textsize_extrasmall"
+                        android:text="Write whatever comes to your mind at the moment in a free-flow mode."
+                        android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="or"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_header"
+            android:layout_height="wrap_content"/>
+
+        <!--guided card-->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            app:cardCornerRadius="@dimen/textsize_small">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ll_journal_selection_guided"
+                android:background="@drawable/rectangle"
+                android:backgroundTint="@color/white"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:backgroundTint="@color/bg_edittext"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:background="@color/dark_yellow"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/ll_guided_journal_card"
+                            android:layout_width="140dp"
+                            android:layout_height="140dp"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/normal"
+                            android:elevation="5dp"
+                            android:gravity="bottom"
+                            android:orientation="vertical">
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="bottom"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:layout_marginBottom="20dp"
+                                    android:drawablePadding="-10dp"
+                                    android:fontFamily="@font/merriweather_bold"
+                                    android:gravity="center"
+                                    android:padding="5dp"
+                                    android:text="Normal"
+                                    android:textAlignment="center"
+                                    android:textColor="#00553A"
+                                    android:textSize="@dimen/textsize_large" />
+
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:background="#F7E6B7"
+                        android:layout_height="wrap_content">
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:text="Guided"
+                            android:paddingStart="10dp"
+                            android:layout_marginStart="16dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="@dimen/textsize_large"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:fontFamily="@font/poppins_medium"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="@color/dark_gray"
+                            android:textSize="@dimen/textsize_extrasmall"
+                            android:text="Write whatever comes to your mind at the moment in a free-flow mode."
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+        <Button
+            android:id="@+id/btn_continue_journal"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:backgroundTint="@color/buttoncolorvc"
+            android:layout_marginBottom="28dp"
+            android:layout_marginTop="28dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:text="Continue" />
+
+        <!--Journal Layouts -->
+
+    </LinearLayout>
+
+
     <LinearLayout
         android:id="@+id/ll_guided_journal"
         android:orientation="vertical"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="match_parent">
     <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"
         android:layout_margin="16dp"
+        android:fontFamily="@font/poppins_medium"
         android:id="@+id/et_title_guided_journal"
         android:hint="Title"
         android:layout_height="wrap_content"/>
@@ -45,6 +277,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:fontFamily="@font/poppins_medium"
             android:id="@+id/et_feeling_guided_journal"
             android:hint="How are you feeling today?"
             android:layout_height="wrap_content"/>
@@ -52,6 +285,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:fontFamily="@font/poppins_medium"
             android:id="@+id/et_situation_guided_journal"
             android:hint="Any perticular situation that worth to mention?"
             android:layout_height="wrap_content"/>
@@ -59,6 +293,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:fontFamily="@font/poppins_medium"
             android:id="@+id/et_mood_guided_journal"
             android:hint="Did anything happen recently that channged your mood?"
             android:layout_height="wrap_content"/>
@@ -69,8 +304,43 @@
             android:text="Save"
             android:layout_gravity="center_horizontal"
             android:layout_margin="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:backgroundTint="@color/dark_yellow"
             android:layout_height="wrap_content"/>
 
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_normal_journal"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_margin="16dp"
+            android:id="@+id/et_title_normal_journal"
+            android:hint="Title"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_height="wrap_content"/>
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_margin="16dp"
+            android:id="@+id/et_your_journal_normal"
+            android:hint="your Journal"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btn_save_normal_journal"
+            android:layout_width="wrap_content"
+            android:text="Save"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/dark_yellow"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
 </LinearLayout>
