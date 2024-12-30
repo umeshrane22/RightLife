@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DateTimeUtils {
     public static String getDateTime() {
@@ -68,6 +69,22 @@ public class DateTimeUtils {
         try {
             Date newDate = spf.parse(date);
             spf = new SimpleDateFormat("dd MMM yyyy");
+            date = spf.format(newDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+    public static String convertAPIDateMonthFormatWithTime(String date) {
+        if (date == null)
+            return date;
+        SimpleDateFormat spf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        spf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        try {
+            Date newDate = spf.parse(date);
+            // Define the desired output format
+            spf = new SimpleDateFormat("dd MMMM yyyy | h.mm a", Locale.getDefault());
+            spf.setTimeZone(TimeZone.getDefault());
             date = spf.format(newDate);
         } catch (ParseException e) {
             e.printStackTrace();

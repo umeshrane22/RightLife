@@ -2484,57 +2484,9 @@
                         android:backgroundTint="@color/white"
                         android:orientation="vertical">
 
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp">
 
-                            <RelativeLayout
-                                android:id="@+id/layout_rl_mindaudit1"
-                                android:layout_width="38dp"
-                                android:layout_height="22dp"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginEnd="20dp"
-                                android:background="@drawable/roundedcornerbutton"
-                                android:backgroundTint="#FD6967"
-                                tools:ignore="DuplicateIds">
-
-                                <ImageView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_centerInParent="true"
-                                    android:src="@drawable/ic_arrow_right_affirm" />
-                            </RelativeLayout>
-
-                            <TextView
-                                android:id="@+id/txt_title_mindaudit11"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-
-                                android:fontFamily="@font/merriweather_bold"
-                                android:text="Last Entry"
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="16sp"
-                                tools:ignore="DuplicateIds" />
-
-                            <TextView
-                                android:id="@+id/txt_title2_mindaudit1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@+id/txt_title_mindaudit11"
-                                android:fontFamily="@font/dmsans_regular"
-                                android:paddingTop="10dp"
-                                android:text="15 Aug, 2024 |   10 pm"
-                                android:textColor="@color/txt_color_header"
-                                android:textSize="@dimen/textsize_small"
-                                tools:ignore="DuplicateIds" />
-
-                        </RelativeLayout>
 
                         <LinearLayout
-                            android:id="@+id/ll_rl_mindaudit"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="16dp"
@@ -2542,6 +2494,63 @@
                             android:orientation="vertical"
                             android:visibility="visible"
                             tools:ignore="DuplicateIds">
+
+                            <LinearLayout
+                                android:id="@+id/ll_journal_main"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+
+                                android:orientation="vertical"
+                                android:visibility="visible"
+                                tools:ignore="DuplicateIds">
+
+                                <RelativeLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <RelativeLayout
+                                        android:id="@+id/layout_rl_mindaudit1"
+                                        android:layout_width="38dp"
+                                        android:layout_height="22dp"
+                                        android:layout_alignParentEnd="true"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginEnd="20dp"
+                                        android:background="@drawable/roundedcornerbutton"
+                                        android:backgroundTint="#FD6967"
+                                        tools:ignore="DuplicateIds">
+
+                                        <ImageView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/ic_arrow_right_affirm" />
+                                    </RelativeLayout>
+
+                                    <TextView
+                                        android:id="@+id/txt_title_mindaudit11"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="16dp"
+
+                                        android:fontFamily="@font/merriweather_bold"
+                                        android:text="Last Entry"
+                                        android:textColor="@color/txt_color_header"
+                                        android:textSize="16sp"
+                                        tools:ignore="DuplicateIds" />
+
+                                    <TextView
+                                        android:id="@+id/txt_journal_date"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@+id/txt_title_mindaudit11"
+                                        android:fontFamily="@font/dmsans_regular"
+                                        android:paddingTop="10dp"
+                                        android:text="15 Aug, 2024 |   10 pm"
+                                        android:textColor="@color/txt_color_header"
+                                        android:textSize="@dimen/textsize_small"
+                                        tools:ignore="DuplicateIds" />
+
+                                </RelativeLayout>
 
                             <View
                                 android:layout_width="match_parent"
@@ -2551,6 +2560,7 @@
                                 android:background="#707070" />
 
                             <TextView
+                                android:id="@+id/tv_title_journal"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/merriweather_bold"
@@ -2559,6 +2569,7 @@
                                 android:textSize="14sp" />
 
                             <TextView
+                                android:id="@+id/tv_journal_desc"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
@@ -2573,6 +2584,8 @@
                                 android:layout_marginTop="10dp"
                                 android:layout_marginBottom="10dp"
                                 android:background="#707070" />
+                            </LinearLayout>
+
 
                             <TextView
                                 android:layout_width="match_parent"
@@ -2590,6 +2603,7 @@
                                 android:orientation="horizontal">
 
                                 <LinearLayout
+                                    android:id="@+id/ll_normal_journal"
                                     android:layout_width="match_parent"
                                     android:layout_height="140dp"
                                     android:layout_margin="5dp"
@@ -2627,6 +2641,7 @@
                                 </LinearLayout>
 
                                 <LinearLayout
+                                    android:id="@+id/ll_guided_journal"
                                     android:layout_width="match_parent"
                                     android:layout_height="140dp"
                                     android:layout_margin="5dp"
