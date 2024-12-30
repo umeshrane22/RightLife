@@ -60,12 +60,12 @@ import retrofit2.Response;
 
 public class JournalingActivity extends AppCompatActivity {
 
-    private LinearLayout llModules;
+    private LinearLayout ll_normal_journal, ll_guided_journal,
+            ll_journal_selection_guided, ll_journal_selection_normal, ll_journal_selection;
     private RelativeLayout rlMoveRight;
 
-    private TextInputEditText etTitle, etFeeling, etSituation, etMood;
-    private Button btnSave;
-
+    private TextInputEditText etTitle, et_title_normal_journal, et_your_journal_normal, etFeeling, etSituation, etMood;
+    private Button btnSave, btnSaveNormal;
 
 
     @Override
@@ -74,7 +74,13 @@ public class JournalingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_journal);
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
+            if (ll_journal_selection.getVisibility() == View.VISIBLE){
             finish();
+        }else {
+                ll_journal_selection.setVisibility(View.VISIBLE);
+                ll_guided_journal.setVisibility(View.GONE);
+                ll_normal_journal.setVisibility(View.GONE);
+            }
         });
 
         // Initialize views
@@ -87,18 +93,54 @@ public class JournalingActivity extends AppCompatActivity {
                 handleSaveButtonClick();
             }
         });
+        btnSaveNormal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleSaveButtonClickNormal();
+            }
+        });
+        ll_journal_selection_guided.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ll_journal_selection.setVisibility(View.GONE);
+                ll_guided_journal.setVisibility(View.VISIBLE);
+            }
+        });
+        ll_journal_selection_normal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ll_journal_selection.setVisibility(View.GONE);
+                ll_normal_journal.setVisibility(View.VISIBLE);
+            }
+        });
+
     }
+
 
     /**
      * Initialize the input fields and button.
      */
     private void initializeViews() {
+        ll_guided_journal = findViewById(R.id.ll_guided_journal);
+        ll_normal_journal = findViewById(R.id.ll_normal_journal);
+        ll_journal_selection_guided = findViewById(R.id.ll_journal_selection_guided);
+        ll_journal_selection_normal = findViewById(R.id.ll_journal_selection_normal);
+        ll_journal_selection = findViewById(R.id.ll_journal_selection);
+
+
         etTitle = findViewById(R.id.et_title_guided_journal);
+        et_title_normal_journal = findViewById(R.id.et_title_normal_journal);
+        et_your_journal_normal = findViewById(R.id.et_your_journal_normal);
         etFeeling = findViewById(R.id.et_feeling_guided_journal);
         etSituation = findViewById(R.id.et_situation_guided_journal);
         etMood = findViewById(R.id.et_mood_guided_journal);
         btnSave = findViewById(R.id.btn_save_guided_journal);
+        btnSaveNormal = findViewById(R.id.btn_save_normal_journal);
     }
+
+
+
+
 
     /**
      * Handle the Save button click.
@@ -117,29 +159,37 @@ public class JournalingActivity extends AppCompatActivity {
         }
     }
 
+    private void handleSaveButtonClickNormal() {
+        String title = et_title_normal_journal.getText().toString().trim();
+        String journal = et_your_journal_normal.getText().toString().trim();
+        String situation = "";
+        String mood = "";
+
+        // Validate input fields
+        if (validateNormalInputs(title, journal)) {
+            // Send data to the API
+            sendDataToApi(title, "SELF", journal, situation, mood);
+        }
+    }
 
 
-
-
-
-private void sendDataToApi(String title, String type, String journal, String situation, String mood) {
-    SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-    String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+    private void sendDataToApi(String title, String type, String journal, String situation, String mood) {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
 
-    Map<String, String> requestData = new HashMap<>();
-    requestData.put("title", title);
-    requestData.put("type", type);
-    requestData.put("journal", journal);
-    requestData.put("particularSitutation", situation);
-    requestData.put("changedMood", mood);
+        Map<String, String> requestData = new HashMap<>();
+        requestData.put("title", title);
+        requestData.put("type", type);
+        requestData.put("journal", journal);
+        requestData.put("particularSitutation", situation);
+        requestData.put("changedMood", mood);
 
 
-
-    // Make the API call
-        Call<ResponseBody> call = apiService.createJournal(accessToken,requestData);
+        // Make the API call
+        Call<ResponseBody> call = apiService.createJournal(accessToken, requestData);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -177,7 +227,6 @@ private void sendDataToApi(String title, String type, String journal, String sit
     }
 
 
-
     /**
      * Validate the user inputs.
      *
@@ -200,6 +249,19 @@ private void sendDataToApi(String title, String type, String journal, String sit
             showToast("Mood cannot be empty.");
             return false;
         }
+        return true;
+    }
+
+    private boolean validateNormalInputs(String title, String journal) {
+        if (TextUtils.isEmpty(title)) {
+            showToast("Title cannot be empty.");
+            return false;
+        }
+        if (TextUtils.isEmpty(journal)) {
+            showToast("Journal cannot be empty.");
+            return false;
+        }
+
         return true;
     }
 
