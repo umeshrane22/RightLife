@@ -89,4 +89,9 @@ public class Utils {
             );
         }
     }
+
+    public static void AddToFavourite(Context context){
+        String authToken = SharedPreferenceManager.getInstance(context).getAccessToken();
+
+    }
 }

@@ -18,7 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.apimodel.morelikecontent.Like;
+import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
@@ -111,6 +111,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
                     ivTwitter.setVisibility(View.GONE);
                 }
             }
+
         }
 
         if (artistData.getContent().isEmpty()) {
@@ -124,25 +125,28 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
 
         setupListData(artistData.getContent().get(0));
 
+        tvViewAll.setOnClickListener(view -> {
+            Intent intent = new Intent(this, ViewAllByArtistActivity.class);
+            intent.putExtra("ArtistId", artistData.getId());
+            intent.putExtra("ArtistName",artistData.getFirstName() + " "+artistData.getLastName());
+            startActivity(intent);
+        });
+
     }
 
     private void setupListData(Content content) {
-        ArtistContentListAdapter adapter = new ArtistContentListAdapter(this, content, new ArtistContentListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(com.example.rlapp.ui.therledit.List list) {
-
-            }
-
-            @Override
-            public void onFavouriteClick(com.example.rlapp.ui.therledit.List list) {
-
-            }
+        ArtistContentListAdapter adapter = new ArtistContentListAdapter(this, content, (list, position) -> {
+            Intent intent = new Intent(ArtistsDetailsActivity.this, ModuleContentDetailViewActivity.class);
+            intent.putExtra("Categorytype", list.getCategoryId());
+            intent.putExtra("contentId", list.getId());
+            startActivity(intent);
         });
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         rvArtistContent.setLayoutManager(horizontalLayoutManager);
         rvArtistContent.setAdapter(adapter);
 
     }
+
 
     private void openSocialLink(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

@@ -84,6 +84,8 @@
         <activity android:name=".ui.search.SearchActivity" />
         <activity android:name=".ui.therledit.ViewAllActivity"/>
         <activity android:name=".ui.therledit.ArtistsDetailsActivity"/>
+        <activity android:name=".ui.therledit.ViewAllByArtistActivity"/>
+
         <activity android:name="com.example.rlapp.ui.jounal.JournalingActivity" />
 
         <provider
