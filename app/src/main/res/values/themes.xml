@@ -4,6 +4,8 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/rightlife</item>
         <item name="colorPrimaryVariant">@color/gray</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
         <!-- Support edge-to-edge -->
 
     </style>

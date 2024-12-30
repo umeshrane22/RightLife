@@ -40,25 +40,23 @@ import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String mobileNumber, emailId;
+    public static String loginType = "mobile";
     // Login is in this
     // test dev branch 2
-    String deviceName,deviceId;
+    String deviceName, deviceId;
     Button btn_email_login;
     ImageButton googleButton;
-    EditText phoneInput,phoneInputOption,emailInput,emailInputOption,PasswordInputOptionlogin,confirmPasswordInputOptionlogin,emailInputOptionlogin;
-    ImageView img_backicon,img_getotp,imgGetOtpBtn,imgSignupOtpBtn,imgGetEmailOtpBtn;
-    LinearLayout ll_loginoption_mobile,ll_loginoption_email ,ll_loginoption,ll_loginoption_otp,ll_loginoption_email_password;
+    EditText phoneInput, phoneInputOption, emailInput, emailInputOption, PasswordInputOptionlogin, confirmPasswordInputOptionlogin, emailInputOptionlogin;
+    ImageView img_backicon, img_getotp, imgGetOtpBtn, imgSignupOtpBtn, imgGetEmailOtpBtn;
+    LinearLayout ll_loginoption_mobile, ll_loginoption_email, ll_loginoption, ll_loginoption_otp, ll_loginoption_email_password;
     PinView pinView;
-    public static String mobileNumber,emailId;
-    public static String loginType = "mobile";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +64,10 @@ public class MainActivity extends AppCompatActivity {
         // EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         btn_email_login = findViewById(R.id.btn_email_login);
-        googleButton  = findViewById(R.id.googleButton);
+        googleButton = findViewById(R.id.googleButton);
         phoneInput = findViewById(R.id.phoneInput);
         phoneInputOption = findViewById(R.id.phoneInputOption);
-        emailInput  = findViewById(R.id.emailInput);
+        emailInput = findViewById(R.id.emailInput);
         emailInputOption = findViewById(R.id.emailInputOption);
         PasswordInputOptionlogin = findViewById(R.id.passwordInputOptionlogin);
         confirmPasswordInputOptionlogin = findViewById(R.id.confirmPasswordInputOptionlogin);
@@ -98,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                 try {
-                     password = EncryptionUtil.getEncryptedPassword("123456");
+                    password = EncryptionUtil.getEncryptedPassword("123456");
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                submitEmailPasswordLogin(email,password);
+                submitEmailPasswordLogin(email, password);
 
             }
         });
@@ -112,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 ll_loginoption.setVisibility(View.GONE);
                 ll_loginoption_mobile.setVisibility(View.GONE);
                 ll_loginoption_otp.setVisibility(View.VISIBLE);
-                 mobileNumber = phoneInputOption.getText().toString();
+                mobileNumber = phoneInputOption.getText().toString();
                 Log.d("API OTP ", "Success: --" + mobileNumber);
                 Toast.makeText(MainActivity.this, mobileNumber, Toast.LENGTH_SHORT).show();
                 //callForOtpSignup(mobileNumber);
@@ -126,12 +124,12 @@ public class MainActivity extends AppCompatActivity {
 
                 emailId = emailInputOption.getText().toString();
                 Log.d("API OTP ", "Success: --" + emailId);
-              //  Toast.makeText(MainActivity.this, emailId, Toast.LENGTH_SHORT).show();
-                if (!EmailValidator.isValidEmail(emailId)){
+                //  Toast.makeText(MainActivity.this, emailId, Toast.LENGTH_SHORT).show();
+                if (!EmailValidator.isValidEmail(emailId)) {
                     Toast.makeText(MainActivity.this, "Please Enter Email Id", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     loginType = "email";
-                    checkRegistrationApi(emailId,loginType,"");
+                    checkRegistrationApi(emailId, loginType, "");
 
                 }
             }
@@ -142,40 +140,47 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 ll_loginoption.setVisibility(View.GONE);
                 ll_loginoption_mobile.setVisibility(View.VISIBLE);
+                img_backicon.setVisibility(View.VISIBLE);
+                img_backicon.setOnClickListener(view -> {
+                    ll_loginoption.setVisibility(View.VISIBLE);
+                    ll_loginoption_mobile.setVisibility(View.GONE);
+                    img_backicon.setVisibility(View.GONE);
+                });
                 ll_loginoption_email.setVisibility(View.GONE);
             }
         });
 
-        emailInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ll_loginoption_email.setVisibility(View.VISIBLE);
-                ll_loginoption.setVisibility(View.GONE);
-                ll_loginoption_mobile.setVisibility(View.GONE);
-            }
+        emailInput.setOnClickListener(view -> {
+            ll_loginoption_email.setVisibility(View.VISIBLE);
+            ll_loginoption.setVisibility(View.GONE);
+            ll_loginoption_mobile.setVisibility(View.GONE);
+            img_backicon.setVisibility(View.VISIBLE);
+            img_backicon.setOnClickListener(view1 -> {
+                ll_loginoption_email.setVisibility(View.GONE);
+                ll_loginoption.setVisibility(View.VISIBLE);
+                ll_loginoption_mobile.setVisibility(View.VISIBLE);
+                img_backicon.setVisibility(View.GONE);
+            });
         });
 
-        imgSignupOtpBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String otp=pinView.getText().toString();
-                Log.d("API OTP ", "Success: ---" + otp);
-                Toast.makeText(MainActivity.this, otp, Toast.LENGTH_SHORT).show();
+        imgSignupOtpBtn.setOnClickListener(view -> {
+            String otp = pinView.getText().toString();
+            Log.d("API OTP ", "Success: ---" + otp);
+            Toast.makeText(MainActivity.this, otp, Toast.LENGTH_SHORT).show();
 
-               // CallSubmitOtpSignup(otp);
-                if (loginType.equalsIgnoreCase("mobile")) {
-                    submitOtpLogin(otp);
-                } else if (loginType.equalsIgnoreCase("email")) {
-                    submitOtpEmailLogin(otp);
-                }
-
+            // CallSubmitOtpSignup(otp);
+            if (loginType.equalsIgnoreCase("mobile")) {
+                submitOtpLogin(otp);
+            } else if (loginType.equalsIgnoreCase("email")) {
+                submitOtpEmailLogin(otp);
             }
+
         });
 
         btn_email_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // String email = "nakoda0701@gmail.com";
+                // String email = "nakoda0701@gmail.com";
                 String password = "123456";
                 emailId = emailInputOptionlogin.getText().toString();
                 password = PasswordInputOptionlogin.getText().toString();
@@ -188,9 +193,9 @@ public class MainActivity extends AppCompatActivity {
                 if (!emailId.isEmpty() && !password.isEmpty()) {
                     Log.d("Email id ", "Success: ---" + emailId);
                     Log.d("Email password ", "Success: ---" + password);
-                    if (confirmPasswordInputOptionlogin.getVisibility() == View.VISIBLE){
+                    if (confirmPasswordInputOptionlogin.getVisibility() == View.VISIBLE) {
                         setPasswordApi(emailId, password);
-                    }else {
+                    } else {
                         submitEmailPasswordLogin(emailId, password);
                     }
                 }
@@ -244,98 +249,99 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-      //  getPromotionList("");
+        //  getPromotionList("");
 
-         deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
+        deviceId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.d("DeviceInfo", "Device ID: " + deviceId);
 
-         deviceName = Build.MANUFACTURER + " " + Build.MODEL;
+        deviceName = Build.MANUFACTURER + " " + Build.MODEL;
         Log.d("DeviceInfo", "Device Name: " + deviceName);
 
     }
+
     //get otp for signup
- void callForOtpSignup(String mobileNumber){
-
-     ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-     // Create a request body (replace with actual email and phone number)
-     SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-     // Make the API call
-     Call<LoginResponse> call = apiService.generateOtpSignup(request);
-     call.enqueue(new Callback<LoginResponse>() {
-         @Override
-         public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-             if (response.isSuccessful() && response.body() != null) {
-                 LoginResponse loginResponse = response.body();
-                 Log.d("API Response", "Success: " + loginResponse.getMessage());
-                 Gson gson = new Gson();
-                 String jsonResponse = gson.toJson(response.body());
-                 Log.d("API Response body", "Success: " + jsonResponse);
-                 if (loginResponse.isSuccess()) {
-           //          Toast.makeText(MainActivity.this, "Success: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                 } else {
-                     Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                 }
-
-             } else {
-                 Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-             }
-         }
-
-         @Override
-         public void onFailure(Call<LoginResponse> call, Throwable t) {
-             Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-         }
-     });
-
- }
-
- //get otp for login
- void callForOtpLogin(String mobileNumber){
-
-     ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-     // Create a request body (replace with actual email and phone number)
-     SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-     // Make the API call
-     Call<LoginResponse> call = apiService.generateOtpLogin(request);
-     call.enqueue(new Callback<LoginResponse>() {
-         @Override
-         public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-             if (response.isSuccessful() && response.body() != null) {
-                 LoginResponse loginResponse = response.body();
-                 Log.d("API Response", "Success: " + loginResponse.getMessage());
-                 Gson gson = new Gson();
-                 String jsonResponse = gson.toJson(response.body());
-                 Log.d("API Response body", "Success: " + jsonResponse);
-                 if (loginResponse.isSuccess()) {
-                     Toast.makeText(MainActivity.this, "Success: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                 } else {
-                     Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
-                 }
-
-             } else {
-                 Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-             }
-         }
-
-         @Override
-         public void onFailure(Call<LoginResponse> call, Throwable t) {
-             Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-         }
-     });
- }
-
-
-    //call submit otp for signup
-    void CallSubmitOtpSignup(String OTP){
+    void callForOtpSignup(String mobileNumber) {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
-        SubmitOtpRequest request = new SubmitOtpRequest("9226164804",OTP,"ajdsawejkd","sjdhawesjd","android","cazgv4h_TEeHDiFdjKtwVU:APA91bHppHumnxKnekhG7RerIZDDZa3dEogX80UHcv0hVRZlj2IvvATvWcRlnbxo_yqnqgI2CxQrW-4sYAS9wD6xaR5ukd8mj8NQzovPKqxfqNX8pzRlGLnG0jkV5xz6i4Rkw-z3mCxq");
+        SignupOtpRequest request = new SignupOtpRequest("+91" + mobileNumber);
+
+        // Make the API call
+        Call<LoginResponse> call = apiService.generateOtpSignup(request);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+                    Log.d("API Response", "Success: " + loginResponse.getMessage());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("API Response body", "Success: " + jsonResponse);
+                    if (loginResponse.isSuccess()) {
+                        //          Toast.makeText(MainActivity.this, "Success: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    //get otp for login
+    void callForOtpLogin(String mobileNumber) {
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        SignupOtpRequest request = new SignupOtpRequest("+91" + mobileNumber);
+
+        // Make the API call
+        Call<LoginResponse> call = apiService.generateOtpLogin(request);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+                    Log.d("API Response", "Success: " + loginResponse.getMessage());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("API Response body", "Success: " + jsonResponse);
+                    if (loginResponse.isSuccess()) {
+                        Toast.makeText(MainActivity.this, "Success: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    //call submit otp for signup
+    void CallSubmitOtpSignup(String OTP) {
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        SubmitOtpRequest request = new SubmitOtpRequest("9226164804", OTP, "ajdsawejkd", "sjdhawesjd", "android", "cazgv4h_TEeHDiFdjKtwVU:APA91bHppHumnxKnekhG7RerIZDDZa3dEogX80UHcv0hVRZlj2IvvATvWcRlnbxo_yqnqgI2CxQrW-4sYAS9wD6xaR5ukd8mj8NQzovPKqxfqNX8pzRlGLnG0jkV5xz6i4Rkw-z3mCxq");
 
         // Make the API call
         Call<LoginResponse> call = apiService.submitOtpSignup(request);
@@ -368,12 +374,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Call Submit Otp for Email
-    void submitOtpEmailLogin(String OTP){
+    void submitOtpEmailLogin(String OTP) {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
-        SubmitEmailOtpRequest request = new SubmitEmailOtpRequest(emailId,OTP,"ABC123","Asus ROG 6","hp","ABC123","");
+        SubmitEmailOtpRequest request = new SubmitEmailOtpRequest(emailId, OTP, "ABC123", "Asus ROG 6", "hp", "ABC123", "");
 
         // Make the API call
         Call<LoginResponseMobile> call = apiService.submitOtpEmail(request);
@@ -391,12 +397,12 @@ public class MainActivity extends AppCompatActivity {
                     if (loginResponse.isSuccess()) {
                         Toast.makeText(MainActivity.this, "Success: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                         Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                       saveAccessToken(loginResponse.getAccessToken());
-                     //  getUserDetails("");
+                        saveAccessToken(loginResponse.getAccessToken());
+                        //  getUserDetails("");
                         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
                         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, "");
                         Log.d("API Response body", "Success:Token " + accessToken);
-                        checkRegistrationApi(emailId,loginType,"");
+                        checkRegistrationApi(emailId, loginType, "");
                     } else {
                         Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                     }
@@ -422,13 +428,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     //call submit otp for login
-    void submitOtpLogin(String OTP){
+    void submitOtpLogin(String OTP) {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
-        SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91"+mobileNumber,OTP,"ABC123","Asus ROG 6","hp","ABC123");
+        SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91" + mobileNumber, OTP, "ABC123", "Asus ROG 6", "hp", "ABC123");
 
         // Make the API call
         Call<LoginResponseMobile> call = apiService.submitOtpLogin(request);
@@ -535,13 +542,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     //call submit otp for login
-    void submitEmailPasswordLogin(String email, String password){
+    void submitEmailPasswordLogin(String email, String password) {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
 
-        EmailLoginRequest emailLoginRequest = new EmailLoginRequest( email,
+        EmailLoginRequest emailLoginRequest = new EmailLoginRequest(email,
                 password,
                 "TP1A.220905.010",
                 "IV2201",
@@ -596,10 +603,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     // get otp for email -
 
-    void callForOtpEmail(String email){
+    void callForOtpEmail(String email) {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -638,7 +644,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Check Registration API
 
-    void checkRegistrationApi(String emailId, String loginType, String phoneNumber){
+    void checkRegistrationApi(String emailId, String loginType, String phoneNumber) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
@@ -677,18 +683,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupRegistrationView(CheckRegistrationResponse loginResponse) {
 
-        if (!loginResponse.getIsRegistered()){
+        if (!loginResponse.getIsRegistered()) {
             ll_loginoption_otp.setVisibility(View.VISIBLE);
             callForOtpEmail(emailId);
-        }else if (loginResponse.getIsRegistered() && loginResponse.getIsPasswordSet()){
+        } else if (loginResponse.getIsRegistered() && loginResponse.getIsPasswordSet()) {
             ll_loginoption_email_password.setVisibility(View.VISIBLE);
             confirmPasswordInputOptionlogin.setVisibility(View.GONE);
             setEmailidField(emailId);
-        } else if (loginResponse.getIsRegistered() && !loginResponse.getIsPasswordSet()){
-            if (getAcceesToken().isEmpty()){
+        } else if (loginResponse.getIsRegistered() && !loginResponse.getIsPasswordSet()) {
+            if (getAcceesToken().isEmpty()) {
                 ll_loginoption_otp.setVisibility(View.VISIBLE);
                 callForOtpEmail(emailId);
-            }else {
+            } else {
                 ll_loginoption_email_password.setVisibility(View.VISIBLE);
                 confirmPasswordInputOptionlogin.setVisibility(View.VISIBLE);
             }
@@ -712,7 +718,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // set password
-    void setPasswordApi(String email,String password){
+    void setPasswordApi(String email, String password) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
@@ -722,7 +728,7 @@ public class MainActivity extends AppCompatActivity {
         SetPasswordRequest request = new SetPasswordRequest(password);
 
         // Make the API call
-        Call<CheckRegistrationResponse> call = apiService.SetEmailPassword(accessToken,request);
+        Call<CheckRegistrationResponse> call = apiService.SetEmailPassword(accessToken, request);
         call.enqueue(new Callback<CheckRegistrationResponse>() {
             @Override
             public void onResponse(Call<CheckRegistrationResponse> call, Response<CheckRegistrationResponse> response) {
@@ -751,7 +757,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public String getAcceesToken(){
+    public String getAcceesToken() {
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         return sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, "");
     }
