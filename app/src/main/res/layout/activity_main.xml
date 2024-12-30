@@ -27,7 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_leftarrow"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            android:visibility="gone"/>
     </RelativeLayout>
 <LinearLayout
     android:layout_width="match_parent"
@@ -42,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ready? Let’s Get Started"
-        android:textSize="24sp"
+        android:textSize="@dimen/textsize_extralarge"
         android:textStyle="bold"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
