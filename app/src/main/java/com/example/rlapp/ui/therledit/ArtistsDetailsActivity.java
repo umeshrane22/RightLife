@@ -19,6 +19,7 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.morelikecontent.Like;
+import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
@@ -129,7 +130,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
     private void setupListData(Content content) {
         ArtistContentListAdapter adapter = new ArtistContentListAdapter(this, content, new ArtistContentListAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(com.example.rlapp.ui.therledit.List list) {
+            public void onItemClick(com.example.rlapp.ui.therledit.List list, int position) {
 
             }
 
@@ -143,6 +144,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
         rvArtistContent.setAdapter(adapter);
 
     }
+
 
     private void openSocialLink(String url) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));

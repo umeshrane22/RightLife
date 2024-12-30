@@ -57,6 +57,10 @@ class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAda
             holder.imageContentIcon.setImageResource(R.drawable.ic_sound_category);
             holder.tvContentType.setVisibility(View.GONE);
         }
+
+        holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(list, position));
+
+        holder.imageFavorite.setOnClickListener(view -> onItemClickListener.onFavouriteClick(list));
     }
 
     @Override
@@ -65,7 +69,7 @@ class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAda
     }
 
     public interface OnItemClickListener {
-        void onItemClick(List list);
+        void onItemClick(List list, int position);
 
         void onFavouriteClick(List list);
     }
