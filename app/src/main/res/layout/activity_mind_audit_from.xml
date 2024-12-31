@@ -16,6 +16,13 @@
             android:layout_marginStart="20dp"
             android:src="@drawable/ic_leftarrow" />
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/tv_header_htw"
+            android:src="@drawable/mind_audit"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"/>
         <TextView
             android:id="@+id/tv_header_htw"
             android:layout_width="wrap_content"
@@ -76,6 +83,7 @@
             android:backgroundTint="@color/buttoncolormind"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
+            android:layout_marginBottom="8dp"
             android:text="Next" />
         <Button
             android:id="@+id/submitButton"
