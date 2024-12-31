@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/rl_main"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_margin="16dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/roundedcornerbutton"
         android:backgroundTint="@color/buttoncolorvc"
         android:orientation="vertical"
@@ -41,10 +43,10 @@
         <RelativeLayout
             android:id="@+id/rl_main_feeling"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/toproundedvoicescan_sad"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/toproundedcornershape"
             android:backgroundTint="#F9DB84"
             android:orientation="vertical"
             android:visibility="visible">
@@ -60,15 +62,20 @@
                 android:textColor="@color/txt_color_header"
                 android:textSize="@dimen/textsize_extralarge" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_feelings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_marginTop="-10dp"
+                android:backgroundTint="#F9DB84"
+                android:nestedScrollingEnabled="false"
+                android:layout_below="@id/txt_title_feeling"/>
+
         </RelativeLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_feelings"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:layout_below="@id/rl_main_feeling"/>
+
 
     </RelativeLayout>
-
+</ScrollView>
 </LinearLayout>

@@ -539,7 +539,7 @@ public interface ApiService {
             @Body ViewCountRequest viewCountRequest);
 
     @Headers("Content-Type: application/json")
-    @PUT("statitics")
+    @POST("statitics")
     Call<ResponseBody> updateStatiticsRecord(
             @Header("Authorization") String authToken,
             @Body StatiticsRequest statiticsRequest);
@@ -573,6 +573,8 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Path("contentId") String contentId,
             @Body FavouriteRequest favouriteRequest);
+
+
 }
 
 

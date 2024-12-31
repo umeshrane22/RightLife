@@ -37,7 +37,7 @@
             android:paddingStart="10dp"
             android:backgroundTint="@color/buttoncolorvc"
             android:textColor="@color/white"
-            android:text="1.Indicate how you are feeling today"
+            android:text="3.Review your prompt"
             />
 
         <com.airbnb.lottie.LottieAnimationView
@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:visibility="visible"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="#F9DB84"
         android:layout_centerHorizontal="true"
         android:background="@drawable/roundedcornerbutton"
@@ -76,7 +76,7 @@
             android:paddingStart="10dp"
             android:backgroundTint="@color/buttoncolorvc"
             android:textColor="@color/white"
-            android:text="2.Select a topic to speak on"
+            android:text="4.Record your voice response for 30 seconds"
             />
 
         <com.airbnb.lottie.LottieAnimationView

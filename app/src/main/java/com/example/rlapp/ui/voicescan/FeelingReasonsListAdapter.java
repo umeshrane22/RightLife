@@ -45,7 +45,7 @@ class FeelingReasonsListAdapter extends RecyclerView.Adapter<FeelingReasonsListA
             holder.tvFeelingReason.setBackground(context.getDrawable(R.drawable.roundedcornershape_selected));
             holder.tvFeelingReason.setTextColor(context.getColor(R.color.white));
         } else {
-            holder.tvFeelingReason.setBackground(context.getDrawable(R.drawable.roundedcornershape));
+            holder.tvFeelingReason.setBackground(context.getDrawable(R.drawable.roundedcorneryellowbordervoicescan));
             holder.tvFeelingReason.setTextColor(context.getColor(R.color.black));
         }
 

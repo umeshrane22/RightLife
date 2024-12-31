@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:visibility="visible"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="#F9DB84"
         android:layout_centerHorizontal="true"
         android:background="@drawable/roundedcornerbutton"

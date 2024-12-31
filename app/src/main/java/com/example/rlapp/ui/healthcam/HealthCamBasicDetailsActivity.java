@@ -69,7 +69,9 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         getViews();
 
         getQuestionerList();
-
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
+            finish();
+        });
         btnStartScan.setOnClickListener(view -> {
             String firstName = edtFirstName.getText().toString();
             String lastName = edtLastName.getText().toString();

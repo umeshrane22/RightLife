@@ -25,6 +25,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
+            android:visibility="gone"
             android:src="@drawable/closebtncircle" />
 
         <TextView
@@ -34,7 +35,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:fontFamily="@font/dmsans_bold"
-            android:text="How This Works"
+            android:text="Your Details"
             android:textSize="@dimen/textsize_medium" />
 
         <com.zhpan.indicator.IndicatorView
@@ -69,10 +70,14 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Basic Information"
+                android:textColor="@color/txt_color_health"
                 android:textSize="@dimen/textsize_extralarge" />
 
             <TextView
                 android:id="@+id/tv_first_name"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
@@ -97,6 +102,9 @@
 
             <TextView
                 android:id="@+id/tv_last_name"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
@@ -121,6 +129,9 @@
 
             <TextView
                 android:id="@+id/tv_height"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
@@ -219,11 +230,14 @@
 
             <TextView
                 android:id="@+id/tv_weight"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
-                android:text="Your Weight *"
+                android:text="Your Weight"
                 android:textSize="@dimen/textsize_medium"
                 android:visibility="gone"/>
 
@@ -266,11 +280,14 @@
 
             <TextView
                 android:id="@+id/tv_age"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="8dp"
-                android:text="Your Age *"
+                android:text="Your Age"
                 android:textSize="@dimen/textsize_medium"
                 android:visibility="gone"/>
 
@@ -319,10 +336,14 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Medical History"
+                android:textColor="@color/txt_color_health"
                 android:textSize="@dimen/textsize_extralarge" />
 
             <TextView
                 android:id="@+id/tv_smoke"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
@@ -348,6 +369,9 @@
 
             <TextView
                 android:id="@+id/tv_bp_medication"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"
@@ -372,6 +396,9 @@
                 android:visibility="gone"/>
             <TextView
                 android:id="@+id/tv_diabetic"
+                android:drawableEnd="@drawable/ic_asterisk"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"

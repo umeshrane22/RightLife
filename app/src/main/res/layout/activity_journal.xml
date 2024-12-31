@@ -108,20 +108,27 @@
                         android:orientation="vertical"
                         android:background="#F7E6B7"
                         android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:id="@+id/rl_radio_normal"
+                            android:layout_height="wrap_content">
                         <RadioButton
                             android:layout_width="wrap_content"
+                            android:id="@+id/rd_normal"
                             android:text="Normal"
                             android:paddingStart="10dp"
                             android:layout_marginStart="16dp"
                             android:fontFamily="@font/dmsans_bold"
                             android:textSize="@dimen/textsize_large"
+                            android:clickable="false"
                             android:layout_height="wrap_content"/>
+                        </RelativeLayout>
                     <TextView
                         android:layout_width="match_parent"
                         android:fontFamily="@font/poppins_medium"
                         android:layout_marginStart="16dp"
                         android:layout_marginBottom="10dp"
-                        android:textColor="@color/dark_gray"
+                        android:textColor="#6E7191"
                         android:textSize="@dimen/textsize_extrasmall"
                         android:text="Write whatever comes to your mind at the moment in a free-flow mode."
                         android:layout_height="wrap_content"/>
@@ -215,23 +222,31 @@
                         android:orientation="vertical"
                         android:background="#F7E6B7"
                         android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:id="@+id/rl_radio_guided"
+                            android:layout_height="wrap_content">
                         <RadioButton
                             android:layout_width="wrap_content"
                             android:text="Guided"
+                            android:id="@+id/rd_guided"
                             android:paddingStart="10dp"
                             android:layout_marginStart="16dp"
                             android:fontFamily="@font/dmsans_bold"
                             android:textSize="@dimen/textsize_large"
+                            android:clickable="false"
                             android:layout_height="wrap_content"/>
+                        </RelativeLayout>
                         <TextView
                             android:layout_width="match_parent"
                             android:fontFamily="@font/poppins_medium"
                             android:layout_marginStart="16dp"
                             android:layout_marginBottom="10dp"
-                            android:textColor="@color/dark_gray"
+                            android:textColor="#6E7191"
                             android:textSize="@dimen/textsize_extrasmall"
                             android:text="Write whatever comes to your mind at the moment in a free-flow mode."
                             android:layout_height="wrap_content"/>
+
                     </LinearLayout>
                 </LinearLayout>
 
@@ -269,6 +284,7 @@
     <com.google.android.material.textfield.TextInputEditText
         android:layout_width="match_parent"
         android:layout_margin="16dp"
+        android:textSize="@dimen/textsize_small"
         android:fontFamily="@font/poppins_medium"
         android:id="@+id/et_title_guided_journal"
         android:hint="Title"
@@ -279,12 +295,14 @@
             android:layout_margin="16dp"
             android:fontFamily="@font/poppins_medium"
             android:id="@+id/et_feeling_guided_journal"
+            android:textSize="@dimen/textsize_small"
             android:hint="How are you feeling today?"
             android:layout_height="wrap_content"/>
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:textSize="@dimen/textsize_small"
             android:fontFamily="@font/poppins_medium"
             android:id="@+id/et_situation_guided_journal"
             android:hint="Any perticular situation that worth to mention?"
@@ -293,6 +311,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:textSize="@dimen/textsize_small"
             android:fontFamily="@font/poppins_medium"
             android:id="@+id/et_mood_guided_journal"
             android:hint="Did anything happen recently that channged your mood?"
@@ -319,6 +338,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:textSize="@dimen/textsize_small"
             android:id="@+id/et_title_normal_journal"
             android:hint="Title"
             android:fontFamily="@font/poppins_medium"
@@ -328,6 +348,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            android:textSize="@dimen/textsize_small"
             android:id="@+id/et_your_journal_normal"
             android:hint="your Journal"
             android:fontFamily="@font/poppins_medium"

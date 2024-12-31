@@ -39,7 +39,7 @@
             android:paddingStart="10dp"
             android:backgroundTint="@color/buttoncolorvc"
             android:textColor="@color/white"
-            android:text="1.Indicate how you are feeling today"
+            android:text="5.Note Your Score"
             />
 
         <com.airbnb.lottie.LottieAnimationView
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:visibility="visible"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:backgroundTint="#F9DB84"
         android:layout_centerHorizontal="true"
         android:background="@drawable/roundedcornerbutton"
@@ -78,7 +78,7 @@
             android:paddingStart="10dp"
             android:backgroundTint="@color/buttoncolorvc"
             android:textColor="@color/white"
-            android:text="2.Select a topic to speak on"
+            android:text="6.Reflect and Act"
             />
 
         <com.airbnb.lottie.LottieAnimationView
@@ -93,6 +93,12 @@
             app:lottie_rawRes="@raw/noteyourvoice" />
     </RelativeLayout>
 
-
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:text="Don't show this again"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="1dp"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>
