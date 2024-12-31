@@ -53,7 +53,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
     private TextView currentTime;
     private Handler handler = new Handler();
     private RelativeLayout rl_player;
-    // RadioButton radioButton;
+     RadioButton radio_set_routine;
     Button btn_play_sleepsound;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
         btn_play_sleepsound  =  findViewById(R.id.btn_play_sleepsound);
         RadioButton radioButton = findViewById(R.id.testradio);
         playPauseButton = findViewById(R.id.playPauseButton);
+        radio_set_routine = findViewById(R.id.radio_set_routine);
 
         edt_subcategory  = findViewById(R.id.edt_subcategory);
         edt_category = findViewById(R.id.edt_category);
@@ -82,6 +83,11 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
 
             }
             Log.e("TAG", "onCreate: is checked - "+radioButton.isChecked());
+        });
+
+        radio_set_routine.setOnClickListener(view -> {
+            radio_set_routine.setChecked(!radio_set_routine.isChecked());
+
         });
 
         btn_play_sleepsound.setOnClickListener(new View.OnClickListener() {

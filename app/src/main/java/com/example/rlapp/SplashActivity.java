@@ -34,7 +34,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 loader.setVisibility(View.VISIBLE);
             }
-        }, 2000);
+        }, 1000);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -56,6 +56,6 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
             }
-        }, 3000);
+        }, 1000);
     }
 }

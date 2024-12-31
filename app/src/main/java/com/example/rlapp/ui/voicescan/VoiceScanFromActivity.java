@@ -113,11 +113,14 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
 
     private void updateButtonVisibility(int position) {
         int totalItems = adapter.getItemCount();
-
+        nextButton.setVisibility(View.VISIBLE);
         if (position == totalItems - 1) {
-            nextButton.setText("Begin Recording");
-        } else {
-            nextButton.setText("Next Page");
+            nextButton.setText("Start Recording");
+        } else if (position == 0) {
+            nextButton.setVisibility(View.GONE);
+        }
+        else {
+            nextButton.setText("Next");
         }
     }
 

@@ -117,7 +117,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="10dp">
 
 
         <TextView
@@ -127,7 +127,7 @@
             android:layout_centerHorizontal="true"
             android:drawableStart="@drawable/repeat"
             android:drawablePadding="10dp"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:paddingStart="20dp"
             android:paddingTop="10dp"
             android:paddingEnd="20dp"
@@ -148,7 +148,7 @@
             android:id="@+id/radio_use_my_own_topic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:gravity="center"
             android:text="I’ll use my own topic"
             android:textColor="@color/txt_color_header"
@@ -160,7 +160,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp">
+        android:layout_marginTop="10dp">
 
         <TextView
             android:id="@+id/tv_relationship"
@@ -175,7 +175,7 @@
             android:paddingBottom="10dp"
             android:text="Remember to find a quiet place \nto record your 30 seconds "
             android:textColor="#6E7191"
-            android:textSize="@dimen/textsize_large" />
+            android:textSize="@dimen/textsize_medium" />
 
     </RelativeLayout>
 

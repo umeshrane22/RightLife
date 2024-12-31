@@ -49,6 +49,10 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:src="@drawable/img_healthcam_declaimer"
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/dialog_text"
@@ -68,6 +72,7 @@
                 android:layout_width="166dp"
                 android:layout_height="46dp"
                 android:text="Okay"
+                android:fontFamily="@font/dmsans_bold"
                 android:backgroundTint="@color/buttoncolormind"
                 android:textSize="@dimen/textsize_small"
                 android:textColor="#FFF"

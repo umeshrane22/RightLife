@@ -21,11 +21,11 @@
             android:id="@+id/tv_header_htw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:fontFamily="@font/dmsans_bold"
             android:text="Voice Scan"
             android:layout_centerVertical="true"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="@dimen/textsize_large" />
 
 
         <ImageView
@@ -78,6 +78,7 @@
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/buttoncolorvc"
             android:paddingStart="20dp"
+            android:layout_marginBottom="10dp"
             android:paddingEnd="20dp"
             android:text="Next" />
         <Button

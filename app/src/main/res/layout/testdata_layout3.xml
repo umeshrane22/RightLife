@@ -47,9 +47,76 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+
+        <!--media player -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+
+            android:id="@+id/rl_player"
+            android:visibility="gone"
+            android:layout_height="600dp">
+
+            <!-- Full-Screen Background Image -->
+            <ImageView
+                android:id="@+id/backgroundImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_logintop" />
+
+            <!-- Circular Progress Bar -->
+            <ProgressBar
+                android:id="@+id/circularProgressBar"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_centerInParent="true"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="0"
+                android:visibility="visible"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:progressDrawable="@drawable/circular_progress_bar" />
+
+            <!-- Play/Pause Button in Center -->
+            <ImageButton
+                android:id="@+id/playPauseButton"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/circle_shape"
+                android:backgroundTint="@color/sleep_right_blue"
+                android:src="@drawable/ic_sound_play" />
+
+            <!-- Current Time Display -->
+            <TextView
+                android:id="@+id/currentTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/seekBar"
+                android:textSize="20sp"
+                android:layout_marginBottom="50dp"
+                android:textColor="#FFFFFF"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_centerHorizontal="true"
+                android:text="00:00" />
+
+            <!-- SeekBar at the Bottom -->
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
+                android:progressTint="@color/sleep_right_blue"
+                android:thumbTint="@color/sleep_right_blue"
+                android:progressBackgroundTint="@color/white"
+                android:layout_alignParentBottom="true" />
+        </RelativeLayout>
+
         <!-- Video Player Section -->
         <RelativeLayout
             android:layout_width="match_parent"
+            android:visibility="visible"
             android:layout_height="200dp">
 
             <!-- ExoPlayer View with controls -->

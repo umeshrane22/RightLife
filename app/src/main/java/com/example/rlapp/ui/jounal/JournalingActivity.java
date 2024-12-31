@@ -62,16 +62,32 @@ public class JournalingActivity extends AppCompatActivity {
 
     private LinearLayout ll_normal_journal, ll_guided_journal,
             ll_journal_selection_guided, ll_journal_selection_normal, ll_journal_selection;
-    private RelativeLayout rlMoveRight;
+    private RelativeLayout rlMoveRight,rl_radio_normal,rl_radio_guided;
 
     private TextInputEditText etTitle, et_title_normal_journal, et_your_journal_normal, etFeeling, etSituation, etMood;
-    private Button btnSave, btnSaveNormal;
+    private Button btnSave, btnSaveNormal,btn_continue_journal;
+    private RadioButton rd_guided,rd_normal;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_journal);
+        rd_guided = findViewById(R.id.rd_guided);
+        rd_normal = findViewById(R.id.rd_normal);
+        rl_radio_normal = findViewById(R.id.rl_radio_normal);
+        rl_radio_guided = findViewById(R.id.rl_radio_guided);
+
+
+        rl_radio_normal.setOnClickListener(view -> {
+            rd_normal.setChecked(!rd_normal.isChecked());
+            rd_guided.setChecked(!rd_normal.isChecked());
+        });
+
+        rl_radio_guided.setOnClickListener(view -> {
+            rd_guided.setChecked(!rd_guided.isChecked());
+            rd_normal.setChecked(!rd_guided.isChecked());
+        });
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             if (ll_journal_selection.getVisibility() == View.VISIBLE){
@@ -99,7 +115,21 @@ public class JournalingActivity extends AppCompatActivity {
                 handleSaveButtonClickNormal();
             }
         });
-        ll_journal_selection_guided.setOnClickListener(new View.OnClickListener() {
+        btn_continue_journal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (rd_guided.isChecked()){
+                    ll_journal_selection.setVisibility(View.GONE);
+                    ll_guided_journal.setVisibility(View.VISIBLE);
+                }else if (rd_normal.isChecked()){
+                    ll_journal_selection.setVisibility(View.GONE);
+                    ll_normal_journal.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(JournalingActivity.this, "Please select a journal type", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+     /*   ll_journal_selection_guided.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ll_journal_selection.setVisibility(View.GONE);
@@ -112,7 +142,7 @@ public class JournalingActivity extends AppCompatActivity {
                 ll_journal_selection.setVisibility(View.GONE);
                 ll_normal_journal.setVisibility(View.VISIBLE);
             }
-        });
+        });*/
 
     }
 
@@ -126,7 +156,7 @@ public class JournalingActivity extends AppCompatActivity {
         ll_journal_selection_guided = findViewById(R.id.ll_journal_selection_guided);
         ll_journal_selection_normal = findViewById(R.id.ll_journal_selection_normal);
         ll_journal_selection = findViewById(R.id.ll_journal_selection);
-
+        btn_continue_journal = findViewById(R.id.btn_continue_journal);
 
         etTitle = findViewById(R.id.et_title_guided_journal);
         et_title_normal_journal = findViewById(R.id.et_title_normal_journal);

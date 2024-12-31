@@ -36,7 +36,7 @@ public class ReceipeDetailActivity extends AppCompatActivity {
         ic_back_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                finish();
             }
         });
 

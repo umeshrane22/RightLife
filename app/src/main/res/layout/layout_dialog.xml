@@ -47,11 +47,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Please find a quiet and \ncomfortable place \nbefore starting"
-                android:textColor="#000"
+                android:textColor="@color/txt_color_health"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:padding="@dimen/textsize_medium"
-                android:fontFamily="@font/dmsans_regular"
+                android:fontFamily="@font/dmsans_medium"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp" />
 
@@ -60,7 +60,7 @@
                 android:layout_width="166dp"
                 android:layout_height="36dp"
                 android:text="Next Step"
-                android:backgroundTint="#FFD700"
+                android:backgroundTint="@color/dark_yellow"
                 android:textSize="@dimen/textsize_small"
                 android:textColor="#FFF"
                  />

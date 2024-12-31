@@ -8,6 +8,7 @@
     android:clipToPadding="false"
     android:padding="0dp">
 
+
     <!-- RelativeLayout to position the star icon and dialog content -->
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -22,8 +23,8 @@
         <!-- Star Icon Positioned Half Above the Dialog -->
         <ImageView
             android:id="@+id/dialog_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="-40dp"
             android:adjustViewBounds="true"

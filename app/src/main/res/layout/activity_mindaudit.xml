@@ -25,7 +25,8 @@
             android:text="How This Works"
             android:textSize="@dimen/textsize_medium"
             android:fontFamily="@font/dmsans_bold"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
+
             android:layout_height="wrap_content"/>
     <com.zhpan.indicator.IndicatorView
         android:id="@+id/indicator_view"

@@ -147,7 +147,7 @@ public class VoiceScanActivity extends AppCompatActivity {
         if (position == totalItems - 1) {
             btn_howitworks.setText("Proceed to Scan");
         } else {
-            btn_howitworks.setText("Next Page");
+            btn_howitworks.setText("Next");
         }
     }
 
@@ -170,7 +170,7 @@ public class VoiceScanActivity extends AppCompatActivity {
         Button dialogButton = dialog.findViewById(R.id.dialog_button);
 
         // Optional: Set dynamic content
-        dialogText.setText("Please find a quiet and comfortable place before starting");
+        dialogText.setText("Please find a quiet and\n comfortable place before starting");
 
         // Set button click listener
         dialogButton.setOnClickListener(v -> {

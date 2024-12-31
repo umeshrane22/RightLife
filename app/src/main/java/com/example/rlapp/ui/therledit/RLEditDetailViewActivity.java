@@ -4,16 +4,24 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
@@ -32,6 +40,7 @@ import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.svgloader.GlideApp;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -44,6 +53,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -51,6 +61,17 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RLEditDetailViewActivity extends AppCompatActivity {
+
+    /*For Music Player*/
+    private MediaPlayer mediaPlayer;
+    private ImageButton playPauseButtonMusic;
+    private boolean isPlayingAudio = false;
+
+    private SeekBar seekBar;
+    private ProgressBar circularProgressBar;
+    private TextView currentTime;
+    private Handler handler = new Handler();
+    // till here music player
 
     RightLifeEditResponse rightLifeEditResponse;
     int position;
@@ -62,6 +83,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
 
+    private RelativeLayout rl_player;
 
     private PlayerView playerView;
     private ExoPlayer player;
@@ -75,9 +97,15 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.testdata_layout3);
+         // music player
+        rl_player  = findViewById(R.id.rl_player);
+        playPauseButtonMusic = findViewById(R.id.playPauseButton);
+
+        // till here
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
 
+        rl_player  = findViewById(R.id.rl_player);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
@@ -138,16 +166,28 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         txt_desc.setText(rightLifeEditResponse.getData().getTopList().get(position).getDesc());
         tv_header_htw.setText(rightLifeEditResponse.getData().getTopList().get(position).getTitle());
 //if (false)
+
         if (!rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("VIDEO")) {
-            img_contentview.setVisibility(View.VISIBLE);
-            playerView.setVisibility(View.GONE);
-            Glide.with(getApplicationContext())
-                    .load(ApiClient.CDN_URL_QA + rightLifeEditResponse.getData().getTopList().get(position).getThumbnail().getUrl())
-                    .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
-                    .into(img_contentview);
+            if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("AUDIO")){
+                rl_player.setVisibility(View.VISIBLE);
+                playerView.setVisibility(View.GONE);
+                img_contentview.setVisibility(View.GONE);
+                setupMusicPlayer(rightLifeEditResponse);
+
+            }else {
+                img_contentview.setVisibility(View.VISIBLE);
+                playerView.setVisibility(View.GONE);
+                Glide.with(getApplicationContext())
+                        .load(ApiClient.CDN_URL_QA + rightLifeEditResponse.getData().getTopList().get(position).getThumbnail().getUrl())
+                        .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                        .into(img_contentview);
+            }
         } else {
             playerView.setVisibility(View.VISIBLE);
             img_contentview.setVisibility(View.GONE);
+            rl_player.setVisibility(View.GONE);
+            initializePlayer();
+            player.setPlayWhenReady(true);
         }
 
 
@@ -168,38 +208,9 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
         playButton = findViewById(R.id.playButton);
 
-        // Set up the video URL
-        // Set the video URL
-        String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-        Uri videoUri = Uri.parse(videoUrl);
-
-        // Play video when play button is clicked
-  /*      playButton.setOnClickListener(v -> {
-            if (!videoView.isPlaying()) {
-                videoView.start();
-                playButton.setVisibility(View.GONE); // Hide the play button when video starts
-            }
-        });*/
-        /*
-        // Show play button again when video completes
-        videoView.setOnCompletionListener(mp -> playButton.setVisibility(View.VISIBLE));
-
-        //VideoView videoView = findViewById(R.id.videoView);
-        MediaController mediaController = new MediaController(this);
-        mediaController.setAnchorView(videoView);
-// Set MediaController and Uri
-        videoView.setMediaController(mediaController);
-        videoView.setVideoURI(videoUri);
-        videoView.requestFocus();
-
-// Add listener to play the video when ready
-        videoView.setOnPreparedListener(mp -> {
-            // Start video playback
-           // videoView.start();
-        });*/
 
 
-        initializePlayer();
+
 
         // Handle play/pause button click
         playPauseButton.setOnClickListener(v -> {
@@ -210,12 +221,19 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             }
         });
 
-        player.setPlayWhenReady(true);
+
         ViewCountRequest viewCountRequest = new ViewCountRequest();
         viewCountRequest.setId(rightLifeEditResponse.getData().getTopList().get(position).getId());
         viewCountRequest.setUserId(SharedPreferenceManager.getInstance(this).getUserId());
         updateViewCount(viewCountRequest);
+
+        StatiticsRequest statiticsRequest = new StatiticsRequest();
+        statiticsRequest.setContentId(rightLifeEditResponse.getData().getTopList().get(position).getId());
+        statiticsRequest.setEpisodeId("");
+        updateStaticticsRecord(statiticsRequest);
     }
+
+
 
 
     private void showExitDialog() {
@@ -477,7 +495,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (Util.SDK_INT >= 24) {
-            initializePlayer();
+            //initializePlayer();
         }
     }
 
@@ -486,7 +504,18 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         super.onStop();
         if (Util.SDK_INT >= 24) {
             releasePlayer();
+            releaseMusicPlayer();
+        }else {
+            releasePlayer();
+            releaseMusicPlayer();
         }
+    }
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        handler.removeCallbacks(updateProgress);
     }
 
     private void releasePlayer() {
@@ -494,6 +523,12 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             player.release();
             player = null;
         }
+    }
+    private void releaseMusicPlayer() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        handler.removeCallbacks(updateProgress);
     }
 
     private void updateViewCount(ViewCountRequest viewCountRequest) {
@@ -507,7 +542,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         String jsonString = jsonString = response.body().string();
-                        Log.d("API_RESPONSE", "more like content: " + jsonString);
+                        Log.d("API_RESPONSE", "View Count content: " + jsonString);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -534,7 +569,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         String jsonString = jsonString = response.body().string();
-                        Log.d("API_RESPONSE", "more like content: " + jsonString);
+                        Log.d("API_RESPONSE", "statistics content: " + jsonString);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -547,6 +582,109 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
             }
+        });
+    }
+
+
+
+
+
+
+
+    // Update progress in SeekBar and Circular Progress Bar
+    private final Runnable updateProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                int totalDuration = mediaPlayer.getDuration();
+
+                // Update seek bar and progress bar
+                seekBar.setProgress(currentPosition);
+                // Update Circular ProgressBar
+                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
+                circularProgressBar.setProgress(progressPercent);
+
+
+                // Update time display
+                String timeFormatted = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
+                currentTime.setText(timeFormatted);
+
+                // Update every second
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
+
+    private void setupMusicPlayer(RightLifeEditResponse rightLifeEditResponse) {
+        seekBar = findViewById(R.id.seekBar);
+        circularProgressBar = findViewById(R.id.circularProgressBar);
+        // Set progress to 50%
+        currentTime = findViewById(R.id.currentTime);
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+        rl_player.setVisibility(View.VISIBLE);
+        //String imageUrl  = rightLifeEditResponse.getData().getTopList().get(position).getThumbnail().getUrl();
+        String imageUrl  = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/e9c5598c82c85de5903195f549a26210.jpg";
+
+        GlideApp.with(RLEditDetailViewActivity.this)
+                .load(ApiClient.CDN_URL_QA+imageUrl)//episodes.get(1).getThumbnail().getUrl()
+                .error(R.drawable.img_logintop)
+                .into(backgroundImage);
+
+
+        String previewUrl  = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";
+        String url = ApiClient.CDN_URL_QA+previewUrl; //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        Log.d("API Response", "Sleep aid URL: " + url);
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();  // Load asynchronously
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show();
+        }
+
+        mediaPlayer.setOnPreparedListener(mp -> {
+            mediaPlayer.start();
+            seekBar.setMax(mediaPlayer.getDuration());
+            isPlaying = true;
+            playPauseButtonMusic.setImageResource(R.drawable.ic_sound_pause);
+            // Update progress every second
+            handler.post(updateProgress);
+        });
+        // Play/Pause Button Listener
+        playPauseButtonMusic.setOnClickListener(v -> {
+            if (isPlaying) {
+                mediaPlayer.pause();
+                playPauseButtonMusic.setImageResource(R.drawable.ic_sound_play);
+                handler.removeCallbacks(updateProgress);
+            } else {
+                mediaPlayer.start();
+                playPauseButtonMusic.setImageResource(R.drawable.ic_sound_pause);
+                //updateProgress();
+                handler.post(updateProgress);
+            }
+            isPlaying = !isPlaying;
+        });
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show();
+            handler.removeCallbacks(updateProgress);
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 
