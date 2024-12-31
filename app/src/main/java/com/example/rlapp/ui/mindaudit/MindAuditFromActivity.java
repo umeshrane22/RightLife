@@ -21,10 +21,10 @@ import com.example.rlapp.ui.payment.AccessPaymentActivity;
 
 public class MindAuditFromActivity extends AppCompatActivity {
 
+    public Button nextButton;
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
     private Button prevButton, submitButton;
-    public Button nextButton;
     private MindAuditFormPagerAdapter adapter;
     private ProgressBar progressBar;
 
@@ -92,6 +92,9 @@ public class MindAuditFromActivity extends AppCompatActivity {
         } else {
             nextButton.setText("Next");
         }
+        if (totalItems == 1) {
+            nextButton.setText("Next");
+        }
     }
 
     private void submitFormData() {
@@ -120,6 +123,11 @@ public class MindAuditFromActivity extends AppCompatActivity {
 
     private void updateProgress(int fragmentIndex) {
         // Set progress percentage based on the current fragment (out of 8)
+        if (adapter.getItemCount() == 1) {
+
+            progressBar.setProgress(50);
+            return;
+        }
         int progressPercentage = (int) (((fragmentIndex + 1) / (double) adapter.getItemCount()) * 100);
         progressBar.setProgress(progressPercentage);
     }

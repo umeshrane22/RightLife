@@ -19,6 +19,8 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.google.common.base.CaseFormat;
 import com.google.gson.Gson;
 
 import java.io.IOException;
