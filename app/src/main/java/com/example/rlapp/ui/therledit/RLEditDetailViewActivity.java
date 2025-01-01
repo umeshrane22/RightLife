@@ -83,7 +83,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
 
-    private RelativeLayout rl_player;
+    private RelativeLayout rl_player,rl_video_players_layout;
 
     private PlayerView playerView;
     private ExoPlayer player;
@@ -99,6 +99,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         setContentView(R.layout.testdata_layout3);
          // music player
         rl_player  = findViewById(R.id.rl_player);
+        rl_video_players_layout = findViewById(R.id.rl_video_players_layout);
         playPauseButtonMusic = findViewById(R.id.playPauseButton);
 
         // till here
@@ -170,6 +171,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         if (!rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("VIDEO")) {
             if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("AUDIO")){
                 rl_player.setVisibility(View.VISIBLE);
+                rl_video_players_layout.setVisibility(View.GONE);
                 playerView.setVisibility(View.GONE);
                 img_contentview.setVisibility(View.GONE);
                 setupMusicPlayer(rightLifeEditResponse);
@@ -177,12 +179,14 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             }else {
                 img_contentview.setVisibility(View.VISIBLE);
                 playerView.setVisibility(View.GONE);
+                rl_video_players_layout.setVisibility(View.VISIBLE);
                 Glide.with(getApplicationContext())
                         .load(ApiClient.CDN_URL_QA + rightLifeEditResponse.getData().getTopList().get(position).getThumbnail().getUrl())
                         .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
                         .into(img_contentview);
             }
         } else {
+            rl_video_players_layout.setVisibility(View.VISIBLE);
             playerView.setVisibility(View.VISIBLE);
             img_contentview.setVisibility(View.GONE);
             rl_player.setVisibility(View.GONE);

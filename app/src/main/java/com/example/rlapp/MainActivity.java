@@ -695,6 +695,7 @@ public class MainActivity extends AppCompatActivity {
                 ll_loginoption_otp.setVisibility(View.VISIBLE);
                 callForOtpEmail(emailId);
             } else {
+                setEmailidField(emailId);
                 ll_loginoption_email_password.setVisibility(View.VISIBLE);
                 confirmPasswordInputOptionlogin.setVisibility(View.VISIBLE);
             }
@@ -744,7 +745,8 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(MainActivity.this, "Failed: " + loginResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
                     }
-                    setupRegistrationView(loginResponse);
+                    //setupRegistrationView(loginResponse);
+                    getUserDetails("");
                 } else {
                     Toast.makeText(MainActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

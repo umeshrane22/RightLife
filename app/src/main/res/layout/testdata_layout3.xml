@@ -52,7 +52,6 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-
             android:id="@+id/rl_player"
             android:visibility="gone"
             android:layout_height="600dp">
@@ -117,6 +116,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:visibility="visible"
+            android:id="@+id/rl_video_players_layout"
             android:layout_height="200dp">
 
             <!-- ExoPlayer View with controls -->

@@ -372,14 +372,14 @@ public class ProfileActivity extends AppCompatActivity {
             } else {
                 userdata.setGender("F");
             }
-            userdata.setWeight(Integer.parseInt(edtWeight.getText().toString()));
+            userdata.setWeight(Double.parseDouble(edtWeight.getText().toString()));
             if ("Kgs".equalsIgnoreCase(tvWeightSpinner.getText().toString())) {
                 userdata.setWeightUnit("KG");
             } else {
                 userdata.setWeightUnit("LBS");
             }
 
-            userdata.setHeight(Integer.parseInt(edtHeightCms.getText().toString()));
+            userdata.setHeight(Double.parseDouble(edtHeightCms.getText().toString()));
             userdata.setHeightUnit("CM");
             userdata.setPhoneNumber(phoneNumber);
 
