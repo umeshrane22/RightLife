@@ -19,8 +19,7 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
-import com.example.rlapp.ui.utility.SharedPreferenceManager;
-import com.google.common.base.CaseFormat;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -33,8 +32,8 @@ import retrofit2.Response;
 
 public class MindAuditFeelingsFragment extends Fragment {
 
-    private static final String ARG_PAGE_INDEX = "page_index";
     public static final String ARG_BASIC_QUESTION = "BASIC_QUESTION";
+    private static final String ARG_PAGE_INDEX = "page_index";
     private int pageIndex;
     private GetEmotions getEmotions;
     private RecyclerView recyclerView;
@@ -99,14 +98,14 @@ public class MindAuditFeelingsFragment extends Fragment {
                         getEmotions = gson.fromJson(jsonString, GetEmotions.class);
 
                         for (String s : getEmotions.getEmotions()) {
-                            emotionsList.add(new Emotions(s, false));
+                            emotionsList.add(new Emotions(Utils.toTitleCase(s), false));
                         }
 
                         emotionsAdapter = new EmotionsAdapter(requireContext(), emotionsList, emotion -> {
                             if (emotion.isSelected()) {
-                                selectedEmotions.add(emotion.getEmotion());
+                                selectedEmotions.add(emotion.getEmotion().toUpperCase());
                             } else {
-                                selectedEmotions.remove(emotion.getEmotion());
+                                selectedEmotions.remove(emotion.getEmotion().toUpperCase());
                             }
                         });
 

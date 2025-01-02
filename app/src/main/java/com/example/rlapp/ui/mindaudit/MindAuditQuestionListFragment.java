@@ -21,16 +21,19 @@ import java.util.ArrayList;
 
 public class MindAuditQuestionListFragment extends Fragment {
     private static final String ARG_QUESTION = "QUESTION";
+    private static final String ARG_POSITION = "POSITION";
     private Question question;
     private TextView txt_question;
     private RecyclerView recyclerView;
     //private OnNextFragmentClickListener onNextFragmentClickListener;
     private MindAuditOptionsAdapter adapter;
+    private int position = 0;
 
-    public static MindAuditQuestionListFragment newInstance(Question question) {
+    public static MindAuditQuestionListFragment newInstance(Question question, int position) {
         MindAuditQuestionListFragment fragment = new MindAuditQuestionListFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARG_QUESTION, question);
+        args.putInt(ARG_POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,6 +43,7 @@ public class MindAuditQuestionListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             question = (Question) getArguments().getSerializable(ARG_QUESTION);
+            position = getArguments().getInt(ARG_POSITION, 0);
         }
     }
 
@@ -57,6 +61,7 @@ public class MindAuditQuestionListFragment extends Fragment {
         txt_question = view.findViewById(R.id.txt_question);
 
         txt_question.setText(question.getQuestion());
+        ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.GONE);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 1);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -66,11 +71,16 @@ public class MindAuditQuestionListFragment extends Fragment {
                 boolean b = (boolean) scoringPattern.getScore();
                 if (!b) {
                     ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
-                }else {
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                } else {
+                    //((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
                 }
             } else {
-                ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                //((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                if (position != adapter.getItemCount() - 1)
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
+                else
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
             }
         });
         recyclerView.setAdapter(adapter);
