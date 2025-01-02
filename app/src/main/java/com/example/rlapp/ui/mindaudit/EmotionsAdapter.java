@@ -22,7 +22,7 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
     private ArrayList<Emotions> emotions;
     private OnItemClickListener onItemClickListener;
 
-    public EmotionsAdapter(Context context,ArrayList<Emotions> emotions, OnItemClickListener onItemClickListener) {
+    public EmotionsAdapter(Context context, ArrayList<Emotions> emotions, OnItemClickListener onItemClickListener) {
         this.context = context;
         this.emotions = emotions;
         this.onItemClickListener = onItemClickListener;
@@ -40,7 +40,7 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
     public void onBindViewHolder(@NonNull EmotionsViewHolder holder, int position) {
         Emotions emotion = emotions.get(position);
         holder.tvEmotions.setText(emotion.getEmotion());
-        switch (emotion.getEmotion()) {
+        switch (emotion.getEmotion().toUpperCase()) {
             case "LOW":
                 holder.ivEmotions.setImageResource(R.drawable.img_mindau_low);
                 break;
@@ -61,11 +61,16 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
                 break;
         }
 
-        if (emotion.isSelected()){
+        if (emotion.isSelected()) {
             holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_pink));
-        }else {
+            holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape_medium_pink));
+            setMargin(7, holder.tvEmotions);
+        } else {
             holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_light_pink));
+            holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape));
+            setMargin(0, holder.tvEmotions);
         }
+
 
         holder.itemView.setOnClickListener(v -> {
             emotion.setSelected(!emotion.isSelected());
@@ -77,6 +82,15 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
     @Override
     public int getItemCount() {
         return emotions.size();
+    }
+
+    private void setMargin(int margin, TextView textView) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                95
+        );
+        params.setMargins(margin, margin, margin, margin);
+        textView.setLayoutParams(params);
     }
 
     public interface OnItemClickListener {

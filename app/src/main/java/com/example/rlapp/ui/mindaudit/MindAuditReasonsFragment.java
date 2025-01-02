@@ -1,5 +1,6 @@
 package com.example.rlapp.ui.mindaudit;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +8,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,19 +38,18 @@ import retrofit2.Response;
 
 public class MindAuditReasonsFragment extends Fragment {
 
-    private RecyclerView recyclerView;
-    private MindAuditReasonslistAdapter adapter;
     private static final String ARG_PAGE_INDEX = "page_index";
     private static final String ARG_EMOTION = "emotion";
     private static final String ARG_EMOTION_REASONS = "emotion_reasons";
+    private static ArrayList<String> userEmotionsString = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private MindAuditReasonslistAdapter adapter;
     private int pageIndex;
     private ArrayList<String> selectedEmotionReasons = new ArrayList<>();
     private ArrayList<String> emotionReasons = new ArrayList<>();
     private String emotion;
     private ArrayList<Fruit> fruitList = new ArrayList<>();
     private TextView tvHeader;
-    private static ArrayList<String> userEmotionsString = new ArrayList<>();
-
 
     public static MindAuditReasonsFragment newInstance(int pageIndex, ArrayList<String> emotionReasons, String emotion) {
         MindAuditReasonsFragment fragment = new MindAuditReasonsFragment();
@@ -96,8 +100,7 @@ public class MindAuditReasonsFragment extends Fragment {
 
         ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
             if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
-                UserEmotions userEmotions = new UserEmotions(userEmotionsString);
-                getSuggestedAssessment(userEmotions);
+                showDisclaimerDialog();
             } else {
                 ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
             }
@@ -141,5 +144,41 @@ public class MindAuditReasonsFragment extends Fragment {
                 Toast.makeText(requireContext(), "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showDisclaimerDialog() {
+        // Create the dialog
+        Dialog dialog = new Dialog(requireActivity());
+        dialog.setContentView(R.layout.layout_disclaimer_health_cam);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Window window = dialog.getWindow();
+        // Set the dim amount
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
+        window.setAttributes(layoutParams);
+
+        // Find views from the dialog layout
+        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
+        ImageView dialogImage = dialog.findViewById(R.id.img_dialog);
+        TextView dialogText = dialog.findViewById(R.id.dialog_text);
+        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
+
+        Button dialogButtonOkay = dialog.findViewById(R.id.dialog_button_stay);
+
+        dialogImage.setVisibility(View.GONE);
+        dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");
+
+        // Optional: Set dynamic content
+        // dialogText.setText("Please find a quiet and comfortable place before starting");
+
+        dialogButtonOkay.setOnClickListener(v -> {
+            dialog.dismiss();
+            UserEmotions userEmotions = new UserEmotions(userEmotionsString);
+            getSuggestedAssessment(userEmotions);
+        });
+
+        // Show the dialog
+        dialog.show();
     }
 }

@@ -18,7 +18,7 @@ class MAAssessmentPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         Question question = group.getQuestions().get(position);
-        return MindAuditQuestionListFragment.newInstance(question);
+        return MindAuditQuestionListFragment.newInstance(question, position);
     }
 
     @Override

@@ -32,8 +32,8 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
     private TextView tvHeader;
     private ImageView imgBack;
     private ViewPager2 viewPager;
-    private Button prevButton, nextButton;
-    public Button submitButton;
+    private Button prevButton;
+    public Button submitButton,nextButton;
     private MAAssessmentPagerAdapter adapter;
     private ProgressBar progressBar;
     private MindAuditAssessmentQuestions mindAuditAssessmentQuestions;
@@ -97,6 +97,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
     private void updateButtonVisibility(int position) {
         submitButton.setVisibility(position == adapter.getItemCount() - 1 ? View.VISIBLE : View.GONE);
+        nextButton.setVisibility(position == adapter.getItemCount() - 1 ? View.GONE : View.VISIBLE);
     }
 
     private void updateProgress(int fragmentIndex) {

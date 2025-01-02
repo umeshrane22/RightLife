@@ -40,14 +40,9 @@ public class MindAuditReasonslistAdapter extends RecyclerView.Adapter<MindAuditR
         holder.favoriteCheckbox.setChecked(fruit.isSelected());
 
         if (fruit.isSelected()) {
-
-            ColorStateList colorStateList = ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.mindauditpink);
-            holder.bgrelative.setBackgroundTintList(colorStateList);
-         //   holder.bgrelative.setBackgroundTintList(ContextCompat.getColor(holder.itemView.getContext(), R.color.healthauditgreen));
+            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerpinkborder_selected));
         } else {
-            ColorStateList colorStateList = ContextCompat.getColorStateList(holder.itemView.getContext(), R.color.white);
-            holder.bgrelative.setBackgroundTintList(colorStateList);
-           // holder.bgrelative.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.white));
+            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerpinkborder));
         }
 
 
