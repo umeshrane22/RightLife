@@ -18,6 +18,7 @@ import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
+import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
@@ -364,6 +365,21 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Query("assessment") String assessment
     );
+
+    @Headers("Content-Type: application/json")
+    @GET("mind-audit/q/get-assessment-result")
+    Call<ResponseBody> getMindAuditAssessmentResult(
+            @Header("Authorization") String authToken,
+            @Query("assessment") String assessment
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("mind-audit/c/save-assessment")
+    Call<ResponseBody> saveMindAuditAssessment(
+            @Header("Authorization") String authToken,
+            @Body MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest
+            );
+
 
     @Headers("Content-Type: application/json")
     @GET("user/purchasehistory")

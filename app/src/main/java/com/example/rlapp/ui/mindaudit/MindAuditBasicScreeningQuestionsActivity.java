@@ -12,10 +12,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.rlapp.R;
 
 public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity {
+    public Button nextButton, submitButton;
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
     private Button prevButton;
-    public Button nextButton, submitButton;
     private ProgressBar progressBar;
     private MindAuditBasicQuestionsAdapter adapter;
     private BasicScreeningQuestion basicScreeningQuestions;
@@ -40,7 +40,6 @@ public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity 
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage());
-        submitButton.setOnClickListener(v -> submitFormData());
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -76,9 +75,6 @@ public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity 
         } else {
             nextButton.setText("Next");
         }
-    }
-
-    private void submitFormData() {
     }
 
     private void navigateToPreviousPage() {
