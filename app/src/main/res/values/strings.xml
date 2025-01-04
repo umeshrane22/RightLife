@@ -123,4 +123,73 @@
     <string name="systolic_range_error"> The Systolic range should be between 40 to 250</string>
     <string name="diastolic_range_error"> The Diastolic range should be between 30 to 300</string>
     <string name="general_error"> Please fill the values</string>
+
+    <string name="MEASUREMENT_CANCELED">"Measurement cancelled"</string>
+    <string name="MEASURING_COUNTDOWN">"Measurement starting in..."</string>
+    <string name="MEASURING_PERFECT">"Perfect! Please hold still"</string>
+    <string name="MEASURING_MSG_DEFAULT">"Please centre your face within the outline"</string>
+
+    <string name="ERR_CAMERA_CALIBRATION_TIMEOUT">"Could not calibrate camera
+Restarting calibration..."</string>
+    <string name="ERR_CONFLICT_EMAIL">"A user with that email address already exists
+Try logging in instead"</string>
+    <string name="ERR_CONFLICT_PHONE">"A user with that phone number already exists
+Try logging in instead"</string>
+    <string name="ERR_CONSTRAINT_BRIGHTNESS">"Your face was too bright
+Please try to dim the lights"</string>
+    <string name="ERR_CONSTRAINT_DARKNESS">"Your face was not well lit
+Please try better lighting"</string>
+    <string name="ERR_CONSTRAINT_DISTANCE">"Please move closer to the camera and try again"</string>
+    <string name="ERR_CONSTRAINT_FPS">"The camera is not maintaining the required frame rate
+Please try closing all background applications"</string>
+    <string name="ERR_CONSTRAINT_GAZE">"Please directly face the camera throughout the measurement"</string>
+    <string name="ERR_CONSTRAINT_MOVEMENT">"Please hold still throughout the measurement"</string>
+    <string name="ERR_CONSTRAINT_NO_NETWORK">"To use Anura, please make sure you're connected to WiFi or a mobile network"</string>
+    <string name="ERR_CONSTRAINT_POSITION">"Please keep your face centred within the outline throughout the measurement"</string>
+    <string name="ERR_CONSTRAINT_TOO_FAR">"Please move closer to the camera and keep your face centred within the outline throughout the measurement"</string>
+    <string name="ERR_EMAIL_LOGIN_FAILED">"Email/Password combination is incorrect
+Please try again"</string>
+    <string name="ERR_EMAIL_NOT_FOUND">"A user with this email address was not found"</string>
+    <string name="ERR_MSG_ANALYZER_FAILED">"There was an error analyzing your results
+Please try again"</string>
+    <string name="ERR_MSG_MEASUREMENT_FAILED">"Anura is unable to process this measurement.
+Please check your network connection and try again."</string>
+    <string name="ERR_MSG_MEASUREMENT_TIMEOUT">"Data could not be sent for analysis
+Please check your network connection and try again."</string>
+    <string name="ERR_MSG_NO_NETWORK">"You are not connected to the internet"</string>
+    <string name="ERR_MSG_SNR">"The blood flow measurement was not reliable
+Please try to allow the light to fall evenly across your face while holding still"</string>
+    <string name="ERR_MSG_SNR_SHORT">"Please try to allow the light to fall evenly across your face while holding still"</string>
+    <string name="ERR_NOTE_LOAD">"Failed to load note"</string>
+    <string name="ERR_NOTE_SAVE">"There was an error saving the note"</string>
+    <string name="ERR_PASSWORD_RESET">"Your password could not be reset"</string>
+    <string name="ERR_PASSWORD_SHORT">"Your password must be at least {NUM} characters long"</string>
+    <string name="ERR_PHONE_NOT_FOUND">"A user with this mobile number was not found"</string>
+    <string name="ERR_SERVER_CONNECTION">"Unable to connect to the server"</string>
+    <string name="ERR_TIMEOUT">"Please make sure you are connected to WiFi or a mobile network"</string>
+    <string name="ERR_TITLE_ANALYZER_FAILED">"Analyzer Failed"</string>
+    <string name="ERR_TITLE_MEASUREMENT_FAILED">"Measurement failed"</string>
+    <string name="ERR_TITLE_MEASUREMENT_TIMEOUT">"Request timed out"</string>
+    <string name="ERR_TURN_OFF_LOW_POWER_MODE">"Please disable Low Power Mode before continuing"</string>
+
+    <string name="WARNING_CONSTRAINT_BACKLIGHT">"The backlight is too strong
+Please try changing position so more light falls directly on the face"</string>
+    <string name="WARNING_CONSTRAINT_BRIGHTNESS">"Your face is too bright
+Please try to dim the lights"</string>
+    <string name="WARNING_CONSTRAINT_DARKNESS">"Your face is not well lit
+Please try better lighting"</string>
+    <string name="WARNING_CONSTRAINT_DISTANCE">"The face is too far
+Please try to move closer to the camera"</string>
+    <string name="WARNING_CONSTRAINT_EXPOSURE">"Please hold still while the camera is calibrating…"</string>
+    <string name="WARNING_CONSTRAINT_FPS">"The camera is not maintaining the required frame rate
+Please try closing all background applications"</string>
+    <string name="WARNING_CONSTRAINT_GAZE">"Please look directly into the camera"</string>
+    <string name="WARNING_CONSTRAINT_MOVEMENT">"Too much movement
+Please hold still"</string>
+    <string name="WARNING_CONSTRAINT_POSITION">"Try to keep your face within the outline"</string>
+    <string name="WARNING_CONSTRAINT_TOO_CLOSE">"Please move a little further away"</string>
+    <string name="WARNING_CONSTRAINT_TOO_FAR">"Please move a little closer"</string>
+    <string name="WARNING_LOW_POWER_MODE">"For better accuracy, please disable Low Power Mode"</string>
+    <string name="WARNING_SERVER_CONNECTION">"Connecting to the server"</string>
+    <string name="dfx_id_version">"DFX Extraction Library Version: %1$s\nAnura Core Version: %2$s"</string>
 </resources>

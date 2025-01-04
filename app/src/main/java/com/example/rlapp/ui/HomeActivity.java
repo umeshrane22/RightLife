@@ -60,6 +60,8 @@ import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
+import com.example.rlapp.ui.sdkpackage.SDKActivity;
+import com.example.rlapp.ui.sdkpackage.VoiceRecorderActivity;
 import com.example.rlapp.ui.search.SearchActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.utility.DateTimeUtils;
@@ -1185,7 +1187,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, SearchActivity.class));
+            startActivity(new Intent(this, VoiceRecorderActivity.class));
         }else
         if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();

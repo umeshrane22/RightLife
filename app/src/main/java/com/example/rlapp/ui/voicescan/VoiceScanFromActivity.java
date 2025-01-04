@@ -24,6 +24,7 @@ import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionData;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
 import com.example.rlapp.ui.payment.AccessPaymentActivity;
+import com.example.rlapp.ui.sdkpackage.VoiceRecorderActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -156,10 +157,18 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
                     Log.d("API Response 2", "Success: " + response.body().toString());
 
                     Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body().toString());
+                    String jsonResponse = gson.toJson(response.body());
                     Log.d("API Response body", "Success: " + jsonResponse);
 
-                    Intent intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
+                    VoiceScanSubmitResponse voiceScanSubmitResponse = gson.fromJson(jsonResponse, VoiceScanSubmitResponse.class);
+
+                    Intent intent;
+                    if (voiceScanSubmitResponse.getData().getIsSubscribed()){
+                        intent = new Intent(VoiceScanFromActivity.this, VoiceRecorderActivity.class);
+                        intent.putExtra("answerId", voiceScanSubmitResponse.getData().getAnswerId());
+                    }else {
+                        intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
+                    }
                     startActivity(intent);
 
                 } else {
