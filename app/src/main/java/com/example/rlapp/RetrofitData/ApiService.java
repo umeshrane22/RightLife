@@ -23,6 +23,7 @@ import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
+import com.example.rlapp.ui.voicescan.VoiceScanCheckInRequest;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
@@ -573,6 +574,15 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Path("contentId") String contentId,
             @Body FavouriteRequest favouriteRequest);
+
+
+
+    @Headers("Content-Type: application/json")
+    @POST("check-in/create")
+    Call<ResponseBody> voiceScanCheckInCreate(
+            @Header("Authorization") String authToken,
+            @Body VoiceScanCheckInRequest checkInRequest);
+
 
 
 }

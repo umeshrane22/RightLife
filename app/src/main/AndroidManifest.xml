@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -82,9 +83,13 @@
         <activity android:name=".ui.drawermenu.PreferencesLayer2Activity" />
         <activity android:name=".ui.drawermenu.ChangePasswordActivity" />
         <activity android:name=".ui.search.SearchActivity" />
-        <activity android:name=".ui.therledit.ViewAllActivity"/>
-        <activity android:name=".ui.therledit.ArtistsDetailsActivity"/>
-        <activity android:name=".ui.therledit.ViewAllByArtistActivity"/>
+        <activity android:name=".ui.therledit.ViewAllActivity" />
+        <activity android:name=".ui.therledit.ArtistsDetailsActivity" />
+        <activity android:name=".ui.therledit.ViewAllByArtistActivity" />
+
+        <activity android:name=".ui.sdkpackage.SDKActivity" />
+        <activity android:name=".ui.sdkpackage.VoiceRecorderActivity" />
+        <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
 
         <activity android:name="com.example.rlapp.ui.jounal.JournalingActivity" />
 
@@ -100,9 +105,18 @@
     </application>
 
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 </manifest>
