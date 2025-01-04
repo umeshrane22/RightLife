@@ -84,6 +84,7 @@
         android:layout_margin="16dp"
         android:fontFamily="@font/dmsans_bold"
         android:textSize="@dimen/textsize_large"
+        android:visibility="gone"
         android:text="Curated for You"/>
 
     <androidx.recyclerview.widget.RecyclerView

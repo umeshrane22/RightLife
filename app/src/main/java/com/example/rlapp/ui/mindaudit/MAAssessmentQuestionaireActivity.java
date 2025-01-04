@@ -3,6 +3,7 @@ package com.example.rlapp.ui.mindaudit;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -19,9 +20,12 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.mindaudit.questions.MindAuditAssessmentQuestions;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -29,14 +33,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
+    public Button submitButton, nextButton;
     private TextView tvHeader;
     private ImageView imgBack;
     private ViewPager2 viewPager;
     private Button prevButton;
-    public Button submitButton,nextButton;
     private MAAssessmentPagerAdapter adapter;
     private ProgressBar progressBar;
     private MindAuditAssessmentQuestions mindAuditAssessmentQuestions;
+    private String header;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,7 +56,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
         submitButton = findViewById(R.id.submitButton);
         progressBar = findViewById(R.id.progressBar);
 
-        String header = getIntent().getStringExtra("AssessmentType");
+        header = getIntent().getStringExtra("AssessmentType");
 
         tvHeader.setText(header);
 
@@ -59,7 +64,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage());
-        submitButton.setOnClickListener(v -> submitFormData());
+        submitButton.setOnClickListener(v -> submitFormData(header));
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -91,13 +96,24 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
         }
     }
 
-    private void submitFormData() {
-
+    private void submitFormData(String assessment) {
+        MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest = new MindAuditAssessmentSaveRequest();
+        AssessmentsTaken assessmentsTaken = new AssessmentsTaken();
+        assessmentsTaken.setAssessment(assessment);
+        Interpretation interpretation = new Interpretation();
+        Anger anger = new Anger();
+        anger.setLevel("Extremely Severe");
+        anger.setScore(0);
+        interpretation.setAnger(anger);
+        assessmentsTaken.setInterpretation(interpretation);
+        List<AssessmentsTaken> assessmentTakens = new ArrayList<>();
+        assessmentTakens.add(assessmentsTaken);
+        mindAuditAssessmentSaveRequest.setAssessmentsTaken(assessmentTakens);
+        saveAssessment(mindAuditAssessmentSaveRequest);
     }
 
     private void updateButtonVisibility(int position) {
         submitButton.setVisibility(position == adapter.getItemCount() - 1 ? View.VISIBLE : View.GONE);
-        nextButton.setVisibility(position == adapter.getItemCount() - 1 ? View.GONE : View.VISIBLE);
     }
 
     private void updateProgress(int fragmentIndex) {
@@ -136,6 +152,75 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                 Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    private void getAssessmentResult(String assessment) {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getMindAuditAssessmentResult(accessToken, assessment);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    String jsonResponse = null;
+                    try {
+                        jsonResponse = gson.toJson(response.body().string());
+                        Log.d("AAAA", jsonResponse);
+                        Toast.makeText(MAAssessmentQuestionaireActivity.this, "Result : " + jsonResponse, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorMessage = response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Toast.makeText(MAAssessmentQuestionaireActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void saveAssessment(MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest) {
+        String assessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.saveMindAuditAssessment(assessToken, mindAuditAssessmentSaveRequest);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(MAAssessmentQuestionaireActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Gson gson = new Gson();
+                        Log.d("AAAAA", "Result  = " + jsonString);
+
+                        getAssessmentResult(header);
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(MAAssessmentQuestionaireActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

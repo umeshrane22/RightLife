@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -36,7 +37,7 @@ import retrofit2.Response;
 public class MASuggestedAssessmentActivity extends AppCompatActivity {
     private ImageView ic_back_dialog, close_dialog;
     private RecyclerView rvSuggestedAssessment, rvAllAssessment, rvCurated;
-
+    private TextView tv_curated;
     private SuggestedAssessmentAdapter suggestedAssessmentAdapter;
     private AllAssessmentAdapter allAssessmentAdapter;
     private Assessments assessments;
@@ -63,6 +64,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
         rvSuggestedAssessment = findViewById(R.id.rv_suggested_assessment);
         rvAllAssessment = findViewById(R.id.rv_all_assessment);
         rvCurated = findViewById(R.id.rv_curated);
+        tv_curated = findViewById(R.id.tv_curated);
 
         assessments = (Assessments) getIntent().getSerializableExtra("AssessmentData");
 
@@ -179,10 +181,12 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
                         /*****
                          * Sudhir will complete this part
                          */
+                        tv_curated.setVisibility(View.VISIBLE);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 } else {
+                    tv_curated.setVisibility(View.GONE);
                     Toast.makeText(MASuggestedAssessmentActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }

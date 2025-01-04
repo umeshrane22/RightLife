@@ -2,6 +2,7 @@ package com.example.rlapp.ui.mindaudit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,21 +68,24 @@ public class MindAuditQuestionListFragment extends Fragment {
         recyclerView.setLayoutManager(gridLayoutManager);
 
         adapter = new MindAuditOptionsAdapter(requireContext(), (ArrayList<ScoringPattern>) question.getScoringPattern(), scoringPattern -> {
-            if (question.isContinueFurtherIfTrue()) {
-                boolean b = (boolean) scoringPattern.getScore();
-                if (!b) {
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
+            new Handler().postDelayed(() -> {
+                if (question.isContinueFurtherIfTrue()) {
+                    boolean b = (boolean) scoringPattern.getScore();
+                    if (!b) {
+                        ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
+                    } else {
+                        ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+                        //((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
+                    }
                 } else {
-                    //((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
+            /*if (position != adapter.getItemCount() - 1)
+                ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
+            else
+                ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);*/
                 }
-            } else {
-                //((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
-                if (position != adapter.getItemCount() - 1)
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
-                else
-                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
-            }
+            }, 1000);
+
         });
         recyclerView.setAdapter(adapter);
 
