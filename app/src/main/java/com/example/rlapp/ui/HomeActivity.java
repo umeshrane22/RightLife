@@ -47,7 +47,6 @@ import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
 import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
-import com.example.rlapp.ui.drawermenu.PreferencesLayer2Activity;
 import com.example.rlapp.ui.drawermenu.ProfileActivity;
 import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
@@ -60,8 +59,6 @@ import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
-import com.example.rlapp.ui.sdkpackage.SDKActivity;
-import com.example.rlapp.ui.sdkpackage.VoiceRecorderActivity;
 import com.example.rlapp.ui.search.SearchActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.utility.DateTimeUtils;
@@ -100,7 +97,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
-    ImageView searchIcon,img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
+    ImageView searchIcon, img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
@@ -1187,9 +1184,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, VoiceRecorderActivity.class));
-        }else
-        if (viewId == R.id.rlmenu) {
+            startActivity(new Intent(this, SearchActivity.class));
+        } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
             Intent intent = new Intent(HomeActivity.this, RLPageActivity.class);
@@ -1657,7 +1653,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
-        } else if (id == R.id.nav_preferences){
+        } else if (id == R.id.nav_preferences) {
             Intent intent = new Intent(this, PreferencesLayer1Activity.class);
             startActivity(intent);
         }

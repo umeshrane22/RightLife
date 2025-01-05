@@ -46,9 +46,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.voicescan.VoiceScanActivity" />
+        <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />
         <activity android:name=".ui.healthaudit.HealthAuditActivity" />
         <activity android:name=".ui.mindaudit.MindAuditActivity" />
         <activity android:name=".ui.healthcam.HealthCamActivity" />
+        <activity android:name=".ui.voicescan.VoiceScanWaitingActivity" />
         <activity android:name=".ui.healthcam.HealthCamBasicDetailsActivity" />
         <activity android:name=".ui.CategoryListActivity" />
         <activity android:name=".ui.healthaudit.HealthAuditFormActivity" />

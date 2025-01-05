@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/thinkright">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_time_left"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:background="@drawable/round_circle_voice_record"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="80sp"
+            android:fontFamily="@font/dmsans_bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Get ready..."
+            android:textColor="@color/txt_color_mind"
+            android:layout_marginTop="80dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/dmsans_medium"/>
+
+        <TextView
+            android:id="@+id/tv_topic_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Be prepared to talk about:\nYour topic"
+            android:textColor="@color/txt_color_mind"
+            android:layout_marginTop="10dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
