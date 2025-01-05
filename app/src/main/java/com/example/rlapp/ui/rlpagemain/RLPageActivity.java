@@ -22,6 +22,7 @@ import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
+import com.example.rlapp.ui.jounal.JournalingListActivity;
 import com.example.rlapp.ui.mindaudit.AllAssessment;
 import com.example.rlapp.ui.mindaudit.Assessments;
 import com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity;
@@ -68,7 +69,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private RecyclerView recyclerViewContinue,recyclerViewrecent;
     private FloatingActionButton add_fab;
-    private RelativeLayout rl_verify_view;
+    private RelativeLayout rl_verify_view,layout_rl_journalarrow;
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
             ll_journal, ll_affirmations, ll_sleepsounds;
     private ImageView img_homemenu, img_healthmenu, quicklinkmenu;
@@ -84,6 +85,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         recyclerViewContinue = findViewById(R.id.recyclerViewContinue);
         recyclerViewrecent = findViewById(R.id.recyclerViewrecent);
         rl_verify_view = findViewById(R.id.rl_verify_view);
+        layout_rl_journalarrow = findViewById(R.id.layout_rl_journalarrow);
         rlmenu = findViewById(R.id.rlmenu);
         rlmenu.setOnClickListener(this);
         //img_homemenu = findViewById(R.id.img_homemenu);
@@ -127,7 +129,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         ll_normal_journal = findViewById(R.id.ll_normal_journal);
         ll_guided_journal.setOnClickListener(this);
         ll_normal_journal.setOnClickListener(this);
-
+        layout_rl_journalarrow.setOnClickListener(this);
 
         // Api Calls
 
@@ -547,6 +549,11 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
         }else if (viewId == R.id.ll_normal_journal) {
             startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
+        }else if (viewId == R.id.layout_rl_journalarrow) {
+            Intent intent = new Intent(RLPageActivity.this, JournalingListActivity.class);
+            // Optionally pass data
+            //intent.putExtra("key", "value");
+            startActivity(intent);
         }
     }
 }
