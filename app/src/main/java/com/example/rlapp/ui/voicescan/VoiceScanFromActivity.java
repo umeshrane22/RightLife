@@ -164,8 +164,9 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
 
                     Intent intent;
                     if (voiceScanSubmitResponse.getData().getIsSubscribed()){
-                        intent = new Intent(VoiceScanFromActivity.this, VoiceRecorderActivity.class);
+                        intent = new Intent(VoiceScanFromActivity.this, VoiceScanWaitingActivity.class);
                         intent.putExtra("answerId", voiceScanSubmitResponse.getData().getAnswerId());
+                        intent.putExtra("description",VoiceRecordFragment.getDifferentTopic());
                     }else {
                         intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
                     }

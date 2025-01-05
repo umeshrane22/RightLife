@@ -2,10 +2,15 @@ package com.example.rlapp.ui.sdkpackage
 
 
 import android.Manifest
-import android.content.Intent
+import android.app.Dialog
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import android.view.Window
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -13,13 +18,9 @@ import androidx.core.content.ContextCompat
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
-import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest
-import com.example.rlapp.ui.payment.AccessPaymentActivity
 import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.voicescan.VoiceScanCheckInRequest
-import com.example.rlapp.ui.voicescan.VoiceScanSubmitResponse
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.sondeservices.common.HealthCheckType
 import com.sondeservices.edge.inference.InferenceCallback
 import com.sondeservices.edge.init.SondeEdgeSdk
@@ -34,10 +35,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class VoiceRecorderActivity : AppCompatActivity() {
+
+    private lateinit var progressBar: ProgressBar
+    private lateinit var tvPercentage: TextView
+    private lateinit var tvYourTopic: TextView
 
     companion object {
         const val PERMISSION_REQUEST_CODE = 101
+        const val TIME_DURATION_RECORDING = 30000L
     }
 
 
@@ -63,12 +70,24 @@ class VoiceRecorderActivity : AppCompatActivity() {
         override fun onTick(millisUntilFinished: Long) {
             // callback for remaining time for recording
             Log.d("AAAA", "onTick $millisUntilFinished")
+
+            val progress =
+                ((TIME_DURATION_RECORDING - millisUntilFinished).toFloat() / TIME_DURATION_RECORDING.toFloat()) * 100
+            Log.d("AAAA", "progress $progress")
+            progressBar.progress = progress.toInt() + 1
+
+            // Update the text with the progress
+            val secondsRemaining = millisUntilFinished / 1000
+            tvPercentage.text = "$secondsRemaining"
         }
 
         override fun onRecordingFinish(filePath: String) {
             Log.d("AAAA", "onRecordingFinish filepath $filePath")
-            //startNewActivity(filePath)
             registerVoiceScan(filePath)
+            showDialogAfterSubmit(
+                R.drawable.layer_1,
+                "Improve your mood and lower your anxiety risk.\n Keep your body hydrated!"
+            )
         }
     }
 
@@ -78,10 +97,19 @@ class VoiceRecorderActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_start_recording)
 
+        tvPercentage = findViewById(R.id.percentageText)
+        progressBar = findViewById(R.id.progressBar)
+        tvYourTopic = findViewById(R.id.tv_selected_topic)
+
+        val yourTopic = intent.getStringExtra("description")
+        tvYourTopic.text = yourTopic
+
+        answerId = intent.getStringExtra("answerId")
+
 
         sondeAudioRecorder = SondeAudioRecorder(baseContext)
 
-        sondeAudioRecorder.beginRecording(3000, timerRecordingListener)
+        sondeAudioRecorder.beginRecording(TIME_DURATION_RECORDING, timerRecordingListener)
 
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -92,7 +120,7 @@ class VoiceRecorderActivity : AppCompatActivity() {
 
             ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE)
         }
-        answerId = intent.getStringExtra("answerId")
+
     }
 
     override fun onRequestPermissionsResult(
@@ -108,32 +136,9 @@ class VoiceRecorderActivity : AppCompatActivity() {
             throw RuntimeException("Record Audio permission is required to start recording.")
         } else {
             sondeAudioRecorder.beginRecording(
-                300000, timerRecordingListener
+                TIME_DURATION_RECORDING, timerRecordingListener
             )
         }
-    }
-
-    // Check if permissions are granted
-    private fun checkPermissions(): Boolean {
-        val recordPermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-        val writePermission =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return recordPermission == PackageManager.PERMISSION_GRANTED &&
-                writePermission == PackageManager.PERMISSION_GRANTED
-    }
-
-    // Request permissions
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ),
-            PERMISSION_REQUEST_CODE
-        )
     }
 
 
@@ -172,6 +177,33 @@ class VoiceRecorderActivity : AppCompatActivity() {
             })
     }
 
+    private fun showDialogAfterSubmit(
+        imageResource: Int,
+        text: String,
+        isContinue: Boolean = true
+    ) {
+        val dialog = Dialog(this@VoiceRecorderActivity, android.R.style.Theme_Light)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.activity_after_voicescan)
+
+        val image: ImageView = dialog.findViewById(R.id.image_view)
+        val textView: TextView = dialog.findViewById(R.id.tv_selected_topic)
+
+        image.setImageResource(imageResource)
+        textView.text = text
+
+        Handler().postDelayed({
+            dialog.dismiss()
+            if (isContinue)
+                showDialogAfterSubmit(
+                    R.drawable.layer_1_1, "We respect your privacy. \n" +
+                            "Your data is stored securely.", false
+                )
+        }, 3000)
+
+        dialog.show()
+    }
+
     fun submitAnswerRequest(requestAnswer: VoiceScanCheckInRequest?) {
         val sharedPreferences =
             getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
@@ -181,15 +213,10 @@ class VoiceRecorderActivity : AppCompatActivity() {
 
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        // Create a request body (replace with actual email and phone number)
-        //SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91"+mobileNumber,OTP,"ABC123","Asus ROG 6","hp","ABC123");
-
-        // Make the API call
         val call = apiService.voiceScanCheckInCreate(accessToken, requestAnswer)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
-                    //LoginResponseMobile loginResponse = response.body();
                     val voicecheckinresposne = response.body()!!.string()
                     Log.d("API Response", "Success: " + response.body().toString())
                     Log.d("API Response 2", "Success: " + response.body().toString())
@@ -197,6 +224,11 @@ class VoiceRecorderActivity : AppCompatActivity() {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body()!!.string())
                     Log.d("API Response body", "Success: $voicecheckinresposne")
+                    Toast.makeText(
+                        this@VoiceRecorderActivity,
+                        "Response : $voicecheckinresposne",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
 
                 } else {
@@ -226,6 +258,11 @@ class VoiceRecorderActivity : AppCompatActivity() {
                 ).show()
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sondeAudioRecorder.interruptAndDiscardRecording()
     }
 
 }

@@ -28,7 +28,8 @@ public class VoiceRecordFragment extends Fragment {
     private int selectedPosition = 0;
 
     private ArrayList<String> voiceScanTopic = new ArrayList<>();
-    private TextView tvGetDifferentTopics, tvSelectedTopic;
+    TextView tvGetDifferentTopics;
+    static TextView tvSelectedTopic;
     private RadioButton radioButton;
 
     public static VoiceRecordFragment newInstance(int pageIndex, Question question) {
@@ -113,5 +114,9 @@ public class VoiceRecordFragment extends Fragment {
 
 
         return view;
+    }
+
+    public static String getDifferentTopic(){
+        return tvSelectedTopic.getText().toString();
     }
 }
