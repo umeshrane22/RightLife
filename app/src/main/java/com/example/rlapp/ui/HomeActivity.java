@@ -474,8 +474,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         ImageView ivClose = view.findViewById(R.id.iv_close);
         ivClose.setOnClickListener(view1 -> drawer.close());
+        if (userdata.getProfilePicture()!=null) {
+            Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).placeholder(R.drawable.avatar).error(R.drawable.avatar).into(ivProfileImage);
+        }else {
 
-        Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).into(ivProfileImage);
+        }
 
         tvAddress.setText(userdata.getCountry());
 
@@ -1440,7 +1443,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     SharedPreferenceManager.getInstance(getApplicationContext()).saveUserProfile(ResponseObj);
 
                     setDrawerHeader(navigationView.getHeaderView(0));
-                    Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).into(profileImage);
+                    if (ResponseObj.getUserdata().getProfilePicture()!=null) {
+                        Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).into(profileImage);
+                    }
                     tvUserName.setText(ResponseObj.getUserdata().getFirstName());
 
 

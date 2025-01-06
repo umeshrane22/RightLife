@@ -124,12 +124,25 @@ public class ChangePasswordActivity extends AppCompatActivity {
     }
 
     private void showPasswordClick(EditText passwordEditText){
-        if (passwordEditText.getInputType() == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+       /* if (passwordEditText.getInputType() == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
             passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         } else {
             passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
         }
 
+        passwordEditText.setSelection(passwordEditText.getText().length());*/
+
+        int inputType = passwordEditText.getInputType();
+
+        if ((inputType & InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+            // Hide password
+            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else {
+            // Show password
+            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        }
+
+        // Ensure the cursor remains at the end of the text
         passwordEditText.setSelection(passwordEditText.getText().length());
     }
 

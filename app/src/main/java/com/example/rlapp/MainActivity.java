@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     // test dev branch 2
     String deviceName, deviceId;
     Button btn_email_login;
-    ImageButton googleButton;
+    ImageButton googleButton,ib_password;
     EditText phoneInput, phoneInputOption, emailInput, emailInputOption, PasswordInputOptionlogin, confirmPasswordInputOptionlogin, emailInputOptionlogin;
     ImageView img_backicon, img_getotp, imgGetOtpBtn, imgSignupOtpBtn, imgGetEmailOtpBtn;
     LinearLayout ll_loginoption_mobile, ll_loginoption_email, ll_loginoption, ll_loginoption_otp, ll_loginoption_email_password;
@@ -202,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // show hide passwoord on eye click
+        ib_password = findViewById(R.id.ib_password);
+        ib_password.setOnClickListener(view -> showPasswordClick(PasswordInputOptionlogin));
+
        /* imgGetOtpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -259,6 +264,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void showPasswordClick(EditText passwordEditText){
+     /*   if (passwordEditText.getInputType() == InputType.TYPE_TEXT_VARIATION_PASSWORD) {
+            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT);
+        } else {
+            passwordEditText.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        }
+
+        passwordEditText.setSelection(passwordEditText.getText().length());*/
+        int inputType = passwordEditText.getInputType();
+
+        if ((inputType & InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
+            // Hide password
+            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        } else {
+            // Show password
+            passwordEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        }
+
+        // Ensure the cursor remains at the end of the text
+        passwordEditText.setSelection(passwordEditText.getText().length());
+    }
     //get otp for signup
     void callForOtpSignup(String mobileNumber) {
 
