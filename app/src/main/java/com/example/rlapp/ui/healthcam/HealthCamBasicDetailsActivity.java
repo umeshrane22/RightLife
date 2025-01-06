@@ -26,12 +26,15 @@ import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
 import com.example.rlapp.ui.sdkpackage.HealthCamRecorderActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,6 +74,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             finish();
         });
+
         btnStartScan.setOnClickListener(view -> {
             String firstName = edtFirstName.getText().toString();
             String lastName = edtLastName.getText().toString();
@@ -435,15 +439,9 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     }
 
     void submitAnswerRequest(UserAnswerRequest requestAnswer) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        Log.d("Access Token", "Token: " + accessToken);
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        //SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91"+mobileNumber,OTP,"ABC123","Asus ROG 6","hp","ABC123");
 
         // Make the API call
         Call<JsonElement> call = apiService.postAnswerRequest(accessToken, "FACIAL_SCAN", requestAnswer);
@@ -458,24 +456,9 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
 
                     HealthCamSubmitResponse healthCamSubmitResponse = gson.fromJson(jsonResponse, HealthCamSubmitResponse.class);
 
-                    Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
-                    intent.putExtra("reportID", healthCamSubmitResponse.getData().getAnswerId());
-                    intent.putExtra("USER_PROFILE_HEIGHT", edtHeight.getText().toString());
-                    intent.putExtra("USER_PROFILE_WEIGHT", edtWeight.getText().toString());
-                    intent.putExtra("USER_PROFILE_AGE", edtAge.getText().toString());
-                    intent.putExtra("USER_PROFILE_GENDER", edtGender.getText().toString());
-                    startActivity(intent);
-                    finish();
+                    submitFacialScan(healthCamSubmitResponse.getData().getAnswerId());
 
                 } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
                     Toast.makeText(HealthCamBasicDetailsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -485,6 +468,48 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                 Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void submitFacialScan(String reportId) {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Gson gson = new Gson();
+                    String jsonResponse = null;
+                    try {
+                        //jsonResponse = gson.toJson(response.body().string());
+                        HealthCamReportIdResponse reportIdResponse = gson.fromJson(response.body().string(), HealthCamReportIdResponse.class);
+
+                        Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
+                        intent.putExtra("reportID", reportIdResponse.getData().getId());
+                        intent.putExtra("USER_PROFILE_HEIGHT", edtHeight.getText().toString());
+                        intent.putExtra("USER_PROFILE_WEIGHT", edtWeight.getText().toString());
+                        intent.putExtra("USER_PROFILE_AGE", edtAge.getText().toString());
+                        intent.putExtra("USER_PROFILE_GENDER", edtGender.getText().toString());
+                        startActivity(intent);
+                        finish();
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Log.d("AAAA API Response", "ReportId submit - : " + jsonResponse);
+                } else {
+                    Toast.makeText(HealthCamBasicDetailsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
+
+
 }

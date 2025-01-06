@@ -3,28 +3,20 @@ package com.example.rlapp.ui.healthcam;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class HealthCamSubmitResponse {
+public class HealthCamReportIdResponse {
 
-    @SerializedName("statusCode")
-    @Expose
-    private Integer statusCode;
     @SerializedName("success")
     @Expose
     private Boolean success;
-    @SerializedName("status")
+    @SerializedName("statusCode")
     @Expose
-    private String status;
+    private Integer statusCode;
+    @SerializedName("successMessage")
+    @Expose
+    private String successMessage;
     @SerializedName("data")
     @Expose
     private ReportIdData data;
-
-    public Integer getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(Integer statusCode) {
-        this.statusCode = statusCode;
-    }
 
     public Boolean getSuccess() {
         return success;
@@ -34,12 +26,20 @@ public class HealthCamSubmitResponse {
         this.success = success;
     }
 
-    public String getStatus() {
-        return status;
+    public Integer getStatusCode() {
+        return statusCode;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatusCode(Integer statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getSuccessMessage() {
+        return successMessage;
+    }
+
+    public void setSuccessMessage(String successMessage) {
+        this.successMessage = successMessage;
     }
 
     public ReportIdData getData() {

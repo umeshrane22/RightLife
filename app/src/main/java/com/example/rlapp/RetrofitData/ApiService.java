@@ -624,6 +624,13 @@ public interface ApiService {
             @Body HealthCamFacialScanRequest scanRequest
     );
 
+    @Headers("Content-Type: application/json")
+    @GET("facial-scan")
+    Call<ResponseBody> getHealthCamByReportId(
+            @Header("Authorization") String authToken,
+            @Query("reportId") String reportId
+    );
+
 }
 
 
