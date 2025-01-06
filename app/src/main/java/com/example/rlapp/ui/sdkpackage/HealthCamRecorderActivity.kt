@@ -3,12 +3,10 @@ package com.example.rlapp.ui.sdkpackage
 import ai.nuralogix.anurasdk.camera.CameraCapability
 import ai.nuralogix.anurasdk.camera.CameraInfo
 import ai.nuralogix.anurasdk.core.entity.MeasurementQuestionnaire
-import ai.nuralogix.anurasdk.core.result.MeasurementResults
 import ai.nuralogix.anurasdk.error.AnuraError
 import ai.nuralogix.anurasdk.utils.AnuLogUtil
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -20,20 +18,22 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.rlapp.BuildConfig
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest
+import com.example.rlapp.ui.healthcam.ReportData
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.sondeservices.common.HealthCheckType
-import com.sondeservices.edge.inference.InferenceCallback
-import com.sondeservices.edge.init.SondeEdgeSdk
-import com.sondeservices.edge.ml.model.Gender
-import com.sondeservices.edge.ml.model.MetaData
-import com.sondeservices.edge.ml.model.Score
-import com.sondeservices.edge.ml.model.VFFinalScore
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
 import org.json.JSONObject
-import java.io.File
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import kotlin.system.exitProcess
 
-class SDKActivity : AppCompatActivity() {
+class HealthCamRecorderActivity : AppCompatActivity() {
 
     private val exampleStartViewModel: StartViewModel by viewModels { StartViewModel.Factory }
 
@@ -54,6 +54,7 @@ class SDKActivity : AppCompatActivity() {
         var USER_PROFILE_AGE = "36"
         var USER_PROFILE_GENDER = "male"
         var PARTNER_ID = "AndroidTest"
+        var REPORT_ID = "6777ff3f24e05ea22043ebf9"
         var measurementQuestionnaire = MeasurementQuestionnaire()
 
         const val REST_SERVER_KEY = "rest_server_key"
@@ -71,7 +72,11 @@ class SDKActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
+        /*REPORT_ID = intent.getStringExtra("reportID").toString()
+        USER_PROFILE_HEIGHT = intent.getStringExtra("USER_PROFILE_HEIGHT").toString()
+        USER_PROFILE_WEIGHT = intent.getStringExtra("USER_PROFILE_WEIGHT").toString()
+        USER_PROFILE_AGE = intent.getStringExtra("USER_PROFILE_AGE").toString()
+        USER_PROFILE_GENDER = intent.getStringExtra("USER_PROFILE_GENDER").toString()*/
 
 
         exampleStartViewModel.readyToMeasure.observe(this) { handleTokenVerified(it) }
@@ -79,22 +84,15 @@ class SDKActivity : AppCompatActivity() {
 
         initialize()
         if (requestPermission()) {
-            //registerScan()
-
-            val file = intent.getStringExtra("FILEPATH")
-            registerVoiceScan(file!!)
-
+            registerScan()
         }
 
     }
 
 
-
-
     private fun handleTokenVerified(isTokenVerified: Boolean) {
         Log.d(TAG, "=============>handleTokenVerified")
         if (isTokenVerified) {
-           // registerVoiceScan(filePath = )
             startScan()
         }
     }
@@ -286,63 +284,159 @@ class SDKActivity : AppCompatActivity() {
                     measurementQuestionnaire.toString() +
                     "partnerID=$PARTNER_ID"
         )
-        val intent = Intent(this@SDKActivity, RlAnuraMeasurementActivity::class.java)
+        val intent = Intent(this@HealthCamRecorderActivity, RlAnuraMeasurementActivity::class.java)
         startActivityForResult(intent, ANURA_REQUEST)
     }
 
     private fun showInvalidInputErrorToast(inputWithError: String) {
         Toast.makeText(this, "Invalid Inputs: $inputWithError", Toast.LENGTH_SHORT).show()
-//        returnErrorResult("Invalid Inputs: $inputWithError")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == ANURA_REQUEST) {
             Log.d(TAG, "results222=${data?.getStringExtra("result")}")
-            val jsonObject = data?.getStringExtra("result")?.let { JSONObject(it) }
+            /*val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                data?.getParcelableExtra(
+                    "result",
+                    MeasurementResults::class.java
+                )
+            } else {
+                data?.getParcelableExtra("result")
+            }*/
 
-            var bmi = 0.0
-            var snr = 0.0
-            bmi = jsonObject?.getDouble("bmi")!!
-            snr = jsonObject.getDouble("snr")
-            Log.d(TAG,"result bmi = $snr")
+            val result = data?.getStringExtra("result")
+            val jsonObject = JSONObject(result)
+
+            val healthCamFacialScanRequest = HealthCamFacialScanRequest()
+            healthCamFacialScanRequest.status = "SUCCESS"
+            healthCamFacialScanRequest.reportId = REPORT_ID
+            /*val reportData = ReportData()
+
+            if (jsonObject.has("bmi") && !jsonObject.isNull("bmi"))
+                reportData.bmi = jsonObject.getDouble("bmi")
+            if (jsonObject.has("snr") && !jsonObject.isNull("snr"))
+                reportData.snr = jsonObject.getDouble("snr")
+            if (jsonObject.has("msi") && !jsonObject.isNull("msi"))
+                reportData.msi = jsonObject.getDouble("msi")
+            if (jsonObject.has("systolic") && !jsonObject.isNull("systolic"))
+                reportData.systolic = jsonObject.getDouble("systolic")
+            if (jsonObject.has("diastolic") && !jsonObject.isNull("diastolic"))
+                reportData.diastolic = jsonObject.getDouble("diastolic")
+            if (jsonObject.has("AGE") && !jsonObject.isNull("AGE"))
+                reportData.age = jsonObject.getDouble("AGE")
+            if (jsonObject.has("healthScore") && !jsonObject.isNull("healthScore"))
+                reportData.healthScore1 = jsonObject.getDouble("healthScore")
+            if (jsonObject.has("heartRateVariability") && !jsonObject.isNull("heartRateVariability"))
+                reportData.heartRateVariability = jsonObject.getDouble("heartRateVariability")
+            if (jsonObject.has("absi") && !jsonObject.isNull("absi"))
+                reportData.absi = jsonObject.getDouble("absi")
+            if (jsonObject.has("cvdRisk") && !jsonObject.isNull("cvdRisk"))
+                reportData.cvdRisk = jsonObject.getDouble("cvdRisk")
+            if (jsonObject.has("strokeRisk") && !jsonObject.isNull("strokeRisk"))
+                reportData.strokeRisk = jsonObject.getDouble("strokeRisk")
+            if (jsonObject.has("heartAttackRisk") && !jsonObject.isNull("heartAttackRisk"))
+                reportData.heartAttackRisk = jsonObject.getDouble("heartAttackRisk")
+            if (jsonObject.has("HDLTC_RISK_PROB") && !jsonObject.isNull("HDLTC_RISK_PROB"))
+                reportData.hdltcRiskProb = jsonObject.getDouble("HDLTC_RISK_PROB")
+            if (jsonObject.has("HPT_RISK_PROB") && !jsonObject.isNull("HPT_RISK_PROB"))
+                reportData.hptRiskProb = jsonObject.getDouble("HPT_RISK_PROB")
+            if (jsonObject.has("TG_RISK_PROB") && !jsonObject.isNull("TG_RISK_PROB"))
+                reportData.tgRiskProb = jsonObject.getDouble("TG_RISK_PROB")
+            if (jsonObject.has("VITAL_SCORE") && !jsonObject.isNull("VITAL_SCORE"))
+                reportData.vitalScore = jsonObject.getDouble("VITAL_SCORE")
+            if (jsonObject.has("waistToHeight") && !jsonObject.isNull("waistToHeight"))
+                reportData.waistToHeight = jsonObject.getDouble("waistToHeight")
+            if (jsonObject.has("WAIST_TO_HEIGHT") && !jsonObject.isNull("WAIST_TO_HEIGHT"))
+                reportData.waistToHeight1 = jsonObject.getDouble("WAIST_TO_HEIGHT")
+            if (jsonObject.has("BP_RPP") && !jsonObject.isNull("BP_RPP"))
+                reportData.bpRpp = jsonObject.getDouble("BP_RPP")
+            if (jsonObject.has("HRV_SDNN") && !jsonObject.isNull("HRV_SDNN"))
+                reportData.hrvSdnn = jsonObject.getDouble("HRV_SDNN")
+            if (jsonObject.has("BP_HEART_ATTACK") && !jsonObject.isNull("BP_HEART_ATTACK"))
+                reportData.bpHeartAttack = jsonObject.getDouble("BP_HEART_ATTACK")
+            if (jsonObject.has("WEIGHT") && !jsonObject.isNull("WEIGHT"))
+                reportData.weight = jsonObject.getDouble("WEIGHT")
+            if (jsonObject.has("irregularHeartBeats") && !jsonObject.isNull("irregularHeartBeats"))
+                reportData.irregularHeartBeats = jsonObject.getDouble("irregularHeartBeats")
+            if (jsonObject.has("PHYSICAL_SCORE") && !jsonObject.isNull("PHYSICAL_SCORE"))
+                reportData.physioScore = jsonObject.getDouble("PHYSICAL_SCORE")
+            if (jsonObject.has("ABSI") && !jsonObject.isNull("ABSI"))
+                reportData.absi = jsonObject.getDouble("ABSI")
+            if (jsonObject.has("BP_DIASTOLIC") && !jsonObject.isNull("BP_DIASTOLIC"))
+                reportData.bpDiastolic = jsonObject.getDouble("BP_DIASTOLIC")
+            if (jsonObject.has("BP_CVD") && !jsonObject.isNull("BP_CVD"))
+                reportData.bpCvd = jsonObject.getDouble("BP_CVD")
+            if (jsonObject.has("IHB_COUNT") && !jsonObject.isNull("IHB_COUNT"))
+                reportData.ihbCount = jsonObject.getDouble("IHB_COUNT")
+            if (jsonObject.has("HEALTH_SCORE") && !jsonObject.isNull("HEALTH_SCORE"))
+                reportData.healtH_SCORE = jsonObject.getDouble("HEALTH_SCORE")
+            if (jsonObject.has("BP_HEART_ATTACK") && !jsonObject.isNull("MENTAL_SCORE"))
+                reportData.mentalScore = jsonObject.getDouble("MENTAL_SCORE")
+            if (jsonObject.has("BP_STROKE") && !jsonObject.isNull("BP_STROKE"))
+                reportData.bpStroke = jsonObject.getDouble("BP_STROKE")
+            if (jsonObject.has("BMI_CALC") && !jsonObject.isNull("BMI_CALC"))
+                reportData.bmiCalc = jsonObject.getDouble("BMI_CALC")
+            if (jsonObject.has("BP_TAU") && !jsonObject.isNull("BP_TAU"))
+                reportData.bpTau = jsonObject.getDouble("BP_TAU")
+            if (jsonObject.has("BP_SYSTOLIC") && !jsonObject.isNull("BP_SYSTOLIC"))
+                reportData.bpSystolic = jsonObject.getDouble("BP_SYSTOLIC")
+            if (jsonObject.has("HEIGHT") && !jsonObject.isNull("HEIGHT"))
+                reportData.height = jsonObject.getDouble("HEIGHT")
+            if (jsonObject.has("MSI") && !jsonObject.isNull("MSI"))
+                reportData.msi1 = jsonObject.getDouble("MSI")*/
+
+            val  reportData1 = data?.getSerializableExtra("resultObject") as ReportData
+            healthCamFacialScanRequest.reportData = reportData1
+
+            submitReport(healthCamFacialScanRequest)
+
+            Log.d("AAAA", result.toString())
         } else {
             Log.d(TAG, "results= error")
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    private fun submitReport(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
+        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-    // Voice scan
-    private fun registerVoiceScan(filePath : String){
-        SondeEdgeSdk.createInferenceEngine(
-            this,
-            MetaData(Gender.MALE)
-        )
-        SondeEdgeSdk.inferScore(filePath, HealthCheckType.MENTAL_FITNESS,
-            object : InferenceCallback {
-                override fun onScore(score: Score) {
-                    Log.d("AAAA","SCORE RECEIVED")
-                    val vfFinalScore: VFFinalScore = score as VFFinalScore
-                    var arrayList: ArrayList<Pair<String,String>> = arrayListOf()
-                    arrayList.add(Pair("Score",vfFinalScore.getValue().toString()))
-                    for(index in 0 until vfFinalScore.getVFScores().size){
-                        arrayList.add( Pair(vfFinalScore.getVFScores()[index].getName().toString(),vfFinalScore.getVFScores()[index].getRawValue().toString()))
+        val gson = Gson()
+        val json = gson.toJson(healthCamFacialScanRequest)
+
+        val call = apiService.submitHealthCamReport(accessToken, healthCamFacialScanRequest)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body()?.string())
+                    Log.d("AAAA", jsonResponse)
+
+                } else {
+                    try {
+                        if (response.errorBody() != null) {
+                            val errorMessage = response.errorBody()!!.string()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                    Log.d("AAAA", "Arraylist = $arrayList")
-                    //_result?.success(arrayList.toMap());
+
+                    Toast.makeText(
+                        this@HealthCamRecorderActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-                override fun onError(throwable: Throwable) {
-                    Log.d("throwable", "$throwable")
-                }
-            })
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@HealthCamRecorderActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 
-    fun createEmptyFile(context: Context, fileName: String): String {
-        // Create an empty file in the app's internal storage
-        val file = File(context.filesDir, fileName)
-        if (!file.exists()) {
-            file.createNewFile() // Create the empty file
-        }
-        return file.absolutePath // Return the file's path
-    }
 }

@@ -89,7 +89,7 @@
         <activity android:name=".ui.therledit.ArtistsDetailsActivity" />
         <activity android:name=".ui.therledit.ViewAllByArtistActivity" />
 
-        <activity android:name=".ui.sdkpackage.SDKActivity" />
+        <activity android:name=".ui.sdkpackage.HealthCamRecorderActivity" />
         <activity android:name=".ui.sdkpackage.VoiceRecorderActivity" />
         <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
 
