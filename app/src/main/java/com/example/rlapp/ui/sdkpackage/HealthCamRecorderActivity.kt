@@ -411,19 +411,15 @@ class HealthCamRecorderActivity : AppCompatActivity() {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body()?.string())
                     Log.d("AAAA", jsonResponse)
-
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            val errorMessage = response.errorBody()!!.string()
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-
                     Toast.makeText(
                         this@HealthCamRecorderActivity,
-                        "Server Error: " + response.code(),
+                        "Success: $jsonResponse",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this@HealthCamRecorderActivity,
+                        "Server Error: " + response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
