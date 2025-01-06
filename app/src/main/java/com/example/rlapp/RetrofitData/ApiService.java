@@ -18,6 +18,7 @@ import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
+import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
@@ -616,6 +617,12 @@ public interface ApiService {
             @Query("status") String status
     );
 
+    @Headers("Content-Type: application/json")
+    @PUT("facial-scan")
+    Call<ResponseBody> submitHealthCamReport(
+            @Header("Authorization") String authToken,
+            @Body HealthCamFacialScanRequest scanRequest
+    );
 
 }
 

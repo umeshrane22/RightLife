@@ -21,11 +21,10 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.UserAuditAnswer.Answer;
 import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
-import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
 import com.example.rlapp.ui.healthaudit.questionlist.Option;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
-import com.example.rlapp.ui.payment.AccessPaymentActivity;
+import com.example.rlapp.ui.sdkpackage.HealthCamRecorderActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -127,8 +126,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 break;
                             case "gender":
                                 String selectedGender = "";
-                                for ( Option gen: genderOptions){
-                                    if (gen.getOptionText().equals(gender)){
+                                for (Option gen : genderOptions) {
+                                    if (gen.getOptionText().equals(gender)) {
                                         selectedGender = gen.getOptionPosition();
                                     }
                                 }
@@ -136,8 +135,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 break;
                             case "smoking":
                                 String selectedSmoke = "";
-                                for ( Option sm: smokeOptions){
-                                    if (sm.getOptionText().equals(smoke)){
+                                for (Option sm : smokeOptions) {
+                                    if (sm.getOptionText().equals(smoke)) {
                                         selectedSmoke = sm.getOptionPosition();
                                     }
                                 }
@@ -145,8 +144,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 break;
                             case "bloodpressuremedication":
                                 String selectedBP = "";
-                                for ( Option bp: bpMedicationOptions){
-                                    if (bp.getOptionText().equals(bpMedication)){
+                                for (Option bp : bpMedicationOptions) {
+                                    if (bp.getOptionText().equals(bpMedication)) {
                                         selectedBP = bp.getOptionPosition();
                                     }
                                 }
@@ -154,8 +153,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 break;
                             case "diabetes":
                                 String selectedDiabetic = "";
-                                for ( Option dia: diabeticsOptions){
-                                    if (dia.getOptionText().equals(gender)){
+                                for (Option dia : diabeticsOptions) {
+                                    if (dia.getOptionText().equals(gender)) {
                                         selectedDiabetic = dia.getOptionPosition();
                                     }
                                 }
@@ -278,7 +277,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             String previousSelection = edtSpinnerHeight.getText().toString();
-            if (previousSelection.equals(menuItem.toString())){
+            if (previousSelection.equals(menuItem.toString())) {
                 return true;
             }
             String height;
@@ -412,6 +411,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
                     responseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
+                    Log.d("AAAA API Response", "ReportId - : " + jsonResponse);
                     setData();
                 } else {
                     Toast.makeText(HealthCamBasicDetailsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -427,7 +427,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void submitData(ArrayList formData){
+    private void submitData(ArrayList formData) {
 
         List<Answer> answers = new ArrayList<>(formData);
         UserAnswerRequest request = new UserAnswerRequest("", responseObj.getQuestionData().getId(), answers);
@@ -452,10 +452,20 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body().toString());
+                    String jsonResponse = gson.toJson(response.body());
 
-                    Intent intent = new Intent(HealthCamBasicDetailsActivity.this, AccessPaymentActivity.class);
+                    Log.d("AAAA API Response", "ReportId submit - : " + jsonResponse);
+
+                    HealthCamSubmitResponse healthCamSubmitResponse = gson.fromJson(jsonResponse, HealthCamSubmitResponse.class);
+
+                    Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
+                    intent.putExtra("reportID", healthCamSubmitResponse.getData().getAnswerId());
+                    intent.putExtra("USER_PROFILE_HEIGHT", edtHeight.getText().toString());
+                    intent.putExtra("USER_PROFILE_WEIGHT", edtWeight.getText().toString());
+                    intent.putExtra("USER_PROFILE_AGE", edtAge.getText().toString());
+                    intent.putExtra("USER_PROFILE_GENDER", edtGender.getText().toString());
                     startActivity(intent);
+                    finish();
 
                 } else {
                     try {

@@ -40,6 +40,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import com.example.rlapp.R
+import com.example.rlapp.ui.healthcam.ReportData
 import org.json.JSONObject
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -205,9 +206,49 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
             "HEIGHT" to allResults["HEIGHT"]?.value,
             "MSI" to allResults["MSI"]?.value
         )
+
+        val reportData = ReportData()
+
+            reportData.bmi = allResults["BMI"]?.value
+            reportData.snr = allResults["SNR"]?.value
+            reportData.msi = allResults["MSI"]?.value
+            reportData.systolic = allResults["BP_SYSTOLIC"]?.value
+            reportData.age = allResults["AGE"]?.value
+            reportData.heartRateVariability = allResults["HRV_SDNN"]?.value
+            reportData.absi = allResults["ABSI"]?.value
+            reportData.cvdRisk = allResults["BP_CVD"]?.value
+            reportData.strokeRisk = allResults["BP_STROKE"]?.value
+            reportData.heartAttackRisk = allResults["BP_HEART_ATTACK"]?.value
+            reportData.hdltcRiskProb = allResults["HDLTC_RISK_PROB"]?.value
+            reportData.hptRiskProb = allResults["HPT_RISK_PROB"]?.value
+            reportData.tgRiskProb = allResults["TG_RISK_PROB"]?.value
+            reportData.vitalScore = allResults["VITAL_SCORE"]?.value
+            reportData.waistToHeight = allResults["WAIST_TO_HEIGHT"]?.value
+            reportData.waistToHeight1 = allResults["WAIST_TO_HEIGHT"]?.value
+            reportData.bpRpp = allResults["BP_RPP"]?.value
+            reportData.hrvSdnn = allResults["HRV_SDNN"]?.value
+            reportData.bpHeartAttack = allResults["BP_HEART_ATTACK"]?.value
+            reportData.weight = allResults["WEIGHT"]?.value
+            reportData.irregularHeartBeats = allResults["IHB_COUNT"]?.value
+            reportData.physioScore = allResults["PHYSICAL_SCORE"]?.value
+            reportData.absi = allResults["ABSI"]?.value
+            reportData.bpDiastolic = allResults["BP_DIASTOLIC"]?.value
+            reportData.bpCvd = allResults["BP_CVD"]?.value
+            reportData.ihbCount = allResults["IHB_COUNT"]?.value
+            reportData.healthScore1 = allResults["HEALTH_SCORE"]?.value
+            reportData.mentalScore = allResults["MENTAL_SCORE"]?.value
+            reportData.bpStroke = allResults["BP_STROKE"]?.value
+            reportData.bmiCalc = allResults["BMI_CALC"]?.value
+            reportData.bpTau = allResults["BP_TAU"]?.value
+            reportData.bpSystolic = allResults["BP_SYSTOLIC"]?.value
+            reportData.height = allResults["HEIGHT"]?.value
+            reportData.msi1 = allResults["MSI"]?.value
+
         data.putExtra("result", JSONObject(resultString).toString())
+        data.putExtra("resultObject", reportData)
         setResult(Activity.RESULT_OK, data)
         finish()
+
     }
 
     /**
@@ -223,10 +264,10 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
         }
 
         val status = measurementPipeline.startMeasurement(
-            SDKActivity.measurementQuestionnaire,
-            SDKActivity.STUDY_ID,
+            HealthCamRecorderActivity.measurementQuestionnaire,
+            HealthCamRecorderActivity.STUDY_ID,
             "",
-            SDKActivity.PARTNER_ID
+            HealthCamRecorderActivity.PARTNER_ID
         )
 
         if (status == AnuraError.Core.OK) {
