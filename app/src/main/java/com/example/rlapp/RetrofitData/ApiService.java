@@ -379,7 +379,7 @@ public interface ApiService {
     Call<ResponseBody> saveMindAuditAssessment(
             @Header("Authorization") String authToken,
             @Body MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest
-            );
+    );
 
 
     @Headers("Content-Type: application/json")
@@ -592,13 +592,29 @@ public interface ApiService {
             @Body FavouriteRequest favouriteRequest);
 
 
-
     @Headers("Content-Type: application/json")
     @POST("check-in/create")
     Call<ResponseBody> voiceScanCheckInCreate(
             @Header("Authorization") String authToken,
             @Body VoiceScanCheckInRequest checkInRequest);
 
+    @Headers("Content-Type: application/json")
+    @GET("check-in")
+    Call<ResponseBody> getVoiceScanResults(
+            @Header("Authorization") String authToken,
+            @Query("assessmentId") String answerId,
+            @Query("isRecommended") boolean isRecommended,
+            @Query("skip") int skip,
+            @Query("limit") int limit
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("wellnessStreak")
+    Call<ResponseBody> postWellnessStreak(
+            @Header("Authorization") String authToken,
+            @Query("serviceName") String serviceName,
+            @Query("status") String status
+    );
 
 
 }

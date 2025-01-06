@@ -45,7 +45,7 @@ public class SharedPreferenceManager {
 
     // Method to retrieve the user ID
     public String getUserId() {
-        return sharedPreferences.getString(SharedPreferenceConstants.USER_ID, null);
+        return sharedPreferences.getString(SharedPreferenceConstants.USER_ID, "");
     }
 
     // Clear the access token and user ID (for example, when logging out)
@@ -69,6 +69,16 @@ public class SharedPreferenceManager {
         String json = sharedPreferences.getString(SharedPreferenceConstants.USER_PROFILE, "");
         UserProfileResponse obj = gson.fromJson(json, UserProfileResponse.class);
         return obj;
+    }
+
+    public void saveVoiceScanAnswerId(String answerId) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.VOICE_SCAN_ANSWER_ID, answerId);
+        editor.apply();
+    }
+
+    public String getVoiceScanAnswerId() {
+        return sharedPreferences.getString(SharedPreferenceConstants.VOICE_SCAN_ANSWER_ID, "");
     }
 }
 

@@ -20,7 +20,6 @@ import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.voicescan.VoiceScanCheckInRequest
-import com.google.gson.Gson
 import com.sondeservices.common.HealthCheckType
 import com.sondeservices.edge.inference.InferenceCallback
 import com.sondeservices.edge.init.SondeEdgeSdk
@@ -31,6 +30,7 @@ import com.sondeservices.edge.ml.model.VFFinalScore
 import com.sondeservices.edge.recorder.SondeAudioRecorder
 import com.sondeservices.edge.recorder.listeners.TimerRecordingListener
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -219,18 +219,15 @@ class VoiceRecorderActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val voicecheckinresposne = response.body()!!.string()
                     Log.d("API Response", "Success: " + response.body().toString())
-                    Log.d("API Response 2", "Success: " + response.body().toString())
 
-                    val gson = Gson()
-                    val jsonResponse = gson.toJson(response.body()!!.string())
-                    Log.d("API Response body", "Success: $voicecheckinresposne")
+                    val jsonObject = JSONObject(voicecheckinresposne)
+                    val checkInId = jsonObject.getString("checkInId")
+                    val message = jsonObject.getString("successMessage")
                     Toast.makeText(
                         this@VoiceRecorderActivity,
-                        "Response : $voicecheckinresposne",
+                        "Response : $message",
                         Toast.LENGTH_SHORT
                     ).show()
-
-
                 } else {
                     try {
                         if (response.errorBody() != null) {

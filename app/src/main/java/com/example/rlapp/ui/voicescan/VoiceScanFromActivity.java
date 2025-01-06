@@ -24,8 +24,8 @@ import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionData;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
 import com.example.rlapp.ui.payment.AccessPaymentActivity;
-import com.example.rlapp.ui.sdkpackage.VoiceRecorderActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
@@ -119,8 +119,7 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
             nextButton.setText("Start Recording");
         } else if (position == 0) {
             nextButton.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             nextButton.setText("Next");
         }
     }
@@ -161,13 +160,14 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
                     Log.d("API Response body", "Success: " + jsonResponse);
 
                     VoiceScanSubmitResponse voiceScanSubmitResponse = gson.fromJson(jsonResponse, VoiceScanSubmitResponse.class);
+                    SharedPreferenceManager.getInstance(VoiceScanFromActivity.this).saveVoiceScanAnswerId(voiceScanSubmitResponse.getData().getAnswerId());
 
                     Intent intent;
-                    if (voiceScanSubmitResponse.getData().getIsSubscribed()){
+                    if (voiceScanSubmitResponse.getData().getIsSubscribed()) {
                         intent = new Intent(VoiceScanFromActivity.this, VoiceScanWaitingActivity.class);
                         intent.putExtra("answerId", voiceScanSubmitResponse.getData().getAnswerId());
-                        intent.putExtra("description",VoiceRecordFragment.getDifferentTopic());
-                    }else {
+                        intent.putExtra("description", VoiceRecordFragment.getDifferentTopic());
+                    } else {
                         intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
                     }
                     startActivity(intent);

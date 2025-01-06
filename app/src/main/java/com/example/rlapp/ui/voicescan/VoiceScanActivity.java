@@ -1,9 +1,7 @@
 package com.example.rlapp.ui.voicescan;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -26,18 +24,16 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
-import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.zhpan.indicator.IndicatorView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import me.relex.circleindicator.CircleIndicator3;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,6 +60,9 @@ public class VoiceScanActivity extends AppCompatActivity {
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
         btn_howitworks = findViewById(R.id.btn_howitworks);
+
+
+        getVoiceScanResults();
 
         CircleIndicator3 indicator = findViewById(R.id.indicator);
         IndicatorView indicator_view = findViewById(R.id.indicator_view);
@@ -217,7 +216,7 @@ public class VoiceScanActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 int count = edtDD.getText().length();
-                if (count == 2){
+                if (count == 2) {
                     edtMM.requestFocus();
                 }
             }
@@ -237,10 +236,10 @@ public class VoiceScanActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 int count = edtMM.getText().length();
-                if (count == 2){
+                if (count == 2) {
                     edtYYYY.requestFocus();
                 }
-                if (count == 0){
+                if (count == 0) {
                     edtDD.requestFocus();
                 }
             }
@@ -260,10 +259,10 @@ public class VoiceScanActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 int count = edtYYYY.getText().length();
-                if (count == 2){
+                if (count == 2) {
                     dialogButton.requestFocus();
                 }
-                if (count == 0){
+                if (count == 0) {
                     edtMM.requestFocus();
                 }
             }
@@ -289,6 +288,21 @@ public class VoiceScanActivity extends AppCompatActivity {
         dialogIcon.setOnClickListener(v -> {
             dialog.dismiss();
         });
+
+        dialog.show();
+    }
+
+
+    private void showErrorDialog1(){
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.vc_error_dialog);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Window window = dialog.getWindow();
+        // Set the dim amount
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
+        window.setAttributes(layoutParams);
 
         dialog.show();
     }
@@ -330,6 +344,32 @@ public class VoiceScanActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void getVoiceScanResults() {
+        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
+        String authToken = sharedPreferenceManager.getAccessToken();
+        String ansId = sharedPreferenceManager.getUserId();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.getVoiceScanResults(authToken, ansId, true, 0, 0);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null){
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    Log.d("AAAA","Get Voice Scan results response = "+jsonResponse);
+                }else {
+                    Toast.makeText(VoiceScanActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(VoiceScanActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }
