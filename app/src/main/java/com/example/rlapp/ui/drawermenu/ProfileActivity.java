@@ -2,6 +2,7 @@ package com.example.rlapp.ui.drawermenu;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,6 +10,8 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +19,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
@@ -118,6 +122,12 @@ public class ProfileActivity extends AppCompatActivity {
             cameraActivityResultLauncher.launch(intent);
         });
 
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                checkExitConditions();
+            }
+        });
     }
 
     private void getViews() {
@@ -148,7 +158,7 @@ public class ProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
         });
-        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> checkExitConditions());
     }
 
     private void setData() {
@@ -160,7 +170,10 @@ public class ProfileActivity extends AppCompatActivity {
         edtEmail.setText(userdata.getEmail());
         edtPhoneNumber.setText(userdata.getPhoneNumber());
         tvDate.setText(DateTimeUtils.convertAPIDate(userdata.getDateofbirth()));
-        Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).into(ivProfileImage);
+        Glide.with(this).
+                load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
+                .placeholder(R.drawable.avatar)
+                .into(ivProfileImage);
 
         if (userdata.getGender().equals("M") || userdata.getGender().equalsIgnoreCase("Male"))
             tvGenderSpinner.setText("Male");
@@ -406,5 +419,58 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(ProfileActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showExitDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_profile_exit);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Window window = dialog.getWindow();
+        // Set the dim amount
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
+        window.setAttributes(layoutParams);
+
+        dialog.findViewById(R.id.iv_dialog_close).setOnClickListener(view -> dialog.dismiss());
+        dialog.findViewById(R.id.btn_yes).setOnClickListener(view -> {
+            dialog.dismiss();
+            finish();
+        });
+
+        dialog.findViewById(R.id.btn_no).setOnClickListener(view -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void checkExitConditions() {
+        String firstName = addNullIfEmpty(edtFirstName.getText().toString());
+        String lastName = addNullIfEmpty(edtLastName.getText().toString());
+        String height = addNullIfEmpty(edtHeightCms.getText().toString());
+        String weight = addNullIfEmpty(edtWeight.getText().toString());
+        String gender = addNullIfEmpty(tvGenderSpinner.getText().toString());
+        String dob = addNullIfEmpty(tvDate.getText().toString());
+        String phoneNumber = addNullIfEmpty(edtPhoneNumber.getText().toString());
+        String email = addNullIfEmpty(edtEmail.getText().toString());
+
+
+        if (!firstName.equals(userdata.getFirstName()) ||
+                !lastName.equals(userdata.getLastName()) ||
+                !height.equals(userdata.getHeight()) ||
+                !weight.equals(userdata.getWeight()) ||
+                !gender.equals(userdata.getGender()) ||
+                !dob.equals(userdata.getDateofbirth()) ||
+                !phoneNumber.equals(userdata.getPhoneNumber()) ||
+                !email.equals(userdata.getEmail())
+        ) {
+            showExitDialog();
+        }
+    }
+
+    private String addNullIfEmpty(String str) {
+        if (str.equals("")) {
+            return null;
+        } else
+            return str;
     }
 }

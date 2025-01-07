@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="0dp"
+    android:background="@android:color/transparent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
-    <!-- Image Half Inside and Half Outside -->
-    <TextView
-        android:id="@+id/dialogImage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="top|center"
-        android:layout_marginTop="-30dp"
-        android:text="!"
-        android:textColor="@color/white"
-        android:textSize="@dimen/textsize_large24sp"
-        android:gravity="center"
-        android:fontFamily="@font/dmsans_bold"
-        android:background="@drawable/rounded_image" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/roundedcornerbutton"
+        android:padding="20dp"
+        android:layout_margin="40dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <ImageView
+            android:id="@+id/dialog_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_alert_dialog"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-40dp"
+            android:adjustViewBounds="true" />
 
     <!-- Dialog Content: Text -->
     <LinearLayout
@@ -52,4 +61,6 @@
             android:paddingStart="32dp"/>
 
     </LinearLayout>
+
+    </RelativeLayout>
 </FrameLayout>

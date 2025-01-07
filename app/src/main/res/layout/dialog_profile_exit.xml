@@ -11,9 +11,9 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/roundedcornerbutton"
+        android:background="@drawable/roundedcornerwithborder_rightlife"
         android:padding="20dp"
-        android:layout_margin="40dp"
+        android:layout_margin="50dp"
         android:clipChildren="false"
         android:clipToPadding="false">
 
@@ -42,20 +42,11 @@
             android:layout_below="@id/dialog_icon"
             android:gravity="center_horizontal">
 
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:text="Logout?"
-                android:textSize="@dimen/textsize_large"
-                android:fontFamily="@font/dmsans_bold" />
-
             <TextView
                 android:id="@+id/dialog_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="You will not receive \nnotification if you logout"
+                android:text="You have made some\n changes, are you sure\n you want to proceed\n without saving ?"
                 android:textSize="16sp"
                 android:gravity="center"
                 android:padding="@dimen/textsize_medium"
@@ -64,29 +55,29 @@
                 android:layout_marginBottom="16dp" />
 
             <Button
-                android:id="@+id/btn_stay"
+                android:id="@+id/btn_yes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/rightlife"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
                 android:layout_marginTop="20dp"
                 android:textColor="@color/white"
                 android:layout_gravity="center_horizontal"
-                android:text="I'll stay" />
+                android:text="Yes" />
 
             <Button
-                android:id="@+id/btn_logout"
+                android:id="@+id/btn_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="20dp"
-                android:backgroundTint="@color/white"
-                android:paddingEnd="20dp"
+                android:backgroundTint="@color/rightlife"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                android:textColor="@color/rightlife"
+                android:textColor="@color/white"
                 android:layout_gravity="center_horizontal"
-                android:text="Logout" />
+                android:text="No" />
         </LinearLayout>
     </RelativeLayout>
 </FrameLayout>

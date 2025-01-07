@@ -71,8 +71,12 @@ public class MindAuditFeelingsFragment extends Fragment {
         getAllEmotions();
 
         ((MindAuditFromActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
-            UserEmotions userEmotions = new UserEmotions(selectedEmotions);
-            getBasicScreeningQuestions(userEmotions);
+            if (!selectedEmotions.isEmpty()) {
+                UserEmotions userEmotions = new UserEmotions(selectedEmotions);
+                getBasicScreeningQuestions(userEmotions);
+            } else {
+                Toast.makeText(requireContext(), "Please selection emotion", Toast.LENGTH_SHORT).show();
+            }
         });
 
         return view;
