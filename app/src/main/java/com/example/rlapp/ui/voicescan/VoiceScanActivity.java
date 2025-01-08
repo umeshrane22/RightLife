@@ -24,7 +24,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 import com.zhpan.indicator.IndicatorView;
@@ -293,7 +292,7 @@ public class VoiceScanActivity extends AppCompatActivity {
     }
 
 
-    private void showErrorDialog1(){
+    private void showErrorDialog1() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.vc_error_dialog);
         dialog.setCancelable(true);
@@ -302,7 +301,6 @@ public class VoiceScanActivity extends AppCompatActivity {
         // Set the dim amount
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
 
         dialog.show();
     }
@@ -356,11 +354,11 @@ public class VoiceScanActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null){
+                if (response.isSuccessful() && response.body() != null) {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
-                    Log.d("AAAA","Get Voice Scan results response = "+jsonResponse);
-                }else {
+                    Log.d("AAAA", "Get Voice Scan results response = " + jsonResponse);
+                } else {
                     Toast.makeText(VoiceScanActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }

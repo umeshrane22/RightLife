@@ -21,6 +21,7 @@
             android:background="@drawable/rounded_image"
             android:src="@drawable/profile_man" />
 
+
         <ImageView
             android:id="@+id/iv_close"
             android:layout_width="wrap_content"
