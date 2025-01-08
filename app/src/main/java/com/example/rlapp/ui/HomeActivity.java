@@ -148,7 +148,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         profileImage = findViewById(R.id.profileImage);
         tvUserName = findViewById(R.id.userName);
         TextView tvGreetingText = findViewById(R.id.greetingText);
-        tvGreetingText.setText("Good " + DateTimeUtils.getWishingMessage());
+        tvGreetingText.setText("Good " + DateTimeUtils.getWishingMessage() +" ,");
 
         profileImage.setOnClickListener(view -> {
             if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
@@ -1321,13 +1321,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
-            Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, JournalingActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
-            Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreAffirmationsListActivity.class));
         } else if (viewId == R.id.ll_sleepsounds) {
-            Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
         }
 

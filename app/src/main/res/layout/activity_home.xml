@@ -45,9 +45,11 @@
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="8dp"
-                        android:background="@drawable/circle_shape"
+                        android:tint="@color/txt_color_header"
+                        android:background="@drawable/rounded_image"
+
                         android:scaleType="centerCrop"
-                        android:src="@drawable/avatar" />
+                        android:src="@drawable/profile_man" />
 
                     <!-- Greeting Text -->
                     <LinearLayout
@@ -240,7 +242,7 @@
                                         android:id="@+id/ll_voice_scan"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:layout_margin="10dp"
+                                        android:layout_margin="9dp"
                                         android:layout_weight="1"
                                         android:background="@drawable/roundedcornerbutton"
                                         android:backgroundTint="#F7E6B7"
@@ -272,7 +274,7 @@
                                         android:id="@+id/ll_mind_audit"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:layout_margin="10dp"
+                                        android:layout_margin="9dp"
                                         android:layout_weight="1"
                                         android:background="@drawable/roundedcornerbutton"
                                         android:backgroundTint="#FDE6FF"
@@ -306,7 +308,7 @@
                                         android:id="@+id/ll_health_cam"
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
-                                        android:layout_margin="10dp"
+                                        android:layout_margin="9dp"
                                         android:layout_weight="1"
                                         android:background="@drawable/roundedcornerbutton"
                                         android:backgroundTint="#FFBFBD"

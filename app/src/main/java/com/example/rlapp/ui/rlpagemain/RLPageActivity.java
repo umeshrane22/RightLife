@@ -537,13 +537,13 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
-            Toast.makeText(RLPageActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(RLPageActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
-            Toast.makeText(RLPageActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(RLPageActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(RLPageActivity.this, ExploreAffirmationsListActivity.class));
         } else if (viewId == R.id.ll_sleepsounds) {
-            Toast.makeText(RLPageActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(RLPageActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(RLPageActivity.this, ExploreSleepSoundsActivity.class));
         } else if (viewId == R.id.ll_guided_journal) {
             startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
