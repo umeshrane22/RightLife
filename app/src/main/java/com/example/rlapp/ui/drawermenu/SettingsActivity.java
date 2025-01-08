@@ -82,7 +82,8 @@ public class SettingsActivity extends AppCompatActivity {
     private void dialogLogout() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_alert);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         Window window = dialog.getWindow();
         // Set the dim amount
         WindowManager.LayoutParams layoutParams = window.getAttributes();
