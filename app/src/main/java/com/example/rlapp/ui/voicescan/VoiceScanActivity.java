@@ -2,6 +2,7 @@ package com.example.rlapp.ui.voicescan;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,12 +20,15 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.Utils;
+import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
 import com.zhpan.indicator.IndicatorView;
 
@@ -197,7 +201,7 @@ public class VoiceScanActivity extends AppCompatActivity {
         ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
         ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
         TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButton = dialog.findViewById(R.id.dialog_button);
+        MaterialButton dialogButton = dialog.findViewById(R.id.dialog_button);
 
         EditText edtDD = dialog.findViewById(R.id.date_dd);
         EditText edtMM = dialog.findViewById(R.id.date_mm);
@@ -205,6 +209,15 @@ public class VoiceScanActivity extends AppCompatActivity {
 
         // Optional: Set dynamic content
         dialogText.setText("Tell us when you were born");
+
+        ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.dark_yellow);
+        ColorStateList colorStateListWhite = ContextCompat.getColorStateList(this, R.color.white);
+
+        if (edtDD.getText().length() == 2 && edtMM.getText().length() == 2 && edtYYYY.getText().length() == 4) {
+            dialogButton.setBackgroundTintList(colorStateList);
+            dialogButton.setTextColor(getColor(R.color.white));
+            dialogButton.setStrokeWidth(0);
+        }
 
         edtDD.addTextChangedListener(new TextWatcher() {
             @Override
@@ -217,6 +230,16 @@ public class VoiceScanActivity extends AppCompatActivity {
                 int count = edtDD.getText().length();
                 if (count == 2) {
                     edtMM.requestFocus();
+                }
+
+                if (count == 2 && edtMM.getText().length() == 2 && edtYYYY.getText().length() == 4) {
+                    dialogButton.setBackgroundTintList(colorStateList);
+                    dialogButton.setTextColor(getColor(R.color.white));
+                    dialogButton.setStrokeWidth(0);
+                } else {
+                    dialogButton.setBackgroundTintList(colorStateListWhite);
+                    dialogButton.setTextColor(getColor(R.color.txt_color_vs));
+                    dialogButton.setStrokeWidth(1);
                 }
             }
 
@@ -241,6 +264,17 @@ public class VoiceScanActivity extends AppCompatActivity {
                 if (count == 0) {
                     edtDD.requestFocus();
                 }
+
+                if (count == 2 && edtDD.getText().length() == 2 && edtYYYY.getText().length() == 4) {
+                    dialogButton.setBackgroundTintList(colorStateList);
+                    dialogButton.setTextColor(getColor(R.color.white));
+                    dialogButton.setStrokeWidth(0);
+                } else {
+                    dialogButton.setBackgroundTintList(colorStateListWhite);
+                    dialogButton.setTextColor(getColor(R.color.txt_color_vs));
+                    dialogButton.setStrokeWidth(1);
+                }
+
             }
 
             @Override
@@ -263,6 +297,15 @@ public class VoiceScanActivity extends AppCompatActivity {
                 }
                 if (count == 0) {
                     edtMM.requestFocus();
+                }
+                if (count == 4 && edtDD.getText().length() == 2 && edtMM.getText().length() == 2) {
+                    dialogButton.setBackgroundTintList(colorStateList);
+                    dialogButton.setTextColor(getColor(R.color.white));
+                    dialogButton.setStrokeWidth(0);
+                } else {
+                    dialogButton.setBackgroundTintList(colorStateListWhite);
+                    dialogButton.setTextColor(getColor(R.color.txt_color_vs));
+                    dialogButton.setStrokeWidth(1);
                 }
             }
 

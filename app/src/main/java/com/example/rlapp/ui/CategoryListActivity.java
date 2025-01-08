@@ -124,12 +124,11 @@ public class CategoryListActivity extends AppCompatActivity {
         chip.setChipCornerRadius(50);
         chip.setChipStrokeColor(ContextCompat.getColorStateList(this, R.color.chip_selected_background_color));
         chip.setChipBackgroundColorResource(R.color.white);
-        chip.setTextColor(ContextCompat.getColorStateList(this, R.color.black));
 
 
         // Set up the chip's appearance
         chip.setChipBackgroundColorResource(R.color.white);
-        chip.setTextColor(ContextCompat.getColorStateList(this, R.color.chip_text_color));
+        chip.setTextSize(12);
 
         // Set different colors for selected state
         ColorStateList colorStateList = new ColorStateList(

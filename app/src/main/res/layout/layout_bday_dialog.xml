@@ -126,13 +126,13 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/dialog_button"
                 android:layout_width="166dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:text="Okay"
-                android:textColor="#7C7C7C"
+                android:textColor="@color/txt_color_vs"
                 android:textSize="@dimen/textsize_small"
                 app:backgroundTint="@color/white"
                 app:cornerRadius="20dp"
-                app:strokeColor="#7C7C7C"
+                app:strokeColor="@color/txt_color_vs"
                 app:strokeWidth="1dp" />
         </LinearLayout>
     </RelativeLayout>

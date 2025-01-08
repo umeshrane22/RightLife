@@ -69,7 +69,6 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
                 Gson gson = new Gson();
                 String json = gson.toJson(contentList);
                 Intent intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);
@@ -100,7 +99,7 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
             favorite_image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(itemView.getContext(), "position - "+getAdapterPosition(), Toast.LENGTH_SHORT).show();
+
                 }
             });
 

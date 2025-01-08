@@ -37,7 +37,33 @@ public class AllAssessmentAdapter extends RecyclerView.Adapter<AllAssessmentAdap
     public void onBindViewHolder(@NonNull AllAssessmentViewHolder holder, int position) {
         String all = allAssessment.get(position);
         holder.tvAllAssessment.setText(all);
-        //holder.imageView.setImageResource();
+        switch (all){
+            case "DASS-21": {
+                holder.imageView.setImageResource(R.drawable.dass_21);
+                break;
+            }
+            case "Sleep Audit": {
+                holder.imageView.setImageResource(R.drawable.sleep_audit);
+                break;
+            }
+            case "GAD-7": {
+                holder.imageView.setImageResource(R.drawable.gad_7);
+                break;
+            }
+            case "OHQ": {
+                holder.imageView.setImageResource(R.drawable.ohq);
+                break;
+            }
+            case "CAS": {
+                holder.imageView.setImageResource(R.drawable.cas);
+                break;
+            }
+            case "PHQ-9": {
+                holder.imageView.setImageResource(R.drawable.phq_9);
+                break;
+            }
+
+        }
         holder.itemView.setOnClickListener(view -> {
             onItemClickListener.onItemClick(all);
         });

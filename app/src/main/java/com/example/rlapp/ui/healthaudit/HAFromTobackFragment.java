@@ -40,7 +40,6 @@ public class HAFromTobackFragment extends Fragment {
 
         private void handleButtonClick() {
             // Handle button click logic for Page 1
-            Toast.makeText(getContext(), "Button on Page 1 clicked", Toast.LENGTH_SHORT).show();
             showDatePicker();
         }
 

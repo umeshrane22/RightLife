@@ -132,7 +132,6 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(MAAssessmentQuestionaireActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
@@ -168,7 +167,6 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                     try {
                         jsonResponse = gson.toJson(response.body().string());
                         Log.d("AAAA", jsonResponse);
-                        Toast.makeText(MAAssessmentQuestionaireActivity.this, "Result : " + jsonResponse, Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -201,7 +199,6 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(MAAssessmentQuestionaireActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();

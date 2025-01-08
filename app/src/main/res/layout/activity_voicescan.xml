@@ -28,7 +28,8 @@
             android:textStyle="bold"
             android:fontFamily="@font/dmsans_bold"
             android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
     <com.zhpan.indicator.IndicatorView
         android:id="@+id/indicator_view"
         android:layout_width="wrap_content"
@@ -69,15 +70,15 @@
 
     <Button
         android:id="@+id/btn_howitworks"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:backgroundTint="@color/buttoncolorvc"
         android:layout_marginBottom="28dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="Proceed to Scan" />
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"
+        android:text="Next" />
 
 
 </LinearLayout>

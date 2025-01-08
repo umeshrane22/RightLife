@@ -75,7 +75,7 @@ public class MindAuditFeelingsFragment extends Fragment {
                 UserEmotions userEmotions = new UserEmotions(selectedEmotions);
                 getBasicScreeningQuestions(userEmotions);
             } else {
-                Toast.makeText(requireContext(), "Please selection emotion", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please select emotion", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -94,7 +94,6 @@ public class MindAuditFeelingsFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
 
@@ -142,7 +141,6 @@ public class MindAuditFeelingsFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
