@@ -12,7 +12,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/roundedcornerbutton"
+        android:background="@drawable/roundedcornerdialogbg"
+        android:elevation="5dp"
         android:paddingBottom="20dp"
         android:paddingTop="20dp"
         android:layout_margin="20dp"
@@ -64,14 +65,14 @@
                 android:textSize="16sp"
                 android:gravity="center"
                 android:padding="@dimen/textsize_medium"
-                android:fontFamily="@font/dmsans_regular"
+                android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp" />
 
             <Button
                 android:id="@+id/dialog_button_stay"
                 android:layout_width="166dp"
-                android:layout_height="46dp"
+                android:layout_height="40dp"
                 android:text="Okay"
                 android:fontFamily="@font/dmsans_bold"
                 android:backgroundTint="@color/buttoncolormind"

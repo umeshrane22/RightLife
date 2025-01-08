@@ -166,10 +166,11 @@ public class HealthCamActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.layout_disclaimer_health_cam);
         dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
         Window window = dialog.getWindow();
         // Set the dim amount
         WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
+        layoutParams.dimAmount = 0.85f; // Adjust the dim amount (0.0 - 1.0)
         window.setAttributes(layoutParams);
 
         // Find views from the dialog layout

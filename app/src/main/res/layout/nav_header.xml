@@ -12,12 +12,15 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/iv_profile_image"
-            android:layout_width="94dp"
-            android:layout_height="94dp"
+            android:layout_width="84dp"
+            android:layout_height="84dp"
             android:layout_alignParentStart="true"
             android:layout_margin="8dp"
-            android:background="@drawable/circle_shape"
-            android:src="@drawable/avatar" />
+            android:tint="@color/txt_color_header"
+            android:layout_centerVertical="true"
+            android:background="@drawable/rounded_image"
+            android:src="@drawable/profile_man" />
+
 
         <ImageView
             android:id="@+id/iv_close"
@@ -30,7 +33,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/textsize_large24sp"
+            android:layout_margin="@dimen/textsize_medium"
             android:layout_toRightOf="@id/iv_profile_image"
             android:gravity="center_vertical"
             android:orientation="vertical">

@@ -3314,7 +3314,7 @@
             android:background="@drawable/roundedcornershape"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:id="@+id/ll_journal"
@@ -3323,11 +3323,19 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/roundedcornershape"
-                android:backgroundTint="@color/thinkright"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/textsize_small">
-
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/roundedcornershape"
+                    android:backgroundTint="@color/thinkright"
+                    android:gravity="center"
+                    android:padding="11dp"
+                    android:layout_margin="1dp"
+                    android:orientation="vertical">
                 <ImageView
                     android:layout_width="34dp"
                     android:layout_height="34dp"
@@ -3342,6 +3350,7 @@
                     android:text="Journal"
                     android:textAlignment="center"
                     android:textSize="@dimen/textsize_extrasmall" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
