@@ -56,7 +56,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
             finish();
         });
         close_dialog.setOnClickListener(view -> {
-            finish();
+            showExitDialog();
         });
 
         getCurated();
@@ -174,7 +174,6 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(MASuggestedAssessmentActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
@@ -187,7 +186,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
                     }
                 } else {
                     tv_curated.setVisibility(View.GONE);
-                    Toast.makeText(MASuggestedAssessmentActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MASuggestedAssessmentActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -196,5 +195,40 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
                 Toast.makeText(MASuggestedAssessmentActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showExitDialog() {
+        // Create the dialog
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.layout_exit_dialog_mind);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Window window = dialog.getWindow();
+        // Set the dim amount
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
+        window.setAttributes(layoutParams);
+
+        // Find views from the dialog layout
+        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
+        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
+        TextView dialogText = dialog.findViewById(R.id.dialog_text);
+        Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
+        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
+
+        // Optional: Set dynamic content
+        // dialogText.setText("Please find a quiet and comfortable place before starting");
+
+        // Set button click listener
+        dialogButtonStay.setOnClickListener(v -> {
+            // Perform your action
+            dialog.dismiss();
+        });
+        dialogButtonExit.setOnClickListener(v -> {
+            dialog.dismiss();
+            this.finish();
+        });
+
+        dialog.show();
     }
 }

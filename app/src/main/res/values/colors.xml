@@ -7,6 +7,7 @@
     <color name="txt_color_header">#0B1215</color>
     <color name="txt_color_mind">#14142B</color>
     <color name="txt_color_health">#14142B</color>
+    <color name="txt_color_vs">#7C7C7C</color>
 
     <color name="gray">#D3D3D3</color>
     <color name="dark_gray">#A9A9A9</color>
