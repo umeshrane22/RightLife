@@ -93,6 +93,34 @@ public class Utils {
         }
     }
 
+    public static int getModuleDarkColor(Context context, String module) {
+        if (module == null) {
+            return ContextCompat.getColor(context, android.R.color.transparent); // Default to transparent if null
+        }
+
+        switch (module) {
+            case AppConstants.EAT_RIGHT:
+            case "EAT_RIGHT":
+                return ContextCompat.getColor(context, R.color.color_eat_right);
+
+            case AppConstants.THINK_RIGHT:
+            case "THINK_RIGHT":
+                return ContextCompat.getColor(context, R.color.color_think_right);
+
+            case AppConstants.SLEEP_RIGHT:
+            case "SLEEP_RIGHT":
+                return ContextCompat.getColor(context, R.color.color_sleep_right);
+
+            case AppConstants.MOVE_RIGHT:
+            case "MOVE_RIGHT":
+                return ContextCompat.getColor(context, R.color.color_move_right);
+
+            default:
+                // If no match, return a default color (e.g., transparent or a predefined color)
+                return ContextCompat.getColor(context, android.R.color.darker_gray);
+        }
+    }
+
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
                 (InputMethodManager) activity.getSystemService(

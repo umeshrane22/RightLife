@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:text="@string/know_each_other"
+        android:textSize="@dimen/textsize_medium"
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="@color/txt_color_header" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/know_your_name"
+        android:textSize="@dimen/textsize_extralarge"
+        android:gravity="center"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/txt_color_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="36dp">
+
+        <TextView
+            android:id="@+id/tv_username_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_regular"
+            android:gravity="center"
+            android:text="@string/error_username"
+            android:textColor="@color/menuselected"
+            android:textSize="@dimen/textsize_small"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/edt_username"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="36dp"
+            android:background="@drawable/bg_edittext_gray"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:maxLength="20"
+            android:text="Shyam"
+            android:textColor="@color/txt_color_header"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_char_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="5/20 ch"
+        android:textSize="11sp"
+        android:gravity="center"
+        android:fontFamily="@font/dmsans_medium"
+        android:textColor="@color/text_color_char_left" />
+
+    <Button
+        android:id="@+id/btn_continue"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="36dp"
+        android:text="@string/str_continue"
+        android:textSize="@dimen/textsize_large"
+        android:fontFamily="@font/dmsans_bold"
+        android:backgroundTint="@color/menuselected"/>
+
+</LinearLayout>
