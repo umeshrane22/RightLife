@@ -45,14 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity
-            android:name=".ui.SplashScreenActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.SplashScreenActivity" />
         <activity android:name=".ui.DataControlActivity" />
         <activity android:name=".ui.ImageSliderActivity" />
         <activity android:name=".ui.CreateUsernameActivity" />
