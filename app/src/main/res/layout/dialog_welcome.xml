@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:src="@mipmap/welcome_image" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/dmsans_bold"
+        android:gravity="center"
+        android:text="@string/happy_to_share"
+        android:textColor="@color/txt_color_header"
+        android:textSize="@dimen/textsize_large24sp" />
+
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/dmsans_bold"
+        android:gravity="center"
+        android:text="Shyam"
+        android:textColor="@color/txt_color_header"
+        android:textSize="36sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="20sp"
+        android:textColor="@color/txt_color_header"
+        android:text="Join over 40,000 people who are\n living the RightLife."/>
+
+</LinearLayout>

@@ -82,5 +82,12 @@
     <color name="dark_green">#17B471</color>
 
     <color name="sleep_right_blue">#4593FB</color>
+    <color name="bg_edittext_color">#F2F2F2</color>
+    <color name="text_color_char_left">#707070</color>
+
+    <color name="color_think_right">#984C01</color>
+    <color name="color_move_right">#B11414</color>
+    <color name="color_eat_right">#005439</color>
+    <color name="color_sleep_right">#002C5F</color>
 
 </resources>
