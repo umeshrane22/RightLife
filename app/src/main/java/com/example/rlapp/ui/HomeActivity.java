@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,6 +24,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
@@ -113,6 +115,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     ImageView img_homemenu, img_healthmenu, quicklinkmenu;
     ImageView img1, img2, img3, img4, img5, img6, img7, img8;
     TextView tv1_header, tv1, tv2_header, tv2, tv3_header, tv3, tv4_header, tv4;
+    ImageView imgtag_tv4, imgtag_tv3, imgtag_tv2, imgtag_tv1;
     TextView tv1_viewcount, tv2_viewcount, tv3_viewcount, tv4_viewcount;
     private ViewPager2 viewPager;
     private CircularCardAdapter adapter;
@@ -504,12 +507,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // Initialize TextView variables using findViewById
         tv1_header = findViewById(R.id.tv1_header);
         tv1 = findViewById(R.id.tv1);
+        imgtag_tv1 = findViewById(R.id.imgtag_tv1);
         tv2_header = findViewById(R.id.tv2_header);
         tv2 = findViewById(R.id.tv2);
+        imgtag_tv2 = findViewById(R.id.imgtag_tv2);
         tv3_header = findViewById(R.id.tv3_header);
         tv3 = findViewById(R.id.tv3);
+        imgtag_tv3 = findViewById(R.id.imgtag_tv3);
         tv4_header = findViewById(R.id.tv4_header);
         tv4 = findViewById(R.id.tv4);
+        imgtag_tv4 = findViewById(R.id.imgtag_tv4);
 
         tv1_viewcount = findViewById(R.id.tv1_viewcount);
         tv2_viewcount = findViewById(R.id.tv2_viewcount);
@@ -954,20 +961,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (contentList == null || contentList.size() < 4) return;
 
         // Bind data for item 1
-        bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5);
+        bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5,imgtag_tv1);
 
         // Bind data for item 2
-        bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6);
+        bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6,imgtag_tv2);
 
         // Bind data for item 3
-        bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7);
+        bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7,imgtag_tv3);
 
         // Bind data for item 4
-        bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8);
+        bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8,imgtag_tv4);
     }
 
     //Bind Wellnes content
-    private void bindContentToView(ContentWellness content, TextView header, TextView category, ImageView thumbnail, TextView viewcount, ImageView imgcontenttype) {
+    private void bindContentToView(ContentWellness content, TextView header, TextView category, ImageView thumbnail, TextView viewcount, ImageView imgcontenttype,ImageView imgtag) {
         // Set title in the header TextView
         header.setText(content.getTitle());
         viewcount.setText("" + content.getViewCount());
@@ -982,7 +989,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 .transform(new RoundedCorners(25))// Optional error image
                 .into(thumbnail);
 
+        setModuleColor(imgtag, content.getModuleId());
+    }
+    private void setModuleColor(ImageView imgtag, String moduleId) {
+        if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.eatright);
+            imgtag.setImageTintList(colorStateList);
 
+        } else if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright);
+            imgtag.setImageTintList(colorStateList);
+
+        } else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright);
+            imgtag.setImageTintList(colorStateList);
+
+        } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.moveright);
+            imgtag.setImageTintList(colorStateList);
+
+        }
     }
 
 
