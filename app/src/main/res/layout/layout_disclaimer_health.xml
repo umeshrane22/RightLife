@@ -60,7 +60,7 @@ The analysed information in the Smart Report is not ideal for individuals less t
                 android:textSize="16sp"
                 android:gravity="center"
                 android:padding="@dimen/textsize_medium"
-                android:fontFamily="@font/dmsans_regular"
+                android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp" />
 

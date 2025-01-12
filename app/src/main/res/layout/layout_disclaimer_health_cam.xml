@@ -61,11 +61,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="This facial scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
-                android:textColor="#000"
-                android:textSize="16sp"
+                android:textColor="@color/txt_color_mind"
+                android:textSize="@dimen/textsize_large"
                 android:gravity="center"
-                android:padding="@dimen/textsize_medium"
-                android:fontFamily="@font/dmsans_bold"
+                android:padding="@dimen/textsize_large"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp" />
 

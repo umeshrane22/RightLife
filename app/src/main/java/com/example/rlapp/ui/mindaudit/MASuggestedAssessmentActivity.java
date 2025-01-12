@@ -23,6 +23,7 @@ import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.mindaudit.curated.AssessmentUndertaken;
 import com.example.rlapp.ui.mindaudit.curated.Context;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
+import com.example.rlapp.ui.utility.AppConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.gson.Gson;
 
@@ -139,7 +140,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
         TextView tvItem3 = dialog.findViewById(R.id.item_text3);
         TextView tvHeader = dialog.findViewById(R.id.tv_selected_assessment);
         tvHeader.setText(header);
-
+        setDialogText(tvItem1,tvItem2,tvItem3,header);
         ImageView imgClose = dialog.findViewById(R.id.ic_close_dialog);
         imgClose.setOnClickListener(view -> {
             dialog.dismiss();
@@ -152,6 +153,48 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
         });
         // Show the dialog
         dialog.show();
+    }
+
+    private void setDialogText(TextView tvItem1, TextView tvItem2, TextView tvItem3, String header) {
+        switch (header){
+            case "DASS-21": {
+                tvItem1.setText(AppConstants.dass21FirstPara);
+                tvItem2.setText(AppConstants.dass21SecondPara);
+                tvItem3.setText(AppConstants.dass21ThirdPara);
+                break;
+            }
+            case "Sleep Audit": {
+                tvItem1.setText(AppConstants.ssFirstPara);
+                tvItem2.setText(AppConstants.ssSecondPara);
+                tvItem3.setText(AppConstants.ssThirdPara);
+                break;
+            }
+            case "GAD-7": {
+                tvItem1.setText(AppConstants.gad7FirstPara);
+                tvItem2.setText(AppConstants.gad7SecondPara);
+                tvItem3.setText(AppConstants.gad7ThirdPara);
+                break;
+            }
+            case "OHQ": {
+                tvItem1.setText(AppConstants.ohqFirstPara);
+                tvItem2.setText(AppConstants.ohqSecondPara);
+                tvItem3.setText(AppConstants.ohqThirdPara);
+                break;
+            }
+            case "CAS": {
+                tvItem1.setText(AppConstants.casFirstPara);
+                tvItem2.setText(AppConstants.casSecondPara);
+                tvItem3.setText(AppConstants.casThirdPara);
+                break;
+            }
+            case "PHQ-9": {
+                tvItem1.setText(AppConstants.phq9FirstPara);
+                tvItem2.setText(AppConstants.phq9SecondPara);
+                tvItem3.setText(AppConstants.phq9ThirdPara);
+                break;
+            }
+
+        }
     }
 
     private void getCurated() {

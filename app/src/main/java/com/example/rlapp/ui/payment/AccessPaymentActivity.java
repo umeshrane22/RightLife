@@ -46,7 +46,7 @@ public class AccessPaymentActivity extends AppCompatActivity implements View.OnC
                 Toast.makeText(HealthPageMainActivity.this, "Health Audit card click", Toast.LENGTH_SHORT).show();
             }
         });*/
-
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
     }
 
     @Override

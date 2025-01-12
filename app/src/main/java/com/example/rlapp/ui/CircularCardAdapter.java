@@ -21,6 +21,7 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
+import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.voicescan.VoiceScanActivity;
 
@@ -66,9 +67,9 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                     //intent.putExtra("key", "value");
                     mContext.startActivity(intent);
 
-                } else
-                {
-                    Intent intent = new Intent(mContext, HealthAuditActivity.class);
+                }else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN")) {
+
+                    Intent intent = new Intent(mContext, HealthCamActivity.class);
                     // Optionally pass data
                     //intent.putExtra("key", "value");
                     mContext.startActivity(intent);

@@ -38,6 +38,7 @@ public class ContactUsActivity extends AppCompatActivity {
         btnSend.setOnClickListener(view -> {
             sendData();
         });
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
     }
 
     private void sendData() {
