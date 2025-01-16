@@ -1,4 +1,4 @@
-package com.example.rlapp.ui
+package com.example.rlapp.ui.new_design
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -10,12 +10,14 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.ui.utility.Utils
 
 class WellnessFocusListAdapter(
     private val context: Context,
-    private val wellnessFocusList: ArrayList<WellnessFocus>,
+    private val wellnessFocusList: ArrayList<Topic>,
     private val onItemClickListener: OnItemClickListener,
     private val module: String
 ) : RecyclerView.Adapter<WellnessFocusListAdapter.WellnessFocusViewHolder>() {
@@ -32,14 +34,21 @@ class WellnessFocusListAdapter(
 
     override fun onBindViewHolder(holder: WellnessFocusViewHolder, position: Int) {
         val wellnessFocus = wellnessFocusList[position]
-        holder.imageView.setImageResource(wellnessFocus.imageResource)
-        holder.tvHeader.text = wellnessFocus.wellnessFocusName
+        //holder.imageView.setImageResource(wellnessFocus.imageResource)
+
+        Glide.with(context).load(ApiClient.CDN_URL_QA + wellnessFocus.moduleThumbnail)
+            .placeholder(R.drawable.think_right)
+            /*.error(R.drawable.avatar)*/
+            .into(holder.imageView)
+
+        holder.tvHeader.text = wellnessFocus.moduleTopic
+
 
         val bgDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray)
+            AppCompatResources.getDrawable(context, R.drawable.bg_gray_border)
 
         val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.bg_gray_border)
+            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray)
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,
@@ -57,7 +66,7 @@ class WellnessFocusListAdapter(
     }
 
     fun interface OnItemClickListener {
-        fun onItemClick(wellnessFocus: WellnessFocus)
+        fun onItemClick(wellnessFocus: Topic)
     }
 
     class WellnessFocusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

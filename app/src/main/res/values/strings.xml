@@ -215,5 +215,13 @@ Please hold still"</string>
     <string name="sleep_better">Sleep Better.</string>
     <string name="your_journey_your_way">Your journey, your way!</string>
     <string name="choose_goals">Choose all the topics and goals that interest you.</string>
-
+    <string name="unlock_power">Unlock The Power Of Your Mind</string>
+    <string name="third_filler_screen1">"\"Insufficient and excessive sleep were associated with higher depressive symptoms and lower well-being\""</string>
+    <string name="third_filler_screen2">"\"High consumption of refined carbohydrates may increase the risk of depression symptoms.\""</string>
+    <string name="third_filler_screen3">"\"Exercise to enhance memory performs and reduce depression and anxiety.\""</string>
+    <string name="third_filler_screen4">A Calm Mind Is\nJust the Start</string>
+    <string name="third_filler_screen5">Thinking right isn\'t just about quieting your thoughts; it\'s about fueling your body, moving with purpose, and resting deeply.\n\nAt RightLife, we bring this together to make mindfulness a lifestyle, not a moment.</string>
+    <string name="other_topics">What other topics interest you?</string>
+    <string name="select_your_interest">Select all that apply. You can edit from your profile.</string>
+    <string name="save_interest">Save Interest</string>
 </resources>

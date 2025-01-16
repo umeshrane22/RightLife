@@ -60,8 +60,8 @@ import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
+import com.example.rlapp.ui.new_design.SplashScreenActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
-import com.example.rlapp.ui.sdkpackage.HealthCamRecorderActivity;
 import com.example.rlapp.ui.search.SearchActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.utility.DateTimeUtils;
@@ -151,7 +151,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         profileImage = findViewById(R.id.profileImage);
         tvUserName = findViewById(R.id.userName);
         TextView tvGreetingText = findViewById(R.id.greetingText);
-        tvGreetingText.setText("Good " + DateTimeUtils.getWishingMessage() +" ,");
+        tvGreetingText.setText("Good " + DateTimeUtils.getWishingMessage() + " ,");
 
         profileImage.setOnClickListener(view -> {
             if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
@@ -394,7 +394,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // calls for APIs
         getUserDetails("");
         getPromotionList("");
-        getPromotionList2(""); // Service pane
+        getPromotionList2(""); // ModuleService pane
         getRightlifeEdit("");
 
         getAffirmations("");
@@ -478,9 +478,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         ImageView ivClose = view.findViewById(R.id.iv_close);
         ivClose.setOnClickListener(view1 -> drawer.close());
-        if (userdata.getProfilePicture()!=null) {
+        if (userdata.getProfilePicture() != null) {
             Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).placeholder(R.drawable.avatar).error(R.drawable.avatar).into(ivProfileImage);
-        }else {
+        } else {
 
         }
 
@@ -961,20 +961,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (contentList == null || contentList.size() < 4) return;
 
         // Bind data for item 1
-        bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5,imgtag_tv1);
+        bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5, imgtag_tv1);
 
         // Bind data for item 2
-        bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6,imgtag_tv2);
+        bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6, imgtag_tv2);
 
         // Bind data for item 3
-        bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7,imgtag_tv3);
+        bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7, imgtag_tv3);
 
         // Bind data for item 4
-        bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8,imgtag_tv4);
+        bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8, imgtag_tv4);
     }
 
     //Bind Wellnes content
-    private void bindContentToView(ContentWellness content, TextView header, TextView category, ImageView thumbnail, TextView viewcount, ImageView imgcontenttype,ImageView imgtag) {
+    private void bindContentToView(ContentWellness content, TextView header, TextView category, ImageView thumbnail, TextView viewcount, ImageView imgcontenttype, ImageView imgtag) {
         // Set title in the header TextView
         header.setText(content.getTitle());
         viewcount.setText("" + content.getViewCount());
@@ -991,6 +991,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         setModuleColor(imgtag, content.getModuleId());
     }
+
     private void setModuleColor(ImageView imgtag, String moduleId) {
         if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
             ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.eatright);
@@ -1470,7 +1471,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     SharedPreferenceManager.getInstance(getApplicationContext()).saveUserProfile(ResponseObj);
 
                     setDrawerHeader(navigationView.getHeaderView(0));
-                    if (ResponseObj.getUserdata().getProfilePicture()!=null) {
+                    if (ResponseObj.getUserdata().getProfilePicture() != null) {
                         Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).into(profileImage);
                     }
                     tvUserName.setText(ResponseObj.getUserdata().getFirstName());

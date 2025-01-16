@@ -22,6 +22,8 @@ import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
+import com.example.rlapp.ui.new_design.OnBoardingDataModuleResponse;
+import com.example.rlapp.ui.new_design.OnBoardingModuleResponse;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
@@ -107,7 +109,7 @@ public interface ApiService {
             @Query("position") String position
     );
 
-    //Service Pane
+    //ModuleService Pane
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("user")
     // Assume the API endpoint is /login
@@ -115,7 +117,7 @@ public interface ApiService {
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
 
-    //Service Pane
+    //ModuleService Pane
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("service-pane")
     // Assume the API endpoint is /login
@@ -631,6 +633,18 @@ public interface ApiService {
             @Query("reportId") String reportId
     );
 
+    @Headers("Content-Type: application/json")
+    @GET("onboardingModule")
+    Call<OnBoardingModuleResponse> getOnboardingModule(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("onboardingDataModule")
+    Call<OnBoardingDataModuleResponse> getOnboardingDataModule(
+            @Header("Authorization") String authToken,
+            @Query("moduleName") String moduleName
+    );
 }
 
 

@@ -39,18 +39,29 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.new_design.SplashScreenActivity"
+            android:exported="true">
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>-->
         </activity>
-        <activity android:name=".ui.SplashScreenActivity" />
-        <activity android:name=".ui.DataControlActivity" />
-        <activity android:name=".ui.ImageSliderActivity" />
-        <activity android:name=".ui.CreateUsernameActivity" />
-        <activity android:name=".ui.WellnessFocusActivity" />
-        <activity android:name=".ui.WellnessFocusListActivity" />
+        <activity android:name=".ui.new_design.DataControlActivity" />
+        <activity android:name=".ui.new_design.ImageSliderActivity" />
+        <activity android:name=".ui.new_design.CreateUsernameActivity" />
+        <activity android:name=".ui.new_design.WellnessFocusActivity" />
+        <activity android:name=".ui.new_design.WellnessFocusListActivity" />
+        <activity android:name=".ui.new_design.UnlockPowerOfYourMindActivity" />
+        <activity android:name=".ui.new_design.ThirdFillerScreenActivity" />
+        <activity android:name=".ui.new_design.YourInterestActivity" />
 
         <activity android:name=".ui.voicescan.VoiceScanActivity" />
         <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />

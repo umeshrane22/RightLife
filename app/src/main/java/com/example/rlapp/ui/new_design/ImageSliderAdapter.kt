@@ -1,4 +1,4 @@
-package com.example.rlapp.ui
+package com.example.rlapp.ui.new_design
 
 import android.content.Context
 import android.view.LayoutInflater
