@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_onboarding_module"
+    android:layout_width="match_parent"
+    android:layout_height="105dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/bg_gray_border">
+
+    <ImageView
+        android:id="@+id/img_onboarding_module"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="22dp"
+        android:src="@drawable/think_right" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/img_onboarding_module"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_onboarding_module_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="@string/str_think_right"
+            android:textColor="@color/color_think_right"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_onboarding_module_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_regular"
+            android:text="@string/boost_mental_clarity"
+            android:textColor="@color/color_think_right"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+</RelativeLayout>

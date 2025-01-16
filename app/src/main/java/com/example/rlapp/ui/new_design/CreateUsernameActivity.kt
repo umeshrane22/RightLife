@@ -1,4 +1,4 @@
-package com.example.rlapp.ui
+package com.example.rlapp.ui.new_design
 
 import android.app.Dialog
 import android.content.Intent
@@ -79,7 +79,7 @@ class CreateUsernameActivity : AppCompatActivity() {
         Handler().postDelayed({
             val intent = Intent(this, WellnessFocusActivity::class.java)
             startActivity(intent)
-            //finish()
+            finish()
         }, 2000)
 
         val tvUsername = dialog.findViewById<TextView>(R.id.tv_username)

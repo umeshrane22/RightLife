@@ -1,4 +1,4 @@
-package com.example.rlapp.ui
+package com.example.rlapp.ui.new_design
 
 import android.content.Intent
 import android.os.Bundle

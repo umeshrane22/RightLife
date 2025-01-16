@@ -28,213 +28,36 @@
         android:textColor="@color/txt_color_header"
         android:textSize="16sp" />
 
-    <RelativeLayout
-        android:id="@+id/rl_think_right"
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/bg_gray_border">
-
-        <ImageView
-            android:id="@+id/img_think_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="22dp"
-            android:src="@drawable/think_right"/>
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/img_think_right"
-            android:padding="16dp"
-            android:gravity="center">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_onboarding_module"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/str_think_right"
-                android:textColor="@color/color_think_right"
-                android:textSize="20sp"
-                android:fontFamily="@font/dmsans_bold"/>
+                android:layout_alignParentTop="true"
+                android:layout_above="@id/btn_continue"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="32dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/boost_mental_clarity"
-                android:textColor="@color/color_think_right"
-                android:textSize="14sp"
-                android:fontFamily="@font/dmsans_regular"/>
+            <Button
+                android:id="@+id/btn_continue"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginEnd="36dp"
+                android:backgroundTint="@color/rightlife"
+                android:enabled="false"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="@string/str_continue"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textsize_large"
+                android:layout_alignParentBottom="true"/>
 
-        </LinearLayout>
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_move_right"
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/bg_gray_border">
-
-        <ImageView
-            android:id="@+id/img_move_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="22dp"
-            android:src="@drawable/move_right"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/img_move_right"
-            android:padding="16dp"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/str_move_right"
-                android:textColor="@color/color_move_right"
-                android:textSize="20sp"
-                android:fontFamily="@font/dmsans_bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/stay_active"
-                android:textColor="@color/color_move_right"
-                android:textSize="14sp"
-                android:fontFamily="@font/dmsans_regular"/>
-
-        </LinearLayout>
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_eat_right"
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/bg_gray_border">
-
-        <ImageView
-            android:id="@+id/img_eat_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="22dp"
-            android:src="@drawable/eat_right"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/img_eat_right"
-            android:padding="16dp"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/str_eat_right"
-                android:textColor="@color/color_eat_right"
-                android:textSize="20sp"
-                android:fontFamily="@font/dmsans_bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/eat_healthy"
-                android:textColor="@color/color_eat_right"
-                android:textSize="14sp"
-                android:fontFamily="@font/dmsans_regular"/>
-
-        </LinearLayout>
-
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_sleep_right"
-        android:layout_width="match_parent"
-        android:layout_height="105dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@drawable/bg_gray_border">
-
-        <ImageView
-            android:id="@+id/img_sleep_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="22dp"
-            android:src="@drawable/sleep_right"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/img_sleep_right"
-            android:padding="16dp"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/str_sleep_right"
-                android:textColor="@color/color_sleep_right"
-                android:textSize="20sp"
-                android:fontFamily="@font/dmsans_bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/sleep_better"
-                android:textColor="@color/color_sleep_right"
-                android:textSize="14sp"
-                android:fontFamily="@font/dmsans_regular"/>
-
-        </LinearLayout>
-
-
-    </RelativeLayout>
-
-
-    <Button
-        android:id="@+id/btn_continue"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginStart="36dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginTop="50dp"
-        android:text="@string/str_continue"
-        android:textSize="@dimen/textsize_large"
-        android:fontFamily="@font/dmsans_bold"
-        android:backgroundTint="@color/rightlife"
-        android:textColor="@color/white"
-        android:enabled="false"/>
-
+        </RelativeLayout>
 
 </LinearLayout>
 </ScrollView>
