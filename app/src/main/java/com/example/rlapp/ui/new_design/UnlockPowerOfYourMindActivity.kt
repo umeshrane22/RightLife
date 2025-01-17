@@ -10,6 +10,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ui.new_design.pojo.UnlockPower
 import com.example.rlapp.ui.utility.Utils
 
 class UnlockPowerOfYourMindActivity : AppCompatActivity() {

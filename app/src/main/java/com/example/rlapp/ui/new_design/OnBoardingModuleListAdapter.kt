@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.ui.new_design.pojo.ModuleService
 import com.example.rlapp.ui.utility.Utils
 
 class OnBoardingModuleListAdapter(
@@ -38,6 +39,9 @@ class OnBoardingModuleListAdapter(
         val moduleService = moduleServices[position]
         holder.tvHeader.text = Utils.getModuleText(moduleService.moduleName)
         holder.tvDescription.text = moduleService.moduleTitle
+
+        holder.tvHeader.setTextColor(Utils.getModuleDarkColor(context, moduleService.moduleName))
+        holder.tvDescription.setTextColor(Utils.getModuleDarkColor(context, moduleService.moduleName))
 
         Glide.with(context).load(ApiClient.CDN_URL_QA + moduleService.moduleThumbnail)
             .placeholder(R.drawable.think_right)

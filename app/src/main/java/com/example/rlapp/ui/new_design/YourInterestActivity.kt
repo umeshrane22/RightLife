@@ -3,12 +3,14 @@ package com.example.rlapp.ui.new_design
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ui.new_design.pojo.YourInterest
 
 class YourInterestActivity : AppCompatActivity() {
     private lateinit var adapter: YourInterestAdapter
@@ -61,11 +63,11 @@ class YourInterestActivity : AppCompatActivity() {
             btnSaveInterest.setTextColor(getColor(R.color.txt_color_header))
             btnSaveInterest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.correct_green, 0, 0, 0);
 
-            Handler().postDelayed({
-                val intent = Intent(this, DataControlActivity::class.java)
+            Handler(Looper.getMainLooper()).postDelayed({
+                val intent = Intent(this, PersonalisationActivity::class.java)
                 startActivity(intent)
-                //finish()
-            }, 5000)
+                finish()
+            }, 2000)
         }
 
     }

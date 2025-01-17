@@ -57,6 +57,7 @@
             android:fontFamily="@font/dmsans_bold"
             android:text="@string/save_interest"
             android:textColor="@color/white"
+            android:enabled="false"
             android:textSize="@dimen/textsize_large" />
 
         <TextView

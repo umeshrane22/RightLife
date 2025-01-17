@@ -13,11 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.ui.new_design.pojo.ModuleTopic
 import com.example.rlapp.ui.utility.Utils
 
 class WellnessFocusListAdapter(
     private val context: Context,
-    private val wellnessFocusList: ArrayList<Topic>,
+    private val wellnessFocusList: ArrayList<ModuleTopic>,
     private val onItemClickListener: OnItemClickListener,
     private val module: String
 ) : RecyclerView.Adapter<WellnessFocusListAdapter.WellnessFocusViewHolder>() {
@@ -66,7 +67,7 @@ class WellnessFocusListAdapter(
     }
 
     fun interface OnItemClickListener {
-        fun onItemClick(wellnessFocus: Topic)
+        fun onItemClick(wellnessFocus: ModuleTopic)
     }
 
     class WellnessFocusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

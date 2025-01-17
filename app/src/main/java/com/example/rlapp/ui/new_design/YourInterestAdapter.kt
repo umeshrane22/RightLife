@@ -10,6 +10,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ui.new_design.pojo.YourInterest
 import com.example.rlapp.ui.utility.Utils
 
 class YourInterestAdapter(
