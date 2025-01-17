@@ -29,7 +29,7 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
     private int[] itemImages;
     private LayoutInflater inflater;
     private Context ctx;
-    List<Content> contentList;
+    private List<Content> contentList;
     public GridRecyclerViewAdapter(Context context, String[] itemNames, int[] itemImages, List<Content> contentList) {
         this.ctx = context;
         this.itemNames = itemNames;
@@ -78,6 +78,35 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
                 holder.itemView.getContext().startActivity(intent);
             }
         });
+        if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")) {
+            holder.img_iconview.setImageResource(R.drawable.ic_read_category);
+            holder.item_text1.setVisibility(View.GONE);
+        } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")) {
+            holder.img_iconview.setImageResource(R.drawable.ic_read_play);
+            holder.item_text1.setVisibility(View.GONE);
+        } else if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
+            holder.img_iconview.setImageResource(R.drawable.ic_read_play);
+            holder.item_text1.setVisibility(View.VISIBLE);
+            holder.item_text1.setText(". 0 . videos");
+        } else {
+            holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
+            holder.item_text1.setVisibility(View.GONE);
+        }
+        if (contentList.get(position).getIsFavourited()) {
+            holder.favorite_image.setImageResource(R.drawable.favstarsolid);
+        }else {
+            holder.favorite_image.setImageResource(R.drawable.favstar);
+        }
+        holder.favorite_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (contentList.get(position).getIsFavourited()) {
+                    holder.favorite_image.setImageResource(R.drawable.favstarsolid);
+                }else {
+                    holder.favorite_image.setImageResource(R.drawable.favstar);
+                }
+            }
+        });
     }
 
     @Override
@@ -96,12 +125,7 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
             item_text1 = itemView.findViewById(R.id.item_text1);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
-            favorite_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                }
-            });
 
 
             //img_iconview.setImageResource(R.drawable.ic_read_category);

@@ -104,5 +104,5 @@
         android:layout_margin="5dp"
         android:scaleType="fitXY"
         android:layout_gravity="end"
-        android:src="@drawable/favstarsolid" />
+        android:src="@drawable/favstar" />
 </androidx.cardview.widget.CardView>
