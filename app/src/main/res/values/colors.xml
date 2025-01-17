@@ -90,4 +90,7 @@
     <color name="color_eat_right">#005439</color>
     <color name="color_sleep_right">#002C5F</color>
 
+    <color name="color_green">#03B27B</color>
+    <color name="color_blue">#1292E5</color>
+
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_sync_now"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="36dp"
+            android:layout_marginEnd="36dp"
+            android:backgroundTint="@color/menuselected"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Sync Now"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_large"
+            android:layout_above="@id/btn_skip_for_now"
+            android:drawableLeft="@drawable/icon_heart"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/btn_skip_for_now"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="36dp"
+            android:layout_marginEnd="36dp"
+            android:backgroundTint="@color/bg_edittext_color"
+            android:fontFamily="@font/dmsans_regular"
+            android:text="Skip for Now"
+            android:textColor="@color/txt_color_header"
+            android:textSize="@dimen/textsize_large"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</ScrollView>

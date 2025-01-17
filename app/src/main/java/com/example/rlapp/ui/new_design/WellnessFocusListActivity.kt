@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ui.new_design.pojo.ModuleTopic
+import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import retrofit2.Call
@@ -20,9 +22,9 @@ import retrofit2.Response
 
 class WellnessFocusListActivity : AppCompatActivity() {
 
-    private val selectedWellnessFocus = ArrayList<Topic>()
+    private val selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var wellnessFocusListAdapter: WellnessFocusListAdapter
-    val topicList = ArrayList<Topic>()
+    val topicList = ArrayList<ModuleTopic>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

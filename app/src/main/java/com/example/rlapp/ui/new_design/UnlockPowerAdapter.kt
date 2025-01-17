@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ui.new_design.pojo.UnlockPower
 
 class UnlockPowerAdapter(
     private val context: Context,

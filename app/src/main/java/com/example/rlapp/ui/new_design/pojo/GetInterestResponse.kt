@@ -1,9 +1,9 @@
-package com.example.rlapp.ui.new_design
+package com.example.rlapp.ui.new_design.pojo
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class OnBoardingModuleResponse {
+class GetInterestResponse {
     @SerializedName("success")
     @Expose
     var success: Boolean? = null
@@ -14,5 +14,5 @@ class OnBoardingModuleResponse {
 
     @SerializedName("data")
     @Expose
-    var data: ModuleData? = null
+    var data: InterestData? = null
 }

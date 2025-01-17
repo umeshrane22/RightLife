@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="What’s your body fat %?"
+        android:textColor="@color/txt_color_header"
+        android:textSize="26sp" />
+
+    <TextView
+        android:id="@+id/tv_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:text="Share your body fat percentage to help us create a more tailored plan for your fitness goals."
+        android:textColor="@color/txt_color_header"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/ll_selected_body_fat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_selected_body_fat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/color_green"
+            android:text="11 fat"
+            android:textSize="26sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

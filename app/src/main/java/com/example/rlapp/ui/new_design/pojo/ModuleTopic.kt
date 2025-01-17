@@ -1,9 +1,9 @@
-package com.example.rlapp.ui.new_design
+package com.example.rlapp.ui.new_design.pojo
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class Topic {
+class ModuleTopic {
     @SerializedName("moduleTopic")
     @Expose
     var moduleTopic: String? = null
