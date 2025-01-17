@@ -163,7 +163,7 @@ public class CategoryListActivity extends AppCompatActivity {
             Chip chip = group.findViewById(checkedId);
             if (chip != null) {
                 String category = chip.getText().toString();
-                Toast.makeText(this, "this is " + category, Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(this, "this is " + category, Toast.LENGTH_SHORT).show();
                 //filterList(category.equals("All") ? "all" : category.toLowerCase());
 
 
@@ -183,8 +183,7 @@ public class CategoryListActivity extends AppCompatActivity {
                     //API Call
                     selectedCategoryId = ResponseObj.getData().getResult().get(position).getCategoryId();
                     selectedModuleId = ResponseObj.getData().getResult().get(position).getModuleId();
-                    Toast.makeText(this, "this is " +
-                            ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "this is " + ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
                     contentList.clear();
                     mSkip = 0;
                     getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
@@ -260,6 +259,7 @@ public class CategoryListActivity extends AppCompatActivity {
                             if (ResponseObj.getData().getCount() > adapter.getItemCount()) {
                                 btnLoadMore.setVisibility(View.VISIBLE);
                                 mSkip = mSkip + limit;
+                                setModuleColor(btnLoadMore, moduleId);
                             } else {
                                 btnLoadMore.setVisibility(View.GONE);
                             }
@@ -356,4 +356,23 @@ public class CategoryListActivity extends AppCompatActivity {
 
     }
 
+    private void setModuleColor(Button button, String moduleId) {
+        if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.eatright);
+            button.setBackgroundTintList(colorStateList);
+
+        } else if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright);
+            button.setBackgroundTintList(colorStateList);
+
+        } else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright);
+            button.setBackgroundTintList(colorStateList);
+
+        } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.moveright);
+            button.setBackgroundTintList(colorStateList);
+
+        }
+    }
 }
