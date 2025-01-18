@@ -59,6 +59,20 @@ class BodyFatAdapter(
         }
     }
 
+    fun clearSelection() {
+        for (i in 0 until bodyFatLists.size) {
+            bodyFatLists[i].isSelected = false
+        }
+        selectedPosition = -1
+        notifyDataSetChanged()
+    }
+
+    fun setSelected(position: Int) {
+        bodyFatLists[position].isSelected = true
+        selectedPosition = position
+        notifyDataSetChanged()
+    }
+
     fun interface OnItemClickListener {
         fun onItemClick(bodyFat: BodyFat)
     }

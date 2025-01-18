@@ -5,6 +5,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
@@ -23,11 +25,11 @@ class BodyFatSelectionFragment : Fragment() {
 
     private lateinit var llSelectedBodyFat: LinearLayout
     private lateinit var tvSelectedBodyFat: TextView
-    private var selectedBodyFat = ""
     private lateinit var tvDescription: TextView
     private lateinit var cardBodyFat: CardView
     private lateinit var edtBodyFat: EditText
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: BodyFatAdapter
 
 
     companion object {
@@ -84,12 +86,18 @@ class BodyFatSelectionFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.length?.let {
-                    if (it > 0){
-                        iconMinus.visibility = View.VISIBLE
-                        iconPlus.visibility =  View.VISIBLE
-                    }else{
-                        iconMinus.visibility = View.GONE
-                        iconPlus.visibility =  View.GONE
+                    if (it > 0) {
+                        iconMinus.visibility = VISIBLE
+                        iconPlus.visibility = VISIBLE
+                        btnContinue.isEnabled = true
+                        btnContinue.backgroundTintList = colorStateListSelected
+                        setSelection("Female", s.toString().toDouble())
+                    } else {
+                        iconMinus.visibility = GONE
+                        iconPlus.visibility = GONE
+                        btnContinue.isEnabled = false
+                        btnContinue.backgroundTintList = colorStateList
+                        adapter.clearSelection()
                     }
                 }
             }
@@ -99,22 +107,46 @@ class BodyFatSelectionFragment : Fragment() {
         recyclerView.setLayoutManager(gridLayoutManager)
 
 
-        val adapter = BodyFatAdapter(requireContext(), getBodyFatList("Female")) { bodyFat ->
+        adapter = BodyFatAdapter(requireContext(), getBodyFatList("Female")) { bodyFat ->
             btnContinue.isEnabled = true
             btnContinue.backgroundTintList = colorStateListSelected
             edtBodyFat.setText(average(bodyFat.bodyFatNumber).toString())
-            iconMinus.visibility = View.VISIBLE
-            iconPlus.visibility =  View.VISIBLE
+            iconMinus.visibility = VISIBLE
+            iconPlus.visibility = VISIBLE
         }
 
         recyclerView.adapter = adapter
 
         btnContinue.setOnClickListener {
-
+            tvSelectedBodyFat.text = "${edtBodyFat.text}%"
+            llSelectedBodyFat.visibility = VISIBLE
+            cardBodyFat.visibility = GONE
         }
 
 
         return view
+    }
+
+    private fun setSelection(gender: String, bodyFat: Double) {
+        if (gender == "Male") {
+            if (bodyFat in 5.0..14.0)
+                adapter.setSelected(0)
+            else if (bodyFat in 14.0..24.0)
+                adapter.setSelected(1)
+            else if (bodyFat in 25.0..33.0)
+                adapter.setSelected(2)
+            else if (bodyFat >= 34)
+                adapter.setSelected(3)
+        } else {
+            if (bodyFat in 10.0..19.0)
+                adapter.setSelected(0)
+            else if (bodyFat in 20.0..29.0)
+                adapter.setSelected(1)
+            else if (bodyFat in 30.0..44.0)
+                adapter.setSelected(2)
+            else if (bodyFat >= 45)
+                adapter.setSelected(3)
+        }
     }
 
     private fun average(input: String): Double {
