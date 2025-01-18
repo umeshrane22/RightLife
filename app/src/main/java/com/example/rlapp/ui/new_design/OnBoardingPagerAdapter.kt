@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class OnBoardingPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int {
-        return 4 // The number of fragments
+        return 5 // The number of fragments
     }
 
     override fun createFragment(position: Int): Fragment {
@@ -16,6 +16,7 @@ class OnBoardingPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(
             1 -> AgeSelectionFragment.newInstance(position)
             2 -> HeightSelectionFragment.newInstance(position)
             3 -> WeightSelectionFragment.newInstance(position)
+            4 -> BodyFatSelectionFragment.newInstance(position)
 
             else -> GenderSelectionFragment.newInstance(0)
         }

@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleTopic
 import com.example.rlapp.ui.new_design.pojo.UnlockPower
 
 class UnlockPowerAdapter(
     private val context: Context,
-    private val unlockPowerList: ArrayList<UnlockPower>
+    private val unlockPowerList: ArrayList<OnboardingModuleTopic>
 ) : RecyclerView.Adapter<UnlockPowerAdapter.UnlockPowerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UnlockPowerViewHolder {
@@ -27,9 +30,15 @@ class UnlockPowerAdapter(
 
     override fun onBindViewHolder(holder: UnlockPowerViewHolder, position: Int) {
         val unlockPower = unlockPowerList[position]
-        holder.imageView.setImageResource(unlockPower.imageResource)
-        holder.tvHeader.text = unlockPower.unlockPowerHeader
-        holder.tvDescription.text = unlockPower.unlockPowerDescription
+        //holder.imageView.setImageResource(unlockPower.imageResource)
+
+        Glide.with(context).load(ApiClient.CDN_URL_QA + unlockPower.onboardingModuleThumbnail)
+            .placeholder(R.drawable.visualise_manifest)
+            .error(R.drawable.visualise_manifest)
+            .into(holder.imageView)
+
+        holder.tvHeader.text = unlockPower.onboardingModuleTopic
+        holder.tvDescription.text = unlockPower.onboardingModuleTopicData
     }
 
     class UnlockPowerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

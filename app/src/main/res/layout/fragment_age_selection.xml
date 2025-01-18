@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/dmsans_bold"
         android:text="What is your age?"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:textColor="@color/txt_color_header"
         android:textSize="26sp" />
 
@@ -19,6 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:fontFamily="@font/dmsans_regular"
         android:text="Your age helps me tailor recommendations that fit your life stage perfectly."
         android:textColor="@color/txt_color_header"

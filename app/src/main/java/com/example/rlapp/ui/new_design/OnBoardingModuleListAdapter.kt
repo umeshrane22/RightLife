@@ -64,18 +64,16 @@ class OnBoardingModuleListAdapter(
 
         holder.itemView.setOnClickListener {
 
-            val previousSelectedPosition = selectedPosition
             selectedPosition = position
 
             onItemClickListener.onItemClick(service = moduleService)
             moduleService.isSelected = !moduleService.isSelected
-            notifyItemChanged(previousSelectedPosition)
-            notifyItemChanged(selectedPosition)
+            notifyDataSetChanged()
         }
 
     }
 
-    public fun interface OnItemClickListener {
+    fun interface OnItemClickListener {
         fun onItemClick(service: ModuleService)
     }
 
