@@ -3,16 +3,25 @@ package com.example.rlapp.ui.new_design
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.rlapp.R
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class ImageSliderActivity : AppCompatActivity() {
+
+    private val RC_SIGN_IN = 9001
+    private val TAG = "Googlelogin"
 
     private lateinit var viewPager: ViewPager2
     private lateinit var tabLayout: TabLayout
@@ -87,10 +96,22 @@ class ImageSliderActivity : AppCompatActivity() {
             }
         })
 
+
+        // Configure Google Sign-In
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestIdToken("376715991698-8lavu418dl8lgr5on0o0dg3au47gg36c.apps.googleusercontent.com")
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(this, gso)
+
+
         val btnGoogle = findViewById<TextView>(R.id.btn_google)
         btnGoogle.setOnClickListener {
             startActivity(Intent(this, CreateUsernameActivity::class.java))
             finish()
+//            val signInIntent = googleSignInClient.signInIntent
+//            startActivityForResult(signInIntent, RC_SIGN_IN)
         }
     }
 
@@ -116,4 +137,41 @@ class ImageSliderActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    // handle googel signin
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            // Signed in successfully, show authenticated UI.
+            updateUI(account)
+        } catch (e: ApiException) {
+            Log.w(TAG, "signInResult:failed code=" + e.statusCode)
+            updateUI(null)
+        }
+    }
+
+    private fun updateUI(account: GoogleSignInAccount?) {
+        if (account != null) {
+            // User is signed in, display user information
+            val displayName = account.displayName
+            val email = account.email
+            val authcode = account.serverAuthCode
+            // Update your UI with user information
+            Log.d(TAG, "User  signed in: $displayName, $email,$authcode")
+        } else {
+            // User is not signed in, show sign-in button
+            Log.d(TAG, "User  not signed in")
+        }
+    }
+
 }

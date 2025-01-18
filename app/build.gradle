@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id 'kotlin-kapt'
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 android {
@@ -126,5 +127,18 @@ dependencies {
     implementation "net.zetetic:android-database-sqlcipher:4.4.2"
     implementation "androidx.security:security-crypto:1.0.0"
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
+
+
+    // google signin
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("com.google.android.gms:play-services-auth:20.4.0") // Or a newer version
+
 
 }
