@@ -2,8 +2,9 @@ package com.example.rlapp.ui.new_design.pojo
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-class ModuleTopic {
+class ModuleTopic : Serializable{
     @SerializedName("moduleTopic")
     @Expose
     var moduleTopic: String? = null

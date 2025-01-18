@@ -72,8 +72,8 @@ class WellnessFocusListActivity : AppCompatActivity() {
         btnContinue.setOnClickListener {
             val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
             intent.putExtra("WellnessFocus", header)
+            intent.putExtra("SelectedTopic", selectedWellnessFocus)
             startActivity(intent)
-            finish()
         }
     }
 

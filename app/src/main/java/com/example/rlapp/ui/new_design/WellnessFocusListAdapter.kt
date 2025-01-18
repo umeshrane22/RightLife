@@ -39,7 +39,7 @@ class WellnessFocusListAdapter(
 
         Glide.with(context).load(ApiClient.CDN_URL_QA + wellnessFocus.moduleThumbnail)
             .placeholder(R.drawable.think_right)
-            /*.error(R.drawable.avatar)*/
+            .error(R.drawable.think_right)
             .into(holder.imageView)
 
         holder.tvHeader.text = wellnessFocus.moduleTopic

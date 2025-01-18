@@ -15,4 +15,6 @@ class InterestTopic {
     @SerializedName("_id")
     @Expose
     var id: String? = null
+
+    var isSelected: Boolean = false
 }

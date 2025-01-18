@@ -22,8 +22,13 @@ import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
+import com.example.rlapp.ui.new_design.pojo.GetInterestResponse;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingModuleResponse;
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultRequest;
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultResponse;
+import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest;
+import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
@@ -644,6 +649,27 @@ public interface ApiService {
     Call<OnBoardingDataModuleResponse> getOnboardingDataModule(
             @Header("Authorization") String authToken,
             @Query("moduleName") String moduleName
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("userIntrest")
+    Call<GetInterestResponse> getUserInterest(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("onboardingModuleResult")
+    Call<OnboardingModuleResultResponse> getOnboardingModuleResult(
+            @Header("Authorization") String authToken,
+            @Query("moduleName") String moduleName,
+            @Body OnboardingModuleResultRequest onboardingModuleResultRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("userIntrestDetailSave")
+    Call<SaveUserInterestResponse> saveUserInterest(
+            @Header("Authorization") String authToken,
+            @Body SaveUserInterestRequest saveUserInterestRequest
     );
 }
 

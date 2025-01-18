@@ -94,7 +94,7 @@ class GenderSelectionFragment : Fragment() {
                     OnboardingQuestionnaireActivity.navigateToNextPage()
                 }, 1000)
 
-            }, 2000)
+            }, 1000)
         }
 
         llFemale.setOnClickListener {
@@ -130,7 +130,7 @@ class GenderSelectionFragment : Fragment() {
                 }, 1000)
 
                 tvDescription?.visibility = GONE
-            }, 2000)
+            }, 1000)
         }
 
         return view
