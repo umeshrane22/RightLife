@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleTopic
-import com.example.rlapp.ui.new_design.pojo.UnlockPower
 
 class UnlockPowerAdapter(
     private val context: Context,

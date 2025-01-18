@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="What is your experience with mindfulness or stress management?"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/txt_color_header"
+        android:textSize="26sp" />
+
+    <RelativeLayout
+        android:id="@+id/rl_stress_management"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_stress_management"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_above="@id/btn_continue"/>
+
+        <Button
+            android:id="@+id/btn_continue"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="36dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginBottom="36dp"
+            android:backgroundTint="@color/rightlife"
+            android:enabled="false"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="@string/str_continue"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_large"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_selected_stress_management"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_selected_stress_management_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/color_green"
+            android:text="5ft 4in"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/tv_selected_stress_management_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/color_green"
+            android:layout_marginTop="4dp"
+            android:text="5ft 4in"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

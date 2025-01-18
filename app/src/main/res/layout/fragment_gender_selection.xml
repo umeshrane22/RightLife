@@ -34,7 +34,7 @@
         android:layout_marginTop="40dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/bg_gray_border"
+        android:background="@drawable/bg_gray_border_transperent"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -65,7 +65,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/bg_gray_border"
+        android:background="@drawable/bg_gray_border_transperent"
         android:gravity="center"
         android:orientation="horizontal">
 
