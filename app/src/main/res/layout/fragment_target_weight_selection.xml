@@ -12,7 +12,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
         android:fontFamily="@font/dmsans_bold"
-        android:text="What’s your current weight?"
+        android:text="What’s your target weight?"
         android:textColor="@color/txt_color_header"
         android:textSize="26sp" />
 
@@ -24,8 +24,20 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
         android:fontFamily="@font/dmsans_regular"
-        android:text="Your weight is just a number—it helps me guide you toward your health goals."
+        android:text="Setting a target helps us craft a personalised roadmap to get you there."
         android:textColor="@color/txt_color_header"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_description_who"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="32dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:text="As per WHO’s recommendation your target weight should be between 50-70 kg."
+        android:textColor="#005C83"
         android:textSize="16sp" />
 
 
@@ -33,7 +45,7 @@
         android:id="@+id/card_view_age_selector"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="30dp"
         android:layout_marginBottom="-12dp"
         android:elevation="8dp"
         app:cardCornerRadius="25dp">
