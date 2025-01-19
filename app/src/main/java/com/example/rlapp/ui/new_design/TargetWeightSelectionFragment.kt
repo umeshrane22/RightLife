@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.rlapp.R
 
-class WeightSelectionFragment : Fragment() {
+class TargetWeightSelectionFragment : Fragment() {
 
     private var llSelectedWeight: LinearLayout? = null
     private var tvSelectedWeight: TextView? = null
@@ -24,8 +24,8 @@ class WeightSelectionFragment : Fragment() {
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView?=null
     companion object {
-        fun newInstance(pageIndex: Int): WeightSelectionFragment {
-            val fragment = WeightSelectionFragment()
+        fun newInstance(pageIndex: Int): TargetWeightSelectionFragment {
+            val fragment = TargetWeightSelectionFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
@@ -37,7 +37,7 @@ class WeightSelectionFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view: View = inflater.inflate(R.layout.fragment_weight_selection, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_target_weight_selection, container, false)
 
         llSelectedWeight = view.findViewById(R.id.ll_selected_weight)
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)

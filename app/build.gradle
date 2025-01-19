@@ -140,5 +140,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-auth:20.4.0") // Or a newer version
 
+    //onboarding libs
+    implementation 'io.github.ShawnLin013:number-picker:2.4.13'
 
 }

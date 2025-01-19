@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <TextView
@@ -26,6 +27,141 @@
         android:text="Knowing your height helps calculate key health metrics for a personalised journey."
         android:textColor="@color/txt_color_header"
         android:textSize="16sp" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_age_selector"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        android:elevation="8dp"
+        app:cardCornerRadius="25dp"
+        android:layout_marginBottom="-12dp">
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Feet"
+                    android:paddingRight="20dp"
+                    android:layout_toLeftOf="@+id/switch_height_metric"
+                    android:textSize="@dimen/textsize_large" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Cms"
+                    android:paddingLeft="20dp"
+                    android:layout_toRightOf="@+id/switch_height_metric"
+                    android:textSize="@dimen/textsize_large" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_height_metric"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    app:track="@drawable/custom_track"
+                    android:thumb="@drawable/custom_thumb"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:id="@+id/ll_main_ruler"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="200dp"
+                android:padding="16dp">
+
+
+                <TextView
+                    android:id="@+id/selected_number_text"
+                    android:layout_width="0dp"
+                    android:text="170 Cms"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:textSize="@dimen/textsize_large24sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:layout_height="wrap_content"/>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:background="#F2F2F2"
+                    android:layout_weight="1"
+                    android:id="@+id/rl_ruler_container"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="match_parent">
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rulerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:clipToPadding="false" />
+
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_weight="1"
+                        android:id="@+id/ll_marker_view"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+                        <!-- Line that will be drawn at different sizes based on the number -->
+                        <View
+                            android:id="@+id/markerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="5dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginEnd="40dp"
+                            android:background="@android:color/holo_red_light"/>
+
+                        <View
+                            android:id="@+id/markerViewdummy"
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:background="@android:color/transparent"
+                            android:layout_marginEnd="80dp"
+                            />
+                    </LinearLayout>
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_continue"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="36dp"
+                android:layout_marginBottom="36dp"
+                android:backgroundTint="@color/rightlife"
+                android:enabled="false"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="@string/str_continue"
+                android:textColor="@color/white"
+                android:textSize="@dimen/textsize_large"
+                android:layout_alignParentBottom="true"/>
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
 
     <LinearLayout
         android:id="@+id/ll_selected_height"
