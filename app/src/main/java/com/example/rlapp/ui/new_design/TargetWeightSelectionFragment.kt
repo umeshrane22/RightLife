@@ -1,28 +1,37 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class TargetWeightSelectionFragment : Fragment() {
 
-    private var llSelectedWeight: LinearLayout? = null
-    private var tvSelectedWeight: TextView? = null
+    private lateinit var llSelectedWeight: LinearLayout
+    private lateinit var tvSelectedWeight: TextView
     private var selectedHeight = ""
     private var tvDescription: TextView? = null
-    private var selected_number_text: TextView?=null
+    private var selected_number_text: TextView? = null
+    private lateinit var cardViewSelection: CardView
+
     companion object {
         fun newInstance(pageIndex: Int): TargetWeightSelectionFragment {
             val fragment = TargetWeightSelectionFragment()
@@ -37,28 +46,44 @@ class TargetWeightSelectionFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val view: View = inflater.inflate(R.layout.fragment_target_weight_selection, container, false)
+        val view: View =
+            inflater.inflate(R.layout.fragment_target_weight_selection, container, false)
 
         llSelectedWeight = view.findViewById(R.id.ll_selected_weight)
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)
         tvDescription = view.findViewById(R.id.tv_description)
+        cardViewSelection = view.findViewById(R.id.card_view_age_selector)
 
 
         //---------
-        val recyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
         selected_number_text = view.findViewById<TextView>(R.id.selected_number_text)
-        //val llMainRuler: LinearLayout = view.findViewById<LinearLayout>(R.id.ll_main_ruler)
-        val rulerView: RecyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
+
+        val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
-            Toast.makeText(requireContext(), "Continue button clicked", Toast.LENGTH_SHORT).show()
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.targetWeight = selectedHeight
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+            cardViewSelection.visibility = GONE
+            llSelectedWeight.visibility = VISIBLE
+            tvSelectedWeight.text = selectedHeight
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                OnboardingQuestionnaireActivity.navigateToNextPage()
+            },1000)
         }
 
 
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
 
         // Generate numbers with increments of 0.1
@@ -66,7 +91,6 @@ class TargetWeightSelectionFragment : Fragment() {
         for (i in 0..1000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
-
 
 
         val adapter = RulerAdapter(numbers) { number ->
@@ -98,7 +122,9 @@ class TargetWeightSelectionFragment : Fragment() {
                         //selected_number_text.setText("$snappedNumber Kg")
                         if (selected_number_text != null) {
                             selected_number_text!!.text = "$snappedNumber Kg"
+                            selectedHeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
+                            btnContinue.backgroundTintList = colorStateList
                         }
                     }
                 }

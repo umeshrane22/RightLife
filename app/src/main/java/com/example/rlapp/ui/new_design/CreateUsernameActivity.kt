@@ -77,14 +77,13 @@ class CreateUsernameActivity : AppCompatActivity() {
         }
 
         Handler().postDelayed({
-            dialog.dismiss()
             val intent = Intent(this, WellnessFocusActivity::class.java)
             startActivity(intent)
+            dialog.dismiss()
         }, 2000)
 
         val tvUsername = dialog.findViewById<TextView>(R.id.tv_username)
         tvUsername.text = username
-
         dialog.show()
     }
 }
