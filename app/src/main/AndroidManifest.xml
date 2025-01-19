@@ -64,7 +64,9 @@
         <activity android:name=".ui.new_design.YourInterestActivity"/>
         <activity android:name=".ui.new_design.PersonalisationActivity" />
         <activity android:name=".ui.new_design.SyncNowActivity" />
-        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity" />
+        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity"/>
+        <activity android:name=".ui.new_design.AwesomeScreenActivity" />
+        <activity android:name=".ui.new_design.EnableNotificationActivity" />
 
         <activity android:name=".ui.voicescan.VoiceScanActivity" />
         <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />

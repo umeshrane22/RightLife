@@ -8,11 +8,13 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ui.new_design.pojo.StressManagement
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class StressManagementSelectionFragment : Fragment() {
     private lateinit var llSelectedStressManagement: LinearLayout
@@ -90,6 +92,8 @@ class StressManagementSelectionFragment : Fragment() {
             StressManagementAdapter(requireContext(), stressManagementList) { stressManagement ->
                 selectedStressManagement = stressManagement
                 btnContinue.isEnabled = true
+                val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
+                btnContinue.backgroundTintList = colorStateList
             }
 
         recyclerView.adapter = adapter
@@ -100,6 +104,13 @@ class StressManagementSelectionFragment : Fragment() {
             rlStressManagement.visibility = View.GONE
             tvSelectedStressManagementHeader.text = selectedStressManagement.header
             tvSelectedStressManagementDesc.text = selectedStressManagement.description
+
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.experienceStressMindfulManagement =
+                selectedStressManagement.header
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
         }
 
         return view

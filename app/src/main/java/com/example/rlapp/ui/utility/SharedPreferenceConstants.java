@@ -9,6 +9,7 @@ public class SharedPreferenceConstants {
     public static final String USER_ID = "user_id";
     public static final String USER_PROFILE = "user_profile";
     public static final String VOICE_SCAN_ANSWER_ID = "VOICE_SCAN_ANSWER_ID";
+    public static final String ON_BOARDING_QUESTIONS = "ON_BOARDING_QUESTIONS";
 }
 
 

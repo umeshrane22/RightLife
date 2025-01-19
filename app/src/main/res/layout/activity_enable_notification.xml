@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view_consistency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:elevation="16dp"
+        app:cardCornerRadius="25dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp">
+
+        <RelativeLayout
+            android:id="@+id/rl_consistency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/subtraction_2"/>
+
+            <LinearLayout
+                android:id="@+id/ll_consistency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_gray_border"
+                android:layout_marginTop="50dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/logo_rightlife"
+                    android:layout_margin="24dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:layout_marginEnd="24dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textSize="14sp"
+                    android:text="We’ll only send what truly matters to your health and happiness."/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll_consistency"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center"
+                android:text="Consistency Is The Key To Health"
+                android:textColor="@color/txt_color_header"
+                android:textSize="26sp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_below="@id/rl_consistency"
+            android:layout_margin="16dp"
+            android:background="@drawable/roundedcornerbutton"
+            android:backgroundTint="#E6F0FE"
+            android:padding="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Turn On Notifications For"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="18sp"
+                android:padding="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/image_correct1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/correct_green"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tv_personalise_insights"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image_correct1"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Daily Reminders"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_personalise_insights_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image_correct1"
+                    android:layout_below="@+id/tv_personalise_insights"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Stay on track with affirmations, workouts, and more."
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/image_correct2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/correct_green"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tv_better_results"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image_correct2"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Personalised"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_better_results_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image_correct2"
+                    android:layout_below="@+id/tv_better_results"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Tips Get curated content tailored to your goals."
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp">
+
+                <ImageView
+                    android:id="@+id/image_correct3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/correct_green"
+                    android:layout_marginTop="4dp"/>
+
+                <TextView
+                    android:id="@+id/tv_end_to_end"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image_correct3"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:text="Exclusive Updates"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_end_to_end_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image_correct3"
+                    android:layout_below="@+id/tv_end_to_end"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Be the first to know about new features and programs."
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_list"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/roundedcornerbutton"
+            android:backgroundTint="@color/medium_yellow"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:src="@drawable/icon_awesome_lightbulb" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="You Are 2.4X More Likely To Achieve Your Goals."
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_enable_notification"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_below="@id/ll_info"
+            android:layout_margin="36dp"
+            android:backgroundTint="@color/menuselected"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Enable Notifications"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_large" />
+
+    </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</ScrollView>

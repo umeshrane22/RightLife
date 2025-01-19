@@ -27,6 +27,7 @@ import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingModuleResponse;
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultRequest;
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultResponse;
+import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
@@ -670,6 +671,13 @@ public interface ApiService {
     Call<SaveUserInterestResponse> saveUserInterest(
             @Header("Authorization") String authToken,
             @Body SaveUserInterestRequest saveUserInterestRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("questionable")
+    Call<SaveUserInterestResponse> saveUserInterest(
+            @Header("Authorization") String authToken,
+            @Body OnboardingQuestionRequest onboardingQuestionRequest
     );
 }
 

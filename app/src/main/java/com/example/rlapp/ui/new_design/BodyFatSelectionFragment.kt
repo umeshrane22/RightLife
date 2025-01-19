@@ -1,6 +1,8 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -20,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ui.new_design.pojo.BodyFat
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class BodyFatSelectionFragment : Fragment() {
 
@@ -30,6 +33,7 @@ class BodyFatSelectionFragment : Fragment() {
     private lateinit var edtBodyFat: EditText
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: BodyFatAdapter
+    private lateinit var gendar: String
 
 
     companion object {
@@ -52,6 +56,9 @@ class BodyFatSelectionFragment : Fragment() {
         val colorStateListSelected =
             ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.rightlife)
+
+        gendar =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender.toString()
 
         llSelectedBodyFat = view.findViewById(R.id.ll_selected_body_fat)
         tvSelectedBodyFat = view.findViewById(R.id.tv_selected_body_fat)
@@ -91,7 +98,7 @@ class BodyFatSelectionFragment : Fragment() {
                         iconPlus.visibility = VISIBLE
                         btnContinue.isEnabled = true
                         btnContinue.backgroundTintList = colorStateListSelected
-                        setSelection("Female", s.toString().toDouble())
+                        setSelection(gendar, s.toString().toDouble())
                     } else {
                         iconMinus.visibility = GONE
                         iconPlus.visibility = GONE
@@ -107,7 +114,7 @@ class BodyFatSelectionFragment : Fragment() {
         recyclerView.setLayoutManager(gridLayoutManager)
 
 
-        adapter = BodyFatAdapter(requireContext(), getBodyFatList("Female")) { bodyFat ->
+        adapter = BodyFatAdapter(requireContext(), getBodyFatList(gendar)) { bodyFat ->
             btnContinue.isEnabled = true
             btnContinue.backgroundTintList = colorStateListSelected
             edtBodyFat.setText(average(bodyFat.bodyFatNumber).toString())
@@ -121,6 +128,16 @@ class BodyFatSelectionFragment : Fragment() {
             tvSelectedBodyFat.text = "${edtBodyFat.text}%"
             llSelectedBodyFat.visibility = VISIBLE
             cardBodyFat.visibility = GONE
+
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.bodyFat = edtBodyFat.text.toString()
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                OnboardingQuestionnaireActivity.navigateToNextPage()
+            },1000)
         }
 
 

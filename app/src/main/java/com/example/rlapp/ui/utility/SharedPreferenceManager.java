@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
+import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.google.gson.Gson;
 
 public class SharedPreferenceManager {
@@ -79,6 +80,28 @@ public class SharedPreferenceManager {
 
     public String getVoiceScanAnswerId() {
         return sharedPreferences.getString(SharedPreferenceConstants.VOICE_SCAN_ANSWER_ID, "");
+    }
+
+    public void saveOnboardingQuestionAnswer(OnboardingQuestionRequest onboardingQuestionRequest) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(onboardingQuestionRequest);
+        prefsEditor.putString(SharedPreferenceConstants.ON_BOARDING_QUESTIONS, json);
+        prefsEditor.apply();
+    }
+
+    public OnboardingQuestionRequest getOnboardingQuestionRequest() {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(SharedPreferenceConstants.ON_BOARDING_QUESTIONS, "");
+        OnboardingQuestionRequest obj = gson.fromJson(json, OnboardingQuestionRequest.class);
+        if (obj == null){
+            obj = new OnboardingQuestionRequest();
+        }
+        return obj;
+    }
+
+    public void clearOnboardingQuestionRequest(){
+        sharedPreferences.edit().remove(SharedPreferenceConstants.ON_BOARDING_QUESTIONS).apply();
     }
 }
 
