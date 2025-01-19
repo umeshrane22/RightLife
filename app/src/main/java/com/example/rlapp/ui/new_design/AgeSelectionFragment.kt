@@ -2,6 +2,8 @@ package com.example.rlapp.ui.new_design
 
 import android.content.ContentValues
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +13,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.shawnlin.numberpicker.NumberPicker
 import java.util.Locale
 
@@ -37,10 +41,11 @@ class AgeSelectionFragment : Fragment() {
         "99 years", "100 years"
     )
 
-    private var llSelectedAge: LinearLayout? = null
-    private var tvSelectedAge: TextView? = null
+    private lateinit var llSelectedAge: LinearLayout
+    private lateinit var tvSelectedAge: TextView
     private var selectedAge = ""
     private var tvDescription: TextView? = null
+    private lateinit var cardViewSelection: CardView
 
 
     companion object {
@@ -62,10 +67,24 @@ class AgeSelectionFragment : Fragment() {
         llSelectedAge = view.findViewById(R.id.ll_selected_age)
         tvSelectedAge = view.findViewById(R.id.tv_selected_age)
         tvDescription = view.findViewById(R.id.tv_description)
+        cardViewSelection = view.findViewById(R.id.card_view_age_selector)
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
-            Toast.makeText(requireContext(), "Continue button clicked", Toast.LENGTH_SHORT).show()
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            val age = selectedAge.split(" ")
+            onboardingQuestionRequest.age = age[0].toInt()
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+            cardViewSelection.visibility = GONE
+            llSelectedAge.visibility = VISIBLE
+            tvSelectedAge.text = selectedAge
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                OnboardingQuestionnaireActivity.navigateToNextPage()
+            },1000)
         }
 
         // new number picker
@@ -76,6 +95,8 @@ class AgeSelectionFragment : Fragment() {
         numberPicker.value = 13
         numberPicker.wheelItemCount = 7
 
+        selectedAge = years[13]
+
         // OnScrollListener
         numberPicker.setOnScrollListener { view, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
@@ -83,9 +104,8 @@ class AgeSelectionFragment : Fragment() {
                     ContentValues.TAG,
                     String.format(Locale.US, "newVal: %d", view.value)
                 )
-                // Log.d(TAG, String.format(Locale.US, "Selected age : %d", years[view.getValue()]));
                 Log.d("Selected age : ", years[view.value - 1] + "")
-                btnContinue.isEnabled = true
+                selectedAge = years[view.value - 1]
             }
         }
 

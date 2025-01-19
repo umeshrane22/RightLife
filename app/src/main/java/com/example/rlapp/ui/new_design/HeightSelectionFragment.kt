@@ -1,27 +1,35 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class HeightSelectionFragment : Fragment() {
 
-    private var llSelectedHeight: LinearLayout? = null
-    private var tvSelectedHeight: TextView? = null
+    private lateinit var llSelectedHeight: LinearLayout
+    private lateinit var tvSelectedHeight: TextView
     private var selectedHeight = ""
     private var tvDescription: TextView? = null
-    private var selected_number_text: TextView?=null
+    private var selected_number_text: TextView? = null
+    private lateinit var cardViewSelection: CardView
 
     companion object {
         fun newInstance(pageIndex: Int): HeightSelectionFragment {
@@ -43,15 +51,14 @@ class HeightSelectionFragment : Fragment() {
         tvSelectedHeight = view.findViewById(R.id.tv_selected_height)
         tvDescription = view.findViewById(R.id.tv_description)
         selected_number_text = view.findViewById(R.id.selected_number_text)
+        cardViewSelection = view.findViewById(R.id.card_view_age_selector)
 
 
-        val rulerView: RecyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
+        val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
-        // new number picker
-        val recyclerView: RecyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
-        // Initialize RecyclerView with a vertical LinearLayoutManager
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
         rulerView.layoutManager = layoutManager
 
@@ -63,7 +70,19 @@ class HeightSelectionFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
-            Toast.makeText(requireContext(), "Continue button clicked", Toast.LENGTH_SHORT).show()
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.height = selectedHeight
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+            cardViewSelection.visibility = GONE
+            llSelectedHeight.visibility = VISIBLE
+            tvSelectedHeight.text = selectedHeight
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                OnboardingQuestionnaireActivity.navigateToNextPage()
+            },1000)
         }
 
         val adapter = RulerAdapterVertical(numbers) { number ->
@@ -84,12 +103,16 @@ class HeightSelectionFragment : Fragment() {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
                     if (snappedView != null) {
-                        val position = recyclerView.layoutManager?.getPosition(snappedView) ?: return
+                        val position =
+                            recyclerView.layoutManager?.getPosition(snappedView) ?: return
                         val snappedNumber = numbers[position]
-                        Toast.makeText(activity, "Snapped to: $snappedNumber", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "Snapped to: $snappedNumber", Toast.LENGTH_SHORT)
+                            .show()
                         if (selected_number_text != null) {
                             selected_number_text!!.text = "$snappedNumber Cms"
+                            selectedHeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
+                            btnContinue.backgroundTintList = colorStateList
                         }
 
                     }
@@ -101,7 +124,12 @@ class HeightSelectionFragment : Fragment() {
         rlRulerContainer.post {
             val parentHeight = rlRulerContainer.height
             val paddingVertical = parentHeight / 2
-            markerView.setPadding(markerView.paddingLeft, paddingVertical, markerView.paddingRight, paddingVertical)
+            markerView.setPadding(
+                markerView.paddingLeft,
+                paddingVertical,
+                markerView.paddingRight,
+                paddingVertical
+            )
         }
 
         // Scroll to the center position after layout is measured
@@ -110,10 +138,6 @@ class HeightSelectionFragment : Fragment() {
             val centerPosition = itemCount / 2
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
-
-
-
-
 
         return view
     }

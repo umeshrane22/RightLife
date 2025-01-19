@@ -11,13 +11,21 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.HealthGoal
+import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest
+import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HealthGoalFragment : Fragment() {
 
@@ -78,25 +86,67 @@ class HealthGoalFragment : Fragment() {
             rlHealthGoal.visibility = View.GONE
             tvSelectedHealthGoal.text = selectedHealthGoal
             tvDescription.visibility = View.GONE
-            Handler(Looper.getMainLooper()).postDelayed({
-                val onboardingQuestionRequest =
-                    SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-                onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
-                SharedPreferenceManager.getInstance(requireContext())
-                    .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
-                // Submit Questions answer here
-                requireContext().startActivity(
-                    Intent(
-                        requireContext(),
-                        AwesomeScreenActivity::class.java
-                    )
-                )
-
-            }, 1000)
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            submitAnswer(onboardingQuestionRequest)
         }
 
 
         return view
+    }
+
+    private fun submitAnswer(onboardingQuestionRequest: OnboardingQuestionRequest) {
+        val authToken = SharedPreferenceManager.getInstance(requireContext()).accessToken
+        val apiService = ApiClient.getDevClient().create(ApiService::class.java)
+
+        val call = apiService.submitOnBoardingAnswers(authToken, onboardingQuestionRequest)
+
+        call.enqueue(object : Callback<SaveUserInterestResponse>{
+            override fun onResponse(
+                call: Call<SaveUserInterestResponse>,
+                response: Response<SaveUserInterestResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()
+
+                    Toast.makeText(
+                        requireContext(),
+                        apiResponse?.successMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        // Submit Questions answer here
+                        requireContext().startActivity(
+                            Intent(
+                                requireContext(),
+                                AwesomeScreenActivity::class.java
+                            )
+                        )
+
+                    }, 1000)
+
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
+                Toast.makeText(
+                    requireContext(),
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        })
     }
 }

@@ -675,7 +675,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json")
     @POST("questionable")
-    Call<SaveUserInterestResponse> saveUserInterest(
+    Call<SaveUserInterestResponse> submitOnBoardingAnswers(
             @Header("Authorization") String authToken,
             @Body OnboardingQuestionRequest onboardingQuestionRequest
     );

@@ -1,6 +1,8 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,6 +113,9 @@ class StressManagementSelectionFragment : Fragment() {
                 selectedStressManagement.header
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            Handler(Looper.getMainLooper()).postDelayed({
+                OnboardingQuestionnaireActivity.navigateToNextPage()
+            },1000)
         }
 
         return view

@@ -35,6 +35,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progress_bar_onboarding)
         viewPager = findViewById(R.id.viewPagerOnboarding)
+        //viewPager.isUserInputEnabled = false
 
 
         adapter = OnBoardingPagerAdapter(this)
