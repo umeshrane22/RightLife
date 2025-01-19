@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rlapp.R
@@ -19,16 +20,16 @@ class SplashScreenActivity : AppCompatActivity() {
 
         // Set the video URI from the raw folder
         val videoUri = Uri.parse("android.resource://${packageName}/${R.raw.rewards_screen}")
-        videoView.setVideoURI(videoUri)
+        //videoView.setVideoURI(videoUri)
 
         // Set a listener for video completion
         //videoView.setOnCompletionListener {
         // Delay the transition to the next activity to allow the video to end properly
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, DataControlActivity::class.java)
             startActivity(intent)
             finish()  // Close the SplashActivity
-        }, 500)
+        }, 1000)
         //}
 
         // Start the video

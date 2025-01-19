@@ -1,5 +1,6 @@
 package com.example.rlapp.ui.new_design
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ui.new_design.pojo.HealthGoal
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class HealthGoalFragment : Fragment() {
 
@@ -77,7 +79,20 @@ class HealthGoalFragment : Fragment() {
             tvSelectedHealthGoal.text = selectedHealthGoal
             tvDescription.visibility = View.GONE
             Handler(Looper.getMainLooper()).postDelayed({
-                // code here for submit or next fragment
+                val onboardingQuestionRequest =
+                    SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+                onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
+                SharedPreferenceManager.getInstance(requireContext())
+                    .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+                // Submit Questions answer here
+                requireContext().startActivity(
+                    Intent(
+                        requireContext(),
+                        AwesomeScreenActivity::class.java
+                    )
+                )
+
             }, 1000)
         }
 

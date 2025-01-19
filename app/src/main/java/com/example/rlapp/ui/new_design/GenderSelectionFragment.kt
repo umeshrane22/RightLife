@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class GenderSelectionFragment : Fragment() {
 
@@ -92,6 +93,7 @@ class GenderSelectionFragment : Fragment() {
 
                 Handler(Looper.getMainLooper()).postDelayed({
                     OnboardingQuestionnaireActivity.navigateToNextPage()
+                    saveGender()
                 }, 1000)
 
             }, 1000)
@@ -126,6 +128,7 @@ class GenderSelectionFragment : Fragment() {
                 )
 
                 Handler(Looper.getMainLooper()).postDelayed({
+                    saveGender()
                     OnboardingQuestionnaireActivity.navigateToNextPage()
                 }, 1000)
 
@@ -134,5 +137,13 @@ class GenderSelectionFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun saveGender() {
+        val onboardingQuestionRequest =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        onboardingQuestionRequest.gender = selectedGender
+        SharedPreferenceManager.getInstance(requireContext())
+            .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
     }
 }
