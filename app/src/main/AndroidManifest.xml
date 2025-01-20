@@ -64,16 +64,11 @@
         <activity android:name=".ui.new_design.YourInterestActivity"/>
         <activity android:name=".ui.new_design.PersonalisationActivity" />
         <activity android:name=".ui.new_design.SyncNowActivity" />
-        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity"
-            android:exported="true">
-          <!--  <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
+        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity"/>
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
+        <activity android:name=".ui.new_design.OnboardingFinalActivity"/>
+        <activity android:name=".ui.new_design.WelcomeActivity" />
 
         <activity android:name=".ui.voicescan.VoiceScanActivity" />
         <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />

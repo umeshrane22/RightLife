@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -53,6 +54,8 @@ class StressManagementSelectionFragment : Fragment() {
         tvSelectedStressManagementDesc = view.findViewById(R.id.tv_selected_stress_management_desc)
 
         recyclerView = view.findViewById(R.id.rv_stress_management)
+
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 

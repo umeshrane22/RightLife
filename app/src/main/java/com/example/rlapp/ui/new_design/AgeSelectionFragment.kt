@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
@@ -69,6 +70,8 @@ class AgeSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
 
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
             val onboardingQuestionRequest =
@@ -95,7 +98,7 @@ class AgeSelectionFragment : Fragment() {
         numberPicker.value = 13
         numberPicker.wheelItemCount = 7
 
-        selectedAge = years[13]
+        selectedAge = years[12]
 
         // OnScrollListener
         numberPicker.setOnScrollListener { view, scrollState ->

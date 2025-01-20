@@ -12,11 +12,16 @@ import com.example.rlapp.R
 class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
     private lateinit var progressBar: ProgressBar
+    lateinit var tvSkip: TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding_questionnaire)
+
+        progressBar = findViewById(R.id.progress_bar_onboarding)
+        viewPager = findViewById(R.id.viewPagerOnboarding)
+        viewPager.isUserInputEnabled = false
 
         val ivBack = findViewById<ImageView>(R.id.icon_back)
         ivBack.setOnClickListener {
@@ -24,19 +29,14 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             if (currentItem == 0) {
                 finish()
             } else {
-                viewPager.currentItem = currentItem - 1
+                navigateToPreviousPage()
             }
         }
 
-        val tvSkip = findViewById<TextView>(R.id.tv_skip)
+        tvSkip = findViewById(R.id.tv_skip)
         tvSkip.setOnClickListener {
-
+            navigateToNextPage()
         }
-
-        progressBar = findViewById(R.id.progress_bar_onboarding)
-        viewPager = findViewById(R.id.viewPagerOnboarding)
-        viewPager.isUserInputEnabled = false
-
 
         adapter = OnBoardingPagerAdapter(this)
         viewPager.adapter = adapter

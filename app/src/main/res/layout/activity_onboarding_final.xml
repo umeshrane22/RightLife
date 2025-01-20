@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/img_final_onboarding"
+        android:layout_width="350dp"
+        android:layout_height="210dp"
+        android:layout_marginTop="80dp"
+        android:src="@drawable/final_onboarding1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginStart="70dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/textview1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="Crafting Your Personalised Experience!"
+            android:textSize="18sp"
+            android:textColor="@color/txt_color_header"/>
+
+        <ImageView
+            android:id="@+id/img_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_refresh20"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/tv_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="20 %"
+            android:textColor="@color/menuselected"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:id="@+id/textview2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="Analysing Your Answers…"
+            android:textSize="16sp"
+            android:textColor="@color/txt_color_header"
+            android:layout_marginTop="24dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_final_onboarding1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/correct_green"
+                android:layout_margin="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Primary Goal &amp; Interests"
+                android:textSize="16sp"
+                android:layout_margin="4dp"
+                android:textColor="@color/color_green"
+                android:layout_marginTop="24dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_final_onboarding2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/correct_green"
+                android:layout_margin="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Other Interests"
+                android:textSize="16sp"
+                android:layout_margin="4dp"
+                android:textColor="@color/color_green"
+                android:layout_marginTop="24dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_final_onboarding3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/correct_green"
+                android:layout_margin="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Demographics"
+                android:textSize="16sp"
+                android:layout_margin="4dp"
+                android:textColor="@color/color_green"
+                android:layout_marginTop="24dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_final_onboarding4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/correct_green"
+                android:layout_margin="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Experience &amp; Commitment"
+                android:textSize="16sp"
+                android:layout_margin="4dp"
+                android:textColor="@color/color_green"
+                android:layout_marginTop="24dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

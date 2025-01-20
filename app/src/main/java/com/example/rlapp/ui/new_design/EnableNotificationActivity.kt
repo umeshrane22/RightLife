@@ -1,5 +1,6 @@
 package com.example.rlapp.ui.new_design
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +15,7 @@ class EnableNotificationActivity : AppCompatActivity() {
         val btnEnableNotification = findViewById<Button>(R.id.btn_enable_notification)
 
         btnEnableNotification.setOnClickListener {
-
+            startActivity(Intent(this, OnboardingFinalActivity::class.java))
         }
     }
 }
