@@ -5,6 +5,15 @@
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
+
+
+    <include layout="@layout/dialog_welcome"
+        android:id="@+id/dialog_welcome"
+        android:visibility="gone"/>
+
+
+
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

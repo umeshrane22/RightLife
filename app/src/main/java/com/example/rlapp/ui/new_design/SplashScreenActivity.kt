@@ -7,12 +7,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.rlapp.MainActivity
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class SplashScreenActivity : AppCompatActivity() {
 
@@ -29,6 +32,8 @@ class SplashScreenActivity : AppCompatActivity() {
         imgview2 = findViewById(R.id.imgview2)
 
 
+        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        Log.d("SplashActivity Auth Token = ", authToken)
         // Set the video URI from the raw folder
         val videoUri = Uri.parse("android.resource://${packageName}/${R.raw.rewards_screen}")
         //videoView.setVideoURI(videoUri)
@@ -37,10 +42,15 @@ class SplashScreenActivity : AppCompatActivity() {
         //videoView.setOnCompletionListener {
         // Delay the transition to the next activity to allow the video to end properly
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, DataControlActivity::class.java)
-            startActivity(intent)
+            //if (authToken.isEmpty()) {
+                val intent = Intent(this, DataControlActivity::class.java)
+                startActivity(intent)
+            /*} else {
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+            }*/
             finish()  // Close the SplashActivity
-        }, 3000)
+        }, SPLASH_DELAY)
         //}
 
         // Start the video
@@ -49,30 +59,31 @@ class SplashScreenActivity : AppCompatActivity() {
 
         val view1: View = findViewById(R.id.rlview1)
         val view2: View = findViewById(R.id.imgview2)
-        animateViews();
-       /* val toggleButton: View = findViewById(R.id.btn_toggle)
+        animateViews()
+        /* val toggleButton: View = findViewById(R.id.btn_toggle)
 
-        toggleButton.setOnClickListener {
-            // Fade out view1 and fade in view2
-            view1.animate()
-                .alpha(0f) // Fade out
-                .setDuration(700) // Animation duration in ms
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        view1.visibility = View.GONE // Hide view1 after animation
-                        view2.visibility = View.VISIBLE // Show view2 before animation
-                        view2.alpha = 0f // Set initial alpha for fade in
+         toggleButton.setOnClickListener {
+             // Fade out view1 and fade in view2
+             view1.animate()
+                 .alpha(0f) // Fade out
+                 .setDuration(700) // Animation duration in ms
+                 .setListener(object : AnimatorListenerAdapter() {
+                     override fun onAnimationEnd(animation: Animator) {
+                         view1.visibility = View.GONE // Hide view1 after animation
+                         view2.visibility = View.VISIBLE // Show view2 before animation
+                         view2.alpha = 0f // Set initial alpha for fade in
 
-                        view2.animate()
-                            .alpha(1f) // Fade in
-                            .setDuration(700) // Animation duration in ms
-                            .setListener(null)
-                    }
-                })
-        }*/
+                         view2.animate()
+                             .alpha(1f) // Fade in
+                             .setDuration(700) // Animation duration in ms
+                             .setListener(null)
+                     }
+                 })
+         }*/
 
     }
-    fun animateViews(){
+
+    fun animateViews() {
         val view1: View = findViewById(R.id.rlview1)
         val view2: View = findViewById(R.id.imgview2)
         // Fade out view1 and fade in view2

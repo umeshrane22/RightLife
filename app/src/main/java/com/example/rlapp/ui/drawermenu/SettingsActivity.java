@@ -22,6 +22,7 @@ import com.example.rlapp.RetrofitData.LogoutUserRequest;
 import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -119,8 +120,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void postUserLogout(String s) {
         //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 

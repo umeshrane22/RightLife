@@ -1,6 +1,5 @@
 package com.example.rlapp.ui.new_design
 
-import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -9,9 +8,9 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +18,6 @@ import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.RetrofitData.LogoutUserRequest
-import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import com.google.gson.Gson
@@ -36,7 +34,6 @@ class CreateUsernameActivity : AppCompatActivity() {
 
 
         val username = intent.getStringExtra("USERNAME_KEY")
-
 
 
         val edtUsername = findViewById<EditText>(R.id.edt_username)
@@ -133,26 +130,18 @@ class CreateUsernameActivity : AppCompatActivity() {
 
     private fun showFullScreenDialog(username: String) {
 
-        // Create the dialog
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_welcome)
-        dialog.setCancelable(false)
-        val window = dialog.window
-        window.let {
-            val params = it?.attributes
-            params?.width = WindowManager.LayoutParams.MATCH_PARENT
-            params?.height = WindowManager.LayoutParams.MATCH_PARENT
-            it?.attributes = params
-        }
+        findViewById<LinearLayout>(R.id.dialog_welcome).visibility = VISIBLE
+
+
 
         Handler().postDelayed({
             val intent = Intent(this, WellnessFocusActivity::class.java)
             startActivity(intent)
-            dialog.dismiss()
+            //dialog.dismiss()
         }, 2000)
 
-        val tvUsername = dialog.findViewById<TextView>(R.id.tv_username)
+        val tvUsername = findViewById<TextView>(R.id.tv_username)
         tvUsername.text = username
-        dialog.show()
+
     }
 }
