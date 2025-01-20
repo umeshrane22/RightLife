@@ -2,6 +2,7 @@ package com.example.rlapp.ui.utility;
 
 import android.app.Activity;
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 
@@ -210,5 +211,9 @@ public class Utils {
         }
 
         return builder.toString(); // Return builders text
+    }
+
+    public static String getDeviceId(Context context) {
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 }

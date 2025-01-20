@@ -1,22 +1,40 @@
 package com.example.rlapp.ui.new_design
 
+import android.content.Context
+import android.provider.Settings
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ui.new_design.pojo.GoogleLoginTokenResponse
+import com.example.rlapp.ui.new_design.pojo.GoogleSignInRequest
+import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
+import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.Task
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ImageSliderActivity : AppCompatActivity() {
 
@@ -28,7 +46,7 @@ class ImageSliderActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
     private val timeDurationForImageSlider = 2000L
-
+    private lateinit var displayName: String
     // List of images (replace with your own images)
     private val images = listOf(
         R.mipmap.mask_group69,
@@ -100,18 +118,34 @@ class ImageSliderActivity : AppCompatActivity() {
         // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
-            .requestIdToken("376715991698-8lavu418dl8lgr5on0o0dg3au47gg36c.apps.googleusercontent.com")
+            //.requestIdToken("376715991698-8lavu418dl8lgr5on0o0dg3au47gg36c.apps.googleusercontent.com")
+            .requestIdToken("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
+            .requestServerAuthCode("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
+            .requestEmail()
+            .requestProfile()
+            .requestScopes(
+                Scope("https://www.googleapis.com/auth/userinfo.email"),
+                Scope("https://www.googleapis.com/auth/userinfo.profile"),
+                Scope("openid")
+            )
             .build()
 
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // Sign out the user
+        googleSignInClient.signOut()
+            .addOnCompleteListener(this) {
+                // Update your UI to reflect the sign-out
 
+
+            }
         val btnGoogle = findViewById<TextView>(R.id.btn_google)
         btnGoogle.setOnClickListener {
-            startActivity(Intent(this, CreateUsernameActivity::class.java))
-            finish()
-//            val signInIntent = googleSignInClient.signInIntent
-//            startActivityForResult(signInIntent, RC_SIGN_IN)
+//            startActivity(Intent(this, CreateUsernameActivity::class.java))
+//            finish()
+
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
         }
     }
 
@@ -145,8 +179,53 @@ class ImageSliderActivity : AppCompatActivity() {
 
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
+
+            try {
+                val account = task.getResult(ApiException::class.java)
+                account?.let {
+                    val email = it.email
+                    val scope = "oauth2:https://www.googleapis.com/auth/userinfo.profile"
+
+                    // Use a coroutine to fetch the access token
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            // Retrieve the access token
+                            val accessTokenGoogle =
+                                GoogleAuthUtil.getToken(this@ImageSliderActivity, email!!, scope)
+                            Log.d("AccessToken", "Access Token: $accessTokenGoogle")
+
+                            // Use the access token for API requests
+
+                            if (account != null) {
+                                // User is signed in, display user information
+                                 displayName = account.displayName!!
+                                val email = account.email
+                                val authcode = account.serverAuthCode
+                            }
+                            fetchApiData(accessTokenGoogle)
+                        } catch (e: Exception) {
+                            Log.e("GoogleAuthUtil", "Error retrieving access token", e)
+                        }
+                    }
+                }
+            } catch (e: ApiException) {
+                Log.e("GoogleSignIn", "Sign-in failed", e)
+            }
+
+            //  handleSignInResult(task)
         }
+    }
+
+    private fun fetchApiData(accessTokenGoogle: String) {
+        val deviceId = Utils.getDeviceId(this)
+        println("Device ID: $deviceId")
+        val googleSignInRequest = GoogleSignInRequest(
+            accessTokenGoogle,
+            deviceId,
+            "androidDevice",
+            "dummytokenfortest"
+        )
+        submitAnswer(googleSignInRequest)
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
@@ -168,10 +247,75 @@ class ImageSliderActivity : AppCompatActivity() {
             val authcode = account.serverAuthCode
             // Update your UI with user information
             Log.d(TAG, "User  signed in: $displayName, $email,$authcode")
+            val intent = Intent(this, CreateUsernameActivity::class.java)
+            intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
+            //startActivity(intent)
+            //finish()
         } else {
             // User is not signed in, show sign-in button
             Log.d(TAG, "User  not signed in")
         }
     }
 
+
+    private fun submitAnswer(googleSignInRequest: GoogleSignInRequest) {
+        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val call = apiService.submitGoogleLogin( "android", googleSignInRequest)
+
+        call.enqueue(object : Callback<GoogleLoginTokenResponse> {
+            override fun onResponse(
+                call: Call<GoogleLoginTokenResponse>,
+                response: Response<GoogleLoginTokenResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()
+
+                    Toast.makeText(
+                        this@ImageSliderActivity,
+                        apiResponse?.accessToken,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    SharedPreferenceManager.getInstance(this@ImageSliderActivity)
+                        .saveAccessToken(apiResponse?.accessToken)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        // Send username to next Activity
+                        startActivity(
+                            Intent(
+                                this@ImageSliderActivity,
+                                CreateUsernameActivity::class.java
+                            )
+                        )
+                        val intent = Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
+                        intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
+                        startActivity(intent)
+
+                    }, 1000)
+
+                } else {
+                    Toast.makeText(
+                        this@ImageSliderActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<GoogleLoginTokenResponse>, t: Throwable) {
+                Toast.makeText(
+                    this@ImageSliderActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        })
+    }
+
+
+
+    fun getDeviceId(context: Context): String {
+        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
 }

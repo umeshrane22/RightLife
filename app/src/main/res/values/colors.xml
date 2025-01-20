@@ -92,5 +92,6 @@
 
     <color name="color_green">#03B27B</color>
     <color name="color_blue">#1292E5</color>
+    <color name="color_switch_gray">#F2F2F2</color>
 
 </resources>
