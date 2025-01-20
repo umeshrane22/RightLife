@@ -8,6 +8,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="match_parent"
+            android:src="@drawable/imagesync"
+            android:layout_alignParentTop="true"
+            android:layout_height="350dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:textSize="@dimen/textsize_large24sp"
+                android:fontFamily="@font/merriweather_bold"
+                android:layout_marginTop="30dp"
+                android:text="Sync With Apple Health"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:textSize="@dimen/textsize_large"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="Connect your Apple Health to seamlessly track and integrate your fitness, sleep, and wellness data. With real-time insights, we’ll personalize your journey to better health!"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
         <Button
             android:id="@+id/btn_sync_now"
             android:layout_width="match_parent"
@@ -21,6 +51,7 @@
             android:textSize="@dimen/textsize_large"
             android:layout_above="@id/btn_skip_for_now"
             android:drawableLeft="@drawable/icon_heart"
+
             android:gravity="center"/>
 
         <Button

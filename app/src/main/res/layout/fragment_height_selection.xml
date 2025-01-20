@@ -72,8 +72,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    app:track="@drawable/custom_track"
-                    android:thumb="@drawable/custom_thumb"/>
+                    app:track="@drawable/custom_track_onboardingswitch"
+                    android:thumb="@drawable/custom_thumb"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
             </RelativeLayout>
 
             <LinearLayout
