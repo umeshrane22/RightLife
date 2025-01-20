@@ -5,29 +5,45 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 class ModuleTopic : Serializable{
+    @SerializedName("_id")
+    @Expose
+     val id: String? = null
+
+    @SerializedName("moduleName")
+    @Expose
+     val moduleName: String? = null
+
     @SerializedName("moduleTopic")
     @Expose
-    var moduleTopic: String? = null
+     val moduleTopic: String? = null
 
     @SerializedName("moduleThumbnail")
     @Expose
-    var moduleThumbnail: String? = null
+     val moduleThumbnail: String? = null
 
     @SerializedName("moduleDarkThemeThumbnail")
     @Expose
-    var moduleDarkThemeThumbnail: String? = null
+     val moduleDarkThemeThumbnail: String? = null
 
     @SerializedName("order")
     @Expose
-    var order: Int? = null
+     val order: Int? = null
 
     @SerializedName("isActive")
     @Expose
-    var isActive: Boolean? = null
+     val isActive: Boolean? = null
 
-    @SerializedName("_id")
+    @SerializedName("createdAt")
     @Expose
-    var id: String? = null
+     val createdAt: String? = null
 
+    @SerializedName("updatedAt")
+    @Expose
+     val updatedAt: String? = null
+
+    @SerializedName("__v")
+    @Expose
+     val v: Int? = null
+    
     var isSelected = false
 }
