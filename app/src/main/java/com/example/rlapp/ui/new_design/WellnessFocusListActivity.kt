@@ -92,7 +92,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
                     val apiResponse = response.body()
 
                     val data = apiResponse?.data
-                    data?.topics?.let { topicList.addAll(it) }
+                    data?.data?.let { topicList.addAll(it) }
                     wellnessFocusListAdapter.notifyDataSetChanged()
 
                 } else {

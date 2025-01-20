@@ -4,39 +4,15 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class OnboardingModuleData {
-    @SerializedName("_id")
+    @SerializedName("sectionTitle")
     @Expose
-    var id: String? = null
+    var sectionTitle: String? = null
 
-    @SerializedName("moduleName")
+    @SerializedName("sectionSubtitle")
     @Expose
-    var moduleName: String? = null
+    var sectionSubtitle: String? = null
 
-    @SerializedName("thumbnail")
+    @SerializedName("data")
     @Expose
-    var thumbnail: String? = null
-
-    @SerializedName("title")
-    @Expose
-    var title: String? = null
-
-    @SerializedName("subtitle")
-    @Expose
-    var subtitle: String? = null
-
-    @SerializedName("topics")
-    @Expose
-    var topics: List<ModuleTopic>? = null
-
-    @SerializedName("createdAt")
-    @Expose
-    var createdAt: String? = null
-
-    @SerializedName("updatedAt")
-    @Expose
-    var updatedAt: String? = null
-
-    @SerializedName("__v")
-    @Expose
-    var v: Int? = null
+    var data: List<ModuleTopic>? = null
 }
