@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -61,6 +62,8 @@ class HealthGoalFragment : Fragment() {
         tvSelectedHealthGoal = view.findViewById(R.id.tv_selected_health_goals)
         recyclerView = view.findViewById(R.id.rv_health_goals)
         tvDescription = view.findViewById(R.id.tv_description)
+
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         healthGoalList.add(HealthGoal("0-10 minutes"))
         healthGoalList.add(HealthGoal("10-20 minutes"))

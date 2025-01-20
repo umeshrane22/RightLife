@@ -6,6 +6,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -60,6 +61,8 @@ class GenderSelectionFragment : Fragment() {
             wrappedDrawable,
             ContextCompat.getColor(requireContext(), R.color.color_green)
         )
+
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = INVISIBLE
 
         llMale.setOnClickListener {
             selectedGender = "Male"
@@ -130,7 +133,7 @@ class GenderSelectionFragment : Fragment() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     saveGender()
                     OnboardingQuestionnaireActivity.navigateToNextPage()
-                }, 1000)
+                }, 500)
 
                 tvDescription?.visibility = GONE
             }, 1000)

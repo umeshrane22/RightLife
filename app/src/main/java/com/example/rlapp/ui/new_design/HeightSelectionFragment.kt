@@ -53,6 +53,7 @@ class HeightSelectionFragment : Fragment() {
         selected_number_text = view.findViewById(R.id.selected_number_text)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
 
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)

@@ -54,6 +54,7 @@ class TargetWeightSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
 
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)

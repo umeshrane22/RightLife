@@ -60,6 +60,8 @@ class BodyFatSelectionFragment : Fragment() {
         gendar =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender.toString()
 
+        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+
         llSelectedBodyFat = view.findViewById(R.id.ll_selected_body_fat)
         tvSelectedBodyFat = view.findViewById(R.id.tv_selected_body_fat)
         tvDescription = view.findViewById(R.id.tv_description)
