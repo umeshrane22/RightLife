@@ -5,16 +5,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.rlapp.MainActivity;
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.RetrofitData.LogoutUserRequest;
+import com.example.rlapp.apimodel.PromotionResponse;
+import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.Utils;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SettingsActivity extends AppCompatActivity {
     private LinearLayout llAboutUs, llNotifications, llFAQ, llContactUs, llManageSubscription, llTheme, llTermsAndConditions,
@@ -99,6 +113,53 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void logOut() {
+        postUserLogout("");
+    }
+
+
+    private void postUserLogout(String s) {
+        //-----------
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        // Create a request body (replace with actual email and phone number)
+        String deviceId = Utils.getDeviceId(this);
+         LogoutUserRequest request = new LogoutUserRequest();
+         request.setDeviceId(deviceId);
+
+        // Make the API call
+        Call<JsonElement> call = apiService.LogoutUser(accessToken,request);
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonElement promotionResponse2 = response.body();
+                    Log.d("API Response", "Success: " + promotionResponse2.toString());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+//                    PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
+                    Log.d("API Response body", "Success: promotion " + jsonResponse);
+                    clearUserDataAndFinish();
+
+                } else {
+                      Toast.makeText(SettingsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                Toast.makeText(SettingsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API ERROR", "onFailure: " + t.getMessage());
+                t.printStackTrace();  // Print the full stack trace for more details
+
+            }
+        });
+
+    }
+
+    private void clearUserDataAndFinish() {
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
@@ -109,4 +170,5 @@ public class SettingsActivity extends AppCompatActivity {
 
         finishAffinity();
     }
+
 }

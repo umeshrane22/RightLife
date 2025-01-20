@@ -23,6 +23,8 @@ import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.example.rlapp.ui.new_design.pojo.GetInterestResponse;
+import com.example.rlapp.ui.new_design.pojo.GoogleLoginTokenResponse;
+import com.example.rlapp.ui.new_design.pojo.GoogleSignInRequest;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingModuleResponse;
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultRequest;
@@ -678,6 +680,23 @@ public interface ApiService {
     Call<SaveUserInterestResponse> submitOnBoardingAnswers(
             @Header("Authorization") String authToken,
             @Body OnboardingQuestionRequest onboardingQuestionRequest
+    );
+
+    @Headers({
+            "x-forwarded-for: 60.254.127.250",
+            "Content-Type: application/json"
+    })
+    @POST("auth/google/login")
+    Call<GoogleLoginTokenResponse> submitGoogleLogin(
+            //@Header("Authorization") String authToken,
+            @Query("platform") String platform,
+            @Body GoogleSignInRequest googleSignInRequest
+    );
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @POST("auth/logout")
+    Call<JsonElement> LogoutUser(
+            @Header("Authorization") String authToken,
+            @Body LogoutUserRequest logoutUserRequest
     );
 }
 
