@@ -21,6 +21,7 @@ import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.RetrofitData.LogoutUserRequest;
 import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.ui.HomeActivity;
+import com.example.rlapp.ui.new_design.ImageSliderActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.example.rlapp.ui.utility.Utils;
@@ -137,11 +138,11 @@ public class SettingsActivity extends AppCompatActivity {
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement promotionResponse2 = response.body();
-                    Log.d("API Response", "Success: " + promotionResponse2.toString());
+                    Log.d("API Response", "Logout: " + promotionResponse2.toString());
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 //                    PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
-                    Log.d("API Response body", "Success: promotion " + jsonResponse);
+                    Log.d("API Response body", "Success: Logout " + jsonResponse);
                     clearUserDataAndFinish();
 
                 } else {
@@ -165,8 +166,9 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
+        SharedPreferenceManager.getInstance(this).clearData();
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ImageSliderActivity.class);
         startActivity(intent);
 
         finishAffinity();

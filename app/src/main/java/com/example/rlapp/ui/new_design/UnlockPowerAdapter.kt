@@ -10,11 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultDataList
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleTopic
 
 class UnlockPowerAdapter(
     private val context: Context,
-    private val unlockPowerList: ArrayList<OnboardingModuleTopic>
+    private val unlockPowerList: ArrayList<OnboardingModuleResultDataList>
 ) : RecyclerView.Adapter<UnlockPowerAdapter.UnlockPowerViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UnlockPowerViewHolder {

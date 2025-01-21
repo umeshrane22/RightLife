@@ -36,6 +36,7 @@ class WelcomeActivity : AppCompatActivity() {
         textView.text = spannable
         Handler(mainLooper).postDelayed({
             startActivity(Intent(this, HomeActivity::class.java))
+            finishAffinity()
         },1000)
     }
 }

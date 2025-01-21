@@ -3314,7 +3314,7 @@
             android:background="@drawable/roundedcornershape"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:id="@+id/ll_journal"
@@ -3334,7 +3334,7 @@
                     android:backgroundTint="@color/thinkright"
                     android:gravity="center"
                     android:padding="11dp"
-                    android:layout_margin="1dp"
+                    android:layout_margin="0dp"
                     android:orientation="vertical">
                 <ImageView
                     android:layout_width="34dp"

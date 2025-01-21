@@ -14,6 +14,7 @@ import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.GetInterestResponse
+import com.example.rlapp.ui.new_design.pojo.InterestDataList
 import com.example.rlapp.ui.new_design.pojo.InterestTopic
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse
@@ -24,8 +25,8 @@ import retrofit2.Response
 
 class YourInterestActivity : AppCompatActivity() {
     private lateinit var adapter: YourInterestAdapter
-    private val interestList = ArrayList<InterestTopic>()
-    private val selectedInterest = ArrayList<InterestTopic>()
+    private val interestList = ArrayList<InterestDataList>()
+    private val selectedInterest = ArrayList<InterestDataList>()
     private lateinit var btnSaveInterest: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +79,7 @@ class YourInterestActivity : AppCompatActivity() {
                     val apiResponse = response.body()
 
                     val data = apiResponse?.data
-                    data?.topics?.let { interestList.addAll(it) }
+                    data?.InterestDatata?.let { interestList.addAll(it) }
                     adapter.notifyDataSetChanged()
 
                 } else {

@@ -15,6 +15,7 @@ import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rlapp.MainActivity
 import com.example.rlapp.R
+import com.example.rlapp.ui.HomeActivity
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -42,13 +43,13 @@ class SplashScreenActivity : AppCompatActivity() {
         //videoView.setOnCompletionListener {
         // Delay the transition to the next activity to allow the video to end properly
         Handler(Looper.getMainLooper()).postDelayed({
-            //if (authToken.isEmpty()) {
+            if (authToken.isEmpty()) {
                 val intent = Intent(this, DataControlActivity::class.java)
                 startActivity(intent)
-            /*} else {
+            } else {
                 val intent = Intent(this, HomeActivity::class.java)
                 startActivity(intent)
-            }*/
+            }
             finish()  // Close the SplashActivity
         }, SPLASH_DELAY)
         //}
@@ -88,7 +89,7 @@ class SplashScreenActivity : AppCompatActivity() {
         val view2: View = findViewById(R.id.imgview2)
         // Fade out view1 and fade in view2
         view1.animate()
-            .alpha(0f) // Fade out
+            .alpha(0.9f) // Fade out
             .setDuration(2000) // Animation duration in ms
             .setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
