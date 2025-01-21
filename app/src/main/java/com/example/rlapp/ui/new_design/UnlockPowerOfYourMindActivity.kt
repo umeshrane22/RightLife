@@ -14,6 +14,7 @@ import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.ModuleTopic
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultDataList
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultRequest
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultResponse
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleTopic
@@ -27,7 +28,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
 
     private val selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var unlockPowerAdapter: UnlockPowerAdapter
-    private val unlockPowerList = ArrayList<OnboardingModuleTopic>()
+    private val unlockPowerList = ArrayList<OnboardingModuleResultDataList>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,7 +147,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
                     val apiResponse = response.body()
 
                     val data = apiResponse?.data
-                    data?.onboardingModuleTopics?.let { unlockPowerList.addAll(it) }
+                    data?.data?.let { unlockPowerList.addAll(it) }
                     unlockPowerAdapter.notifyDataSetChanged()
                 } else {
                     Toast.makeText(

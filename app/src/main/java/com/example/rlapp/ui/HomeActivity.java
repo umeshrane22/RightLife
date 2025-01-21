@@ -1215,7 +1215,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, SplashScreenActivity.class));
+            startActivity(new Intent(this, SearchActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
@@ -1371,12 +1371,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void CallWellnessDetailActivity(int position) {
-        Gson gson = new Gson();
+      /*  Gson gson = new Gson();
         String json = gson.toJson(wellnessApiResponse);
         Intent intent = new Intent(HomeActivity.this, WellnessDetailViewActivity.class);
         intent.putExtra("responseJson", json);
         intent.putExtra("position", position);
-        startActivity(intent);
+        startActivity(intent);*/
+
+        if (wellnessApiResponse != null) {
+            Gson gson = new Gson();
+            String json = gson.toJson(wellnessApiResponse);
+            Intent intent = new Intent(HomeActivity.this, WellnessDetailViewActivity.class);
+            intent.putExtra("responseJson", json);
+            intent.putExtra("position", position);
+            startActivity(intent);
+        } else {
+            // Handle null case
+            Toast.makeText(HomeActivity.this, "Response is null", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void CallExploreModuleActivity(SubModuleResponse responseJson) {

@@ -10,12 +10,12 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-import com.example.rlapp.ui.new_design.pojo.InterestTopic
+import com.example.rlapp.ui.new_design.pojo.InterestDataList
 import com.example.rlapp.ui.utility.Utils
 
 class YourInterestAdapter(
     private val context: Context,
-    private val interestList: ArrayList<InterestTopic>,
+    private val interestList: ArrayList<InterestDataList>,
     private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<YourInterestAdapter.YourInterestViewHolder>() {
 
@@ -54,7 +54,7 @@ class YourInterestAdapter(
     }
 
     fun interface OnItemClickListener {
-        fun onItemClick(interest: InterestTopic)
+        fun onItemClick(interest: InterestDataList)
     }
 
     class YourInterestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

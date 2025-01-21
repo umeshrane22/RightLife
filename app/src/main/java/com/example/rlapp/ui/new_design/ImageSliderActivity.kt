@@ -1,11 +1,11 @@
 package com.example.rlapp.ui.new_design
 
 import android.content.Context
-import android.provider.Settings
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -18,6 +18,7 @@ import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.example.rlapp.ui.new_design.pojo.GoogleSignInRequest
+import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -279,6 +280,7 @@ class ImageSliderActivity : AppCompatActivity() {
                     ).show()
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
+                    saveAccessToken(apiResponse?.accessToken!!)
                     Handler(Looper.getMainLooper()).postDelayed({
                         // Send username to next Activity
                         startActivity(
@@ -290,6 +292,7 @@ class ImageSliderActivity : AppCompatActivity() {
                         val intent = Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
                         intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
                         startActivity(intent)
+                        finish()
 
                     }, 1000)
 
@@ -317,5 +320,15 @@ class ImageSliderActivity : AppCompatActivity() {
 
     fun getDeviceId(context: Context): String {
         return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    private fun saveAccessToken(accessToken: String) {
+        SharedPreferenceManager.getInstance(this).saveAccessToken(accessToken)
+        val sharedPreferences =
+            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(SharedPreferenceConstants.ACCESS_TOKEN, accessToken)
+        editor.putBoolean(SharedPreferenceConstants.IS_LOGGED_IN, true)
+        editor.apply()
     }
 }

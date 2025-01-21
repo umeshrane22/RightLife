@@ -137,6 +137,7 @@ class CreateUsernameActivity : AppCompatActivity() {
         Handler().postDelayed({
             val intent = Intent(this, WellnessFocusActivity::class.java)
             startActivity(intent)
+            finishAffinity();
             //dialog.dismiss()
         }, 2000)
 

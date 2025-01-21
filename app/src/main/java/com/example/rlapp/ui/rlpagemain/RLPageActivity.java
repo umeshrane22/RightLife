@@ -147,15 +147,18 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         //--
         ImageView ivProfileImage = findViewById(R.id.iv_profile_image);
         UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
+        if (userProfileResponse == null) return;
         Userdata userdata = userProfileResponse.getUserdata();
-        Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
-                .circleCrop()
-                .into(ivProfileImage);
-        txtuserName.setText("Hi "+userdata.getFirstName());
-        txt_rldays.setText(String.valueOf(userProfileResponse.getDaysCount()));
-        txt_well_streak_count.setText(String.valueOf(userProfileResponse.getWellnessStreak()));
+        if (userdata!=null) {
+            Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
+                    .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                    .circleCrop()
+                    .into(ivProfileImage);
 
+            txtuserName.setText("Hi " + userdata.getFirstName());
+            txt_rldays.setText(String.valueOf(userProfileResponse.getDaysCount()));
+            txt_well_streak_count.setText(String.valueOf(userProfileResponse.getWellnessStreak()));
+        }
 
     }
 

@@ -3,18 +3,12 @@ package com.example.rlapp.ui.new_design.pojo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class InterestData {
+class OnboardingModuleResultDataData {
     @SerializedName("sectionTitle")
     @Expose
-     var sectionTitle: String? = null
-
-    @SerializedName("sectionSubtitle")
-    @Expose
-     var sectionSubtitle: String? = null
+    var sectionTitle: String? = null
 
     @SerializedName("data")
     @Expose
-     var InterestDatata: List<InterestDataList>? = null
-
-
+    var data: List<OnboardingModuleResultData>? = null
 }
