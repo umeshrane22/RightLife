@@ -186,14 +186,14 @@ class BodyFatSelectionFragment : Fragment() {
         val bodyFatList = ArrayList<BodyFat>()
         if (gender == "Male") {
             bodyFatList.add(BodyFat(R.drawable.img_male_fat1, "5-14%"))
-            bodyFatList.add(BodyFat(R.drawable.img_male_fat1, "15-24%"))
-            bodyFatList.add(BodyFat(R.drawable.img_male_fat1, "25-33%"))
-            bodyFatList.add(BodyFat(R.drawable.img_male_fat1, "34+%"))
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat2, "15-24%"))
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat3, "25-33%"))
+            bodyFatList.add(BodyFat(R.drawable.img_male_fat4, "34+%"))
         } else {
             bodyFatList.add(BodyFat(R.drawable.img_female_fat1, "10-19%"))
-            bodyFatList.add(BodyFat(R.drawable.img_female_fat1, "20-29%"))
-            bodyFatList.add(BodyFat(R.drawable.img_female_fat1, "30-44%"))
-            bodyFatList.add(BodyFat(R.drawable.img_female_fat1, "45+%"))
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat2, "20-29%"))
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat3, "30-44%"))
+            bodyFatList.add(BodyFat(R.drawable.img_female_fat4, "45+%"))
         }
 
         return bodyFatList

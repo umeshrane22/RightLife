@@ -48,6 +48,7 @@ class ImageSliderActivity : AppCompatActivity() {
     private lateinit var runnable: Runnable
     private val timeDurationForImageSlider = 2000L
     private lateinit var displayName: String
+
     // List of images (replace with your own images)
     private val images = listOf(
         R.mipmap.mask_group69,
@@ -120,8 +121,10 @@ class ImageSliderActivity : AppCompatActivity() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             //.requestIdToken("376715991698-8lavu418dl8lgr5on0o0dg3au47gg36c.apps.googleusercontent.com")
-            .requestIdToken("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
-            .requestServerAuthCode("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
+//            .requestIdToken("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
+//            .requestServerAuthCode("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
+            .requestIdToken("376715991698-djfb8tj4brdsv6h7c5cpvr5pavt3nbns.apps.googleusercontent.com")
+            .requestServerAuthCode("376715991698-djfb8tj4brdsv6h7c5cpvr5pavt3nbns.apps.googleusercontent.com")
             .requestEmail()
             .requestProfile()
             .requestScopes(
@@ -199,7 +202,7 @@ class ImageSliderActivity : AppCompatActivity() {
 
                             if (account != null) {
                                 // User is signed in, display user information
-                                 displayName = account.displayName!!
+                                displayName = account.displayName!!
                                 val email = account.email
                                 val authcode = account.serverAuthCode
                             }
@@ -263,7 +266,7 @@ class ImageSliderActivity : AppCompatActivity() {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val call = apiService.submitGoogleLogin( "android", googleSignInRequest)
+        val call = apiService.submitGoogleLogin("android", googleSignInRequest)
 
         call.enqueue(object : Callback<GoogleLoginTokenResponse> {
             override fun onResponse(
@@ -273,11 +276,11 @@ class ImageSliderActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
 
-                    Toast.makeText(
+                    /*Toast.makeText(
                         this@ImageSliderActivity,
                         apiResponse?.accessToken,
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
                     saveAccessToken(apiResponse?.accessToken!!)
@@ -289,7 +292,8 @@ class ImageSliderActivity : AppCompatActivity() {
                                 CreateUsernameActivity::class.java
                             )
                         )
-                        val intent = Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
+                        val intent =
+                            Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
                         intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
                         startActivity(intent)
                         finish()
@@ -315,7 +319,6 @@ class ImageSliderActivity : AppCompatActivity() {
 
         })
     }
-
 
 
     fun getDeviceId(context: Context): String {

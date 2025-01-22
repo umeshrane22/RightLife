@@ -20,6 +20,18 @@
             "package_name": "com.example.rlapp",
             "certificate_hash": "0a0d180959fa41467677f2a3debe46092c070399"
           }
+        },
+        {
+          "client_id": "376715991698-adbcj3ha6h9bklpfi7m0avjl7g4o1nqn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rlapp",
+            "certificate_hash": "35af4d5827684e2ea957e8a99904576c3bdcbe90"
+          }
+        },
+        {
+          "client_id": "376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [
@@ -29,7 +41,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
