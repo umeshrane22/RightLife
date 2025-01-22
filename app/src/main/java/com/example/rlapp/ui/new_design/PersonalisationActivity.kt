@@ -15,7 +15,9 @@ class PersonalisationActivity : AppCompatActivity() {
 
         val tvSkip = findViewById<TextView>(R.id.tv_skip)
         tvSkip.setOnClickListener {
-
+            val intent = Intent(this, SyncNowActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
         val btnAllowPersonalisation = findViewById<Button>(R.id.btn_allow_personalisation)

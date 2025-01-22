@@ -6,7 +6,6 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -23,6 +22,7 @@ class GenderSelectionFragment : Fragment() {
 
     private var selectedGender = ""
     private var tvDescription: TextView? = null
+    private lateinit var handler: Handler
 
     companion object {
         fun newInstance(pageIndex: Int): GenderSelectionFragment {
@@ -52,6 +52,8 @@ class GenderSelectionFragment : Fragment() {
         val ivSelectedGender = view.findViewById<ImageView>(R.id.image_selected_gender)
         tvDescription = view.findViewById(R.id.tv_description)
 
+        handler = Handler(Looper.getMainLooper())
+
         val bgDrawable = AppCompatResources.getDrawable(requireContext(), R.drawable.bg_gray_border)
 
         val unwrappedDrawable =
@@ -62,7 +64,7 @@ class GenderSelectionFragment : Fragment() {
             ContextCompat.getColor(requireContext(), R.color.color_green)
         )
 
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = INVISIBLE
+        //(activity as OnboardingQuestionnaireActivity).tvSkip.visibility = INVISIBLE
 
         llMale.setOnClickListener {
             selectedGender = "Male"
@@ -80,7 +82,7 @@ class GenderSelectionFragment : Fragment() {
                 android.graphics.PorterDuff.Mode.SRC_IN
             )
 
-            Handler(Looper.getMainLooper()).postDelayed({
+            handler.postDelayed({
                 llMale.visibility = GONE
                 llFemale.visibility = GONE
                 llSelectedGender.visibility = VISIBLE
@@ -94,12 +96,9 @@ class GenderSelectionFragment : Fragment() {
                 )
                 tvDescription?.visibility = GONE
 
-                Handler(Looper.getMainLooper()).postDelayed({
-                    OnboardingQuestionnaireActivity.navigateToNextPage()
-                    saveGender()
-                }, 1000)
+                saveGender()
 
-            }, 1000)
+            }, 300)
         }
 
         llFemale.setOnClickListener {
@@ -117,7 +116,7 @@ class GenderSelectionFragment : Fragment() {
                 ContextCompat.getColor(requireContext(), R.color.color_blue),
                 android.graphics.PorterDuff.Mode.SRC_IN
             )
-            Handler(Looper.getMainLooper()).postDelayed({
+            handler.postDelayed({
                 llMale.visibility = GONE
                 llFemale.visibility = GONE
                 llSelectedGender.visibility = VISIBLE
@@ -129,24 +128,23 @@ class GenderSelectionFragment : Fragment() {
                         R.color.color_green
                     ), android.graphics.PorterDuff.Mode.SRC_IN
                 )
-
-                Handler(Looper.getMainLooper()).postDelayed({
-                    saveGender()
-                    OnboardingQuestionnaireActivity.navigateToNextPage()
-                }, 500)
-
+                saveGender()
                 tvDescription?.visibility = GONE
-            }, 1000)
+            }, 300)
         }
 
         return view
     }
 
     private fun saveGender() {
-        val onboardingQuestionRequest =
-            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-        onboardingQuestionRequest.gender = selectedGender
-        SharedPreferenceManager.getInstance(requireContext())
-            .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+        handler.postDelayed({
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.gender = selectedGender
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            OnboardingQuestionnaireActivity.navigateToNextPage()
+        }, 0)
+
     }
 }

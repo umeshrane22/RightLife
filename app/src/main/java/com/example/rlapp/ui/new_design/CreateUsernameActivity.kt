@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
@@ -42,10 +43,24 @@ class CreateUsernameActivity : AppCompatActivity() {
             edtUsername.setText(username) // Set the username to the EditText
         }
 
+        val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
+        val colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)
+
         val tvCharLeft = findViewById<TextView>(R.id.tv_char_left)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
         val tvError = findViewById<TextView>(R.id.tv_username_error)
         val charLeft = edtUsername.text.length
+        if (validateUsername(edtUsername.text.toString())) {
+            tvError.visibility = GONE
+            btnContinue.backgroundTintList = colorStateListSelected
+            btnContinue.isEnabled = true
+        }
+        else {
+            tvError.visibility = VISIBLE
+            btnContinue.backgroundTintList = colorStateList
+            btnContinue.isEnabled = false
+        }
+
         "$charLeft/20 ch".also { tvCharLeft.text = it }
 
         edtUsername.addTextChangedListener(object : TextWatcher {
@@ -54,11 +69,18 @@ class CreateUsernameActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
-                "$count/20 ch".also { tvCharLeft.text = it }
-                if (validateUsername(p0.toString()))
+                val c = 20 - edtUsername.text.length
+                "$c/20 ch".also { tvCharLeft.text = it }
+                if (validateUsername(p0.toString())) {
                     tvError.visibility = GONE
-                else
+                    btnContinue.backgroundTintList = colorStateListSelected
+                    btnContinue.isEnabled = true
+                }
+                else {
                     tvError.visibility = VISIBLE
+                    btnContinue.backgroundTintList = colorStateList
+                    btnContinue.isEnabled = false
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {

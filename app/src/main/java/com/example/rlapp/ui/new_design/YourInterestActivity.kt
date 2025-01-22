@@ -34,7 +34,7 @@ class YourInterestActivity : AppCompatActivity() {
         setContentView(R.layout.activity_your_interest)
 
         val recyclerView = findViewById<RecyclerView>(R.id.rv_your_interest)
-        btnSaveInterest = findViewById<Button>(R.id.btn_save_interest)
+        btnSaveInterest = findViewById(R.id.btn_save_interest)
 
 
         val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
@@ -114,11 +114,11 @@ class YourInterestActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
 
-                    Toast.makeText(
+                    /*Toast.makeText(
                         this@YourInterestActivity,
                         apiResponse?.successMessage,
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
 
                     uiChangesOnSaveInterest()
 

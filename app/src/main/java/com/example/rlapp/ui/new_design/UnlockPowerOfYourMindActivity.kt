@@ -28,6 +28,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
 
     private val selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var unlockPowerAdapter: UnlockPowerAdapter
+    private lateinit var tvUnlockPower: TextView
     private val unlockPowerList = ArrayList<OnboardingModuleResultDataList>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +40,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         selectedWellnessFocus.addAll(intent.getSerializableExtra("SelectedTopic") as ArrayList<ModuleTopic>)
 
         val tvHeader = findViewById<TextView>(R.id.tv_header)
-        val tvUnlockPower = findViewById<TextView>(R.id.tv_unlock_power)
+        tvUnlockPower = findViewById(R.id.tv_unlock_power)
         val rvUnlockPower = findViewById<RecyclerView>(R.id.rv_unlock_power)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
         tvHeader.text = header
@@ -57,46 +58,8 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         tvHeader.setTextColor(selectedColor)
         tvUnlockPower.setTextColor(selectedColor)
 
-        /*val list = ArrayList<UnlockPower>()
-
-        list.add(
-            UnlockPower(
-                "Visualise and Manifest",
-                "Achieve clarity with 500+ uplifting affirmations",
-                R.drawable.visualise_manifest
-            )
-        )
-        list.add(
-            UnlockPower(
-                "Master Stress",
-                "Use voice scans to decode mood and stress level daily",
-                R.drawable.master_stress
-            )
-        )
-        list.add(
-            UnlockPower(
-                "Deepen Your Awareness",
-                "Guided meditation to calm and balance your thoughts",
-                R.drawable.deepen_your_awareness
-            )
-        )
-        list.add(
-            UnlockPower(
-                "Simplified Journaling",
-                "Capture growth and reflect with journaling prompts",
-                R.drawable.simplified_journaling
-            )
-        )
-        list.add(
-            UnlockPower(
-                "Stay Ahead",
-                "Access mental health texts to address concerns early",
-                R.drawable.stay_ahead
-            )
-        )*/
-
         val unwrappedDrawable =
-            AppCompatResources.getDrawable(this, R.drawable.bg_gray_border)
+            AppCompatResources.getDrawable(this, R.drawable.rounded_corder_border_gray)
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,
@@ -113,16 +76,8 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
             val intent = Intent(this, ThirdFillerScreenActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
-            clearColor()
             finish()
         }
-    }
-
-    private fun clearColor() {
-        val unwrappedDrawable =
-            AppCompatResources.getDrawable(this, R.drawable.bg_gray_border)
-        val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
-        DrawableCompat.setTint(wrappedDrawable, getColor(R.color.white))
     }
 
     private fun getOnboardingModuleResult(
@@ -149,6 +104,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
                     val data = apiResponse?.data
                     data?.data?.let { unlockPowerList.addAll(it) }
                     unlockPowerAdapter.notifyDataSetChanged()
+                    tvUnlockPower.text = data?.sectionTitle
                 } else {
                     Toast.makeText(
                         this@UnlockPowerOfYourMindActivity,

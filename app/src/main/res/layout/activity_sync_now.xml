@@ -38,30 +38,43 @@
                 android:text="Connect your Apple Health to seamlessly track and integrate your fitness, sleep, and wellness data. With real-time insights, we’ll personalize your journey to better health!"
                 android:layout_height="match_parent"/>
         </LinearLayout>
-        <Button
+
+
+        <LinearLayout
             android:id="@+id/btn_sync_now"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="36dp"
-            android:backgroundTint="@color/menuselected"
-            android:fontFamily="@font/dmsans_bold"
-            android:text="Sync Now"
-            android:textColor="@color/white"
-            android:textSize="@dimen/textsize_large"
             android:layout_above="@id/btn_skip_for_now"
-            android:drawableLeft="@drawable/icon_heart"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:background="@drawable/bg_gray_border"
+            android:backgroundTint="@color/menuselected"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            android:gravity="center"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_heart"
+                android:layout_gravity="center_vertical"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Sync Now"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
         <Button
             android:id="@+id/btn_skip_for_now"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="36dp"
-            android:layout_marginEnd="36dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
             android:backgroundTint="@color/bg_edittext_color"
             android:fontFamily="@font/dmsans_regular"
             android:text="Skip for Now"
