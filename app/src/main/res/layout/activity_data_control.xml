@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true">
 
     <LinearLayout
@@ -51,10 +52,11 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <CheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/ck_privacy_policy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:buttonTint="@color/checkbox_color"
                 android:layout_marginEnd="8dp" />
 
             <!-- TextView -->
@@ -62,6 +64,8 @@
                 android:id="@+id/tv_privacy_policy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:textColorLink="@color/nuraBlue"
                 android:textSize="11sp" />
 
         </LinearLayout>
@@ -71,10 +75,11 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <CheckBox
+            <com.google.android.material.checkbox.MaterialCheckBox
                 android:id="@+id/ck_terms_conditions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:buttonTint="@color/checkbox_color"
                 android:layout_marginEnd="8dp" />
 
             <!-- TextView -->
@@ -82,6 +87,8 @@
                 android:id="@+id/tv_terms_condition"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:textColorLink="@color/nuraBlue"
                 android:textSize="11sp" />
         </LinearLayout>
 
