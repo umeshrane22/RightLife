@@ -29,13 +29,37 @@ android {
         buildConfigField 'String', 'CLIENT_SECRET_SONDE', "\"1d2ac04h1m40pig9qi3ekhh0830q9vsn1kof0jtoc9dvbadmm7hc\""
         buildConfigField 'Boolean', 'hasFullFeature', "true"
     }
-
-    buildTypes {
+    signingConfigs {
+        debug {
+            storeFile file("my-release-key.jks") // Use the same keystore for debug
+            storePassword "android" // Use the same password
+            keyAlias "key0" // Use the same alias
+            keyPassword "android" // Use the same key password
+        }
         release {
+            storeFile file("my-release-key.jks") // Use the same keystore for release
+            storePassword "android" // Use the same password
+            keyAlias "key0" // Use the same alias
+            keyPassword "android" // Use the same key password
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+//    buildTypes {
+//        release {
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//        }
+//    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -46,6 +70,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    lint {
+        baseline = file("lint-baseline.xml")
     }
 }
 
