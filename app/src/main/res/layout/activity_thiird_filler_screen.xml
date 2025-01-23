@@ -127,7 +127,7 @@
             android:fontFamily="@font/dmsans_medium"
             android:text="@string/third_filler_screen5"
             android:textColor="@color/txt_color_header"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="16sp" />
 
         <Button
             android:id="@+id/btn_continue"

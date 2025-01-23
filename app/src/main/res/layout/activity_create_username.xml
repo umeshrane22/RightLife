@@ -61,7 +61,6 @@
             android:fontFamily="@font/dmsans_bold"
             android:gravity="center"
             android:maxLength="20"
-            android:text="Shyam"
             android:textColor="@color/txt_color_header"
             android:textSize="30sp" />
 
@@ -86,6 +85,7 @@
         android:text="@string/str_continue"
         android:textSize="@dimen/textsize_large"
         android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/white"
         android:backgroundTint="@color/menuselected"/>
 
 </LinearLayout>

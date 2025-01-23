@@ -6,22 +6,32 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 
 class OnBoardingPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
+    private val fragmentList = ArrayList<String>()
+
     override fun getItemCount(): Int {
-        return 8 // The number of fragments
+        return fragmentList.size // The number of fragments
     }
 
     override fun createFragment(position: Int): Fragment {
-        return when (position) {
-            0 -> GenderSelectionFragment.newInstance(position)
-            1 -> AgeSelectionFragment.newInstance(position)
-            2 -> HeightSelectionFragment.newInstance(position)
-            3 -> WeightSelectionFragment.newInstance(position)
-            4 -> BodyFatSelectionFragment.newInstance(position)
-            5 -> TargetWeightSelectionFragment.newInstance(position)
-            6 -> StressManagementSelectionFragment.newInstance(position)
-            7 -> HealthGoalFragment.newInstance(position)
+        return when (fragmentList[position]) {
+            "GenderSelection" -> GenderSelectionFragment.newInstance(position)
+            "AgeSelection" -> AgeSelectionFragment.newInstance(position)
+            "HeightSelection" -> HeightSelectionFragment.newInstance(position)
+            "WeightSelection" -> WeightSelectionFragment.newInstance(position)
+            "BodyFatSelection" -> BodyFatSelectionFragment.newInstance(position)
+            "TargetWeightSelection" -> TargetWeightSelectionFragment.newInstance(position)
+            "StressManagementSelection" -> StressManagementSelectionFragment.newInstance(position)
+            "HealthGoalFragment" -> HealthGoalFragment.newInstance(position)
 
             else -> GenderSelectionFragment.newInstance(0)
         }
+    }
+
+    fun setData(list: ArrayList<String>) {
+        fragmentList.addAll(list)
+    }
+
+    fun removeItem(name: String) {
+        fragmentList.remove(name)
     }
 }

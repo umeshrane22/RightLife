@@ -232,7 +232,7 @@ class ImageSliderActivity : AppCompatActivity() {
         submitAnswer(googleSignInRequest)
     }
 
-    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+    /*private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account = completedTask.getResult(ApiException::class.java)
             // Signed in successfully, show authenticated UI.
@@ -241,9 +241,9 @@ class ImageSliderActivity : AppCompatActivity() {
             Log.w(TAG, "signInResult:failed code=" + e.statusCode)
             updateUI(null)
         }
-    }
+    }*/
 
-    private fun updateUI(account: GoogleSignInAccount?) {
+    /*private fun updateUI(account: GoogleSignInAccount?) {
         if (account != null) {
             // User is signed in, display user information
             val displayName = account.displayName
@@ -259,7 +259,7 @@ class ImageSliderActivity : AppCompatActivity() {
             // User is not signed in, show sign-in button
             Log.d(TAG, "User  not signed in")
         }
-    }
+    }*/
 
 
     private fun submitAnswer(googleSignInRequest: GoogleSignInRequest) {
@@ -286,12 +286,6 @@ class ImageSliderActivity : AppCompatActivity() {
                     saveAccessToken(apiResponse?.accessToken!!)
                     Handler(Looper.getMainLooper()).postDelayed({
                         // Send username to next Activity
-                        startActivity(
-                            Intent(
-                                this@ImageSliderActivity,
-                                CreateUsernameActivity::class.java
-                            )
-                        )
                         val intent =
                             Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
                         intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra

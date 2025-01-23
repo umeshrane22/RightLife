@@ -35,10 +35,27 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
         tvSkip = findViewById(R.id.tv_skip)
         tvSkip.setOnClickListener {
+            if (viewPager.currentItem == 0){
+                adapter.removeItem("BodyFatSelection")
+            }
             navigateToNextPage()
         }
 
         adapter = OnBoardingPagerAdapter(this)
+
+
+        val fragmentList = ArrayList<String>()
+
+        fragmentList.add("GenderSelection")
+        fragmentList.add("AgeSelection")
+        fragmentList.add("HeightSelection")
+        fragmentList.add("WeightSelection")
+        fragmentList.add("BodyFatSelection")
+        fragmentList.add("TargetWeightSelection")
+        fragmentList.add("StressManagementSelection")
+        fragmentList.add("HealthGoalFragment")
+        adapter.setData(fragmentList)
+
         viewPager.adapter = adapter
 
         viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
