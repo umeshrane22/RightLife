@@ -85,9 +85,10 @@ class AgeSelectionFragment : Fragment() {
             llSelectedAge.visibility = VISIBLE
             tvSelectedAge.text = selectedAge
 
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)
+            },1000)*/
+            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
         // new number picker

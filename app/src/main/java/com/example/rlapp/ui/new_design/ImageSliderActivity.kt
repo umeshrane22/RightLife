@@ -263,7 +263,6 @@ class ImageSliderActivity : AppCompatActivity() {
 
 
     private fun submitAnswer(googleSignInRequest: GoogleSignInRequest) {
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val call = apiService.submitGoogleLogin("android", googleSignInRequest)

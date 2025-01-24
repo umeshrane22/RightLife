@@ -75,7 +75,8 @@
                     app:track="@drawable/custom_track_onboardingswitch"
                     android:thumb="@drawable/custom_thumb"
                     app:thumbTint="@color/switch_thumb_color"
-                    app:trackTint="@color/switch_track_color" />
+                    app:trackTint="@color/switch_track_color"
+                    android:enabled="false"/>
             </RelativeLayout>
 
             <LinearLayout
@@ -91,7 +92,6 @@
                 <TextView
                     android:id="@+id/selected_number_text"
                     android:layout_width="0dp"
-                    android:text="170 Cms"
                     android:layout_weight="1"
                     android:layout_gravity="center"
                     android:gravity="center_horizontal"

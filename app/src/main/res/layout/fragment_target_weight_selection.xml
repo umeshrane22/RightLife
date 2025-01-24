@@ -65,7 +65,7 @@
                     android:fontFamily="@font/dmsans_regular"
                     android:text="Kg"
                     android:paddingRight="20dp"
-                    android:layout_toLeftOf="@+id/switch_height_metric"
+                    android:layout_toLeftOf="@+id/switch_weight_metric"
                     android:textSize="@dimen/textsize_large" />
                 <TextView
                     android:layout_width="wrap_content"
@@ -74,18 +74,19 @@
                     android:fontFamily="@font/dmsans_regular"
                     android:text="lbs"
                     android:paddingLeft="20dp"
-                    android:layout_toRightOf="@+id/switch_height_metric"
+                    android:layout_toRightOf="@+id/switch_weight_metric"
                     android:textSize="@dimen/textsize_large" />
 
                 <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_height_metric"
+                    android:id="@+id/switch_weight_metric"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     app:track="@drawable/custom_track_onboardingswitch"
                     android:thumb="@drawable/custom_thumb"
                     app:thumbTint="@color/switch_thumb_color"
-                    app:trackTint="@color/switch_track_color" />
+                    app:trackTint="@color/switch_track_color"
+                    android:enabled="false"/>
             </RelativeLayout>
 
             <TextView
@@ -93,12 +94,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/rl_ruler_container"
-
                 android:layout_gravity="center"
                 android:layout_marginBottom="50dp"
                 android:fontFamily="@font/poppins_medium"
                 android:gravity="center_horizontal"
-                android:text="50 Kg"
                 android:textSize="@dimen/textsize_large24sp"
                 android:textStyle="bold" />
 

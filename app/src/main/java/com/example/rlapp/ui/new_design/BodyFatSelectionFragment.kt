@@ -137,9 +137,10 @@ class BodyFatSelectionFragment : Fragment() {
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)
+            },1000)*/
+            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
 
