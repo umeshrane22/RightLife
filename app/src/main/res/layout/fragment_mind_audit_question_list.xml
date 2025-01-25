@@ -7,11 +7,13 @@
         android:id="@+id/txt_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="150dp"
         android:gravity="center"
-        android:background="@color/topcolorhealthcam"
+        android:background="@color/topcolormindauditQuestionbg"
         android:padding="16dp"
         android:text="Do any of your direct blood relatives currently have or have had medical conditions from the same below?"
         android:textColor="@color/txt_color_health"
+        android:fontFamily="@font/poppins_medium"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -26,6 +28,9 @@
             android:gravity="center_horizontal"
             android:text="Choose any one option"
             android:layout_marginTop="30dp"
+            android:textColor="#A0A3BD"
+            android:fontFamily="@font/dmsans_medium"
+            android:textSize="@dimen/textsize_medium"
             android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -33,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="56dp"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="10dp" />
     </LinearLayout>
 
 </RelativeLayout>

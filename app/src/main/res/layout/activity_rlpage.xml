@@ -3334,7 +3334,7 @@
                     android:backgroundTint="@color/thinkright"
                     android:gravity="center"
                     android:padding="11dp"
-                    android:layout_margin="0dp"
+                    android:layout_margin="1dp"
                     android:orientation="vertical">
                 <ImageView
                     android:layout_width="34dp"
@@ -3360,11 +3360,19 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/roundedcornershape"
-                android:backgroundTint="@color/moveright"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/textsize_small">
-
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/roundedcornershape"
+                    android:backgroundTint="@color/moveright"
+                    android:gravity="center"
+                    android:padding="11dp"
+                    android:layout_margin="1dp"
+                    android:orientation="vertical">
                 <ImageView
                     android:layout_width="34dp"
                     android:layout_height="34dp"
@@ -3379,6 +3387,7 @@
                     android:text="Affirmation"
                     android:textAlignment="center"
                     android:textSize="@dimen/textsize_extrasmall" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -3388,11 +3397,19 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/roundedcornershape"
-                android:backgroundTint="@color/sleepright"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="@dimen/textsize_small">
-
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/roundedcornershape"
+                    android:backgroundTint="@color/sleepright"
+                    android:gravity="center"
+                    android:padding="11dp"
+                    android:layout_margin="1dp"
+                    android:orientation="vertical">
                 <ImageView
                     android:layout_width="34dp"
                     android:layout_height="34dp"
@@ -3407,6 +3424,7 @@
                     android:text="Sleep Sounds"
                     android:textAlignment="center"
                     android:textSize="@dimen/textsize_extrasmall" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -3414,10 +3432,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            android:background="@android:color/transparent">
 
 
             <!-- Bottom Navigation Bar -->
@@ -3426,7 +3441,7 @@
                 android:layout_height="77dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/toproundedcornershape"
-
+                android:elevation="5dp"
                 android:backgroundTint="@color/white">
 
                 <!-- Left Button -->
@@ -3443,7 +3458,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="25dp">
+                        android:padding="15dp">
 
                         <ImageView
                             android:id="@+id/img_homemenu"
@@ -3475,7 +3490,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="25dp">
+                        android:padding="15dp">
 
                         <ImageView
                             android:id="@+id/img_healthmenu"
@@ -3514,6 +3529,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="23dp"
                 android:scaleType="fitXY"
+                android:elevation="10dp"
                 android:src="@drawable/quicklink_selector" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

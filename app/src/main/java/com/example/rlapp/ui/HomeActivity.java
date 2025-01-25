@@ -637,6 +637,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         // Resume auto-slide when activity is visible
         sliderHandler.postDelayed(sliderRunnable, 3000);
+        getRightlifeEdit("");
     }
 
     @Override
