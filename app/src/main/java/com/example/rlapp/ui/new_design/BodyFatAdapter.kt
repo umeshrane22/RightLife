@@ -36,7 +36,7 @@ class BodyFatAdapter(
         holder.tvHeader.text = bodyFatLists[position].bodyFatNumber
         holder.imageView.setImageResource(bodyFatLists[position].image)
 
-        val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_gray_border)
+        val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_edittext_gray)
 
         val unwrappedDrawable =
             AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray)

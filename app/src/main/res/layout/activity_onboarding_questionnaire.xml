@@ -50,7 +50,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:fontFamily="@font/dmsans_regular"
-            android:padding="15dp"
+            android:paddingEnd="16dp"
             android:text="Skip"
             android:textColor="@color/text_color_char_left"
             android:textSize="15sp" />
