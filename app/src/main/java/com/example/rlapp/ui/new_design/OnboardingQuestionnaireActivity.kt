@@ -6,6 +6,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -75,6 +76,18 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             }
         })
 
+        onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                val currentItem = viewPager.currentItem
+                if (currentItem == 0) {
+                    finish()
+                } else {
+                    navigateToPreviousPage()
+                }
+            }
+
+        })
+
     }
 
 
@@ -116,13 +129,6 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
-
-                    Toast.makeText(
-                        this@OnboardingQuestionnaireActivity,
-                        apiResponse?.successMessage,
-                        Toast.LENGTH_SHORT
-                    ).show()
-
                     //Handler(Looper.getMainLooper()).postDelayed({
                     // Submit Questions answer here
                     if (viewPager.currentItem == adapter.itemCount - 1) {
@@ -158,6 +164,11 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        navigateToPreviousPage()
     }
 
 }

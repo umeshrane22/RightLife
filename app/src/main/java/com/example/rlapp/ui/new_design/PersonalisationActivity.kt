@@ -24,7 +24,7 @@ class PersonalisationActivity : AppCompatActivity() {
         btnAllowPersonalisation.setOnClickListener {
             val intent = Intent(this, SyncNowActivity::class.java)
             startActivity(intent)
-            finish()
+            //finish()
         }
     }
 }

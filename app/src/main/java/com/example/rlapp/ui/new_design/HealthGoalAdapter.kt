@@ -63,7 +63,7 @@ class HealthGoalAdapter(
             holder.imageView.setColorFilter(
                 ContextCompat.getColor(
                     context,
-                    R.color.txt_color_header
+                    R.color.color_icon_green
                 ), android.graphics.PorterDuff.Mode.SRC_IN
             )
             holder.tvHeader.setTextColor(context.getColor(R.color.txt_color_header))

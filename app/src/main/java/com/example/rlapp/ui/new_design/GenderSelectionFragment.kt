@@ -23,6 +23,9 @@ class GenderSelectionFragment : Fragment() {
     private var selectedGender = ""
     private var tvDescription: TextView? = null
     private lateinit var handler: Handler
+    private lateinit var llMale: LinearLayout
+    private lateinit var llFemale: LinearLayout
+    private lateinit var llSelectedGender: LinearLayout
 
     companion object {
         fun newInstance(pageIndex: Int): GenderSelectionFragment {
@@ -41,9 +44,9 @@ class GenderSelectionFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.fragment_gender_selection, container, false)
 
 
-        val llMale = view.findViewById<LinearLayout>(R.id.ll_male)
-        val llFemale = view.findViewById<LinearLayout>(R.id.ll_female)
-        val llSelectedGender = view.findViewById<LinearLayout>(R.id.ll_selected_gender)
+        llMale = view.findViewById(R.id.ll_male)
+        llFemale = view.findViewById(R.id.ll_female)
+        llSelectedGender = view.findViewById(R.id.ll_selected_gender)
         val tvMale = view.findViewById<TextView>(R.id.tv_male)
         val tvFemale = view.findViewById<TextView>(R.id.tv_female)
         val tvSelectedGender = view.findViewById<TextView>(R.id.tv_selected_gender)
@@ -143,5 +146,12 @@ class GenderSelectionFragment : Fragment() {
         SharedPreferenceManager.getInstance(requireContext())
             .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
         (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        llMale.visibility = VISIBLE
+        llFemale.visibility = VISIBLE
+        llSelectedGender.visibility = GONE
     }
 }

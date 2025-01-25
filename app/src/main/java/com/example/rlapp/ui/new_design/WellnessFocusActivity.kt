@@ -40,6 +40,7 @@ class WellnessFocusActivity : AppCompatActivity() {
         adapter = OnBoardingModuleListAdapter(this, { moduleService ->
             selectedWellness = Utils.getModuleText(moduleService.moduleName)
             selectedService = moduleService
+            SharedPreferenceManager.getInstance(this@WellnessFocusActivity).selectedOnboardingModule = selectedService?.moduleName
             btnContinue.backgroundTintList = colorStateListSelected
             btnContinue.isEnabled = true
         }, moduleList)
@@ -59,7 +60,7 @@ class WellnessFocusActivity : AppCompatActivity() {
 
     private fun getModuleList() {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getDevClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val call = apiService.getOnboardingModule(authToken)
 

@@ -41,7 +41,7 @@ class ThirdFillerScreenActivity : AppCompatActivity() {
             val intent = Intent(this, YourInterestActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
-            finish()
+            //finish()
         }
     }
 }

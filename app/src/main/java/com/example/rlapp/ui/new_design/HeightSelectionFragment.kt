@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,7 +10,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -113,16 +110,12 @@ class HeightSelectionFragment : Fragment() {
             llSelectedHeight.visibility = VISIBLE
             tvSelectedHeight.text = selectedHeight
 
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                OnboardingQuestionnaireActivity.navigateToNextPage()
-            }, 1000)*/
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
 
         adapter = RulerAdapterVertical(numbers) { number ->
             // Handle the selected number
-            Toast.makeText(activity, "Selected: $number", Toast.LENGTH_SHORT).show()
         }
         adapter.setType("feet")
         rulerView.adapter = adapter
@@ -142,20 +135,15 @@ class HeightSelectionFragment : Fragment() {
                         val position =
                             recyclerView.layoutManager?.getPosition(snappedView) ?: return
                         val snappedNumber = numbers[position]
-                        /*Toast.makeText(
-                            activity,
-                            "Snapped to: $snappedNumber",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()*/
                         if (selected_number_text != null) {
-                            selected_number_text!!.text = "${decimalFormat.format(snappedNumber)} $selectedLabel"
+                            selected_number_text!!.text =
+                                "${decimalFormat.format(snappedNumber)} $selectedLabel"
                             if (selectedLabel == " feet") {
                                 val feet = decimalFormat.format(snappedNumber / 12)
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
                                 var inch = "0"
-                                if(h.size > 1){
+                                if (h.size > 1) {
                                     inch = h[1]
                                 }
                                 selected_number_text!!.text = "$ft Ft $inch In"
@@ -209,6 +197,12 @@ class HeightSelectionFragment : Fragment() {
         }
         adapter.setType("feet")
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cardViewSelection.visibility = VISIBLE
+        llSelectedHeight.visibility = GONE
     }
 
 }

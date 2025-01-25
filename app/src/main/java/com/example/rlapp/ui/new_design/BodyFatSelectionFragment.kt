@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -72,6 +70,7 @@ class BodyFatSelectionFragment : Fragment() {
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         val iconPlus = view.findViewById<ImageView>(R.id.icon_plus)
         val iconMinus = view.findViewById<ImageView>(R.id.icon_minus)
+        val tvPercentage = view.findViewById<TextView>(R.id.tv_percent)
 
         iconMinus.setOnClickListener {
             var fatValue = edtBodyFat.text.toString().toDouble()
@@ -98,12 +97,14 @@ class BodyFatSelectionFragment : Fragment() {
                     if (it > 0) {
                         iconMinus.visibility = VISIBLE
                         iconPlus.visibility = VISIBLE
+                        tvPercentage.visibility = VISIBLE
                         btnContinue.isEnabled = true
                         btnContinue.backgroundTintList = colorStateListSelected
                         setSelection(gendar, s.toString().toDouble())
                     } else {
                         iconMinus.visibility = GONE
                         iconPlus.visibility = GONE
+                        tvPercentage.visibility = GONE
                         btnContinue.isEnabled = false
                         btnContinue.backgroundTintList = colorStateList
                         adapter.clearSelection()
@@ -122,6 +123,7 @@ class BodyFatSelectionFragment : Fragment() {
             edtBodyFat.setText(average(bodyFat.bodyFatNumber).toString())
             iconMinus.visibility = VISIBLE
             iconPlus.visibility = VISIBLE
+            tvPercentage.visibility = VISIBLE
         }
 
         recyclerView.adapter = adapter
@@ -137,9 +139,6 @@ class BodyFatSelectionFragment : Fragment() {
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)*/
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
@@ -198,6 +197,12 @@ class BodyFatSelectionFragment : Fragment() {
         }
 
         return bodyFatList
+    }
+
+    override fun onPause() {
+        super.onPause()
+        llSelectedBodyFat.visibility = GONE
+        cardBodyFat.visibility = VISIBLE
     }
 
 }

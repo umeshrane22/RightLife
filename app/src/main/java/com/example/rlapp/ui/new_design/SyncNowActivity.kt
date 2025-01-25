@@ -22,7 +22,7 @@ class SyncNowActivity : AppCompatActivity() {
         }
         btnSkipForNOw.setOnClickListener {
             startActivity(Intent(this,OnboardingQuestionnaireActivity::class.java))
-            finish()
+           // finish()
         }
     }
 }
