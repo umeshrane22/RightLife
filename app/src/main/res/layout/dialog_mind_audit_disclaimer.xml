@@ -60,11 +60,11 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@color/gray"
+                android:background="@color/color_assesment_dialog_gray"
                 android:fontFamily="@font/dmsans_regular"
                 android:padding="16dp"
-                android:textColor="@color/black"
-                android:text="Consisting of 21 questions, the CAS score range from 0 to 63. This scale empowers mental health professionals"/>
+                android:text="Consisting of 21 questions, the CAS score range from 0 to 63. This scale empowers mental health professionals"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/item_text3"

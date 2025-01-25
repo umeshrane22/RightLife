@@ -33,12 +33,33 @@
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:layout_margin="16dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:max="100"
         android:progress="0"
         android:visibility="visible"
         android:backgroundTint="@color/buttoncolormind"
         android:progressDrawable="@drawable/roundedcornerprogessbarpink" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/roundedcornerpinkborder_radius10"
+        android:orientation="vertical"
+        android:layout_marginBottom="-20dp"
+        android:layout_marginTop="10dp"
+        android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:text="Over the last 2 weeks, how often have you been bothered by any of the following problems?"
+        android:gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="@dimen/textsize_medium"
+        android:layout_height="wrap_content"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
@@ -50,6 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_marginBottom="30dp"
         android:orientation="horizontal">
 
         <Button
@@ -77,11 +99,11 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:backgroundTint="@color/buttoncolormind"
-            android:visibility="gone"
+            android:visibility="visible"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:text="Submit" />
 
     </LinearLayout>
-
+    </LinearLayout>
 </LinearLayout>
