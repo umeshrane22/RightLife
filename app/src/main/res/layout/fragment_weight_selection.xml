@@ -88,6 +88,7 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:gravity="center_horizontal"
                 android:textSize="@dimen/textsize_large24sp"
+                android:text="50 kg"
                 android:textStyle="bold" />
 
             <RelativeLayout

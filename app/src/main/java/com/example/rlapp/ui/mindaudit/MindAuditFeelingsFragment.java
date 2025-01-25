@@ -75,7 +75,7 @@ public class MindAuditFeelingsFragment extends Fragment {
                 UserEmotions userEmotions = new UserEmotions(selectedEmotions);
                 getBasicScreeningQuestions(userEmotions);
             } else {
-                Toast.makeText(requireContext(), "Please select emotion", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please select at least one reason for your emotion before proceeding.", Toast.LENGTH_SHORT).show();
             }
         });
 
