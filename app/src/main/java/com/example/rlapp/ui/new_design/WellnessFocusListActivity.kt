@@ -3,6 +3,7 @@ package com.example.rlapp.ui.new_design
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,7 +35,16 @@ class WellnessFocusListActivity : AppCompatActivity() {
         val tvHeader = findViewById<TextView>(R.id.tv_header)
         val rvWellnessFocusList = findViewById<RecyclerView>(R.id.rv_wellness_focus_list)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
-        tvHeader.text = Utils.getModuleText(header)
+        val imgHeader = findViewById<ImageView>(R.id.img_header)
+
+        when (header) {
+            "MoveRight" -> imgHeader.setImageResource(R.drawable.header_move_right)
+            "SleepRight" -> imgHeader.setImageResource(R.drawable.header_sleep_right)
+            "EatRight" -> imgHeader.setImageResource(R.drawable.header_eat_right)
+            else
+                -> imgHeader.setImageResource(R.drawable.header_think_right)
+        }
+        tvHeader.text = header
 
         tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
         getOnboardingDataModule(header)
@@ -77,12 +87,12 @@ class WellnessFocusListActivity : AppCompatActivity() {
         }
     }
 
-    private fun getOnboardingDataModule(moduleName: String?){
+    private fun getOnboardingDataModule(moduleName: String?) {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getDevClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val call = apiService.getOnboardingDataModule(authToken,moduleName)
-        call.enqueue(object : Callback<OnBoardingDataModuleResponse>{
+        val call = apiService.getOnboardingDataModule(authToken, moduleName)
+        call.enqueue(object : Callback<OnBoardingDataModuleResponse> {
             override fun onResponse(
                 call: Call<OnBoardingDataModuleResponse>,
                 response: Response<OnBoardingDataModuleResponse>

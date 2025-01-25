@@ -137,14 +137,11 @@ class GenderSelectionFragment : Fragment() {
     }
 
     private fun saveGender() {
-        handler.postDelayed({
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-            onboardingQuestionRequest.gender = selectedGender
-            SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
-            OnboardingQuestionnaireActivity.navigateToNextPage()
-        }, 0)
-
+        val onboardingQuestionRequest =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        onboardingQuestionRequest.gender = selectedGender
+        SharedPreferenceManager.getInstance(requireContext())
+            .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+        (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
     }
 }

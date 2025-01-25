@@ -72,7 +72,7 @@ public class ExploreTRStaticCardsAdapter extends RecyclerView.Adapter<ExploreTRS
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
                 Gson gson = new Gson();
                 String json = gson.toJson(contentList);
               /*  Intent intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);

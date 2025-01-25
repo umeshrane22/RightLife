@@ -121,7 +121,7 @@ public class MindAuditReasonsFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(requireContext(), "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();

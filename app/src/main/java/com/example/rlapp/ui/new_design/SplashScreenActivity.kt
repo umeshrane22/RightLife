@@ -43,13 +43,13 @@ class SplashScreenActivity : AppCompatActivity() {
         //videoView.setOnCompletionListener {
         // Delay the transition to the next activity to allow the video to end properly
         Handler(Looper.getMainLooper()).postDelayed({
-            //if (authToken.isEmpty()) {
+            if (authToken.isEmpty()) {
                 val intent = Intent(this, DataControlActivity::class.java)
                 startActivity(intent)
-            /*} else {
+            } else {
                 val intent = Intent(this, HomeActivity::class.java)
                 startActivity(intent)
-            }*/
+            }
             finish()  // Close the SplashActivity
         }, SPLASH_DELAY)
         //}

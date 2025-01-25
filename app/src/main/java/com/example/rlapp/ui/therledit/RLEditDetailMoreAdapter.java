@@ -57,7 +57,7 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
         //holder.imageView.setImageResource(itemImages[position]);
 
         holder.itemView.setOnClickListener(view -> {
-            Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             Gson gson = new Gson();
             String json = gson.toJson(contentList);
             Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);

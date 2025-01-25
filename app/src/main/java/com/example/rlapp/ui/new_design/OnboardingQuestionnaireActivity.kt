@@ -1,13 +1,23 @@
 package com.example.rlapp.ui.new_design
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest
+import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse
+import com.example.rlapp.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
@@ -35,7 +45,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
         tvSkip = findViewById(R.id.tv_skip)
         tvSkip.setOnClickListener {
-            if (viewPager.currentItem == 0){
+            if (viewPager.currentItem == 0) {
                 adapter.removeItem("BodyFatSelection")
             }
             navigateToNextPage()
@@ -91,6 +101,63 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                 viewPager.currentItem += 1
             }
         }
+    }
+
+    fun submitAnswer(onboardingQuestionRequest: OnboardingQuestionRequest) {
+        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val call = apiService.submitOnBoardingAnswers(authToken, onboardingQuestionRequest)
+
+        call.enqueue(object : Callback<SaveUserInterestResponse> {
+            override fun onResponse(
+                call: Call<SaveUserInterestResponse>,
+                response: Response<SaveUserInterestResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()
+
+                    Toast.makeText(
+                        this@OnboardingQuestionnaireActivity,
+                        apiResponse?.successMessage,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    //Handler(Looper.getMainLooper()).postDelayed({
+                    // Submit Questions answer here
+                    if (viewPager.currentItem == adapter.itemCount - 1) {
+                        startActivity(
+                            Intent(
+                                this@OnboardingQuestionnaireActivity,
+                                AwesomeScreenActivity::class.java
+                            )
+                        )
+                        finishAffinity()
+                        SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity).clearOnboardingQuestionRequest()
+                    } else {
+                        navigateToNextPage()
+                    }
+
+                    //}, 1000)
+
+                } else {
+                    Toast.makeText(
+                        this@OnboardingQuestionnaireActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
+                Toast.makeText(
+                    this@OnboardingQuestionnaireActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        })
     }
 
 }

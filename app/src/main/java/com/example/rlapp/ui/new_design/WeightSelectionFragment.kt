@@ -12,7 +12,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -21,7 +21,10 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.ConversionUtils
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import kotlin.math.floor
+
 
 class WeightSelectionFragment : Fragment() {
 
@@ -29,8 +32,13 @@ class WeightSelectionFragment : Fragment() {
     private lateinit var tvSelectedWeight: TextView
     private var selectedWeight = ""
     private var tvDescription: TextView? = null
-    private var selected_number_text: TextView?=null
+    private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
+    private lateinit var swithch: SwitchCompat
+    private val numbers = mutableListOf<Float>()
+    private lateinit var adapter: RulerAdapter
+    private var selectedLabel: String = " kg"
+
     companion object {
         fun newInstance(pageIndex: Int): WeightSelectionFragment {
             val fragment = WeightSelectionFragment()
@@ -51,16 +59,32 @@ class WeightSelectionFragment : Fragment() {
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
+        swithch = view.findViewById(R.id.switch_weight_metric)
 
         (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
         selected_number_text = view.findViewById(R.id.selected_number_text)
-        val rulerView= view.findViewById<RecyclerView>(R.id.rulerView)
+        val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
+        swithch.setOnCheckedChangeListener { buttonView, isChecked ->
+            val w = selectedWeight.split(" ")
+            if (isChecked) {
+                selectedLabel = " lbs"
+                selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+                setLbsValue()
+            } else {
+                selectedLabel = " kg"
+                selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+                setKgsValue()
+            }
+            recyclerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+            selectedWeight += selectedLabel
+            selected_number_text!!.text = selectedWeight
+        }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
@@ -74,24 +98,25 @@ class WeightSelectionFragment : Fragment() {
             llSelectedWeight.visibility = VISIBLE
             tvSelectedWeight.text = selectedWeight
 
-            Handler(Looper.getMainLooper()).postDelayed({
+            /*Handler(Looper.getMainLooper()).postDelayed({
                 OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)
+            }, 1000)*/
+            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
 
-        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerView.layoutManager = layoutManager
 
         // Generate numbers with increments of 0.1
-        val numbers = mutableListOf<Float>()
+
         for (i in 0..1000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
 
 
-
-        val adapter = RulerAdapter(numbers) { number ->
+        adapter = RulerAdapter(numbers) { number ->
             // Handle the selected number
         }
         recyclerView.adapter = adapter
@@ -111,17 +136,19 @@ class WeightSelectionFragment : Fragment() {
                     if (snappedView != null) {
                         val position = recyclerView.layoutManager!!.getPosition(snappedView)
                         val snappedNumber = numbers[position]
-                        Toast.makeText(
-                            requireContext(),
-                            "Snapped to: $snappedNumber",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        /* Toast.makeText(
+                             requireContext(),
+                             "Snapped to: $snappedNumber",
+                             Toast.LENGTH_SHORT
+                         ).show()*/
                         //selected_number_text.setText("$snappedNumber Kg")
                         if (selected_number_text != null) {
-                            selected_number_text!!.text = "$snappedNumber Kg"
+                            selected_number_text!!.text = "$snappedNumber $selectedLabel"
                             selectedWeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
                             btnContinue.backgroundTintList = colorStateList
+                            swithch.isEnabled = true
+
                         }
                     }
                 }
@@ -155,6 +182,22 @@ class WeightSelectionFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun setLbsValue() {
+        numbers.clear()
+        for (i in 0..2204) {
+            numbers.add(i / 10f)
+        }
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun setKgsValue() {
+        numbers.clear()
+        for (i in 0..1000) {
+            numbers.add(i / 10f) // Increment by 0.1
+        }
+        adapter.notifyDataSetChanged()
     }
 
 }

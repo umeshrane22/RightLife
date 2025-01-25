@@ -3,6 +3,7 @@ package com.example.rlapp.ui.new_design
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -19,10 +20,12 @@ import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.RetrofitData.LogoutUserRequest
+import com.example.rlapp.apimodel.userdata.Userdata
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -54,8 +57,7 @@ class CreateUsernameActivity : AppCompatActivity() {
             tvError.visibility = GONE
             btnContinue.backgroundTintList = colorStateListSelected
             btnContinue.isEnabled = true
-        }
-        else {
+        } else {
             tvError.visibility = VISIBLE
             btnContinue.backgroundTintList = colorStateList
             btnContinue.isEnabled = false
@@ -75,8 +77,7 @@ class CreateUsernameActivity : AppCompatActivity() {
                     tvError.visibility = GONE
                     btnContinue.backgroundTintList = colorStateListSelected
                     btnContinue.isEnabled = true
-                }
-                else {
+                } else {
                     tvError.visibility = VISIBLE
                     btnContinue.backgroundTintList = colorStateList
                     btnContinue.isEnabled = false
@@ -153,10 +154,11 @@ class CreateUsernameActivity : AppCompatActivity() {
     private fun showFullScreenDialog(username: String) {
 
         findViewById<LinearLayout>(R.id.dialog_welcome).visibility = VISIBLE
+        val userdata = Userdata()
+        userdata.firstName = username
+        updateUserData(userdata)
 
-
-
-        Handler().postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, WellnessFocusActivity::class.java)
             startActivity(intent)
             finishAffinity();
@@ -166,5 +168,32 @@ class CreateUsernameActivity : AppCompatActivity() {
         val tvUsername = findViewById<TextView>(R.id.tv_username)
         tvUsername.text = username
 
+    }
+
+    private fun updateUserData(userdata: Userdata) {
+        val token = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call: Call<ResponseBody> = apiService.updateUser(token, userdata)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    Log.d("AAAA", "Response = " + response.body())
+                } else {
+                    Toast.makeText(
+                        this@CreateUsernameActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@CreateUsernameActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 }
