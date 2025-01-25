@@ -85,9 +85,6 @@ class AgeSelectionFragment : Fragment() {
             llSelectedAge.visibility = VISIBLE
             tvSelectedAge.text = selectedAge
 
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)*/
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
@@ -115,6 +112,12 @@ class AgeSelectionFragment : Fragment() {
 
 
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cardViewSelection.visibility = VISIBLE
+        llSelectedAge.visibility = GONE
     }
 
 }

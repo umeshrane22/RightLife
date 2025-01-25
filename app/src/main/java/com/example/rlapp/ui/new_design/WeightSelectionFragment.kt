@@ -136,11 +136,6 @@ class WeightSelectionFragment : Fragment() {
                     if (snappedView != null) {
                         val position = recyclerView.layoutManager!!.getPosition(snappedView)
                         val snappedNumber = numbers[position]
-                        /* Toast.makeText(
-                             requireContext(),
-                             "Snapped to: $snappedNumber",
-                             Toast.LENGTH_SHORT
-                         ).show()*/
                         //selected_number_text.setText("$snappedNumber Kg")
                         if (selected_number_text != null) {
                             selected_number_text!!.text = "$snappedNumber $selectedLabel"
@@ -198,6 +193,12 @@ class WeightSelectionFragment : Fragment() {
             numbers.add(i / 10f) // Increment by 0.1
         }
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cardViewSelection.visibility = VISIBLE
+        llSelectedWeight.visibility = GONE
     }
 
 }

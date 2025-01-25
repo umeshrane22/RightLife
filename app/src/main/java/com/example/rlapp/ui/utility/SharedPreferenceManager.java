@@ -103,5 +103,16 @@ public class SharedPreferenceManager {
     public void clearOnboardingQuestionRequest(){
         sharedPreferences.edit().remove(SharedPreferenceConstants.ON_BOARDING_QUESTIONS).apply();
     }
+
+    public void setSelectedOnboardingModule(String moduleName){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.ON_BOARDING_SELECTED_MODULE, moduleName);
+        editor.apply();
+    }
+
+    public String getSelectedOnboardingModule() {
+        return sharedPreferences.getString(SharedPreferenceConstants.ON_BOARDING_SELECTED_MODULE, "");
+    }
+
 }
 

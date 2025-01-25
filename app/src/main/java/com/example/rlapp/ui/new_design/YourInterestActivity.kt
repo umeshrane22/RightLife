@@ -68,7 +68,7 @@ class YourInterestActivity : AppCompatActivity() {
 
     private fun getInterests() {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getDevClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getUserInterest(authToken)
         call.enqueue(object : Callback<GetInterestResponse> {
             override fun onResponse(
@@ -103,7 +103,7 @@ class YourInterestActivity : AppCompatActivity() {
 
     private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest) {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getDevClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.saveUserInterest(authToken, saveUserInterestRequest)
 
         call.enqueue(object : Callback<SaveUserInterestResponse> {
@@ -113,13 +113,6 @@ class YourInterestActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
-
-                    /*Toast.makeText(
-                        this@YourInterestActivity,
-                        apiResponse?.successMessage,
-                        Toast.LENGTH_SHORT
-                    ).show()*/
-
                     uiChangesOnSaveInterest()
 
                 } else {
@@ -162,8 +155,8 @@ class YourInterestActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, PersonalisationActivity::class.java)
             startActivity(intent)
-            finish()
-        }, 2000)
+            //finish()
+        }, 1000)
     }
 
 }

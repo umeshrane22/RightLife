@@ -13,6 +13,8 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ui.new_design.pojo.StressManagement
+import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
 
 class StressManagementAdapter(
     private val context: Context,
@@ -43,7 +45,7 @@ class StressManagementAdapter(
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,
-            ContextCompat.getColor(context, R.color.thinkright)
+            Utils.getModuleColor(context, SharedPreferenceManager.getInstance(context).selectedOnboardingModule)
         )
 
         holder.llStressManagement.background =

@@ -1,222 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_above="@+id/btn_allow_personalisation">
 
-        <ImageView
-            android:id="@+id/image_personalisation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_skip"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/image_personalisation" />
-
-        <TextView
-            android:id="@+id/tv_skip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="8dp"
-            android:fontFamily="@font/dmsans_regular"
-            android:padding="16dp"
-            android:text="Skip"
-            android:textColor="@color/text_color_char_left"
-            android:textSize="15sp" />
-
-
-        <TextView
-            android:id="@+id/tv_make_experience"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/image_personalisation"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:fontFamily="@font/dmsans_bold"
-            android:gravity="center"
-            android:text="Let’s Make Your Experience Truly Yours"
-            android:textColor="@color/txt_color_header"
-            android:textSize="24sp" />
-
-        <LinearLayout
-            android:id="@+id/ll_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_below="@id/tv_make_experience"
-            android:layout_margin="16dp"
-            android:background="@drawable/roundedcornerbutton"
-            android:backgroundTint="#E6F0FE"
-            android:padding="8dp">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
-
-                <ImageView
-                    android:id="@+id/image_correct1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/correct_green"
-                    android:layout_marginTop="4dp"/>
-
-                <TextView
-                    android:id="@+id/tv_personalise_insights"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image_correct1"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Personalised Insights"
-                    android:textColor="@color/txt_color_header"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/tv_personalise_insights_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image_correct1"
-                    android:layout_below="@+id/tv_personalise_insights"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:text="Personalised Insights Tailored recommendations based on your preferences and progress."
-                    android:textColor="@color/txt_color_header"
-                    android:textSize="18sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
-
-                <ImageView
-                    android:id="@+id/image_correct2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/correct_green"
-                    android:layout_marginTop="4dp"/>
-
-                <TextView
-                    android:id="@+id/tv_better_results"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image_correct2"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Better Results"
-                    android:textColor="@color/txt_color_header"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/tv_better_results_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image_correct2"
-                    android:layout_below="@+id/tv_better_results"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:text="Better Results Align your wellness journey with your unique goals."
-                    android:textColor="@color/txt_color_header"
-                    android:textSize="18sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp">
-
-                <ImageView
-                    android:id="@+id/image_correct3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/correct_green"
-                    android:layout_marginTop="4dp"/>
-
-                <TextView
-                    android:id="@+id/tv_end_to_end"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image_correct3"
-                    android:layout_marginStart="16dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="End -To-End Encryption"
-                    android:textColor="@color/txt_color_header"
-                    android:textSize="20sp" />
-
-                <TextView
-                    android:id="@+id/tv_end_to_end_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image_correct3"
-                    android:layout_below="@+id/tv_end_to_end"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:text="End-To-End Encryption Your data stays secure and is used only to enhance your experience."
-                    android:textColor="@color/txt_color_header"
-                    android:textSize="18sp" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/ll_list"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/roundedcornerbutton"
-            android:backgroundTint="@color/medium_yellow"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
             <ImageView
+                android:id="@+id/image_personalisation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:src="@drawable/icon_awesome_lightbulb" />
+                android:layout_below="@id/tv_skip"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/image_personalisation" />
 
             <TextView
+                android:id="@+id/tv_skip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="8dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:padding="16dp"
+                android:text="Skip"
+                android:textColor="@color/text_color_char_left"
+                android:textSize="15sp" />
+
+
+            <TextView
+                android:id="@+id/tv_make_experience"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/image_personalisation"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:fontFamily="@font/dmsans_regular"
+                android:fontFamily="@font/dmsans_bold"
                 android:gravity="center"
-                android:text="94% of user have completed their profile in 2 minutes"
+                android:text="Let’s Make Your Experience Truly Yours"
                 android:textColor="@color/txt_color_header"
-                android:textSize="12sp" />
+                android:textSize="22sp" />
 
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@id/tv_make_experience"
+                android:layout_margin="16dp"
+                android:background="@drawable/roundedcornerbutton"
+                android:backgroundTint="#E6F0FE"
+                android:padding="8dp">
 
-        <Button
-            android:id="@+id/btn_allow_personalisation"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/ll_info"
-            android:layout_margin="36dp"
-            android:backgroundTint="@color/menuselected"
-            android:fontFamily="@font/dmsans_bold"
-            android:text="Allow Personalisation"
-            android:textColor="@color/white"
-            android:textSize="@dimen/textsize_large" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp">
 
-    </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/image_correct1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/correct_green"
+                        android:layout_marginTop="4dp" />
 
-</ScrollView>
+                    <TextView
+                        android:id="@+id/tv_personalise_insights"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/image_correct1"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Personalised Insights"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tv_personalise_insights_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/image_correct1"
+                        android:layout_below="@+id/tv_personalise_insights"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Personalised Insights Tailored recommendations based on your preferences and progress."
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/image_correct2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/correct_green"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tv_better_results"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/image_correct2"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Better Results"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tv_better_results_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/image_correct2"
+                        android:layout_below="@+id/tv_better_results"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Better Results Align your wellness journey with your unique goals."
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp">
+
+                    <ImageView
+                        android:id="@+id/image_correct3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/correct_green"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tv_end_to_end"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/image_correct3"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="End -To-End Encryption"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/tv_end_to_end_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/image_correct3"
+                        android:layout_below="@+id/tv_end_to_end"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="End-To-End Encryption Your data stays secure and is used only to enhance your experience."
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="16sp" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll_list"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/roundedcornerbutton"
+                android:backgroundTint="@color/medium_yellow"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:src="@drawable/icon_awesome_lightbulb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center"
+                    android:text="94% of user have completed their profile in 2 minutes"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_allow_personalisation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginEnd="36dp"
+        android:backgroundTint="@color/menuselected"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="Allow Personalisation"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textsize_large" />
+
+</RelativeLayout>

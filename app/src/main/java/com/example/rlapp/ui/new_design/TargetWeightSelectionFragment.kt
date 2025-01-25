@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,7 +10,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -38,6 +35,8 @@ class TargetWeightSelectionFragment : Fragment() {
     private val numbers = mutableListOf<Float>()
     private lateinit var adapter: RulerAdapter
     private var selectedLabel: String = " kg"
+    private lateinit var tvCurrentWeight: TextView
+    private lateinit var tvLabel: TextView
 
     companion object {
         fun newInstance(pageIndex: Int): TargetWeightSelectionFragment {
@@ -61,6 +60,8 @@ class TargetWeightSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
         swithch = view.findViewById(R.id.switch_weight_metric)
+        tvCurrentWeight = view.findViewById(R.id.tv_current_weight)
+        tvLabel = view.findViewById(R.id.tv_label)
 
         (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
@@ -72,11 +73,20 @@ class TargetWeightSelectionFragment : Fragment() {
 
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
+        val onboardingQuestionRequest =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+
+        val currentWeight = onboardingQuestionRequest.weight
+
+        val weight = currentWeight?.split(" ")
+        tvCurrentWeight.text = weight?.get(0) ?: "0"
+        if (weight?.size!! > 2)
+            tvLabel.text = weight[2]
+        else
+            tvLabel.text = weight[1]
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
             onboardingQuestionRequest.targetWeight = selectedWeight
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
@@ -85,9 +95,6 @@ class TargetWeightSelectionFragment : Fragment() {
             llSelectedWeight.visibility = VISIBLE
             tvSelectedWeight.text = selectedWeight
 
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)*/
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
@@ -104,7 +111,6 @@ class TargetWeightSelectionFragment : Fragment() {
 
         adapter = RulerAdapter(numbers) { number ->
             // Handle the selected number
-            //Toast.makeText(requireContext(), "Selected: $number", Toast.LENGTH_SHORT).show()
         }
         recyclerView.adapter = adapter
 
@@ -140,11 +146,6 @@ class TargetWeightSelectionFragment : Fragment() {
                     if (snappedView != null) {
                         val position = recyclerView.layoutManager!!.getPosition(snappedView)
                         val snappedNumber = numbers[position]
-                        /*Toast.makeText(
-                            requireContext(),
-                            "Snapped to: $snappedNumber",
-                            Toast.LENGTH_SHORT
-                        ).show()*/
                         //selected_number_text.setText("$snappedNumber Kg")
                         if (selected_number_text != null) {
                             selected_number_text!!.text = "$snappedNumber $selectedLabel"
@@ -202,6 +203,12 @@ class TargetWeightSelectionFragment : Fragment() {
             numbers.add(i / 10f) // Increment by 0.1
         }
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        cardViewSelection.visibility = VISIBLE
+        llSelectedWeight.visibility = GONE
     }
 
 }

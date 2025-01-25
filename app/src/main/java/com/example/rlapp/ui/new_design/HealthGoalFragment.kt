@@ -3,6 +3,7 @@ package com.example.rlapp.ui.new_design
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
@@ -74,7 +75,7 @@ class HealthGoalFragment : Fragment() {
         recyclerView.adapter = adapter
 
         btnContinue.setOnClickListener {
-            llSelectedHealthGoal.visibility = View.VISIBLE
+            llSelectedHealthGoal.visibility = VISIBLE
             rlHealthGoal.visibility = View.GONE
             tvSelectedHealthGoal.text = selectedHealthGoal
             tvDescription.visibility = View.GONE
@@ -89,5 +90,12 @@ class HealthGoalFragment : Fragment() {
 
 
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        llSelectedHealthGoal.visibility = GONE
+        rlHealthGoal.visibility = VISIBLE
+        tvDescription.visibility = VISIBLE
     }
 }

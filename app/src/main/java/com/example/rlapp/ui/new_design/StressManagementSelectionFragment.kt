@@ -1,10 +1,9 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Button
@@ -97,7 +96,8 @@ class StressManagementSelectionFragment : Fragment() {
             StressManagementAdapter(requireContext(), stressManagementList) { stressManagement ->
                 selectedStressManagement = stressManagement
                 btnContinue.isEnabled = true
-                val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
+                val colorStateList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
                 btnContinue.backgroundTintList = colorStateList
             }
 
@@ -105,7 +105,7 @@ class StressManagementSelectionFragment : Fragment() {
 
 
         btnContinue.setOnClickListener {
-            llSelectedStressManagement.visibility = View.VISIBLE
+            llSelectedStressManagement.visibility = VISIBLE
             rlStressManagement.visibility = View.GONE
             tvSelectedStressManagementHeader.text = selectedStressManagement.header
             tvSelectedStressManagementDesc.text = selectedStressManagement.description
@@ -116,12 +116,15 @@ class StressManagementSelectionFragment : Fragment() {
                 selectedStressManagement.header
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                OnboardingQuestionnaireActivity.navigateToNextPage()
-            },1000)*/
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        llSelectedStressManagement.visibility = GONE
+        rlStressManagement.visibility = VISIBLE
     }
 }

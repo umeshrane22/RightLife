@@ -76,7 +76,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
             val intent = Intent(this, ThirdFillerScreenActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
-            finish()
+            //finish()
         }
     }
 
@@ -85,7 +85,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         onboardingModuleResultRequest: OnboardingModuleResultRequest
     ) {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getDevClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val call = apiService.getOnboardingModuleResult(
             authToken,
