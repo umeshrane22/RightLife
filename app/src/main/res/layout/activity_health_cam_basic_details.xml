@@ -174,7 +174,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
-                        android:text="FT"
+                        android:text="ft"
                         android:textColor="@color/black" />
 
                     <EditText
@@ -195,7 +195,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
-                        android:text="INCH"
+                        android:text="inch"
                         android:textColor="@color/black" />
                 </LinearLayout>
 
@@ -224,7 +224,7 @@
                     android:drawableEnd="@drawable/icon_arrow_article"
                     android:drawableTint="@color/black"
                     android:gravity="center"
-                    android:text="CM"
+                    android:text="cm"
                     android:textColor="@color/black" />
             </LinearLayout>
 
@@ -274,7 +274,7 @@
                     android:drawableEnd="@drawable/icon_arrow_article"
                     android:drawableTint="@color/black"
                     android:gravity="center"
-                    android:text="KGS"
+                    android:text="kgs"
                     android:textColor="@color/black" />
             </LinearLayout>
 

@@ -44,6 +44,7 @@ import static com.example.rlapp.ui.utility.ConversionUtils.convertCentimeterToIn
 import static com.example.rlapp.ui.utility.ConversionUtils.convertFeetToCentimeter;
 import static com.example.rlapp.ui.utility.ConversionUtils.convertFeetToInch;
 import static com.example.rlapp.ui.utility.ConversionUtils.convertInchToCentimeter;
+import static com.example.rlapp.ui.utility.ConversionUtils.convertInchToFeet;
 import static com.example.rlapp.ui.utility.ConversionUtils.convertKgToLbs;
 import static com.example.rlapp.ui.utility.ConversionUtils.convertLbsToKgs;
 
@@ -277,7 +278,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     private void openHeightPopUp() {
         PopupMenu popupMenu = new PopupMenu(this, edtSpinnerHeight);
         for (Option option : heightUnits) {
-            popupMenu.getMenu().add(option.getOptionText());
+            popupMenu.getMenu().add(option.getOptionText().toLowerCase());
         }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             String previousSelection = edtSpinnerHeight.getText().toString();
@@ -286,8 +287,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             }
             String height;
             switch (menuItem.toString()) {
-                case "CM":
-                    if (previousSelection.equals("INCH")) {
+                case "cm":
+                    if (previousSelection.equals("inch")) {
                         height = convertInchToCentimeter(edtHeight.getText().toString());
                         edtHeight.setText(height);
                     } else { //ftInch
@@ -297,8 +298,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                         edtHeight.setText(height);
                     }
                     break;
-                case "INCH":
-                    if (previousSelection.equals("CM")) {
+                case "inch":
+                    if (previousSelection.equals("cm")) {
                         height = convertCentimeterToInch(edtHeight.getText().toString());
                         edtHeight.setText(height);
                     } else { //FtInch
@@ -308,10 +309,10 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                         edtHeight.setText(height);
                     }
                     break;
-                case "FT_AND_INCHES":
+                case "ft_and_inches":
                     edtHeight.setVisibility(View.GONE);
                     llHeightFtInch.setVisibility(View.VISIBLE);
-                    if (previousSelection.equals("CM")) {
+                    if (previousSelection.equals("cm")) {
                         String cms = convertCentimeterToFtInch(edtHeight.getText().toString());
                         String[] strings = cms.split("\\.");
                         edtFt.setText(strings[0]);
@@ -319,7 +320,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                             edtInch.setText(strings[1]);
                         }
                     } else { //Inch
-                        String inches = convertFeetToInch(edtHeight.getText().toString());
+                        String inches = convertInchToFeet(edtHeight.getText().toString());
                         String[] strings = inches.split("\\.");
                         edtFt.setText(strings[0]);
                         if (strings.length > 1) {
@@ -338,12 +339,12 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     private void openWeightPopup() {
         PopupMenu popupMenu = new PopupMenu(this, edtSpinnerWeight);
         for (Option option : weightUnits) {
-            popupMenu.getMenu().add(option.getOptionText());
+            popupMenu.getMenu().add(option.getOptionText().toLowerCase());
         }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             edtSpinnerWeight.setText(menuItem.toString());
             String weight;
-            if ("KGS".equals(menuItem.toString())) {
+            if ("kgs".equals(menuItem.toString())) {
                 weight = convertKgToLbs(edtWeight.getText().toString());
             } else {
                 weight = convertLbsToKgs(edtWeight.getText().toString());

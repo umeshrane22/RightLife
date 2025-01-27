@@ -280,6 +280,15 @@ public interface ApiService {
             @Query("moduleId") String moduleId
     );
 
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("content/list")
+    Call<ResponseBody> getContentdetailslist(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("moduleId") String moduleId
+    );
+
     // get filterchip
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @GET("app/type/content")

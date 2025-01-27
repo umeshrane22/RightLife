@@ -2,6 +2,7 @@ package com.example.rlapp.ui.utility;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -124,6 +125,62 @@ public class Utils {
             default:
                 // If no match, return a default color (e.g., transparent or a predefined color)
                 return ContextCompat.getColor(context, android.R.color.darker_gray);
+        }
+    }
+
+    public static ColorStateList getModuleColorStateList(Context context, String module) {
+        if (module == null) {
+            return ContextCompat.getColorStateList(context, android.R.color.transparent); // Default to transparent if null
+        }
+
+        switch (module) {
+            case AppConstants.EAT_RIGHT:
+            case "EAT_RIGHT":
+                return ContextCompat.getColorStateList(context, R.color.eatright);
+
+            case AppConstants.THINK_RIGHT:
+            case "THINK_RIGHT":
+                return ContextCompat.getColorStateList(context, R.color.thinkright);
+
+            case AppConstants.SLEEP_RIGHT:
+            case "SLEEP_RIGHT":
+                return ContextCompat.getColorStateList(context, R.color.sleepright);
+
+            case AppConstants.MOVE_RIGHT:
+            case "MOVE_RIGHT":
+                return ContextCompat.getColorStateList(context, R.color.moveright);
+
+            default:
+                // If no match, return a default color (e.g., transparent or a predefined color)
+                return ContextCompat.getColorStateList(context, android.R.color.darker_gray);
+        }
+    }
+
+    public static int getModuleColorResource(Context context, String module) {
+        if (module == null) {
+            return android.R.color.transparent; // Default to transparent if null
+        }
+
+        switch (module) {
+            case AppConstants.EAT_RIGHT:
+            case "EAT_RIGHT":
+                return  R.color.eatright;
+
+            case AppConstants.THINK_RIGHT:
+            case "THINK_RIGHT":
+                return R.color.thinkright;
+
+            case AppConstants.SLEEP_RIGHT:
+            case "SLEEP_RIGHT":
+                return R.color.sleepright;
+
+            case AppConstants.MOVE_RIGHT:
+            case "MOVE_RIGHT":
+                return R.color.moveright;
+
+            default:
+                // If no match, return a default color (e.g., transparent or a predefined color)
+                return android.R.color.darker_gray;
         }
     }
 
