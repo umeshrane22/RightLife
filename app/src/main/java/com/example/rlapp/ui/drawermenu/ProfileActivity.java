@@ -125,7 +125,8 @@ public class ProfileActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                checkExitConditions();
+                //checkExitConditions();
+                showExitDialog();
             }
         });
     }
@@ -158,7 +159,7 @@ public class ProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
         });
-        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> checkExitConditions());
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> showExitDialog());
     }
 
     private void setData() {

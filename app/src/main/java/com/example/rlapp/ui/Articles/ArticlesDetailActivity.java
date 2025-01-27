@@ -1,8 +1,11 @@
 package com.example.rlapp.ui.Articles;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -18,14 +21,15 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.rlapp.R;
 import com.example.rlapp.ui.healthaudit.HealthAuditFormActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditPagerAdapter;
+import com.example.rlapp.ui.utility.Utils;
 import com.zhpan.indicator.IndicatorView;
 
 import me.relex.circleindicator.CircleIndicator3;
 
 public class ArticlesDetailActivity extends AppCompatActivity {
 
-    ImageView ic_back_dialog, close_dialog;
-
+    ImageView ic_back_dialog, close_dialog,iconArrow ,image_like_article,image_share_article;
+    TextView txt_inthisarticle,txt_inthisarticle_list;
     Button btn_howitworks;
 
     @Override
@@ -37,8 +41,24 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
         btn_howitworks = findViewById(R.id.btn_howitworks);
+        txt_inthisarticle = findViewById(R.id.txt_inthisarticle);
+        txt_inthisarticle_list = findViewById(R.id.txt_inthisarticle_list);
+        iconArrow = findViewById(R.id.icon_arrow_article);
 
 
+
+        txt_inthisarticle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
+                    txt_inthisarticle_list.setVisibility(View.GONE);
+                    iconArrow.setRotation(360f); // Rotate by 180 degrees
+                }else {
+                    txt_inthisarticle_list.setVisibility(View.VISIBLE);
+                    iconArrow.setRotation(180f); // Rotate by 180 degrees
+                }
+            }
+        });
         ic_back_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,8 +82,10 @@ public class ArticlesDetailActivity extends AppCompatActivity {
             }
         });
 
-
+        txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
+        Utils.showCustomTopToast(this,"this is top toast!!!");
     }
+
 
 
     private void showExitDialog() {
