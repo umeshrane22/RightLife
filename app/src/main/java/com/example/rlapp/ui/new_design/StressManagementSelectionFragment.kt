@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ui.new_design.pojo.StressManagement
+import com.example.rlapp.ui.utility.AppConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class StressManagementSelectionFragment : Fragment() {
@@ -24,15 +25,18 @@ class StressManagementSelectionFragment : Fragment() {
     private lateinit var tvSelectedStressManagementHeader: TextView
     private lateinit var tvSelectedStressManagementDesc: TextView
     private lateinit var selectedStressManagement: StressManagement
+    private lateinit var tvStressManagementHeader: TextView
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: StressManagementAdapter
     private val stressManagementList = ArrayList<StressManagement>()
+    private lateinit var header: String
 
     companion object {
-        fun newInstance(pageIndex: Int): StressManagementSelectionFragment {
+        fun newInstance(pageIndex: Int, header: String): StressManagementSelectionFragment {
             val fragment = StressManagementSelectionFragment()
             val args = Bundle()
+            args.putString("HEADER", header)
             fragment.arguments = args
             return fragment
         }
@@ -53,42 +57,160 @@ class StressManagementSelectionFragment : Fragment() {
         tvSelectedStressManagementDesc = view.findViewById(R.id.tv_selected_stress_management_desc)
 
         recyclerView = view.findViewById(R.id.rv_stress_management)
+        tvStressManagementHeader = view.findViewById(R.id.tv_header_stress_management)
 
         (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
-        stressManagementList.add(
-            StressManagement(
-                "Beginner",
-                "I occasionally meditate or practise breathing exercises.",
-                R.drawable.beginer
-            )
-        )
+        header = arguments?.getString("HEADER").toString()
 
-        stressManagementList.add(
-            StressManagement(
-                "Intermediate",
-                "I haven’t tried mindfulness or stress management yet.",
-                R.drawable.intermediate
-            )
-        )
+        when (header) {
+            AppConstants.EAT_RIGHT, "EAT_RIGHT" -> {
+                tvStressManagementHeader.text = "How would you describe your current eating?"
+                stressManagementList.add(
+                    StressManagement(
+                        "Beginner",
+                        "I don’t pay much attention to what I eat.",
+                        R.drawable.beginer
+                    )
+                )
 
-        stressManagementList.add(
-            StressManagement(
-                "Advanced",
-                "I regularly practise mindfulness, journaling, or stress-relief techniques.",
-                R.drawable.advance
-            )
-        )
+                stressManagementList.add(
+                    StressManagement(
+                        "Intermediate",
+                        "I try to eat balanced meals but sometimes struggle",
+                        R.drawable.intermediate
+                    )
+                )
 
-        stressManagementList.add(
-            StressManagement(
-                "Expert",
-                "I have a solid routine for managing stress and maintaining mental clarity.",
-                R.drawable.expert
-            )
-        )
+                stressManagementList.add(
+                    StressManagement(
+                        "Advanced",
+                        "I follow a specific diet and track my nutrition regularly.",
+                        R.drawable.advance
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Expert",
+                        "I follow a specific diet and track my nutrition regularly.",
+                        R.drawable.expert
+                    )
+                )
+            }
+
+            AppConstants.THINK_RIGHT, "THINK_RIGHT" -> {
+                tvStressManagementHeader.text = "What is your experience with mindfulness or stress management?"
+                stressManagementList.add(
+                    StressManagement(
+                        "Beginner",
+                        "I occasionally meditate or practise breathing exercises.",
+                        R.drawable.beginer
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Intermediate",
+                        "I haven’t tried mindfulness or stress management yet.",
+                        R.drawable.intermediate
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Advanced",
+                        "I regularly practise mindfulness, journaling, or stress-relief techniques.",
+                        R.drawable.advance
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Expert",
+                        "I have a solid routine for managing stress and maintaining mental clarity.",
+                        R.drawable.expert
+                    )
+                )
+            }
+
+            AppConstants.SLEEP_RIGHT, "SLEEP_RIGHT" -> {
+                tvStressManagementHeader.text = "How would you rate your current sleep routine?"
+                stressManagementList.add(
+                    StressManagement(
+                        "Beginner",
+                        "I rarely sleep on time and often feel tired.",
+                        R.drawable.beginer
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Intermediate",
+                        "I try to maintain a sleep schedule but it’s inconsistent.",
+                        R.drawable.intermediate
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Advanced",
+                        "I follow a regular sleep routine and feel rested most days.",
+                        R.drawable.advance
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Expert",
+                        "I prioritise sleep hygiene and consistently get quality sleep",
+                        R.drawable.expert
+                    )
+                )
+            }
+
+            AppConstants.MOVE_RIGHT, "MOVE_RIGHT" -> {
+                tvStressManagementHeader.text = "How active are you on a regular basis?"
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Beginner",
+                        "I rarely exercise or engage in physical activity",
+                        R.drawable.beginer
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Intermediate",
+                        "I stay active a few times a week (walks, light workouts).",
+                        R.drawable.intermediate
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Advanced",
+                        "I work out regularly and have a structured fitness routine.",
+                        R.drawable.advance
+                    )
+                )
+
+                stressManagementList.add(
+                    StressManagement(
+                        "Expert",
+                        "I work out regularly and have a structured fitness routine.",
+                        R.drawable.expert
+                    )
+                )
+            }
+
+            else -> {
+
+            }
+        }
 
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
 
