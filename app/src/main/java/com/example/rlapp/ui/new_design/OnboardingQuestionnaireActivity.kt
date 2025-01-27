@@ -30,9 +30,11 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding_questionnaire)
 
+        val header = intent.getStringExtra("WellnessFocus")
+
         progressBar = findViewById(R.id.progress_bar_onboarding)
         viewPager = findViewById(R.id.viewPagerOnboarding)
-        viewPager.isUserInputEnabled = false
+       // viewPager.isUserInputEnabled = false
 
         val ivBack = findViewById<ImageView>(R.id.icon_back)
         ivBack.setOnClickListener {
@@ -66,6 +68,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         fragmentList.add("StressManagementSelection")
         fragmentList.add("HealthGoalFragment")
         adapter.setData(fragmentList)
+        adapter.setHeader(header!!)
 
         viewPager.adapter = adapter
 
@@ -76,7 +79,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             }
         })
 
-        onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true){
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val currentItem = viewPager.currentItem
                 if (currentItem == 0) {
@@ -139,7 +142,8 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                             )
                         )
                         finishAffinity()
-                        SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity).clearOnboardingQuestionRequest()
+                        SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
+                            .clearOnboardingQuestionRequest()
                     } else {
                         navigateToNextPage()
                     }

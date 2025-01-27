@@ -15,7 +15,6 @@ import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.GetInterestResponse
 import com.example.rlapp.ui.new_design.pojo.InterestDataList
-import com.example.rlapp.ui.new_design.pojo.InterestTopic
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse
 import com.example.rlapp.ui.utility.SharedPreferenceManager
@@ -32,6 +31,8 @@ class YourInterestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_your_interest)
+
+        val header = intent.getStringExtra("WellnessFocus")
 
         val recyclerView = findViewById<RecyclerView>(R.id.rv_your_interest)
         btnSaveInterest = findViewById(R.id.btn_save_interest)
@@ -62,7 +63,7 @@ class YourInterestActivity : AppCompatActivity() {
             }
             val saveUserInterestRequest = SaveUserInterestRequest()
             saveUserInterestRequest.intrestId = ids
-            saveUserInterest(saveUserInterestRequest)
+            saveUserInterest(saveUserInterestRequest, header!!)
         }
     }
 
@@ -101,7 +102,7 @@ class YourInterestActivity : AppCompatActivity() {
         })
     }
 
-    private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest) {
+    private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest, header: String) {
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.saveUserInterest(authToken, saveUserInterestRequest)
@@ -113,7 +114,7 @@ class YourInterestActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
-                    uiChangesOnSaveInterest()
+                    uiChangesOnSaveInterest(header = header)
 
                 } else {
                     Toast.makeText(
@@ -135,7 +136,7 @@ class YourInterestActivity : AppCompatActivity() {
         })
     }
 
-    private fun uiChangesOnSaveInterest(){
+    private fun uiChangesOnSaveInterest(header: String) {
         interestList.clear()
         interestList.addAll(selectedInterest)
         adapter.notifyDataSetChanged()
@@ -154,6 +155,7 @@ class YourInterestActivity : AppCompatActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, PersonalisationActivity::class.java)
+            intent.putExtra("WellnessFocus", header)
             startActivity(intent)
             //finish()
         }, 1000)

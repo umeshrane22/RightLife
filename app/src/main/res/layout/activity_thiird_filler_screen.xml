@@ -33,19 +33,21 @@
 
 
         <TextView
+            android:id="@+id/tvFillerText1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/dmsans_regular"
-            android:text="@string/third_filler_screen1"
+            android:text="@string/third_filler_screen1_thinkright"
             android:textColor="@color/txt_color_header"
             android:layout_marginTop="10dp"/>
         <ImageView
+            android:id="@+id/ivFillerImage1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:src="@mipmap/fillerscreen1" />
+            android:src="@mipmap/fillerscreen1_thinkright" />
 
     </LinearLayout>
 
@@ -57,7 +59,6 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="110dp"
         android:layout_marginLeft="10dp"
-
         android:background="@drawable/bg_gray_border"
         android:gravity="center_horizontal"
         android:orientation="vertical"
@@ -66,19 +67,21 @@
 
 
         <TextView
+            android:id="@+id/tvFillerText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:fontFamily="@font/dmsans_regular"
-            android:text="@string/third_filler_screen2"
+            android:text="@string/third_filler_screen2_thinkright"
             android:textColor="@color/txt_color_header"
             android:layout_marginTop="10dp"/>
         <ImageView
+            android:id="@+id/ivFillerImage2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:src="@mipmap/fillerscreen2" />
+            android:src="@mipmap/fillerscreen2_thinkright" />
 
     </LinearLayout>
     </LinearLayout>
@@ -93,18 +96,20 @@
         android:padding="20dp">
 
         <TextView
+            android:id="@+id/tvFillerText3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_regular"
             android:layout_weight="1"
-            android:text="@string/third_filler_screen3"
+            android:text="@string/third_filler_screen3_thinkright"
             android:textColor="@color/txt_color_header" />
 
         <ImageView
+            android:id="@+id/ivFillerImage3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/fillerscreen3"
+            android:src="@mipmap/fillerscreen3_thinkright"
             android:layout_marginStart="8dp"/>
 
     </LinearLayout>
@@ -117,7 +122,7 @@
             android:layout_centerHorizontal="true"
             android:layout_margin="24dp"
             android:fontFamily="@font/dmsans_bold"
-            android:text="@string/third_filler_screen4"
+            android:text="@string/third_filler_screen4_thinkright"
             android:textColor="@color/txt_color_header"
             android:textSize="@dimen/textsize_extralarge" />
 
@@ -130,7 +135,7 @@
             android:layout_marginStart="34dp"
             android:layout_marginEnd="34dp"
             android:fontFamily="@font/dmsans_medium"
-            android:text="@string/third_filler_screen5"
+            android:text="@string/third_filler_screen5_thinkright"
             android:textColor="@color/txt_color_header"
             android:textSize="16sp" />
 
