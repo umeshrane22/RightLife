@@ -21,6 +21,8 @@ import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import java.io.IOException;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -135,7 +137,12 @@ public class PreferencesLayer2Activity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
+                    try {
+                        //String jsonResponse = gson.toJson(response.body().string());
+                        String jsonResponse = response.body().string();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     if (pagePosition == adapter.getItemCount() - 1){
                         finish();
                     }else {
