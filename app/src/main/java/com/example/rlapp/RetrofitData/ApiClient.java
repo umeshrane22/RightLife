@@ -36,7 +36,7 @@ public class ApiClient {
                 .build();
         //if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL2)
+                    .baseUrl(BASE_URL)
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create()) // This converts JSON to Java objects
                     .build();

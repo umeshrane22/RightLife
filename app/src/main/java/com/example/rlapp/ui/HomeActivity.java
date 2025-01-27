@@ -46,6 +46,7 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
+import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
 import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
@@ -101,6 +102,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
     ImageView searchIcon, img_rledit, img_rledit1, img_rledit2, img_contenttype_rledit;
+    RelativeLayout rl_wellness_lock;
+    Button btn_wellness_preference;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
@@ -259,6 +262,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         btn_er_explore.setOnClickListener(this);
         btn_mr_explore.setOnClickListener(this);
 
+        // Wellness lock
+        rl_wellness_lock = findViewById(R.id.rl_wellness_lock);
+        btn_wellness_preference = findViewById(R.id.btn_wellness_preference);
+        btn_wellness_preference.setOnClickListener(this);
 
         // MENU
         rlmenu = findViewById(R.id.rlmenu);
@@ -638,6 +645,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // Resume auto-slide when activity is visible
         sliderHandler.postDelayed(sliderRunnable, 3000);
         getRightlifeEdit("");
+        getWelnessPlaylist("");
     }
 
     @Override
@@ -939,7 +947,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     wellnessApiResponse = gson.fromJson(jsonResponse, WellnessApiResponse.class);
                     Log.d("API Response body", "Wellness:RLEdit " + wellnessApiResponse.getData().getContentList().get(0).getTitle());
-                    setupWellnessContent(wellnessApiResponse.getData().getContentList());
+                    if (wellnessApiResponse.getData().isPreference()) {
+                        setupWellnessContent(wellnessApiResponse.getData().getContentList());
+                    }else {
+                        rl_wellness_lock.setVisibility(View.VISIBLE);
+                    }
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -1357,6 +1369,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.ll_sleepsounds) {
             //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
+        } else if (viewId == R.id.btn_wellness_preference){
+            startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
         }
 
 

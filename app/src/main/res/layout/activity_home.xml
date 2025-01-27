@@ -536,6 +536,8 @@
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="The think right Show: Viap- asana Meditation"
+                                        android:maxLines="2"
+                                        android:ellipsize="marquee"
                                         android:textAlignment="textStart"
                                         android:textColor="#0B1215"
                                         android:textSize="@dimen/textsize_medium" />
@@ -551,7 +553,9 @@
                                             android:layout_height="wrap_content"
                                             android:layout_centerVertical="true"
                                             android:fontFamily="@font/dmsans_regular"
-                                            android:text="Ventak swami muthu  "
+                                            android:text="Ventak swami muthu "
+                                            android:maxLength="20"
+                                            android:ellipsize="marquee"
                                             android:textAlignment="textStart"
                                             android:textColor="#0B1215"
                                             android:textSize="@dimen/textsize_extrasmall"
@@ -652,6 +656,8 @@
                                         android:gravity="center"
                                         android:text="5 best exercises to streng- then arthritic knees with physical therapy physical therapy physical thera"
                                         android:textAlignment="textStart"
+                                        android:maxLines="2"
+                                        android:ellipsize="marquee"
                                         android:textColor="#0B1215"
                                         android:textSize="@dimen/textsize_medium" />
 
@@ -667,7 +673,9 @@
                                             android:layout_height="wrap_content"
                                             android:layout_centerVertical="true"
                                             android:fontFamily="@font/dmsans_regular"
-                                            android:text="Ventak swami muthu s…"
+                                            android:text="Ventak swami muthu  "
+                                            android:maxLength="20"
+                                            android:ellipsize="marquee"
                                             android:textAlignment="textStart"
                                             android:textColor="#0B1215"
                                             android:textSize="@dimen/textsize_extrasmall"
@@ -1094,7 +1102,7 @@
                             <RelativeLayout
                                 android:id="@+id/relative_wellness1"
                                 android:layout_width="match_parent"
-                                android:layout_height="100dp">
+                                android:layout_height="10dp">
 
                                 <View
                                     android:layout_width="match_parent"
@@ -1131,6 +1139,8 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
+                                    android:maxLines="2"
+                                    android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
@@ -1213,6 +1223,8 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
+                                    android:maxLines="2"
+                                    android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
@@ -1292,6 +1304,8 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
+                                    android:maxLines="2"
+                                    android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
@@ -1372,6 +1386,8 @@
                                     android:fontFamily="@font/merriweather_bold"
                                     android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
                                     android:textColor="@color/txt_color_header"
+                                    android:maxLines="2"
+                                    android:ellipsize="marquee"
                                     android:textSize="@dimen/textsize_medium" />
 
                                 <androidx.appcompat.widget.AppCompatImageView
@@ -1420,7 +1436,7 @@
                         android:layout_width="match_parent"
                         android:id="@+id/rl_wellness_lock"
                         android:background="@drawable/roundedcornerdialogbg"
-                        android:backgroundTint="#80F5F5F5"
+                        android:backgroundTint="#80FFFFFF"
                         android:elevation="5dp"
                         android:visibility="gone"
                         android:layout_height="450dp">
@@ -2526,7 +2542,7 @@
             <!-- Bottom Navigation Bar -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="70dp"
+                android:layout_height="77dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/toproundedcornershape"
                 android:backgroundTint="@color/white">
@@ -2613,6 +2629,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="23dp"
+                android:scaleType="fitXY"
+                android:elevation="10dp"
                 android:src="@drawable/quicklink_selector" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

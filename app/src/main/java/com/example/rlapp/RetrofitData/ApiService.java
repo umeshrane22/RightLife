@@ -698,6 +698,12 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body LogoutUserRequest logoutUserRequest
     );
+
+    @Headers("Content-Type: application/json")
+    @GET("app/api/payment/plan/{moduletype}")
+    Call<ResponseBody> getPaymentPlan(
+            @Header("Authorization") String authToken,
+            @Path("moduletype") String moduleType);
 }
 
 

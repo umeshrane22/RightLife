@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
@@ -215,5 +220,26 @@ public class Utils {
 
     public static String getDeviceId(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+
+    // show custom toast
+    public static void showCustomTopToast(Context context, String message) {
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View layout = inflater.inflate(R.layout.custom_toast, null);
+
+        // Set the message text
+        TextView toastText = layout.findViewById(R.id.toast_text);
+        toastText.setText(message);
+
+        // Create the Toast
+        Toast toast = new Toast(context.getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+
+        // Position the Toast at the top
+        toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 100); // Adjust Y-offset if needed
+        toast.show();
     }
 }
