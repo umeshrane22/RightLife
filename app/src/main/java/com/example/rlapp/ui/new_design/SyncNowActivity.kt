@@ -13,16 +13,22 @@ class SyncNowActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sync_now)
 
+        val header = intent.getStringExtra("WellnessFocus")
+
         val btnSyncNow = findViewById<LinearLayout>(R.id.btn_sync_now)
         val btnSkipForNOw = findViewById<Button>(R.id.btn_skip_for_now)
 
         btnSyncNow.setOnClickListener {
-            startActivity(Intent(this,OnboardingQuestionnaireActivity::class.java))
-            finish()
+            val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+            intent.putExtra("WellnessFocus", header)
+            startActivity(intent)
+            //finish()
         }
         btnSkipForNOw.setOnClickListener {
-            startActivity(Intent(this,OnboardingQuestionnaireActivity::class.java))
-           // finish()
+            val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+            intent.putExtra("WellnessFocus", header)
+            startActivity(intent)
+            // finish()
         }
     }
 }

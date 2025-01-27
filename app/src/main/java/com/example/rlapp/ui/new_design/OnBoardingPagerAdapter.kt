@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class OnBoardingPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
     private val fragmentList = ArrayList<String>()
+    private lateinit var header: String
 
     override fun getItemCount(): Int {
         return fragmentList.size // The number of fragments
@@ -20,7 +21,11 @@ class OnBoardingPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(
             "WeightSelection" -> WeightSelectionFragment.newInstance(position)
             "BodyFatSelection" -> BodyFatSelectionFragment.newInstance(position)
             "TargetWeightSelection" -> TargetWeightSelectionFragment.newInstance(position)
-            "StressManagementSelection" -> StressManagementSelectionFragment.newInstance(position)
+            "StressManagementSelection" -> StressManagementSelectionFragment.newInstance(
+                position,
+                header
+            )
+
             "HealthGoalFragment" -> HealthGoalFragment.newInstance(position)
 
             else -> GenderSelectionFragment.newInstance(0)
@@ -33,5 +38,9 @@ class OnBoardingPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(
 
     fun removeItem(name: String) {
         fragmentList.remove(name)
+    }
+
+    fun setHeader(header: String) {
+        this.header = header
     }
 }

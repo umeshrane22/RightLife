@@ -36,6 +36,7 @@ class StressManagementAdapter(
 
     override fun onBindViewHolder(holder: StressManagementViewHolder, position: Int) {
         holder.tvHeader.text = stressManagementList[position].header
+        holder.tvDescription.text = stressManagementList[position].description
         holder.imageView.setImageResource(stressManagementList[position].imageResource)
 
         val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_transperent)

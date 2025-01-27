@@ -216,12 +216,33 @@ Please hold still"</string>
     <string name="your_journey_your_way">Your journey, your way!</string>
     <string name="choose_goals">Choose all the topics and goals that interest you.</string>
     <string name="unlock_power">Unlock The Power Of Your Mind</string>
-    <string name="third_filler_screen1">"\"Insufficient and excessive sleep were associated with higher depressive symptoms and lower well-being\""</string>
-    <string name="third_filler_screen2">"\"High consumption of refined carbohydrates may increase the risk of depression symptoms.\""</string>
-    <string name="third_filler_screen3">"\"Exercise to enhance memory performs and reduce depression and anxiety.\""</string>
-    <string name="third_filler_screen4">A Calm Mind Is\nJust the Start</string>
-    <string name="third_filler_screen5">Thinking right isn\'t just about quieting your thoughts; it\'s about fueling your body, moving with purpose, and resting deeply.\n\nAt RightLife, we bring this together to make mindfulness a lifestyle, not a moment.</string>
+
     <string name="other_topics">What other topics interest you?</string>
     <string name="select_your_interest">Select all that apply. You can edit from your profile.</string>
     <string name="save_interest">Save Interests</string>
+
+    <string name="third_filler_screen1_thinkright">"\"Insufficient and excessive sleep were associated with higher depressive symptoms and lower well-being\""</string>
+    <string name="third_filler_screen2_thinkright">"\"High consumption of refined carbohydrates may increase the risk of depression symptoms.\""</string>
+    <string name="third_filler_screen3_thinkright">"\"Exercise to enhance memory performs and reduce depression and anxiety.\""</string>
+    <string name="third_filler_screen4_thinkright">A Calm Mind Is\nJust the Start</string>
+    <string name="third_filler_screen5_thinkright">Thinking right isn\'t just about quieting your thoughts; it\'s about fueling your body, moving with purpose, and resting deeply.\n\nAt RightLife, we bring this together to make mindfulness a lifestyle, not a moment.</string>
+
+    <string name="third_filler_screen1_sleepright">"\"Individuals with consistent, high-quality sleep reported lower perceived stress\""</string>
+    <string name="third_filler_screen2_sleepright">"\"Sleep deprivation led to increased calorie consumptions\""</string>
+    <string name="third_filler_screen3_sleepright">"\"Physical activity aids in stress reduction and promotes better sleep\""</string>
+    <string name="third_filler_screen4_sleepright">Sleep, But Make It Holistic</string>
+    <string name="third_filler_screen5_sleepright">Sleep isn’t just what happens at night—it’s influenced by how you move, what you eat, and how you manage your mind. At RightLife, we connect these dots to help you truly rest and recharge.</string>
+
+    <string name="third_filler_screen1_moveright">"\"A meta-analysis in JAMA Psychiatry (2018) revealed that regular physical activity reduced depression risk by 26%\""</string>
+    <string name="third_filler_screen2_moveright">"\"Individuals engaging in regular aerobic exercise reported significantly lower stress levels\""</string>
+    <string name="third_filler_screen3_moveright">"\"Regular exercise improved the regulation of hunger and reduced overeating tendencies\""</string>
+    <string name="third_filler_screen4_moveright">Your Body In Motion, Your Life In Balance</string>
+    <string name="third_filler_screen5_moveright">Movement fuels energy, builds strength, and even improves your sleep and focus. At RightLife, we weave exercise into your overall wellness, making every move count.</string>
+
+    <string name="third_filler_screen1_eatright">"\"Nutrient-dense foods improves cognitive function and emotional stability.\""</string>
+    <string name="third_filler_screen2_eatright">"\"Consuming high-fat or high-sugar meals near bedtime delays sleep onset and reduces REM sleep\""</string>
+    <string name="third_filler_screen3_eatright">"\"A 2023 review in the Journal of Sports Medicine highlighted that carbohydrate intake before exercise improves energy levels\""</string>
+    <string name="third_filler_screen4_eatright">It’s Not Just About The Plate</string>
+    <string name="third_filler_screen5_eatright">Eating right feeds more than hunger—it fuels your mind, powers your movement, and supports restorative sleep. At RightLife, we blend nutrition with every aspect of wellness to make sure your meals work for you.</string>
+
 </resources>
