@@ -1,6 +1,7 @@
 package com.example.rlapp.ui.mindaudit;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
+import com.example.rlapp.ui.HomeActivity;
 
 public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity {
     public Button nextButton, submitButton;
@@ -137,7 +139,10 @@ public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity 
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
-            this.finish();
+            //this.finish();
+            finishAffinity(); // Finishes Activity D and all activities below it in the same task
+            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeActivity.class);
+            startActivity(intent);
         });
 
         // Show the dialog

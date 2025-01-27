@@ -3,6 +3,7 @@ package com.example.rlapp.ui.rlpagemain;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
@@ -73,6 +74,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
             ll_journal, ll_affirmations, ll_sleepsounds;
     private ImageView img_homemenu, img_healthmenu, quicklinkmenu;
+    private TextView txt_healthmenu;
     private CardView cardview_healthcam;
     private TextView txtuserName,txt_rldays,txt_well_streak_count,txt_next_date,txt_mindaudit_days_count;
     private Button btn_continue_healthcam,btn_recheck_health,btn_rerecord_voicescan;
@@ -88,7 +90,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         layout_rl_journalarrow = findViewById(R.id.layout_rl_journalarrow);
         rlmenu = findViewById(R.id.rlmenu);
         rlmenu.setOnClickListener(this);
-        //img_homemenu = findViewById(R.id.img_homemenu);
+        img_healthmenu = findViewById(R.id.img_healthmenu);
+        txt_healthmenu = findViewById(R.id.txt_healthmenu);
         //img_homemenu.setOnClickListener(this);
         rlmenu = findViewById(R.id.rlmenu);
         rlmenu.setOnClickListener(this);
@@ -535,8 +538,12 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             }*/
             if (bottom_sheet.getVisibility() == View.VISIBLE) {
                 bottom_sheet.setVisibility(View.GONE);
+                img_healthmenu.setBackgroundResource(R.drawable.homeselected);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.menuselected));
             } else {
                 bottom_sheet.setVisibility(View.VISIBLE);
+                img_healthmenu.setBackgroundColor(Color.TRANSPARENT);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.txt_color_header));
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {

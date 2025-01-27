@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -117,6 +118,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout ll_eatright_category1, ll_eatright_category2, ll_eatright_category3, ll_eatright_category4;
     LinearLayout ll_sleepright_category1, ll_sleepright_category2, ll_sleepright_category3;
     ImageView img_homemenu, img_healthmenu, quicklinkmenu;
+    TextView txt_homemenu, txt_healthmenu;
     ImageView img1, img2, img3, img4, img5, img6, img7, img8;
     TextView tv1_header, tv1, tv2_header, tv2, tv3_header, tv3, tv4_header, tv4;
     ImageView imgtag_tv4, imgtag_tv3, imgtag_tv2, imgtag_tv1;
@@ -285,6 +287,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         img_homemenu = findViewById(R.id.img_homemenu);
         //img_homemenu.setOnClickListener(this);
+        txt_homemenu = findViewById(R.id.txt_homemenu);
         img_healthmenu = findViewById(R.id.img_healthmenu);
         //img_healthmenu.setOnClickListener(this);
 
@@ -1370,8 +1373,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }*/
             if (bottom_sheet.getVisibility() == View.VISIBLE) {
                 bottom_sheet.setVisibility(View.GONE);
+                img_homemenu.setBackgroundResource(R.drawable.homeselected);
+                txt_homemenu.setTextColor(getResources().getColor(R.color.menuselected));
             } else {
                 bottom_sheet.setVisibility(View.VISIBLE);
+                img_homemenu.setBackgroundColor(Color.TRANSPARENT);
+                txt_homemenu.setTextColor(getResources().getColor(R.color.txt_color_header));
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {

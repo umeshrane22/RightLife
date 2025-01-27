@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
+import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.payment.AccessPaymentActivity;
 
 public class MindAuditFromActivity extends AppCompatActivity {
@@ -216,7 +217,11 @@ public class MindAuditFromActivity extends AppCompatActivity {
         });
         dialogButtonExit.setOnClickListener(v -> {
             dialog.dismiss();
-            this.finish();
+            //this.finish();
+            finishAffinity();
+            Intent intent = new Intent(MindAuditFromActivity.this, HomeActivity.class);
+            startActivity(intent);
+
         });
 
         // Show the dialog

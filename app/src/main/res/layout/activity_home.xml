@@ -28,7 +28,7 @@
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="80dp"
+            android:layout_marginBottom="77dp"
             android:layout_weight="1"
             android:background="@android:color/transparent">
 
@@ -1109,7 +1109,7 @@
                             <RelativeLayout
                                 android:id="@+id/relative_wellness1"
                                 android:layout_width="match_parent"
-                                android:layout_height="10dp">
+                                android:layout_height="110dp">
 
                                 <View
                                     android:layout_width="match_parent"
@@ -1193,7 +1193,7 @@
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:id="@+id/relative_wellness2"
-                                android:layout_height="100dp">
+                                android:layout_height="110dp">
 
                                 <View
                                     android:layout_width="match_parent"
@@ -1274,7 +1274,7 @@
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:id="@+id/relative_wellness3"
-                                android:layout_height="100dp">
+                                android:layout_height="110dp">
 
                                 <View
                                     android:layout_width="match_parent"
@@ -1356,7 +1356,7 @@
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:id="@+id/relative_wellness4"
-                                android:layout_height="100dp">
+                                android:layout_height="110dp">
 
                                 <View
                                     android:layout_width="match_parent"
@@ -2552,6 +2552,7 @@
                 android:layout_height="77dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/toproundedcornershape"
+                android:elevation="5dp"
                 android:backgroundTint="@color/white">
 
                 <!-- Left Button -->
@@ -2579,6 +2580,7 @@
                             android:src="@drawable/homemenu" />
 
                         <TextView
+                            android:id="@+id/txt_homemenu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/dmsans_bold"
