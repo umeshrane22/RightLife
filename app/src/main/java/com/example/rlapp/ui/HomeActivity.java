@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
@@ -60,7 +62,6 @@ import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
-import com.example.rlapp.ui.new_design.SplashScreenActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
@@ -152,6 +153,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         tvUserName = findViewById(R.id.userName);
         TextView tvGreetingText = findViewById(R.id.greetingText);
         tvGreetingText.setText("Good " + DateTimeUtils.getWishingMessage() + " ,");
+
+        SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.refreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+                    callAPIs();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+        );
+
+        //Swipe to refresh enable only for top position
+        ScrollView scrollView = findViewById(R.id.scrollView);
+        scrollView.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) -> swipeRefreshLayout.setEnabled(scrollY <= 5));
 
         profileImage.setOnClickListener(view -> {
             if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
@@ -390,33 +402,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         //setupViewPager();
 
-
-        // calls for APIs
-        getUserDetails("");
-        getPromotionList("");
-        getPromotionList2(""); // ModuleService pane
-        getRightlifeEdit("");
-
-        getAffirmations("");
-        // getUpcomingEvents("");
-        // getLiveEvents("");
-        // getUpcomingLiveEvents("");
-
-        getWelnessPlaylist("");
-        getCuratedContent("");
-        getModuleContent("");
-
-
-        getSubModuleContent("THINK_RIGHT");
-        getSubModuleContent("MOVE_RIGHT");
-        getSubModuleContent("EAT_RIGHT");
-        getSubModuleContent("SLEEP_RIGHT");
-
-        //getQuestionerList("");
-
-        getContentlist("");   // api to get module
-        getContentlistdetails("");
-        getContentlistdetailsfilter("");
+        callAPIs();
 
         ll_voice_scan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -462,6 +448,34 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         printAccessToken();
 
 
+    }
+
+    private void callAPIs() {
+        getUserDetails("");
+        getPromotionList("");
+        getPromotionList2(""); // ModuleService pane
+        getRightlifeEdit("");
+
+        getAffirmations("");
+        // getUpcomingEvents("");
+        // getLiveEvents("");
+        // getUpcomingLiveEvents("");
+
+        getWelnessPlaylist("");
+        getCuratedContent("");
+        getModuleContent("");
+
+
+        getSubModuleContent("THINK_RIGHT");
+        getSubModuleContent("MOVE_RIGHT");
+        getSubModuleContent("EAT_RIGHT");
+        getSubModuleContent("SLEEP_RIGHT");
+
+        //getQuestionerList("");
+
+        getContentlist("");   // api to get module
+        getContentlistdetails("");
+        getContentlistdetailsfilter("");
     }
 
     private void setDrawerHeader(View view) {

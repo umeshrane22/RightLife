@@ -169,5 +169,6 @@ dependencies {
 
     //onboarding libs
     implementation 'io.github.ShawnLin013:number-picker:2.4.13'
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
 
 }

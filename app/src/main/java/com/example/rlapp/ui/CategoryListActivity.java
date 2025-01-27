@@ -28,6 +28,7 @@ import com.example.rlapp.apimodel.chipsmodulefilter.ModuleChipCategory;
 import com.example.rlapp.apimodel.modulecontentlist.Content;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
@@ -115,19 +116,18 @@ public class CategoryListActivity extends AppCompatActivity {
     }
 
     // Method to dynamically add chips
-    private void addChip(String category) {
+    private void addChip(String category, String categoryId) {
         Chip chip = new Chip(this);
         chip.setId(View.generateViewId()); // Generate unique ID
         chip.setText(category);
         chip.setCheckable(true);
         chip.setChecked(false);
         chip.setChipCornerRadius(50);
-        chip.setChipStrokeColor(ContextCompat.getColorStateList(this, R.color.chip_selected_background_color));
-        chip.setChipBackgroundColorResource(R.color.white);
+        chip.setChipStrokeColor(Utils.getModuleColorStateList(CategoryListActivity.this, selectedModuleId));
+        if (categoryId.equals(selectedCategoryId)) {
+            chip.setChecked(true);
+        }
 
-
-        // Set up the chip's appearance
-        chip.setChipBackgroundColorResource(R.color.white);
         chip.setTextSize(12);
 
         // Set different colors for selected state
@@ -137,23 +137,14 @@ public class CategoryListActivity extends AppCompatActivity {
                         new int[]{-android.R.attr.state_checked}
                 },
                 new int[]{
-                        ContextCompat.getColor(this, R.color.chip_selected_background_color),
+                        Utils.getModuleColor(CategoryListActivity.this, selectedModuleId),
                         ContextCompat.getColor(this, R.color.white)
                 }
         );
         chip.setChipBackgroundColor(colorStateList);
 
         // Text color for selected state
-        ColorStateList textColorStateList = new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{-android.R.attr.state_checked}
-                },
-                new int[]{
-                        ContextCompat.getColor(this, R.color.chip_selected_text_color),
-                        ContextCompat.getColor(this, R.color.chip_text_color)
-                }
-        );
+        ColorStateList textColorStateList = ContextCompat.getColorStateList(this, R.color.chip_text_color);
         chip.setTextColor(textColorStateList);
         chipGroup.addView(chip);
     }
@@ -163,7 +154,7 @@ public class CategoryListActivity extends AppCompatActivity {
             Chip chip = group.findViewById(checkedId);
             if (chip != null) {
                 String category = chip.getText().toString();
-             //   Toast.makeText(this, "this is " + category, Toast.LENGTH_SHORT).show();
+                //   Toast.makeText(this, "this is " + category, Toast.LENGTH_SHORT).show();
                 //filterList(category.equals("All") ? "all" : category.toLowerCase());
 
 
@@ -186,7 +177,10 @@ public class CategoryListActivity extends AppCompatActivity {
                     //Toast.makeText(this, "this is " + ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
                     contentList.clear();
                     mSkip = 0;
-                    getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
+                    if (position == 0)
+                        getContentlistdetails(null, selectedModuleId, mSkip, mLimit);
+                    else
+                        getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
                 }
             }
         });
@@ -234,13 +228,23 @@ public class CategoryListActivity extends AppCompatActivity {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         // Make the GET request
-        Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
-                categoryId,
-                mLimit,
-                skip,
-                moduleId
-        );
+        Call<ResponseBody> call = null;
+        if (categoryId == null) {
+            call = apiService.getContentdetailslist(
+                    accessToken,
+                    mLimit,
+                    skip,
+                    moduleId
+            );
+        } else {
+            call = apiService.getContentdetailslist(
+                    accessToken,
+                    categoryId,
+                    mLimit,
+                    skip,
+                    moduleId
+            );
+        }
 
         // Handle the response
         call.enqueue(new Callback<ResponseBody>() {
@@ -327,8 +331,9 @@ public class CategoryListActivity extends AppCompatActivity {
 
                     ResponseObj = gson.fromJson(jsonResponse, ModuleChipCategory.class);
                     Log.d("API Response body", "Success:chip name " + ResponseObj.getData().getResult().get(0).getName());
+                    addChip("All", selectedModuleId);
                     for (int i = 0; i < ResponseObj.getData().getResult().size(); i++) {
-                        addChip(ResponseObj.getData().getResult().get(i).getName());
+                        addChip(ResponseObj.getData().getResult().get(i).getName(), ResponseObj.getData().getResult().get(i).getId());
                     }
 
                 } else {
