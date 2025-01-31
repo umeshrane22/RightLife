@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="420dp"
+    android:padding="16dp"
+    android:background="@drawable/bg_gray_border">
+
+    <LinearLayout
+        android:id="@+id/ll_by_subcategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/imageView_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/icon_arrow_article" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center_vertical"
+            android:text="By SubCategory"
+            android:textSize="20sp"
+            android:textColor="@color/txt_color_header"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_clear_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Clear All"
+            android:background="@drawable/bg_gray_border"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:textSize="12sp"
+            android:textColor="@color/text_color_char_left"
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_sub_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_by_subcategory"
+        android:layout_above="@id/ll_button"
+        android:layout_margin="8dp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/ll_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_apply"
+            android:layout_width="95dp"
+            android:layout_height="35dp"
+            android:background="@drawable/bg_gray_border"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="Apply"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/btn_cancel"
+            android:layout_width="95dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/bg_gray_border"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="Cancel"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+</RelativeLayout>

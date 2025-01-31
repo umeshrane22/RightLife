@@ -100,7 +100,6 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/dmsans_bold"
                             android:gravity="center"
-                            android:text="Nikhil"
                             android:textColor="@color/txt_color_header"
                             android:textSize="@dimen/textsize_medium" />
                     </LinearLayout>

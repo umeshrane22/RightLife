@@ -17,7 +17,6 @@ import com.example.rlapp.ui.new_design.pojo.ModuleTopic
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultDataList
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultRequest
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultResponse
-import com.example.rlapp.ui.new_design.pojo.OnboardingModuleTopic
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import retrofit2.Call
@@ -44,6 +43,15 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         val rvUnlockPower = findViewById<RecyclerView>(R.id.rv_unlock_power)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
         tvHeader.text = header
+
+        when (header) {
+            "ThinkRight" -> tvUnlockPower.text = "Unlock The Power Of Your Mind"
+            "MoveRight" -> tvUnlockPower.text = "Revolutionise Your Movement Journey"
+            "SleepRight" -> tvUnlockPower.text = "Redefine Rest, Recharge Fully"
+            "EatRight" -> tvUnlockPower.text = "Fuel Your Body, Transform Your Health"
+            else
+            -> tvUnlockPower.text = "Unlock The Power Of Your Mind"
+        }
 
         val ids = ArrayList<String>()
         selectedWellnessFocus.forEach { module ->

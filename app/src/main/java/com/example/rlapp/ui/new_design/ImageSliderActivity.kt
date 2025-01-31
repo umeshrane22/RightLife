@@ -23,11 +23,9 @@ import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.android.gms.tasks.Task
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
@@ -48,6 +46,7 @@ class ImageSliderActivity : AppCompatActivity() {
     private lateinit var runnable: Runnable
     private val timeDurationForImageSlider = 2000L
     private lateinit var displayName: String
+    private lateinit var mEmail: String
 
     // List of images (replace with your own images)
     private val images = listOf(
@@ -203,7 +202,7 @@ class ImageSliderActivity : AppCompatActivity() {
                             if (account != null) {
                                 // User is signed in, display user information
                                 displayName = account.displayName!!
-                                val email = account.email
+                                mEmail = account.email.toString()
                                 val authcode = account.serverAuthCode
                             }
                             fetchApiData(accessTokenGoogle)
@@ -288,6 +287,7 @@ class ImageSliderActivity : AppCompatActivity() {
                         val intent =
                             Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
                         intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
+                        intent.putExtra("EMAIL", mEmail)
                         startActivity(intent)
                         finish()
 
