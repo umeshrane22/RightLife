@@ -34,7 +34,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progress_bar_onboarding)
         viewPager = findViewById(R.id.viewPagerOnboarding)
-       // viewPager.isUserInputEnabled = false
+        viewPager.isUserInputEnabled = false
 
         val ivBack = findViewById<ImageView>(R.id.icon_back)
         ivBack.setOnClickListener {

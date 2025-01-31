@@ -78,11 +78,15 @@ class BodyFatSelectionFragment : Fragment() {
                 fatValue = edtBodyFat.text.toString().toDouble() - 0.5
             }
             edtBodyFat.setText(fatValue.toString())
+            edtBodyFat.setSelection(edtBodyFat.text.length)
+            edtBodyFat.requestFocus()
         }
 
         iconPlus.setOnClickListener {
             var fatValue = edtBodyFat.text.toString().toDouble() + 0.5
             edtBodyFat.setText(fatValue.toString())
+            edtBodyFat.setSelection(edtBodyFat.text.length)
+            edtBodyFat.requestFocus()
         }
 
         edtBodyFat.addTextChangedListener(object : TextWatcher {
@@ -121,6 +125,8 @@ class BodyFatSelectionFragment : Fragment() {
             btnContinue.isEnabled = true
             btnContinue.backgroundTintList = colorStateListSelected
             edtBodyFat.setText(average(bodyFat.bodyFatNumber).toString())
+            edtBodyFat.setSelection(edtBodyFat.text.length)
+            edtBodyFat.requestFocus()
             iconMinus.visibility = VISIBLE
             iconPlus.visibility = VISIBLE
             tvPercentage.visibility = VISIBLE
@@ -148,20 +154,20 @@ class BodyFatSelectionFragment : Fragment() {
 
     private fun setSelection(gender: String, bodyFat: Double) {
         if (gender == "Male") {
-            if (bodyFat in 5.0..14.0)
+            if (bodyFat in 5.0..14.9)
                 adapter.setSelected(0)
-            else if (bodyFat in 14.0..24.0)
+            else if (bodyFat in 14.0..24.9)
                 adapter.setSelected(1)
-            else if (bodyFat in 25.0..33.0)
+            else if (bodyFat in 25.0..33.9)
                 adapter.setSelected(2)
             else if (bodyFat >= 34)
                 adapter.setSelected(3)
         } else {
-            if (bodyFat in 10.0..19.0)
+            if (bodyFat in 10.0..19.9)
                 adapter.setSelected(0)
-            else if (bodyFat in 20.0..29.0)
+            else if (bodyFat in 20.0..29.9)
                 adapter.setSelected(1)
-            else if (bodyFat in 30.0..44.0)
+            else if (bodyFat in 30.0..44.9)
                 adapter.setSelected(2)
             else if (bodyFat >= 45)
                 adapter.setSelected(3)

@@ -10,8 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.rlapp.R;
@@ -28,6 +32,7 @@ import com.example.rlapp.apimodel.chipsmodulefilter.ModuleChipCategory;
 import com.example.rlapp.apimodel.modulecontentlist.Content;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -41,6 +46,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class CategoryListActivity extends AppCompatActivity {
 
@@ -57,7 +65,61 @@ public class CategoryListActivity extends AppCompatActivity {
     private String selectedCategoryId = "";
     private GridRecyclerViewAdapter adapter;
     private List<Content> contentList = new ArrayList<>();
+    private SubCategoryResponse subCategoryResponse;
 
+    public static void expand(final View v) {
+        int matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(((View) v.getParent()).getWidth(), View.MeasureSpec.EXACTLY);
+        int wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        v.measure(matchParentMeasureSpec, wrapContentMeasureSpec);
+        final int targetHeight = v.getMeasuredHeight();
+
+        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
+        v.getLayoutParams().height = 1;
+        v.setVisibility(VISIBLE);
+        Animation a = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                v.getLayoutParams().height = interpolatedTime == 1
+                        ? LinearLayout.LayoutParams.WRAP_CONTENT
+                        : (int) (targetHeight * interpolatedTime);
+                v.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // Expansion speed of 1dp/ms
+        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        v.startAnimation(a);
+    }
+
+    public static void collapse(final View v) {
+        final int initialHeight = v.getMeasuredHeight();
+
+        Animation a = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (interpolatedTime == 1) {
+                    v.setVisibility(GONE);
+                } else {
+                    v.getLayoutParams().height = initialHeight - (int) (initialHeight * interpolatedTime);
+                    v.requestLayout();
+                }
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        // Collapse speed of 1dp/ms
+        a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
+        v.startAnimation(a);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,8 +170,7 @@ public class CategoryListActivity extends AppCompatActivity {
         ic_back_dialog.setOnClickListener(view -> finish());
 
         close_dialog.setOnClickListener(view -> {
-            //finish();
-            showExitDialog();
+            showSubCategoryDialog(selectedModuleId);
         });
 
         setupChipListeners();
@@ -186,7 +247,6 @@ public class CategoryListActivity extends AppCompatActivity {
         });
     }
 
-
     private void showExitDialog() {
         // Create the dialog
         Dialog dialog = new Dialog(this);
@@ -219,7 +279,6 @@ public class CategoryListActivity extends AppCompatActivity {
         // Show the dialog
         dialog.show();
     }
-
 
     private void getContentlistdetails(String categoryId, String moduleId, int skip, int limit) {
         //-----------
@@ -261,12 +320,14 @@ public class CategoryListActivity extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
 
                             if (ResponseObj.getData().getCount() > adapter.getItemCount()) {
-                                btnLoadMore.setVisibility(View.VISIBLE);
+                                btnLoadMore.setVisibility(VISIBLE);
                                 mSkip = mSkip + limit;
                                 setModuleColor(btnLoadMore, moduleId);
                             } else {
-                                btnLoadMore.setVisibility(View.GONE);
+                                btnLoadMore.setVisibility(GONE);
                             }
+
+                            getSubCategoryList(moduleId, categoryId);
 
                         }
                     } catch (Exception e) {
@@ -290,6 +351,61 @@ public class CategoryListActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void getContentListBySubcategory(String subCategoryId, String moduleId, int skip, int limit) {
+        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getContentdetailslistBySubCategory(
+                authToken,
+                subCategoryId,
+                mLimit,
+                skip,
+                moduleId
+        );
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        if (response.body() != null) {
+                            String successMessage = response.body().string();
+                            System.out.println("Request successful: " + successMessage);
+                            Gson gson = new Gson();
+                            ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
+                            contentList.addAll(ResponseObj.getData().getContentList());
+                            adapter.notifyDataSetChanged();
+
+                            if (ResponseObj.getData().getCount() > adapter.getItemCount()) {
+                                btnLoadMore.setVisibility(VISIBLE);
+                                mSkip = mSkip + limit;
+                                setModuleColor(btnLoadMore, moduleId);
+                            } else {
+                                btnLoadMore.setVisibility(GONE);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorMessage = response.errorBody().string();
+                            System.out.println("Request failed with error: " + errorMessage);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                System.out.println("Request failed: " + t.getMessage());
+            }
+        });
     }
 
     private void setupListData() {
@@ -379,5 +495,117 @@ public class CategoryListActivity extends AppCompatActivity {
             button.setBackgroundTintList(colorStateList);
 
         }
+    }
+
+    private void getSubCategoryList(String moduleId, String categoryId) {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<SubCategoryResponse> call = apiService.getSubCategoryList(accessToken, "SUB_CATEGORY", moduleId, categoryId, true);
+
+        call.enqueue(new Callback<SubCategoryResponse>() {
+            @Override
+            public void onResponse(Call<SubCategoryResponse> call, Response<SubCategoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    subCategoryResponse = response.body();
+                    Log.d("AAAA", "response = " + response.body());
+                } else {
+                    Toast.makeText(CategoryListActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SubCategoryResponse> call, Throwable t) {
+                Toast.makeText(CategoryListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void showSubCategoryDialog(String moduleId) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_subcategory_list);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        Window window = dialog.getWindow();
+        // Set the dim amount
+        WindowManager.LayoutParams layoutParams = window.getAttributes();
+        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
+        window.setAttributes(layoutParams);
+
+        LinearLayout llSubCategory = dialog.findViewById(R.id.ll_by_subcategory);
+        RecyclerView rvSubCategory = dialog.findViewById(R.id.rv_sub_category);
+        TextView btnCancel = dialog.findViewById(R.id.btn_cancel);
+        TextView btnApply = dialog.findViewById(R.id.btn_apply);
+        TextView tvClearAll = dialog.findViewById(R.id.tv_clear_all);
+
+
+        if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
+            btnCancel.setBackground(getDrawable(R.drawable.border_green));
+            btnApply.setBackground(getDrawable(R.drawable.bg_dialog_button_green));
+        } else if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
+            btnCancel.setBackground(getDrawable(R.drawable.border_yellow));
+            btnApply.setBackground(getDrawable(R.drawable.bg_dialog_button_yellow));
+
+        } else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
+            btnCancel.setBackground(getDrawable(R.drawable.border_blue));
+            btnApply.setBackground(getDrawable(R.drawable.bg_dialog_button_blue));
+
+        } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
+            btnCancel.setBackground(getDrawable(R.drawable.border_red));
+            btnApply.setBackground(getDrawable(R.drawable.bg_dialog_button_red));
+
+        }
+
+        ArrayList<SubCategoryResult> selectedList = new ArrayList<>();
+
+        llSubCategory.setOnClickListener(view -> {
+            if (rvSubCategory.getVisibility() == GONE) {
+                expand(rvSubCategory);
+                rvSubCategory.setVisibility(VISIBLE);
+            } else {
+                collapse(rvSubCategory);
+                rvSubCategory.setVisibility(GONE);
+            }
+        });
+
+        SubCategoryAdapter subCategoryAdapter = new SubCategoryAdapter(this, subCategoryResponse.getData().getResult(), subCategoryResult -> {
+            if (subCategoryResult.getSelected()) {
+                selectedList.add(subCategoryResult);
+            } else {
+                selectedList.remove(subCategoryResult);
+            }
+
+            if (selectedList.isEmpty()) {
+                tvClearAll.setVisibility(GONE);
+            } else {
+                tvClearAll.setVisibility(VISIBLE);
+            }
+        });
+
+        tvClearAll.setOnClickListener(view -> {
+            subCategoryAdapter.clearAll();
+            selectedList.clear();
+        });
+
+        rvSubCategory.setLayoutManager(new LinearLayoutManager(this));
+        rvSubCategory.setAdapter(subCategoryAdapter);
+
+        btnCancel.setOnClickListener(view -> dialog.dismiss());
+        btnApply.setOnClickListener(view -> {
+            if (!selectedList.isEmpty()) {
+                StringBuilder subCategoryId = new StringBuilder();
+                for (int i = 0; i < selectedList.size(); i++) {
+                    subCategoryId.append(selectedList.get(i).getId()).append(",");
+                }
+                subCategoryId = new StringBuilder(subCategoryId.substring(0, subCategoryId.length() - 1));
+                mSkip = 0;
+                contentList.clear();
+                getContentListBySubcategory(subCategoryId.toString(), selectedModuleId, mSkip, mLimit);
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.show();
     }
 }

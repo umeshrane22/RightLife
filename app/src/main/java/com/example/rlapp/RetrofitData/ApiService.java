@@ -16,6 +16,7 @@ import com.example.rlapp.apimodel.emaillogin.EmailOtpRequest;
 import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.ui.SubCategoryResponse;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
@@ -275,6 +276,16 @@ public interface ApiService {
     Call<ResponseBody> getContentdetailslist(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Query("categoryId") String categoryId,
+            @Query("limit") int limit,
+            @Query("skip") int skip,
+            @Query("moduleId") String moduleId
+    );
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("content/list")
+    Call<ResponseBody> getContentdetailslistBySubCategory(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("subCategoryId") String subCategoryId,
             @Query("limit") int limit,
             @Query("skip") int skip,
             @Query("moduleId") String moduleId
@@ -713,6 +724,16 @@ public interface ApiService {
     Call<ResponseBody> getPaymentPlan(
             @Header("Authorization") String authToken,
             @Path("moduletype") String moduleType);
+
+    @Headers("Content-Type: application/json")
+    @GET("app/type/content")
+    Call<SubCategoryResponse> getSubCategoryList(
+            @Header("Authorization") String authToken,
+            @Query("type") String type,
+            @Query("moduleId") String moduleId,
+            @Query("categoryId") String categoryId,
+            @Query("isExist") boolean isExist
+    );
 }
 
 

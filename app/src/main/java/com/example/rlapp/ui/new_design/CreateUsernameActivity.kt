@@ -38,6 +38,7 @@ class CreateUsernameActivity : AppCompatActivity() {
 
 
         val username = intent.getStringExtra("USERNAME_KEY")
+        val email = intent.getStringExtra("EMAIL")
 
 
         val edtUsername = findViewById<EditText>(R.id.edt_username)
@@ -91,7 +92,7 @@ class CreateUsernameActivity : AppCompatActivity() {
         })
 
         btnContinue.setOnClickListener {
-            showFullScreenDialog(edtUsername.text.toString())
+            showFullScreenDialog(edtUsername.text.toString(), email!!)
             //postUserLogout("")
         }
     }
@@ -152,11 +153,12 @@ class CreateUsernameActivity : AppCompatActivity() {
         }
     }
 
-    private fun showFullScreenDialog(username: String) {
+    private fun showFullScreenDialog(username: String, email: String) {
 
         findViewById<LinearLayout>(R.id.dialog_welcome).visibility = VISIBLE
         val userdata = Userdata()
         userdata.firstName = username
+        userdata.email = email
         updateUserData(userdata)
 
         Handler(Looper.getMainLooper()).postDelayed({
