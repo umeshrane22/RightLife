@@ -156,6 +156,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                         "Server Error: " + response.code(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    navigateToNextPage()
                 }
             }
 
@@ -165,6 +166,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                     "Network Error: " + t.message,
                     Toast.LENGTH_SHORT
                 ).show()
+                navigateToNextPage()
             }
 
         })
