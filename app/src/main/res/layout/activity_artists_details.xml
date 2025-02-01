@@ -140,25 +140,29 @@
                         android:id="@+id/img_facebook"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:visibility="gone"
                         android:src="@drawable/facebook" />
 
                     <ImageView
                         android:id="@+id/img_instagram"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:visibility="gone"
                         android:src="@drawable/instagram" />
 
                     <ImageView
                         android:id="@+id/img_linked_in"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:visibility="gone"
                         android:src="@drawable/linkedin" />
 
                     <ImageView
                         android:id="@+id/img_twitter"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/twitter" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/twitter"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 

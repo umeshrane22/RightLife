@@ -713,6 +713,13 @@ public interface ApiService {
     Call<ResponseBody> getPaymentPlan(
             @Header("Authorization") String authToken,
             @Path("moduletype") String moduleType);
+
+    //ModuleService Pane
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("content/679b1e6d4199ddf6752fdb20")
+    Call<JsonElement> getArticleDetails(
+            @Header("Authorization") String authToken // Dynamic Authorization Header
+    );
 }
 
 
