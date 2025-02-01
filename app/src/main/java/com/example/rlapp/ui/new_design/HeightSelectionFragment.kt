@@ -27,7 +27,7 @@ class HeightSelectionFragment : Fragment() {
 
     private lateinit var llSelectedHeight: LinearLayout
     private lateinit var tvSelectedHeight: TextView
-    private var selectedHeight = ""
+    private var selectedHeight = "5 Ft 10 In"
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
@@ -75,6 +75,14 @@ class HeightSelectionFragment : Fragment() {
 
         val switch = view.findViewById<SwitchCompat>(R.id.switch_height_metric)
         switch.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (selectedHeight.isNullOrEmpty()) {
+                if (isChecked) {
+                    setCms()
+                } else {
+                    setFtIn()
+                }
+                return@setOnCheckedChangeListener
+            }
             if (isChecked) {
                 val h = selectedHeight.split(" ")
                 val feet = "${h[0]}.${h[2]}"
@@ -151,7 +159,6 @@ class HeightSelectionFragment : Fragment() {
                             selectedHeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
                             btnContinue.backgroundTintList = colorStateList
-                            switch.isEnabled = true
                         }
 
                     }

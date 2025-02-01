@@ -86,8 +86,7 @@
                     app:track="@drawable/custom_track_onboardingswitch"
                     android:thumb="@drawable/custom_thumb"
                     app:thumbTint="@color/switch_thumb_color"
-                    app:trackTint="@color/switch_track_color"
-                    android:enabled="false"/>
+                    app:trackTint="@color/switch_track_color" />
             </RelativeLayout>
 
             <LinearLayout
@@ -142,7 +141,8 @@
                     android:gravity="center_horizontal"
                     android:textSize="@dimen/textsize_large24sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="16dp"/>
+                    android:layout_marginTop="16dp"
+                    android:text="50 kg"/>
             </LinearLayout>
 
             <RelativeLayout
@@ -219,7 +219,6 @@
                 android:layout_marginEnd="36dp"
                 android:layout_marginBottom="36dp"
                 android:backgroundTint="@color/rightlife"
-                android:enabled="false"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="@string/str_continue"
                 android:textColor="@color/white"
