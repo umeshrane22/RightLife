@@ -731,7 +731,7 @@ public interface ApiService {
     @GET("content/679b1e6d4199ddf6752fdb20")
     Call<JsonElement> getArticleDetails(
             @Header("Authorization") String authToken // Dynamic Authorization Header
-
+    );
     @Headers("Content-Type: application/json")
     @GET("app/type/content")
     Call<SubCategoryResponse> getSubCategoryList(
