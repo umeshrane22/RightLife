@@ -34,7 +34,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
         progressBar = findViewById(R.id.progress_bar_onboarding)
         viewPager = findViewById(R.id.viewPagerOnboarding)
-       // viewPager.isUserInputEnabled = false
+        viewPager.isUserInputEnabled = false
 
         val ivBack = findViewById<ImageView>(R.id.icon_back)
         ivBack.setOnClickListener {
@@ -156,6 +156,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                         "Server Error: " + response.code(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    navigateToNextPage()
                 }
             }
 
@@ -165,6 +166,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                     "Network Error: " + t.message,
                     Toast.LENGTH_SHORT
                 ).show()
+                navigateToNextPage()
             }
 
         })

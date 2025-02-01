@@ -1,8 +1,6 @@
 package com.example.rlapp.ui.new_design
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -30,7 +28,7 @@ class WeightSelectionFragment : Fragment() {
 
     private lateinit var llSelectedWeight: LinearLayout
     private lateinit var tvSelectedWeight: TextView
-    private var selectedWeight = ""
+    private var selectedWeight = "50 kg"
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
@@ -71,6 +69,11 @@ class WeightSelectionFragment : Fragment() {
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
         swithch.setOnCheckedChangeListener { buttonView, isChecked ->
+            /*if (selectedWeight.isNullOrEmpty()) {
+                if (isChecked) setLbsValue()
+                else setKgsValue()
+                return@setOnCheckedChangeListener
+            }*/
             val w = selectedWeight.split(" ")
             if (isChecked) {
                 selectedLabel = " lbs"
@@ -142,8 +145,6 @@ class WeightSelectionFragment : Fragment() {
                             selectedWeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
                             btnContinue.backgroundTintList = colorStateList
-                            swithch.isEnabled = true
-
                         }
                     }
                 }

@@ -53,8 +53,6 @@ class WellnessFocusListActivity : AppCompatActivity() {
         val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
         val colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)
 
-        btnContinue.isEnabled = true
-
         wellnessFocusListAdapter =
             WellnessFocusListAdapter(
                 this,

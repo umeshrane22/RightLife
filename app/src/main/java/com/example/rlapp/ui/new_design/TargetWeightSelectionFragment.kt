@@ -27,7 +27,7 @@ class TargetWeightSelectionFragment : Fragment() {
 
     private lateinit var llSelectedWeight: LinearLayout
     private lateinit var tvSelectedWeight: TextView
-    private var selectedWeight = ""
+    private var selectedWeight = "50 kg"
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
@@ -116,6 +116,11 @@ class TargetWeightSelectionFragment : Fragment() {
 
 
         swithch.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (selectedWeight.isNullOrEmpty()) {
+                if (isChecked) setLbsValue()
+                else setKgsValue()
+                return@setOnCheckedChangeListener
+            }
             val w = selectedWeight.split(" ")
             if (isChecked) {
                 selectedLabel = " lbs"
@@ -152,16 +157,15 @@ class TargetWeightSelectionFragment : Fragment() {
                             selectedWeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
                             btnContinue.backgroundTintList = colorStateList
-                            swithch.isEnabled = true
                         }
                     }
                 }
             }
         })
 
-        rlRulerContainer.post(Runnable {
+        rlRulerContainer.post {
             // Get the width of the parent LinearLayout
-            val parentWidth: Int = rlRulerContainer.getWidth()
+            val parentWidth: Int = rlRulerContainer.width
 
             // Calculate horizontal padding (half of parent width)
             val paddingHorizontal = parentWidth / 2
@@ -173,7 +177,7 @@ class TargetWeightSelectionFragment : Fragment() {
                 paddingHorizontal,
                 rulerView.paddingBottom
             )
-        })
+        }
 
 
         // Scroll to the center after layout is measured
