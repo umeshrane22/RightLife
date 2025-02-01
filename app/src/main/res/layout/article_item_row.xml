@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="1dp">
+
+    <TextView
+        android:id="@+id/txt_article_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:fontFamily="@font/merriweather_regular"
+        android:gravity="center_vertical"
+        android:text="Consuming adequate magnesium may enhance mood and promote healthy sleep. Additionally, it might lessen your chance of migraines and cardiovascular problems. Magnesium is necessary for your body to carry out over 300 enzymatic activities. A lack of magnesium in the body could have a significant negative impact on your health. \n\nEven though a wide range of foods contain magnesium, taking supplements can be beneficial, especially for those with low intake. However, selecting a magnesium supplement can be challenging because they come in a multitude of shapes and sizes. \n \n This article describes the many kinds and dosages of magnesium supplements and examines their advantages and disadvantages."
+        android:textColor="@color/txt_color_header"
+        android:textSize="@dimen/textsize_medium" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:src="@drawable/ic_launcher_foreground" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="visible">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_product"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:visibility="visible"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/textsize_extrasmall"
+                    android:fontFamily="@font/merriweather_bold"
+                    android:text="Boost Your Intake"
+                    android:textColor="@color/color_godeeper_orange"
+                    android:textSize="@dimen/textsize_medium" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp">
+
+                    <RelativeLayout
+                        android:id="@+id/relative_img_product"
+                        android:layout_width="120dp"
+                        android:layout_height="90dp"
+
+                        android:layout_margin="16dp">
+
+                        <ImageView
+                            android:id="@+id/img_thumbnail_video"
+                            android:layout_width="120dp"
+                            android:layout_height="80dp"
+                            android:layout_alignParentStart="true"
+                            android:scaleType="fitXY"
+                            android:src="@drawable/productimageimune"
+                            tools:ignore="DuplicateIds" />
+
+
+                    </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/txt_desc_card_product"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="@dimen/text_margin"
+                        android:layout_marginEnd="@dimen/textsize_extrasmall"
+                        android:layout_toRightOf="@+id/relative_img_product"
+                        android:fontFamily="@font/merriweather_bold"
+                        android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_medium" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/relative_img_product"
+                        android:gravity="end|center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txt_price_product"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="₹ 1,099/-"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <TextView
+                            android:id="@+id/txt_saved_price_product"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="₹1,499/- you save ₹400"
+                            android:textColor="@color/txt_color_header"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <TextView
+                            android:id="@+id/txt_viewcount_product"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/menuselected"
+                            android:fontFamily="@font/dmsans_medium"
+                            android:gravity="center"
+                            android:paddingLeft="10dp"
+                            android:paddingTop="2dp"
+                            android:paddingRight="10dp"
+
+                            android:paddingBottom="2dp"
+                            android:text="Buy Now"
+                            android:textColor="@android:color/white"
+                            android:textSize="@dimen/textsize_extrasmall" />
+
+                    </LinearLayout>
+
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Card 2" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Card 3" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Card 4" />
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

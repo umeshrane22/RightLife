@@ -168,7 +168,7 @@ class ImageSliderActivity : AppCompatActivity() {
             val tab = tabLayout.getTabAt(i)
             val dot = tab?.customView as? ImageView
             if (i == position) {
-                dot?.setImageResource(R.drawable.dot_selected) // Active dot image
+                dot?.setImageResource(R.drawable.roundedcornerbutton) // Active dot image
             } else {
                 dot?.setImageResource(R.drawable.dot) // Inactive dot image
             }

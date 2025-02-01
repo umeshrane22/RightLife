@@ -1245,7 +1245,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, SearchActivity.class));
+            startActivity(new Intent(this, ArticlesDetailActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
@@ -1398,11 +1398,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void CallRlEditDetailActivity(int position) {
-        Gson gson = new Gson();
+     /*   Gson gson = new Gson();
         String json = gson.toJson(rightLifeEditResponse);
         Intent intent = new Intent(HomeActivity.this, RLEditDetailViewActivity.class);
         intent.putExtra("Categorytype", json);
         intent.putExtra("position", position);
+        startActivity(intent);*/
+
+        Intent intent = new Intent(HomeActivity.this, ArticlesDetailActivity.class);
         startActivity(intent);
     }
 

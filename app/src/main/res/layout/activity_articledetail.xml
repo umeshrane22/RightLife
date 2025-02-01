@@ -6,63 +6,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:gravity="center">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:id="@+id/llmainlayout"
         android:gravity="center">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-            <ImageView
-                android:id="@+id/ic_back_dialog"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_back_articlepage"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="20dp"
-                />
-            <TextView
-                android:layout_width="wrap_content"
-                android:id="@+id/tv_header_htw"
-                android:text="How This Works"
-                android:textSize="@dimen/textsize_medium"
-                android:visibility="gone"
-                android:fontFamily="@font/dmsans_bold"
-                android:layout_centerHorizontal="true"
-                android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/ic_back_dialog"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_back_articlepage"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="20dp"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/tv_header_htw"
+            android:text="How This Works"
+            android:textSize="@dimen/textsize_medium"
+            android:visibility="gone"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content"/>
 
-            <ImageView
-                android:id="@+id/ic_close_dialog"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_save_article"
-                android:layout_marginEnd="20dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentEnd="true"
-                />
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/ic_save_article"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_save_article"
+            android:layout_marginEnd="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/tv_header_article"
-                android:layout_width="wrap_content"
-                android:text="Magnesium: Get Your Mag-Nificent Boost!"
+                android:layout_width="match_parent"
+                android:text="Title"
                 android:fontFamily="@font/merriweather_bold"
                 android:textColor="@color/txt_color_header"
                 android:textSize="@dimen/textsize_large24sp"
-                android:gravity="center"
+                android:gravity="center_horizontal"
                 android:padding="@dimen/textsize_extralarge"
                 android:layout_height="wrap_content"/>
 
@@ -73,7 +79,7 @@
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/author_image"
                     android:layout_width="41dp"
                     android:layout_height="41dp"
@@ -108,7 +114,7 @@
                     android:contentDescription="Author" />
 
                 <TextView
-                    android:id="@+id/txt_topic"
+                    android:id="@+id/txt_category_article"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Food &amp; body"
@@ -161,8 +167,41 @@
                 android:layout_width="match_parent"
                 android:src="@drawable/img_article"
                 android:scaleType="fitXY"
-
+                android:id="@+id/article_image_main"
                 android:layout_height="200dp"/>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:visibility="gone"
+                    android:layout_height="200dp">
+
+                    <com.google.android.exoplayer2.ui.StyledPlayerView
+                        android:id="@+id/player_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:controller_layout_id="@layout/custom_playback_controls"
+                        app:surface_type="texture_view">
+
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:visibility="gone" />
+
+                    </com.google.android.exoplayer2.ui.StyledPlayerView>
+
+                    <com.google.android.exoplayer2.ui.PlayerControlView
+                        android:id="@+id/control_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_alignParentBottom="true"
+                        app:controller_layout_id="@layout/custom_playback_controls" />
+
+                </RelativeLayout>
+
+
             </RelativeLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -171,6 +210,7 @@
                 android:id="@+id/ll_inthisarticle"
                 android:background="@drawable/roundedcornerbutton"
                 android:backgroundTint="#E6F0FE"
+                android:visibility="gone"
                 android:layout_height="wrap_content">
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -207,7 +247,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="In This Article"
-                        android:textColor="#21A4F8"
+                        android:textColor="@color/color_in_this_article"
                         android:fontFamily="@font/merriweather_regular"
                         android:textSize="@dimen/textsize_medium"
                         android:gravity="center_vertical"
@@ -218,70 +258,73 @@
                         />
                 </LinearLayout>
             </LinearLayout>
-            <TextView
-                android:id="@+id/txt_article_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Consuming adequate magnesium may enhance mood and promote healthy sleep. Additionally, it might lessen your chance of migraines and cardiovascular problems. Magnesium is necessary for your body to carry out over 300 enzymatic activities. A lack of magnesium in the body could have a significant negative impact on your health. \n\nEven though a wide range of foods contain magnesium, taking supplements can be beneficial, especially for those with low intake. However, selecting a magnesium supplement can be challenging because they come in a multitude of shapes and sizes. \n \n This article describes the many kinds and dosages of magnesium supplements and examines their advantages and disadvantages."
-                android:textColor="@color/txt_color_header"
-                android:fontFamily="@font/merriweather_regular"
-                android:textSize="@dimen/textsize_medium"
-                android:gravity="center_vertical"
-                android:layout_margin="16dp"/>
 
-            <TextView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_article"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="What is magnesium?"
-                android:textColor="@color/txt_color_header"
-                android:fontFamily="@font/merriweather_bold"
-                android:textSize="22sp"
-                android:gravity="center_vertical"
-                android:layout_margin="16dp"/>
+                android:visibility="visible"
+                android:overScrollMode="never"
+                android:layout_height="wrap_content"/>
 
-            <TextView
 
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/article"
-                android:textColor="@color/txt_color_header"
-                android:fontFamily="@font/merriweather_regular"
-                android:textSize="@dimen/textsize_medium"
-                android:gravity="center_vertical"
-                android:layout_margin="16dp"/>
+                android:layout_margin="16dp"
+                android:orientation="vertical"
+                android:id="@+id/ll_keytakeaway"
+                android:background="@drawable/roundedcornerbutton"
+                android:backgroundTint="#E6F0FE"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/txt_keytakeaway_header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:text="Key Takeaways"
+                        android:textColor="@color/txt_color_header"
+                        android:fontFamily="@font/merriweather_bold"
+                        android:textSize="@dimen/textsize_large"
+                        android:gravity="center_vertical"
+                        android:paddingStart="32dp"
+                        android:paddingEnd="30dp"
+                        />
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:src="@drawable/img_article"
-                android:scaleType="fitXY"
-                android:layout_marginTop="23dp"
-                android:layout_height="220dp"/>
+                </RelativeLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Health Benefits:"
-                android:textColor="@color/txt_color_header"
-                android:fontFamily="@font/merriweather_bold"
-                android:textSize="22sp"
-                android:gravity="center_vertical"
-                android:layout_margin="16dp"/>
+                    android:orientation="vertical"
+                    android:id="@+id/ll_keytakeaway_desc_view"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/txt_keytakeaway_desc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="In This Article"
+                        android:textColor="@color/color_in_this_article"
+                        android:fontFamily="@font/merriweather_regular"
+                        android:textSize="@dimen/textsize_medium"
+                        android:gravity="center_vertical"
+                        android:paddingStart="32dp"
+                        android:paddingEnd="30dp"
+                        android:visibility="visible"
+                        android:paddingBottom="10dp"
+                        />
+                </LinearLayout>
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/article"
-                android:textColor="@color/txt_color_header"
-                android:fontFamily="@font/merriweather_regular"
-                android:textSize="@dimen/textsize_medium"
-                android:gravity="center_vertical"
-                android:layout_margin="16dp"/>
+
+
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 app:cardCornerRadius="16dp"
+                android:id="@+id/bottomcardview"
+                android:visibility="visible"
                 app:cardElevation="4dp">
 
 
@@ -289,6 +332,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="@dimen/textsize_extrasmall"
+                        android:layout_toEndOf="@id/rlimg12"
+                        android:fontFamily="@font/merriweather_bold"
+                        android:text="Go Deeper"
+                        android:layout_marginTop="@dimen/text_margin"
+                        android:textColor="@color/color_godeeper_orange"
+                        android:textSize="@dimen/textsize_medium" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -348,10 +403,10 @@
                                 android:layout_height="wrap_content"/>
 
                             <TextView
-                                android:id="@+id/txt_article_date1"
+                                android:id="@+id/txt_article_date_card"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="15 Aug, 2024"
+                                android:text="10 Aug, 2024"
                                 android:textColor="@android:color/black"
                                 android:fontFamily="@font/dmsans_medium"
                                 android:textSize="@dimen/textsize_small"
@@ -392,75 +447,16 @@
 
             </androidx.cardview.widget.CardView>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
     </LinearLayout>
-        <Button
-            android:id="@+id/btn_howitworks"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:backgroundTint="@color/buttoncolorhealth"
-            android:layout_marginBottom="28dp"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Take Assessment" />
 
-    </LinearLayout>
-</ScrollView>
 
-        <!--<LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_margin="16dp"
-            android:background="@drawable/roundedcornershape"
-            android:gravity="center"
-            android:visibility="gone"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
-            android:layout_height="50dp">
 
-            <ImageView
-                android:id="@+id/image_tag2"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tag"
-                app:tint="@color/color_tag_article"
-                android:contentDescription="Author" />
+</androidx.core.widget.NestedScrollView>
 
-            <TextView
-                android:id="@+id/txt_topic2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Food &amp; body"
-                android:textColor="@android:color/black"
-                android:fontFamily="@font/dmsans_medium"
-                android:textSize="@dimen/textsize_small"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="16dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:text="|"
-                android:layout_height="wrap_content"/>
-            <ImageView
-                android:id="@+id/image_tag1"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:src="@drawable/ic_tag"
-                android:layout_marginStart="16dp"
-                app:tint="@color/color_tag_article"
-                android:contentDescription="Author" />
-
-            <TextView
-                android:id="@+id/txt_topic1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Food &amp; body"
-                android:textColor="@android:color/black"
-                android:fontFamily="@font/dmsans_medium"
-                android:textSize="@dimen/textsize_small"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="16dp"/>
-
-        </LinearLayout>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"
@@ -468,6 +464,7 @@
             android:background="@drawable/roundedcornershape"
             android:gravity="center"
             android:layout_alignParentBottom="true"
+            android:visibility="visible"
             android:layout_gravity="center"
             android:layout_height="50dp">
 
@@ -475,8 +472,7 @@
                 android:id="@+id/image_like_article"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/like"
-                app:tint="@color/black"
+                android:src="@drawable/like_article_inactive"
                 android:contentDescription="Author" />
 
             <TextView
@@ -516,4 +512,6 @@
 
         </LinearLayout>
     </RelativeLayout>
+    </LinearLayout>
+
     </LinearLayout>
