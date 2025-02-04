@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -299,4 +300,16 @@ public class Utils {
         toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 100); // Adjust Y-offset if needed
         toast.show();
     }
+
+    private static FrameLayout loadingOverlay;
+    public static void showLoader(Activity activity){
+        loadingOverlay = activity.findViewById(R.id.loading_overlay);
+        loadingOverlay.setVisibility(View.VISIBLE);
+    }
+
+    public static void dismissLoader(Activity activity){
+        loadingOverlay = activity.findViewById(R.id.loading_overlay);
+        loadingOverlay.setVisibility(View.GONE);
+    }
+
 }

@@ -40,7 +40,6 @@ public class MindAuditActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mindaudit);
-        Log.d("AAAA","MindAuditActivity");
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);

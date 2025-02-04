@@ -37,6 +37,7 @@ import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -433,6 +434,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
     // more like this content
     private void getMoreLikeContent(String contentid) {
         //-----------
+        Utils.showLoader(this);
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
@@ -444,6 +446,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Utils.dismissLoader(MoreContentDetailViewActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         // Parse the raw JSON into the LikeResponse class
@@ -481,6 +484,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Utils.dismissLoader(MoreContentDetailViewActivity.this);
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
             }
         });

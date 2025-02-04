@@ -39,6 +39,7 @@ import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -484,6 +485,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
 
     private void getSeriesWithEpisodes(String seriesId) {
         //-----------
+        Utils.showLoader(this);
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
@@ -497,6 +499,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                Utils.dismissLoader(WellnessDetailViewActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
                     Log.d("API Response", "Wellness:episodes " + affirmationsResponse.toString());
@@ -515,6 +518,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
+                Utils.dismissLoader(WellnessDetailViewActivity.this);
                 Toast.makeText(WellnessDetailViewActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("API ERROR", "onFailure: " + t.getMessage());
                 t.printStackTrace();  // Print the full stack trace for more details

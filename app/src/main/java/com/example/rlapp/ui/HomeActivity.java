@@ -510,7 +510,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         tvAddress.setText(userdata.getCountry());
 
-        tvUserName.setText(userdata.getFirstName() + " " + userdata.getLastName());
+        String username = userdata.getFirstName();
+        if (userdata.getLastName() != null){
+            username += " "+userdata.getLastName();
+        }
+        tvUserName.setText(username);
         tvWellnessDays.setText(userProfileResponse.getWellnessStreak().toString());
         tvHealthCheckins.setText(userProfileResponse.getDaysCount().toString());
 
