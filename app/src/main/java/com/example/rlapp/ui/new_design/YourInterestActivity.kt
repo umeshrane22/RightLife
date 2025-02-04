@@ -18,6 +18,7 @@ import com.example.rlapp.ui.new_design.pojo.InterestDataList
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,6 +53,7 @@ class YourInterestActivity : AppCompatActivity() {
             btnSaveInterest.backgroundTintList =
                 if (selectedInterest.size > 0) colorStateListSelected else colorStateList
         }
+        recyclerView.isScrollbarFadingEnabled = false
         recyclerView.setLayoutManager(LinearLayoutManager(this))
         recyclerView.adapter = adapter
 
@@ -68,6 +70,7 @@ class YourInterestActivity : AppCompatActivity() {
     }
 
     private fun getInterests() {
+        Utils.showLoader(this)
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getUserInterest(authToken)
@@ -76,6 +79,7 @@ class YourInterestActivity : AppCompatActivity() {
                 call: Call<GetInterestResponse>,
                 response: Response<GetInterestResponse>
             ) {
+                Utils.dismissLoader(this@YourInterestActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
 
@@ -93,6 +97,7 @@ class YourInterestActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<GetInterestResponse>, t: Throwable) {
+                Utils.dismissLoader(this@YourInterestActivity)
                 Toast.makeText(
                     this@YourInterestActivity,
                     "Network Error: " + t.message,
@@ -103,6 +108,7 @@ class YourInterestActivity : AppCompatActivity() {
     }
 
     private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest, header: String) {
+        Utils.showLoader(this)
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.saveUserInterest(authToken, saveUserInterestRequest)
@@ -112,6 +118,7 @@ class YourInterestActivity : AppCompatActivity() {
                 call: Call<SaveUserInterestResponse>,
                 response: Response<SaveUserInterestResponse>
             ) {
+                Utils.dismissLoader(this@YourInterestActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
                     uiChangesOnSaveInterest(header = header)
@@ -126,6 +133,7 @@ class YourInterestActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
+                Utils.dismissLoader(this@YourInterestActivity)
                 Toast.makeText(
                     this@YourInterestActivity,
                     "Network Error: " + t.message,

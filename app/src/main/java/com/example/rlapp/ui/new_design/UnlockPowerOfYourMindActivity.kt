@@ -92,6 +92,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         moduleName: String,
         onboardingModuleResultRequest: OnboardingModuleResultRequest
     ) {
+        Utils.showLoader(this)
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
@@ -106,6 +107,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
                 call: Call<OnboardingModuleResultResponse>,
                 response: Response<OnboardingModuleResultResponse>
             ) {
+                Utils.dismissLoader(this@UnlockPowerOfYourMindActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
 
@@ -123,6 +125,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<OnboardingModuleResultResponse>, t: Throwable) {
+                Utils.dismissLoader(this@UnlockPowerOfYourMindActivity)
                 Toast.makeText(
                     this@UnlockPowerOfYourMindActivity,
                     "Network Error: " + t.message,

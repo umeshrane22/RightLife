@@ -29,6 +29,13 @@
             android:textSize="16sp" />
     </LinearLayout>
 
+    <include
+        layout="@layout/loader_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/ll_interest"
+        android:layout_above="@id/ll_bottom" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_your_interest"
@@ -38,7 +45,10 @@
         android:layout_above="@id/ll_bottom"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@color/rightlife"
+        android:scrollbarTrackVertical="@color/darker_gray" />
 
     <LinearLayout
         android:id="@+id/ll_bottom"
@@ -65,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="You can edit from your Profile"
+            android:text="You Can Edit From Your Profile"
             android:fontFamily="@font/dmsans_regular"
             android:textSize="12sp"
             android:gravity="center"/>

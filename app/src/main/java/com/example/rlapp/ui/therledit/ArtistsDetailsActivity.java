@@ -20,6 +20,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
 
@@ -163,12 +164,14 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
 
 
     private void getArtistDetails(String artistId) {
+        Utils.showLoader(this);
         String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         Call<ResponseBody> call = apiService.getArtistDetails(accessToken, artistId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Utils.dismissLoader(ArtistsDetailsActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         String jsonString = response.body().string();
@@ -187,6 +190,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                Utils.dismissLoader(ArtistsDetailsActivity.this);
             }
         });
     }

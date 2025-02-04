@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +40,7 @@ import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -337,6 +339,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
     //getRLDetailpage
     private void getContendetails(String categoryId) {
+        Utils.showLoader(this);
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -357,6 +360,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Utils.dismissLoader(ModuleContentDetailViewActivity.this);
                 if (response.isSuccessful()) {
                     try {
                         if (response.body() != null) {
@@ -386,6 +390,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Utils.dismissLoader(ModuleContentDetailViewActivity.this);
                 System.out.println("Request failed: " + t.getMessage());
             }
         });

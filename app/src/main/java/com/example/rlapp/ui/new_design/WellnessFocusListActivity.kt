@@ -88,6 +88,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
     }
 
     private fun getOnboardingDataModule(moduleName: String?) {
+        Utils.showLoader(this)
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
@@ -97,6 +98,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
                 call: Call<OnBoardingDataModuleResponse>,
                 response: Response<OnBoardingDataModuleResponse>
             ) {
+                Utils.dismissLoader(this@WellnessFocusListActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
 
@@ -114,6 +116,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<OnBoardingDataModuleResponse>, t: Throwable) {
+                Utils.dismissLoader(this@WellnessFocusListActivity)
                 Toast.makeText(
                     this@WellnessFocusListActivity,
                     "Network Error: " + t.message,
