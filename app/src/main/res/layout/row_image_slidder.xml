@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
@@ -30,6 +30,7 @@
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/dmsans_regular"
         android:text="Four Foundations, One Powerful App"
+        android:gravity="center"
         android:textColor="@color/txt_color_header"
         android:textSize="@dimen/textsize_medium" />
 

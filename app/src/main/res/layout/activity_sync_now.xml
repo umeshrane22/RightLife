@@ -29,7 +29,7 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:gravity="center"
+                android:gravity="left"
                 android:textSize="@dimen/textsize_large"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="30dp"
@@ -73,9 +73,8 @@
             android:layout_height="50dp"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginEnd="40dp"
-            android:backgroundTint="@color/bg_edittext_color"
+
+            android:backgroundTint="@color/colorTransperent"
             android:fontFamily="@font/dmsans_regular"
             android:text="Skip for Now"
             android:textColor="@color/txt_color_header"

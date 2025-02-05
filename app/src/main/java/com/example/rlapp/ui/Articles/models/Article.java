@@ -21,6 +21,20 @@ public class Article {
     @SerializedName("recommendedArticle")
     @Expose
     private RecommendedArticle recommendedArticle;
+
+    @SerializedName("recommendedLive")
+    @Expose
+    private RecommendedLive recommendedLive;
+
+    public RecommendedLive getRecommendedLive() {
+        return recommendedLive;
+    }
+
+    public void setRecommendedLive(RecommendedLive recommendedLive) {
+        this.recommendedLive = recommendedLive;
+    }
+
+
     @SerializedName("funFacts")
     @Expose
     private FunFacts funFacts;

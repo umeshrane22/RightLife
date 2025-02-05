@@ -24,6 +24,8 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
 
     private lateinit var progressBar: ProgressBar
     lateinit var tvSkip: TextView
+    lateinit var tv_fragment_count: TextView
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             }
         }
 
+        tv_fragment_count = findViewById(R.id.tv_fragment_count)
         tvSkip = findViewById(R.id.tv_skip)
         tvSkip.setOnClickListener {
             if (viewPager.currentItem == 0) {
@@ -99,6 +102,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         val progressPercentage =
             (((fragmentIndex + 1) / adapter.itemCount.toDouble()) * 100).toInt()
         progressBar.progress = progressPercentage
+        tv_fragment_count.text = "${fragmentIndex + 1}/8"
     }
 
     companion object {

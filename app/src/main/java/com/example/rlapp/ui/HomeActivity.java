@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -1379,10 +1381,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 bottom_sheet.setVisibility(View.GONE);
                 img_homemenu.setBackgroundResource(R.drawable.homeselected);
                 txt_homemenu.setTextColor(getResources().getColor(R.color.menuselected));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
+                txt_homemenu.setTypeface(typeface);
             } else {
                 bottom_sheet.setVisibility(View.VISIBLE);
                 img_homemenu.setBackgroundColor(Color.TRANSPARENT);
                 txt_homemenu.setTextColor(getResources().getColor(R.color.txt_color_header));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_regular);
+                txt_homemenu.setTypeface(typeface);
+
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
