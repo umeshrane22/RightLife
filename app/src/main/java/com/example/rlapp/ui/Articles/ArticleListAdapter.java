@@ -67,9 +67,16 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
         // Article Card
         if (article.getRecommendedArticle() != null && article.getRecommendedArticle().getTitle() != null) {
-            holder.binding.card3.setVisibility(View.VISIBLE);
-        } else {
-            holder.binding.card3.setVisibility(View.GONE);
+            if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("video")){
+                holder.binding.card3.setVisibility(View.VISIBLE);
+                holder.binding.card3Series.setVisibility(View.GONE);
+            }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")){
+                holder.binding.card3.setVisibility(View.GONE);
+                holder.binding.card3Series.setVisibility(View.VISIBLE);
+            }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
+                holder.binding.card3.setVisibility(View.GONE);
+                holder.binding.card3Series.setVisibility(View.VISIBLE);
+            }
         }
 
         // funfact Card

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import com.bumptech.glide.Glide;
@@ -40,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -540,10 +542,14 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                 bottom_sheet.setVisibility(View.GONE);
                 img_healthmenu.setBackgroundResource(R.drawable.homeselected);
                 txt_healthmenu.setTextColor(getResources().getColor(R.color.menuselected));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
+                txt_healthmenu.setTypeface(typeface);
             } else {
                 bottom_sheet.setVisibility(View.VISIBLE);
                 img_healthmenu.setBackgroundColor(Color.TRANSPARENT);
                 txt_healthmenu.setTextColor(getResources().getColor(R.color.txt_color_header));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_regular);
+                txt_healthmenu.setTypeface(typeface);
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
