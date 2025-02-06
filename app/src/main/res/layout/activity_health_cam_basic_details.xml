@@ -36,7 +36,8 @@
             android:layout_centerVertical="true"
             android:fontFamily="@font/dmsans_bold"
             android:text="Your Details"
-            android:textSize="@dimen/textsize_medium" />
+            android:textColor="@color/txt_color_mind"
+            android:textSize="@dimen/textsize_extralarge" />
 
         <com.zhpan.indicator.IndicatorView
             android:id="@+id/indicator_view"
@@ -325,7 +326,8 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:drawableEnd="@drawable/icon_arrow_article"
                 android:drawableTint="@color/black"
-                android:gravity="center"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="7dp"
                 android:text="Male"
                 android:textColor="@color/black"
                 android:visibility="gone"/>
@@ -362,7 +364,8 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:drawableEnd="@drawable/icon_arrow_article"
                 android:drawableTint="@color/black"
-                android:gravity="center"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="5dp"
                 android:hint="Select an option"
                 android:textColor="@color/black"
                 android:visibility="gone"/>
@@ -390,7 +393,8 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:drawableEnd="@drawable/icon_arrow_article"
                 android:drawableTint="@color/black"
-                android:gravity="center"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="5dp"
                 android:hint="Select an option"
                 android:textColor="@color/black"
                 android:visibility="gone"/>
@@ -417,7 +421,8 @@
                 android:backgroundTint="@color/bg_edittext"
                 android:drawableEnd="@drawable/icon_arrow_article"
                 android:drawableTint="@color/black"
-                android:gravity="center"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="5dp"
                 android:hint="Select an option"
                 android:editable="false"
                 android:textColor="@color/black"

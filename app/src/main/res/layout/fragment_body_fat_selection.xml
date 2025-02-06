@@ -32,7 +32,7 @@
         android:id="@+id/card_view_body_fat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:elevation="8dp"
         app:cardCornerRadius="25dp"
         android:layout_marginBottom="-12dp">
@@ -62,7 +62,7 @@
                 <EditText
                     android:id="@+id/edt_body_fat"
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
+                    android:layout_height="54dp"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@id/icon_plus"
                     android:layout_toEndOf="@id/icon_minus"

@@ -61,7 +61,7 @@
             <TextView
                 android:id="@+id/dialog_text"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="250dp"
                 android:text="This facial scan is intended to improve your awareness of general wellness. It does not diagnose, treat or mitigate any disease, disorder or abnormal physical state. Please consult with a healthcare professional or emergency services if you believe you have a medical emergency."
                 android:textColor="@color/txt_color_mind"
                 android:textSize="@dimen/textsize_large"
@@ -69,6 +69,10 @@
                 android:padding="@dimen/textsize_large"
                 android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="16dp"
+                app:autoSizeMaxTextSize="100sp"
+                app:autoSizeMinTextSize="2sp"
+                app:autoSizeStepGranularity="2sp"
+                app:autoSizeTextType="uniform"
                 android:layout_marginBottom="16dp" />
 
             <Button
