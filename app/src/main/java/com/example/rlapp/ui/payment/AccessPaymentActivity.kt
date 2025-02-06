@@ -1,137 +1,125 @@
-package com.example.rlapp.ui.payment;
+package com.example.rlapp.ui.payment
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ui.utility.SharedPreferenceConstants
+import com.example.rlapp.ui.utility.Utils
+import com.example.rlapp.ui.utility.svgloader.GlideApp
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-import androidx.appcompat.app.AppCompatActivity;
+class AccessPaymentActivity : AppCompatActivity() {
 
-import com.bumptech.glide.Glide;
-import com.example.rlapp.R;
-import com.example.rlapp.RetrofitData.ApiClient;
-import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.apimodel.userdata.UserProfileResponse;
-import com.example.rlapp.ui.HomeActivity;
-import com.example.rlapp.ui.rlpagemain.RLPageActivity;
-import com.example.rlapp.ui.utility.SharedPreferenceConstants;
-import com.example.rlapp.ui.utility.SharedPreferenceManager;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+    private lateinit var rvPaymentCard: RecyclerView
+    private lateinit var adapter: AccessPaymentCardAdapter
+    private val paymentCardList = ArrayList<PaymentCardList>()
+    private lateinit var imagePaymentBg: ImageView
+    private lateinit var tvHeader: TextView
 
-import java.io.IOException;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+        setContentView(R.layout.activity_accesspayment)
+        findViewById<View>(R.id.ic_back_dialog).setOnClickListener { finish() }
+        rvPaymentCard = findViewById(R.id.rv_payment_card)
+        imagePaymentBg = findViewById(R.id.image_payment_bg)
+        tvHeader = findViewById(R.id.tv_header_htw)
 
-public class AccessPaymentActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private LinearLayout llHealthAudit, llHealthCam, llVoiceScan, llmindaudit;
-    private ImageView rlmenu,img_homemenu,img_healthmenu;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_accesspayment);
-       /* llHealthAudit = findViewById(R.id.ll_health_audit);
-        llHealthCam = findViewById(R.id.ll_health_cam);
-        llVoiceScan = findViewById(R.id.ll_voice_scan);
-        llmindaudit = findViewById(R.id.ll_mind_audit);
-
-
-        llHealthAudit.setOnClickListener(this);
-        llHealthCam.setOnClickListener(this);
-        llVoiceScan.setOnClickListener(this);
-        llmindaudit.setOnClickListener(this);*/
-
-
-
-
-
-
-        /*llHealthAudit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(HealthPageMainActivity.this, "Health Audit card click", Toast.LENGTH_SHORT).show();
+        adapter = AccessPaymentCardAdapter(this, paymentCardList, object :
+            AccessPaymentCardAdapter.OnItemClickListener{
+            override fun onItemClick(paymentCard: PaymentCardList) {
+                Toast.makeText(
+                    this@AccessPaymentActivity,
+                    "OnItemClick",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
-        });*/
-        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
 
-        getPaymentCardList("");
-    }
+            override fun onBuyClick(paymentCard: PaymentCard) {
+                Toast.makeText(
+                    this@AccessPaymentActivity,
+                    "BuyClick",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
 
-    @Override
-    public void onClick(View view) {
-        int viewId = view.getId();
+            override fun onOfferClick(paymentCard: PaymentCard) {
+                Toast.makeText(
+                    this@AccessPaymentActivity,
+                    "OfferClick",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
 
-        if (view.getId() == R.id.ll_health_audit) {
+        })
 
-            Toast.makeText(AccessPaymentActivity.this, "Health Audit card click", Toast.LENGTH_SHORT).show();
-        } else if (view.getId() == R.id.ll_health_cam) {
-            Toast.makeText(AccessPaymentActivity.this, "Health Cam card click", Toast.LENGTH_SHORT).show();
+        rvPaymentCard.setLayoutManager(LinearLayoutManager(this))
+        rvPaymentCard.adapter = adapter
 
-        } else if (view.getId() == R.id.ll_voice_scan) {
-            Toast.makeText(AccessPaymentActivity.this, "Voice Scan card click", Toast.LENGTH_SHORT).show();
-
-        } else if (view.getId() == R.id.ll_mind_audit) {
-            Toast.makeText(AccessPaymentActivity.this, "Mind Audit card click", Toast.LENGTH_SHORT).show();
-        }
-
+        getPaymentCardList("")
     }
 
 
     // get user details
-    private void getPaymentCardList(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+    private fun getPaymentCardList(type: String) {
+        Utils.showLoader(this)
+        val sharedPreferences =
+            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         // Make the API call
-        Call<ResponseBody> call = apiService.getPaymentPlan(accessToken,"FACIAL_SCAN");
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String paymentPlanResponse = null;
-                    try {
-                        paymentPlanResponse = response.body().string();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Log.d("API Response", "PaymentPlan: " + paymentPlanResponse);
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
+        val call = apiService.getPaymentPlan(accessToken, "FACIAL_SCAN")
+        call.enqueue(object : Callback<PaymentCardResponse?> {
+            override fun onResponse(
+                call: Call<PaymentCardResponse?>,
+                response: Response<PaymentCardResponse?>
+            ) {
+                Utils.dismissLoader(this@AccessPaymentActivity)
+                if (response.isSuccessful && response.body() != null) {
 
+                    val paymentResponse = response.body()?.data
+                    paymentResponse?.result?.list?.let { paymentCardList.addAll(it) }
+                    adapter.notifyDataSetChanged()
+
+                    tvHeader.text = paymentResponse?.result?.service?.title
+
+                    GlideApp.with(this@AccessPaymentActivity)
+                        .load(ApiClient.CDN_URL_QA + paymentResponse?.result?.service?.moduleImageUrl)
+                        .placeholder(R.drawable.ic_healthaudit_logo)
+                        .into(imagePaymentBg)
 
                 } else {
-                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                        this@AccessPaymentActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show();
                 }
             }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(AccessPaymentActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+            override fun onFailure(call: Call<PaymentCardResponse?>, t: Throwable) {
+                Utils.dismissLoader(this@AccessPaymentActivity)
+                Toast.makeText(
+                    this@AccessPaymentActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+                Log.e("API ERROR", "onFailure: " + t.message)
+                t.printStackTrace()
             }
-        });
-
+        })
     }
-
-
 }
