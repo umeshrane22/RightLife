@@ -33,6 +33,7 @@ import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultResponse;
 import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
+import com.example.rlapp.ui.payment.PaymentCardResponse;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
@@ -720,10 +721,10 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
-    @GET("app/api/payment/plan/{moduletype}")
-    Call<ResponseBody> getPaymentPlan(
+    @GET("payment/plan/{type}")
+    Call<PaymentCardResponse> getPaymentPlan(
             @Header("Authorization") String authToken,
-            @Path("moduletype") String moduleType);
+            @Path("type") String moduleType);
 
 
     //ModuleService Pane
