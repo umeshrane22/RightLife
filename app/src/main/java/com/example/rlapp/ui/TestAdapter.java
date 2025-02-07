@@ -77,6 +77,8 @@ public class TestAdapter extends BaseBannerAdapter<SortedService> {
 
             }else {
                 button.setText(data.getCtaName());
+                button.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_bg_button_affirmed));
+                button.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_bg_button_affirm));
             }
             //button.setText(data.getCtaName());
             button.setOnClickListener(new View.OnClickListener() {

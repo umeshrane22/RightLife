@@ -49,9 +49,10 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/image_p" />
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:orientation="vertical"
                     android:layout_toRightOf="@+id/img_affirmation">
 
                     <TextView
@@ -59,10 +60,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:layout_weight=".5"
+                        android:layout_weight=".2"
                         android:fontFamily="@font/merriweather_bold"
                         android:text="Soul Fuel"
-                        android:textAlignment="textStart"
+                        android:gravity="center"
                         android:textColor="@color/txt_color_header"
                         android:textSize="@dimen/textsize_large" />
 
@@ -71,12 +72,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_above="@+id/btn_affirm"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="10dp"
                         android:layout_weight=".5"
                         android:fontFamily="@font/dmsans_regular"
                         android:paddingStart="2dp"
                         android:text="Positive thoughts, \npositive life."
-                        android:textAlignment="textStart"
+                        android:textAlignment="center"
                         android:textColor="#0B1215"
                         android:textSize="@dimen/textsize_medium" />
 
@@ -92,7 +93,7 @@
                         android:text="Affirm Now"
                         android:textSize="@dimen/textsize_small" />
 
-                </RelativeLayout>
+                </LinearLayout>
             </RelativeLayout>
 
         </LinearLayout>

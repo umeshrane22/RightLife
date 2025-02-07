@@ -1026,6 +1026,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/textsize_small">
 
                     <LinearLayout
@@ -1666,11 +1667,12 @@
 
                 <TextView
                     android:layout_width="match_parent"
-
+                    android:id="@+id/txt_continue_view_header"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:fontFamily="@font/merriweather_bold"
                     android:text="Continue"
+                    android:visibility="visible"
                     android:textColor="@color/txt_color_header"
                     android:textSize="@dimen/textsize_extralarge" />
 
@@ -2469,12 +2471,14 @@
                 </androidx.cardview.widget.CardView>
 
 
-                <!--RL voice Audit-->
+                <!--RL Journal-->
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="20dp"
                     app:cardCornerRadius="@dimen/textsize_small">
 
                     <LinearLayout
@@ -2793,11 +2797,12 @@
 
                 <TextView
                     android:layout_width="match_parent"
-
+                    android:id="@+id/txt_recently_view_header"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:fontFamily="@font/merriweather_bold"
                     android:text="Recently Viewed"
+                    android:visibility="gone"
                     android:textColor="@color/txt_color_header"
                     android:textSize="@dimen/textsize_extralarge" />
 
