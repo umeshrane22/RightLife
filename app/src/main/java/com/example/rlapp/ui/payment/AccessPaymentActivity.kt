@@ -26,6 +26,7 @@ class AccessPaymentActivity : AppCompatActivity() {
     private val paymentCardList = ArrayList<PaymentCardList>()
     private lateinit var imagePaymentBg: ImageView
     private lateinit var tvHeader: TextView
+    private var type: String? = "FACIAL_SCAN"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +37,10 @@ class AccessPaymentActivity : AppCompatActivity() {
         imagePaymentBg = findViewById(R.id.image_payment_bg)
         tvHeader = findViewById(R.id.tv_header_htw)
 
+        type = intent.getStringExtra("ACCESS_VALUE")
+
         adapter = AccessPaymentCardAdapter(this, paymentCardList, object :
-            AccessPaymentCardAdapter.OnItemClickListener{
+            AccessPaymentCardAdapter.OnItemClickListener {
             override fun onItemClick(paymentCard: PaymentCardList) {
                 Toast.makeText(
                     this@AccessPaymentActivity,
@@ -67,12 +70,12 @@ class AccessPaymentActivity : AppCompatActivity() {
         rvPaymentCard.setLayoutManager(LinearLayoutManager(this))
         rvPaymentCard.adapter = adapter
 
-        getPaymentCardList("")
+        getPaymentCardList(type)
     }
 
 
     // get user details
-    private fun getPaymentCardList(type: String) {
+    private fun getPaymentCardList(type: String?) {
         Utils.showLoader(this)
         val sharedPreferences =
             getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
@@ -81,7 +84,7 @@ class AccessPaymentActivity : AppCompatActivity() {
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         // Make the API call
-        val call = apiService.getPaymentPlan(accessToken, "FACIAL_SCAN")
+        val call = apiService.getPaymentPlan(accessToken, type)
         call.enqueue(object : Callback<PaymentCardResponse?> {
             override fun onResponse(
                 call: Call<PaymentCardResponse?>,

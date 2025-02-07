@@ -8,9 +8,6 @@ public class AssessmentsTaken {
     @SerializedName("assessment")
     @Expose
     private String assessment;
-    @SerializedName("interpretation")
-    @Expose
-    private Interpretation interpretation;
     @SerializedName("interpretations")
     @Expose
     private Interpretations interpretations;
@@ -21,14 +18,6 @@ public class AssessmentsTaken {
 
     public void setAssessment(String assessment) {
         this.assessment = assessment;
-    }
-
-    public Interpretation getInterpretation() {
-        return interpretation;
-    }
-
-    public void setInterpretation(Interpretation interpretation) {
-        this.interpretation = interpretation;
     }
 
     public Interpretations getInterpretations() {

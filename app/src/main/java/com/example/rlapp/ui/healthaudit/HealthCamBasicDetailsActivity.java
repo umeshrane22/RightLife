@@ -82,6 +82,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                      */
 
                     Intent intent = new Intent(HealthCamBasicDetailsActivity.this, AccessPaymentActivity.class);
+                    intent.putExtra("ACCESS_VALUE","FACIAL_SCAN");
                     startActivity(intent);
                 }
             }

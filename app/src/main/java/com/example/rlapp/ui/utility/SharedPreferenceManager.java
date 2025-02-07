@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
+import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.google.gson.Gson;
 
@@ -112,6 +113,28 @@ public class SharedPreferenceManager {
 
     public String getSelectedOnboardingModule() {
         return sharedPreferences.getString(SharedPreferenceConstants.ON_BOARDING_SELECTED_MODULE, "");
+    }
+
+    public void saveMindAuditRequest(MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(mindAuditAssessmentSaveRequest);
+        prefsEditor.putString(SharedPreferenceConstants.MIND_AUDIT_FEELINGS, json);
+        prefsEditor.apply();
+    }
+
+    public MindAuditAssessmentSaveRequest getMindAuditRequest() {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(SharedPreferenceConstants.MIND_AUDIT_FEELINGS, "");
+        MindAuditAssessmentSaveRequest obj = gson.fromJson(json, MindAuditAssessmentSaveRequest.class);
+        if (obj == null){
+            obj = new MindAuditAssessmentSaveRequest();
+        }
+        return obj;
+    }
+
+    public void clearMindAuditRequest(){
+        sharedPreferences.edit().remove(SharedPreferenceConstants.MIND_AUDIT_FEELINGS).apply();
     }
 
 }

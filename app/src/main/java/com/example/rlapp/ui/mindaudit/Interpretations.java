@@ -5,38 +5,49 @@ import com.google.gson.annotations.SerializedName;
 
 public class Interpretations {
 
-@SerializedName("depression")
-@Expose
-private Depression depression;
-@SerializedName("anxiety")
-@Expose
-private Anxiety anxiety;
-@SerializedName("stress")
-@Expose
-private Stress stress;
+    @SerializedName("anger")
+    @Expose
+    private Anger anger;
+    @SerializedName("anxiety")
+    @Expose
+    private Anxiety anxiety;
+    @SerializedName("happiness")
+    @Expose
+    private Happiness happiness;
+    @SerializedName("depression")
+    @Expose
+    private Depression depression;
 
-public Depression getDepression() {
-return depression;
-}
+    public Anger getAnger() {
+        return anger;
+    }
 
-public void setDepression(Depression depression) {
-this.depression = depression;
-}
+    public void setAnger(Anger anger) {
+        this.anger = anger;
+    }
 
-public Anxiety getAnxiety() {
-return anxiety;
-}
+    public Anxiety getAnxiety() {
+        return anxiety;
+    }
 
-public void setAnxiety(Anxiety anxiety) {
-this.anxiety = anxiety;
-}
+    public void setAnxiety(Anxiety anxiety) {
+        this.anxiety = anxiety;
+    }
 
-public Stress getStress() {
-return stress;
-}
+    public Happiness getHappiness() {
+        return happiness;
+    }
 
-public void setStress(Stress stress) {
-this.stress = stress;
-}
+    public void setHappiness(Happiness happiness) {
+        this.happiness = happiness;
+    }
+
+    public Depression getDepression() {
+        return depression;
+    }
+
+    public void setDepression(Depression depression) {
+        this.depression = depression;
+    }
 
 }

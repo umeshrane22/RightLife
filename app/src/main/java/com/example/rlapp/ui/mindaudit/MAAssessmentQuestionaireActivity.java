@@ -97,15 +97,27 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
     }
 
     private void submitFormData(String assessment) {
-        MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest = new MindAuditAssessmentSaveRequest();
+        MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest = SharedPreferenceManager.getInstance(this).getMindAuditRequest();
         AssessmentsTaken assessmentsTaken = new AssessmentsTaken();
         assessmentsTaken.setAssessment(assessment);
-        Interpretation interpretation = new Interpretation();
+        Interpretations interpretation = new Interpretations();
         Anger anger = new Anger();
         anger.setLevel("Extremely Severe");
-        anger.setScore(0);
+        anger.setScore(36);
         interpretation.setAnger(anger);
-        assessmentsTaken.setInterpretation(interpretation);
+        Anxiety anxiety = new Anxiety();
+        anxiety.setLevel("Extremely Severe");
+        anxiety.setScore(36);
+        interpretation.setAnxiety(anxiety);
+        Depression depression = new Depression();
+        depression.setLevel("Extremely Severe");
+        depression.setScore(36);
+        interpretation.setDepression(depression);
+        Happiness happiness = new Happiness();
+        happiness.setLevel("Extremely Severe");
+        happiness.setScore(36);
+        interpretation.setHappiness(happiness);
+        assessmentsTaken.setInterpretations(interpretation);
         List<AssessmentsTaken> assessmentTakens = new ArrayList<>();
         assessmentTakens.add(assessmentsTaken);
         mindAuditAssessmentSaveRequest.setAssessmentsTaken(assessmentTakens);
@@ -205,6 +217,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                         Log.d("AAAAA", "Result  = " + jsonString);
 
                         getAssessmentResult(header);
+                        //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);

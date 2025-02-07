@@ -19,6 +19,7 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
@@ -74,6 +75,9 @@ public class MindAuditFeelingsFragment extends Fragment {
             if (!selectedEmotions.isEmpty()) {
                 UserEmotions userEmotions = new UserEmotions(selectedEmotions);
                 getBasicScreeningQuestions(userEmotions);
+                MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest = SharedPreferenceManager.getInstance(requireContext()).getMindAuditRequest();
+                mindAuditAssessmentSaveRequest.setEmotionalState(selectedEmotions);
+                SharedPreferenceManager.getInstance(requireContext()).saveMindAuditRequest(mindAuditAssessmentSaveRequest);
             } else {
                 Utils.showCustomTopToast(requireContext(),"Please select at least one reason for your emotion before proceeding.");
                 //Toast.makeText(requireContext(), "Please select at least one reason for your emotion before proceeding.", Toast.LENGTH_SHORT).show();
