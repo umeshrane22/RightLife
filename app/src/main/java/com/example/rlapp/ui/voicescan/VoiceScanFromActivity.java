@@ -169,6 +169,7 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
                         intent.putExtra("description", VoiceRecordFragment.getDifferentTopic());
                     } else {
                         intent = new Intent(VoiceScanFromActivity.this, AccessPaymentActivity.class);
+                        intent.putExtra("ACCESS_VALUE", "CHECK_IN");
                     }
                     startActivity(intent);
 

@@ -11,6 +11,7 @@ public class SharedPreferenceConstants {
     public static final String VOICE_SCAN_ANSWER_ID = "VOICE_SCAN_ANSWER_ID";
     public static final String ON_BOARDING_QUESTIONS = "ON_BOARDING_QUESTIONS";
     public static final String ON_BOARDING_SELECTED_MODULE = "ON_BOARDING_SELECTED_MODULE";
+    public static final String MIND_AUDIT_FEELINGS = "MIND_AUDIT_FEELINGS";
 }
 
 
