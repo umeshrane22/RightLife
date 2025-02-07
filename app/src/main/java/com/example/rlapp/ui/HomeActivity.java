@@ -78,6 +78,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.zhpan.bannerview.BannerViewPager;
 import com.zhpan.bannerview.constants.PageStyle;
+import com.zhpan.indicator.enums.IndicatorStyle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -793,12 +794,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //setupViewPager();
         mViewPager = findViewById(R.id.banner_viewpager);
 
+        int selectedColor = ContextCompat.getColor(HomeActivity.this, R.color.menuselected);
+        int unselectedColor = ContextCompat.getColor(HomeActivity.this, R.color.gray);
         // Set up the ViewPager
         testAdapter = new TestAdapter(responseObj.getData().getSortedServices());
         mViewPager.setAdapter(testAdapter);
         // mViewPager.setLifecycleRegistry(getLifecycle());
+        mViewPager.setScrollDuration(1000);
         mViewPager.setPageStyle(PageStyle.MULTI_PAGE);
-        mViewPager.create(responseObj.getData().getSortedServices());
+        mViewPager.setIndicatorSliderGap(20) // Adjust spacing if needed
+                .setIndicatorStyle(IndicatorStyle.ROUND_RECT)
+                .setIndicatorHeight(20) // Adjust height for a pill-like shape
+                .setIndicatorSliderWidth(20, 50) // Unselected: 10px, Selected: 20px
+                .setIndicatorSliderColor(unselectedColor, selectedColor) // Adjust colors accordingly
+                .create(responseObj.getData().getSortedServices());
 
     }
 
@@ -1266,8 +1275,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             //intent.putExtra("key", "value");
             startActivity(intent);
             finish();
-        } else if (viewId == R.id.img_homemenu) {
+        } else if (viewId == R.id.ll_homemenuclick) {
             //  Toast.makeText(HomeActivity.this, "ImageView clicked", Toast.LENGTH_SHORT).show();
+
+            if (bottom_sheet.getVisibility() == View.VISIBLE) {
+                bottom_sheet.setVisibility(View.GONE);
+                img_homemenu.setBackgroundResource(R.drawable.homeselected);
+                txt_homemenu.setTextColor(getResources().getColor(R.color.menuselected));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
+                txt_homemenu.setTypeface(typeface);
+            }/* else {
+                bottom_sheet.setVisibility(View.VISIBLE);
+                img_homemenu.setBackgroundColor(Color.TRANSPARENT);
+                txt_homemenu.setTextColor(getResources().getColor(R.color.txt_color_header));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_regular);
+                txt_homemenu.setTypeface(typeface);
+
+            }*/
         }
 
         if (viewId == R.id.ll_thinkright_category1) {

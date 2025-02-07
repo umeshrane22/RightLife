@@ -3,12 +3,17 @@ package com.example.rlapp.ui.utility;
 import android.util.Log;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Buffer;
 
 /*
 public class LoggingInterceptor implements Interceptor {
@@ -44,9 +49,22 @@ public class LoggingInterceptor implements Interceptor {
             System.out.println("Header: " + name + " = " + headers.get(name));
         }
 
+        if (request.body() != null) {
+            RequestBody requestBody = request.body();
+            Buffer buffer = new Buffer();
+            requestBody.writeTo(buffer);
+
+            Charset charset = StandardCharsets.UTF_8;
+            MediaType contentType = requestBody.contentType();
+            if (contentType != null) {
+                charset = contentType.charset(StandardCharsets.UTF_8);
+            }
+
+            Log.d("Retrofit", "API Request Body: " + buffer.readString(charset));
+        }
         // Log body (if applicable)
         if (request.body() != null) {
-            System.out.println("Body: " + request.body().toString());
+            System.out.println("API Request Body: " + request.body());
         }
 
         // Proceed with the request

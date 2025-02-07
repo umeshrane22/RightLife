@@ -76,7 +76,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
             ll_journal, ll_affirmations, ll_sleepsounds;
     private ImageView img_homemenu, img_healthmenu, quicklinkmenu;
-    private TextView txt_healthmenu;
+    private TextView txt_healthmenu,txt_recently_view_header,txt_continue_view_header;
     private CardView cardview_healthcam;
     private TextView txtuserName,txt_rldays,txt_well_streak_count,txt_next_date,txt_mindaudit_days_count;
     private Button btn_continue_healthcam,btn_recheck_health,btn_rerecord_voicescan;
@@ -88,6 +88,10 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_rlpage);
         recyclerViewContinue = findViewById(R.id.recyclerViewContinue);
         recyclerViewrecent = findViewById(R.id.recyclerViewrecent);
+
+        txt_continue_view_header = findViewById(R.id.txt_continue_view_header);
+        txt_recently_view_header = findViewById(R.id.txt_recently_view_header);
+
         rl_verify_view = findViewById(R.id.rl_verify_view);
         layout_rl_journalarrow = findViewById(R.id.layout_rl_journalarrow);
         rlmenu = findViewById(R.id.rlmenu);
@@ -276,6 +280,11 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void HandleContinueWatchUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
+        if (rlPageContinueWatchResponse.getData().getContentDetails().size()>0) {
+            txt_continue_view_header.setVisibility(View.VISIBLE);
+        }else {
+            txt_continue_view_header.setVisibility(View.GONE);
+        }
         RLContinueListAdapter adapter = new RLContinueListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
@@ -321,6 +330,12 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void HandleRecentlyWatchedUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
+        if (rlPageContinueWatchResponse.getData().getContentDetails().size()>0) {
+            txt_recently_view_header.setVisibility(View.VISIBLE);
+        }else {
+            txt_recently_view_header.setVisibility(View.GONE);
+        }
+        recyclerViewrecent.setVisibility(View.VISIBLE);
         RLRecentlyWatchedListAdapter adapter = new RLRecentlyWatchedListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewrecent.setLayoutManager(horizontalLayoutManager);

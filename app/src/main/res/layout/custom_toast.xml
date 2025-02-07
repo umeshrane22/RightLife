@@ -2,19 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_margin="10dp"
-    android:background="@drawable/roundedcornerbutton"
-    android:backgroundTint="@color/red"
+    android:background="@drawable/roundedcornerdialogbg"
+    android:backgroundTint="#FD6967"
     android:layout_height="50dp">
 
     <TextView
         android:id="@+id/toast_text"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="This custom Toast"
-        android:textColor="@color/white"
-        android:textSize="@dimen/textsize_medium"
+
+        android:text="Please select at least one reason for your emotions before proceeding."
+        android:textColor="@color/txt_color_header"
+        android:textSize="@dimen/textsize_small"
         android:fontFamily="@font/dmsans_regular"
-        android:padding="5dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
         android:gravity="center"
         android:layout_centerInParent="true" />
 </RelativeLayout>

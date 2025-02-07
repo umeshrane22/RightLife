@@ -46,10 +46,10 @@ class WellnessFocusListAdapter(
 
 
         val bgDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.bg_gray_border)
+            AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_radius_small)
 
         val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray)
+            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray_radius_small)
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,
