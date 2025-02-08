@@ -76,7 +76,9 @@ class TargetWeightSelectionFragment : Fragment() {
         val onboardingQuestionRequest =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
 
+
         val currentWeight = onboardingQuestionRequest.weight
+
 
         val weight = currentWeight?.split(" ")
         tvCurrentWeight.text = weight?.get(0) ?: "0"
@@ -113,6 +115,19 @@ class TargetWeightSelectionFragment : Fragment() {
             // Handle the selected number
         }
         recyclerView.adapter = adapter
+
+
+        val stringArray = (currentWeight).split(" ")
+        if (stringArray[1].uppercase() == "LBS") {
+            swithch.isChecked = true
+            selectedLabel = " lbs"
+            selectedWeight = ConversionUtils.convertLbsToKgs(selectedWeight)
+            setLbsValue()
+            recyclerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+            selectedWeight += selectedLabel
+            selected_number_text!!.text = selectedWeight
+        }
+
 
 
         swithch.setOnCheckedChangeListener { buttonView, isChecked ->
