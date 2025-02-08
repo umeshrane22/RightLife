@@ -176,9 +176,5 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         })
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        navigateToPreviousPage()
-    }
 
 }
