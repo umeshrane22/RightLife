@@ -3,7 +3,6 @@ package com.example.rlapp.ui.Articles;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.media.browse.MediaBrowser;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,10 +32,8 @@ import com.example.rlapp.databinding.ActivityArticledetailBinding;
 import com.example.rlapp.ui.Articles.models.Article;
 import com.example.rlapp.ui.Articles.models.ArticleDetailsResponse;
 import com.example.rlapp.ui.Articles.models.Artist;
-import com.example.rlapp.ui.rlpagemain.RLRecentlyWatchedListAdapter;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
-import com.example.rlapp.ui.utility.Utils;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.ui.PlayerControlView;
@@ -51,28 +48,25 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ArticlesDetailActivity extends AppCompatActivity {
-// video views
-private StyledPlayerView playerView;
+    private static final String VIDEO_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; // Free content URL
+    // views
+    ImageView ic_back_dialog, ic_save_article, iconArrow, image_like_article, image_share_article;
+    TextView txt_inthisarticle, txt_inthisarticle_list, txt_article_content;
+    ActivityArticledetailBinding binding;
+    // video views
+    private StyledPlayerView playerView;
     private PlayerControlView controlView;
     private ExoPlayer player;
     private ProgressBar progressBar;
     private ImageView fullscreenButton;
-
     private boolean isFullscreen = false;
-
-    private static final String VIDEO_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; // Free content URL
-
-    // views
-    ImageView ic_back_dialog, ic_save_article,iconArrow ,image_like_article,image_share_article;
-    TextView txt_inthisarticle,txt_inthisarticle_list,txt_article_content;
-    ActivityArticledetailBinding binding;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_articledetail);
 
-         binding = ActivityArticledetailBinding.inflate(getLayoutInflater());
+        binding = ActivityArticledetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -83,48 +77,30 @@ private StyledPlayerView playerView;
         iconArrow = findViewById(R.id.icon_arrow_article);
 
 
-
-        txt_inthisarticle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
-                    txt_inthisarticle_list.setVisibility(View.GONE);
-                    iconArrow.setRotation(360f); // Rotate by 180 degrees
-                }else {
-                    txt_inthisarticle_list.setVisibility(View.VISIBLE);
-                    iconArrow.setRotation(180f); // Rotate by 180 degrees
-                }
+        txt_inthisarticle.setOnClickListener(v -> {
+            if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
+                txt_inthisarticle_list.setVisibility(View.GONE);
+                iconArrow.setRotation(360f); // Rotate by 180 degrees
+            } else {
+                txt_inthisarticle_list.setVisibility(View.VISIBLE);
+                iconArrow.setRotation(180f); // Rotate by 180 degrees
             }
         });
-        ic_back_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        ic_back_dialog.setOnClickListener(view -> finish());
 
 
-        ic_save_article.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ic_save_article.setImageResource(R.drawable.ic_save_article_active);
-                // Call Save article api
-            }
+        ic_save_article.setOnClickListener(view -> {
+            ic_save_article.setImageResource(R.drawable.ic_save_article_active);
+            // Call Save article api
         });
 
-        binding.imageLikeArticle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
-            }
-        });
+        binding.imageLikeArticle.setOnClickListener(v -> binding.imageLikeArticle.setImageResource(R.drawable.like_article_active));
         txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
 
 
         setVideoPlayerView();
         getArticleDetails("");
     }
-
 
 
     private void getArticleDetails(String s) {
@@ -171,36 +147,36 @@ private StyledPlayerView playerView;
 
     private void handleArticleResponseData(ArticleDetailsResponse articleDetailsResponse) {
 
-binding.tvHeaderArticle.setText(articleDetailsResponse.getData().getTitle());
+        binding.tvHeaderArticle.setText(articleDetailsResponse.getData().getTitle());
         Artist artist = articleDetailsResponse.getData().getArtist().get(0);
-binding.tvAuthorName.setText(String.format("%s %s", artist.getFirstName(),artist.getLastName()));
-binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
+        binding.tvAuthorName.setText(String.format("%s %s", artist.getFirstName(), artist.getLastName()));
+        binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
 
-        Glide.with(this).load(ApiClient.CDN_URL_QA+artist.getProfilePicture())
+        Glide.with(this).load(ApiClient.CDN_URL_QA + artist.getProfilePicture())
                 .transform(new RoundedCorners(25))
                 .into(binding.authorImage);
-binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
-        setModuleColor(binding.imageTag,articleDetailsResponse.getData().getModuleId());
+        binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
+        setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
         binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime());
-        Glide.with(this).load(ApiClient.CDN_URL_QA+articleDetailsResponse.getData().getUrl())
+        Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
                 .transform(new RoundedCorners(1))
                 .into(binding.articleImageMain);
         //setInThisArticleList(articleDetailsResponse.getData().getArticle());
         HandleArticleListView(articleDetailsResponse.getData().getArticle());
-        if (articleDetailsResponse.getData().getTableOfContents()!=null) {
+        if (articleDetailsResponse.getData().getTableOfContents() != null) {
             binding.llInthisarticle.setVisibility(View.VISIBLE);
             handleInThisArticle(articleDetailsResponse.getData().getTableOfContents());
         }
         // handle save icon
         if (articleDetailsResponse.getData().getIsFavourited()) {
             binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
-        }else {
+        } else {
             binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
         }
 
         if (articleDetailsResponse.getData().getIsLike()) {
             binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe);
-        }else {
+        } else {
             binding.imageLikeArticle.setImageResource(R.drawable.like);
         }
 
@@ -277,7 +253,6 @@ binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().ge
 
         }
     }
-
 
 
     // set exoplayer videoview

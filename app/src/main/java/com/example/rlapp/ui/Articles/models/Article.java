@@ -15,9 +15,12 @@ public class Article {
     @SerializedName("recommendedProduct")
     @Expose
     private RecommendedProduct recommendedProduct;
-    @SerializedName("recommendedService")
+    @SerializedName("funFacts")
     @Expose
-    private RecommendedService recommendedService;
+    private FunFacts funFacts;
+    @SerializedName("_id")
+    @Expose
+    private String id;
     @SerializedName("recommendedArticle")
     @Expose
     private RecommendedArticle recommendedArticle;
@@ -25,22 +28,9 @@ public class Article {
     @SerializedName("recommendedLive")
     @Expose
     private RecommendedLive recommendedLive;
-
-    public RecommendedLive getRecommendedLive() {
-        return recommendedLive;
-    }
-
-    public void setRecommendedLive(RecommendedLive recommendedLive) {
-        this.recommendedLive = recommendedLive;
-    }
-
-
-    @SerializedName("funFacts")
+    @SerializedName("recommendedService")
     @Expose
-    private FunFacts funFacts;
-    @SerializedName("_id")
-    @Expose
-    private String id;
+    private RecommendedService recommendedService;
 
     public String getHtmlContent() {
         return htmlContent;
@@ -58,21 +48,12 @@ public class Article {
         this.thumbnail = thumbnail;
     }
 
-
-    public RecommendedService getRecommendedService() {
-        return recommendedService;
+    public RecommendedProduct getRecommendedProduct() {
+        return recommendedProduct;
     }
 
-    public void setRecommendedService(RecommendedService recommendedService) {
-        this.recommendedService = recommendedService;
-    }
-
-    public RecommendedArticle getRecommendedArticle() {
-        return recommendedArticle;
-    }
-
-    public void setRecommendedArticle(RecommendedArticle recommendedArticle) {
-        this.recommendedArticle = recommendedArticle;
+    public void setRecommendedProduct(RecommendedProduct recommendedProduct) {
+        this.recommendedProduct = recommendedProduct;
     }
 
     public FunFacts getFunFacts() {
@@ -91,11 +72,28 @@ public class Article {
         this.id = id;
     }
 
-    public RecommendedProduct getRecommendedProduct() {
-        return recommendedProduct;
+    public RecommendedArticle getRecommendedArticle() {
+        return recommendedArticle;
     }
 
-    public void setRecommendedProduct(RecommendedProduct recommendedProduct) {
-        this.recommendedProduct = recommendedProduct;
+    public void setRecommendedArticle(RecommendedArticle recommendedArticle) {
+        this.recommendedArticle = recommendedArticle;
     }
+
+    public RecommendedLive getRecommendedLive() {
+        return recommendedLive;
+    }
+
+    public void setRecommendedLive(RecommendedLive recommendedLive) {
+        this.recommendedLive = recommendedLive;
+    }
+
+    public RecommendedService getRecommendedService() {
+        return recommendedService;
+    }
+
+    public void setRecommendedService(RecommendedService recommendedService) {
+        this.recommendedService = recommendedService;
+    }
+
 }
