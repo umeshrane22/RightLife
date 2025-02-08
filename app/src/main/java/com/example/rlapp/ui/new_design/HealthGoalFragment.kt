@@ -127,19 +127,32 @@ class HealthGoalFragment : Fragment() {
         tvDescription.visibility = VISIBLE
     }
 
-    private fun updateUserData(onboardingQuestionRequest : OnboardingQuestionRequest) {
+    private fun updateUserData(onboardingQuestionRequest: OnboardingQuestionRequest) {
 
         val userData = Userdata()
-        userData.gender = onboardingQuestionRequest.gender
+        userData.gender = if (onboardingQuestionRequest.gender == "Male") "M" else "F"
         if (onboardingQuestionRequest.height != null) {
             val stringArray = (onboardingQuestionRequest.height)?.split(" ")
-            userData.height = stringArray?.get(0)?.toDouble()
-            userData.heightUnit = stringArray?.get(1)
+
+            if (stringArray?.get(2) == "cms") {
+                userData.height = stringArray[0].toDouble()
+                userData.heightUnit = "CM"
+            } else {
+                val height = stringArray?.get(0)?.toDouble()
+                    ?.plus(("0." + stringArray[2]).toDouble())
+                userData.height = height
+                userData.heightUnit = "FT_AND_INCHES"
+            }
+
         }
         if (onboardingQuestionRequest.weight != null) {
             val stringArray = (onboardingQuestionRequest.weight)?.split(" ")
             userData.weight = stringArray?.get(0)?.toDouble()
-            userData.weightUnit = stringArray?.get(1)
+            if (stringArray?.get(1)?.uppercase() == "LBS") {
+                userData.weightUnit = stringArray[1].uppercase()
+            } else {
+                userData.weightUnit = stringArray?.get(2)?.uppercase()
+            }
         }
 
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
