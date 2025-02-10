@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--//RL Mind Audit new user -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview_mindaudit_new_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_card_16dp"
+        android:layout_marginRight="@dimen/margin_card_16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="1dp"
+        android:elevation="5dp"
+        app:cardCornerRadius="@dimen/textsize_small"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp">
+
+            <RelativeLayout
+                android:id="@+id/rl_report_img_holder"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true">
+
+                <ImageView
+                    android:id="@+id/img_mindaudit_logo_rlpage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/img_mindaudit_rlpage" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt_titl3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@+id/img_right_arrow_start_mindaudit"
+                android:layout_toRightOf="@+id/rl_report_img_holder"
+                android:fontFamily="@font/dmsans_regular"
+                android:padding="10dp"
+                android:text="Almost there! Finish your Mind Audit to gain clarity into your mental wellness. Dive deeper with just a tap!"
+                android:textColor="@color/txt_color_header"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/img_right_arrow_start_mindaudit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="@dimen/textsize_small"
+                android:src="@drawable/ic_mindaudit_rlpage_arrow_red" />
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

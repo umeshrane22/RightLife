@@ -43,6 +43,7 @@ import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.jounal.JournalingListActivity;
 import com.example.rlapp.ui.mindaudit.AllAssessment;
 import com.example.rlapp.ui.mindaudit.Assessments;
+import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
@@ -78,6 +79,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     // Uniquely Section
     private TextView txt_section_title_uniquely, txt_title_uniquely, txt_desc_uniquely;
     private ImageView img_uniquely;
+    private View cardview_mindaudit_new_user_include;
+    private ImageView img_right_arrow_start_mindaudit;
 
     // voice Scan
     private TextView txt_voicescore_rlpage;
@@ -130,6 +133,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         cardview_healthcam_new_user = findViewById(R.id.cardview_healthcam_new_user);
         cardview_healthcam = findViewById(R.id.cardview_healthcam);
         cardview_mindaudit = findViewById(R.id.cardview_mindaudit);
+        cardview_mindaudit_new_user_include = findViewById(R.id.cardview_mindaudit_new_user_include);
+        cardview_mindaudit_new_user_include.setVisibility(View.GONE);
+        img_right_arrow_start_mindaudit = cardview_mindaudit_new_user_include.findViewById(R.id.img_right_arrow_start_mindaudit);
         cardview_healthcam = findViewById(R.id.cardview_healthcam);
         cardview_voicescan = findViewById(R.id.cardview_voicescan);
         txt_voicescore_rlpage = findViewById(R.id.txt_voicescore_rlpage);
@@ -192,6 +198,14 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(RLPageActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        img_right_arrow_start_mindaudit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RLPageActivity.this, MindAuditActivity.class);
                 startActivity(intent);
             }
         });
@@ -608,9 +622,20 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setMindAuditDate(MindAuditNextDate mindAuditNextDate) {
-        txt_next_date.setText(DateTimeUtils.convertAPIDateMonthFormat(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate()) + " " + "|" + " " + "View Detailed Report"
-        );
-        txt_mindaudit_days_count.setText("Next Scan In " + mindAuditNextDate.getData().getMindAuditDateCount() + " Days");
+        if (mindAuditNextDate!=null) {
+            if (mindAuditNextDate.getData().getMindAuditDateCount() != 0) {
+                cardview_mindaudit.setVisibility(View.VISIBLE);
+                txt_next_date.setText(DateTimeUtils.convertAPIDateMonthFormat(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate()) + " " + "|" + " " + "View Detailed Report"
+                );
+                txt_mindaudit_days_count.setText("Next Scan In " + mindAuditNextDate.getData().getMindAuditDateCount() + " Days");
+            }else {
+                cardview_mindaudit.setVisibility(View.GONE);
+                cardview_mindaudit_new_user_include.setVisibility(View.VISIBLE);
+            }
+        }else {
+            cardview_mindaudit.setVisibility(View.GONE);
+            cardview_mindaudit_new_user_include.setVisibility(View.VISIBLE);
+        }
     }
 
 

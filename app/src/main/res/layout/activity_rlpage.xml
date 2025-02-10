@@ -755,6 +755,10 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <include
+                    android:id="@+id/cardview_mindaudit_new_user_include"
+                    layout="@layout/cardview_mindaudit_new_user"/>
+
                 <!--//RL Mind Audit -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardview_mindaudit"
