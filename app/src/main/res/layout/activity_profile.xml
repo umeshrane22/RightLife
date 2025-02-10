@@ -80,9 +80,9 @@
             android:id="@+id/iv_profile_image"
             android:layout_width="125dp"
             android:layout_height="125dp"
-            android:src="@drawable/avatar"
             android:layout_centerInParent="true"
-            android:background="@drawable/circle_shape"/>
+            android:background="@drawable/rounded_image"
+            android:src="@drawable/profile_man"/>
 
         <ImageView
             android:layout_width="wrap_content"

@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
@@ -28,6 +29,10 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.zhpan.bannerview.indicator.DrawableIndicator
+import com.zhpan.indicator.IndicatorView
+import com.zhpan.indicator.enums.IndicatorSlideMode
+import com.zhpan.indicator.enums.IndicatorStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -94,6 +99,31 @@ class ImageSliderActivity : AppCompatActivity() {
             dot.setImageResource(R.drawable.dot) // Default inactive dot image
             tab.customView = dot
         }.attach()
+
+
+        val selectedColor = ContextCompat.getColor(this@ImageSliderActivity, R.color.menuselected)
+        val unselectedColor = ContextCompat.getColor(this@ImageSliderActivity, R.color.gray)
+        val indicatorView = findViewById<DrawableIndicator>(R.id.indicator_view_pager1)
+        val dp20 = resources.getDimensionPixelOffset(R.dimen.textsize_small)
+
+        indicatorView.apply {
+            setSliderColor(unselectedColor, selectedColor)
+            setIndicatorDrawable(R.drawable.dot, R.drawable.dot_selected)
+            setSliderGap(30F)
+            setSliderWidth(10F)
+            setSliderHeight(10F)
+            setCheckedSlideWidth(50F)
+            setIndicatorGap(resources.getDimensionPixelOffset(R.dimen.textsize_small))
+            //setIndicatorSize(dp20, dp20, dp20, dp20)
+            setCheckedSlideWidth(50F)
+
+            setSlideMode(IndicatorSlideMode.SCALE)
+            setIndicatorStyle(IndicatorStyle.ROUND_RECT)
+            setupWithViewPager(viewPager)
+        }
+
+
+
 
         // Set up the auto-slide functionality
         handler = Handler(mainLooper)
@@ -289,7 +319,7 @@ class ImageSliderActivity : AppCompatActivity() {
                         intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
                         intent.putExtra("EMAIL", mEmail)
                         startActivity(intent)
-                        finish()
+                        finishAffinity()
 
                     }, 1000)
 

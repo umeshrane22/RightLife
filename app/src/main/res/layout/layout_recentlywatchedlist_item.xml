@@ -19,10 +19,11 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="5dp">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_toRightOf="@id/rlimg1"
+                android:id="@+id/rl_module_name"
                 android:layout_height="wrap_content">
 
                 <View
@@ -61,7 +62,7 @@
                     app:tint="@color/black" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_category"
                     android:layout_marginStart="5dp"
@@ -78,10 +79,10 @@
 
             <ImageView
                 android:id="@+id/rlimg1"
-                android:layout_width="104dp"
-                android:layout_height="104dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_alignParentStart="true"
-
+                android:layout_centerVertical="true"
                 android:scaleType="fitXY"
                 android:src="@drawable/image1_rlpage_edit"
                 tools:ignore="DuplicateIds" />
@@ -90,7 +91,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_modulename"
+                android:layout_below="@+id/rl_module_name"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_toEndOf="@id/rlimg1"
@@ -150,6 +151,7 @@
             android:layout_width="match_parent"
             android:background="@color/gray"
             android:layout_margin="1dp"
+            android:visibility="gone"
             android:layout_height="1dp"/>
     </LinearLayout>
 </LinearLayout>

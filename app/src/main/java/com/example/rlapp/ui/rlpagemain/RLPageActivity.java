@@ -6,46 +6,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-
-import com.bumptech.glide.Glide;
-import com.example.rlapp.RetrofitData.ApiClient;
-import com.example.rlapp.RetrofitData.ApiService;
-import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
-import com.example.rlapp.apimodel.rlpagemain.nextdate.MindAuditNextDate;
-import com.example.rlapp.apimodel.rlpagemodels.continuemodela.RlPageContinueWatchResponse;
-import com.example.rlapp.apimodel.rlpagemodels.journal.RLpageJournalResponse;
-import com.example.rlapp.apimodel.userdata.UserProfileResponse;
-import com.example.rlapp.apimodel.userdata.Userdata;
-import com.example.rlapp.ui.HomeActivity;
-import com.example.rlapp.ui.Wellness.EpisodesListAdapter;
-import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
-import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
-import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
-import com.example.rlapp.ui.healthcam.HealthCamActivity;
-import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
-import com.example.rlapp.ui.jounal.JournalingActivity;
-import com.example.rlapp.ui.jounal.JournalingListActivity;
-import com.example.rlapp.ui.mindaudit.AllAssessment;
-import com.example.rlapp.ui.mindaudit.Assessments;
-import com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity;
-import com.example.rlapp.ui.mindaudit.UserEmotions;
-import com.example.rlapp.ui.utility.DateTimeUtils;
-import com.example.rlapp.ui.utility.SharedPreferenceConstants;
-import com.example.rlapp.ui.utility.SharedPreferenceManager;
-import com.example.rlapp.ui.voicescan.VoiceScanActivity;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,8 +15,41 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
-import com.example.rlapp.databinding.ActivityRlpageBinding;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
+import com.example.rlapp.apimodel.rlpagemain.nextdate.MindAuditNextDate;
+import com.example.rlapp.apimodel.rlpagemodels.RLPageVoiceResult.RLPageVoiceScanResultResponse;
+import com.example.rlapp.apimodel.rlpagemodels.continuemodela.RlPageContinueWatchResponse;
+import com.example.rlapp.apimodel.rlpagemodels.journal.RLpageJournalResponse;
+import com.example.rlapp.apimodel.rlpagemodels.uniquelyyours.UniquelyYoursResponse;
+import com.example.rlapp.apimodel.userdata.UserProfileResponse;
+import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.ui.HomeActivity;
+import com.example.rlapp.ui.drawermenu.PreferencesLayer2Activity;
+import com.example.rlapp.ui.drawermenu.ProfileActivity;
+import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
+import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
+import com.example.rlapp.ui.healthcam.HealthCamActivity;
+import com.example.rlapp.ui.jounal.JournalingActivity;
+import com.example.rlapp.ui.jounal.JournalingListActivity;
+import com.example.rlapp.ui.mindaudit.AllAssessment;
+import com.example.rlapp.ui.mindaudit.Assessments;
+import com.example.rlapp.ui.mindaudit.UserEmotions;
+import com.example.rlapp.ui.utility.DateTimeUtils;
+import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.voicescan.VoiceScanActivity;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -70,18 +63,25 @@ import retrofit2.Response;
 public class RLPageActivity extends AppCompatActivity implements View.OnClickListener {
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
-    private RecyclerView recyclerViewContinue,recyclerViewrecent;
+    private RecyclerView recyclerViewContinue, recyclerViewrecent;
     private FloatingActionButton add_fab;
-    private RelativeLayout rl_verify_view,layout_rl_journalarrow;
+    private RelativeLayout rl_verify_view, layout_rl_journalarrow,rllayout_button_completeprofile;
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
             ll_journal, ll_affirmations, ll_sleepsounds;
-    private ImageView img_homemenu, img_healthmenu, quicklinkmenu;
-    private TextView txt_healthmenu,txt_recently_view_header,txt_continue_view_header;
-    private CardView cardview_healthcam;
-    private TextView txtuserName,txt_rldays,txt_well_streak_count,txt_next_date,txt_mindaudit_days_count;
-    private Button btn_continue_healthcam,btn_recheck_health,btn_rerecord_voicescan;
-    private TextView tv_title_journal,tv_journal_desc,txt_journal_date;
-    private LinearLayout ll_journal_main,ll_normal_journal,ll_guided_journal;
+    private ImageView img_homemenu, img_healthmenu, quicklinkmenu, iv_yellow_exclamation;
+    private TextView txt_healthmenu, txt_recently_view_header, txt_continue_view_header;
+    private CardView cardview_healthcam, cardview_healthcam_new_user, cardview_mindaudit,cardview_voicescan;
+    private TextView txtuserName, txt_rldays, txt_well_streak_count, txt_next_date, txt_mindaudit_days_count;
+    private Button btn_continue_healthcam, btn_recheck_health, btn_rerecord_voicescan;
+    private TextView tv_title_journal, tv_journal_desc, txt_journal_date;
+    private LinearLayout ll_journal_main, ll_normal_journal, ll_guided_journal;
+    // Uniquely Section
+    private TextView txt_section_title_uniquely, txt_title_uniquely, txt_desc_uniquely;
+    private ImageView img_uniquely;
+
+    // voice Scan
+    private TextView txt_voicescore_rlpage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +93,11 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         txt_recently_view_header = findViewById(R.id.txt_recently_view_header);
 
         rl_verify_view = findViewById(R.id.rl_verify_view);
+        iv_yellow_exclamation = findViewById(R.id.iv_yellow_exclamation);
+
+
+        rllayout_button_completeprofile = findViewById(R.id.rllayout_button_completeprofile);
+
         layout_rl_journalarrow = findViewById(R.id.layout_rl_journalarrow);
         rlmenu = findViewById(R.id.rlmenu);
         rlmenu.setOnClickListener(this);
@@ -122,7 +127,14 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         btn_rerecord_voicescan = findViewById(R.id.btn_rerecord_voicescan);
         btn_rerecord_voicescan.setOnClickListener(this);
 
+        cardview_healthcam_new_user = findViewById(R.id.cardview_healthcam_new_user);
         cardview_healthcam = findViewById(R.id.cardview_healthcam);
+        cardview_mindaudit = findViewById(R.id.cardview_mindaudit);
+        cardview_healthcam = findViewById(R.id.cardview_healthcam);
+        cardview_voicescan = findViewById(R.id.cardview_voicescan);
+        txt_voicescore_rlpage = findViewById(R.id.txt_voicescore_rlpage);
+
+
         txtuserName = findViewById(R.id.txtuserName);
         txt_rldays = findViewById(R.id.txt_rldays);
         txt_well_streak_count = findViewById(R.id.txt_well_streak_count);
@@ -140,6 +152,12 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         ll_normal_journal.setOnClickListener(this);
         layout_rl_journalarrow.setOnClickListener(this);
 
+        //Uniqely Card
+        txt_section_title_uniquely = findViewById(R.id.txt_section_title_uniquely);
+        txt_title_uniquely = findViewById(R.id.txt_title_uniquely);
+        txt_desc_uniquely = findViewById(R.id.txt_desc_uniquely);
+        img_uniquely = findViewById(R.id.img_uniquely);
+
         // Api Calls
 
         GetMyRLContent();
@@ -148,19 +166,21 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         MyRLJournal();
         getMyRLHealthCamResult();
         getMyRLGetMindAuditDate();
-         ArrayList<String> userEmotionsString = new ArrayList<>();
+        ArrayList<String> userEmotionsString = new ArrayList<>();
         UserEmotions userEmotions = new UserEmotions(userEmotionsString);
         getSuggestedAssessment(userEmotions);
         MyRLRecentlyWatched();
 
+        // get voice scan data call
+        getMyRLVoiceScanCheckinResult();
         //--
         ImageView ivProfileImage = findViewById(R.id.iv_profile_image);
         UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
         if (userProfileResponse == null) return;
         Userdata userdata = userProfileResponse.getUserdata();
-        if (userdata!=null) {
+        if (userdata != null) {
             Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
-                    .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                    .placeholder(R.drawable.profile_man) // Replace with your placeholder image
                     .circleCrop()
                     .into(ivProfileImage);
 
@@ -168,7 +188,13 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             txt_rldays.setText(String.valueOf(userProfileResponse.getDaysCount()));
             txt_well_streak_count.setText(String.valueOf(userProfileResponse.getWellnessStreak()));
         }
-
+        rllayout_button_completeprofile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RLPageActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void GetMyRLContent() {
@@ -186,10 +212,11 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL Content - "+jsonString);
+                        Log.d("Response Body", " My RL Content - " + jsonString);
                         Gson gson = new Gson();
-                        //getEmotions = gson.fromJson(jsonString, GetEmotions.class);
+                        UniquelyYoursResponse uniquelyYoursResponse = gson.fromJson(jsonString, UniquelyYoursResponse.class);
 
+                        HandleUniquelyYoursUI(uniquelyYoursResponse);
 
 
                     } catch (IOException e) {
@@ -207,6 +234,16 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         });
     }
 
+    private void HandleUniquelyYoursUI(UniquelyYoursResponse uniquelyYoursResponse) {
+        txt_section_title_uniquely.setText(uniquelyYoursResponse.getData().getSectionTitle());
+        txt_title_uniquely.setText(uniquelyYoursResponse.getData().getServices().get(0).getTitle());
+        txt_desc_uniquely.setText(uniquelyYoursResponse.getData().getServices().get(0).getSubtitle());
+
+        Glide.with(this).load(ApiClient.CDN_URL_QA + uniquelyYoursResponse.getData().getServices().get(0).getThumbnail().getUrl())
+                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .into(img_uniquely);
+    }
+
     private void FirstLookReport() {
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -222,10 +259,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL Firstlook Report - "+jsonString);
+                        Log.d("Response Body", " My RL Firstlook Report - " + jsonString);
                         Gson gson = new Gson();
                         //getEmotions = gson.fromJson(jsonString, GetEmotions.class);
-
 
 
                     } catch (IOException e) {
@@ -249,7 +285,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getMyRLContinueWatching(accessToken,"continue",4,0);
+        Call<ResponseBody> call = apiService.getMyRLContinueWatching(accessToken, "continue", 4, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -258,7 +294,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL Continue watching - "+jsonString);
+                        Log.d("Response Body", " My RL Continue watching - " + jsonString);
                         Gson gson = new Gson();
                         RlPageContinueWatchResponse rlPageContinueWatchResponse = gson.fromJson(jsonString, RlPageContinueWatchResponse.class);
 
@@ -280,9 +316,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void HandleContinueWatchUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
-        if (rlPageContinueWatchResponse.getData().getContentDetails().size()>0) {
+        if (rlPageContinueWatchResponse.getData().getContentDetails().size() > 0) {
             txt_continue_view_header.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             txt_continue_view_header.setVisibility(View.GONE);
         }
         RLContinueListAdapter adapter = new RLContinueListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
@@ -298,7 +334,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getMyRLRecentlyWatched(accessToken,"recently",4,0);
+        Call<ResponseBody> call = apiService.getMyRLRecentlyWatched(accessToken, "recently", 4, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -307,7 +343,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL Continue watching - "+jsonString);
+                        Log.d("Response Body", " My RL Continue watching - " + jsonString);
                         Gson gson = new Gson();
                         RlPageContinueWatchResponse rlPageContinueWatchResponse = gson.fromJson(jsonString, RlPageContinueWatchResponse.class);
 
@@ -330,9 +366,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
 
     private void HandleRecentlyWatchedUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
-        if (rlPageContinueWatchResponse.getData().getContentDetails().size()>0) {
+        if (rlPageContinueWatchResponse.getData().getContentDetails().size() > 0) {
             txt_recently_view_header.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             txt_recently_view_header.setVisibility(View.GONE);
         }
         recyclerViewrecent.setVisibility(View.VISIBLE);
@@ -358,24 +394,29 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL HEalth Cam Result - "+jsonString);
+                        Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
                         Gson gson = new Gson();
                         //getEmotions = gson.fromJson(jsonString, GetEmotions.class);
-
-
+                        // show healhcam card and hind new user card
+                        cardview_healthcam.setVisibility(View.VISIBLE);
+                        cardview_healthcam_new_user.setVisibility(View.GONE);
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 } else {
-                 //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.d("MyRLHealthCamResult","Error:"+response.message());
+                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
+                    cardview_healthcam.setVisibility(View.GONE);
+                    cardview_healthcam_new_user.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                cardview_healthcam.setVisibility(View.GONE);
+                cardview_healthcam_new_user.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -396,7 +437,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL Mind Audit Next - "+jsonString);
+                        Log.d("Response Body", " My RL Mind Audit Next - " + jsonString);
                         Gson gson = new Gson();
                         MindAuditNextDate mindAuditNextDate = gson.fromJson(jsonString, MindAuditNextDate.class);
 
@@ -408,7 +449,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 } else {
                     //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.d("MyRLHealthCamResult","Error:"+response.message());
+                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
                 }
             }
 
@@ -420,13 +461,71 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
+    // get voice scan Result data here // check api with backend is this the correct one
+
+    private void getMyRLVoiceScanCheckinResult() {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getVoiceScanCheckInData(accessToken,true,  0,  0);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(RLPageActivity.this, "Success RLPAGE Voice Scan check in: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Log.d("Response Body", " My RL Mind Audit Next - " + jsonString);
+                        Gson gson = new Gson();
+                        RLPageVoiceScanResultResponse rlPageVoiceScanResultResponse = gson.fromJson(jsonString, RLPageVoiceScanResultResponse.class);
+                        if (rlPageVoiceScanResultResponse.getData()!=null) {
+                            HandleVoiceScanCardUI(rlPageVoiceScanResultResponse);
+                        }else {
+                            cardview_voicescan.setVisibility(View.GONE);
+                        }
+
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
+                    cardview_voicescan.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void HandleVoiceScanCardUI(RLPageVoiceScanResultResponse rlPageVoiceScanResultResponse) {
+        if (rlPageVoiceScanResultResponse.getData()!=null)  {
+            if (rlPageVoiceScanResultResponse.getData().getScore()!=null) {
+                cardview_voicescan.setVisibility(View.VISIBLE);
+                txt_voicescore_rlpage.setText(String.valueOf(rlPageVoiceScanResultResponse.getData().getScore()));
+            }else {
+                cardview_voicescan.setVisibility(View.GONE);
+            }
+        }else {
+            cardview_voicescan.setVisibility(View.GONE);
+        }
+
+    }
+
     private void MyRLJournal() {
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getMyRLJournal(accessToken,0,10);
+        Call<ResponseBody> call = apiService.getMyRLJournal(accessToken, 0, 10);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -435,12 +534,12 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL journal - "+jsonString);
+                        Log.d("Response Body", " My RL journal - " + jsonString);
                         Gson gson = new Gson();
                         RLpageJournalResponse rLpageJournalResponse = gson.fromJson(jsonString, RLpageJournalResponse.class);
-                        Log.d("Response Body"," My RL journal - "+jsonString);
+                        Log.d("Response Body", " My RL journal - " + jsonString);
                         HandleJournalUI(rLpageJournalResponse);
-                        
+
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -460,7 +559,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         if (rLpageJournalResponse.getData().getJournalsList().isEmpty()) {
             ll_journal_main.setVisibility(View.GONE);
             return;
-        }else {
+        } else {
             txt_journal_date.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(rLpageJournalResponse.getData().getJournalsList().get(0).getUpdatedAt()));
             tv_title_journal.setText(rLpageJournalResponse.getData().getJournalsList().get(0).getTitle());
             tv_journal_desc.setText(rLpageJournalResponse.getData().getJournalsList().get(0).getJournal());
@@ -483,7 +582,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                     Toast.makeText(RLPageActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL Mind Audit suggestion - "+jsonString);
+                        Log.d("Response Body", " My RL Mind Audit suggestion - " + jsonString);
                         Gson gson = new Gson();
                         Assessments assessments = gson.fromJson(jsonString, Assessments.class);
                         setupAssesmentsUi(assessments);
@@ -507,12 +606,12 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         AllAssessment assessment = assessments.getAllAssessment();
 
     }
-    private void setMindAuditDate(MindAuditNextDate mindAuditNextDate) {
-        txt_next_date.setText(DateTimeUtils.convertAPIDateMonthFormat(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate())+" "+"|"+" "+"View Detailed Report"
-        );
-        txt_mindaudit_days_count.setText("Next Scan In "+mindAuditNextDate.getData().getMindAuditDateCount()+" Days");
-    }
 
+    private void setMindAuditDate(MindAuditNextDate mindAuditNextDate) {
+        txt_next_date.setText(DateTimeUtils.convertAPIDateMonthFormat(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate()) + " " + "|" + " " + "View Detailed Report"
+        );
+        txt_mindaudit_days_count.setText("Next Scan In " + mindAuditNextDate.getData().getMindAuditDateCount() + " Days");
+    }
 
 
     // On click
@@ -524,12 +623,12 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             // Optionally pass data
             //intent.putExtra("key", "value");
             startActivity(intent);
-        }else if (viewId == R.id.btn_recheck_health) {
+        } else if (viewId == R.id.btn_recheck_health) {
             Intent intent = new Intent(RLPageActivity.this, HealthAuditActivity.class);
             // Optionally pass data
             //intent.putExtra("key", "value");
             startActivity(intent);
-        }else if (viewId == R.id.btn_continue_healthcam) {
+        } else if (viewId == R.id.btn_continue_healthcam) {
             Intent intent = new Intent(RLPageActivity.this, HealthCamActivity.class);
             // Optionally pass data
             //intent.putExtra("key", "value");
@@ -578,9 +677,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             startActivity(new Intent(RLPageActivity.this, ExploreSleepSoundsActivity.class));
         } else if (viewId == R.id.ll_guided_journal) {
             startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
-        }else if (viewId == R.id.ll_normal_journal) {
+        } else if (viewId == R.id.ll_normal_journal) {
             startActivity(new Intent(RLPageActivity.this, JournalingActivity.class));
-        }else if (viewId == R.id.layout_rl_journalarrow) {
+        } else if (viewId == R.id.layout_rl_journalarrow) {
             Intent intent = new Intent(RLPageActivity.this, JournalingListActivity.class);
             // Optionally pass data
             //intent.putExtra("key", "value");

@@ -149,9 +149,9 @@ class HealthGoalFragment : Fragment() {
             val stringArray = (onboardingQuestionRequest.weight)?.split(" ")
             userData.weight = stringArray?.get(0)?.toDouble()
             if (stringArray?.get(1)?.uppercase() == "LBS") {
-                userData.weightUnit = stringArray[1].uppercase()
+                userData.weightUnit = "LBS"
             } else {
-                userData.weightUnit = stringArray?.get(2)?.uppercase()
+                userData.weightUnit = "KG"
             }
         }
 

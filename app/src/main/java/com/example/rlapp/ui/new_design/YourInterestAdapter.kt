@@ -34,10 +34,10 @@ class YourInterestAdapter(
         holder.textView.text = interest.topic
 
 
-        val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_gray_border)
+        val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_gray_border_radius_small)
 
         val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray)
+            AppCompatResources.getDrawable(context, R.drawable.rounded_corder_border_gray_radius_small)
         val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
         DrawableCompat.setTint(
             wrappedDrawable,

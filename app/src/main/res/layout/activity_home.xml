@@ -1473,10 +1473,10 @@
                         android:layout_width="match_parent"
                         android:id="@+id/rl_wellness_lock"
                         android:background="@drawable/roundedcornerdialogbg"
-                        android:backgroundTint="#80FFFFFF"
+                        android:backgroundTint="#90FFFFFF"
                         android:elevation="5dp"
                         android:visibility="gone"
-                        android:layout_height="450dp">
+                        android:layout_height="460dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -2455,7 +2455,7 @@
             android:layout_margin="16dp"
             android:background="@drawable/roundedcornershape"
             android:orientation="horizontal"
-            android:padding="16dp"
+            android:padding="12dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -2490,7 +2490,8 @@
                         android:layout_marginTop="14dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:text="Journal"
-                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:minLines="2"
                         android:textSize="@dimen/textsize_extrasmall" />
                 </LinearLayout>
             </LinearLayout>
@@ -2527,7 +2528,8 @@
                         android:layout_marginTop="14dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:text="Affirmation"
-                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:minLines="2"
                         android:textSize="@dimen/textsize_extrasmall" />
                 </LinearLayout>
             </LinearLayout>
@@ -2564,7 +2566,8 @@
                         android:layout_marginTop="14dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:text="Sleep Sounds"
-                        android:textAlignment="center"
+                        android:gravity="center"
+                        android:minLines="2"
                         android:textSize="@dimen/textsize_extrasmall" />
                 </LinearLayout>
             </LinearLayout>

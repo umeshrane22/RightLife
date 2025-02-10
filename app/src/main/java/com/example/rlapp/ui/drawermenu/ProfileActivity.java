@@ -76,7 +76,12 @@ public class ProfileActivity extends AppCompatActivity {
                 Intent data = result.getData();
                 assert data != null;
                 Bitmap photo = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-                ivProfileImage.setImageBitmap(photo);
+               // ivProfileImage.setImageBitmap(photo);
+                Glide.with(this)
+                        .load(photo)  // Pass the Bitmap object here
+                        .placeholder(R.drawable.profile_man) // Optional placeholder
+                        .into(ivProfileImage);
+
             } else {
                 assert result.getData() != null;
                 Uri selectedImage = result.getData().getData();
@@ -116,8 +121,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         tvTakePhoto.setOnClickListener(view -> {
             requestCode = CAMERA_REQUEST;
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                   // ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 checkPermissions();
             } else {
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -184,7 +189,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvDate.setText(DateTimeUtils.convertAPIDate(userdata.getDateofbirth()));
         Glide.with(this).
                 load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
-                .placeholder(R.drawable.avatar)
+                .placeholder(R.drawable.profile_man)
                 .into(ivProfileImage);
 
         if (userdata.getGender().equals("M") || userdata.getGender().equalsIgnoreCase("Male"))
@@ -487,14 +492,13 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ) {
 
             // Check if the app should show an explanation for the permission request
             ActivityCompat.requestPermissions(
                     this,
-                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_REQUEST
             );
         }
     }
