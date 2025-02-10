@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="9dp"
+    android:height="9dp"
+    android:viewportWidth="11"
+    android:viewportHeight="11">
+
+    <!-- Red Circle -->
+    <path
+        android:fillColor="@color/menuselected"
+        android:pathData="M5.5,0A5.5,5.5 0,1,1,5.5,11A5.5,5.5 0,1,1,5.5,0z"/>
+
+    <!-- Check Path Centered Inside the Red Circle -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M3,5L5,7L8,3"
+        android:strokeWidth="1.27778"
+        android:strokeColor="#FCFCFC"
+        android:strokeLineCap="round" />
+</vector>

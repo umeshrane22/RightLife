@@ -13,7 +13,7 @@ import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.rlapp.MainActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.rlapp.R
 import com.example.rlapp.ui.HomeActivity
 import com.example.rlapp.ui.utility.SharedPreferenceManager
@@ -31,6 +31,15 @@ class SplashScreenActivity : AppCompatActivity() {
         videoView = findViewById(R.id.videoView)
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
+
+        val appMode = SharedPreferenceManager.getInstance(this).appMode
+        if (appMode.equals("System", ignoreCase = true)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        } else if (appMode.equals("Dark", ignoreCase = true)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
 
 
         val authToken = SharedPreferenceManager.getInstance(this).accessToken

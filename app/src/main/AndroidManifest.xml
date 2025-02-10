@@ -116,6 +116,7 @@
         <activity android:name=".ui.drawermenu.PreferencesLayer1Activity" />
         <activity android:name=".ui.drawermenu.PreferencesLayer2Activity" />
         <activity android:name=".ui.drawermenu.ChangePasswordActivity" />
+        <activity android:name=".ui.drawermenu.ThemeActivity" />
         <activity android:name=".ui.search.SearchActivity" />
         <activity android:name=".ui.therledit.ViewAllActivity" />
         <activity android:name=".ui.therledit.ArtistsDetailsActivity" />
