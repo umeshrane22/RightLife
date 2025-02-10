@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FFFFFF</color>
+    <color name="white">#000000</color>
+    <color name="rightlife">#FD9493</color>
+    <color name="bg_edittext">#F7F7FC</color>
+    <color name="txt_color_header">#FFFFFF</color>
+    <color name="txt_color_mind">#FFFFFF</color>
+    <color name="txt_color_health">#14142B</color>
+    <color name="txt_color_vs">#7C7C7C</color>
+
+    <color name="gray">#D3D3D3</color>
+    <color name="dark_gray">#A9A9A9</color>
+
+    <color name="border">#DDDDDD</color>
+    <color name="menuselected">#FD6967</color>
+
+
+    <color name="buttoncolorvc">#E5B62D</color>
+    <color name="bdayedittextcolor">#F7F7FC</color>
+
+    <color name="buttoncolorhealth">#17B471</color>
+
+    <color name="rlpagegreen">#4ED6AC</color>
+
+    <color name="healthauditgreen">#A6E0CE</color>
+    <color name="mindauditpink">#FFC1E1</color>
+
+    <color name="buttoncolormind">#FF7FC0</color>
+    <color name="topcolorhealthcam">#FFC1E1</color>
+    <color name="topcolormindauditQuestionbg">#FDE6FF</color>
+
+    <color name="chip_background_color">#E0E0E0</color>
+    <color name="chip_text_color">#000000</color>
+    <color name="chip_selected_background_color">#2196F3</color>
+    <color name="chip_selected_text_color">#FFFFFF</color>
+
+    <!--My health-->
+    <color name="color_pink_myhealth">#FF7FC0</color>
+    <color name="color_lightpink_myhealth">#FDE6FF</color>
+
+
+    <!--Affirmation-->
+    <color name="color_bg_button_affirm">#FD6967</color>
+    <color name="color_bg_button_affirmed">#F7F7F7</color>
+
+    <!--Article Page-->
+    <color name="color_tag_article">#8CD5BE</color>
+
+    <color name="color_godeeper_orange">#FC4B49</color>
+
+
+    <!--module colors-->
+    <color name="thinkright">#F7E6B7</color>
+    <color name="moveright">#FFBFBD</color>
+    <color name="eatright">#A6E0CE</color>
+    <color name="sleepright">#A0CEFF</color>
+
+    <color name="color_sad">#EFF0F6</color>
+    <color name="color_stressed">#C5DEF9</color>
+    <color name="color_unsure">#A6E0CE</color>
+    <color name="color_relaxed">#D5C6ED</color>
+    <color name="color_happy">#F7E6B7</color>
+
+    <color name="light_pink">#FDE6FF</color>
+    <color name="dark_pink">#FF7FC0</color>
+    <color name="medium_pink">#FFC1E1</color>
+
+    <color name="light_yellow">#F7E6B7</color>
+    <color name="dark_yellow">#E5B62D</color>
+    <color name="medium_yellow">#F9DB84</color>
+
+    <color name="light_blue">#C5DEF9</color>
+    <color name="medium_blue">#93C4FB</color>
+    <color name="dark_blue">#4593FB</color>
+
+    <color name="light_red">#FDD3D2</color>
+    <color name="medium_red">#FFA8A5</color>
+    <color name="dark_red">#FD6967</color>
+
+    <color name="light_green">#A6E0CE</color>
+    <color name="medium_green">#4ED6AC</color>
+    <color name="dark_green">#17B471</color>
+
+    <color name="sleep_right_blue">#4593FB</color>
+    <color name="bg_edittext_color">#F2F2F2</color>
+    <color name="text_color_char_left">#707070</color>
+
+    <color name="color_think_right">#984C01</color>
+    <color name="color_move_right">#B11414</color>
+    <color name="color_eat_right">#005439</color>
+    <color name="color_sleep_right">#002C5F</color>
+
+    <color name="color_green">#03B27B</color>
+    <color name="color_blue">#1292E5</color>
+    <color name="color_switch_gray">#F2F2F2</color>
+    <color name="color_icon_green">#06B27B</color>
+
+    <color name="color_assesment_dialog_gray">#F7F7FC</color>
+    <color name="color_mindaudit_popup_exclamation">#FDD3D2</color>
+    <color name="color_in_this_article">#21A4F8</color>
+
+
+
+
+
+</resources>

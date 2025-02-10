@@ -75,7 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(intent);
         });
         llTheme.setOnClickListener(view -> {
-            Intent intent = new Intent(SettingsActivity.this, AboutUsActivity.class);
+            Intent intent = new Intent(SettingsActivity.this, ThemeActivity.class);
             startActivity(intent);
         });
         llTermsAndConditions.setOnClickListener(view -> {

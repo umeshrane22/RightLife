@@ -137,5 +137,15 @@ public class SharedPreferenceManager {
         sharedPreferences.edit().remove(SharedPreferenceConstants.MIND_AUDIT_FEELINGS).apply();
     }
 
+    public void saveAppMode(String mode){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.APP_MODE, mode);
+        editor.apply();
+    }
+
+    public String getAppMode() {
+        return sharedPreferences.getString(SharedPreferenceConstants.APP_MODE, "System");
+    }
+
 }
 
