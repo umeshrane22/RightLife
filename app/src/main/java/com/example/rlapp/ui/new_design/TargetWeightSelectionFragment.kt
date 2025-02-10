@@ -27,6 +27,7 @@ class TargetWeightSelectionFragment : Fragment() {
 
     private lateinit var llSelectedWeight: LinearLayout
     private lateinit var tvSelectedWeight: TextView
+    private lateinit var tv_description_who: TextView
     private var selectedWeight = "50 kg"
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
@@ -57,6 +58,8 @@ class TargetWeightSelectionFragment : Fragment() {
 
         llSelectedWeight = view.findViewById(R.id.ll_selected_weight)
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)
+        tv_description_who = view.findViewById(R.id.tv_description_who)
+
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
         swithch = view.findViewById(R.id.switch_weight_metric)
@@ -120,12 +123,12 @@ class TargetWeightSelectionFragment : Fragment() {
         val stringArray = (currentWeight).split(" ")
         if (stringArray[1].uppercase() == "LBS") {
             swithch.isChecked = true
-            selectedLabel = " lbs"
-            selectedWeight = ConversionUtils.convertLbsToKgs(selectedWeight)
+            /*selectedLabel = " lbs"
+            selectedWeight = ConversionUtils.convertLbsToKgs(selectedWeight.split(" ")[0])
             setLbsValue()
             recyclerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
             selectedWeight += selectedLabel
-            selected_number_text!!.text = selectedWeight
+            selected_number_text!!.text = selectedWeight*/
         }
 
 
@@ -205,6 +208,10 @@ class TargetWeightSelectionFragment : Fragment() {
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
 
+
+
+       // tv_description_who.text = getIdealWeightRange(165.0)
+
         return view
     }
 
@@ -230,4 +237,12 @@ class TargetWeightSelectionFragment : Fragment() {
         llSelectedWeight.visibility = GONE
     }
 
+    // Method to get Ideal Weight Range based on BMI (18.5 - 24.9)
+    fun getIdealWeightRange(heightCm: Double): String {
+        val heightM = heightCm / 100
+        val minWeight = 18.5 * (heightM * heightM)
+        val maxWeight = 24.9 * (heightM * heightM)
+
+        return String.format("%.1f - %.1f kg", minWeight, maxWeight)
+    }
 }

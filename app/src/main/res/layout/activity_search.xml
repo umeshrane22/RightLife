@@ -78,6 +78,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="RightLife Top 10"
+                android:visibility="gone"
                 android:textSize="@dimen/textsize_large" />
 
             <androidx.recyclerview.widget.RecyclerView

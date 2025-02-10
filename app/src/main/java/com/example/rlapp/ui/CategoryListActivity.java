@@ -233,6 +233,9 @@ public class CategoryListActivity extends AppCompatActivity {
                     // Do something with the position
                     Log.d("ChipGroup", "Checked chip position: " + position);
                     //API Call
+                    if (position == ResponseObj.getData().getResult().size() ){
+                        position = 0;
+                    }
                     selectedCategoryId = ResponseObj.getData().getResult().get(position).getCategoryId();
                     selectedModuleId = ResponseObj.getData().getResult().get(position).getModuleId();
                     //Toast.makeText(this, "this is " + ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
@@ -451,7 +454,13 @@ public class CategoryListActivity extends AppCompatActivity {
                     for (int i = 0; i < ResponseObj.getData().getResult().size(); i++) {
                         addChip(ResponseObj.getData().getResult().get(i).getName(), ResponseObj.getData().getResult().get(i).getId());
                     }
-
+                    int targetChip = chipGroup.getCheckedChipId();
+                    if (targetChip != -1) {
+                        Chip targetChipview = findViewById(targetChip);
+                        if (targetChipview!=null) {
+                            chipGroup.requestChildFocus(targetChipview, targetChipview);
+                        }
+                    }
                 } else {
                     try {
                         if (response.errorBody() != null) {

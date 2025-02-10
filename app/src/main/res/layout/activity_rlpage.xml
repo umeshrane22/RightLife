@@ -44,15 +44,18 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center"
                             android:layout_margin="10dp">
 
-                            <ImageView
+                            <de.hdodenhof.circleimageview.CircleImageView
                                 android:id="@+id/iv_profile_image"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:layout_toLeftOf="@+id/txtuserName"
-                                android:background="@drawable/circle_shape"
-                                android:src="@drawable/imageprofileniks" />
+                                android:background="@drawable/rounded_image"
+                                android:src="@drawable/profile_man"/>
+
+
 
 
                             <TextView
@@ -63,17 +66,26 @@
                                 android:layout_centerHorizontal="true"
                                 android:fontFamily="@font/merriweather_bold"
                                 android:paddingStart="10dp"
-                                android:text="Hi Hemant,"
+                                android:text="Hi,"
                                 android:textSize="22sp" />
+
+                            <ImageView
+                                android:id="@+id/iv_yellow_exclamation"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_toLeftOf="@+id/txtuserName"
+                                android:background="@drawable/circle_shape"
+                                android:src="@drawable/ic_exlamation_rlpage" />
                         </RelativeLayout>
 
                         <RelativeLayout
                             android:id="@+id/rl_verify_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_marginLeft="10dp"
 
-                            android:visibility="gone">
+                            android:visibility="visible">
 
                             <ImageView
                                 android:layout_width="40dp"
@@ -98,6 +110,7 @@
                                 android:layout_height="18dp"
                                 android:layout_centerVertical="true"
                                 android:layout_marginStart="20dp"
+                                android:id="@+id/rllayout_button_completeprofile"
                                 android:layout_toRightOf="@+id/txt_verification"
                                 android:background="@drawable/ic_verified_rightarrow">
 
@@ -151,7 +164,7 @@
                                 android:layout_centerHorizontal="true"
                                 android:layout_marginBottom="10dp"
                                 android:fontFamily="@font/dmsans_regular"
-                                android:text="Day"
+                                android:text="Days"
                                 android:textSize="10sp" />
 
                         </RelativeLayout>
@@ -177,11 +190,11 @@
                                 android:layout_height="wrap_content"
                                 android:layout_toRightOf="@+id/img_fire_lit"
                                 android:layout_centerVertical="true"
-                                android:fontFamily="@font/dmsans_regular"
                                 android:padding="20dp"
                                 app:fontFamily="@font/merriweather_bold"
                                 android:text="Wellness Streak"
-                                android:textSize="12sp" />
+                                android:textColor="@color/txt_color_header"
+                                android:textSize="@dimen/textsize_large" />
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -213,6 +226,7 @@
                                     android:gravity="center_vertical"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:textSize="@dimen/textsize_extralarge"
+                                    android:textColor="#03B27B"
                                     android:layout_height="wrap_content"/>
 
                             </LinearLayout>
@@ -223,22 +237,22 @@
                 </androidx.cardview.widget.CardView>
 
                 <TextView
-                    android:id="@+id/txt_title_notsure"
+                    android:id="@+id/txt_section_title_uniquely"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
                     android:fontFamily="@font/merriweather_bold"
-                    android:text="Not Sure Where To Start?"
+                    android:text="Uniquely Yours"
                     android:textColor="@color/txt_color_header"
                     android:textSize="@dimen/textsize_extralarge"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardview_notsure"
+                    android:id="@+id/cardview_uniquely"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:cardCornerRadius="@dimen/textsize_small">
 
                     <LinearLayout
@@ -249,7 +263,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/txt_title"
+                            android:id="@+id/txt_title_uniquely"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="16sp"
@@ -261,18 +275,20 @@
                         <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="16dp"
-                            app:cardCornerRadius="20dp">
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            app:cardCornerRadius="15dp">
 
                             <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="188dp">
 
                                 <ImageView
+                                    android:id="@+id/img_uniquely"
                                     android:layout_width="match_parent"
                                     android:layout_height="188dp"
-                                    android:scaleType="fitXY"
-                                    android:src="@drawable/img_notsurevideo" />
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/logo_rightlife" />
 
                                 <ImageView
                                     android:layout_width="32dp"
@@ -284,14 +300,15 @@
                         </androidx.cardview.widget.CardView>
 
                         <TextView
-                            android:id="@+id/txt_desc"
+                            android:id="@+id/txt_desc_uniquely"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_margin="16sp"
+                            android:layout_margin="10sp"
                             android:fontFamily="@font/dmsans_regular"
                             android:text="Listen to a 5 min audio specially curated for you."
                             android:textColor="@color/txt_color_header"
-                            android:textSize="14sp" />
+                            android:gravity="center"
+                            android:textSize="@dimen/textsize_small" />
 
                         <Button
                             android:layout_width="wrap_content"
@@ -304,7 +321,7 @@
                             android:paddingStart="75dp"
                             android:paddingEnd="75dp"
                             android:text="Listen Now"
-                            android:visibility="gone" />
+                            android:visibility="visible" />
 
                         <Button
                             android:layout_width="wrap_content"
@@ -317,6 +334,7 @@
                             android:paddingStart="75dp"
                             android:paddingEnd="75dp"
                             android:text="Completed"
+                            android:visibility="gone"
                             android:textColor="#0B1215" />
 
                     </LinearLayout>
@@ -366,7 +384,7 @@
                                 android:layout_margin="16sp"
                                 android:layout_toRightOf="@+id/rl_report"
                                 android:fontFamily="@font/merriweather_bold"
-                                android:text="Health Cam."
+                                android:text="Health Cam"
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="16sp" />
 
@@ -613,9 +631,39 @@
                             android:backgroundTint="#FD6967"
                             android:drawableLeft="@drawable/ic_upload"
                             android:gravity="center"
-                            android:paddingStart="80dp"
-                            android:paddingEnd="80dp"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp"
+                            android:visibility="gone"
                             android:text="Update Your Vitals Now" />
+
+                        <LinearLayout
+                            android:id="@+id/ll_btn_healthcam_start"
+                            android:layout_width="match_parent"
+                            android:layout_height="41dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/bg_gray_border"
+                            android:backgroundTint="@color/menuselected"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_margin="10dp"
+                                android:src="@drawable/ic_upload"
+                                android:layout_gravity="center_vertical"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="Update Your Vitals Now"
+                                android:textColor="@color/white"
+                                android:textSize="@dimen/textsize_small"
+                                android:gravity="center_vertical"/>
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -628,6 +676,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
+                    android:id="@+id/cardview_healthcam_new_user"
                     app:cardCornerRadius="@dimen/textsize_small">
 
                     <LinearLayout
@@ -708,6 +757,7 @@
 
                 <!--//RL Mind Audit -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview_mindaudit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
@@ -1344,8 +1394,10 @@
                 <!--RL voice Audit-->
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardview_voicescan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible"
                     android:layout_margin="20dp"
                     app:cardCornerRadius="@dimen/textsize_small">
 
@@ -1477,6 +1529,7 @@
                                     android:padding="5dp">
 
                                     <TextView
+                                        android:id="@+id/txt_voicescore_rlpage"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/dmsans_bold"
@@ -1657,8 +1710,9 @@
                             android:backgroundTint="#FD6967"
                             android:drawableLeft="@drawable/ic_upload"
                             android:gravity="center"
-                            android:paddingStart="50dp"
-                            android:paddingEnd="50dp"
+                            android:paddingStart="41dp"
+                            android:paddingEnd="41dp"
+                            android:textSize="@dimen/textsize_small"
                             android:text="Re-Record For Daily Insights" />
 
                     </LinearLayout>
@@ -3318,7 +3372,7 @@
             android:layout_margin="16dp"
             android:background="@drawable/roundedcornershape"
             android:orientation="horizontal"
-            android:padding="16dp"
+            android:padding="12dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -3341,20 +3395,21 @@
                     android:padding="11dp"
                     android:layout_margin="1dp"
                     android:orientation="vertical">
-                <ImageView
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_marginTop="5dp"
-                    android:src="@drawable/ic_quick_journey" />
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/ic_quick_journey" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Journal"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/textsize_extrasmall" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Journal"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:textSize="@dimen/textsize_extrasmall" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -3378,20 +3433,21 @@
                     android:padding="11dp"
                     android:layout_margin="1dp"
                     android:orientation="vertical">
-                <ImageView
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_marginTop="5dp"
-                    android:src="@drawable/ic_quick_affirmation" />
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/ic_quick_affirmation" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Affirmation"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/textsize_extrasmall" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Affirmation"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:textSize="@dimen/textsize_extrasmall" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -3415,20 +3471,21 @@
                     android:padding="11dp"
                     android:layout_margin="1dp"
                     android:orientation="vertical">
-                <ImageView
-                    android:layout_width="34dp"
-                    android:layout_height="34dp"
-                    android:layout_marginTop="5dp"
-                    android:src="@drawable/ic_quick_sleepsound" />
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/ic_quick_sleepsound" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:text="Sleep Sounds"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/textsize_extrasmall" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:text="Sleep Sounds"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:textSize="@dimen/textsize_extrasmall" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -34,6 +34,7 @@ import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.payment.PaymentCardResponse;
+import com.example.rlapp.ui.therledit.EpisodeTrackRequest;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
@@ -743,6 +744,25 @@ public interface ApiService {
             @Query("isExist") boolean isExist
 
     );
+
+    // get RL page voice scan data // check api with backed is correct or not got it from debug
+
+    @Headers("Content-Type: application/json")
+    @GET("check-in")
+    Call<ResponseBody> getVoiceScanCheckInData(
+            @Header("Authorization") String authToken,
+            @Query("isRecommended") boolean isRecommended,
+            @Query("skip") int skip,
+            @Query("limit") int limit
+    );
+
+
+
+    @Headers("Content-Type: application/json")
+    @POST("rightEpisodeTrack")
+    Call<ResponseBody> trackEpisode(
+            @Header("Authorization") String authToken,
+            @Body EpisodeTrackRequest request);
 }
 
 

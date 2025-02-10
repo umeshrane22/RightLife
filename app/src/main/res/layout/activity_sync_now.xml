@@ -24,7 +24,7 @@
                 android:textSize="@dimen/textsize_large24sp"
                 android:fontFamily="@font/merriweather_bold"
                 android:layout_marginTop="30dp"
-                android:text="Sync With Apple Health"
+                android:text="Sync With Health Connect"
                 android:layout_height="match_parent"/>
 
             <TextView
@@ -35,7 +35,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="Connect your Apple Health to seamlessly track and integrate your fitness, sleep, and wellness data. With real-time insights, we’ll personalize your journey to better health!"
+                android:text="Connect your Health Connec to seamlessly track and integrate your fitness, sleep, and wellness data. With real-time insights, we’ll personalize your journey to better health!"
                 android:layout_height="match_parent"/>
         </LinearLayout>
 
@@ -53,9 +53,10 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/icon_heart"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/icon_health_connect"
                 android:layout_gravity="center_vertical"/>
 
             <TextView

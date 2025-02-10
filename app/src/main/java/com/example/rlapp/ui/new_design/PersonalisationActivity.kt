@@ -17,10 +17,9 @@ class PersonalisationActivity : AppCompatActivity() {
 
         val tvSkip = findViewById<TextView>(R.id.tv_skip)
         tvSkip.setOnClickListener {
-            val intent = Intent(this, SyncNowActivity::class.java)
+            val intent = Intent(this, EnableNotificationActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
-            finish()
         }
 
         val btnAllowPersonalisation = findViewById<Button>(R.id.btn_allow_personalisation)
@@ -28,7 +27,6 @@ class PersonalisationActivity : AppCompatActivity() {
             val intent = Intent(this, SyncNowActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
-            //finish()
         }
     }
 }

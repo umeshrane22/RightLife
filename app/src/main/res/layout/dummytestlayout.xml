@@ -9,6 +9,37 @@
     android:padding="16dp">
 
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="#FD6967"
+        android:drawableLeft="@drawable/ic_upload"
+        android:gravity="center"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:visibility="visible"
+        android:text="Update Your Vitals Now" />
+
+    <Button
+        android:id="@+id/btn_rerecord_voicescan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="#FD6967"
+        android:drawableLeft="@drawable/ic_upload"
+        android:gravity="center"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:text="Re-Record For Daily Insights" />
+
+
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

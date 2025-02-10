@@ -164,7 +164,7 @@ class CreateUsernameActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, WellnessFocusActivity::class.java)
             startActivity(intent)
-            finishAffinity();
+            findViewById<LinearLayout>(R.id.dialog_welcome).visibility = GONE
             //dialog.dismiss()
         }, 2000)
 

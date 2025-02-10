@@ -506,7 +506,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ImageView ivClose = view.findViewById(R.id.iv_close);
         ivClose.setOnClickListener(view1 -> drawer.close());
         if (userdata.getProfilePicture() != null) {
-            Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).placeholder(R.drawable.avatar).error(R.drawable.avatar).into(ivProfileImage);
+            Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).placeholder(R.drawable.profile_man).error(R.drawable.profile_man).into(ivProfileImage);
         } else {
 
         }
@@ -1260,7 +1260,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, ArticlesDetailActivity.class));
+            startActivity(new Intent(this, SearchActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
@@ -1284,6 +1284,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 txt_homemenu.setTextColor(getResources().getColor(R.color.menuselected));
                 Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
                 txt_homemenu.setTypeface(typeface);
+                quicklinkmenu.setSelected(!quicklinkmenu.isSelected());
             }/* else {
                 bottom_sheet.setVisibility(View.VISIBLE);
                 img_homemenu.setBackgroundColor(Color.TRANSPARENT);
@@ -1558,7 +1559,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     setDrawerHeader(navigationView.getHeaderView(0));
                     if (ResponseObj.getUserdata().getProfilePicture() != null) {
-                        Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).into(profileImage);
+                        Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).placeholder(R.drawable.profile_man).error(R.drawable.profile_man).into(profileImage);
                     }
                     tvUserName.setText(ResponseObj.getUserdata().getFirstName());
 
