@@ -47,7 +47,7 @@
                     android:layout_alignParentStart="true"
                     android:padding="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/image_p" />
+                    android:src="@drawable/img_logintop1" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -32,6 +32,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Utils {
+    private static final String TAG = "AppLog";
+
     public static final String LOGIN_TYPE_PHONE_NUMBER = "PHONE_NUMBER";
     public static final String BETTER_RIGHT_LIFE_KEY = "ukd5jxlefzxyvgxlq9mbvzre7oxewo0m";
     public static final String BETTER_RIGHT_LIFE_IV = "8PzGKSMLuqSm0MVbviaWHA==";
@@ -312,4 +314,13 @@ public class Utils {
         loadingOverlay.setVisibility(View.GONE);
     }
 
+    public static void logDebug(String message) {
+        Log.d(TAG, message);
+    }
+    public static void logDebug(String Tag,String message) {
+        Log.d(TAG, message);
+    }
+    public static void logError(String Tag,String message) {
+        Log.e(TAG, message);
+    }
 }

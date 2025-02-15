@@ -317,6 +317,25 @@
 
 
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:background="@drawable/artcle_bottom_separator_line"
+                android:scaleType="fitXY"
+                android:layout_margin="@dimen/margin_card_16dp"
+                android:layout_height="@dimen/margin_card_16dp"/>
+
+            <TextView
+                android:id="@+id/txt_alsolike_header"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:text="You May Also Like"
+                android:textColor="@color/txt_color_header"
+                android:fontFamily="@font/merriweather_bold"
+                android:textSize="@dimen/textsize_large"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_card_16dp"
+                android:paddingEnd="30dp"
+                />
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -324,7 +343,7 @@
                 android:layout_margin="16dp"
                 app:cardCornerRadius="16dp"
                 android:id="@+id/bottomcardview"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardElevation="4dp">
 
 

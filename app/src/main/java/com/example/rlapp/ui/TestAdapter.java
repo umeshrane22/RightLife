@@ -6,11 +6,13 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
@@ -63,11 +65,17 @@ public class TestAdapter extends BaseBannerAdapter<SortedService> {
         if (data != null) {
             //holder.setImageResource(R.id.cardImage, data.getImageResId());
 
+            ImageView img_affirmation = holder.findViewById(R.id.img_affirmation);
             TextView txt_title_affirm = holder.findViewById(R.id.txt_title_affirm);
             TextView txt_desc_affirm = holder.findViewById(R.id.txt_desc_affirm);
             Button button = holder.findViewById(R.id.btn_affirm);
             txt_title_affirm.setText(data.getTitle());
             txt_desc_affirm.setText(data.getSubtitle());
+
+            Glide.with(holder.itemView.getContext())
+                    .load(ApiClient.CDN_URL_QA + data.getThumbnail().getUrl())
+                    .placeholder(R.drawable.img_logintop1) // Replace with your placeholder image
+                    .into(img_affirmation);
 
             if (!data.getConsumedCta().equalsIgnoreCase(""))
             {

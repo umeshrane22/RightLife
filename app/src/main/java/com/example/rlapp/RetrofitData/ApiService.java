@@ -763,6 +763,22 @@ public interface ApiService {
     Call<ResponseBody> trackEpisode(
             @Header("Authorization") String authToken,
             @Body EpisodeTrackRequest request);
+
+    @Headers("Content-Type: application/json")
+    @GET("user/get-scan-past-report")
+    Call<ResponseBody> getScanPastReport(
+            @Header("Authorization") String authToken,
+            @Query("scanType") String scanType
+    );
+
+    // API to Get single report for report id
+    @Headers("Content-Type: application/json")
+    @GET("facial-scan")
+    Call<ResponseBody> getFacialScanReport(
+            @Header("Authorization") String authToken,
+            @Query("reportId") String reportId
+    );
+
 }
 
 

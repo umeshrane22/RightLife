@@ -84,16 +84,17 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="10dp"
                             android:layout_marginLeft="10dp"
-
+                            android:gravity="center_vertical"
                             android:visibility="visible">
 
                             <ImageView
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
                                 android:layout_toLeftOf="@+id/txt_verification"
+                                android:layout_centerVertical="true"
                                 android:src="@drawable/ic_verified" />
 
-                            <com.example.rlapp.ui.utility.UnderlinedTextView
+                            <TextView
                                 android:id="@+id/txt_verification"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -101,15 +102,14 @@
                                 android:layout_centerVertical="true"
                                 android:fontFamily="@font/dmsans_regular"
                                 android:padding="10dp"
-
-                                android:text="To become a verified member, \nComplete Your Profile."
+                                android:text="@string/verified_member_text"
                                 android:textSize="12sp" />
 
                             <RelativeLayout
                                 android:layout_width="40dp"
                                 android:layout_height="18dp"
                                 android:layout_centerVertical="true"
-                                android:layout_marginStart="20dp"
+                                android:layout_marginStart="10dp"
                                 android:id="@+id/rllayout_button_completeprofile"
                                 android:layout_toRightOf="@+id/txt_verification"
                                 android:background="@drawable/ic_verified_rightarrow">
@@ -127,7 +127,7 @@
                                 android:layout_alignParentBottom="true"
                                 android:layout_margin="20dp"
                                 android:paddingTop="20dp"
-                                android:background="@color/txt_color_mind" />
+                                android:background="#DDDDDD" />
                         </RelativeLayout>
 
 
@@ -245,14 +245,14 @@
                     android:text="Uniquely Yours"
                     android:textColor="@color/txt_color_header"
                     android:textSize="@dimen/textsize_extralarge"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/cardview_uniquely"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/textsize_small">
 
                     <LinearLayout
@@ -311,6 +311,7 @@
                             android:textSize="@dimen/textsize_small" />
 
                         <Button
+                            android:id="@+id/btn_uniquely_yours"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
@@ -347,7 +348,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="20dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:cardCornerRadius="@dimen/textsize_small">
 
                     <LinearLayout
@@ -388,7 +389,7 @@
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="16sp" />
 
-                            <TextView
+                            <com.example.rlapp.ui.utility.UnderlinedTextView
                                 android:id="@+id/txt_titl2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -803,7 +804,7 @@
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="16sp" />
 
-                            <TextView
+                            <com.example.rlapp.ui.utility.UnderlinedTextView
                                 android:id="@+id/txt_titl4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -811,7 +812,7 @@
                                 android:layout_margin="16sp"
                                 android:fontFamily="@font/merriweather_bold"
                                 android:text="View All Past Reports"
-                                android:visibility="invisible"
+                                android:visibility="visible"
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="@dimen/textsize_small" />
 
@@ -1039,7 +1040,6 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginStart="16dp"
                             android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="10dp"
                             android:background="@drawable/roundedcornerbutton"
                             android:gravity="center"
                             android:text="8 Aug, 2024 | View Detailed Report"

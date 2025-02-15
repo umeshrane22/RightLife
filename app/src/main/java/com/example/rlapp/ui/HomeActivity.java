@@ -485,10 +485,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getSubModuleContent("SLEEP_RIGHT");
 
         //getQuestionerList("");
-
-        getContentlist("");   // api to get module
-        getContentlistdetails("");
-        getContentlistdetailsfilter("");
+         //call below content api on details page remove form here
+        //getContentlist("");   // api to get module
+        //getContentlistdetails("");
+       // getContentlistdetailsfilter("");
     }
 
     private void setDrawerHeader(View view) {

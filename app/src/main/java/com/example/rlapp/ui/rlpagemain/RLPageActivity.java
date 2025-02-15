@@ -29,7 +29,12 @@ import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmation
 import com.example.rlapp.apimodel.rlpagemain.nextdate.MindAuditNextDate;
 import com.example.rlapp.apimodel.rlpagemodels.RLPageVoiceResult.RLPageVoiceScanResultResponse;
 import com.example.rlapp.apimodel.rlpagemodels.continuemodela.RlPageContinueWatchResponse;
+import com.example.rlapp.apimodel.rlpagemodels.faceScanReportForId.FacialReportData;
+import com.example.rlapp.apimodel.rlpagemodels.faceScanReportForId.FacialScanResponse;
 import com.example.rlapp.apimodel.rlpagemodels.journal.RLpageJournalResponse;
+import com.example.rlapp.apimodel.rlpagemodels.scanresultfacescan.Data;
+import com.example.rlapp.apimodel.rlpagemodels.scanresultfacescan.FaceScanPastResultResponse;
+import com.example.rlapp.apimodel.rlpagemodels.scanresultfacescan.Report;
 import com.example.rlapp.apimodel.rlpagemodels.uniquelyyours.UniquelyYoursResponse;
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
@@ -48,6 +53,7 @@ import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.voicescan.VoiceScanActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -78,10 +84,11 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private LinearLayout ll_journal_main, ll_normal_journal, ll_guided_journal;
     // Uniquely Section
     private TextView txt_section_title_uniquely, txt_title_uniquely, txt_desc_uniquely;
+    private Button btn_uniquely_yours;
     private ImageView img_uniquely;
     private View cardview_mindaudit_new_user_include;
     private ImageView img_right_arrow_start_mindaudit;
-
+    private CardView cardview_uniquely;
     // voice Scan
     private TextView txt_voicescore_rlpage;
 
@@ -159,17 +166,20 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         layout_rl_journalarrow.setOnClickListener(this);
 
         //Uniqely Card
+        cardview_uniquely = findViewById(R.id.cardview_uniquely);
+        cardview_uniquely = findViewById(R.id.cardview_uniquely);
         txt_section_title_uniquely = findViewById(R.id.txt_section_title_uniquely);
         txt_title_uniquely = findViewById(R.id.txt_title_uniquely);
         txt_desc_uniquely = findViewById(R.id.txt_desc_uniquely);
         img_uniquely = findViewById(R.id.img_uniquely);
-
+        btn_uniquely_yours = findViewById(R.id.btn_uniquely_yours);
         // Api Calls
 
         GetMyRLContent();
         FirstLookReport();
         MyRLContinueWatching();
         MyRLJournal();
+        getFaceScanResultsForId();
         getMyRLHealthCamResult();
         getMyRLGetMindAuditDate();
         ArrayList<String> userEmotionsString = new ArrayList<>();
@@ -249,6 +259,11 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void HandleUniquelyYoursUI(UniquelyYoursResponse uniquelyYoursResponse) {
+        if (uniquelyYoursResponse.getData() == null) {
+            return;
+        }
+        cardview_uniquely.setVisibility(View.VISIBLE);
+        txt_section_title_uniquely.setVisibility(View.VISIBLE);
         txt_section_title_uniquely.setText(uniquelyYoursResponse.getData().getSectionTitle());
         txt_title_uniquely.setText(uniquelyYoursResponse.getData().getServices().get(0).getTitle());
         txt_desc_uniquely.setText(uniquelyYoursResponse.getData().getServices().get(0).getSubtitle());
@@ -256,6 +271,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         Glide.with(this).load(ApiClient.CDN_URL_QA + uniquelyYoursResponse.getData().getServices().get(0).getThumbnail().getUrl())
                 .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
                 .into(img_uniquely);
+
+        btn_uniquely_yours.setText(uniquelyYoursResponse.getData().getServices().get(0).getButtonName());
     }
 
     private void FirstLookReport() {
@@ -710,5 +727,95 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             //intent.putExtra("key", "value");
             startActivity(intent);
         }
+    }
+
+    private void getFaceScanResultsForId() {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getScanPastReport(accessToken,"faceScan");
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(RLPageActivity.this, "Face scan past result: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Log.d("Response Body", " Face scan past result - " + jsonString);
+
+                        Gson gson = new Gson();
+                        FaceScanPastResultResponse faceScanPastResultResponse = gson.fromJson(jsonString, FaceScanPastResultResponse.class);
+
+                        if (faceScanPastResultResponse != null && faceScanPastResultResponse.getData() != null && !faceScanPastResultResponse.getData().isEmpty()) {
+                            Data firstData = faceScanPastResultResponse.getData().get(0);
+                            Report report = firstData.getReport();
+                            double snr = report.getSnr(); // Access the SNR value
+                            Utils.logDebug("Face scan past result", "AnswerId: " + firstData.getAnswerId());
+                            getFacialScanReport(firstData.getAnswerId());
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
+                    cardview_voicescan.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void getFacialScanReport(String reportId) {
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getFacialScanReport(accessToken,reportId);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(RLPageActivity.this, "Face scan ONE result: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Log.d("Response Body", " Face scan ONE result - " + jsonString);
+
+                        Gson gson = new Gson();
+                        FacialScanResponse faceScanSingleResultResponse = gson.fromJson(jsonString, FacialScanResponse.class);
+
+                        if (faceScanSingleResultResponse != null && faceScanSingleResultResponse.getData() != null) {
+                            FacialReportData firstData = faceScanSingleResultResponse.getData();
+                            com.example.rlapp.apimodel.rlpagemodels.faceScanReportForId.Report report = firstData.getReport();
+                            double snr = report.getSnr(); // Access the SNR value
+                            Utils.logDebug("Face scan Single result", "Diastolic: " + report.getBP_DIASTOLIC());
+                            Utils.logDebug("Face scan Single result", "Systolic: " + report.getBP_SYSTOLIC());
+
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
+                    cardview_voicescan.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

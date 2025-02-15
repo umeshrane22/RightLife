@@ -1,5 +1,6 @@
 package com.example.rlapp.apimodel.rledit;
 
+import com.example.rlapp.ui.Articles.models.Article;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -43,9 +44,12 @@ public class Top {
     @SerializedName("desc")
     @Expose
     private String desc;
-    @SerializedName("article")
+    /*@SerializedName("article")
     @Expose
-    private String article;
+    private String article;*/
+    /*@SerializedName("article")
+    @Expose
+    private List<Article> article;*/
     @SerializedName("tags")
     @Expose
     private List<String> tags;
@@ -197,13 +201,13 @@ public class Top {
         this.desc = desc;
     }
 
-    public String getArticle() {
+    /*public String getArticle() {
         return article;
     }
 
     public void setArticle(String article) {
         this.article = article;
-    }
+    }*/
 
     public List<String> getTags() {
         return tags;
@@ -348,5 +352,12 @@ public class Top {
     public void setContentTypeOrder(Integer contentTypeOrder) {
         this.contentTypeOrder = contentTypeOrder;
     }
+/*
+    public List<Article> getArticle() {
+        return article;
+    }
 
+    public void setArticle(List<Article> article) {
+        this.article = article;
+    }*/
 }

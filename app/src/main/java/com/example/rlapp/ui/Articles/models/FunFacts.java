@@ -13,9 +13,6 @@ public class FunFacts {
     @SerializedName("description")
     @Expose
     private String description;
-    @SerializedName("_id")
-    @Expose
-    private String id;
 
     public String getHeading() {
         return heading;
@@ -31,14 +28,6 @@ public class FunFacts {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
 }

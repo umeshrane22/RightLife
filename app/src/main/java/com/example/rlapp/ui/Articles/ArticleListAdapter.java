@@ -52,14 +52,14 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         //holder.binding.imageView.setImageResource(article.getImageResId());
 
         // Hide Product cards initially
-        if (article.getRecommendedProduct() != null && article.getRecommendedProduct().getTitle() != null) {
+        if (article.getRecommendedProduct() != null && article.getRecommendedProduct().getSectionTitle() != null) {
             holder.binding.card1.setVisibility(View.VISIBLE);
         } else {
             holder.binding.card1.setVisibility(View.GONE);
         }
 
         // Service Card
-        if (article.getRecommendedService() != null && article.getRecommendedService().getName() != null) {
+        if (article.getRecommendedService() != null && article.getRecommendedService().getTitle() != null) {
             holder.binding.card2.setVisibility(View.VISIBLE);
         } else {
             holder.binding.card2.setVisibility(View.GONE);
@@ -80,7 +80,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         }
 
         // funfact Card
-        if (article.getRecommendedProduct() != null && article.getRecommendedProduct().getTitle() != null) {
+        if (article.getRecommendedProduct() != null && article.getRecommendedProduct().getSectionTitle() != null) {
             holder.binding.card4.setVisibility(View.VISIBLE);
         } else {
             holder.binding.card4.setVisibility(View.GONE);

@@ -8,6 +8,321 @@
     android:padding="16dp">
 
 
+    <!--//RL Mind Audit -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardview_mindaudit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:cardCornerRadius="@dimen/textsize_small">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rectangle"
+            android:backgroundTint="@color/white"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp">
+
+                <RelativeLayout
+                    android:id="@+id/rl_report2"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/img_mindaudit_rlpage" />
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/txt_titl3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16sp"
+                    android:layout_toRightOf="@+id/rl_report2"
+                    android:fontFamily="@font/merriweather_bold"
+                    android:text="Mind Audit"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="16sp" />
+
+                <com.example.rlapp.ui.utility.UnderlinedTextView
+                    android:id="@+id/txt_titl4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="16sp"
+                    android:fontFamily="@font/merriweather_bold"
+                    android:text="View All Past Reports"
+                    android:visibility="visible"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="@dimen/textsize_small" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_eatright_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                android:background="@color/white"
+                android:orientation="vertical"
+
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:src="@drawable/rl_phq9" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:gravity="center"
+
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:drawablePadding="-10dp"
+                                android:fontFamily="@font/merriweather_bold"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="PHQ - 9"
+                                android:textAlignment="center"
+                                android:textColor="#00553A"
+                                android:textSize="@dimen/textsize_large" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                android:src="@drawable/rlpage_info_icon" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:src="@drawable/rl_gad7" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:gravity="center"
+
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:drawablePadding="-10dp"
+                                android:fontFamily="@font/merriweather_bold"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="GAD-7"
+                                android:textAlignment="center"
+                                android:textColor="#00553A"
+                                android:textSize="@dimen/textsize_large" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                android:src="@drawable/rlpage_info_icon" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:src="@drawable/rl_dass2" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:gravity="center"
+
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:drawablePadding="-10dp"
+                                android:fontFamily="@font/merriweather_bold"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="DASS-2"
+                                android:textAlignment="center"
+                                android:textColor="#00553A"
+                                android:textSize="@dimen/textsize_large" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                android:src="@drawable/rlpage_info_icon" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/bg_edittext"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".4"
+                            android:contentDescription="dsha"
+                            android:src="@drawable/rl_ohq" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight=".6"
+                            android:gravity="center"
+
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:drawablePadding="-10dp"
+                                android:fontFamily="@font/merriweather_bold"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="OHQ"
+                                android:textAlignment="center"
+                                android:textColor="#00553A"
+                                android:textSize="@dimen/textsize_large" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                android:src="@drawable/rlpage_info_icon" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+                <TextView
+                    android:id="@+id/txt_next_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+
+                    android:background="@drawable/roundedcornerbutton"
+                    android:gravity="center"
+                    android:text="8 Aug, 2024 | View Detailed Report"
+                    android:textColor="#0B1215"
+                    app:backgroundTint="#F7F7F7" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="#FD6967"
+                    android:drawableLeft="@drawable/rlpage_md_checkbox"
+                    android:gravity="center"
+                    android:paddingStart="50dp"
+                    android:paddingEnd="50dp"
+                    android:visibility="visible"
+                    android:text="Reassess Your Mental Health" />
+
+            <TextView
+                android:id="@+id/txt_mindaudit_days_count"
+                android:layout_width="wrap_content"
+                android:text="Next Scan in 3 Days"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="@dimen/textsize_small"
+                android:layout_margin="16dp"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 
 </LinearLayout>

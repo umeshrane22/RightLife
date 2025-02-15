@@ -8,6 +8,133 @@ public class RecommendedService {
     @SerializedName("_id")
     @Expose
     private String id;
+    @SerializedName("__v")
+    @Expose
+    private Integer v;
+    @SerializedName("createdAt")
+    @Expose
+    private String createdAt;
+    @SerializedName("description")
+    @Expose
+    private String description;
+    @SerializedName("imageUrl")
+    @Expose
+    private String imageUrl;
+    @SerializedName("index")
+    @Expose
+    private Integer index;
+    @SerializedName("moduleId")
+    @Expose
+    private String moduleId;
+    @SerializedName("order")
+    @Expose
+    private Integer order;
+    @SerializedName("title")
+    @Expose
+    private String title;
+    @SerializedName("updatedAt")
+    @Expose
+    private String updatedAt;
+    @SerializedName("moduleImageUrl")
+    @Expose
+    private String moduleImageUrl;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Integer getV() {
+        return v;
+    }
+
+    public void setV(Integer v) {
+        this.v = v;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
+
+    public String getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getModuleImageUrl() {
+        return moduleImageUrl;
+    }
+
+    public void setModuleImageUrl(String moduleImageUrl) {
+        this.moduleImageUrl = moduleImageUrl;
+    }
+
+}
+
+
+/*public class RecommendedService {
+
+    @SerializedName("_id")
+    @Expose
+    private String id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -293,4 +420,4 @@ public class RecommendedService {
     public void setSelectedContentType(String selectedContentType) {
         this.selectedContentType = selectedContentType;
     }
-}
+}*/
