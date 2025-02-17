@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
@@ -75,6 +76,7 @@ public class TestAdapter extends BaseBannerAdapter<SortedService> {
             Glide.with(holder.itemView.getContext())
                     .load(ApiClient.CDN_URL_QA + data.getThumbnail().getUrl())
                     .placeholder(R.drawable.img_logintop1) // Replace with your placeholder image
+                    .transform(new RoundedCorners(25))
                     .into(img_affirmation);
 
             if (!data.getConsumedCta().equalsIgnoreCase(""))

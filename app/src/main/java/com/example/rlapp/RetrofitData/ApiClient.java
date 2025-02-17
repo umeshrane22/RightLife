@@ -6,6 +6,8 @@ import android.webkit.HttpAuthHandler;
 
 import com.example.rlapp.ui.utility.LoggingInterceptor;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -33,6 +35,9 @@ public class ApiClient {
         // Add the logging interceptor to OkHttpClient
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new LoggingInterceptor())
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
                 .build();
         //if (retrofit == null) {
             retrofit = new Retrofit.Builder()
