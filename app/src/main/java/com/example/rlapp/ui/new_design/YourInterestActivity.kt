@@ -108,7 +108,7 @@ class YourInterestActivity : AppCompatActivity() {
     }
 
     private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest, header: String) {
-        Utils.showLoader(this)
+       // Utils.showLoader(this)
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.saveUserInterest(authToken, saveUserInterestRequest)
@@ -133,7 +133,7 @@ class YourInterestActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
-                Utils.dismissLoader(this@YourInterestActivity)
+               // Utils.dismissLoader(this@YourInterestActivity)
                 Toast.makeText(
                     this@YourInterestActivity,
                     "Network Error: " + t.message,

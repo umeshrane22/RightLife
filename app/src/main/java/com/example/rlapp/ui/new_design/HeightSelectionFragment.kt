@@ -65,6 +65,16 @@ class HeightSelectionFragment : Fragment() {
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
+        val onboardingQuestionRequest =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        val gender = onboardingQuestionRequest.gender
+        selectedHeight = if (gender == "Male")
+            "5 Ft 8 In"
+        else
+            "5 Ft 4 In"
+
+        selected_number_text!!.text = selectedHeight
+
         val layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, true)
         rulerView.layoutManager = layoutManager
 

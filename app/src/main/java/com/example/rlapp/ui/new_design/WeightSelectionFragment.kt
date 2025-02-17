@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -68,6 +69,18 @@ class WeightSelectionFragment : Fragment() {
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
+        val onboardingQuestionRequest =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+        val gender = onboardingQuestionRequest.gender
+
+        selectedWeight = if (gender == "Male")
+            "75 kg"
+        else
+            "55 kg"
+
+        selected_number_text!!.text = selectedWeight
+
+
         swithch.setOnCheckedChangeListener { buttonView, isChecked ->
             /*if (selectedWeight.isNullOrEmpty()) {
                 if (isChecked) setLbsValue()
@@ -91,6 +104,29 @@ class WeightSelectionFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
+            val w = selectedWeight.split(" ")
+            if (selectedLabel == " kg") {
+                if (w[0].toDouble() < 30) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select weight between 30 kg and 300 kg",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+            }
+
+            if (selectedLabel == " lbs") {
+                if (w[0].toDouble() < 66) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select weight between 66 lbs and 660 lbs",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+            }
+
             val onboardingQuestionRequest =
                 SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
             onboardingQuestionRequest.weight = selectedWeight

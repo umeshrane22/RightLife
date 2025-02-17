@@ -28,7 +28,7 @@ class TargetWeightSelectionFragment : Fragment() {
     private lateinit var llSelectedWeight: LinearLayout
     private lateinit var tvSelectedWeight: TextView
     private lateinit var tv_description_who: TextView
-    private var selectedWeight = "50 kg"
+    private var selectedWeight = "50"
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
@@ -121,15 +121,14 @@ class TargetWeightSelectionFragment : Fragment() {
 
 
         val stringArray = (currentWeight).split(" ")
-        if (stringArray[1].uppercase() == "LBS") {
+        if (stringArray[1].uppercase() == "LBS" || stringArray[2].uppercase() == "LBS") {
             swithch.isChecked = true
-            /*selectedLabel = " lbs"
-            selectedWeight = ConversionUtils.convertLbsToKgs(selectedWeight.split(" ")[0])
-            setLbsValue()
-            recyclerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
-            selectedWeight += selectedLabel
-            selected_number_text!!.text = selectedWeight*/
+            selectedLabel = " lbs"
+            selectedWeight = ConversionUtils.convertLbsToKgs("50")
         }
+
+        selectedWeight += selectedLabel
+        tvSelectedWeight.text = selectedWeight
 
 
 
@@ -209,8 +208,7 @@ class TargetWeightSelectionFragment : Fragment() {
         }
 
 
-
-       // tv_description_who.text = getIdealWeightRange(165.0)
+        // tv_description_who.text = getIdealWeightRange(165.0)
 
         return view
     }
