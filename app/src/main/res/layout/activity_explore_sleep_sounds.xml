@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,308 +9,345 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
 
-  <ImageView
-            android:id="@+id/ic_back_dialog"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_leftarrow" />
+            <ImageView
+                android:id="@+id/ic_back_dialog"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_leftarrow" />
 
-        <TextView
-            android:id="@+id/tv_header_htw"
+            <TextView
+                android:id="@+id/tv_header_htw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Sleep sounds"
+                android:textSize="@dimen/textsize_medium" />
+
+            <ImageView
+                android:id="@+id/ic_close_dialog"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="20dp"
+                android:src="@drawable/menucategory"
+                android:visibility="gone" />
+        </RelativeLayout>
+
+        <RadioButton
+            android:id="@+id/testradio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="@font/dmsans_bold"
-            android:text="Sleep sounds"
-            android:textSize="@dimen/textsize_medium" />
+            android:layout_marginTop="16dp"
+            android:buttonTint="@color/sleepright"
+            android:text="Set a Routine"
+            android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/ic_close_dialog"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="20dp"
-            android:visibility="gone"
-            android:src="@drawable/menucategory" />
-    </RelativeLayout>
-    <RadioButton
-        android:id="@+id/testradio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Set a Routine"
-        android:visibility="gone"
-        android:buttonTint="@color/sleepright"
-        android:layout_marginTop="16dp" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingVertical="1dp">
-        <TextView
-            android:id="@+id/txt_sleep_checklist"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sleep Better Checklist"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/dmsans_bold"
-            android:textSize="16sp" />
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch_sleep_checklist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/white"
-            android:trackTint="@color/sleep_right_blue"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true" />
-    </RelativeLayout>
-
-    <!--Sleep options radio Grid-->
-    <GridLayout
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:columnCount="2"
-        android:rowCount="4"
-        android:padding="16dp"
-        android:horizontalSpacing="16dp"
-        android:verticalSpacing="16dp">
-
-        <!-- Row 1 -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_set_routine"
-                android:layout_width="wrap_content"
-                android:buttonTint="@color/sleepright"
-                android:layout_height="wrap_content" />
+            android:paddingVertical="1dp">
 
             <TextView
+                android:id="@+id/txt_sleep_checklist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Set a Routine"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Sleep Better Checklist"
                 android:textSize="16sp" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_sleep_checklist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:thumbTint="@color/white"
+                android:trackTint="@color/sleep_right_blue" />
+        </RelativeLayout>
+
+        <!--Sleep options radio Grid-->
+        <GridLayout
+
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
+            android:columnCount="2"
+            android:horizontalSpacing="16dp"
+            android:padding="16dp"
+            android:rowCount="4"
+            android:verticalSpacing="16dp">
 
-            <RadioButton
-                android:id="@+id/radio_cool_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
+            <!-- Row 1 -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Cool Down"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginEnd="16dp"
 
-        <!-- Row 2 -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_set_routine"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/sleepright" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Set a Routine"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_cool_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Cool Down"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Row 2 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_lights_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Lights Off"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_quiet_space"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Quiet Space"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Row 3 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_unplug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Unplug"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_get_comfy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Get Comfy"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Row 4 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_breathe_deep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Breathe Deep"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_think_positive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Think Positive"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </GridLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_lights_off"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:paddingVertical="1dp">
 
             <TextView
+                android:id="@+id/txt_sound_aids"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Lights Off"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Sound Aids"
                 android:textSize="16sp" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_quiet_space"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_sound_aids"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Quiet Space"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:thumbTint="@color/white"
+                android:trackTint="@color/sleep_right_blue" />
+        </RelativeLayout>
 
-        <!-- Row 3 -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_unplug"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Unplug"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_get_comfy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Get Comfy"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <!-- Row 4 -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_breathe_deep"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Breathe Deep"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical">
-
-            <RadioButton
-                android:id="@+id/radio_think_positive"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Think Positive"
-                android:textSize="16sp" />
-        </LinearLayout>
-
-    </GridLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:paddingVertical="1dp">
+        <!-- Duration Slider -->
         <TextView
-            android:id="@+id/txt_sound_aids"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sound Aids"
-            android:layout_centerVertical="true"
-            android:fontFamily="@font/dmsans_bold"
-            android:textSize="16sp" />
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch_sound_aids"
-            android:layout_width="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Duration"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/seekbar_duration"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:thumbTint="@color/white"
-            android:trackTint="@color/sleep_right_blue"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true" />
-    </RelativeLayout>
+            android:max="130"
+            android:progress="1"
+            android:progressTint="@color/txt_color_header" />
 
-    <!-- Duration Slider -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Duration"
-        android:textSize="14sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="10dp"
-        android:fontFamily="@font/poppins_medium"
-        android:textColor="@android:color/black" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="130"
-        android:progress="1"
-        android:progressTint="@color/txt_color_header" />
+            <TextView
+                android:id="@+id/seekBarValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/txt_color_header"
+                android:textSize="16sp"
+                android:layout_centerInParent="true"
+                android:visibility="invisible" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="0:01           1:30"
-        android:textSize="12sp"
-        android:gravity="center"
-        android:textColor="@android:color/darker_gray" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginLeft="@dimen/margin_card_16dp"
+                android:layout_marginRight="@dimen/margin_card_16dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
-    <!-- Category Dropdown -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Category"
-        android:textSize="14sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="10dp"
-        android:fontFamily="@font/poppins_medium"
-        android:textColor="@android:color/black" />
+                <TextView
+                    android:id="@+id/seekBarStartValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:01"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/seekBarEndValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="1:30"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </RelativeLayout>
+        <!-- Category Dropdown -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Category"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
 
         <!-- Sub-Category Dropdown -->
         <EditText
@@ -326,70 +362,69 @@
             android:drawableEnd="@drawable/icon_arrow_article"
             android:drawableTint="@color/gray"
             android:editable="false"
+            android:focusable="false"
             android:gravity="center_vertical"
             android:hint="Select"
             android:inputType="none"
-            android:focusable="false"
             android:longClickable="false"
             android:paddingStart="20dp"
-            android:text="Sleep Hygeine"
+            android:text=""
             android:textSize="@dimen/textsize_medium" />
 
         <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Sub-Category"
-        android:textSize="14sp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="10dp"
-        android:fontFamily="@font/poppins_medium"
-        android:textColor="@android:color/black" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Sub-Category"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
 
-    <EditText
-        android:id="@+id/edt_subcategory"
-        android:layout_width="match_parent"
-        android:drawableEnd="@drawable/icon_arrow_article"
-        android:hint="Select"
-        android:paddingStart="20dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="10dp"
-        android:backgroundTint="@color/gray"
-        android:drawableTint="@color/gray"
-        android:text="Sleep good"
-        android:textSize="@dimen/textsize_medium"
-        android:editable="false"
-        android:cursorVisible="false"
-        android:inputType="none"
-        android:focusable="false"
-        android:longClickable="false"
-        android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/edt_subcategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/gray"
+            android:cursorVisible="false"
+            android:drawableEnd="@drawable/icon_arrow_article"
+            android:drawableTint="@color/gray"
+            android:editable="false"
+            android:focusable="false"
+            android:hint="Select"
+            android:inputType="none"
+            android:longClickable="false"
+            android:paddingStart="20dp"
+            android:text=""
+            android:textSize="@dimen/textsize_medium" />
 
 
-
-    <!-- Play Button -->
-    <Button
-        android:id="@+id/btn_play_sleepsound"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Play"
-        android:layout_gravity="center_horizontal"
-        android:backgroundTint="@color/sleep_right_blue"
-        android:textColor="@android:color/white" />
+        <!-- Play Button -->
+        <Button
+            android:id="@+id/btn_play_sleepsound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/sleep_right_blue"
+            android:text="Play"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 
     <!--media player -->
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_marginTop="50dp"
         android:id="@+id/rl_player"
-        android:visibility="gone"
-        android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:visibility="gone">
 
         <!-- Full-Screen Background Image -->
         <ImageView
@@ -402,15 +437,15 @@
         <!-- Circular Progress Bar -->
         <ProgressBar
             android:id="@+id/circularProgressBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_centerInParent="true"
             android:indeterminate="false"
             android:max="100"
             android:progress="0"
-            android:visibility="visible"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:progressDrawable="@drawable/circular_progress_bar" />
+            android:progressDrawable="@drawable/circular_progress_bar"
+            android:visibility="visible" />
 
         <!-- Play/Pause Button in Center -->
         <ImageButton
@@ -428,23 +463,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/seekBar"
-            android:textSize="20sp"
-            android:layout_marginBottom="50dp"
-            android:textColor="#FFFFFF"
-            android:fontFamily="@font/dmsans_bold"
             android:layout_centerHorizontal="true"
-            android:text="00:00" />
+            android:layout_marginBottom="50dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="00:00"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
 
         <!-- SeekBar at the Bottom -->
         <SeekBar
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_marginBottom="50dp"
-            android:progressTint="@color/sleep_right_blue"
-            android:thumbTint="@color/sleep_right_blue"
             android:progressBackgroundTint="@color/white"
-            android:layout_alignParentBottom="true" />
+            android:progressTint="@color/sleep_right_blue"
+            android:thumbTint="@color/sleep_right_blue" />
     </RelativeLayout>
 
 

@@ -779,6 +779,17 @@ public interface ApiService {
             @Query("reportId") String reportId
     );
 
+
+
+  // Sleep Sound APIs
+  @Headers("Content-Type: application/json") // Set content-type as application/json
+  @GET("sleep-aids")
+  Call<ResponseBody> getSleepSoundsList(
+          @Header("Authorization") String authToken, // Dynamic Authorization Header
+          @Query("limit") int limit,
+          @Query("skip") int skip
+
+  );
 }
 
 
