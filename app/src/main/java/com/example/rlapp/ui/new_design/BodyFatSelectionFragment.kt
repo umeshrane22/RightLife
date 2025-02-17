@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -139,6 +140,14 @@ class BodyFatSelectionFragment : Fragment() {
             llSelectedBodyFat.visibility = VISIBLE
             cardBodyFat.visibility = GONE
 
+            if (edtBodyFat.text.toString().toDouble() < 3 && edtBodyFat.text.toString().toDouble() > 60){
+                Toast.makeText(
+                    requireContext(),
+                    "Please select weight between 30 kg and 300 kg",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
             val onboardingQuestionRequest =
                 SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
             onboardingQuestionRequest.bodyFat = edtBodyFat.text.toString()
