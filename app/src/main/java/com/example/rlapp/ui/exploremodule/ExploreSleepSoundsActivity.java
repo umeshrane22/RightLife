@@ -109,7 +109,11 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
         btn_play_sleepsound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                postSleepAidsRequest();
+                if (edt_category.getText().toString().isEmpty() || edt_subcategory.getText().toString().isEmpty()){
+                    Toast.makeText(ExploreSleepSoundsActivity.this, "Please select category and subcategory", Toast.LENGTH_SHORT).show();
+                }else {
+                    postSleepAidsRequest();
+                }
             }
         });
         edt_category.setOnClickListener(new View.OnClickListener() {
