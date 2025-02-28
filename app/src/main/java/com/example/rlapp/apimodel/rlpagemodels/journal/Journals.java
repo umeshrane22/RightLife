@@ -5,8 +5,10 @@ package com.example.rlapp.apimodel.rlpagemodels.journal;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 
-public class Journals {
+
+public class Journals implements Serializable {
 
     @SerializedName("type")
     @Expose

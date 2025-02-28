@@ -128,6 +128,8 @@
 
         <activity android:name="com.example.rlapp.ui.jounal.JournalingActivity" />
         <activity android:name="com.example.rlapp.ui.jounal.JournalingListActivity" />
+        <activity android:name="com.example.rlapp.ui.jounal.MyJournalActivity" />
+        <activity android:name="com.example.rlapp.ui.jounal.EditJournalActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
