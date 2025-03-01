@@ -46,6 +46,7 @@ import java.util.Map;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -537,6 +538,20 @@ public interface ApiService {
 
     );
 
+    @Headers("Content-Type: application/json")
+    @DELETE("journal/{journalId}")
+    Call<ResponseBody> deleteMyRLJournal(
+            @Header("Authorization") String authToken,
+            @Path("journalId") String journalId
+    );
+
+    @Headers("Content-Type: application/json")
+    @PUT("journal/{journalId}")
+    Call<ResponseBody> updateJournal(
+            @Header("Authorization") String authToken,
+            @Path("journalId") String journalId,
+            @Body Map<String, String> requestData);
+
     // RL page APIs - Health Cam SearchResult
     @Headers("Content-Type: application/json")
     @GET("facial-scan")
@@ -714,6 +729,7 @@ public interface ApiService {
             @Query("platform") String platform,
             @Body GoogleSignInRequest googleSignInRequest
     );
+
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("auth/logout")
     Call<JsonElement> LogoutUser(
@@ -734,6 +750,7 @@ public interface ApiService {
     Call<JsonElement> getArticleDetails(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );
+
     @Headers("Content-Type: application/json")
     @GET("app/type/content")
     Call<SubCategoryResponse> getSubCategoryList(
@@ -755,7 +772,6 @@ public interface ApiService {
             @Query("skip") int skip,
             @Query("limit") int limit
     );
-
 
 
     @Headers("Content-Type: application/json")
@@ -780,16 +796,15 @@ public interface ApiService {
     );
 
 
+    // Sleep Sound APIs
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("sleep-aids")
+    Call<ResponseBody> getSleepSoundsList(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Query("limit") int limit,
+            @Query("skip") int skip
 
-  // Sleep Sound APIs
-  @Headers("Content-Type: application/json") // Set content-type as application/json
-  @GET("sleep-aids")
-  Call<ResponseBody> getSleepSoundsList(
-          @Header("Authorization") String authToken, // Dynamic Authorization Header
-          @Query("limit") int limit,
-          @Query("skip") int skip
-
-  );
+    );
 }
 
 
