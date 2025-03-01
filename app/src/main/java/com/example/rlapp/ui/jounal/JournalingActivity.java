@@ -230,6 +230,7 @@ public class JournalingActivity extends AppCompatActivity {
                     Log.d("API Response body", "Success: " + jsonResponse);
                     if (response.isSuccessful()) {
                         Toast.makeText(JournalingActivity.this, "Success: " + jsonResponse, Toast.LENGTH_SHORT).show();
+                        finish();
                     } else {
                         Toast.makeText(JournalingActivity.this, "Failed: " + jsonResponse, Toast.LENGTH_SHORT).show();
                     }

@@ -54,9 +54,6 @@ public class JournalingListActivity extends AppCompatActivity {
 
         // Initialize views
         initializeViews();
-        //get Journal list
-        MyRLJournal();
-
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             if (ll_journal_selection.getVisibility() == View.VISIBLE){
@@ -70,49 +67,17 @@ public class JournalingListActivity extends AppCompatActivity {
 
 
         // Set click listener on Save button
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleSaveButtonClick();
-            }
-        });
-        btnSaveNormal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleSaveButtonClickNormal();
-            }
-        });
-/*        btn_continue_journal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (rd_guided.isChecked()){
-                    ll_journal_selection.setVisibility(View.GONE);
-                    ll_guided_journal.setVisibility(View.VISIBLE);
-                }else if (rd_normal.isChecked()){
-                    ll_journal_selection.setVisibility(View.GONE);
-                    ll_normal_journal.setVisibility(View.VISIBLE);
-                }else {
-                    Toast.makeText(JournalingListActivity.this, "Please select a journal type", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
-     /*   ll_journal_selection_guided.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ll_journal_selection.setVisibility(View.GONE);
-                ll_guided_journal.setVisibility(View.VISIBLE);
-            }
-        });
-        ll_journal_selection_normal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ll_journal_selection.setVisibility(View.GONE);
-                ll_normal_journal.setVisibility(View.VISIBLE);
-            }
-        });*/
+        btnSave.setOnClickListener(v -> handleSaveButtonClick());
+        btnSaveNormal.setOnClickListener(v -> handleSaveButtonClickNormal());
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //get Journal list
+        MyRLJournal();
+    }
 
     /**
      * Initialize the input fields and button.
