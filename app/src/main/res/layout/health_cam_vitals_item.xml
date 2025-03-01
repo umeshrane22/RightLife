@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+
+        android:background="@drawable/roundedcornerbutton"
+        android:backgroundTint="@color/rightlife">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:background="@drawable/roundedcornerbutton"
+            android:backgroundTint="@color/bg_edittext">
+
+            <ImageView
+                android:id="@+id/img1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:visibility="gone"
+                android:src="@drawable/rl_heart_hcam" />
+
+            <TextView
+                android:id="@+id/valueTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@+id/img1"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center"
+                android:text="166/67"
+                android:textSize="32dp" />
+
+            <TextView
+                android:id="@+id/unitTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_regular"
+                android:text="kg/m²"
+                android:padding="5dp"
+                android:textSize="@dimen/textsize_small" />
+
+            <TextView
+                android:id="@+id/indicatorTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Obesity-I"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="#C32112"
+                android:padding="5dp"
+                android:textSize="@dimen/textsize_medium" />
+            <TextView
+                android:id="@+id/parameterTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt1_rl_hcam"
+                android:layout_gravity="center_horizontal"
+                android:layout_toRightOf="@+id/img1"
+                android:gravity="center"
+                android:fontFamily="@font/merriweather_bold"
+                android:text="Body Mass Index"
+                android:padding="5dp"
+                android:maxLines="2"
+                android:minLines="2"
+                android:textSize="@dimen/textsize_medium" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

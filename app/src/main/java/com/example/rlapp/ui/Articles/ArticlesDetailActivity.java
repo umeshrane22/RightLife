@@ -98,7 +98,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
 
 
-        setVideoPlayerView();
+        //setVideoPlayerView();
         getArticleDetails("");
     }
 
