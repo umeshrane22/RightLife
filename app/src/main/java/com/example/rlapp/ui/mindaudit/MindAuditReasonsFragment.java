@@ -26,6 +26,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.healthaudit.Fruit;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -175,6 +176,7 @@ public class MindAuditReasonsFragment extends Fragment {
         dialogButtonOkay.setOnClickListener(v -> {
             dialog.dismiss();
             UserEmotions userEmotions = new UserEmotions(userEmotionsString);
+            SharedPreferenceManager.getInstance(requireActivity()).saveUserEmotions(userEmotions);
             getSuggestedAssessment(userEmotions);
         });
 

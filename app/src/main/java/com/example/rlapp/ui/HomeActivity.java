@@ -43,6 +43,7 @@ import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
 import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
+import com.example.rlapp.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
 import com.example.rlapp.apimodel.servicepane.ServicePaneResponse;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
@@ -69,7 +70,6 @@ import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
-import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
@@ -428,14 +428,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
         });
-        ll_health_cam.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(HomeActivity.this, HealthCamActivity.class);
-                // Optionally pass data
-                //intent.putExtra("key", "value");
-                startActivity(intent);
-            }
+        ll_health_cam.setOnClickListener(view -> {
+            getMyRLHealthCamResult();
         });
         ll_mind_audit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -486,10 +480,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getSubModuleContent("SLEEP_RIGHT");
 
         //getQuestionerList("");
-         //call below content api on details page remove form here
+        //call below content api on details page remove form here
         //getContentlist("");   // api to get module
         //getContentlistdetails("");
-       // getContentlistdetailsfilter("");
+        // getContentlistdetailsfilter("");
     }
 
     private void setDrawerHeader(View view) {
@@ -515,8 +509,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         tvAddress.setText(userdata.getCountry());
 
         String username = userdata.getFirstName();
-        if (userdata.getLastName() != null){
-            username += " "+userdata.getLastName();
+        if (userdata.getLastName() != null) {
+            username += " " + userdata.getLastName();
         }
         tvUserName.setText(username);
         tvWellnessDays.setText(userProfileResponse.getWellnessStreak().toString());
@@ -982,7 +976,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("API Response body", "Wellness:RLEdit " + wellnessApiResponse.getData().getContentList().get(0).getTitle());
                     if (wellnessApiResponse.getData().isPreference()) {
                         setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    }else {
+                    } else {
                         rl_wellness_lock.setVisibility(View.VISIBLE);
                     }
 
@@ -1262,7 +1256,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, NewHealthCamReportActivity.class));
+            startActivity(new Intent(this, SearchActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
@@ -1428,7 +1422,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.ll_sleepsounds) {
             //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
-        } else if (viewId == R.id.btn_wellness_preference){
+        } else if (viewId == R.id.btn_wellness_preference) {
             startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
         }
 
@@ -1781,6 +1775,45 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    private void getMyRLHealthCamResult() {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                if (response.isSuccessful() && response.body() != null) {
+                    Toast.makeText(HomeActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String jsonString = response.body().string();
+                        Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
+                        Gson gson = new Gson();
+                        FacialReportResponseNew facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
+
+                        startActivity(new Intent(HomeActivity.this, NewHealthCamReportActivity.class));
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
+                    startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
+            }
+        });
     }
 }
 

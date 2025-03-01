@@ -69,14 +69,10 @@ public class MindAuditQuestionListFragment extends Fragment {
 
         adapter = new MindAuditOptionsAdapter(requireContext(), (ArrayList<ScoringPattern>) question.getScoringPattern(), scoringPattern -> {
             new Handler().postDelayed(() -> {
+
+                ((MAAssessmentQuestionaireActivity) requireActivity()).addScore(question, scoringPattern);
                 if (question.isContinueFurtherIfTrue()) {
-                    boolean b = (boolean) scoringPattern.getScore();
-                    if (!b) {
-                        ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
-                    } else {
-                        ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
-                        //((MAAssessmentQuestionaireActivity) requireActivity()).nextButton.setVisibility(View.VISIBLE);
-                    }
+                    ((MAAssessmentQuestionaireActivity) requireActivity()).submitButton.setVisibility(View.VISIBLE);
                 } else {
                     ((MAAssessmentQuestionaireActivity) requireActivity()).navigateToNextPage();
             /*if (position != adapter.getItemCount() - 1)

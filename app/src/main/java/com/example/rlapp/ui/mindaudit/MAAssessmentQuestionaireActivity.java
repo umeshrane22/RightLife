@@ -19,13 +19,18 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.mindaudit.questions.MindAuditAssessmentQuestions;
+import com.example.rlapp.ui.mindaudit.questions.Question;
+import com.example.rlapp.ui.mindaudit.questions.ScoringPattern;
+import com.example.rlapp.ui.utility.AppConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -34,6 +39,11 @@ import retrofit2.Response;
 
 public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
     public Button submitButton, nextButton;
+    GetAssessmentScoreCASRequest CASRequest = new GetAssessmentScoreCASRequest();
+    GetAssessmentScoreGad7Request gad7Request = new GetAssessmentScoreGad7Request();
+    GetAssessmentScoreOHQ7Request ohq7Request = new GetAssessmentScoreOHQ7Request();
+    GetAssessmentScorePHQ9Request phq9Request = new GetAssessmentScorePHQ9Request();
+    GetAssessmentScoreDass21Request dass21Request = new GetAssessmentScoreDass21Request();
     private TextView tvHeader;
     private ImageView imgBack;
     private ViewPager2 viewPager;
@@ -64,7 +74,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
         nextButton.setOnClickListener(v -> navigateToNextPage());
-        submitButton.setOnClickListener(v -> submitFormData(header));
+        submitButton.setOnClickListener(v -> getAssessmentScoreMethod());
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -84,6 +94,54 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
     }
 
+    private void getAssessmentScoreMethod() {
+        Map<String, Object> requestData = new HashMap<>();
+        requestData.put("assessment", header);
+        if (header.equalsIgnoreCase(AppConstants.dass_21)) {
+            requestData.put("stressLevel", dass21Request.getStressLevel());
+            requestData.put("anxietyLevel", dass21Request.getAnxietyLevel());
+            requestData.put("depressionSeverity", dass21Request.getDepressionSeverity());
+        } else if (header.equalsIgnoreCase(AppConstants.phq_9)) {
+            requestData.put("depressionSeverity", phq9Request.getDepressionSeverity());
+        } else if (header.equalsIgnoreCase(AppConstants.cas)) {
+            requestData.put("angerLevel", CASRequest.getAngerLevel());
+        } else if (header.equalsIgnoreCase(AppConstants.gad_7)) {
+            requestData.put("anxietyLevel", gad7Request.getAnxietyLevel());
+        } else if (header.equalsIgnoreCase(AppConstants.ohq)) {
+            requestData.put("score", ohq7Request.getScore());
+        }
+
+        getAssessmentScore(requestData);
+    }
+
+    public void addScore(Question question, ScoringPattern scoringPattern) {
+
+        if (header.equalsIgnoreCase(AppConstants.dass_21)) {
+            dass21Request.setAssessment(header);
+            if (question.getScale().equalsIgnoreCase("STRESS")) {
+                dass21Request.setStressLevel(dass21Request.getStressLevel() + scoringPattern.getScore());
+            } else if (question.getScale().equalsIgnoreCase("ANXIETY")) {
+                dass21Request.setAnxietyLevel(dass21Request.getAnxietyLevel() + scoringPattern.getScore());
+            } else if (question.getScale().equalsIgnoreCase("DEPRESSION")) {
+                dass21Request.setDepressionSeverity(dass21Request.getDepressionSeverity() + scoringPattern.getScore());
+            }
+        } else if (header.equalsIgnoreCase(AppConstants.phq_9)) {
+            phq9Request.setAssessment(header);
+            phq9Request.setDepressionSeverity(phq9Request.getDepressionSeverity() + scoringPattern.getScore());
+        } else if (header.equalsIgnoreCase(AppConstants.cas)) {
+            CASRequest.setAssessment(header);
+            CASRequest.setAngerLevel(CASRequest.getAngerLevel() + scoringPattern.getScore());
+
+        } else if (header.equalsIgnoreCase(AppConstants.gad_7)) {
+            gad7Request.setAssessment(header);
+            gad7Request.setAnxietyLevel(gad7Request.getAnxietyLevel() + scoringPattern.getScore());
+
+        } else if (header.equalsIgnoreCase(AppConstants.ohq)) {
+            ohq7Request.setAssessment(header);
+            ohq7Request.setScore(ohq7Request.getScore() + scoringPattern.getScore());
+        }
+    }
+
     private void navigateToPreviousPage() {
         if (viewPager.getCurrentItem() > 0) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
@@ -96,31 +154,15 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
         }
     }
 
-    private void submitFormData(String assessment) {
+
+    private void submitFormData(AssessmentsTaken assessmentsTaken) {
         MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest = SharedPreferenceManager.getInstance(this).getMindAuditRequest();
-        AssessmentsTaken assessmentsTaken = new AssessmentsTaken();
-        assessmentsTaken.setAssessment(assessment);
-        Interpretations interpretation = new Interpretations();
-        Anger anger = new Anger();
-        anger.setLevel("Extremely Severe");
-        anger.setScore(36);
-        interpretation.setAnger(anger);
-        Anxiety anxiety = new Anxiety();
-        anxiety.setLevel("Extremely Severe");
-        anxiety.setScore(36);
-        interpretation.setAnxiety(anxiety);
-        Depression depression = new Depression();
-        depression.setLevel("Extremely Severe");
-        depression.setScore(36);
-        interpretation.setDepression(depression);
-        Happiness happiness = new Happiness();
-        happiness.setLevel("Extremely Severe");
-        happiness.setScore(36);
-        interpretation.setHappiness(happiness);
-        assessmentsTaken.setInterpretations(interpretation);
+
         List<AssessmentsTaken> assessmentTakens = new ArrayList<>();
         assessmentTakens.add(assessmentsTaken);
         mindAuditAssessmentSaveRequest.setAssessmentsTaken(assessmentTakens);
+        UserEmotions userEmotions = SharedPreferenceManager.getInstance(this).getUserEmotions();
+        mindAuditAssessmentSaveRequest.setEmotionalState(userEmotions.getEmotions());
         saveAssessment(mindAuditAssessmentSaveRequest);
     }
 
@@ -219,6 +261,38 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                         getAssessmentResult(header);
                         //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
 
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Toast.makeText(MAAssessmentQuestionaireActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getAssessmentScore(Map<String, Object> requestData) {
+        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getMindAuditAssessmentScore(authToken, requestData);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = response.body().string();
+                        Gson gson = new Gson();
+
+                        AssessmentsTaken assessmentsTaken = gson.fromJson(jsonString, AssessmentsTaken.class);
+
+                        submitFormData(assessmentsTaken);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

@@ -6,6 +6,11 @@ public class AppConstants {
     public static final String SLEEP_RIGHT = "SleepRight";
     public static final String MOVE_RIGHT = "MoveRight";
 
+    public static final String cas = "CAS";
+    public static final String dass_21 = "DASS-21";
+    public static final String phq_9 = "PHQ-9";
+    public static final String gad_7 = "GAD-7";
+    public static final String ohq = "OHQ";
 
 
     public static final String phq9FirstPara = "The PHQ-9 is a self-administered questionnaire commonly used to assess the presence and severity of depressive symptoms. It's based on the diagnostic criteria for major depressive disorder from the DSM-IV.";

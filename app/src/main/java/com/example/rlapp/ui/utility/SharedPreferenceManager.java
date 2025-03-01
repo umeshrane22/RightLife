@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
+import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.google.gson.Gson;
 
@@ -63,6 +64,21 @@ public class SharedPreferenceManager {
         Gson gson = new Gson();
         String json = gson.toJson(userProfileResponse);
         prefsEditor.putString(SharedPreferenceConstants.USER_PROFILE, json);
+        prefsEditor.apply();
+    }
+
+    public UserEmotions getUserEmotions() {
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(SharedPreferenceConstants.USER_EMOTIONS, "");
+        UserEmotions obj = gson.fromJson(json, UserEmotions.class);
+        return obj;
+    }
+
+    public void saveUserEmotions(UserEmotions userEmotions) {
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(userEmotions);
+        prefsEditor.putString(SharedPreferenceConstants.USER_EMOTIONS, json);
         prefsEditor.apply();
     }
 
