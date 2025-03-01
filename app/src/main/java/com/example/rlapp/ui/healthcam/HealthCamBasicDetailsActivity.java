@@ -24,6 +24,7 @@ import com.example.rlapp.apimodel.UserAuditAnswer.UserAnswerRequest;
 import com.example.rlapp.ui.healthaudit.questionlist.Option;
 import com.example.rlapp.ui.healthaudit.questionlist.Question;
 import com.example.rlapp.ui.healthaudit.questionlist.QuestionListHealthAudit;
+import com.example.rlapp.ui.payment.AccessPaymentActivity;
 import com.example.rlapp.ui.sdkpackage.HealthCamRecorderActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
@@ -456,8 +457,13 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     Log.d("AAAA API Response", "ReportId submit - : " + jsonResponse);
 
                     HealthCamSubmitResponse healthCamSubmitResponse = gson.fromJson(jsonResponse, HealthCamSubmitResponse.class);
-
-                    submitFacialScan(healthCamSubmitResponse.getData().getAnswerId());
+                    if (healthCamSubmitResponse.getStatus().equalsIgnoreCase("PAYMENT_INPROGRESS")) {
+                        Intent intent = new Intent(HealthCamBasicDetailsActivity.this, AccessPaymentActivity.class);
+                        intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN");
+                        startActivity(intent);
+                    } else {
+                        submitFacialScan(healthCamSubmitResponse.getData().getAnswerId());
+                    }
 
                 } else {
                     Toast.makeText(HealthCamBasicDetailsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();

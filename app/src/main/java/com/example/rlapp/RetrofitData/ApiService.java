@@ -415,6 +415,14 @@ public interface ApiService {
             @Body MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest
     );
 
+    @Headers("Content-Type: application/json")
+    @POST("mind-audit/q/get-assessment-score")
+    Call<ResponseBody> getMindAuditAssessmentScore(
+            @Header("Authorization") String authToken,
+            @Body Map<String, Object> requestData
+    );
+
+
 
     @Headers("Content-Type: application/json")
     @GET("user/purchasehistory")

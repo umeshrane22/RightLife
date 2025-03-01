@@ -12,7 +12,7 @@ public class ScoringPattern implements Serializable {
     private String option;
     @SerializedName("score")
     @Expose
-    private Object score;
+    private Double score;
 
     public String getOption() {
         return option;
@@ -22,11 +22,11 @@ public class ScoringPattern implements Serializable {
         this.option = option;
     }
 
-    public Object getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(Boolean score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 

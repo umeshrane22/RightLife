@@ -21,6 +21,7 @@ import com.example.rlapp.BuildConfig
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest
+import com.example.rlapp.ui.healthcam.NewHealthCamReportActivity
 import com.example.rlapp.ui.healthcam.ReportData
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -72,11 +73,11 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /*REPORT_ID = intent.getStringExtra("reportID").toString()
+        REPORT_ID = intent.getStringExtra("reportID").toString()
         USER_PROFILE_HEIGHT = intent.getStringExtra("USER_PROFILE_HEIGHT").toString()
         USER_PROFILE_WEIGHT = intent.getStringExtra("USER_PROFILE_WEIGHT").toString()
         USER_PROFILE_AGE = intent.getStringExtra("USER_PROFILE_AGE").toString()
-        USER_PROFILE_GENDER = intent.getStringExtra("USER_PROFILE_GENDER").toString()*/
+        USER_PROFILE_GENDER = intent.getStringExtra("USER_PROFILE_GENDER").toString()
 
 
         exampleStartViewModel.readyToMeasure.observe(this) { handleTokenVerified(it) }
@@ -295,14 +296,6 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == ANURA_REQUEST) {
             Log.d(TAG, "results222=${data?.getStringExtra("result")}")
-            /*val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                data?.getParcelableExtra(
-                    "result",
-                    MeasurementResults::class.java
-                )
-            } else {
-                data?.getParcelableExtra("result")
-            }*/
 
             val result = data?.getStringExtra("result")
             val jsonObject = JSONObject(result)
@@ -310,82 +303,8 @@ class HealthCamRecorderActivity : AppCompatActivity() {
             val healthCamFacialScanRequest = HealthCamFacialScanRequest()
             healthCamFacialScanRequest.status = "SUCCESS"
             healthCamFacialScanRequest.reportId = REPORT_ID
-            /*val reportData = ReportData()
 
-            if (jsonObject.has("bmi") && !jsonObject.isNull("bmi"))
-                reportData.bmi = jsonObject.getDouble("bmi")
-            if (jsonObject.has("snr") && !jsonObject.isNull("snr"))
-                reportData.snr = jsonObject.getDouble("snr")
-            if (jsonObject.has("msi") && !jsonObject.isNull("msi"))
-                reportData.msi = jsonObject.getDouble("msi")
-            if (jsonObject.has("systolic") && !jsonObject.isNull("systolic"))
-                reportData.systolic = jsonObject.getDouble("systolic")
-            if (jsonObject.has("diastolic") && !jsonObject.isNull("diastolic"))
-                reportData.diastolic = jsonObject.getDouble("diastolic")
-            if (jsonObject.has("AGE") && !jsonObject.isNull("AGE"))
-                reportData.age = jsonObject.getDouble("AGE")
-            if (jsonObject.has("healthScore") && !jsonObject.isNull("healthScore"))
-                reportData.healthScore1 = jsonObject.getDouble("healthScore")
-            if (jsonObject.has("heartRateVariability") && !jsonObject.isNull("heartRateVariability"))
-                reportData.heartRateVariability = jsonObject.getDouble("heartRateVariability")
-            if (jsonObject.has("absi") && !jsonObject.isNull("absi"))
-                reportData.absi = jsonObject.getDouble("absi")
-            if (jsonObject.has("cvdRisk") && !jsonObject.isNull("cvdRisk"))
-                reportData.cvdRisk = jsonObject.getDouble("cvdRisk")
-            if (jsonObject.has("strokeRisk") && !jsonObject.isNull("strokeRisk"))
-                reportData.strokeRisk = jsonObject.getDouble("strokeRisk")
-            if (jsonObject.has("heartAttackRisk") && !jsonObject.isNull("heartAttackRisk"))
-                reportData.heartAttackRisk = jsonObject.getDouble("heartAttackRisk")
-            if (jsonObject.has("HDLTC_RISK_PROB") && !jsonObject.isNull("HDLTC_RISK_PROB"))
-                reportData.hdltcRiskProb = jsonObject.getDouble("HDLTC_RISK_PROB")
-            if (jsonObject.has("HPT_RISK_PROB") && !jsonObject.isNull("HPT_RISK_PROB"))
-                reportData.hptRiskProb = jsonObject.getDouble("HPT_RISK_PROB")
-            if (jsonObject.has("TG_RISK_PROB") && !jsonObject.isNull("TG_RISK_PROB"))
-                reportData.tgRiskProb = jsonObject.getDouble("TG_RISK_PROB")
-            if (jsonObject.has("VITAL_SCORE") && !jsonObject.isNull("VITAL_SCORE"))
-                reportData.vitalScore = jsonObject.getDouble("VITAL_SCORE")
-            if (jsonObject.has("waistToHeight") && !jsonObject.isNull("waistToHeight"))
-                reportData.waistToHeight = jsonObject.getDouble("waistToHeight")
-            if (jsonObject.has("WAIST_TO_HEIGHT") && !jsonObject.isNull("WAIST_TO_HEIGHT"))
-                reportData.waistToHeight1 = jsonObject.getDouble("WAIST_TO_HEIGHT")
-            if (jsonObject.has("BP_RPP") && !jsonObject.isNull("BP_RPP"))
-                reportData.bpRpp = jsonObject.getDouble("BP_RPP")
-            if (jsonObject.has("HRV_SDNN") && !jsonObject.isNull("HRV_SDNN"))
-                reportData.hrvSdnn = jsonObject.getDouble("HRV_SDNN")
-            if (jsonObject.has("BP_HEART_ATTACK") && !jsonObject.isNull("BP_HEART_ATTACK"))
-                reportData.bpHeartAttack = jsonObject.getDouble("BP_HEART_ATTACK")
-            if (jsonObject.has("WEIGHT") && !jsonObject.isNull("WEIGHT"))
-                reportData.weight = jsonObject.getDouble("WEIGHT")
-            if (jsonObject.has("irregularHeartBeats") && !jsonObject.isNull("irregularHeartBeats"))
-                reportData.irregularHeartBeats = jsonObject.getDouble("irregularHeartBeats")
-            if (jsonObject.has("PHYSICAL_SCORE") && !jsonObject.isNull("PHYSICAL_SCORE"))
-                reportData.physioScore = jsonObject.getDouble("PHYSICAL_SCORE")
-            if (jsonObject.has("ABSI") && !jsonObject.isNull("ABSI"))
-                reportData.absi = jsonObject.getDouble("ABSI")
-            if (jsonObject.has("BP_DIASTOLIC") && !jsonObject.isNull("BP_DIASTOLIC"))
-                reportData.bpDiastolic = jsonObject.getDouble("BP_DIASTOLIC")
-            if (jsonObject.has("BP_CVD") && !jsonObject.isNull("BP_CVD"))
-                reportData.bpCvd = jsonObject.getDouble("BP_CVD")
-            if (jsonObject.has("IHB_COUNT") && !jsonObject.isNull("IHB_COUNT"))
-                reportData.ihbCount = jsonObject.getDouble("IHB_COUNT")
-            if (jsonObject.has("HEALTH_SCORE") && !jsonObject.isNull("HEALTH_SCORE"))
-                reportData.healtH_SCORE = jsonObject.getDouble("HEALTH_SCORE")
-            if (jsonObject.has("BP_HEART_ATTACK") && !jsonObject.isNull("MENTAL_SCORE"))
-                reportData.mentalScore = jsonObject.getDouble("MENTAL_SCORE")
-            if (jsonObject.has("BP_STROKE") && !jsonObject.isNull("BP_STROKE"))
-                reportData.bpStroke = jsonObject.getDouble("BP_STROKE")
-            if (jsonObject.has("BMI_CALC") && !jsonObject.isNull("BMI_CALC"))
-                reportData.bmiCalc = jsonObject.getDouble("BMI_CALC")
-            if (jsonObject.has("BP_TAU") && !jsonObject.isNull("BP_TAU"))
-                reportData.bpTau = jsonObject.getDouble("BP_TAU")
-            if (jsonObject.has("BP_SYSTOLIC") && !jsonObject.isNull("BP_SYSTOLIC"))
-                reportData.bpSystolic = jsonObject.getDouble("BP_SYSTOLIC")
-            if (jsonObject.has("HEIGHT") && !jsonObject.isNull("HEIGHT"))
-                reportData.height = jsonObject.getDouble("HEIGHT")
-            if (jsonObject.has("MSI") && !jsonObject.isNull("MSI"))
-                reportData.msi1 = jsonObject.getDouble("MSI")*/
-
-            val  reportData1 = data?.getSerializableExtra("resultObject") as ReportData
+            val reportData1 = data?.getSerializableExtra("resultObject") as ReportData
             healthCamFacialScanRequest.reportData = reportData1
 
             submitReport(healthCamFacialScanRequest)
@@ -393,6 +312,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
             Log.d("AAAA", result.toString())
         } else {
             Log.d(TAG, "results= error")
+            finish()
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -410,6 +330,11 @@ class HealthCamRecorderActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body()?.string())
+                    val intent = Intent(
+                        this@HealthCamRecorderActivity,
+                        NewHealthCamReportActivity::class.java
+                    )
+                    startActivity(intent)
                     Log.d("AAAA", jsonResponse)
                     Toast.makeText(
                         this@HealthCamRecorderActivity,

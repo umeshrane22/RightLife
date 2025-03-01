@@ -12,16 +12,16 @@ public class GetEmotions {
     private List<String> emotions;
     @SerializedName("takenAssessment")
     @Expose
-    private List<Object> takenAssessment;
+    private List<String> takenAssessment;
     @SerializedName("selectedEmotion")
     @Expose
-    private List<Object> selectedEmotion;
+    private List<String> selectedEmotion;
     @SerializedName("basicAssesmentTaken")
     @Expose
     private Boolean basicAssesmentTaken;
     @SerializedName("selectedBasicEmotions")
     @Expose
-    private List<Object> selectedBasicEmotions;
+    private List<String> selectedBasicEmotions;
 
     public List<String> getEmotions() {
         return emotions;
@@ -31,19 +31,19 @@ public class GetEmotions {
         this.emotions = emotions;
     }
 
-    public List<Object> getTakenAssessment() {
+    public List<String> getTakenAssessment() {
         return takenAssessment;
     }
 
-    public void setTakenAssessment(List<Object> takenAssessment) {
+    public void setTakenAssessment(List<String> takenAssessment) {
         this.takenAssessment = takenAssessment;
     }
 
-    public List<Object> getSelectedEmotion() {
+    public List<String> getSelectedEmotion() {
         return selectedEmotion;
     }
 
-    public void setSelectedEmotion(List<Object> selectedEmotion) {
+    public void setSelectedEmotion(List<String> selectedEmotion) {
         this.selectedEmotion = selectedEmotion;
     }
 
@@ -55,11 +55,11 @@ public class GetEmotions {
         this.basicAssesmentTaken = basicAssesmentTaken;
     }
 
-    public List<Object> getSelectedBasicEmotions() {
+    public List<String> getSelectedBasicEmotions() {
         return selectedBasicEmotions;
     }
 
-    public void setSelectedBasicEmotions(List<Object> selectedBasicEmotions) {
+    public void setSelectedBasicEmotions(List<String> selectedBasicEmotions) {
         this.selectedBasicEmotions = selectedBasicEmotions;
     }
 
