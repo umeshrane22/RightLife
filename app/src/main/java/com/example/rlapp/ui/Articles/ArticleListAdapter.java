@@ -93,10 +93,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
                 holder.binding.tvArticlecard3TitleVideo.setText(article.getRecommendedArticle().getTitle());
                 holder.binding.txtDescCard3Video.setText(article.getRecommendedArticle().getTitle());
-
-                GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedService().getImageUrl())
-                        .transform(new RoundedCorners(15))
-                        .into(holder.binding.imgThumbnailCard3Video);
+                if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
+                    GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
+                            .transform(new RoundedCorners(15))
+                            .into(holder.binding.imgThumbnailCard3Video);
+                }
 
 
 

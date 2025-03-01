@@ -349,13 +349,14 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private void HandleContinueWatchUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
         if (rlPageContinueWatchResponse.getData().getContentDetails().size() > 0) {
             txt_continue_view_header.setVisibility(View.VISIBLE);
+            RLContinueListAdapter adapter = new RLContinueListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
+            LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
+            recyclerViewContinue.setAdapter(adapter);
         } else {
             txt_continue_view_header.setVisibility(View.GONE);
         }
-        RLContinueListAdapter adapter = new RLContinueListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
-        recyclerViewContinue.setAdapter(adapter);
+
     }
 
     // Get Recently Watched Content List here
@@ -399,14 +400,15 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private void HandleRecentlyWatchedUI(RlPageContinueWatchResponse rlPageContinueWatchResponse) {
         if (rlPageContinueWatchResponse.getData().getContentDetails().size() > 0) {
             txt_recently_view_header.setVisibility(View.VISIBLE);
+            recyclerViewrecent.setVisibility(View.VISIBLE);
+            RLRecentlyWatchedListAdapter adapter = new RLRecentlyWatchedListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
+            LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            recyclerViewrecent.setLayoutManager(horizontalLayoutManager);
+            recyclerViewrecent.setAdapter(adapter);
         } else {
             txt_recently_view_header.setVisibility(View.GONE);
         }
-        recyclerViewrecent.setVisibility(View.VISIBLE);
-        RLRecentlyWatchedListAdapter adapter = new RLRecentlyWatchedListAdapter(this, rlPageContinueWatchResponse.getData().getContentDetails());
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerViewrecent.setLayoutManager(horizontalLayoutManager);
-        recyclerViewrecent.setAdapter(adapter);
+
     }
 
     //getMyRLHealthCamResult

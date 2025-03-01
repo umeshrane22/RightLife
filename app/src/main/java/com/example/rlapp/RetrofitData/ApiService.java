@@ -746,7 +746,8 @@ public interface ApiService {
 
     //ModuleService Pane
     @Headers("Content-Type: application/json") // Set content-type as application/json
-    @GET("content/679b1e6d4199ddf6752fdb20")
+    //@GET("content/679b1e6d4199ddf6752fdb20")
+    @GET("content/67a9aeed7864652954596ecb")
     Call<JsonElement> getArticleDetails(
             @Header("Authorization") String authToken // Dynamic Authorization Header
     );

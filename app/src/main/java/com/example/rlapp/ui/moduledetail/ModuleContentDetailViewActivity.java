@@ -30,12 +30,15 @@ import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.Episodes.EpisodeModel;
+import com.example.rlapp.apimodel.Episodes.EpisodeResponseModel;
 import com.example.rlapp.apimodel.modulecontentdetails.ModuleContentDetail;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.EpisodesListAdapter;
+import com.example.rlapp.ui.Wellness.EpisodesListAdapter2;
 import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.therledit.ViewAllActivity;
@@ -62,7 +65,7 @@ import retrofit2.Response;
 public class ModuleContentDetailViewActivity extends AppCompatActivity {
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    TextView txt_desc, tv_header_htw;
+    TextView txt_desc, tv_header_htw,txt_episodes_section;
     String[] itemNames;
     int[] itemImages;
     int position;
@@ -88,6 +91,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wellness_detail_layout);
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
+        txt_episodes_section = findViewById(R.id.txt_episodes_section);
 
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
@@ -129,7 +133,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         // get morelike content
         getMoreLikeContent(contentId);
 
-        // getSeriesWithEpisodes(contentList.get(position).getId());
+
 
         List<Like> contentList1 = Collections.emptyList();
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
@@ -206,6 +210,9 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         } else {
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
 
+            if (ContentResponseObj.getData().getPreviewUrl().isEmpty()){
+                finish();
+            }
             playerView.setVisibility(View.VISIBLE);
             img_contentview.setVisibility(View.GONE);
             initializePlayer();
@@ -372,6 +379,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
                             Log.d("API Response", "Content Details: " + jsonResponse);
                             ContentResponseObj = gson.fromJson(successMessage, ModuleContentDetail.class);
                             setContentDetails(ContentResponseObj);
+                            getSeriesWithEpisodes(ContentResponseObj.getData().getId());
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -452,9 +460,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
         // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
         Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
@@ -462,13 +467,14 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Wellness:SeriesList " + affirmationsResponse.toString());
+                    Log.d("API Response", "Wellness:episodes " + affirmationsResponse.toString());
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                    //wellnessApiResponse = gson.fromJson(jsonResponse, WellnessApiResponse.class);
-                    Log.d("API Response body", "Wellness:SeriesList " + contentList.get(0).getTitle());
+                    EpisodeResponseModel episodeResponseModel = gson.fromJson(jsonResponse, EpisodeResponseModel.class);
+                    Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
+                    setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -494,8 +500,15 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupEpisodeListData(List<Like> contentList) {
+  /*  private void setupEpisodeListData(List<Like> contentList) {
         EpisodesListAdapter adapter = new EpisodesListAdapter(this, itemNames, itemImages, contentList);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerViewEpisode.setLayoutManager(horizontalLayoutManager);
+        recyclerViewEpisode.setAdapter(adapter);
+    }*/
+    private void setupEpisodeListData(List<EpisodeModel> contentList) {
+        txt_episodes_section.setVisibility(View.VISIBLE);
+        EpisodesListAdapter2 adapter = new EpisodesListAdapter2(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewEpisode.setLayoutManager(horizontalLayoutManager);
         recyclerViewEpisode.setAdapter(adapter);

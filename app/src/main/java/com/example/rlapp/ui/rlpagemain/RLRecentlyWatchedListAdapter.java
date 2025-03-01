@@ -61,16 +61,21 @@ public class RLRecentlyWatchedListAdapter extends RecyclerView.Adapter<RLRecentl
         //holder.imgtag.setBackgroundColor(color);
         holder.imgtag.setImageTintList(ColorStateList.valueOf(color));
         holder.tv_category.setText(contentList.get(position).getCategoryName());
-        holder.tv_artistname.setText(String.format("%s %s",
-                contentList.get(position).getArtist().get(0).getFirstName(),
-                contentList.get(position).getArtist().get(0).getLastName()));
-
-        if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
-            Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl())
-                    .transform(new RoundedCorners(25))
-                    .into(holder.imageView);
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
+        if (contentList.get(position).getArtist()!=null){
+        if (contentList.get(position).getArtist().get(0).getFirstName()!=null) {
+            holder.tv_artistname.setText(String.format("%s %s",
+                    contentList.get(position).getArtist().get(0).getFirstName(),
+                    contentList.get(position).getArtist().get(0).getLastName()));
+        }
+    }
+        if (contentList.get(position).getThumbnail()!=null) {
+            if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
+                Glide.with(ctx).load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl())
+                        .transform(new RoundedCorners(25))
+                        .into(holder.imageView);
+                Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl());
+                Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
+            }
         }
         //holder.imageView.setImageResource(itemImages[position]);
        /* if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")){

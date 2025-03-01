@@ -63,6 +63,7 @@ import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
 import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
+import com.example.rlapp.ui.healthcam.NewHealthCamReportActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
@@ -1027,13 +1028,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         category.setText(content.getCategoryName());
 
         // Load thumbnail using Glide
-        Glide.with(this)
-                .load(ApiClient.CDN_URL_QA + content.getThumbnail().getUrl()) // URL of the thumbnail
-                .placeholder(R.drawable.img_logintop) // Optional placeholder
-                .error(R.drawable.img_logintop)
-                .transform(new RoundedCorners(25))// Optional error image
-                .into(thumbnail);
-
+        if (!isFinishing() && !isDestroyed()) {
+            Glide.with(this)
+                    .load(ApiClient.CDN_URL_QA + content.getThumbnail().getUrl()) // URL of the thumbnail
+                    .placeholder(R.drawable.img_logintop) // Optional placeholder
+                    .error(R.drawable.img_logintop)
+                    .transform(new RoundedCorners(25))// Optional error image
+                    .into(thumbnail);
+        }
         setModuleColor(imgtag, content.getModuleId());
     }
 
@@ -1260,7 +1262,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, SearchActivity.class));
+            startActivity(new Intent(this, NewHealthCamReportActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here

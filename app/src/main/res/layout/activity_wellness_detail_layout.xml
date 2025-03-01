@@ -32,7 +32,7 @@
             android:maxLines="1"
             android:ellipsize="marquee"
             android:scrollHorizontally="true"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="@dimen/textsize_large" />
 
         <ImageView
             android:id="@+id/ic_close_dialog"
