@@ -43,7 +43,7 @@ public class Data {
     private String desc;
     @SerializedName("article")
     @Expose
-    private String article;
+    private Object article;
     @SerializedName("tags")
     @Expose
     private List<Tag> tags;
@@ -172,11 +172,11 @@ public class Data {
         this.desc = desc;
     }
 
-    public String getArticle() {
+    public Object getArticle() {
         return article;
     }
 
-    public void setArticle(String article) {
+    public void setArticle(Object article) {
         this.article = article;
     }
 
