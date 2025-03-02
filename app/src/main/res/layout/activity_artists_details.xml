@@ -40,7 +40,7 @@
             app:vpi_slider_normal_color="#EFF0F6"
             app:vpi_style="round_rect" />
     </RelativeLayout>
-
+    <include layout="@layout/loader_layout"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
