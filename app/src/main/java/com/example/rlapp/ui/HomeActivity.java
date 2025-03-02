@@ -31,6 +31,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -45,6 +47,7 @@ import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmation
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
 import com.example.rlapp.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
+import com.example.rlapp.apimodel.servicepane.HomeService;
 import com.example.rlapp.apimodel.servicepane.ServicePaneResponse;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
 import com.example.rlapp.apimodel.upcomingevents.UpcomingEventResponse;
@@ -114,7 +117,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
             tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
-    LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
+    //LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
     LinearLayout ll_thinkright_category, ll_moveright_category, ll_eatright_category, ll_sleepright_category,
             ll_homehealthclick, ll_homemenuclick, rlmenu;
     LinearLayout ll_thinkright_category1, ll_thinkright_category2, ll_thinkright_category3, ll_thinkright_category4;
@@ -303,10 +306,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //service pane
         tv_header_rledit = findViewById(R.id.tv_header_rledit);
         tv_description_rledit = findViewById(R.id.tv_description_rledit);
-        tv_header_servcepane1 = findViewById(R.id.tv_header_servcepane1);
+        /*tv_header_servcepane1 = findViewById(R.id.tv_header_servcepane1);
         tv_header_servcepane2 = findViewById(R.id.tv_header_servcepane2);
         tv_header_servcepane3 = findViewById(R.id.tv_header_servcepane3);
-        tv_header_servcepane4 = findViewById(R.id.tv_header_servcepane4);
+        tv_header_servcepane4 = findViewById(R.id.tv_header_servcepane4);*/
 
         //live Class
         tv_header_lvclass = findViewById(R.id.tv_header_lvclass);
@@ -326,10 +329,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         txt_lvclass_host = findViewById(R.id.txt_lvclass_host);
 
 
-        ll_voice_scan = findViewById(R.id.ll_voice_scan);
+        /*ll_voice_scan = findViewById(R.id.ll_voice_scan);
         ll_health_cam = findViewById(R.id.ll_health_cam);
         ll_mind_audit = findViewById(R.id.ll_mind_audit);
-        ll_health_audit = findViewById(R.id.ll_health_audit);
+        ll_health_audit = findViewById(R.id.ll_health_audit);*/
 
         ll_thinkright_category = findViewById(R.id.ll_thinkright_category);
         ll_moveright_category = findViewById(R.id.ll_moveright_category);
@@ -418,7 +421,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         callAPIs();
 
-        ll_voice_scan.setOnClickListener(new View.OnClickListener() {
+        /*ll_voice_scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Start new activity here
@@ -450,7 +453,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 //intent.putExtra("key", "value");
                 startActivity(intent);
             }
-        });
+        });*/
 
 
         printAccessToken();
@@ -719,27 +722,31 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void handleServicePaneResponse(ServicePaneResponse responseObj) {
-        //  tv_header_rledit.setText(responseObj.getData().getTitle());
-        // tv_description_rledit.setText(responseObj.getData().getSubtitle());
-        if (!responseObj.getData().getHomeServices().isEmpty()) {
-            for (int i = 0; i < responseObj.getData().getHomeServices().size(); i++) {
-                switch (i) {
-                    case 0:
-                        //  tv_header_servcepane1.setText(responseObj.getData().getHomeServices().get(i).getTitle());
-                        break;
-                    case 1:
-                        //tv_header_servcepane2.setText(responseObj.getData().getHomeServices().get(i).getTitle());
-                        break;
-                    case 2:
-                        //tv_header_servcepane3.setText(responseObj.getData().getHomeServices().get(i).getTitle());
-                        break;
-                    case 3:
-                        //tv_header_servcepane4.setText(responseObj.getData().getHomeServices().get(i).getTitle());
-                        break;
-                }
+        RecyclerView recyclerView = findViewById(R.id.rv_service_pane);
+        ServicePaneAdapter adapter = new ServicePaneAdapter(this, responseObj.getData().getHomeServices(), homeService -> {
+            switch (homeService.getTitle()) {
+                case "Voice Scan":
+                    Intent intentVoice = new Intent(HomeActivity.this, VoiceScanActivity.class);
+                    startActivity(intentVoice);
+                    break;
+                case "Mind Audit":
+                    Intent intentMind = new Intent(HomeActivity.this, MindAuditActivity.class);
+                    startActivity(intentMind);
+                    break;
+                case "Health Cam":
+                    getMyRLHealthCamResult();
+                    break;
+                default:
+                    Intent intentHealthAudit = new Intent(HomeActivity.this, HealthAuditActivity.class);
+                    startActivity(intentHealthAudit);
+                    break;
             }
+        });
+        int spanCount = responseObj.getData().getHomeServices().size();
+        spanCount = (spanCount > 3) ? 2 : spanCount;
 
-        }
+        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
+        recyclerView.setAdapter(adapter);
     }
 
 

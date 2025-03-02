@@ -214,11 +214,6 @@ public class CategoryListActivity extends AppCompatActivity {
         chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             Chip chip = group.findViewById(checkedId);
             if (chip != null) {
-                String category = chip.getText().toString();
-                //   Toast.makeText(this, "this is " + category, Toast.LENGTH_SHORT).show();
-                //filterList(category.equals("All") ? "all" : category.toLowerCase());
-
-
                 int position = -1;
                 for (int i = 0; i < group.getChildCount(); i++) {
                     View child = group.getChildAt(i);
@@ -230,21 +225,15 @@ public class CategoryListActivity extends AppCompatActivity {
 
                 // Use the position as needed
                 if (position != -1) {
-                    // Do something with the position
-                    Log.d("ChipGroup", "Checked chip position: " + position);
-                    //API Call
-                    if (position == ResponseObj.getData().getResult().size() ){
-                        position = 0;
-                    }
-                    selectedCategoryId = ResponseObj.getData().getResult().get(position).getCategoryId();
-                    selectedModuleId = ResponseObj.getData().getResult().get(position).getModuleId();
-                    //Toast.makeText(this, "this is " + ResponseObj.getData().getResult().get(position).getCategoryId(), Toast.LENGTH_SHORT).show();
                     contentList.clear();
                     mSkip = 0;
                     if (position == 0)
                         getContentlistdetails(null, selectedModuleId, mSkip, mLimit);
-                    else
+                    else {
+                        selectedCategoryId = ResponseObj.getData().getResult().get(position - 1).getCategoryId();
+                        selectedModuleId = ResponseObj.getData().getResult().get(position - 1).getModuleId();
                         getContentlistdetails(selectedCategoryId, selectedModuleId, mSkip, mLimit);
+                    }
                 }
             }
         });
@@ -457,7 +446,7 @@ public class CategoryListActivity extends AppCompatActivity {
                     int targetChip = chipGroup.getCheckedChipId();
                     if (targetChip != -1) {
                         Chip targetChipview = findViewById(targetChip);
-                        if (targetChipview!=null) {
+                        if (targetChipview != null) {
                             chipGroup.requestChildFocus(targetChipview, targetChipview);
                         }
                     }

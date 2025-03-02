@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_service_pane_even"
+    android:layout_width="wrap_content"
+    android:layout_height="85dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_margin="10dp"
+    android:layout_weight="1"
+    android:background="@drawable/roundedcornerbutton"
+    android:backgroundTint="#FDE6FF"
+    android:elevation="5dp"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="6dp">
+
+    <ImageView
+        android:id="@+id/img_service_pane_even"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:src="@drawable/ic_healthcam_logo" />
+
+    <TextView
+        android:id="@+id/tv_service_pane_header_even"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fontFamily="@font/merriweather_regular"
+        android:gravity="center"
+        android:text="Mind\nAudit"
+        android:textColor="@color/txt_color_header"
+        android:textSize="@dimen/textsize_medium" />
+
+</LinearLayout>
