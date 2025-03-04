@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -19,13 +18,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
-import com.example.rlapp.apimodel.submodule.SubModuleResponse;
-import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
+import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
+import com.example.rlapp.ui.therledit.ViewCountRequest;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.voicescan.VoiceScanActivity;
 
+import java.io.IOException;
 import java.util.List;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapter.CardViewHolder> {
 
@@ -75,9 +82,15 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                     mContext.startActivity(intent);
                 }
 
+                ViewCountRequest viewCountRequest = new ViewCountRequest();
+                viewCountRequest.setId(item.getId());
+                viewCountRequest.setUserId(SharedPreferenceManager.getInstance(mContext).getUserId());
+                updateViewCount(viewCountRequest,holder.getBindingAdapterPosition());
             }
         });
+        Utils.logDebug("CircularCardAdapter",""+holder.getBindingAdapterPosition());
         holder.bind(item);
+
     }
 
     @Override
@@ -152,4 +165,35 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         notifyDataSetChanged();
     }
 
+    private void updateViewCount(ViewCountRequest viewCountRequest, int position) {
+        String authToken = SharedPreferenceManager.getInstance(mContext).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.UpdateBannerViewCount(authToken, viewCountRequest);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = jsonString = response.body().string();
+                        Log.d("API_RESPONSE", "View Count content: " + jsonString);
+
+                   //     int currentViewCount = Integer.parseInt(items.get(position).getViewCount());
+                 //       items.get(position).setViewCount(String.valueOf(currentViewCount + 1));
+                        //notifyDataSetChanged();
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Log.e("API_ERROR", "Error: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+            }
+        });
+    }
 }

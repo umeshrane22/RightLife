@@ -1906,7 +1906,7 @@
                         android:drawableTint="#00543A"
                         android:fontFamily="@font/merriweather_bold"
                         android:gravity="start"
-                        android:text="Eatright"
+                        android:text="Eat Right"
                         android:textColor="#00553A"
                         android:textSize="@dimen/textsize_extralarge" />
 
@@ -2137,7 +2137,7 @@
                         android:drawableTint="#002C5F"
                         android:fontFamily="@font/merriweather_bold"
                         android:gravity="start"
-                        android:text="SleepRight"
+                        android:text="Sleep Right"
                         android:textColor="#002C5F"
                         android:textSize="@dimen/textsize_extralarge"
                         android:textStyle="bold" />

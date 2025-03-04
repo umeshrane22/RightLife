@@ -1,7 +1,7 @@
 <!-- res/layout/grid_item.xml -->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
@@ -30,7 +30,7 @@
         <ImageView
             android:id="@+id/item_image"
             android:layout_width="match_parent"
-            android:layout_height="140dp"
+            android:layout_height="120dp"
             android:layout_weight="1"
             android:scaleType="centerCrop"
             android:src="@drawable/facial_scan" />
@@ -45,13 +45,12 @@
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_gravity="center"
-
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/img_iconview"
-                    android:layout_width="23dp"
-                    android:layout_height="23dp"
+                    android:layout_width="21dp"
+                    android:layout_height="21dp"
                     android:padding="5dp"
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_sound_category" />
@@ -60,7 +59,7 @@
                     android:id="@+id/item_text1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:maxLines="1"
                     android:gravity="center"
                     android:padding="5dp"
                     android:layout_centerVertical="true"
@@ -74,10 +73,13 @@
                 android:id="@+id/item_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:gravity="center"
+                android:layout_marginTop="2dp"
+                android:gravity="center_horizontal"
                 android:layout_gravity="center"
                 android:text="Category title"
+                android:minLines="2"
+                android:maxLines="2"
+                android:ellipsize="marquee"
                 android:fontFamily="@font/dmsans_bold"
                 android:textColor="@android:color/black"
                 android:textSize="12sp"/>

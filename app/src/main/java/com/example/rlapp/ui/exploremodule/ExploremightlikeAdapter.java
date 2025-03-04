@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,11 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.exploremodules.Suggested;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
+import com.example.rlapp.ui.utility.Utils;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
+import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.example.rlapp.ui.utility.Utils;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
 import com.example.rlapp.ui.utility.Utils;
@@ -52,7 +58,17 @@ public class ExploremightlikeAdapter extends RecyclerView.Adapter<Exploremightli
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.textView.setText(contentList.get(position).getTitle());
+        holder.txt_modulename.setText(Utils.getModuleText(contentList.get(position).getModuleId()));
+        if (contentList.get(position).getSeriesType()!=null){
+            if (contentList.get(position).getEpisodeCount()!=null) {
+                holder.item_type_text.setText(contentList.get(position).getEpisodeCount()+" . "+contentList.get(position).getSeriesType());
+            }else {
+                holder.item_type_text.setText(contentList.get(position).getSeriesType());
+            }
+        }
 
+
+        holder.rl_modulename.setBackgroundTintList(Utils.getModuleColorStateList(ctx,contentList.get(position).getModuleId()));
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
             Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
             Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
@@ -113,12 +129,16 @@ public class ExploremightlikeAdapter extends RecyclerView.Adapter<Exploremightli
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView,favorite_image,img_iconview;
-        TextView textView;
+        TextView textView,txt_modulename,item_type_text;
+        RelativeLayout rl_modulename;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            rl_modulename = itemView.findViewById(R.id.rl_modulename);
             imageView = itemView.findViewById(R.id.item_image);
             textView = itemView.findViewById(R.id.item_text);
+            item_type_text = itemView.findViewById(R.id.item_type_text);
+            txt_modulename = itemView.findViewById(R.id.txt_modulename);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
         }

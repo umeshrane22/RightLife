@@ -35,6 +35,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
+            android:visibility="gone"
             android:src="@drawable/menucategory" />
     </RelativeLayout>
 
@@ -54,23 +55,26 @@
             android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/img_explore_banner"
             android:layout_width="match_parent"
             android:background="@color/gray"
             android:scaleType="fitXY"
             android:visibility="visible"
-            android:layout_height="300dp"/>
+            android:layout_height="360dp"/>
             <TextView
+                android:id="@+id/txt_coming_soon_banner"
                 android:layout_width="wrap_content"
                 android:text="Coming soon"
                 android:textSize="@dimen/textsize_medium"
                 android:textColor="@color/txt_color_header"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="120dp"
+                android:visibility="gone"
                 android:layout_height="wrap_content"/>
         <RelativeLayout
             android:layout_width="match_parent"
             android:id="@+id/rl_cards_layout"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="250dp"
             android:visibility="gone"
             android:layout_height="wrap_content">
             <androidx.cardview.widget.CardView

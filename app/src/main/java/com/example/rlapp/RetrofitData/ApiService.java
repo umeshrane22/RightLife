@@ -814,6 +814,15 @@ public interface ApiService {
             @Query("skip") int skip
 
     );
+
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @PUT("promotions/viewCount")
+        // for update banner view count on home
+    Call<ResponseBody> UpdateBannerViewCount(
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Body ViewCountRequest request);
+
 }
 
 
