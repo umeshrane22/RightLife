@@ -87,7 +87,7 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
         } else if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
             holder.img_iconview.setImageResource(R.drawable.ic_read_play);
             holder.item_text1.setVisibility(View.VISIBLE);
-            holder.item_text1.setText(". 0 . videos");
+            holder.item_text1.setText("."+ String.valueOf(contentList.get(position).getEpisodeCount())+"."+ "videos");
         } else {
             holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
             holder.item_text1.setVisibility(View.GONE);

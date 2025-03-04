@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,10 +21,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.rlapp.MainActivity;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.chipsmodulefilter.ModuleChipCategory;
 import com.example.rlapp.apimodel.exploremodules.ExploreSuggestionResponse;
 import com.example.rlapp.apimodel.exploremodules.Suggested;
@@ -37,8 +40,11 @@ import com.example.rlapp.apimodel.submodule.SubModuleResponse;
 import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.utility.JsonUtil;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
+
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,8 +57,8 @@ import retrofit2.Response;
 
 public class ExploreModuleListActivity extends AppCompatActivity {
 
-    TextView txt_morelikethis_section, txt_categories_section, txt_curated_section;
-    ImageView ic_back_dialog, close_dialog;
+    TextView txt_morelikethis_section, txt_categories_section, txt_curated_section,txt_coming_soon_banner;
+    ImageView ic_back_dialog, close_dialog,img_explore_banner;
     private RecyclerView recyclerView, recycler_view_suggestions,recycler_view_curated,recycler_view_cards;
     private ChipGroup chipGroup;
     String[] itemNames;
@@ -70,6 +76,8 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exploremodulelist);
 
         //get views
+        txt_coming_soon_banner = findViewById(R.id.txt_coming_soon_banner);
+        img_explore_banner = findViewById(R.id.img_explore_banner);
         rl_cards_layout = findViewById(R.id.rl_cards_layout);
         tv_header_htw = findViewById(R.id.tv_header_htw);
         txt_morelikethis_section = findViewById(R.id.txt_morelikethis_section);
@@ -126,7 +134,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         //setupModuleListData(subModuleResponse.getData());
         getCuratedContent(moduleId);
         getMoreLikeContent(moduleId);
-
+        getTopBannerImage(moduleId);
 
 
         ic_back_dialog.setOnClickListener(new View.OnClickListener() {
@@ -353,14 +361,6 @@ public class ExploreModuleListActivity extends AppCompatActivity {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
                         Log.d("API_RESPONSE", "Might like content: " + jsonString);
-                    /*LikeResponse likeResponse = gson.fromJson(jsonString, LikeResponse.class);
-
-                    // Use the parsed object
-                    Log.d("API_RESPONSE", "Status: " + likeResponse.getStatus());
-                    for (LikeResponse.Content content : likeResponse.getData()) {
-                        Log.d("API_RESPONSE", "Content Title: " + content.getTitle());
-                        Log.d("API_RESPONSE", "Like Count: " + content.getLikeCount());
-                    }*/
 
                         ExploreSuggestionResponse ResponseObj = gson.fromJson(jsonString, ExploreSuggestionResponse.class);
                         Log.d("API Response", "List Details: " + ResponseObj.getData().getSuggestedList().get(0).getContentType()
@@ -418,6 +418,55 @@ public class ExploreModuleListActivity extends AppCompatActivity {
                recyclerView.requestLayout();
             }
         });
+    }
+
+
+   // get top banner image
+   private void getTopBannerImage(String moduleId) {
+       //-----------
+       String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+       ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+       Call<JsonElement> call = apiService.getPromotionList(authToken, moduleId, null, "TOP");
+       call.enqueue(new Callback<JsonElement>() {
+           @Override
+           public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+               if (response.isSuccessful() && response.body() != null) {
+                   JsonElement promotionResponse2 = response.body();
+                   Log.d("API Response", "Success: " + promotionResponse2.toString());
+                   Gson gson = new Gson();
+                   String jsonResponse = gson.toJson(response.body());
+                   PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
+                   Log.d("API Response body", "Success: promotion " + jsonResponse);
+                   if (promotionResponse.getSuccess()) {
+                       Toast.makeText(ExploreModuleListActivity.this, "Success: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                       Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
+
+                       handleBannerResponse(promotionResponse);
+                   } else {
+                       Toast.makeText(ExploreModuleListActivity.this, "Failed: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                   }
+
+               } else {
+                   //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+               }
+           }
+
+           @Override
+           public void onFailure(Call<JsonElement> call, Throwable t) {
+               Toast.makeText(ExploreModuleListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+               t.printStackTrace();  // Print the full stack trace for more details
+
+           }
+       });
+
+   }
+
+    private void handleBannerResponse(PromotionResponse promotionResponse) {
+        Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
+        Glide.with(this).load(ApiClient.CDN_URL_QA + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl())
+                .placeholder(R.drawable.logo_rightlife)
+                .into(img_explore_banner);
     }
 
 }

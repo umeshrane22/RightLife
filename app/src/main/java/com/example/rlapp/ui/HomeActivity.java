@@ -73,6 +73,7 @@ import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
+import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
@@ -463,7 +464,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void callAPIs() {
         getUserDetails("");
-        getPromotionList("");
+
         getPromotionList2(""); // ModuleService pane
         getRightlifeEdit("");
 
@@ -560,6 +561,33 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return accessToken;
     }
 
+    private void updateViewCount(ViewCountRequest viewCountRequest) {
+        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        Call<ResponseBody> call = apiService.UpdateBannerViewCount(authToken, viewCountRequest);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = jsonString = response.body().string();
+                        Log.d("API_RESPONSE", "View Count content: " + jsonString);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Log.e("API_ERROR", "Error: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+            }
+        });
+    }
+
     private void getPromotionList(String s) {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
@@ -614,7 +642,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         for (int i = 0; i < promotionResponse.getPromotiondata().getPromotionList().size(); i++) {
             Log.d("API image", "Image : " + promotionResponse.getPromotiondata().getPromotionList().get(i).getContentUrl());
-            CardItem cardItem = new CardItem(promotionResponse.getPromotiondata().getPromotionList().get(i).getName(),
+            CardItem cardItem = new CardItem(promotionResponse.getPromotiondata().getPromotionList().get(i).getId(),
+                    promotionResponse.getPromotiondata().getPromotionList().get(i).getName(),
                     R.drawable.facialconcept,
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getThumbnail().getUrl(),
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getContent(),
@@ -646,11 +675,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private List<CardItem> getCardItems() {
         List<CardItem> items = new ArrayList<>();
         // Add your CardItem instances here
-        items.add(new CardItem("Card 1", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("Card 2", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("Card 3", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("Card 4", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("Card 5", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("0","Card 1", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("1","Card 2", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("2","Card 3", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("3","Card 4", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("4","Card 5", R.drawable.facialconcept, "", "", "scan now", "", ""));
         return items;
     }
 
@@ -666,6 +695,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         // Resume auto-slide when activity is visible
         sliderHandler.postDelayed(sliderRunnable, 3000);
+        getPromotionList("");
         getRightlifeEdit("");
         getWelnessPlaylist("");
     }

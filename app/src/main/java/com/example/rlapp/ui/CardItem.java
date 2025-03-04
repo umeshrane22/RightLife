@@ -1,6 +1,7 @@
 package com.example.rlapp.ui;
 
 public class CardItem {
+    private String id;
     private String title;
     private int imageResId;
     private String imageUrl;
@@ -8,13 +9,19 @@ public class CardItem {
     private String buttonText;
     private String category;
     private boolean isAffirmation = false;
+
+    public void setViewCount(String viewCount) {
+        this.viewCount = viewCount;
+    }
+
     private String viewCount;
 
     public String getCategory() {
         return category;
     }
 
-    public CardItem(String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount) {
+    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount) {
+        this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
         this.imageResId = imageResId;
@@ -55,5 +62,13 @@ public class CardItem {
 
     public String getViewCount() {
         return viewCount;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
