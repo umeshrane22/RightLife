@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.rlapp.R
 import com.example.rlapp.ui.HomeActivity
+import com.example.rlapp.ui.new_design.pojo.LoggedInUser
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -24,6 +25,7 @@ class SplashScreenActivity : AppCompatActivity() {
     private lateinit var rlview1: RelativeLayout
     private lateinit var imgview2: ImageView
     private val SPLASH_DELAY: Long = 3000 // 3 seconds
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +34,9 @@ class SplashScreenActivity : AppCompatActivity() {
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
 
-        val appMode = SharedPreferenceManager.getInstance(this).appMode
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+
+        val appMode = sharedPreferenceManager.appMode
         if (appMode.equals("System", ignoreCase = true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         } else if (appMode.equals("Dark", ignoreCase = true)) {
@@ -42,7 +46,7 @@ class SplashScreenActivity : AppCompatActivity() {
         }
 
 
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        val authToken = sharedPreferenceManager.accessToken
         Log.d("SplashActivity Auth Token = ", authToken)
         // Set the video URI from the raw folder
         val videoUri = Uri.parse("android.resource://${packageName}/${R.raw.rewards_screen}")
@@ -56,10 +60,58 @@ class SplashScreenActivity : AppCompatActivity() {
                 val intent = Intent(this, DataControlActivity::class.java)
                 startActivity(intent)
             } else {
-                val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
+                var email = ""
+                email = try {
+                    sharedPreferenceManager.userProfile.userdata.email
+                } catch (e: NullPointerException) {
+                    sharedPreferenceManager.email
+                }
+
+                var loggedInUser: LoggedInUser? = null
+                for (user in sharedPreferenceManager.loggedUserList) {
+                    if (email == user.email) {
+                        loggedInUser = user
+                    }
+                }
+                if (loggedInUser?.isOnboardingComplete == true) {
+                    val intent = Intent(this, HomeActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    if (sharedPreferenceManager.userName.isNullOrEmpty()) {
+                        val intent = Intent(this, CreateUsernameActivity::class.java)
+                        startActivity(intent)
+                    } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()) {
+                        val intent = Intent(this, WellnessFocusActivity::class.java)
+                        startActivity(intent)
+                    } else if (sharedPreferenceManager.wellnessFocusTopics.isNullOrEmpty()) {
+                        val intent = Intent(this, WellnessFocusListActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.unLockPower) {
+                        val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.thirdFiller) {
+                        val intent = Intent(this, ThirdFillerScreenActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.interest) {
+                        val intent = Intent(this, YourInterestActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.allowPersonalization) {
+                        val intent = Intent(this, PersonalisationActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.syncNow) {
+                        val intent = Intent(this, SyncNowActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.onBoardingQuestion) {
+                        val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        val intent = Intent(this, EnableNotificationActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+                finish()
+
             }
-            finish()  // Close the SplashActivity
         }, SPLASH_DELAY)
         //}
 

@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class SyncNowActivity : AppCompatActivity() {
 
@@ -13,13 +14,18 @@ class SyncNowActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sync_now)
 
-        val header = intent.getStringExtra("WellnessFocus")
+        var header = intent.getStringExtra("WellnessFocus")
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        if (header.isNullOrEmpty()){
+            header = sharedPreferenceManager.selectedWellnessFocus
+        }
 
         val btnSyncNow = findViewById<LinearLayout>(R.id.btn_sync_now)
         val btnSkipForNOw = findViewById<Button>(R.id.btn_skip_for_now)
 
         btnSyncNow.setOnClickListener {
             val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+            sharedPreferenceManager.syncNow = true
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
             //finish()
@@ -27,6 +33,7 @@ class SyncNowActivity : AppCompatActivity() {
         btnSkipForNOw.setOnClickListener {
             val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
             intent.putExtra("WellnessFocus", header)
+            sharedPreferenceManager.syncNow = true
             startActivity(intent)
             // finish()
         }

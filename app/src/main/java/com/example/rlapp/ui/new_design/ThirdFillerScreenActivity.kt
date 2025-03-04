@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rlapp.R
 import com.example.rlapp.ui.utility.AppConstants
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class ThirdFillerScreenActivity : AppCompatActivity() {
 
@@ -18,7 +19,11 @@ class ThirdFillerScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_thiird_filler_screen)
 
-        val header = intent.getStringExtra("WellnessFocus")
+        var header = intent.getStringExtra("WellnessFocus")
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        if (header.isNullOrEmpty()) {
+            header = sharedPreferenceManager.selectedWellnessFocus
+        }
         val btnContinue = findViewById<Button>(R.id.btn_continue)
 
         var originalText = getString(R.string.third_filler_screen5_thinkright)
@@ -106,6 +111,7 @@ class ThirdFillerScreenActivity : AppCompatActivity() {
         btnContinue.setOnClickListener {
             val intent = Intent(this, YourInterestActivity::class.java)
             intent.putExtra("WellnessFocus", header)
+            sharedPreferenceManager.thirdFiller = true
             startActivity(intent)
             //finish()
         }

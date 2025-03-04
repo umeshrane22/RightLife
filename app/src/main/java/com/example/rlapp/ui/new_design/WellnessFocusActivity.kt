@@ -54,6 +54,7 @@ class WellnessFocusActivity : AppCompatActivity() {
         btnContinue.setOnClickListener {
             val intent = Intent(this, WellnessFocusListActivity::class.java)
             intent.putExtra("WellnessFocus", selectedService?.moduleName)
+            SharedPreferenceManager.getInstance(this).selectedWellnessFocus = selectedService?.moduleName
             startActivity(intent)
         }
     }

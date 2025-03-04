@@ -16,6 +16,9 @@ import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.morelikecontent.Like;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
+import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.example.rlapp.ui.utility.Utils;
 
 import java.util.List;
 
@@ -63,6 +66,33 @@ public class EpisodesListAdapter extends RecyclerView.Adapter<EpisodesListAdapte
                 //Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             }
         });
+
+        if (contentList.get(position).getIsFavourited()) {
+            holder.favorite_image.setImageResource(R.drawable.favstarsolid);
+        } else {
+            holder.favorite_image.setImageResource(R.drawable.unfavorite);
+        }
+
+        holder.favorite_image.setOnClickListener(view -> {
+            FavouriteRequest favouriteRequest = new FavouriteRequest();
+            favouriteRequest.setFavourite(!contentList.get(position).getIsFavourited());
+            favouriteRequest.setEpisodeId(contentList.get(position).getId());
+            Utils.addToFavourite(ctx, contentList.get(position).getId(), favouriteRequest, new OnFavouriteClickListener() {
+                @Override
+                public void onSuccess(boolean isSuccess, String message) {
+                    Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+                    if (isSuccess) {
+                        contentList.get(position).setIsFavourited(!contentList.get(position).getIsFavourited());
+                        notifyItemChanged(position);
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(ctx, error, Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
     }
 
     @Override
@@ -80,12 +110,7 @@ public class EpisodesListAdapter extends RecyclerView.Adapter<EpisodesListAdapte
             textView = itemView.findViewById(R.id.item_text);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
-            favorite_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(itemView.getContext(), "position - "+getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                }
-            });
+
 
             //img_iconview.setImageResource(R.drawable.ic_read_category);
         }
