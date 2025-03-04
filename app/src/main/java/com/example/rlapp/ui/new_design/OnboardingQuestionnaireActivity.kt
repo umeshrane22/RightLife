@@ -25,6 +25,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     lateinit var tvSkip: TextView
     lateinit var tv_fragment_count: TextView
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
 
 
@@ -32,7 +33,11 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding_questionnaire)
 
-        val header = intent.getStringExtra("WellnessFocus")
+        var header = intent.getStringExtra("WellnessFocus")
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        if (header.isNullOrEmpty()){
+            header = sharedPreferenceManager.selectedWellnessFocus
+        }
 
         progressBar = findViewById(R.id.progress_bar_onboarding)
         viewPager = findViewById(R.id.viewPagerOnboarding)
@@ -54,6 +59,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             if (viewPager.currentItem == 0) {
                 adapter.removeItem("BodyFatSelection")
             }
+            sharedPreferenceManager.currentQuestion = viewPager.currentItem
             navigateToNextPage()
         }
 
@@ -74,6 +80,8 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         adapter.setHeader(header!!)
 
         viewPager.adapter = adapter
+        viewPager.setCurrentItem(sharedPreferenceManager.currentQuestion, false)
+        updateProgress(sharedPreferenceManager.currentQuestion)
 
         viewPager.registerOnPageChangeCallback(object : OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -139,6 +147,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                     //Handler(Looper.getMainLooper()).postDelayed({
                     // Submit Questions answer here
                     if (viewPager.currentItem == adapter.itemCount - 1) {
+                        sharedPreferenceManager.onBoardingQuestion = true
                         startActivity(
                             Intent(
                                 this@OnboardingQuestionnaireActivity,
@@ -150,6 +159,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                             .clearOnboardingQuestionRequest()
                     } else {
                         navigateToNextPage()
+                        sharedPreferenceManager.currentQuestion = viewPager.currentItem
                     }
 
                     //}, 1000)

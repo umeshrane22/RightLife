@@ -19,6 +19,9 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.modulecontentlist.Content;
 import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
+import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -97,15 +100,26 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
         }else {
             holder.favorite_image.setImageResource(R.drawable.favstar);
         }
-        holder.favorite_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (contentList.get(position).getIsFavourited()) {
-                    holder.favorite_image.setImageResource(R.drawable.favstarsolid);
-                }else {
-                    holder.favorite_image.setImageResource(R.drawable.favstar);
+        holder.favorite_image.setOnClickListener(view -> {
+            FavouriteRequest favouriteRequest = new FavouriteRequest();
+            favouriteRequest.setFavourite(!contentList.get(position).getIsFavourited());
+            favouriteRequest.setEpisodeId("");
+
+            Utils.addToFavourite(ctx, contentList.get(position).getId(), favouriteRequest, new OnFavouriteClickListener() {
+                @Override
+                public void onSuccess(boolean isSuccess, String message) {
+                    Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+                    if (isSuccess) {
+                        contentList.get(position).setIsFavourited(!contentList.get(position).getIsFavourited());
+                        notifyItemChanged(position);
+                    }
                 }
-            }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(ctx, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

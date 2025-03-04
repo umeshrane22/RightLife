@@ -118,7 +118,7 @@ public class RLRecentlyWatchedListAdapter extends RecyclerView.Adapter<RLRecentl
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView,imgtag,favorite_image,img_iconview;
+        ImageView imageView,imgtag;
         TextView textView,tv_modulename,tv_category,tv_artistname,tvTimeLeft;
 
         public ViewHolder(View itemView) {
@@ -130,17 +130,6 @@ public class RLRecentlyWatchedListAdapter extends RecyclerView.Adapter<RLRecentl
             tv_artistname = itemView.findViewById(R.id.tv_artistname);
             tvTimeLeft = itemView.findViewById(R.id.tvTimeLeft);
             imgtag = itemView.findViewById(R.id.imgtag);
-
-        /*    img_iconview = itemView.findViewById(R.id.img_iconview);
-            favorite_image = itemView.findViewById(R.id.favorite_image);
-            favorite_image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(itemView.getContext(), "position - "+getAdapterPosition(), Toast.LENGTH_SHORT).show();
-                }
-            });*/
-
-            //img_iconview.setImageResource(R.drawable.ic_read_category);
         }
     }
 }

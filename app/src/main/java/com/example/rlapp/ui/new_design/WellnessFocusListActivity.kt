@@ -31,7 +31,10 @@ class WellnessFocusListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wellness_focus_list)
 
-        val header = intent.getStringExtra("WellnessFocus")
+        var header = intent.getStringExtra("WellnessFocus")
+        if (header.isNullOrEmpty()) {
+            header = SharedPreferenceManager.getInstance(this).selectedWellnessFocus
+        }
         val tvHeader = findViewById<TextView>(R.id.tv_header)
         val rvWellnessFocusList = findViewById<RecyclerView>(R.id.rv_wellness_focus_list)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
@@ -42,7 +45,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
             "SleepRight" -> imgHeader.setImageResource(R.drawable.header_sleep_right)
             "EatRight" -> imgHeader.setImageResource(R.drawable.header_eat_right)
             else
-                -> imgHeader.setImageResource(R.drawable.header_think_right)
+            -> imgHeader.setImageResource(R.drawable.header_think_right)
         }
         tvHeader.text = header
 
@@ -83,6 +86,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
             val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             intent.putExtra("SelectedTopic", selectedWellnessFocus)
+            SharedPreferenceManager.getInstance(this).setWellnessFocusTopics(selectedWellnessFocus)
             startActivity(intent)
         }
     }

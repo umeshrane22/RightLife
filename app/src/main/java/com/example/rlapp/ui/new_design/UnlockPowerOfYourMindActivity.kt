@@ -25,7 +25,7 @@ import retrofit2.Response
 
 class UnlockPowerOfYourMindActivity : AppCompatActivity() {
 
-    private val selectedWellnessFocus = ArrayList<ModuleTopic>()
+    private var selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var unlockPowerAdapter: UnlockPowerAdapter
     private lateinit var tvUnlockPower: TextView
     private val unlockPowerList = ArrayList<OnboardingModuleResultDataList>()
@@ -34,9 +34,15 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_unlock_power_of_your_mind)
 
-        val header = intent.getStringExtra("WellnessFocus")
-        @Suppress("DEPRECATION")
-        selectedWellnessFocus.addAll(intent.getSerializableExtra("SelectedTopic") as ArrayList<ModuleTopic>)
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        var header = sharedPreferenceManager.selectedWellnessFocus
+        selectedWellnessFocus = sharedPreferenceManager.wellnessFocusTopics
+
+        if (selectedWellnessFocus.isEmpty()) {
+            header = intent.getStringExtra("WellnessFocus")
+            @Suppress("DEPRECATION")
+            selectedWellnessFocus.addAll(intent.getSerializableExtra("SelectedTopic") as ArrayList<ModuleTopic>)
+        }
 
         val tvHeader = findViewById<TextView>(R.id.tv_header)
         tvUnlockPower = findViewById(R.id.tv_unlock_power)
@@ -83,6 +89,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         btnContinue.setOnClickListener {
             val intent = Intent(this, ThirdFillerScreenActivity::class.java)
             intent.putExtra("WellnessFocus", header)
+            sharedPreferenceManager.unLockPower = true
             startActivity(intent)
             //finish()
         }
