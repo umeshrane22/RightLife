@@ -25,6 +25,9 @@ import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
 import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.utility.Utils;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
+import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
 
 import java.util.List;
