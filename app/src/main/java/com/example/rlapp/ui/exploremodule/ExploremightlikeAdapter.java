@@ -20,6 +20,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.exploremodules.Suggested;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.ui.Wellness.MoreContentDetailViewActivity;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
 import com.example.rlapp.ui.utility.Utils;
