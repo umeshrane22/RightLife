@@ -28,12 +28,17 @@ class YourInterestActivity : AppCompatActivity() {
     private val interestList = ArrayList<InterestDataList>()
     private val selectedInterest = ArrayList<InterestDataList>()
     private lateinit var btnSaveInterest: Button
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_your_interest)
 
-        val header = intent.getStringExtra("WellnessFocus")
+        var header = intent.getStringExtra("WellnessFocus")
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        if (header.isNullOrEmpty()){
+            header = sharedPreferenceManager.selectedWellnessFocus
+        }
 
         val recyclerView = findViewById<RecyclerView>(R.id.rv_your_interest)
         btnSaveInterest = findViewById(R.id.btn_save_interest)
@@ -66,6 +71,11 @@ class YourInterestActivity : AppCompatActivity() {
             val saveUserInterestRequest = SaveUserInterestRequest()
             saveUserInterestRequest.intrestId = ids
             saveUserInterest(saveUserInterestRequest, header!!)
+        }
+
+        if (sharedPreferenceManager.savedInterest.isNotEmpty()){
+            selectedInterest.addAll(sharedPreferenceManager.savedInterest)
+            uiChangesOnSaveInterest(header!!)
         }
     }
 
@@ -122,6 +132,7 @@ class YourInterestActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
                     uiChangesOnSaveInterest(header = header)
+                    sharedPreferenceManager.setSavedInterest(selectedInterest)
 
                 } else {
                     Toast.makeText(
@@ -164,6 +175,7 @@ class YourInterestActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(this, PersonalisationActivity::class.java)
             intent.putExtra("WellnessFocus", header)
+            sharedPreferenceManager.interest = true
             startActivity(intent)
             //finish()
         }, 1000)

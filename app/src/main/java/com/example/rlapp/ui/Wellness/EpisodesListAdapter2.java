@@ -18,6 +18,9 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.apimodel.Episodes.EpisodeModel;
 import com.example.rlapp.apimodel.Episodes.EpisodeResponseModel;
 import com.example.rlapp.apimodel.morelikecontent.Like;
+import com.example.rlapp.ui.therledit.FavouriteRequest;
+import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.example.rlapp.ui.utility.Utils;
 
 import java.util.List;
 
@@ -64,6 +67,33 @@ public class EpisodesListAdapter2 extends RecyclerView.Adapter<EpisodesListAdapt
             public void onClick(View view) {
                 //Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             }
+        });
+
+        if (contentList.get(position).isFavourited()) {
+            holder.favorite_image.setImageResource(R.drawable.favstarsolid);
+        } else {
+            holder.favorite_image.setImageResource(R.drawable.unfavorite);
+        }
+
+        holder.favorite_image.setOnClickListener(view -> {
+            FavouriteRequest favouriteRequest = new FavouriteRequest();
+            favouriteRequest.setFavourite(!contentList.get(position).isFavourited());
+            favouriteRequest.setEpisodeId(contentList.get(position).get_id());
+            Utils.addToFavourite(ctx, contentList.get(position).getContentId(), favouriteRequest, new OnFavouriteClickListener() {
+                @Override
+                public void onSuccess(boolean isSuccess, String message) {
+                    Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+                    if (isSuccess) {
+                        contentList.get(position).setFavourited(!contentList.get(position).isFavourited());
+                        notifyItemChanged(position);
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(ctx, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

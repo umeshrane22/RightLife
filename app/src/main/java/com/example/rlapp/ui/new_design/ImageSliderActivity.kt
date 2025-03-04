@@ -17,8 +17,10 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ui.HomeActivity
 import com.example.rlapp.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.example.rlapp.ui.new_design.pojo.GoogleSignInRequest
+import com.example.rlapp.ui.new_design.pojo.LoggedInUser
 import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
@@ -30,7 +32,6 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.zhpan.bannerview.indicator.DrawableIndicator
-import com.zhpan.indicator.IndicatorView
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
 import kotlinx.coroutines.CoroutineScope
@@ -52,6 +53,7 @@ class ImageSliderActivity : AppCompatActivity() {
     private val timeDurationForImageSlider = 2000L
     private lateinit var displayName: String
     private lateinit var mEmail: String
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     // List of images (replace with your own images)
     private val images = listOf(
@@ -85,6 +87,8 @@ class ImageSliderActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tabLayout)
 
         viewPager.adapter = ImageSliderAdapter(this, images, headers, descriptions)
+
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         // Set up the TabLayoutMediator to sync dots with the images
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -121,8 +125,6 @@ class ImageSliderActivity : AppCompatActivity() {
             setIndicatorStyle(IndicatorStyle.ROUND_RECT)
             setupWithViewPager(viewPager)
         }
-
-
 
 
         // Set up the auto-slide functionality
@@ -314,11 +316,27 @@ class ImageSliderActivity : AppCompatActivity() {
                     saveAccessToken(apiResponse?.accessToken!!)
                     Handler(Looper.getMainLooper()).postDelayed({
                         // Send username to next Activity
-                        val intent =
-                            Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
-                        intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
-                        intent.putExtra("EMAIL", mEmail)
-                        startActivity(intent)
+                        var loggedInUser: LoggedInUser? = null
+                        for (user in sharedPreferenceManager.loggedUserList) {
+                            if (mEmail == user.email) {
+                                loggedInUser = user
+                            }
+                        }
+                        if (loggedInUser?.isOnboardingComplete == true) {
+                            val intent = Intent(this@ImageSliderActivity, HomeActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            val intent =
+                                Intent(this@ImageSliderActivity, CreateUsernameActivity::class.java)
+                            intent.putExtra("USERNAME_KEY", displayName) // Add the username as an extra
+                            intent.putExtra("EMAIL", mEmail)
+                            val loggedInUsers = sharedPreferenceManager.loggedUserList
+                            loggedInUsers.add(LoggedInUser(email = mEmail))
+                            sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
+                            sharedPreferenceManager.email = mEmail
+                            sharedPreferenceManager.displayName = displayName
+                            startActivity(intent)
+                        }
                         finishAffinity()
 
                     }, 1000)

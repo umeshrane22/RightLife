@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rlapp.R
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class PersonalisationActivity : AppCompatActivity() {
 
@@ -13,7 +14,11 @@ class PersonalisationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_personalisation)
 
-        val header = intent.getStringExtra("WellnessFocus")
+        var header = intent.getStringExtra("WellnessFocus")
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        if (header.isNullOrEmpty()){
+            header = sharedPreferenceManager.selectedWellnessFocus
+        }
 
         val tvSkip = findViewById<TextView>(R.id.tv_skip)
         tvSkip.setOnClickListener {
@@ -26,6 +31,7 @@ class PersonalisationActivity : AppCompatActivity() {
         btnAllowPersonalisation.setOnClickListener {
             val intent = Intent(this, SyncNowActivity::class.java)
             intent.putExtra("WellnessFocus", header)
+            sharedPreferenceManager.allowPersonalization = true
             startActivity(intent)
         }
     }

@@ -121,10 +121,14 @@ class TargetWeightSelectionFragment : Fragment() {
 
 
         val stringArray = (currentWeight).split(" ")
-        if (stringArray[1].uppercase() == "LBS" || stringArray[2].uppercase() == "LBS") {
-            swithch.isChecked = true
-            selectedLabel = " lbs"
-            selectedWeight = ConversionUtils.convertLbsToKgs("50")
+        try {
+            if (stringArray[1].uppercase() == "LBS" || stringArray[2].uppercase() == "LBS") {
+                swithch.isChecked = true
+                selectedLabel = " lbs"
+                selectedWeight = ConversionUtils.convertLbsToKgs("50")
+            }
+        }catch (e: IndexOutOfBoundsException){
+            e.printStackTrace()
         }
 
         selectedWeight += selectedLabel

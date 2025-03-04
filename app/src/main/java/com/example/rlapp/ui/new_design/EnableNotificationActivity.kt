@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.rlapp.R
+import com.example.rlapp.ui.new_design.pojo.LoggedInUser
+import com.example.rlapp.ui.utility.SharedPreferenceManager
 
 class EnableNotificationActivity : AppCompatActivity() {
 
@@ -14,7 +16,28 @@ class EnableNotificationActivity : AppCompatActivity() {
 
         val btnEnableNotification = findViewById<Button>(R.id.btn_enable_notification)
 
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+
+
+
         btnEnableNotification.setOnClickListener {
+            var loggedInUsers = sharedPreferenceManager.loggedUserList
+
+            var loggedInUser: LoggedInUser? = null
+            for (user in loggedInUsers) {
+                if (sharedPreferenceManager.email == user.email) {
+                    loggedInUsers.remove(user)
+                    user.isOnboardingComplete = true
+                    loggedInUser = user
+                }
+            }
+
+            if (loggedInUser != null){
+                loggedInUsers.add(loggedInUser)
+                sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
+            }
+            sharedPreferenceManager.loggedUserList
+            sharedPreferenceManager.clearOnboardingData()
             startActivity(Intent(this, OnboardingFinalActivity::class.java))
         }
     }
