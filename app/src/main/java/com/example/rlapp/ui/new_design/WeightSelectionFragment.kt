@@ -82,11 +82,6 @@ class WeightSelectionFragment : Fragment() {
 
 
         swithch.setOnCheckedChangeListener { buttonView, isChecked ->
-            /*if (selectedWeight.isNullOrEmpty()) {
-                if (isChecked) setLbsValue()
-                else setKgsValue()
-                return@setOnCheckedChangeListener
-            }*/
             val w = selectedWeight.split(" ")
             if (isChecked) {
                 selectedLabel = " lbs"

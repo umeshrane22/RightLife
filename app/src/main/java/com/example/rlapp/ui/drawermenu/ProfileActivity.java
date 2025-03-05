@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
                 Intent data = result.getData();
                 assert data != null;
                 Bitmap photo = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-               // ivProfileImage.setImageBitmap(photo);
+                // ivProfileImage.setImageBitmap(photo);
                 Glide.with(this)
                         .load(photo)  // Pass the Bitmap object here
                         .placeholder(R.drawable.profile_man) // Optional placeholder
@@ -122,7 +122,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvTakePhoto.setOnClickListener(view -> {
             requestCode = CAMERA_REQUEST;
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                   // ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                // ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 checkPermissions();
             } else {
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -215,6 +215,9 @@ public class ProfileActivity extends AppCompatActivity {
                 if (strings.length > 1) {
                     edtInch.setText(strings[1]);
                 }
+                edtHeightCms.setVisibility(View.GONE);
+                llHeightFtInch.setVisibility(View.VISIBLE);
+                tvHeightSpinner.setText(getString(R.string.str_ft_inch));
             }
         }
 
@@ -492,7 +495,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
             // Check if the app should show an explanation for the permission request
             ActivityCompat.requestPermissions(
