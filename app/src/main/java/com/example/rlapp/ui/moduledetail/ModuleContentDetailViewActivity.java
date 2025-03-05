@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -15,6 +17,9 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -32,6 +37,7 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.Episodes.EpisodeModel;
 import com.example.rlapp.apimodel.Episodes.EpisodeResponseModel;
+import com.example.rlapp.apimodel.exploremodules.sleepsounds.Episode;
 import com.example.rlapp.apimodel.modulecontentdetails.ModuleContentDetail;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.morelikecontent.Like;
@@ -39,11 +45,13 @@ import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
 import com.example.rlapp.ui.Wellness.EpisodesListAdapter;
 import com.example.rlapp.ui.Wellness.EpisodesListAdapter2;
+import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
 import com.example.rlapp.ui.therledit.RLEditDetailMoreAdapter;
 import com.example.rlapp.ui.therledit.ViewAllActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.Utils;
+import com.example.rlapp.ui.utility.svgloader.GlideApp;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -54,8 +62,10 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -85,10 +95,27 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
     private TextView tv_artistname, tvViewAll;
     private boolean isFullscreen = false;
 
+    // Music player
+    private MediaPlayer mediaPlayer;
+    private ImageButton playPauseButtonmusic;
+    private boolean isPlayingmusic = false;
+
+    private SeekBar seekBar;
+    private ProgressBar circularProgressBar;
+    private TextView currentTime;
+    private Handler handler = new Handler();
+    private RelativeLayout rl_player;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wellness_detail_layout);
+
+        // for music player new
+        rl_player = findViewById(R.id.rl_player);
+        playPauseButtonmusic = findViewById(R.id.playPauseButton);
+
+
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
         txt_episodes_section = findViewById(R.id.txt_episodes_section);
@@ -173,6 +200,9 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
             }
         });
 
+        //--- for Audio content  
+        
+        
     }
 
     private void setModuleColor(TextView txtDesc, String moduleId) {
@@ -197,7 +227,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
         tv_header_htw.setText(responseObj.getData().getTitle());
 //if (false)
-        if (!responseObj.getData().getContentType().equalsIgnoreCase("VIDEO")) {
+        if (!responseObj.getData().getContentType().equalsIgnoreCase("VIDEO") && !responseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
             img_contentview.setVisibility(View.VISIBLE);
             playerView.setVisibility(View.GONE);
             Glide.with(getApplicationContext())
@@ -207,6 +237,8 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
 
+        } else  if (responseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
+            setupAudioContent(responseObj);
         } else {
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
 
@@ -241,6 +273,10 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         String videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
         Uri videoUri = Uri.parse(videoUrl);
 
+    }
+
+    private void setupAudioContent(ModuleContentDetail responseObj) {
+        setupMusicPlayer("");
     }
 
     private void showExitDialog() {
@@ -577,6 +613,114 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
             player = null;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        handler.removeCallbacks(updateProgress);
+    }
+
+    private void setupMusicPlayer(String S) {
+        seekBar = findViewById(R.id.seekBar);
+        circularProgressBar = findViewById(R.id.circularProgressBar);
+        // Set progress to 50%
+        currentTime = findViewById(R.id.currentTime);
+        ImageView backgroundImage = findViewById(R.id.backgroundImage);
+        rl_player.setVisibility(View.VISIBLE);
+        String imageUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/e9c5598c82c85de5903195f549a26210.jpg";
+
+        GlideApp.with(ModuleContentDetailViewActivity.this)
+                .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
+                .error(R.drawable.img_logintop)
+                .into(backgroundImage);
+
+
+        String previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";
+        String url = ApiClient.CDN_URL_QA + previewUrl; //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        Log.d("API Response", "Sleep aid URL: " + url);
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(url);
+            mediaPlayer.prepareAsync();  // Load asynchronously
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show();
+        }
+
+        mediaPlayer.setOnPreparedListener(mp -> {
+            mediaPlayer.start();
+            seekBar.setMax(mediaPlayer.getDuration());
+            isPlaying = true;
+            playPauseButtonmusic.setImageResource(R.drawable.ic_sound_pause);
+            // Update progress every second
+            handler.post(updateProgress);
+        });
+        // Play/Pause Button Listener
+        playPauseButtonmusic.setOnClickListener(v -> {
+            if (isPlaying) {
+                mediaPlayer.pause();
+                playPauseButtonmusic.setImageResource(R.drawable.ic_sound_play);
+                handler.removeCallbacks(updateProgress);
+            } else {
+                mediaPlayer.start();
+                playPauseButtonmusic.setImageResource(R.drawable.ic_sound_pause);
+                //updateProgress();
+                handler.post(updateProgress);
+            }
+            isPlaying = !isPlaying;
+        });
+        mediaPlayer.setOnCompletionListener(mp -> {
+            Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show();
+            handler.removeCallbacks(updateProgress);
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    mediaPlayer.seekTo(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+    }
+
+    // Update progress in SeekBar and Circular Progress Bar
+    private final Runnable updateProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                int totalDuration = mediaPlayer.getDuration();
+
+                // Update seek bar and progress bar
+                seekBar.setProgress(currentPosition);
+                // Update Circular ProgressBar
+                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
+                circularProgressBar.setProgress(progressPercent);
+
+
+                // Update time display
+                String timeFormatted = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
+                currentTime.setText(timeFormatted);
+
+                // Update every second
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
+
 
 
 }

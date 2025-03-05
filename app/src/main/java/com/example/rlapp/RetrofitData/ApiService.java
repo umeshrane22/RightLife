@@ -823,6 +823,12 @@ public interface ApiService {
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Body ViewCountRequest request);
 
+
+    @Headers("Content-Type: application/json") // Set content-type as application/json
+    @GET("content/{id}")
+        // Thought of the details content
+    Call<ResponseBody> getContentDetailpage(
+            @Header("Authorization") String authToken, @Path("id") String id);
 }
 
 

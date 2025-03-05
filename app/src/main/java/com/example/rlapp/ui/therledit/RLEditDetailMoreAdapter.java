@@ -78,6 +78,7 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             holder.img_iconview.setImageResource(R.drawable.play);
             holder.item_type_text.setVisibility(View.VISIBLE);
             holder.item_type_text.setText(". 0 . videos");
+            holder.item_type_text.setText(contentList.get(position).getEpisodeCount()+" . "+contentList.get(position).getSeriesType());
         } else {
             holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
             holder.item_type_text.setVisibility(View.GONE);

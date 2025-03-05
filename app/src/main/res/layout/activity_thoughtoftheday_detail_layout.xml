@@ -41,7 +41,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/menucategory" />
+            android:src="@drawable/share" />
     </RelativeLayout>
 
     <ScrollView
@@ -61,7 +61,6 @@
                 android:id="@+id/rl_player"
                 android:layout_width="match_parent"
                 android:layout_height="450dp"
-                android:layout_marginTop="50dp"
                 android:visibility="gone">
 
                 <!-- Full-Screen Background Image -->
@@ -87,7 +86,7 @@
 
                 <!-- Play/Pause Button in Center -->
                 <ImageButton
-                    android:id="@+id/playPauseButton"
+                    android:id="@+id/playPauseButtonMusic"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:layout_centerInParent="true"
@@ -125,7 +124,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/rl_video_player_main"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_height="wrap_content">
 
                 <!-- ExoPlayer View with controls -->
@@ -220,44 +219,6 @@
             </LinearLayout>
 
 
-            <!--Episode Sections-->
-
-            <TextView
-                android:id="@+id/txt_episodes_section"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Episodes"
-                android:textSize="16sp"
-                android:layout_marginTop="16dp"
-                android:layout_marginStart="16dp"
-                android:fontFamily="@font/dmsans_bold"
-                android:textColor="@android:color/black" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="8dp">
-
-                <!-- Example Card Items -->
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_view_episode"
-                        android:layout_width="match_parent"
-                        android:layout_marginBottom="30dp"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:layout_centerHorizontal="true" />
-                </RelativeLayout>
-
-                <!-- Add more cards as necessary -->
-            </LinearLayout>
-
 
             <!-- More Like This Section -->
             <RelativeLayout
@@ -265,6 +226,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:id="@+id/tv_more_like_this"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/dmsans_bold"
@@ -272,6 +234,7 @@
                     android:text="More Like This"
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     android:layout_alignParentStart="true" />
 
                 <TextView

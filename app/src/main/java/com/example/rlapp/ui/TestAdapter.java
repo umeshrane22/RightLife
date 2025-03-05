@@ -2,6 +2,7 @@ package com.example.rlapp.ui;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,9 @@ import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
 import com.example.rlapp.apimodel.affirmations.SortedService;
 import com.example.rlapp.apimodel.affirmations.updateAffirmation.AffirmationRequest;
+import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
+import com.example.rlapp.ui.therledit.ArtistsDetailsActivity;
+import com.example.rlapp.ui.thoughtoftheday.ThoughtOfTheDayDetailActivity;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.google.gson.Gson;
@@ -84,19 +88,23 @@ public class TestAdapter extends BaseBannerAdapter<SortedService> {
                 button.setText(data.getConsumedCta());
                 button.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_bg_button_affirm));
                 button.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_bg_button_affirmed));
-
+                button.setEnabled(false);
             }else {
                 button.setText(data.getCtaName());
                 button.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_bg_button_affirmed));
                 button.setBackgroundColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.color_bg_button_affirm));
+                button.setEnabled(true);
             }
             //button.setText(data.getCtaName());
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(holder.itemView.getContext(), "Affirmation Clicked", Toast.LENGTH_SHORT).show();
-                    callAffirmationApi(holder.itemView.getContext(),data.getConsumedCta(), data.getId(), SharedPreferenceManager.getInstance(holder.itemView.getContext()).getUserId());
 
+                   // callAffirmationApi(holder.itemView.getContext(),data.getConsumedCta(), data.getId(), SharedPreferenceManager.getInstance(holder.itemView.getContext()).getUserId());
+                    Intent intent = new Intent(holder.itemView.getContext(), ThoughtOfTheDayDetailActivity.class);
+                    intent.putExtra("affirmationId", data.getId());
+                    intent.putExtra("contentId", data.getContentId());
+                    holder.itemView.getContext().startActivity(intent);
                 }
             });
         }
