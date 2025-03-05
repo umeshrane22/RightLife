@@ -84,11 +84,16 @@ class TargetWeightSelectionFragment : Fragment() {
 
 
         val weight = currentWeight?.split(" ")
-        tvCurrentWeight.text = weight?.get(0) ?: "0"
-        if (weight?.size!! > 2)
-            tvLabel.text = weight[2]
-        else
-            tvLabel.text = weight[1]
+        if (weight != null) {
+            tvCurrentWeight.text = weight[0] ?: "0"
+            if (weight.size > 2) {
+                tvLabel.text = weight[2]
+                selectedLabel = weight[2]
+            } else {
+                tvLabel.text = weight[1]
+                selectedLabel = weight[1]
+            }
+        }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
@@ -120,21 +125,18 @@ class TargetWeightSelectionFragment : Fragment() {
         recyclerView.adapter = adapter
 
 
-        val stringArray = (currentWeight).split(" ")
-        try {
-            if (stringArray[1].uppercase() == "LBS" || stringArray[2].uppercase() == "LBS") {
-                swithch.isChecked = true
-                selectedLabel = " lbs"
-                selectedWeight = ConversionUtils.convertLbsToKgs("50")
+        val stringArray = (currentWeight)?.split(" ")
+        if (stringArray != null) {
+            try {
+                if (stringArray[1].uppercase() == "LBS" || stringArray[2].uppercase() == "LBS") {
+                    swithch.isChecked = true
+                    selectedLabel = " lbs"
+                    selectedWeight = ConversionUtils.convertLbsToKgs("50")
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                e.printStackTrace()
             }
-        }catch (e: IndexOutOfBoundsException){
-            e.printStackTrace()
         }
-
-        selectedWeight += selectedLabel
-        tvSelectedWeight.text = selectedWeight
-
-
 
         swithch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (selectedWeight.isNullOrEmpty()) {

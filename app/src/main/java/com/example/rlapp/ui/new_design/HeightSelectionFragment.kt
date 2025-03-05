@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
@@ -85,14 +86,6 @@ class HeightSelectionFragment : Fragment() {
 
         val switch = view.findViewById<SwitchCompat>(R.id.switch_height_metric)
         switch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (selectedHeight.isNullOrEmpty()) {
-                if (isChecked) {
-                    setCms()
-                } else {
-                    setFtIn()
-                }
-                return@setOnCheckedChangeListener
-            }
             if (isChecked) {
                 val h = selectedHeight.split(" ")
                 val feet = "${h[0]}.${h[2]}"
@@ -118,17 +111,19 @@ class HeightSelectionFragment : Fragment() {
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-            onboardingQuestionRequest.height = selectedHeight
-            SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            if (validateInput()) {
+                val onboardingQuestionRequest =
+                    SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+                onboardingQuestionRequest.height = selectedHeight
+                SharedPreferenceManager.getInstance(requireContext())
+                    .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
-            cardViewSelection.visibility = GONE
-            llSelectedHeight.visibility = VISIBLE
-            tvSelectedHeight.text = selectedHeight
+                cardViewSelection.visibility = GONE
+                llSelectedHeight.visibility = VISIBLE
+                tvSelectedHeight.text = selectedHeight
 
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            }
         }
 
 
@@ -190,12 +185,45 @@ class HeightSelectionFragment : Fragment() {
 
         // Scroll to the center position after layout is measured
         rulerView.post {
-            val itemCount = rulerView.adapter?.itemCount ?: 0
-            val centerPosition = itemCount / 2
-            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
+            val h = selectedHeight.split(" ")
+            val feet = "${h[0]}.${h[2]}"
+            layoutManager.scrollToPositionWithOffset(floor(feet.toDouble()).toInt() * 12, 0)
         }
 
         return view
+    }
+
+    private fun validateInput(): Boolean {
+        var returnValue: Boolean
+        if (selectedLabel == " feet") {
+            val h = selectedHeight.split(" ")
+            val feet = "${h[0]}.${h[2]}".toDouble()
+            if (feet in 4.0..7.0) {
+                returnValue = true
+            } else {
+                returnValue = false
+                Toast.makeText(
+                    requireActivity(),
+                    "Height should be in between 4 feet to 7 feet",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            val w = selectedHeight.split(" ")
+            val height = w[0].toDouble()
+            if (height in 120.0..220.0) {
+                returnValue = true
+            } else {
+                returnValue = false
+                Toast.makeText(
+                    requireActivity(),
+                    "Height should be in between 120 feet to 220 feet",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        }
+        return returnValue
     }
 
     private fun setCms() {
