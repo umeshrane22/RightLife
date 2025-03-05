@@ -834,6 +834,7 @@
                                 android:orientation="horizontal">
 
                                 <LinearLayout
+                                    android:id="@+id/ll_rlpage_phq9"
                                     android:layout_width="match_parent"
                                     android:layout_height="150dp"
                                     android:layout_margin="5dp"
@@ -880,6 +881,7 @@
                                 </LinearLayout>
 
                                 <LinearLayout
+                                    android:id="@+id/ll_rlpage_gad7"
                                     android:layout_width="match_parent"
                                     android:layout_height="150dp"
                                     android:layout_margin="5dp"
@@ -934,6 +936,7 @@
                                 android:orientation="horizontal">
 
                                 <LinearLayout
+                                    android:id="@+id/ll_rlpage_dass21"
                                     android:layout_width="match_parent"
                                     android:layout_height="150dp"
                                     android:layout_margin="5dp"
@@ -966,7 +969,7 @@
                                             android:fontFamily="@font/merriweather_bold"
                                             android:gravity="center"
                                             android:padding="5dp"
-                                            android:text="DASS-2"
+                                            android:text="DASS-21"
                                             android:textAlignment="center"
                                             android:textColor="#00553A"
                                             android:textSize="@dimen/textsize_large" />
@@ -981,6 +984,7 @@
                                 </LinearLayout>
 
                                 <LinearLayout
+                                    android:id="@+id/ll_rlpage_ohq"
                                     android:layout_width="match_parent"
                                     android:layout_height="150dp"
                                     android:layout_margin="5dp"

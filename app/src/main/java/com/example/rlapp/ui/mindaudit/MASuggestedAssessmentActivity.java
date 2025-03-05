@@ -44,6 +44,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
     private Assessments assessments;
     private ArrayList<String> suggestedAssessmentString = new ArrayList<>();
     private ArrayList<String> allAssessments = new ArrayList<>();
+    private String selectedAssessment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,66 +61,73 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
             showExitDialog();
         });
 
-        getCurated();
-
         rvSuggestedAssessment = findViewById(R.id.rv_suggested_assessment);
         rvAllAssessment = findViewById(R.id.rv_all_assessment);
         rvCurated = findViewById(R.id.rv_curated);
         tv_curated = findViewById(R.id.tv_curated);
 
         assessments = (Assessments) getIntent().getSerializableExtra("AssessmentData");
+        selectedAssessment = getIntent().getStringExtra("SelectedAssessment");
 
-        SuggestedAssessments suggestedAssessments = assessments.getSuggestedAssessments();
-
-        rvSuggestedAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvAllAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        rvCurated.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-        suggestedAssessmentAdapter = new SuggestedAssessmentAdapter(this, suggestedAssessmentString, this::showDisclaimerDialog);
-        rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter);
-        rvSuggestedAssessment.scrollToPosition(0);
-
-        AllAssessment assessment = assessments.getAllAssessment();
-
-        if (assessment.getDass21() != null) {
-            allAssessments.add(assessment.getDass21());
+        if (selectedAssessment != null) {
+            showDisclaimerDialog(selectedAssessment);
         } else {
-            suggestedAssessmentString.add("DASS-21");
+            getCurated();
         }
 
-        if (assessment.getSleepAudit() != null) {
-            allAssessments.add(assessment.getSleepAudit());
-        } else {
-            suggestedAssessmentString.add("Sleep Audit");
-        }
+        if (assessments != null) {
+            SuggestedAssessments suggestedAssessments = assessments.getSuggestedAssessments();
 
-        if (assessment.getGad7() != null) {
-            allAssessments.add(assessment.getGad7());
-        } else {
-            suggestedAssessmentString.add("GAD-7");
-        }
-        if (assessment.getOhq() != null) {
-            allAssessments.add(assessment.getOhq());
-        } else {
-            suggestedAssessmentString.add("OHQ");
-        }
+            rvSuggestedAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rvAllAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            rvCurated.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        if (assessment.getCas() != null) {
-            allAssessments.add(assessment.getCas());
-        } else {
-            suggestedAssessmentString.add("CAS");
+            suggestedAssessmentAdapter = new SuggestedAssessmentAdapter(this, suggestedAssessmentString, this::showDisclaimerDialog);
+            rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter);
+            rvSuggestedAssessment.scrollToPosition(0);
+
+            AllAssessment assessment = assessments.getAllAssessment();
+
+            if (assessment.getDass21() != null) {
+                allAssessments.add(assessment.getDass21());
+            } else {
+                suggestedAssessmentString.add("DASS-21");
+            }
+
+            if (assessment.getSleepAudit() != null) {
+                allAssessments.add(assessment.getSleepAudit());
+            } else {
+                suggestedAssessmentString.add("Sleep Audit");
+            }
+
+            if (assessment.getGad7() != null) {
+                allAssessments.add(assessment.getGad7());
+            } else {
+                suggestedAssessmentString.add("GAD-7");
+            }
+            if (assessment.getOhq() != null) {
+                allAssessments.add(assessment.getOhq());
+            } else {
+                suggestedAssessmentString.add("OHQ");
+            }
+
+            if (assessment.getCas() != null) {
+                allAssessments.add(assessment.getCas());
+            } else {
+                suggestedAssessmentString.add("CAS");
+            }
+
+            if (assessment.getPhq9() != null) {
+                allAssessments.add(assessment.getPhq9());
+            } else {
+                suggestedAssessmentString.add("PHQ-9");
+            }
+
+
+            allAssessmentAdapter = new AllAssessmentAdapter(this, allAssessments, this::showDisclaimerDialog);
+            rvAllAssessment.setAdapter(allAssessmentAdapter);
+            rvAllAssessment.scrollToPosition(0);
         }
-
-        if (assessment.getPhq9() != null) {
-            allAssessments.add(assessment.getPhq9());
-        } else {
-            suggestedAssessmentString.add("PHQ-9");
-        }
-
-
-        allAssessmentAdapter = new AllAssessmentAdapter(this, allAssessments, this::showDisclaimerDialog);
-        rvAllAssessment.setAdapter(allAssessmentAdapter);
-        rvAllAssessment.scrollToPosition(0);
 
     }
 
@@ -140,10 +148,13 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
         TextView tvItem3 = dialog.findViewById(R.id.item_text3);
         TextView tvHeader = dialog.findViewById(R.id.tv_selected_assessment);
         tvHeader.setText(header);
-        setDialogText(tvItem1,tvItem2,tvItem3,header);
+        setDialogText(tvItem1, tvItem2, tvItem3, header);
         ImageView imgClose = dialog.findViewById(R.id.ic_close_dialog);
         imgClose.setOnClickListener(view -> {
             dialog.dismiss();
+            if (selectedAssessment != null) {
+                finish();
+            }
         });
 
         btnTakeAssessment.setOnClickListener(view -> {
@@ -156,7 +167,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
     }
 
     private void setDialogText(TextView tvItem1, TextView tvItem2, TextView tvItem3, String header) {
-        switch (header){
+        switch (header) {
             case "DASS-21": {
                 tvItem1.setText(AppConstants.dass21FirstPara);
                 tvItem2.setText(AppConstants.dass21SecondPara);

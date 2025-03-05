@@ -39,7 +39,6 @@ import com.example.rlapp.apimodel.rlpagemodels.uniquelyyours.UniquelyYoursRespon
 import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.HomeActivity;
-import com.example.rlapp.ui.drawermenu.PreferencesLayer2Activity;
 import com.example.rlapp.ui.drawermenu.ProfileActivity;
 import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
@@ -48,6 +47,7 @@ import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.jounal.JournalingListActivity;
 import com.example.rlapp.ui.mindaudit.AllAssessment;
 import com.example.rlapp.ui.mindaudit.Assessments;
+import com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.utility.DateTimeUtils;
@@ -69,15 +69,15 @@ import retrofit2.Response;
 
 public class RLPageActivity extends AppCompatActivity implements View.OnClickListener {
 
+    LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
+            ll_journal, ll_affirmations, ll_sleepsounds;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private RecyclerView recyclerViewContinue, recyclerViewrecent;
     private FloatingActionButton add_fab;
-    private RelativeLayout rl_verify_view, layout_rl_journalarrow,rllayout_button_completeprofile;
-    LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
-            ll_journal, ll_affirmations, ll_sleepsounds;
+    private RelativeLayout rl_verify_view, layout_rl_journalarrow, rllayout_button_completeprofile;
     private ImageView img_homemenu, img_healthmenu, quicklinkmenu, iv_yellow_exclamation;
     private TextView txt_healthmenu, txt_recently_view_header, txt_continue_view_header;
-    private CardView cardview_healthcam, cardview_healthcam_new_user, cardview_mindaudit,cardview_voicescan;
+    private CardView cardview_healthcam, cardview_healthcam_new_user, cardview_mindaudit, cardview_voicescan;
     private TextView txtuserName, txt_rldays, txt_well_streak_count, txt_next_date, txt_mindaudit_days_count;
     private Button btn_continue_healthcam, btn_recheck_health, btn_rerecord_voicescan;
     private TextView tv_title_journal, tv_journal_desc, txt_journal_date;
@@ -91,6 +91,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private CardView cardview_uniquely;
     // voice Scan
     private TextView txt_voicescore_rlpage;
+    private LinearLayout ll_rlpage_phq9, ll_rlpage_gad7, ll_rlpage_ohq, ll_rlpage_dass21;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +128,16 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         ll_sleepsounds = findViewById(R.id.ll_sleepsounds);
         ll_sleepsounds.setOnClickListener(this);
         bottom_sheet = findViewById(R.id.bottom_sheet);
+
+        ll_rlpage_phq9 = findViewById(R.id.ll_rlpage_phq9);
+        ll_rlpage_gad7 = findViewById(R.id.ll_rlpage_gad7);
+        ll_rlpage_ohq = findViewById(R.id.ll_rlpage_ohq);
+        ll_rlpage_dass21 = findViewById(R.id.ll_rlpage_dass21);
+
+        ll_rlpage_phq9.setOnClickListener(this);
+        ll_rlpage_gad7.setOnClickListener(this);
+        ll_rlpage_ohq.setOnClickListener(this);
+        ll_rlpage_dass21.setOnClickListener(this);
 
         // Setup ui
         btn_continue_healthcam = findViewById(R.id.btn_continue_healthcam);
@@ -502,7 +513,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getVoiceScanCheckInData(accessToken,true,  0,  0);
+        Call<ResponseBody> call = apiService.getVoiceScanCheckInData(accessToken, true, 0, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -514,9 +525,9 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                         Log.d("Response Body", " My RL Mind Audit Next - " + jsonString);
                         Gson gson = new Gson();
                         RLPageVoiceScanResultResponse rlPageVoiceScanResultResponse = gson.fromJson(jsonString, RLPageVoiceScanResultResponse.class);
-                        if (rlPageVoiceScanResultResponse.getData()!=null) {
+                        if (rlPageVoiceScanResultResponse.getData() != null) {
                             HandleVoiceScanCardUI(rlPageVoiceScanResultResponse);
-                        }else {
+                        } else {
                             cardview_voicescan.setVisibility(View.GONE);
                         }
 
@@ -539,14 +550,14 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void HandleVoiceScanCardUI(RLPageVoiceScanResultResponse rlPageVoiceScanResultResponse) {
-        if (rlPageVoiceScanResultResponse.getData()!=null)  {
-            if (rlPageVoiceScanResultResponse.getData().getScore()!=null) {
+        if (rlPageVoiceScanResultResponse.getData() != null) {
+            if (rlPageVoiceScanResultResponse.getData().getScore() != null) {
                 cardview_voicescan.setVisibility(View.VISIBLE);
                 txt_voicescore_rlpage.setText(String.valueOf(rlPageVoiceScanResultResponse.getData().getScore()));
-            }else {
+            } else {
                 cardview_voicescan.setVisibility(View.GONE);
             }
-        }else {
+        } else {
             cardview_voicescan.setVisibility(View.GONE);
         }
 
@@ -641,17 +652,17 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setMindAuditDate(MindAuditNextDate mindAuditNextDate) {
-        if (mindAuditNextDate!=null) {
+        if (mindAuditNextDate != null) {
             if (mindAuditNextDate.getData().getMindAuditDateCount() != 0) {
                 cardview_mindaudit.setVisibility(View.VISIBLE);
                 txt_next_date.setText(DateTimeUtils.convertAPIDateMonthFormat(mindAuditNextDate.getData().getMindAuditBasicAssesmentDate()) + " " + "|" + " " + "View Detailed Report"
                 );
                 txt_mindaudit_days_count.setText("Next Scan In " + mindAuditNextDate.getData().getMindAuditDateCount() + " Days");
-            }else {
+            } else {
                 cardview_mindaudit.setVisibility(View.GONE);
                 cardview_mindaudit_new_user_include.setVisibility(View.VISIBLE);
             }
-        }else {
+        } else {
             cardview_mindaudit.setVisibility(View.GONE);
             cardview_mindaudit_new_user_include.setVisibility(View.VISIBLE);
         }
@@ -728,6 +739,22 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
             // Optionally pass data
             //intent.putExtra("key", "value");
             startActivity(intent);
+        } else if (viewId == R.id.ll_rlpage_phq9) {
+            Intent intent = new Intent(RLPageActivity.this, MASuggestedAssessmentActivity.class);
+            intent.putExtra("SelectedAssessment", "PHQ-9");
+            startActivity(intent);
+        } else if (viewId == R.id.ll_rlpage_dass21) {
+            Intent intent = new Intent(RLPageActivity.this, MASuggestedAssessmentActivity.class);
+            intent.putExtra("SelectedAssessment", "DASS-21");
+            startActivity(intent);
+        } else if (viewId == R.id.ll_rlpage_ohq) {
+            Intent intent = new Intent(RLPageActivity.this, MASuggestedAssessmentActivity.class);
+            intent.putExtra("SelectedAssessment", "OHQ");
+            startActivity(intent);
+        } else if (viewId == R.id.ll_rlpage_gad7) {
+            Intent intent = new Intent(RLPageActivity.this, MASuggestedAssessmentActivity.class);
+            intent.putExtra("SelectedAssessment", "GAD-7");
+            startActivity(intent);
         }
     }
 
@@ -737,7 +764,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getScanPastReport(accessToken,"faceScan");
+        Call<ResponseBody> call = apiService.getScanPastReport(accessToken, "faceScan");
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -782,7 +809,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getFacialScanReport(accessToken,reportId);
+        Call<ResponseBody> call = apiService.getFacialScanReport(accessToken, reportId);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
