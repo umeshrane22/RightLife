@@ -829,6 +829,18 @@ public interface ApiService {
         // Thought of the details content
     Call<ResponseBody> getContentDetailpage(
             @Header("Authorization") String authToken, @Path("id") String id);
+
+
+
+    // API TO get series episode detail
+    // Define the GET request with a dynamic ID path and optional query parameter
+    @GET("series/{seriesId}/episode/{episodeId}")
+    Call<ResponseBody> getSeriesEpisodesDetails(
+            @Header("Authorization") String authToken,
+            @Path("seriesId") String seriesId,
+            @Path("episodeId") String episodeId
+
+    );
 }
 
 

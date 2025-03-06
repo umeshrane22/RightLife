@@ -134,6 +134,7 @@
         <activity android:name="com.example.rlapp.ui.jounal.MyJournalActivity" />
         <activity android:name="com.example.rlapp.ui.jounal.EditJournalActivity" />
         <activity android:name="com.example.rlapp.ui.thoughtoftheday.ThoughtOfTheDayDetailActivity" />
+        <activity android:name="com.example.rlapp.ui.Wellness.SeriesEpisodeDetailActivity" />
 
 
         <provider
