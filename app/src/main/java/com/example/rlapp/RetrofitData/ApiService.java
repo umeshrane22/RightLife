@@ -17,6 +17,8 @@ import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.SubCategoryResponse;
+import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
+import com.example.rlapp.ui.affirmation.pojo.AffirmationSelectedCategoryResponse;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
@@ -421,7 +423,6 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body Map<String, Object> requestData
     );
-
 
 
     @Headers("Content-Type: application/json")
@@ -829,6 +830,19 @@ public interface ApiService {
         // Thought of the details content
     Call<ResponseBody> getContentDetailpage(
             @Header("Authorization") String authToken, @Path("id") String id);
+
+    @Headers("Content-Type: application/json")
+    @GET("catagory")
+    Call<AffirmationCategoryListResponse> getAffirmationCategoryList(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("affirmationCatagory")
+    Call<AffirmationSelectedCategoryResponse> getAffirmationSelectedCategoryData(
+            @Header("Authorization") String authToken,
+            @Query("id") String id
+    );
 }
 
 

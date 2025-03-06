@@ -1,0 +1,5 @@
+<!-- res/anim/bottom_sheet_slide_up.xml -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromYDelta="100%"
+    android:toYDelta="0%"
+    android:duration="300" />

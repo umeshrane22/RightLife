@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_stress_management"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="@drawable/bg_gray_border_radius_small">
+
+    <ImageView
+        android:id="@+id/imageCategoryRow"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="8dp"
+        android:src="@drawable/visualise_manifest" />
+
+    <TextView
+        android:id="@+id/tvCategoryRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="12dp"
+        android:fontFamily="@font/dmsans_bold"
+        android:text="All"
+        android:textColor="@color/txt_color_header"
+        android:textSize="16sp" />
+
+</RelativeLayout>
