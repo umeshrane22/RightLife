@@ -136,6 +136,10 @@
         <activity android:name="com.example.rlapp.ui.thoughtoftheday.ThoughtOfTheDayDetailActivity" />
         <activity android:name="com.example.rlapp.ui.Wellness.SeriesEpisodeDetailActivity" />
 
+        <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity1" />
+        <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity2" />
+        <activity android:name="com.example.rlapp.ui.affirmation.TodaysAffirmationActivity" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

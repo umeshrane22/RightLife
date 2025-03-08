@@ -358,5 +358,15 @@ public class SharedPreferenceManager {
         editor.remove(SharedPreferenceConstants.CURRENT_QUESTION).apply();
         editor.remove(SharedPreferenceConstants.ONBOARDING_QUESTION).apply();
     }
+
+    public void setFirstTimeUserForAffirmation(boolean isUnlock){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);
+        editor.apply();
+    }
+
+    public Boolean getFirstTimeUserForAffirmation() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
+    }
 }
 

@@ -22,7 +22,9 @@ import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.apimodel.userdata.Userdata
 import com.example.rlapp.ui.utility.AppConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
 import okhttp3.ResponseBody
+import org.slf4j.helpers.Util
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -94,6 +96,7 @@ class CreateUsernameActivity : AppCompatActivity() {
         })
 
         btnContinue.setOnClickListener {
+            Utils.hideSoftKeyboard(this@CreateUsernameActivity)
             showFullScreenDialog(edtUsername.text.toString(), email!!)
             sharedPreferenceManager.userName = edtUsername.text.toString()
         }
