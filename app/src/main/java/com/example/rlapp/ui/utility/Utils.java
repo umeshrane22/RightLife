@@ -3,6 +3,7 @@ package com.example.rlapp.ui.utility;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -312,6 +313,14 @@ public class Utils {
     public static void dismissLoader(Activity activity){
         loadingOverlay = activity.findViewById(R.id.loading_overlay);
         loadingOverlay.setVisibility(View.GONE);
+    }
+
+    public static ColorStateList getColorStateListFromColorCode(String colorCode){
+        return ColorStateList.valueOf(Color.parseColor("#"+colorCode));
+    }
+
+    public static int getColorFromColorCode(String colorCode){
+        return Color.parseColor("#"+colorCode);
     }
 
     public static void logDebug(String message) {

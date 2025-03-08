@@ -19,6 +19,8 @@ import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.SubCategoryResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationSelectedCategoryResponse;
+import com.example.rlapp.ui.affirmation.pojo.CreateAffirmationPlaylistRequest;
+import com.example.rlapp.ui.affirmation.pojo.GetAffirmationPlaylistResponse;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
@@ -843,6 +845,22 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Query("id") String id
     );
+
+    @Headers("Content-Type: application/json")
+    @GET("affirmationPlaylist")
+    Call<GetAffirmationPlaylistResponse> getAffirmationPlaylist(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("affirmationPlaylist")
+    Call<ResponseBody> createAffirmationPlaylist(
+            @Header("Authorization") String authToken,
+            @Body CreateAffirmationPlaylistRequest affirmationPlaylistRequest
+            );
+
+
+
 }
 
 
