@@ -60,7 +60,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ImageView fullscreenButton;
     private boolean isFullscreen = false;
-
+    private String contentId;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,22 +97,22 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         binding.imageLikeArticle.setOnClickListener(v -> binding.imageLikeArticle.setImageResource(R.drawable.like_article_active));
         txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
 
-
+        contentId = getIntent().getStringExtra("contentId");
         //setVideoPlayerView();
-        getArticleDetails("");
+        getArticleDetails(contentId);
     }
 
 
-    private void getArticleDetails(String s) {
+    private void getArticleDetails(String contentId) {
         //-----------
 
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
+        contentId = "679b1e6d4199ddf6752fdb20";
         // Make the API call
-        Call<JsonElement> call = apiService.getArticleDetails(accessToken);
+        Call<JsonElement> call = apiService.getArticleDetails(accessToken,contentId);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {

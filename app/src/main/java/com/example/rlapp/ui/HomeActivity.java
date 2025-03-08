@@ -71,8 +71,10 @@ import com.example.rlapp.ui.healthcam.NewHealthCamReportActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.JournalingActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
+import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
+import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
@@ -1467,15 +1469,21 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void CallRlEditDetailActivity(int position) {
-     /*   Gson gson = new Gson();
-        String json = gson.toJson(rightLifeEditResponse);
-        Intent intent = new Intent(HomeActivity.this, RLEditDetailViewActivity.class);
-        intent.putExtra("Categorytype", json);
-        intent.putExtra("position", position);
-        startActivity(intent);*/
 
-        Intent intent = new Intent(HomeActivity.this, ArticlesDetailActivity.class);
+        if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("TEXT")){
+            Intent intent = new Intent(HomeActivity.this, ArticlesDetailActivity.class);
+            intent.putExtra("contentId", rightLifeEditResponse.getData().getTopList().get(position).getId());
+            startActivity(intent);
+        }else {
+               Gson gson = new Gson();
+        String json = gson.toJson(rightLifeEditResponse);
+        Intent intent = new Intent(HomeActivity.this, ModuleContentDetailViewActivity.class);
+            intent.putExtra("Categorytype", rightLifeEditResponse.getData().getTopList().get(position).getId());
+            intent.putExtra("position", position);
+            intent.putExtra("contentId", rightLifeEditResponse.getData().getTopList().get(position).getId());
         startActivity(intent);
+        }
+
     }
 
     private void CallWellnessDetailActivity(int position) {

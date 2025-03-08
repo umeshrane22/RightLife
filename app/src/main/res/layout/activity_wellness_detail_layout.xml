@@ -61,7 +61,7 @@
                 android:id="@+id/rl_player"
                 android:layout_width="match_parent"
                 android:layout_height="450dp"
-                android:layout_marginTop="50dp"
+
                 android:visibility="gone">
 
                 <!-- Full-Screen Background Image -->
@@ -231,6 +231,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/dmsans_bold"
+                android:visibility="gone"
                 android:textColor="@android:color/black" />
 
             <LinearLayout

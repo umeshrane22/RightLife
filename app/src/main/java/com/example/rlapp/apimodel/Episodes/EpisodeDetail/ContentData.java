@@ -12,6 +12,8 @@ public class ContentData {
     public List<Artist> artist;
     public Thumbnail thumbnail;
     public String pricingTier;
+    public String url;
+    public String previewUrl;
     public String youtubeUrl;
     public String shareUrl;
     public String createdAt;

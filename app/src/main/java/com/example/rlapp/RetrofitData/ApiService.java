@@ -752,12 +752,13 @@ public interface ApiService {
             @Path("type") String moduleType);
 
 
-    //ModuleService Pane
-    @Headers("Content-Type: application/json") // Set content-type as application/json
-    //@GET("content/679b1e6d4199ddf6752fdb20")
-    @GET("content/67a9aeed7864652954596ecb")
+    //article details
+    @Headers("Content-Type: application/json")
+    @GET("content/{contentId}") // Use {contentId} as a path parameter
     Call<JsonElement> getArticleDetails(
-            @Header("Authorization") String authToken // Dynamic Authorization Header
+            @Header("Authorization") String authToken, // Dynamic Authorization Header
+            @Path("contentId") String contentId // Pass contentId as a path parameter
+
     );
 
     @Headers("Content-Type: application/json")
