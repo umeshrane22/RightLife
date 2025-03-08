@@ -67,11 +67,22 @@ public class EpisodesListAdapter2 extends RecyclerView.Adapter<EpisodesListAdapt
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ctx, "Episode clicked  "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(holder.itemView.getContext(), SeriesEpisodeDetailActivity.class);
-                intent.putExtra("seriesId", contentList.get(position).getContentId());
-                intent.putExtra("episodeId", contentList.get(position).get_id());
-                holder.itemView.getContext().startActivity(intent);
+                if (contentList.get(position).getType().equalsIgnoreCase("YOUTUBE"))
+                {
+                    Toast.makeText(ctx, "Episode clicked  " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(holder.itemView.getContext(), SeriesEpisodeDetailActivity.class);
+                    intent.putExtra("seriesId", contentList.get(position).getContentId());
+                    intent.putExtra("episodeId", contentList.get(position).get_id());
+                    holder.itemView.getContext().startActivity(intent);
+                } else {
+                    Toast.makeText(ctx, "Episode clicked  " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(holder.itemView.getContext(), SeriesEpisodeDetailActivity.class);
+                    intent.putExtra("seriesId", contentList.get(position).getContentId());
+                    intent.putExtra("episodeId", contentList.get(position).get_id());
+                    holder.itemView.getContext().startActivity(intent);
+                }
+
+
             }
         });
 

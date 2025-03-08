@@ -136,6 +136,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerInParent="true"
                     app:auto_show="true"
+                    android:visibility="gone"
                     app:use_controller="true" />
 
                 <ImageView
@@ -170,6 +171,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
                     >
                 </com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView>
 
@@ -250,6 +252,7 @@
                 android:textSize="16sp" />
 
             <LinearLayout
+                android:id="@+id/ll_next_episode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

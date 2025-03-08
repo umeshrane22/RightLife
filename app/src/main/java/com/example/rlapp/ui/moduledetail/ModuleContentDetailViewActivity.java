@@ -239,6 +239,8 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
         } else  if (responseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
             setupAudioContent(responseObj);
+            img_contentview.setVisibility(View.GONE);
+            playerView.setVisibility(View.GONE);
         } else {
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
 

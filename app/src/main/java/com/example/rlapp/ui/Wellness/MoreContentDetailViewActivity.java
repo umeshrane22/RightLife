@@ -29,6 +29,8 @@ import com.bumptech.glide.Glide;
 import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
+import com.example.rlapp.apimodel.Episodes.EpisodeModel;
+import com.example.rlapp.apimodel.Episodes.EpisodeResponseModel;
 import com.example.rlapp.apimodel.modulecontentlist.ModuleContentDetailsList;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.apimodel.morelikecontent.MoreLikeContentResponse;
@@ -61,7 +63,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
 
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    TextView txt_desc, tv_header_htw;
+    TextView txt_desc, tv_header_htw,txt_episodes_section;
     String[] itemNames;
     int[] itemImages;
     int position;
@@ -87,7 +89,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_wellness_detail_layout);
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
-
+        txt_episodes_section = findViewById(R.id.txt_episodes_section);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
@@ -142,7 +144,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         // get morelike content
         getMoreLikeContent(contentList.get(position).getId());
 
-        // getSeriesWithEpisodes(contentList.get(position).getId());
+         getSeriesWithEpisodes(contentList.get(position).getId());
 
         List<Like> contentList1 = Collections.emptyList();
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
@@ -466,7 +468,6 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
                         Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
                                 + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
                         setupListData(ResponseObj.getData().getLikeList());
-                        setupEpisodeListData(ResponseObj.getData().getLikeList());
 
                         if (ResponseObj.getData().getLikeList().size() < 5) {
                             tvViewAll.setVisibility(View.GONE);
@@ -513,9 +514,10 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                    //wellnessApiResponse = gson.fromJson(jsonResponse, WellnessApiResponse.class);
-                    Log.d("API Response body", "Wellness:SeriesList " + contentList.get(0).getTitle());
+                    EpisodeResponseModel episodeResponseModel = gson.fromJson(jsonResponse, EpisodeResponseModel.class);
+                    Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
+                    setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -541,8 +543,10 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupEpisodeListData(List<Like> contentList) {
-        EpisodesListAdapter adapter = new EpisodesListAdapter(this, itemNames, itemImages, contentList);
+
+    private void setupEpisodeListData(List<EpisodeModel> contentList) {
+        txt_episodes_section.setVisibility(View.VISIBLE);
+        EpisodesListAdapter2 adapter = new EpisodesListAdapter2(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerViewEpisode.setLayoutManager(horizontalLayoutManager);
         recyclerViewEpisode.setAdapter(adapter);
@@ -589,22 +593,28 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (Util.SDK_INT >= 24) {
-            initializePlayer();
-        }
+
+        initializePlayer();
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (Util.SDK_INT >= 24) {
+
             releasePlayer();
-        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        player.pause();
     }
 
     private void releasePlayer() {
         if (player != null) {
-            player.release();
+            player.stop();
             player = null;
         }
     }
