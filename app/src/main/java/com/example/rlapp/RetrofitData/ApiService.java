@@ -858,9 +858,16 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body CreateAffirmationPlaylistRequest affirmationPlaylistRequest
             );
+  
+    // API TO get series episode detail
+    // Define the GET request with a dynamic ID path and optional query parameter
+    @GET("series/{seriesId}/episode/{episodeId}")
+    Call<ResponseBody> getSeriesEpisodesDetails(
+            @Header("Authorization") String authToken,
+            @Path("seriesId") String seriesId,
+            @Path("episodeId") String episodeId
 
-
-
+    );
 }
 
 

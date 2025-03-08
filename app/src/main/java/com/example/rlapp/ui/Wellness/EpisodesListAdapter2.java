@@ -1,6 +1,7 @@
 package com.example.rlapp.ui.Wellness;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.example.rlapp.apimodel.Episodes.EpisodeResponseModel;
 import com.example.rlapp.apimodel.morelikecontent.Like;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.OnFavouriteClickListener;
+import com.example.rlapp.ui.thoughtoftheday.ThoughtOfTheDayDetailActivity;
 import com.example.rlapp.ui.utility.Utils;
 
 import java.util.List;
@@ -65,7 +67,11 @@ public class EpisodesListAdapter2 extends RecyclerView.Adapter<EpisodesListAdapt
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, "Episode clicked  "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(holder.itemView.getContext(), SeriesEpisodeDetailActivity.class);
+                intent.putExtra("seriesId", contentList.get(position).getContentId());
+                intent.putExtra("episodeId", contentList.get(position).get_id());
+                holder.itemView.getContext().startActivity(intent);
             }
         });
 

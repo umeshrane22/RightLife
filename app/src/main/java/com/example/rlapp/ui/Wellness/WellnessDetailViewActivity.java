@@ -507,7 +507,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
                     String jsonResponse = gson.toJson(response.body());
 
                     EpisodeResponseModel episodeResponseModel = gson.fromJson(jsonResponse, EpisodeResponseModel.class);
-                    Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
+                    //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
                     setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
 
