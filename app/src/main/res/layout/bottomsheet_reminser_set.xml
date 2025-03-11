@@ -1,0 +1,202 @@
+<!-- res/layout/bottom_sheet_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/design_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:background="@drawable/toproundedcornershape"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
+
+        <ImageView
+            android:id="@+id/ivDialogClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/close_dialog_affirmation" />
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Set Your Reminder"
+            android:textColor="@color/txt_color_header"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/titleImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/playlist_added"
+            android:layout_below="@+id/titleText"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="30dp"/>
+
+        <TextView
+            android:id="@+id/subTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Reminder Is Set For"
+            android:textColor="@color/txt_color_header"
+            android:textSize="14sp"
+            android:layout_below="@id/titleImage" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_below="@+id/subTitleText">
+
+            <TextView
+                android:id="@+id/tvMorningText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Morning"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/txt_color_header"
+                android:textSize="14sp"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <LinearLayout
+                android:id="@+id/llMorningTime"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_time_picker_green"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clickable="false"
+                android:padding="8dp">
+
+                <!-- Clock Icon -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock_affirmation"
+                    app:tint="@color/color_green" />
+
+                <!-- Time Text -->
+                <TextView
+                    android:id="@+id/tvTimeMorning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="6:00 AM"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvAfternoonText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Afternoon"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/txt_color_header"
+                android:textSize="14sp"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <LinearLayout
+                android:id="@+id/llAfternoonTime"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_time_picker_green"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clickable="false"
+                android:padding="8dp">
+
+                <!-- Clock Icon -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock_affirmation"
+                    app:tint="@color/color_green" />
+
+                <!-- Time Text -->
+                <TextView
+                    android:id="@+id/tvTimeAfternoon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="6:00 AM"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvEveningText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Evening"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/txt_color_header"
+                android:textSize="14sp"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <LinearLayout
+                android:id="@+id/llEveningTime"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_time_picker_green"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:clickable="false"
+                android:padding="8dp">
+
+                <!-- Clock Icon -->
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clock_affirmation"
+                    app:tint="@color/color_green" />
+
+                <!-- Time Text -->
+                <TextView
+                    android:id="@+id/tvTimeEvening"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:text="6:00 AM"
+                    android:textColor="#000"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your chosen time, your chosen way"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="12sp"
+                android:textColor="@color/txt_color_header"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

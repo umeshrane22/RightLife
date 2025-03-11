@@ -21,6 +21,8 @@ import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationSelectedCategoryResponse;
 import com.example.rlapp.ui.affirmation.pojo.CreateAffirmationPlaylistRequest;
 import com.example.rlapp.ui.affirmation.pojo.GetAffirmationPlaylistResponse;
+import com.example.rlapp.ui.affirmation.pojo.GetWatchedAffirmationPlaylistResponse;
+import com.example.rlapp.ui.affirmation.pojo.WatchAffirmationPlaylistRequest;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
@@ -869,6 +871,20 @@ public interface ApiService {
             @Path("episodeId") String episodeId
 
     );
+
+    @Headers("Content-Type: application/json")
+    @POST("affirmationPlaylist/playlistWatch")
+    Call<ResponseBody> updateAffirmationPlaylistWatch(
+            @Header("Authorization") String authToken,
+            @Body WatchAffirmationPlaylistRequest watchAffirmationPlaylistRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("affirmationPlaylist/playlistWatch")
+    Call<GetWatchedAffirmationPlaylistResponse> getWatchedAffirmationPlaylist(
+            @Header("Authorization") String authToken
+    );
+
 }
 
 

@@ -7,10 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ui.affirmation.pojo.WatchedAffirmationPlaylistData
 
 class WeekDayAdapter(
-    private val days: List<String>,
-    private val selectedIndex: Int // index of the current day (e.g., 0 for Monday)
+    private val days: ArrayList<WatchedAffirmationPlaylistData>
 ) : RecyclerView.Adapter<WeekDayAdapter.DayViewHolder>() {
 
     inner class DayViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -25,9 +25,9 @@ class WeekDayAdapter(
     }
 
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
-        holder.label.text = days[position]
+        holder.label.text = days[position].day?.first().toString()
 
-        if (position == selectedIndex) {
+        if (days[position].duration!! > 0) {
             holder.circle.setImageResource(R.drawable.circle_selected)
         } else {
             holder.circle.setImageResource(R.drawable.circle_unselected)
