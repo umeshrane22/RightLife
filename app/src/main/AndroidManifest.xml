@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".MainApplication"
@@ -68,14 +69,7 @@
         <activity android:name=".ui.new_design.YourInterestActivity" />
         <activity android:name=".ui.new_design.PersonalisationActivity" />
         <activity android:name=".ui.new_design.SyncNowActivity" />
-        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity"
-            android:exported="true">
-    <!--    <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>-->
-        </activity>
+        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity"/>
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
         <activity android:name=".ui.new_design.OnboardingFinalActivity" />
@@ -143,6 +137,7 @@
         <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity1" />
         <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity2" />
         <activity android:name="com.example.rlapp.ui.affirmation.TodaysAffirmationActivity" />
+        <activity android:name="com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity"/>
 
 
         <provider
@@ -154,6 +149,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
         </provider>
+
+        <receiver android:name=".ui.affirmation.ReminderReceiver" android:exported="true"/>
+
     </application>
 
     <uses-feature android:name="android.hardware.camera" />
