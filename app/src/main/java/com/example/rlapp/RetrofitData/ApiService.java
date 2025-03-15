@@ -26,6 +26,12 @@ import com.example.rlapp.ui.affirmation.pojo.WatchAffirmationPlaylistRequest;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
+import com.example.rlapp.ui.jounal.new_journal.JournalAddTagsRequest;
+import com.example.rlapp.ui.jounal.new_journal.JournalQuestionsResponse;
+import com.example.rlapp.ui.jounal.new_journal.JournalResponse;
+import com.example.rlapp.ui.jounal.new_journal.JournalSectionResponse;
+import com.example.rlapp.ui.jounal.new_journal.JournalTagsResponse;
+import com.example.rlapp.ui.jounal.new_journal.JournalUpdateTagsRequest;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
@@ -884,6 +890,51 @@ public interface ApiService {
     Call<GetWatchedAffirmationPlaylistResponse> getWatchedAffirmationPlaylist(
             @Header("Authorization") String authToken
     );
+
+    @Headers("Content-Type: application/json")
+    @GET("journalNew")
+    Call<JournalResponse> getJournals(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("journalNew")
+    Call<JournalSectionResponse> getJournalSections(
+            @Header("Authorization") String authToken,
+            @Query("type") String type,
+            @Query("id") String id
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("journalNew")
+    Call<JournalQuestionsResponse> getJournalQuestions(
+            @Header("Authorization") String authToken,
+            @Query("type") String type,
+            @Query("id") String id
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("journalNew/journalTag")
+    Call<JournalTagsResponse> getJournalTags(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("journalNew/userJournalTag")
+    Call<ResponseBody> addJournalTag(
+            @Header("Authorization") String authToken,
+            @Body JournalAddTagsRequest journalAddTagsRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @PUT("journalNew/userJournalTag/Tag")
+    Call<ResponseBody> updateJournalTag(
+            @Header("Authorization") String authToken,
+            @Body JournalUpdateTagsRequest journalUpdateTagsRequest
+    );
+
+
+
 
 }
 

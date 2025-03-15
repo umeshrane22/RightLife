@@ -1,0 +1,32 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="8dp">
+
+    <FrameLayout
+        android:id="@+id/iconWrapper"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@drawable/mood_circle_background"
+        android:layout_marginBottom="4dp">
+
+        <ImageView
+            android:id="@+id/moodIcon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_happy"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/moodLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Happy"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textColor="@android:color/black" />
+</LinearLayout>

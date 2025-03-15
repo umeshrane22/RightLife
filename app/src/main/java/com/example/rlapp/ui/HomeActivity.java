@@ -47,7 +47,6 @@ import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmation
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
 import com.example.rlapp.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
-import com.example.rlapp.apimodel.servicepane.HomeService;
 import com.example.rlapp.apimodel.servicepane.ServicePaneResponse;
 import com.example.rlapp.apimodel.submodule.SubModuleResponse;
 import com.example.rlapp.apimodel.upcomingevents.UpcomingEventResponse;
@@ -69,12 +68,11 @@ import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthcam.NewHealthCamReportActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
-import com.example.rlapp.ui.jounal.JournalingActivity;
+import com.example.rlapp.ui.jounal.new_journal.JournalNewActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
-import com.example.rlapp.ui.therledit.RLEditDetailViewActivity;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
@@ -677,11 +675,11 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private List<CardItem> getCardItems() {
         List<CardItem> items = new ArrayList<>();
         // Add your CardItem instances here
-        items.add(new CardItem("0","Card 1", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("1","Card 2", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("2","Card 3", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("3","Card 4", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("4","Card 5", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("0", "Card 1", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("1", "Card 2", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("2", "Card 3", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("3", "Card 4", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("4", "Card 5", R.drawable.facialconcept, "", "", "scan now", "", ""));
         return items;
     }
 
@@ -1454,7 +1452,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
             //Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(HomeActivity.this, JournalingActivity.class));
+            startActivity(new Intent(HomeActivity.this, JournalNewActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
             //Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreAffirmationsListActivity.class));
@@ -1470,18 +1468,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private void CallRlEditDetailActivity(int position) {
 
-        if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("TEXT")){
+        if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("TEXT")) {
             Intent intent = new Intent(HomeActivity.this, ArticlesDetailActivity.class);
             intent.putExtra("contentId", rightLifeEditResponse.getData().getTopList().get(position).getId());
             startActivity(intent);
-        }else {
-               Gson gson = new Gson();
-        String json = gson.toJson(rightLifeEditResponse);
-        Intent intent = new Intent(HomeActivity.this, ModuleContentDetailViewActivity.class);
+        } else {
+            Gson gson = new Gson();
+            String json = gson.toJson(rightLifeEditResponse);
+            Intent intent = new Intent(HomeActivity.this, ModuleContentDetailViewActivity.class);
             intent.putExtra("Categorytype", rightLifeEditResponse.getData().getTopList().get(position).getId());
             intent.putExtra("position", position);
             intent.putExtra("contentId", rightLifeEditResponse.getData().getTopList().get(position).getId());
-        startActivity(intent);
+            startActivity(intent);
         }
 
     }
