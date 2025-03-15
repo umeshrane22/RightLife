@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <!-- Top Bar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="16dp"
+        android:paddingHorizontal="8dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentStart="true"/>
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Journal"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="20sp"
+            android:textColor="@color/txt_color_mind"
+            android:layout_centerInParent="true" />
+
+        <ImageButton
+            android:id="@+id/btnInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/info_affirmation"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Greeting Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/greetingCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/tvGreeting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hello Kritarth,\nWhat’s on your mind?"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:textColor="#463522"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/dmsans_regular"/>
+            </androidx.cardview.widget.CardView>
+
+            <!-- EditText -->
+            <EditText
+                android:id="@+id/etJournalEntry"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Start writing here..."
+                android:background="@android:color/transparent"
+                android:textColor="#463522"
+                android:textSize="18sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="top|start"
+                android:padding="12dp"
+                android:inputType="textMultiLine"
+                android:maxLength="5000"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="Save"
+        android:layout_margin="16dp"
+        android:backgroundTint="#FFDD80"
+        android:textColor="#FFBFBFBF"
+        android:enabled="false"
+        android:paddingVertical="12dp"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>

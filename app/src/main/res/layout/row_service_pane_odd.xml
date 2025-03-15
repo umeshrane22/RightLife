@@ -15,14 +15,14 @@
         android:id="@+id/img_service_pane_odd"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight=".6"
+        android:layout_weight="1"
         android:src="@drawable/ic_healthcam_logo" />
 
     <TextView
         android:id="@+id/tv_service_pane_header_odd"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight=".4"
+        android:layout_weight="1"
         android:fontFamily="@font/merriweather_regular"
         android:gravity="center"
         android:padding="15dp"

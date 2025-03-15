@@ -101,6 +101,11 @@
     <color name="color_in_this_article">#21A4F8</color>
 
     <color name="bg_affirmation_landing">#707070</color>
+    <color name="txt_color_journal_gray">#414141</color>
+    <color name="txt_color_journal_prompt">#414141</color>
+    <color name="txt_color_journal_date">#14142A</color>
+    <color name="btn_color_journal">#FFDD80</color>
+    <color name="delete_color_journal">#FF453A</color>
 
 
 
