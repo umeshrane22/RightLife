@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/bg_card"
+    android:layout_marginBottom="8dp">
+
+    <!-- Date and Time -->
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mar 09, 2025"
+        android:textColor="#888"
+        android:textSize="12sp" />
+
+    <!-- 3-dot menu icon -->
+    <ImageView
+        android:id="@+id/ivMenu"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/menu_about_us"
+        android:layout_alignParentEnd="true" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvDate"
+        android:layout_marginTop="4dp"
+        android:text="Gratitude"
+        android:textStyle="bold"
+        android:textSize="16sp"/>
+
+    <!-- Answer -->
+    <TextView
+        android:id="@+id/tvAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTitle"
+        android:layout_marginTop="4dp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:text="Your journal answer here"
+        android:textSize="14sp" />
+
+    <!-- Tag container -->
+    <LinearLayout
+        android:id="@+id/tagContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/tvAnswer"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"/>
+</RelativeLayout>

@@ -39,7 +39,7 @@ class PromptAdapter(
 
     override fun getItemCount() = prompts.size
 
-    public interface OnItemClickListener {
+    interface OnItemClickListener {
         fun onItemClick(question: Question)
         fun onSwapClick(question: Question, position: Int)
     }

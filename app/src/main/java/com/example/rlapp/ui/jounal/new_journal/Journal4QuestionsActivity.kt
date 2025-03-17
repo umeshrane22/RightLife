@@ -20,6 +20,7 @@ import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.databinding.ActivityJournalAnswerBinding
 import com.example.rlapp.databinding.BottomsheetAddTagBinding
+import com.example.rlapp.databinding.BottomsheetDeleteTagBinding
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -42,6 +43,10 @@ class Journal4QuestionsActivity : AppCompatActivity() {
     private val visibleCount = 3
     private lateinit var journalItem: JournalItem
     private lateinit var answer: String
+    private val journalQuestionCreateRequest = JournalQuestionCreateRequest()
+    private var selectedTag1: String = ""
+    private var selectedTag2: String = ""
+    private var selectedTag3: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +56,14 @@ class Journal4QuestionsActivity : AppCompatActivity() {
 
         journalItem = intent.getSerializableExtra("Section") as JournalItem
         answer = intent.getStringExtra("Answer").toString()
+        val questionId = intent.getStringExtra("QuestionId")
+
+
         binding.tvEntryText.text = answer
+        journalQuestionCreateRequest.title = journalItem.title
+        journalQuestionCreateRequest.questionId = questionId
+        journalQuestionCreateRequest.answer = answer
+
 
         setUpMoodList()
         getJournalTags()
@@ -99,6 +111,18 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             binding.moreButton3.text = if (isExpanded3) "Less ▲" else "More ⌄"
         }
 
+        binding.btnSave.setOnClickListener {
+            if (journalQuestionCreateRequest.emotion.isNullOrEmpty()){
+                Toast.makeText(this,"Please select emotion",Toast.LENGTH_SHORT).show()
+            }else if (selectedTag1.isNullOrEmpty() || selectedTag2.isNullOrEmpty() || selectedTag3.isNullOrEmpty()){
+                Toast.makeText(this,"Please select tag",Toast.LENGTH_SHORT).show()
+            }else {
+                journalQuestionCreateRequest.tags?.add(selectedTag1)
+                journalQuestionCreateRequest.tags?.add(selectedTag2)
+                journalQuestionCreateRequest.tags?.add(selectedTag3)
+                createJournal()
+            }
+        }
 
     }
 
@@ -145,7 +169,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                 if (isFromEdit) {
                     val journalUpdateTagsRequest = JournalUpdateTagsRequest()
                     journalUpdateTagsRequest.tag = dialogBinding.edtTag.text.toString()
-                    journalUpdateTagsRequest.outerIndex = type
+                    journalUpdateTagsRequest.outerIndex = type - 1
                     journalUpdateTagsRequest.innerIndex = position
                     updateJournalTag(
                         journalUpdateTagsRequest,
@@ -157,7 +181,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                 } else {
                     val journalAddTagsRequest = JournalAddTagsRequest()
                     journalAddTagsRequest.tag = dialogBinding.edtTag.text.toString()
-                    journalAddTagsRequest.outerIndex = type
+                    journalAddTagsRequest.outerIndex = type - 1
                     addJournalTag(
                         journalAddTagsRequest,
                         dialogBinding.edtTag.text.toString(),
@@ -167,6 +191,47 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                 }
                 bottomSheetDialog.dismiss()
             }
+        }
+        bottomSheetDialog.show()
+    }
+
+    private fun showDeleteBottomSheet(
+        chipGroup: ChipGroup,
+        type: Int,
+        chip: Chip,
+        position: Int
+    ) {
+        // Create and configure BottomSheetDialog
+        val bottomSheetDialog = BottomSheetDialog(this)
+
+        // Inflate the BottomSheet layout
+        val dialogBinding = BottomsheetDeleteTagBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+
+        dialogBinding.btnCancel.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        dialogBinding.btnYes.setOnClickListener {
+            val journalDeleteTagRequest = JournalDeleteTagRequest()
+            journalDeleteTagRequest.outerIndex = type - 1
+            journalDeleteTagRequest.innerIndex = position
+            deleteTag(journalDeleteTagRequest, chip, chipGroup, type, position)
+            bottomSheetDialog.dismiss()
         }
         bottomSheetDialog.show()
     }
@@ -181,8 +246,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         )
 
         val adapter = JournalMoodAdapter(moodList) { selectedMood ->
-            // Handle mood selection
-            Toast.makeText(this, "Selected: ${selectedMood.name}", Toast.LENGTH_SHORT).show()
+            journalQuestionCreateRequest.emotion = selectedMood.name
         }
 
         binding.moodRecyclerView.adapter = adapter
@@ -243,9 +307,18 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         chip.chipBackgroundColor = colorStateList
 
         chip.setOnLongClickListener { view ->
-            val position = chipGroup.indexOfChild(view)
+            val position = chipGroup.indexOfChild(view) - 1
             showCustomPopupMenu(view, chipGroup, type, chip, position)
             true
+        }
+
+        chip.setOnClickListener { view ->
+            val position = chipGroup.indexOfChild(view) -1
+            when (type) {
+                1 -> selectedTag1 = tagsList1[position]
+                2 -> selectedTag2 = tagsList2[position]
+                3 -> selectedTag3 = tagsList3[position]
+            }
         }
 
         // Text color for selected state
@@ -311,10 +384,10 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         listView.adapter = PopupMenuAdapter(this, menuItems) { item ->
             if (item.title == "Edit") {
                 showAddEditBottomSheet(true, chipGroup, type, chip, position)
-                popupWindow.dismiss()
             } else {
-
+                showDeleteBottomSheet(chipGroup, type, chip, position)
             }
+            popupWindow.dismiss()
         }
 
         popupWindow.elevation = 10f
@@ -454,6 +527,91 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                         3 -> tagsList3[position] = name
                     }
                     chip.text = name
+                } else {
+                    Toast.makeText(
+                        this@Journal4QuestionsActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(
+                    this@Journal4QuestionsActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun deleteTag(
+        journalDeleteTagRequest: JournalDeleteTagRequest,
+        chip: Chip,
+        chipGroup: ChipGroup,
+        type: Int,
+        position: Int
+    ) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call =
+            apiService.deleteJournalTag(
+                sharedPreferenceManager.accessToken,
+                journalDeleteTagRequest
+            )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    Toast.makeText(
+                        this@Journal4QuestionsActivity,
+                        response.message(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    when (type) {
+                        1 -> tagsList1.removeAt(position)
+                        2 -> tagsList2.removeAt(position)
+                        3 -> tagsList3.removeAt(position)
+                    }
+                    chipGroup.removeView(chip)
+                } else {
+                    Toast.makeText(
+                        this@Journal4QuestionsActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(
+                    this@Journal4QuestionsActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun createJournal() {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call =
+            apiService.createJournal(
+                sharedPreferenceManager.accessToken,
+                journalQuestionCreateRequest
+            )
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    Toast.makeText(
+                        this@Journal4QuestionsActivity,
+                        response.message(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 } else {
                     Toast.makeText(
                         this@Journal4QuestionsActivity,
