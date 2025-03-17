@@ -139,6 +139,7 @@
         <activity android:name="com.example.rlapp.ui.jounal.new_journal.Journal4QuestionsActivity" />
         <activity android:name="com.example.rlapp.ui.jounal.new_journal.FreeFormJournalActivity" />
         <activity android:name="com.example.rlapp.ui.jounal.new_journal.BulletJournalActivity" />
+        <activity android:name="com.example.rlapp.ui.jounal.new_journal.GriefJournalActivity" />
 
         <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity1" />
         <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity2" />

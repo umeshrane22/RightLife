@@ -27,6 +27,7 @@ class JournalPromptActivity : AppCompatActivity() {
     private lateinit var adapter: PromptAdapter
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var questionsList: ArrayList<Question> = ArrayList()
+    private var questions4: ArrayList<Question> = ArrayList()
     private var sectionList: ArrayList<Section> = ArrayList()
 
 
@@ -52,18 +53,27 @@ class JournalPromptActivity : AppCompatActivity() {
         setSelectedChipListener()
 
         // Setup RecyclerView
-        adapter = PromptAdapter(questionsList, object :PromptAdapter.OnItemClickListener{
+        adapter = PromptAdapter(questions4, object : PromptAdapter.OnItemClickListener {
             override fun onItemClick(question: Question) {
                 val intent =
-                    Intent(this@JournalPromptActivity, Journal4QuestionsActivity::class.java).apply {
+                    Intent(this@JournalPromptActivity, GriefJournalActivity::class.java).apply {
                         putExtra("Section", journalItem)
                         putExtra("Answer", question.question)
+                        putExtra("QuestionList", questionsList)
+                        putExtra("Position", questionsList.indexOf(question))
                     }
                 startActivity(intent)
             }
 
             override fun onSwapClick(question: Question, position: Int) {
-
+                if (questionsList.isNotEmpty() && questionsList.size > 4) {
+                    questionsList[position] = questionsList[4]
+                    questionsList.removeAt(position)
+                    questionsList.add(question)
+                    questions4.clear()
+                    questions4.addAll(questionsList.take(4))
+                    adapter.notifyDataSetChanged()
+                }
             }
 
         })
@@ -170,8 +180,7 @@ class JournalPromptActivity : AppCompatActivity() {
                         if (i == 0) {
                             sectionList[0].sectionName?.let { addChip(it, true) }
                             sectionList[0].id?.let { getQuestions(it) }
-                        }
-                        else
+                        } else
                             sectionList[i].sectionName?.let { addChip(it, false) }
                     }
                 } else {
@@ -205,7 +214,9 @@ class JournalPromptActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     questionsList.clear()
+                    questions4.clear()
                     response.body()?.data?.let { questionsList.addAll(it) }
+                    questions4.addAll(questionsList.take(4))
                     adapter.notifyDataSetChanged()
                 } else {
                     Toast.makeText(

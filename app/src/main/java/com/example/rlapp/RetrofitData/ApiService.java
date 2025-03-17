@@ -27,6 +27,8 @@ import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalAddTagsRequest;
+import com.example.rlapp.ui.jounal.new_journal.JournalDeleteTagRequest;
+import com.example.rlapp.ui.jounal.new_journal.JournalQuestionCreateRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalQuestionsResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalSectionResponse;
@@ -60,6 +62,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -933,8 +936,19 @@ public interface ApiService {
             @Body JournalUpdateTagsRequest journalUpdateTagsRequest
     );
 
+    @Headers("Content-Type: application/json")
+    @HTTP(method = "DELETE", path = "journalNew/userJournalTag/Tag", hasBody = true)
+    Call<ResponseBody> deleteJournalTag(
+            @Header("Authorization") String authToken,
+            @Body JournalDeleteTagRequest journalDeleteTagRequest
+    );
 
-
+    @Headers("Content-Type: application/json")
+    @POST("journalNew/userJournalTag")
+    Call<ResponseBody> createJournal(
+            @Header("Authorization") String authToken,
+            @Body JournalQuestionCreateRequest journalQuestionCreateRequest
+    );
 
 }
 
