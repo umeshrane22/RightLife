@@ -107,8 +107,35 @@
     <color name="btn_color_journal">#FFDD80</color>
     <color name="delete_color_journal">#FF453A</color>
 
+    <color name="menu_icon_color_unselected">#0B1215</color>
+    <color name="menu_icon_color_selected">#FD6967</color>
+
+    <color name="menu_text_color_unselected">#0B1215</color>
+    <color name="menu_text_color_selected">#FD6967</color>
 
 
+
+    //Quicklink colors
+    <color name="ql_facescan_color">#B11414</color>
+    <color name="ql_facescan_color_bg">#FDEDED</color>
+
+
+    <color name="ql_mealplan_color">#00553A</color>
+    <color name="ql_mealplan_color_bg">#DEFFF5</color>
+
+    <color name="ql_sleepsounds_color">#002C5F</color>
+    <color name="ql_sleepsounds_color_bg">#F5F9FF</color>
+
+    <color name="ql_affirmation_color">#4D4863</color>
+    <color name="ql_affirmation_color_bg">#F8F7FF</color>
+
+    <color name="ql_journaling_color">#9A4F04</color>
+    <color name="ql_journaling_color_bg">#FFF9EA</color>
+
+    <color name="ql_breathwork_color">#1292E5</color>
+    <color name="ql_breathwork_color_bg">#EBF7FF</color>
+
+    <color name="text_color_app">#0B1215</color>
 
 
 </resources>
