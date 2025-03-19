@@ -91,4 +91,9 @@ public class DateTimeUtils {
         }
         return date;
     }
+
+    public static String formatCurrentDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd | hh:mm a", Locale.ENGLISH);
+        return dateFormat.format(new Date());
+    }
 }

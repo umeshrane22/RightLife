@@ -1,59 +1,132 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/ll_journal_list"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
     android:background="@drawable/bg_card"
-    android:layout_marginBottom="8dp">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginBottom="8dp"
+    android:clipToPadding="false">
 
-    <!-- Date and Time -->
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Mar 09, 2025"
-        android:textColor="#888"
-        android:textSize="12sp" />
-
-    <!-- 3-dot menu icon -->
-    <ImageView
-        android:id="@+id/ivMenu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/menu_about_us"
-        android:layout_alignParentEnd="true" />
-
-    <!-- Title -->
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvDate"
-        android:layout_marginTop="4dp"
-        android:text="Gratitude"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
-
-    <!-- Answer -->
-    <TextView
-        android:id="@+id/tvAnswer"
+    <!-- Date & Time Row -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvTitle"
-        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tue Feb 18, 2025"
+            android:textColor="@color/txt_color_journal_date"
+            android:textSize="12sp"
+            android:fontFamily="@font/dmsans_regular"/>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/dark_gray"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginVertical="2dp"/>
+
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:03 pm"
+            android:textColor="@color/txt_color_journal_date"
+            android:textSize="12sp"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/dmsans_regular"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/menu_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/three_dots"
+            android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!-- Journal Entry Preview -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+        android:textColor="#001E00"
+        android:textSize="14sp"
+        android:textStyle="bold"
         android:maxLines="2"
         android:ellipsize="end"
-        android:text="Your journal answer here"
-        android:textSize="14sp" />
+        android:layout_marginBottom="12dp" />
 
-    <!-- Tag container -->
+    <!-- Tags / Chips using LinearLayout -->
     <LinearLayout
-        android:id="@+id/tagContainer"
-        android:layout_width="wrap_content"
+        android:id="@+id/chip_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/tvAnswer"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"/>
-</RelativeLayout>
+        android:gravity="center_vertical"
+        android:layout_marginTop="4dp">
+
+        <LinearLayout
+            android:id="@+id/ll_emotion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="@style/ChipStyle"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/imageEmotion"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_happy"/>
+        <TextView
+            android:id="@+id/chipEmotion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_marginStart="8dp"
+            android:text="Great"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/chip2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ChipStyle"
+            android:text="Gratitude"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+        <TextView
+            android:id="@+id/chip3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ChipStyle"
+            android:text="Pets"/>
+
+        <TextView
+            android:id="@+id/chip_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/ChipStyle"
+            android:text="+3"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

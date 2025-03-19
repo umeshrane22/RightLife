@@ -12,8 +12,9 @@ class GriefJournalActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGriefBinding
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
-    private lateinit var journalItem: JournalItem
-    private var questionsList: ArrayList<Question> = ArrayList()
+    private var journalItem: JournalItem? = JournalItem()
+    private var journalEntry: JournalEntry? = JournalEntry()
+    private var questionsList: ArrayList<Question>? = ArrayList()
     private var position: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,11 +23,25 @@ class GriefJournalActivity : AppCompatActivity() {
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
-        journalItem = intent.getSerializableExtra("Section") as JournalItem
-        questionsList = intent.getSerializableExtra("QuestionList") as ArrayList<Question>
+        journalItem = intent.getSerializableExtra("Section") as? JournalItem
+        journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
+        questionsList = intent.getSerializableExtra("QuestionList") as? ArrayList<Question>
         position = intent.getIntExtra("Position", 0)
 
-        binding.tvPrompt.text = questionsList[position].question
+        if (questionsList?.isNotEmpty() == true) {
+            binding.tvPrompt.text = questionsList?.get(position)?.question
+        } else {
+            binding.tvPrompt.text = journalEntry?.question
+        }
+
+        journalEntry?.let {
+            binding.etJournalEntry.setText(it.answer)
+        }
+
+        binding.btnSave.setTextColor(
+            if (binding.etJournalEntry.text.isNotEmpty()) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+        )
+        binding.btnSave.isEnabled = binding.etJournalEntry.text.isNotEmpty()
 
         setupListeners()
     }
@@ -41,12 +56,12 @@ class GriefJournalActivity : AppCompatActivity() {
         }
 
         binding.ivRefresh.setOnClickListener {
-            if (questionsList.isNotEmpty()) {
-                if (questionsList.size - 1 == position)
+            if (questionsList?.isNotEmpty() == true) {
+                if (questionsList!!.size - 1 == position)
                     position = 0
                 else
                     position += 1
-                binding.tvPrompt.text = questionsList[position].question
+                binding.tvPrompt.text = questionsList!![position].question
             }
         }
 
@@ -70,7 +85,11 @@ class GriefJournalActivity : AppCompatActivity() {
                 Intent(this@GriefJournalActivity, Journal4QuestionsActivity::class.java).apply {
                     putExtra("Section", journalItem)
                     putExtra("Answer", binding.etJournalEntry.text.toString())
-                    putExtra("QuestionId", questionsList[position].id)
+                    if (journalEntry != null)
+                        putExtra("QuestionId", journalEntry?.questionId)
+                    else
+                        putExtra("QuestionId", questionsList?.get(position)?.id)
+                    putExtra("JournalEntry", journalEntry)
                 }
             startActivity(intent)
 

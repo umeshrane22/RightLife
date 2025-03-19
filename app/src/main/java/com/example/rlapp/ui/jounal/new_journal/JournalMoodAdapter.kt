@@ -12,10 +12,9 @@ import com.example.rlapp.R
 
 class JournalMoodAdapter(
     private val moods: List<Mood>,
+    private var selectedPosition: Int = RecyclerView.NO_POSITION,
     private val onMoodSelected: (Mood) -> Unit
 ) : RecyclerView.Adapter<JournalMoodAdapter.MoodViewHolder>() {
-
-    private var selectedPosition = RecyclerView.NO_POSITION
 
     inner class MoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val moodIcon: ImageView = itemView.findViewById(R.id.moodIcon)

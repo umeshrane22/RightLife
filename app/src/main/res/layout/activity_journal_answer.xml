@@ -67,18 +67,18 @@
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/black"
                     android:layout_toStartOf="@+id/imageEdit"
-                    android:layout_alignParentStart="true"/>
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/tvEntryDate"
+                    android:paddingTop="4dp"/>
 
                 <TextView
                     android:id="@+id/tvEntryDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tue Feb 18, 10:49 am"
+                    android:text="Tue Feb 18 | 10:49 am"
                     android:textSize="12sp"
                     android:textColor="@color/txt_color_journal_date"
-                    android:paddingTop="4dp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:layout_below="@id/tvEntryText"/>
+                    android:fontFamily="@font/dmsans_regular" />
                 <ImageView
                     android:id="@+id/imageEdit"
                     android:layout_width="wrap_content"
@@ -175,7 +175,7 @@
                 android:id="@+id/chipGroup1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:singleSelection="true"
+                app:singleSelection="false"
                 android:layout_marginBottom="8dp"
                 app:chipSpacingVertical="0dp"/>
 
@@ -207,7 +207,7 @@
                 android:id="@+id/chipGroup2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:singleSelection="true"
+                app:singleSelection="false"
                 android:layout_marginBottom="8dp"
                 app:chipSpacingVertical="0dp"/>
 
@@ -239,7 +239,7 @@
                 android:id="@+id/chipGroup3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:singleSelection="true"
+                app:singleSelection="false"
                 android:layout_marginBottom="8dp"
                 app:chipSpacingVertical="0dp"/>
 

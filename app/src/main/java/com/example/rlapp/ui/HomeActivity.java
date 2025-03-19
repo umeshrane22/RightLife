@@ -1,6 +1,7 @@
 package com.example.rlapp.ui;
 
 import android.app.Activity;
+import android.app.ComponentCaller;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -68,7 +69,7 @@ import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
 import com.example.rlapp.ui.healthcam.HealthCamActivity;
 import com.example.rlapp.ui.healthcam.NewHealthCamReportActivity;
 import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
-import com.example.rlapp.ui.jounal.new_journal.JournalNewActivity;
+import com.example.rlapp.ui.jounal.new_journal.JournalListActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
@@ -1452,7 +1453,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
             //Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(HomeActivity.this, JournalNewActivity.class));
+            startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
             //Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreAffirmationsListActivity.class));
@@ -1740,6 +1741,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+    }
+
+    @Override
+    public void onNewIntent(@NonNull Intent intent, @NonNull ComponentCaller caller) {
+        super.onNewIntent(intent, caller);
+        if (intent.getBooleanExtra("start_activity5", false)) {
+            startActivity(new Intent(this, JournalListActivity.class));
+        }
     }
 
     private void getContentlistdetailsfilter(String s) {
