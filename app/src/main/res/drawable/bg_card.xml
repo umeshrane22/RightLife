@@ -5,7 +5,7 @@
     <solid android:color="#FFFDE7" /> <!-- Light yellow tone, change as needed -->
 
     <!-- Rounded corners -->
-    <corners android:radius="16dp" />
+    <corners android:radius="25dp" />
 
     <!-- Optional shadow effect (works better on API 21+) -->
     <padding android:left="8dp"

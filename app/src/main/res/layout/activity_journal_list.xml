@@ -1,27 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/list_color_journal"
     android:padding="16dp">
 
-    <!-- Date Row -->
-    <HorizontalScrollView
+    <!-- Top bar -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:scrollbars="none">
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:gravity="center_vertical"
+        android:weightSum="1">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/btnBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:src="@drawable/icon_back" />
 
-            <!-- Day Chips dynamically created in code -->
-        </LinearLayout>
-    </HorizontalScrollView>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/btnInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/info_affirmation" />
+    </LinearLayout>
+
+    <!-- Date Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="8dp">
+
+        <ImageView
+            android:id="@+id/ivPrev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/left_arrow_journal"
+            android:padding="4dp" />
+
+        <TextView
+            android:id="@+id/tvSelectedDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Thur . 17 Feb 2025"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_weight="1"
+            android:textAlignment="center"/>
+
+        <ImageView
+            android:id="@+id/ivNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/right_arrow_journal"
+            android:padding="4dp" />
+    </LinearLayout>
+
+    <!-- RecyclerView for Calendar -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingHorizontal="8dp"
+        android:scrollbars="none"/>
+
 
     <TextView
         android:id="@+id/yourEntriesTitle"
@@ -37,14 +92,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="+ Add A New Journal Entry"
-        android:backgroundTint="#FFF3E0"
-        android:textColor="#FF9800"
-        android:layout_marginBottom="8dp"/>
+        android:background="@drawable/dashed_rounded_border"
+        android:textColor="@color/color_think_right"
+        android:layout_margin="8dp"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"/>
+
+        <include layout="@layout/loader_layout"/>
+
+    </RelativeLayout>
 
 </LinearLayout>

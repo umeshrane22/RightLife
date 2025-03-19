@@ -109,6 +109,14 @@
 
     <color name="menu_icon_color_unselected">#0B1215</color>
     <color name="menu_icon_color_selected">#FD6967</color>
+    <color name="list_color_journal">#F0EFEB</color>
+
+    <color name="happy_bg_color">#D2ECD9</color>
+    <color name="relaxed_bg_color">#E5F1DA</color>
+    <color name="unsure_bg_color">#EDE9CE</color>
+    <color name="stressed_bg_color">#F0E3CF</color>
+    <color name="sad_bg_color">#F1DAD2</color>
+    <color name="no_emotion_bg_color">#F2ECDB</color>
 
     <color name="menu_text_color_unselected">#0B1215</color>
     <color name="menu_text_color_selected">#FD6967</color>

@@ -36,7 +36,8 @@
         <activity
             android:name=".ui.HomeActivity"
             android:exported="false"
-            android:label="@string/title_activity_homepage" />
+            android:label="@string/title_activity_homepage"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -140,6 +141,7 @@
         <activity android:name="com.example.rlapp.ui.jounal.new_journal.FreeFormJournalActivity" />
         <activity android:name="com.example.rlapp.ui.jounal.new_journal.BulletJournalActivity" />
         <activity android:name="com.example.rlapp.ui.jounal.new_journal.GriefJournalActivity" />
+        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalListActivity" />
 
         <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity1" />
         <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity2" />
