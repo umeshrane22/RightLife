@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
     private static final String BASE_URL = "https://qa.rightlife.com/api/app/api/"; // Your API URL
     private static final String BASE_URL2 = "http://18.159.113.191:8081/app/api/"; // Your API URL
+    private static final String BASE_URL3 = "http://18.159.113.191:8080/app/api/"; // Your API URL
 
     public static final String CDN_URL_QA = "https://d1sacaybzizpm5.cloudfront.net/"; // Your API URL
     public static final String CDN_URL_PROD = "https://d1uxs9zd0apq85.cloudfront.net/"; // Your API URL

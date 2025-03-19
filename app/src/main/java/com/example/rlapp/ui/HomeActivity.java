@@ -55,8 +55,12 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
+import com.example.rlapp.newdashboard.HomeDashboardActivity;
 import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
+import com.example.rlapp.ui.affirmation.AffirmationLandingActivity2;
+import com.example.rlapp.ui.affirmation.TodaysAffirmationActivity;
+import com.example.rlapp.ui.breathwork.BreathworkActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
 import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
 import com.example.rlapp.ui.drawermenu.ProfileActivity;
@@ -1294,7 +1298,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, SearchActivity.class));
+            startActivity(new Intent(this, BreathworkActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
@@ -1456,12 +1460,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
             //Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(HomeActivity.this, ExploreAffirmationsListActivity.class));
+            startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
         } else if (viewId == R.id.ll_sleepsounds) {
             //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
         } else if (viewId == R.id.btn_wellness_preference) {
             startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
+        }else if (viewId == R.id.ll_affirmations) {
+            //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
         }
 
 

@@ -2347,131 +2347,11 @@
             </LinearLayout>
         </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/bottom_sheet"
+        <include layout="@layout/home_bottomsheet"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="210dp"
-            android:layout_alignParentBottom="true"
-            android:layout_margin="16dp"
-            android:background="@drawable/roundedcornershape"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:id="@+id/ll_journal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/roundedcornershape"
-                android:backgroundTint="@color/white"
-                android:elevation="5dp"
-                android:gravity="center"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/roundedcornershape"
-                    android:backgroundTint="@color/thinkright"
-                    android:gravity="center"
-                    android:padding="11dp"
-                    android:layout_margin="1dp"
-                    android:orientation="vertical">
-                    <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:layout_marginTop="5dp"
-                        android:src="@drawable/ic_quick_journey" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:text="Journal"
-                        android:gravity="center"
-                        android:minLines="2"
-                        android:textSize="@dimen/textsize_extrasmall" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_affirmations"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/roundedcornershape"
-                android:backgroundTint="@color/white"
-                android:elevation="5dp"
-                android:gravity="center"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/roundedcornershape"
-                    android:backgroundTint="@color/moveright"
-                    android:gravity="center"
-                    android:padding="11dp"
-                    android:layout_margin="1dp"
-                    android:orientation="vertical">
-                    <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:layout_marginTop="5dp"
-                        android:src="@drawable/ic_quick_affirmation" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:text="Affirmation"
-                        android:gravity="center"
-                        android:minLines="2"
-                        android:textSize="@dimen/textsize_extrasmall" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_sleepsounds"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:background="@drawable/roundedcornershape"
-                android:backgroundTint="@color/white"
-                android:elevation="5dp"
-                android:gravity="center"
-                android:orientation="vertical">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/roundedcornershape"
-                    android:backgroundTint="@color/sleepright"
-                    android:gravity="center"
-                    android:padding="11dp"
-                    android:layout_margin="1dp"
-                    android:orientation="vertical">
-                    <ImageView
-                        android:layout_width="34dp"
-                        android:layout_height="34dp"
-                        android:layout_marginTop="5dp"
-                        android:src="@drawable/ic_quick_sleepsound" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:text="Sleep Sounds"
-                        android:gravity="center"
-                        android:minLines="2"
-                        android:textSize="@dimen/textsize_extrasmall" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
+            android:layout_marginBottom="77dp"
+            android:layout_alignParentBottom="true"/>
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -2574,6 +2454,7 @@
                 android:scaleType="fitXY"
                 android:elevation="10dp"
                 android:src="@drawable/quicklink_selector" />
+
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

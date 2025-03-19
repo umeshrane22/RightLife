@@ -7,14 +7,653 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <LinearLayout
+        android:id="@+id/ll_bottomsheet_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Log Your Daily Activities"
+        android:textColor="@color/text_color_app"
+        android:textSize="@dimen/textsize_medium"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_margin="7dp"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:id="@+id/ll_top_log"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/roundedcornershape"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/ll_food_log"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+
+                        android:src="@drawable/icon_food_ql" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Food"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_activity_log"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+
+                        android:src="@drawable/icon_activity_ql" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Activity"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_mood_log"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+
+                        android:src="@drawable/icon_mood_ql" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Mood"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/bottom_sheet5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/roundedcornershape"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/ll_sleep_log"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+
+                        android:src="@drawable/icon_sleep_ql" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Sleep"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_weight_log"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+
+                        android:src="@drawable/icon_weight_ql" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Weight"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_water_log"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+
+                        android:src="@drawable/icon_water_ql" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Water"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Explore Our Services"
+        android:textColor="@color/text_color_app"
+        android:textSize="@dimen/textsize_medium"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_margin="7dp"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/ll_ql_services"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/roundedcornershape"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/ll_health_cam_ql"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="#FDEDED"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/health_cam_iconrl" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Face Scan"
+                        android:textColor="#B11414"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Instant health insights"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_small" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_mealplan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="#DEFFF5"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/icon_mealplan_ql" />
 
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Meal Plan"
+                        android:textColor="@color/ql_mealplan_color"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Smart, balanced eating"
+                        android:textColor="@color/text_color_app"
+                        android:textSize="@dimen/textsize_small" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_sleepsounds"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="@color/ql_sleepsounds_color_bg"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/icon_sleepsound_ql" />
 
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Sleep Sounds"
+                        android:textColor="@color/ql_sleepsounds_color"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Relax, unwind, sleep better"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_small" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+
+            android:background="@drawable/roundedcornershape"
+            android:orientation="horizontal"
+
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/ll_affirmations"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="@color/ql_affirmation_color_bg"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/icon_affirmation_ql" />
 
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Affirmations"
+                        android:textColor="@color/ql_affirmation_color"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Daily mindset boost"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_small" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_journal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="@color/ql_journaling_color_bg"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/icon_journling_ql" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Journaling"
+                        android:textColor="@color/ql_journaling_color"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Write, reflect, grow"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_small" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_breathwork"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+
+                android:backgroundTint="@color/white"
+                android:elevation="5dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/rounded_corder_border_gray_radius_small"
+                    android:backgroundTint="@color/ql_breathwork_color_bg"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/icon_breathwork_ql" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Breathwork"
+                        android:textColor="@color/ql_breathwork_color"
+                        android:textSize="@dimen/textsize_medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:gravity="center"
+                        android:minLines="2"
+                        android:text="Breathe, focus, recharge"
+                        android:textColor="#0B1215"
+                        android:textSize="@dimen/textsize_small" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
     <!--//RL Mind Audit -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_mindaudit"
@@ -68,9 +707,9 @@
                     android:layout_margin="16sp"
                     android:fontFamily="@font/merriweather_bold"
                     android:text="View All Past Reports"
-                    android:visibility="visible"
                     android:textColor="@color/txt_color_header"
-                    android:textSize="@dimen/textsize_small" />
+                    android:textSize="@dimen/textsize_small"
+                    android:visibility="visible" />
 
             </RelativeLayout>
 
@@ -289,44 +928,44 @@
             </LinearLayout>
 
 
-                <TextView
-                    android:id="@+id/txt_next_date"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
+            <TextView
+                android:id="@+id/txt_next_date"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
 
-                    android:background="@drawable/roundedcornerbutton"
-                    android:gravity="center"
-                    android:text="8 Aug, 2024 | View Detailed Report"
-                    android:textColor="#0B1215"
-                    app:backgroundTint="#F7F7F7" />
+                android:background="@drawable/roundedcornerbutton"
+                android:gravity="center"
+                android:text="8 Aug, 2024 | View Detailed Report"
+                android:textColor="#0B1215"
+                app:backgroundTint="#F7F7F7" />
 
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="10dp"
-                    android:backgroundTint="#FD6967"
-                    android:drawableLeft="@drawable/rlpage_md_checkbox"
-                    android:gravity="center"
-                    android:paddingStart="50dp"
-                    android:paddingEnd="50dp"
-                    android:visibility="visible"
-                    android:text="Reassess Your Mental Health" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="#FD6967"
+                android:drawableLeft="@drawable/rlpage_md_checkbox"
+                android:gravity="center"
+                android:paddingStart="50dp"
+                android:paddingEnd="50dp"
+                android:text="Reassess Your Mental Health"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/txt_mindaudit_days_count"
                 android:layout_width="wrap_content"
-                android:text="Next Scan in 3 Days"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/dmsans_bold"
-                android:textSize="@dimen/textsize_small"
                 android:layout_margin="16dp"
-                android:layout_height="wrap_content"/>
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Next Scan in 3 Days"
+                android:textSize="@dimen/textsize_small" />
 
         </LinearLayout>
 
