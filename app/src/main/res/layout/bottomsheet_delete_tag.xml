@@ -7,17 +7,27 @@
     android:background="@drawable/toproundedcornershape"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/ivDialogClose"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:src="@drawable/close_journal"
+        android:layout_gravity="end"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-16dp"
         android:fontFamily="@font/dmsans_bold"
-        android:gravity="center"
+        android:layout_gravity="center_horizontal"
         android:text="Delete Tag?"
         android:textColor="@color/black"
         android:textSize="20sp" />
 
     <TextView
+        android:id="@+id/tvDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"

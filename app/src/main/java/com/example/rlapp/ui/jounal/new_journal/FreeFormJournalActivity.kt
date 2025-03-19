@@ -12,7 +12,8 @@ class FreeFormJournalActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFreeformBinding
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
-    private lateinit var journalItem: JournalItem
+    private var journalItem: JournalItem? = JournalItem()
+    private var journalEntry: JournalEntry? = JournalEntry()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +23,18 @@ class FreeFormJournalActivity : AppCompatActivity() {
         val name = sharedPreferenceManager.userProfile.userdata.firstName
         binding.tvGreeting.text = "Hello $name,\nWhat’s on your mind?"
 
-        journalItem = intent.getSerializableExtra("Section") as JournalItem
+        journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
+
+        journalItem = intent.getSerializableExtra("Section") as? JournalItem
+
+        journalEntry?.let {
+            binding.etJournalEntry.setText(it.answer)
+        }
+
+        binding.btnSave.setTextColor(
+            if (binding.etJournalEntry.text.isNotEmpty()) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
+        )
+        binding.btnSave.isEnabled = binding.etJournalEntry.text.isNotEmpty()
 
         setupListeners()
     }
@@ -56,6 +68,7 @@ class FreeFormJournalActivity : AppCompatActivity() {
                 Intent(this@FreeFormJournalActivity, Journal4QuestionsActivity::class.java).apply {
                     putExtra("Section", journalItem)
                     putExtra("Answer", binding.etJournalEntry.text.toString())
+                    putExtra("JournalEntry", journalEntry)
                 }
             startActivity(intent)
 

@@ -26,6 +26,7 @@
         android:fontFamily="@font/dmsans_regular"
         android:gravity="start"
         android:padding="@dimen/margin_card_16dp"
+        android:maxLength="30"
         android:background="@drawable/bg_edittext_gray"
         android:textColor="@color/txt_color_header"
         android:textSize="14sp" />

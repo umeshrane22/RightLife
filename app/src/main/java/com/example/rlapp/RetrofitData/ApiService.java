@@ -28,11 +28,13 @@ import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalAddTagsRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalDeleteTagRequest;
+import com.example.rlapp.ui.jounal.new_journal.JournalListResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalQuestionCreateRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalQuestionsResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalSectionResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalTagsResponse;
+import com.example.rlapp.ui.jounal.new_journal.JournalUpdateRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalUpdateTagsRequest;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
@@ -923,6 +925,12 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
+    @GET("journalNew/userJournalTag")
+    Call<JournalTagsResponse> getUserJournalTags(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
     @POST("journalNew/userJournalTag")
     Call<ResponseBody> addJournalTag(
             @Header("Authorization") String authToken,
@@ -944,10 +952,30 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
-    @POST("journalNew/userJournalTag")
+    @POST("journalNew")
     Call<ResponseBody> createJournal(
             @Header("Authorization") String authToken,
             @Body JournalQuestionCreateRequest journalQuestionCreateRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("journalNew/journalAnswer")
+    Call<JournalListResponse> getJournalList(
+            @Header("Authorization") String authToken,
+            @Query("date") String date
+    );
+
+    @DELETE("journalNew/{id}")
+    Call<ResponseBody> deleteJournalEntry(
+            @Header("Authorization") String authToken,
+            @Path("id") String journalId
+    );
+
+    @PUT("journalNew/{id}")
+    Call<ResponseBody> updateJournalEntry(
+            @Header("Authorization") String authToken,
+            @Path("id") String journalId,
+            @Body JournalUpdateRequest request
     );
 
 }

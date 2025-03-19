@@ -106,7 +106,14 @@
     <color name="txt_color_journal_date">#14142A</color>
     <color name="btn_color_journal">#FFDD80</color>
     <color name="delete_color_journal">#FF453A</color>
+    <color name="list_color_journal">#F0EFEB</color>
 
+    <color name="happy_bg_color">#D2ECD9</color>
+    <color name="relaxed_bg_color">#E5F1DA</color>
+    <color name="unsure_bg_color">#EDE9CE</color>
+    <color name="stressed_bg_color">#F0E3CF</color>
+    <color name="sad_bg_color">#F1DAD2</color>
+    <color name="no_emotion_bg_color">#F2ECDB</color>
 
 
 

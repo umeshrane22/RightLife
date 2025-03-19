@@ -1,5 +1,6 @@
 package com.example.rlapp.ui.jounal.new_journal
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.TypedValue
@@ -15,12 +16,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.databinding.ActivityJournalAnswerBinding
 import com.example.rlapp.databinding.BottomsheetAddTagBinding
 import com.example.rlapp.databinding.BottomsheetDeleteTagBinding
+import com.example.rlapp.ui.utility.DateTimeUtils
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -41,12 +44,12 @@ class Journal4QuestionsActivity : AppCompatActivity() {
     private var tagsList3: ArrayList<String> = ArrayList()
     private var isExpanded3 = false
     private val visibleCount = 3
-    private lateinit var journalItem: JournalItem
+    private var journalItem: JournalItem? = JournalItem()
     private lateinit var answer: String
     private val journalQuestionCreateRequest = JournalQuestionCreateRequest()
-    private var selectedTag1: String = ""
-    private var selectedTag2: String = ""
-    private var selectedTag3: String = ""
+    private val journalUpdateRequest = JournalUpdateRequest()
+    private var selectedTags: ArrayList<String> = ArrayList()
+    private var journalEntry: JournalEntry? = JournalEntry()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,15 +57,29 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
-        journalItem = intent.getSerializableExtra("Section") as JournalItem
+        journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
+
+        journalItem = intent.getSerializableExtra("Section") as? JournalItem
+
         answer = intent.getStringExtra("Answer").toString()
         val questionId = intent.getStringExtra("QuestionId")
 
 
+
+        binding.tvEntryDate.text = DateTimeUtils.formatCurrentDate()
         binding.tvEntryText.text = answer
-        journalQuestionCreateRequest.title = journalItem.title
-        journalQuestionCreateRequest.questionId = questionId
-        journalQuestionCreateRequest.answer = answer
+
+        if (journalItem != null) {
+            journalQuestionCreateRequest.title = journalItem?.title
+            journalQuestionCreateRequest.questionId = questionId
+            journalQuestionCreateRequest.answer = answer
+        }
+
+        if (journalEntry != null) {
+            journalUpdateRequest.answer = answer
+            journalEntry?.tags?.let { selectedTags.addAll(it) }
+        }
+
 
 
         setUpMoodList()
@@ -79,7 +96,8 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             addPlusChip(binding.chipGroup1, 1)
             val itemsToShow = if (isExpanded1) tagsList1 else tagsList1.take(visibleCount)
             for (label in itemsToShow) {
-                addChip(label, binding.chipGroup1, false, 1)
+                val isSelected = selectedTags.contains(label)
+                addChip(label, binding.chipGroup1, false, 1, isSelected)
             }
 
             binding.moreButton1.text = if (isExpanded1) "Less ▲" else "More ⌄"
@@ -92,7 +110,8 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             addPlusChip(binding.chipGroup2, 2)
             val itemsToShow = if (isExpanded2) tagsList2 else tagsList2.take(visibleCount)
             for (label in itemsToShow) {
-                addChip(label, binding.chipGroup2, false, 2)
+                val isSelected = selectedTags.contains(label)
+                addChip(label, binding.chipGroup2, false, 2, isSelected)
             }
 
             binding.moreButton2.text = if (isExpanded2) "Less ▲" else "More ⌄"
@@ -105,22 +124,20 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             addPlusChip(binding.chipGroup3, 3)
             val itemsToShow = if (isExpanded3) tagsList3 else tagsList3.take(visibleCount)
             for (label in itemsToShow) {
-                addChip(label, binding.chipGroup3, false, 3)
+                val isSelected = selectedTags.contains(label)
+                addChip(label, binding.chipGroup3, false, 3, isSelected)
             }
 
             binding.moreButton3.text = if (isExpanded3) "Less ▲" else "More ⌄"
         }
 
         binding.btnSave.setOnClickListener {
-            if (journalQuestionCreateRequest.emotion.isNullOrEmpty()){
-                Toast.makeText(this,"Please select emotion",Toast.LENGTH_SHORT).show()
-            }else if (selectedTag1.isNullOrEmpty() || selectedTag2.isNullOrEmpty() || selectedTag3.isNullOrEmpty()){
-                Toast.makeText(this,"Please select tag",Toast.LENGTH_SHORT).show()
-            }else {
-                journalQuestionCreateRequest.tags?.add(selectedTag1)
-                journalQuestionCreateRequest.tags?.add(selectedTag2)
-                journalQuestionCreateRequest.tags?.add(selectedTag3)
+            if (journalEntry == null) {
+                journalQuestionCreateRequest.tags?.addAll(selectedTags)
                 createJournal()
+            } else {
+                journalUpdateRequest.tags?.addAll(selectedTags)
+                updateJournal()
             }
         }
 
@@ -226,6 +243,10 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             bottomSheetDialog.dismiss()
         }
 
+        dialogBinding.ivDialogClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
         dialogBinding.btnYes.setOnClickListener {
             val journalDeleteTagRequest = JournalDeleteTagRequest()
             journalDeleteTagRequest.outerIndex = type - 1
@@ -245,8 +266,20 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             Mood("Sad", R.drawable.ic_sad)
         )
 
-        val adapter = JournalMoodAdapter(moodList) { selectedMood ->
+        val selectedEmotionPosition = when (journalEntry?.emotion) {
+            "Happy" -> 0
+            "Relaxed" -> 1
+            "Unsure" -> 2
+            "Stressed" -> 3
+            "Sad" -> 4
+            else -> {
+                RecyclerView.NO_POSITION
+            }
+        }
+
+        val adapter = JournalMoodAdapter(moodList, selectedEmotionPosition) { selectedMood ->
             journalQuestionCreateRequest.emotion = selectedMood.name
+            journalUpdateRequest.emotion = selectedMood.name
         }
 
         binding.moodRecyclerView.adapter = adapter
@@ -254,7 +287,13 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun addChip(name: String, chipGroup: ChipGroup, isFromAddTag: Boolean, type: Int) {
+    private fun addChip(
+        name: String,
+        chipGroup: ChipGroup,
+        isFromAddTag: Boolean,
+        type: Int,
+        isSelected: Boolean
+    ) {
         val chip = Chip(this)
         chip.id = View.generateViewId() // Generate unique ID
         chip.text = name
@@ -281,6 +320,8 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         )
 
         chip.layoutParams = layoutParams
+
+        chip.isChecked = isSelected
 
         // Set different colors for selected state
         val colorStateList = ColorStateList(
@@ -313,11 +354,11 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         }
 
         chip.setOnClickListener { view ->
-            val position = chipGroup.indexOfChild(view) -1
+            val position = chipGroup.indexOfChild(view) - 1
             when (type) {
-                1 -> selectedTag1 = tagsList1[position]
-                2 -> selectedTag2 = tagsList2[position]
-                3 -> selectedTag3 = tagsList3[position]
+                1 -> selectedTags.add(tagsList1[position])
+                2 -> selectedTags.add(tagsList2[position])
+                3 -> selectedTags.add(tagsList3[position])
             }
         }
 
@@ -423,17 +464,20 @@ class Journal4QuestionsActivity : AppCompatActivity() {
 
                     val itemsToShow1 = tagsList1.take(visibleCount)
                     for (label in itemsToShow1) {
-                        addChip(label, binding.chipGroup1, false, 1)
+                        val isSelected = selectedTags.contains(label)
+                        addChip(label, binding.chipGroup1, false, 1, isSelected)
                     }
 
                     val itemsToShow2 = tagsList2.take(visibleCount)
                     for (label in itemsToShow2) {
-                        addChip(label, binding.chipGroup2, false, 2)
+                        val isSelected = selectedTags.contains(label)
+                        addChip(label, binding.chipGroup2, false, 2, isSelected)
                     }
 
                     val itemsToShow3 = tagsList3.take(visibleCount)
                     for (label in itemsToShow3) {
-                        addChip(label, binding.chipGroup3, false, 3)
+                        val isSelected = selectedTags.contains(label)
+                        addChip(label, binding.chipGroup3, false, 3, isSelected)
                     }
 
                 } else {
@@ -474,7 +518,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                         response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
-                    addChip(name, chipGroup, true, type)
+                    addChip(name, chipGroup, true, type, false)
                     when (type) {
                         1 -> tagsList1.add(0, name)
                         2 -> tagsList2.add(0, name)
@@ -611,6 +655,47 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                         response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    closeActivity()
+                } else {
+                    Toast.makeText(
+                        this@Journal4QuestionsActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(
+                    this@Journal4QuestionsActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun updateJournal() {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call =
+            apiService.updateJournalEntry(
+                sharedPreferenceManager.accessToken,
+                journalEntry?.id,
+                journalUpdateRequest
+            )
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    Toast.makeText(
+                        this@Journal4QuestionsActivity,
+                        response.message(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    closeActivity()
 
                 } else {
                     Toast.makeText(
@@ -629,5 +714,17 @@ class Journal4QuestionsActivity : AppCompatActivity() {
                 ).show()
             }
         })
+    }
+
+    private fun closeActivity(){
+        finish()
+        startActivity(
+            Intent(
+                this@Journal4QuestionsActivity,
+                JournalListActivity::class.java
+            ).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("start_journal", true)
+            })
     }
 }
