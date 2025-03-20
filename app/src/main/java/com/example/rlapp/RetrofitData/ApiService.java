@@ -16,6 +16,7 @@ import com.example.rlapp.apimodel.emaillogin.EmailOtpRequest;
 import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.example.rlapp.ui.SubCategoryResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationSelectedCategoryResponse;
@@ -776,6 +777,9 @@ public interface ApiService {
             @Path("contentId") String contentId // Pass contentId as a path parameter
 
     );
+
+    @POST("content/like")
+    Call<ResponseBody> ArticleLikeRequest(@Header("Authorization") String authToken,@Body ArticleLikeRequest request);
 
     @Headers("Content-Type: application/json")
     @GET("app/type/content")

@@ -59,6 +59,7 @@ import com.example.rlapp.newdashboard.HomeDashboardActivity;
 import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.affirmation.AffirmationLandingActivity2;
+import com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity;
 import com.example.rlapp.ui.affirmation.TodaysAffirmationActivity;
 import com.example.rlapp.ui.breathwork.BreathworkActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
@@ -302,6 +303,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         //img_homemenu.setOnClickListener(this);
         txt_homemenu = findViewById(R.id.txt_homemenu);
         img_healthmenu = findViewById(R.id.img_healthmenu);
+        txt_healthmenu = findViewById(R.id.txt_healthmenu);
+
         //img_healthmenu.setOnClickListener(this);
 
         quicklinkmenu = findViewById(R.id.quicklinkmenu);
@@ -1302,10 +1305,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here
-            Intent intent = new Intent(HomeActivity.this, RLPageActivity.class);
+            //Intent intent = new Intent(HomeActivity.this, RLPageActivity.class);
             // Optionally pass data
             //intent.putExtra("key", "value");
-            startActivity(intent);
+            //startActivity(intent);
+
+            if (bottom_sheet.getVisibility() == View.VISIBLE) {
+                bottom_sheet.setVisibility(View.GONE);
+                img_healthmenu.setBackgroundResource(R.drawable.homeselected);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.menuselected));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
+                txt_healthmenu.setTypeface(typeface);
+                quicklinkmenu.setSelected(!quicklinkmenu.isSelected());
+            }
+
         } else if (viewId == R.id.ll_homehealthclick) {
             //Toast.makeText(HomeActivity.this, "TextView clicked", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(HomeActivity.this, HealthPageMainActivity.class);
@@ -1314,16 +1327,17 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             finish();
         } else if (viewId == R.id.ll_homemenuclick) {
-            //  Toast.makeText(HomeActivity.this, "ImageView clicked", Toast.LENGTH_SHORT).show();
-
-            if (bottom_sheet.getVisibility() == View.VISIBLE) {
+              //Toast.makeText(HomeActivity.this, "New Home Coming Soon...", Toast.LENGTH_LONG).show();
+              startActivity(new Intent(HomeActivity.this, PractiseAffirmationPlaylistActivity.class));
+            /*if (bottom_sheet.getVisibility() == View.VISIBLE) {
                 bottom_sheet.setVisibility(View.GONE);
                 img_homemenu.setBackgroundResource(R.drawable.homeselected);
                 txt_homemenu.setTextColor(getResources().getColor(R.color.menuselected));
                 Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
                 txt_homemenu.setTypeface(typeface);
                 quicklinkmenu.setSelected(!quicklinkmenu.isSelected());
-            }/* else {
+            }*/
+            /* else {
                 bottom_sheet.setVisibility(View.VISIBLE);
                 img_homemenu.setBackgroundColor(Color.TRANSPARENT);
                 txt_homemenu.setTextColor(getResources().getColor(R.color.txt_color_header));
@@ -1442,16 +1456,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }*/
             if (bottom_sheet.getVisibility() == View.VISIBLE) {
                 bottom_sheet.setVisibility(View.GONE);
-                img_homemenu.setBackgroundResource(R.drawable.homeselected);
-                txt_homemenu.setTextColor(getResources().getColor(R.color.menuselected));
+                img_healthmenu.setBackgroundResource(R.drawable.homeselected);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.menuselected));
                 Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
-                txt_homemenu.setTypeface(typeface);
+                txt_healthmenu.setTypeface(typeface);
             } else {
                 bottom_sheet.setVisibility(View.VISIBLE);
-                img_homemenu.setBackgroundColor(Color.TRANSPARENT);
-                txt_homemenu.setTextColor(getResources().getColor(R.color.txt_color_header));
+                img_healthmenu.setBackgroundColor(Color.TRANSPARENT);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.txt_color_header));
                 Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_regular);
-                txt_homemenu.setTypeface(typeface);
+                txt_healthmenu.setTypeface(typeface);
 
             }
             view.setSelected(!view.isSelected());

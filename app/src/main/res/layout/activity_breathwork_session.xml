@@ -1,0 +1,203 @@
+<!-- res/layout/activity_breathwork_session.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+    <!-- Top Bar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/icon_back" />
+
+        <ImageView
+            android:id="@+id/ivPlus"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/breathing_plus_icon" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+            <!-- Breathwork Image -->
+            <ImageView
+                android:id="@+id/ivBreathworkImage"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:src="@drawable/breathing_equal" />
+        </RelativeLayout>
+
+        <!-- Title & Description -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="50dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/btnContinue"
+                android:layout_alignParentTop="true"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="Equal Breathing"
+                    android:textColor="@color/text_color_breathwork"
+                    android:textSize="24sp"
+
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting"
+                    android:textColor="@color/text_color_breathwork"
+                    android:layout_marginBottom="10dp"
+                    android:paddingStart="25dp"
+                    android:paddingEnd="25dp"
+                    android:textSize="14sp" />
+
+                <!-- Session Sets -->
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Session Sets"
+                        android:textColor="@color/text_color_breathwork"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/btnMinus"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/breathing_plus_icon"
+                        android:text="-" />
+
+                    <TextView
+                        android:id="@+id/tvSessionCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="12dp"
+                        android:text="3"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/btnPlus"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/breathing_plus_icon"
+                        android:text="+" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvSetInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:gravity="start"
+                        android:text="1 set = 4 breaths  "
+                        android:layout_gravity="center_vertical"
+                        android:textColor="@color/text_color_breathwork" />
+
+                    <TextView
+                        android:id="@+id/tvSettime"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="15:09 mins"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="@color/text_color_breathwork" />
+                </LinearLayout>
+
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="16dp"
+                    android:background="#CCCCCC" />
+
+                <!-- Haptic Feedback Switch -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Haptic Feedback"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_color_breathwork"
+                        android:textSize="16sp" />
+
+                    <Switch
+                        android:id="@+id/switchHaptic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+            <!-- Continue Button -->
+
+
+            <Button
+                android:id="@+id/btnContinue"
+                android:layout_width="200dp"
+                android:layout_height="60dp"
+
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="#FFDD80"
+                android:text="Continue"
+                android:textColor="@color/text_color_breathwork" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</LinearLayout>

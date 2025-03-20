@@ -22,6 +22,8 @@ class AffirmationCardPagerAdapter(
 ) :
     PagerAdapter() {
 
+    private val instantiatedViews = mutableMapOf<Int, View>()
+
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val inflater = LayoutInflater.from(container.context)
         val view = inflater.inflate(R.layout.row_affirmation_card, container, false)
@@ -55,6 +57,7 @@ class AffirmationCardPagerAdapter(
         pageCount.text = "${position + 1}/${items.size}"
 
         container.addView(view)
+        instantiatedViews[position] = view
         return view
     }
 
@@ -64,6 +67,9 @@ class AffirmationCardPagerAdapter(
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         container.removeView(`object` as View)
+    }
+    fun getViewAt(position: Int): View? {
+        return instantiatedViews[position]
     }
 
 }

@@ -149,6 +149,8 @@
         <activity android:name="com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity"/>
         <activity android:name="com.example.rlapp.newdashboard.HomeDashboardActivity" />
         <activity android:name="com.example.rlapp.ui.breathwork.BreathworkActivity" />
+        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkSessionActivity" />
+        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkPracticeActivity" />
 
 
         <provider

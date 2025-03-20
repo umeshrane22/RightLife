@@ -1,6 +1,7 @@
 package com.example.rlapp.ui.Articles;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.example.rlapp.R;
 import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.databinding.ArticleItemRowBinding;
 import com.example.rlapp.ui.Articles.models.Article;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.utility.svgloader.GlideApp;
 
 import java.util.List;
@@ -59,10 +61,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             holder.binding.tvProductTitle.setText(article.getRecommendedProduct().getSectionTitle());
             holder.binding.txtDescCardProduct.setText(article.getRecommendedProduct().getDescription());
             holder.binding.txtPriceProduct.setText(String.format("₹ %s", article.getRecommendedProduct().getDiscountedPrice()));
-            holder.binding.txtSavedPriceProduct.setText(String.format("₹%s", article.getRecommendedProduct().getListPrice()));
+            holder.binding.txtSavedPriceProduct.setText(String.format("₹ %s you save %s" , article.getRecommendedProduct().getListPrice(), article.getRecommendedProduct().getTotalSavings()));
             //holder.binding.txtBtnBuyNow.setText(article.getRecommendedProduct().getButtonText());
-            GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getThumbnail())
-                    .transform(new RoundedCorners(15))
+            GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedProduct().getImage())
+                    .transform(new RoundedCorners(20))
                     .into(holder.binding.imgThumbnailProduct);
 
         } else {
@@ -88,11 +90,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
         // Article Card
         if (article.getRecommendedArticle() != null && article.getRecommendedArticle().getTitle() != null) {
-            if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("video")){
+            if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("video") || article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
                 holder.binding.card3.setVisibility(View.VISIBLE);
 
                 holder.binding.tvArticlecard3TitleVideo.setText(article.getRecommendedArticle().getTitle());
-                holder.binding.txtDescCard3Video.setText(article.getRecommendedArticle().getTitle());
+                holder.binding.txtDescCard3Video.setText(article.getRecommendedArticle().getDesc());
                 if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
                     GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
                             .transform(new RoundedCorners(15))
@@ -101,14 +103,71 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
 
 
+                if (article.getRecommendedArticle().getViewCount()!=null) {
+                    holder.binding.txtViewcountVideo.setText(String.valueOf(article.getRecommendedArticle().getViewCount()));
+                    holder.binding.txtViewcountVideo.setVisibility(View.VISIBLE);
+                }
+
+                if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
+                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_audio_content);
+                }else {
+                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_video_content);
+                }
+
                 holder.binding.card3Series.setVisibility(View.GONE);
+                int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
+                holder.binding.imgTagVideo.setBackgroundTintList(ColorStateList.valueOf(color));
             }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")){
                 holder.binding.card3.setVisibility(View.GONE);
                 holder.binding.card3Series.setVisibility(View.VISIBLE);
+                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
+
+                holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
+                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getDesc());
+                if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
+                    GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
+                            .transform(new RoundedCorners(15))
+                            .into(holder.binding.imgThumbnailSeries);
+                }
+
+
+                holder.binding.txtTagSeries.setVisibility(View.VISIBLE);
+
+                if (article.getRecommendedArticle().getViewCount()!=null) {
+                    holder.binding.txtViewcountSeries.setText(String.valueOf(article.getRecommendedArticle().getViewCount()));
+                    holder.binding.txtViewcountSeries.setVisibility(View.VISIBLE);
+                }
+
+                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
+                int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
+                holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
             }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
                 holder.binding.card3.setVisibility(View.GONE);
                 holder.binding.card3Series.setVisibility(View.VISIBLE);
+                holder.binding.card3.setVisibility(View.GONE);
+                holder.binding.card3Series.setVisibility(View.VISIBLE);
+                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
+
+                holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
+                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getDesc());
+                if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
+                    GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
+                            .transform(new RoundedCorners(15))
+                            .into(holder.binding.imgThumbnailSeries);
+                }
+
+                holder.binding.txtTagSeries.setVisibility(View.VISIBLE);
+
+                if (article.getRecommendedArticle().getViewCount()!=null) {
+                    holder.binding.txtViewcountSeries.setText(String.valueOf(article.getRecommendedArticle().getViewCount()));
+                    holder.binding.txtViewcountSeries.setVisibility(View.VISIBLE);
+                }
+
+                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_text_content);
+                int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
+                holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
             }
+
         }
 
 /*

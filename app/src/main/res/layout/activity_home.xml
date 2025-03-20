@@ -2388,7 +2388,7 @@
                             android:id="@+id/img_homemenu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/homeselected"
+
                             android:padding="2dp"
                             android:src="@drawable/homemenu" />
 
@@ -2398,7 +2398,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Home"
-                            android:textColor="@color/menuselected"
+                            android:textColor="@color/text_color_app"
                             android:textSize="12dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -2422,13 +2422,16 @@
                             android:id="@+id/img_healthmenu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/ic_myrl_menu" />
+                            android:background="@drawable/homeselected"
+                            android:src="@drawable/new_explore_unselected_svg" />
 
                         <TextView
+                            android:id="@+id/txt_healthmenu"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/dmsans_regular"
-                            android:text="My RL"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="Explore"
+                            android:textColor="@color/menuselected"
                             android:textSize="12dp" />
                     </LinearLayout>
 
