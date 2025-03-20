@@ -51,6 +51,8 @@ import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest;
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.payment.PaymentCardResponse;
+import com.example.rlapp.ui.settings.pojo.FAQResponse;
+import com.example.rlapp.ui.settings.pojo.GeneralInformationResponse;
 import com.example.rlapp.ui.therledit.EpisodeTrackRequest;
 import com.example.rlapp.ui.therledit.FavouriteRequest;
 import com.example.rlapp.ui.therledit.StatiticsRequest;
@@ -981,6 +983,20 @@ public interface ApiService {
             @Path("id") String journalId,
             @Body JournalUpdateRequest request
     );
+
+    @Headers("Content-Type: application/json")
+    @GET("faq")
+    Call<FAQResponse> getFAQData(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("termsPrivacy")
+    Call<GeneralInformationResponse> getGeneralInformation(
+            @Header("Authorization") String authToken
+    );
+
+
 
 }
 

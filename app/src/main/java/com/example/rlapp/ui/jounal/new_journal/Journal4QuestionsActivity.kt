@@ -159,9 +159,6 @@ class Journal4QuestionsActivity : AppCompatActivity() {
 
         bottomSheetDialog.setContentView(bottomSheetView)
 
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
@@ -224,9 +221,6 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         // Inflate the BottomSheet layout
         val dialogBinding = BottomsheetDeleteTagBinding.inflate(layoutInflater)
         val bottomSheetView = dialogBinding.root
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
 
         bottomSheetDialog.setContentView(bottomSheetView)
 

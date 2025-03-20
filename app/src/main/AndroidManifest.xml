@@ -152,6 +152,17 @@
         <activity android:name="com.example.rlapp.ui.breathwork.BreathworkSessionActivity" />
         <activity android:name="com.example.rlapp.ui.breathwork.BreathworkPracticeActivity" />
 
+        <activity android:name="com.example.rlapp.ui.settings.SettingsNewActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.AppSettingsActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.NotificationsNewActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.EmailNotificationsNewActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.SupportActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.FAQNewActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.FAQDetailsActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.GeneralInformationActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.HtmlTextActivity" />
+        <activity android:name="com.example.rlapp.ui.settings.SubscriptionPlansActivity" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
