@@ -55,6 +55,7 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
+import com.example.rlapp.databinding.ActivitySettingsNewBinding;
 import com.example.rlapp.newdashboard.HomeDashboardActivity;
 import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
@@ -78,6 +79,7 @@ import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.rlpagemain.RLPageActivity;
 import com.example.rlapp.ui.search.SearchActivity;
+import com.example.rlapp.ui.settings.SettingsNewActivity;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
@@ -1826,7 +1828,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(this, PurchaseHistoryTypesActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
+            Intent intent = new Intent(this, SettingsNewActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_preferences) {
             Intent intent = new Intent(this, PreferencesLayer1Activity.class);

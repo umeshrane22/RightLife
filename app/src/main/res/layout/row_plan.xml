@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <RadioButton
+            android:id="@+id/radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
+
+        <TextView
+            android:id="@+id/planName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monthly Plan"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_mind" />
+
+        <TextView
+            android:id="@+id/planDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/planName"
+            android:text="First 14 days free · XXX/month"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_mind"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/trialEnds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/planDescription"
+            android:text="Trial ends on ##-##-##"
+            android:textColor="@color/menuselected"
+            android:layout_marginTop="4dp"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

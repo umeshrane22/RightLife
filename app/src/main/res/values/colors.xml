@@ -144,6 +144,7 @@
     <color name="ql_breathwork_color_bg">#EBF7FF</color>
 
     <color name="text_color_app">#0B1215</color>
+    <color name="settings_bg_color">#F9F9F9</color>
 
 
 </resources>
