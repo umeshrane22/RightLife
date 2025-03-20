@@ -7,7 +7,7 @@ import com.example.rlapp.databinding.ItemBreathworkBinding
 
 class BreathworkAdapter(
     private val items: List<BreathworkPattern>,
-    private val onItemClick: (BreathworkPattern) -> Unit
+    private val onItemClick: (BreathworkPattern,Int) -> Unit
 ) : RecyclerView.Adapter<BreathworkAdapter.BreathworkViewHolder>() {
 
     inner class BreathworkViewHolder(val binding: ItemBreathworkBinding) : RecyclerView.ViewHolder(binding.root)
@@ -25,11 +25,11 @@ class BreathworkAdapter(
             imageView.setImageResource(item.imageResId)
 
             plusButton.setOnClickListener {
-                onItemClick(item)
+                onItemClick(item,position)
             }
 
             cardView.setOnClickListener {
-                onItemClick(item)
+                onItemClick(item,position)
             }
         }
     }

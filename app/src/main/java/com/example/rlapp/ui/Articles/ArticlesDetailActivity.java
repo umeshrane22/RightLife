@@ -32,6 +32,7 @@ import com.example.rlapp.databinding.ActivityArticledetailBinding;
 import com.example.rlapp.ui.Articles.models.Article;
 import com.example.rlapp.ui.Articles.models.ArticleDetailsResponse;
 import com.example.rlapp.ui.Articles.models.Artist;
+import com.example.rlapp.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -43,6 +44,7 @@ import com.google.gson.JsonElement;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,6 +63,8 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     private ImageView fullscreenButton;
     private boolean isFullscreen = false;
     private String contentId;
+    private ArticleDetailsResponse articleDetailsResponse;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +80,15 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
         iconArrow = findViewById(R.id.icon_arrow_article);
 
-
+        iconArrow.setOnClickListener(v -> {
+            if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
+                txt_inthisarticle_list.setVisibility(View.GONE);
+                iconArrow.setRotation(360f); // Rotate by 180 degrees
+            } else {
+                txt_inthisarticle_list.setVisibility(View.VISIBLE);
+                iconArrow.setRotation(180f); // Rotate by 180 degrees
+            }
+                });
         txt_inthisarticle.setOnClickListener(v -> {
             if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
                 txt_inthisarticle_list.setVisibility(View.GONE);
@@ -94,7 +106,10 @@ public class ArticlesDetailActivity extends AppCompatActivity {
             // Call Save article api
         });
 
-        binding.imageLikeArticle.setOnClickListener(v -> binding.imageLikeArticle.setImageResource(R.drawable.like_article_active));
+        binding.imageLikeArticle.setOnClickListener(v -> {
+            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
+            postArticleLike(articleDetailsResponse.getData().getId());
+        });
         txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
 
         contentId = getIntent().getStringExtra("contentId");
@@ -110,7 +125,9 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        contentId = "679b1e6d4199ddf6752fdb20";
+       // contentId = "679b1e6d4199ddf6752fdb20";
+        contentId = "67a9aeed7864652954596ecb";
+
         // Make the API call
         Call<JsonElement> call = apiService.getArticleDetails(accessToken,contentId);
         call.enqueue(new Callback<JsonElement>() {
@@ -122,10 +139,11 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                    ArticleDetailsResponse ResponseObj = gson.fromJson(jsonResponse, ArticleDetailsResponse.class);
-                    Log.d("API Response body", "Article Title" + ResponseObj.getData().getTitle());
-                    if (ResponseObj != null && ResponseObj.getData() != null) {
-                        handleArticleResponseData(ResponseObj);
+                     articleDetailsResponse = gson.fromJson(jsonResponse, ArticleDetailsResponse.class);
+
+                    Log.d("API Response body", "Article Title" + articleDetailsResponse.getData().getTitle());
+                    if (articleDetailsResponse != null && articleDetailsResponse.getData() != null) {
+                        handleArticleResponseData(articleDetailsResponse);
                     }
 
                 } else {
@@ -157,7 +175,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                 .into(binding.authorImage);
         binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
         setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
-        binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime());
+        binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime()+" min read");
         Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
                 .transform(new RoundedCorners(1))
                 .into(binding.articleImageMain);
@@ -231,10 +249,10 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         binding.recyclerViewArticle.setLayoutManager(horizontalLayoutManager);
         binding.recyclerViewArticle.setAdapter(adapter);
-        binding.bottomcardview.setVisibility(View.VISIBLE);
+        //binding.bottomcardview.setVisibility(View.VISIBLE);
     }
 
-    private void setModuleColor(ImageView imgtag, String moduleId) {
+    public void setModuleColor(ImageView imgtag, String moduleId) {
         if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
             ColorStateList colorStateList = ContextCompat.getColorStateList(this, R.color.eatright);
             binding.imageTag.setImageTintList(colorStateList);
@@ -299,6 +317,47 @@ public class ArticlesDetailActivity extends AppCompatActivity {
             player.release(); // Release the player resources
             player = null; // Important: Set player to null to avoid memory leaks
         }
+    }
+
+
+
+
+    private void postArticleLike(String contentId) {
+        //-----------
+
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+
+        ArticleLikeRequest request = new ArticleLikeRequest(contentId, true);
+        // Make the API call
+        Call<ResponseBody> call = apiService.ArticleLikeRequest(accessToken,request);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ResponseBody articleLikeResponse = response.body();
+                    Log.d("API Response", "Article response: " + articleLikeResponse.toString());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+
+
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ArticlesDetailActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API ERROR", "onFailure: " + t.getMessage());
+                t.printStackTrace();  // Print the full stack trace for more details
+
+            }
+        });
+
     }
 
 }

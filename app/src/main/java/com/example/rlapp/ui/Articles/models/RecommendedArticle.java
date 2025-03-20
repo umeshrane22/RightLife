@@ -33,13 +33,19 @@ public class RecommendedArticle {
     @SerializedName("title")
     @Expose
     private String title;
+
+    @SerializedName("desc")
+    @Expose
+    private String desc;
     @SerializedName("pricing")
     @Expose
     private String pricing;
     @SerializedName("thumbnail")
     @Expose
     private Thumbnail thumbnail; // Assuming you have a Thumbnail class (see below)
-
+    @SerializedName("viewCount")
+    @Expose
+    private Integer viewCount;
     // Getters and setters for all fields (generate these in your IDE)
 
     public String getId() { return id; }
@@ -76,4 +82,19 @@ public class RecommendedArticle {
     public void setThumbnail(Thumbnail thumbnail) { this.thumbnail = thumbnail; }
 
 
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
 }

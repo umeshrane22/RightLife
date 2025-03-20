@@ -90,7 +90,9 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
         setCardPlaylistAdapter(affirmationList)
 
         binding.ivDownload.setOnClickListener {
-            val savedImageUri = saveLinearLayoutToGallery(binding.cardViewPager)
+            val savedImageUri =
+                affirmationCardPagerAdapter.getViewAt(binding.cardViewPager.currentItem)
+                    ?.let { it1 -> saveLinearLayoutToGallery(it1) }
             savedImageUri?.let {
                 Toast.makeText(this, "Image saved to gallery at: $it", Toast.LENGTH_LONG).show()
             } ?: run {

@@ -101,6 +101,12 @@ public class Data {
     @Expose
     private Boolean isLike;
 
+    @SerializedName("alsoLikeSection")
+    @Expose
+    private List<AlsoLikeSection> alsoLikeSection;
+
+
+
     public String getContentType() {
         return contentType;
     }

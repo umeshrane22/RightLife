@@ -1,0 +1,90 @@
+<!-- res/layout/bottom_sheet_layout.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/design_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:background="@drawable/toproundedcornershape"
+    android:backgroundTint="@color/gray_light_bg"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/ivDialogClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close_journal"
+        android:layout_gravity="end"
+        android:layout_margin="8dp"/>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-16dp"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_gravity="center_horizontal"
+        android:text="How do you feel after the exercise?"
+        android:textColor="@color/black"
+        android:padding="10dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_gravity="center"
+        android:text="Are you sure you want to delete? This cannot be undone."
+        android:textColor="@color/txt_color_header"
+        android:visibility="gone"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/btnBetter"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="better than before"
+        android:gravity="center"
+        android:textSize="@dimen/textsize_medium"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/text_color_app"
+        android:background="@drawable/rounded_corder_border_gray_radius_small"
+        />
+
+    <TextView
+        android:id="@+id/btnSame"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="same as before"
+        android:gravity="center"
+        android:textSize="@dimen/textsize_medium"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/text_color_app"
+        android:background="@drawable/rounded_corder_border_gray_radius_small"
+
+        />
+
+    <TextView
+        android:id="@+id/btnWorse"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="worse than before"
+        android:gravity="center"
+        android:textSize="@dimen/textsize_medium"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@color/black"
+        android:background="@drawable/rounded_corder_border_gray_radius_small"
+        />
+
+</LinearLayout>
