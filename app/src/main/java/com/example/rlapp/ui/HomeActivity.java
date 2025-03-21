@@ -115,7 +115,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     BannerViewPager mViewPager;
     //
     LinearLayout bottom_sheet;
-    LinearLayout ll_journal, ll_affirmations, ll_sleepsounds;
+    LinearLayout ll_journal, ll_affirmations, ll_sleepsounds,ll_health_cam_ql,ll_breathwork,ll_mealplan;
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
@@ -204,6 +204,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ll_affirmations.setOnClickListener(this);
         ll_sleepsounds = findViewById(R.id.ll_sleepsounds);
         ll_sleepsounds.setOnClickListener(this);
+
+
+        ll_health_cam_ql = findViewById(R.id.ll_health_cam_ql);
+        ll_health_cam_ql.setOnClickListener(this);
+
+        ll_breathwork = findViewById(R.id.ll_breathwork);
+        ll_breathwork.setOnClickListener(this);
+
+        ll_mealplan = findViewById(R.id.ll_mealplan);
+        ll_mealplan.setOnClickListener(this);
 
         // RL Edit
         tv_rledt_cont_title1 = findViewById(R.id.tv_rledt_cont_title1);
@@ -1472,19 +1482,20 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
-            //Toast.makeText(HomeActivity.this, "journal clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
         } else if (viewId == R.id.ll_affirmations) {
-            //Toast.makeText(HomeActivity.this, "Affirmations clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
         } else if (viewId == R.id.ll_sleepsounds) {
-            //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
+        }else if (viewId == R.id.ll_breathwork) {
+            startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
+        }else if (viewId == R.id.ll_health_cam_ql) {
+            getMyRLHealthCamResult();
+        }else if (viewId == R.id.ll_mealplan) {
+            Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
+            //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         } else if (viewId == R.id.btn_wellness_preference) {
             startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
-        }else if (viewId == R.id.ll_affirmations) {
-            //Toast.makeText(HomeActivity.this, "sleepsounds clicked", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
         }
 
 
