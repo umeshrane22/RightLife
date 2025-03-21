@@ -26,6 +26,7 @@ class WellnessFocusActivity : AppCompatActivity() {
     private var selectedService: ModuleService? = null
     private lateinit var adapter: OnBoardingModuleListAdapter
     private val moduleList: ArrayList<ModuleService> = ArrayList()
+    private lateinit var isFrom: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +37,14 @@ class WellnessFocusActivity : AppCompatActivity() {
 
         val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
 
+        isFrom = intent.getStringExtra("FROM").toString()
+
 
         adapter = OnBoardingModuleListAdapter(this, { moduleService ->
             selectedWellness = Utils.getModuleText(moduleService.moduleName)
             selectedService = moduleService
-            SharedPreferenceManager.getInstance(this@WellnessFocusActivity).selectedOnboardingModule = selectedService?.moduleName
+            SharedPreferenceManager.getInstance(this@WellnessFocusActivity).selectedOnboardingModule =
+                selectedService?.moduleName
             btnContinue.backgroundTintList = colorStateListSelected
             btnContinue.isEnabled = true
         }, moduleList)
@@ -52,9 +56,12 @@ class WellnessFocusActivity : AppCompatActivity() {
 
 
         btnContinue.setOnClickListener {
-            val intent = Intent(this, WellnessFocusListActivity::class.java)
-            intent.putExtra("WellnessFocus", selectedService?.moduleName)
-            SharedPreferenceManager.getInstance(this).selectedWellnessFocus = selectedService?.moduleName
+            val intent = Intent(this, WellnessFocusListActivity::class.java).apply {
+                putExtra("WellnessFocus", selectedService?.moduleName)
+                putExtra("FROM", isFrom)
+            }
+            SharedPreferenceManager.getInstance(this).selectedWellnessFocus =
+                selectedService?.moduleName
             startActivity(intent)
         }
     }

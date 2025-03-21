@@ -44,7 +44,6 @@ import com.example.rlapp.RetrofitData.ApiClient;
 import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.PromotionResponse;
 import com.example.rlapp.apimodel.affirmations.AffirmationResponse;
-import com.example.rlapp.apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity;
 import com.example.rlapp.apimodel.liveevents.LiveEventResponse;
 import com.example.rlapp.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.example.rlapp.apimodel.rledit.RightLifeEditResponse;
@@ -55,20 +54,15 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
-import com.example.rlapp.databinding.ActivitySettingsNewBinding;
-import com.example.rlapp.newdashboard.HomeDashboardActivity;
 import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
-import com.example.rlapp.ui.affirmation.AffirmationLandingActivity2;
 import com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity;
 import com.example.rlapp.ui.affirmation.TodaysAffirmationActivity;
 import com.example.rlapp.ui.breathwork.BreathworkActivity;
 import com.example.rlapp.ui.drawermenu.FavouritesActivity;
 import com.example.rlapp.ui.drawermenu.PreferencesLayer1Activity;
-import com.example.rlapp.ui.drawermenu.ProfileActivity;
 import com.example.rlapp.ui.drawermenu.PurchaseHistoryTypesActivity;
 import com.example.rlapp.ui.drawermenu.ReferAFriendActivity;
-import com.example.rlapp.ui.drawermenu.SettingsActivity;
 import com.example.rlapp.ui.exploremodule.ExploreModuleListActivity;
 import com.example.rlapp.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.example.rlapp.ui.healthaudit.HealthAuditActivity;
@@ -78,8 +72,8 @@ import com.example.rlapp.ui.healthpagemain.HealthPageMainActivity;
 import com.example.rlapp.ui.jounal.new_journal.JournalListActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
-import com.example.rlapp.ui.rlpagemain.RLPageActivity;
-import com.example.rlapp.ui.search.SearchActivity;
+import com.example.rlapp.ui.profile_new.ProfileNewActivity;
+import com.example.rlapp.ui.profile_new.ProfileSettingsActivity;
 import com.example.rlapp.ui.settings.SettingsNewActivity;
 import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
@@ -187,8 +181,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         scrollView.setOnScrollChangeListener((view, scrollX, scrollY, oldScrollX, oldScrollY) -> swipeRefreshLayout.setEnabled(scrollY <= 5));
 
         profileImage.setOnClickListener(view -> {
-            if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
-            else drawer.closeDrawer(Gravity.RIGHT);
+            /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
+            else drawer.closeDrawer(Gravity.RIGHT);*/
+            startActivity(new Intent(HomeActivity.this,ProfileSettingsActivity.class));
         });
 
         drawer = findViewById(R.id.drawer_layout);
@@ -1780,8 +1775,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onNewIntent(@NonNull Intent intent, @NonNull ComponentCaller caller) {
         super.onNewIntent(intent, caller);
-        if (intent.getBooleanExtra("start_activity5", false)) {
+        if (intent.getBooleanExtra("start_journal", false)) {
             startActivity(new Intent(this, JournalListActivity.class));
+        }else if (intent.getBooleanExtra("start_profile",false)){
+            startActivity(new Intent(this, ProfileSettingsActivity.class));
         }
     }
 
@@ -1841,7 +1838,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_profile) {
-            Intent intent = new Intent(this, ProfileActivity.class);
+            Intent intent = new Intent(this, ProfileSettingsActivity.class);
             profileActivityLauncher.launch(intent);
         } else if (id == R.id.nav_refer_friend) {
             Intent intent = new Intent(this, ReferAFriendActivity.class);

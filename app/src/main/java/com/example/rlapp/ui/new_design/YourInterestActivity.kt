@@ -17,6 +17,7 @@ import com.example.rlapp.ui.new_design.pojo.GetInterestResponse
 import com.example.rlapp.ui.new_design.pojo.InterestDataList
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestRequest
 import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse
+import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import retrofit2.Call
@@ -29,14 +30,16 @@ class YourInterestActivity : AppCompatActivity() {
     private val selectedInterest = ArrayList<InterestDataList>()
     private lateinit var btnSaveInterest: Button
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private lateinit var isFrom: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_your_interest)
 
         var header = intent.getStringExtra("WellnessFocus")
+        isFrom = intent.getStringExtra("FROM").toString()
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-        if (header.isNullOrEmpty()){
+        if (header.isNullOrEmpty()) {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
 
@@ -73,7 +76,7 @@ class YourInterestActivity : AppCompatActivity() {
             saveUserInterest(saveUserInterestRequest, header!!)
         }
 
-        if (sharedPreferenceManager.savedInterest.isNotEmpty()){
+        if (sharedPreferenceManager.savedInterest.isNotEmpty()) {
             selectedInterest.addAll(sharedPreferenceManager.savedInterest)
             uiChangesOnSaveInterest(header!!)
         }
@@ -118,7 +121,7 @@ class YourInterestActivity : AppCompatActivity() {
     }
 
     private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest, header: String) {
-       // Utils.showLoader(this)
+        // Utils.showLoader(this)
         val authToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.saveUserInterest(authToken, saveUserInterestRequest)
@@ -132,7 +135,8 @@ class YourInterestActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val apiResponse = response.body()
                     uiChangesOnSaveInterest(header = header)
-                    sharedPreferenceManager.setSavedInterest(selectedInterest)
+                    if (!isFrom.isNullOrEmpty() && isFrom != "ProfileSetting")
+                        sharedPreferenceManager.setSavedInterest(selectedInterest)
 
                 } else {
                     Toast.makeText(
@@ -144,7 +148,7 @@ class YourInterestActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
-               // Utils.dismissLoader(this@YourInterestActivity)
+                // Utils.dismissLoader(this@YourInterestActivity)
                 Toast.makeText(
                     this@YourInterestActivity,
                     "Network Error: " + t.message,
@@ -173,12 +177,25 @@ class YourInterestActivity : AppCompatActivity() {
         )
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, PersonalisationActivity::class.java)
-            intent.putExtra("WellnessFocus", header)
-            sharedPreferenceManager.interest = true
-            startActivity(intent)
-            //finish()
+            if (!isFrom.isNullOrEmpty() && isFrom == "ProfileSetting") {
+                finish()
+                startActivity(
+                    Intent(
+                        this@YourInterestActivity,
+                        ProfileSettingsActivity::class.java
+                    ).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        putExtra("start_profile", true)
+                    })
+            } else {
+                val intent = Intent(this, PersonalisationActivity::class.java)
+                intent.putExtra("WellnessFocus", header)
+                sharedPreferenceManager.interest = true
+                startActivity(intent)
+                //finish()
+            }
         }, 1000)
+
     }
 
 }

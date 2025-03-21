@@ -163,16 +163,23 @@
         <activity android:name="com.example.rlapp.ui.settings.HtmlTextActivity" />
         <activity android:name="com.example.rlapp.ui.settings.SubscriptionPlansActivity" />
 
+        <activity android:name="com.example.rlapp.ui.profile_new.ProfileNewActivity" />
+        <activity android:name="com.example.rlapp.ui.profile_new.ProfileSettingsActivity" />
+        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountSelectionActivity" />
+        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountReasonActivity" />
+        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountEmailDataActivity" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.shareimage.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/paths" />
         </provider>
+
 
         <receiver android:name=".ui.affirmation.ReminderReceiver" android:exported="true"/>
 

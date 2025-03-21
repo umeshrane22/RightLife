@@ -15,6 +15,7 @@ import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.ModuleTopic
 import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse
+import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
 import retrofit2.Call
@@ -26,12 +27,14 @@ class WellnessFocusListActivity : AppCompatActivity() {
     private val selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var wellnessFocusListAdapter: WellnessFocusListAdapter
     val topicList = ArrayList<ModuleTopic>()
+    private lateinit var isFrom: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wellness_focus_list)
 
         var header = intent.getStringExtra("WellnessFocus")
+        isFrom = intent.getStringExtra("FROM").toString()
         if (header.isNullOrEmpty()) {
             header = SharedPreferenceManager.getInstance(this).selectedWellnessFocus
         }
@@ -48,6 +51,9 @@ class WellnessFocusListActivity : AppCompatActivity() {
             -> imgHeader.setImageResource(R.drawable.header_think_right)
         }
         tvHeader.text = header
+
+        if (!isFrom.isNullOrEmpty() && isFrom == "ProfileSetting")
+            btnContinue.text = "Save"
 
         tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
         getOnboardingDataModule(header)
@@ -86,8 +92,21 @@ class WellnessFocusListActivity : AppCompatActivity() {
             val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             intent.putExtra("SelectedTopic", selectedWellnessFocus)
-            SharedPreferenceManager.getInstance(this).setWellnessFocusTopics(selectedWellnessFocus)
-            startActivity(intent)
+            if (!isFrom.isNullOrEmpty() && isFrom == "ProfileSetting") {
+                finish()
+                startActivity(
+                    Intent(
+                        this@WellnessFocusListActivity,
+                        ProfileSettingsActivity::class.java
+                    ).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        putExtra("start_profile", true)
+                    })
+            } else {
+                SharedPreferenceManager.getInstance(this)
+                    .setWellnessFocusTopics(selectedWellnessFocus)
+                startActivity(intent)
+            }
         }
     }
 
