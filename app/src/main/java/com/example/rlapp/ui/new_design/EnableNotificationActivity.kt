@@ -24,9 +24,11 @@ class EnableNotificationActivity : AppCompatActivity() {
             var loggedInUsers = sharedPreferenceManager.loggedUserList
 
             var loggedInUser: LoggedInUser? = null
-            for (user in loggedInUsers) {
+            val iterator = loggedInUsers.iterator()
+            while (iterator.hasNext()) {
+                val user = iterator.next()
                 if (sharedPreferenceManager.email == user.email) {
-                    loggedInUsers.remove(user)
+                    iterator.remove() // Safe removal
                     user.isOnboardingComplete = true
                     loggedInUser = user
                 }
