@@ -11,6 +11,8 @@
         android:background="@drawable/toproundedcornershape"
         android:orientation="vertical"
         android:padding="5dp"
+        android:focusable="true"
+        android:clickable="true"
         android:visibility="gone">
 
 
