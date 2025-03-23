@@ -169,6 +169,8 @@
         <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountReasonActivity" />
         <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountEmailDataActivity" />
 
+        <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireActivity" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

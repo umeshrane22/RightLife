@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tvQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="What kind of food do you usually eat?"
+        android:textSize="18sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/menu_icon_color_unselected"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFoodOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

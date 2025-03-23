@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mealItemRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_food_item"
+    android:layout_marginBottom="12dp"
+    android:gravity="center_horizontal">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_rounded_corner_small"
+        android:layout_margin="2dp">
+    <ImageView
+        android:id="@+id/ivMealImage"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_meal_2" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvMealTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1-2 meals—it's enough for me"
+        android:textColor="@color/txt_color_header"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="14sp"
+        android:padding="10dp"
+        android:textAlignment="center"/>
+</LinearLayout>

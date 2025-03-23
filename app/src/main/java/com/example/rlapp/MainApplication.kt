@@ -3,6 +3,7 @@ package com.example.rlapp
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.example.rlapp.ui.affirmation.ReminderReceiver
 import com.sondeservices.edge.init.SondeEdgeSdk
 
 class MainApplication : Application() {
@@ -10,6 +11,7 @@ class MainApplication : Application() {
         super.onCreate()
 
         sondeSdk(this)
+        ReminderReceiver.ringtone?.stop()
     }
     private fun sondeSdk(context: Context) {
         SondeEdgeSdk.init(

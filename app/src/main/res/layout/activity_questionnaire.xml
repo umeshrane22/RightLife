@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/settings_bg_color">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:src="@drawable/icon_back" />
+
+        <ProgressBar
+            android:id="@+id/progress_questionnaire"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="16dp"
+            android:layout_toStartOf="@id/tv_skip"
+            android:layout_toEndOf="@id/tv_fragment_count"
+            android:backgroundTint="@color/buttoncolormind"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/roundedcornerprogessbar" />
+
+        <TextView
+            android:id="@+id/tv_fragment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/icon_back"
+            android:fontFamily="@font/dmsans_regular"
+            android:text="1/8"
+            android:textColor="@color/text_color_char_left"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/dmsans_regular"
+            android:paddingEnd="16dp"
+            android:text="Skip"
+            android:visibility="gone"
+            android:textColor="@color/text_color_char_left"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerQuestionnaire"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
