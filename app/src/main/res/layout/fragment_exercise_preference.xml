@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tvQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How often do you exercise or stay physically active in a week?"
+        android:textSize="18sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/menu_icon_color_unselected" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/toproundedcornershape"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="30dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_edittext_gray">
+
+            <EditText
+                android:id="@+id/inputTimes"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:background="@android:color/transparent"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/timesLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="times/ week"
+                android:textSize="14sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/txt_color_header"
+                android:paddingHorizontal="8dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:text="Continue"
+            android:layout_alignParentBottom="true"
+            android:textSize="16sp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/menuselected"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
