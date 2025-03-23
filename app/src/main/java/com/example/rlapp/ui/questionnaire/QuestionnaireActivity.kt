@@ -51,11 +51,15 @@ class QuestionnaireActivity : AppCompatActivity() {
             "MealPreferenceFragment",
             "SchedulePreferenceFragment",
             "FoodServingFragment",
+            "WaterCaffeineIntakeFragment",
             "FastfoodPreferenceFragment",
             "EatAffectMoodFragment",
             "ExercisePreferenceFragment",
             "ActiveDuringSessionsFragment",
+            "PhysicalActivitiesFragment",
             "ExerciseLocationFragment",
+            "StepsTakenFragment",
+            "EnergyLevelFragment",
             "BreaksToStretchFragment"
         )
 
