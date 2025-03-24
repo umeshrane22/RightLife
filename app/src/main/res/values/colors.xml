@@ -149,7 +149,7 @@
     <color name="gray_light_bg">#F7F7F7</color>
 
     <color name="settings_bg_color">#F9F9F9</color>
-
+    <color name="player_bg_color_sleep_sound">#E6F0FE</color>
 
 
 </resources>

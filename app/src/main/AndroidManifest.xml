@@ -3,9 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
         android:name=".MainApplication"
@@ -19,6 +32,9 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.NewSleepSounds.SleepSoundPlayerActivity"
+            android:exported="false" />
         <activity
             android:name=".apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity"
             android:exported="false" />
@@ -37,7 +53,7 @@
             android:name=".ui.HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_homepage"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -45,11 +61,14 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
-            <!--<intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
+            -->
         </activity>
         <activity
             android:name=".ui.new_design.SplashScreenActivity"
@@ -66,16 +85,15 @@
         <activity android:name=".ui.new_design.WellnessFocusActivity" />
         <activity android:name=".ui.new_design.WellnessFocusListActivity" />
         <activity android:name=".ui.new_design.UnlockPowerOfYourMindActivity" />
-        <activity android:name=".ui.new_design.ThirdFillerScreenActivity"/>
+        <activity android:name=".ui.new_design.ThirdFillerScreenActivity" />
         <activity android:name=".ui.new_design.YourInterestActivity" />
         <activity android:name=".ui.new_design.PersonalisationActivity" />
         <activity android:name=".ui.new_design.SyncNowActivity" />
-        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity"/>
+        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity" />
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
         <activity android:name=".ui.new_design.OnboardingFinalActivity" />
         <activity android:name=".ui.new_design.WelcomeActivity" />
-
         <activity android:name=".ui.voicescan.VoiceScanActivity" />
         <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />
         <activity android:name=".ui.healthaudit.HealthAuditActivity" />
@@ -120,55 +138,47 @@
         <activity android:name=".ui.therledit.ViewAllActivity" />
         <activity android:name=".ui.therledit.ArtistsDetailsActivity" />
         <activity android:name=".ui.therledit.ViewAllByArtistActivity" />
-
         <activity android:name=".ui.sdkpackage.HealthCamRecorderActivity" />
         <activity android:name=".ui.sdkpackage.VoiceRecorderActivity" />
         <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
-
-        <activity android:name="com.example.rlapp.ui.jounal.JournalingActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.JournalingListActivity" />
-
-        <activity android:name="com.example.rlapp.ui.healthcam.NewHealthCamReportActivity" />
-
-        <activity android:name="com.example.rlapp.ui.jounal.MyJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.EditJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.thoughtoftheday.ThoughtOfTheDayDetailActivity" />
-        <activity android:name="com.example.rlapp.ui.Wellness.SeriesEpisodeDetailActivity" />
-
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalNewActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalPromptActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.Journal4QuestionsActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.FreeFormJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.BulletJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.GriefJournalActivity" />
-        <activity android:name="com.example.rlapp.ui.jounal.new_journal.JournalListActivity" />
-
-        <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity1" />
-        <activity android:name="com.example.rlapp.ui.affirmation.AffirmationLandingActivity2" />
-        <activity android:name="com.example.rlapp.ui.affirmation.TodaysAffirmationActivity" />
-        <activity android:name="com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity"/>
-        <activity android:name="com.example.rlapp.newdashboard.HomeDashboardActivity" />
-        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkActivity" />
-        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkSessionActivity" />
-        <activity android:name="com.example.rlapp.ui.breathwork.BreathworkPracticeActivity" />
-
-        <activity android:name="com.example.rlapp.ui.settings.SettingsNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.AppSettingsActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.NotificationsNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.EmailNotificationsNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.SupportActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.FAQNewActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.FAQDetailsActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.GeneralInformationActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.HtmlTextActivity" />
-        <activity android:name="com.example.rlapp.ui.settings.SubscriptionPlansActivity" />
-
-        <activity android:name="com.example.rlapp.ui.profile_new.ProfileNewActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.ProfileSettingsActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountSelectionActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountReasonActivity" />
-        <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountEmailDataActivity" />
-
+        <activity android:name=".ui.jounal.JournalingActivity" />
+        <activity android:name=".ui.jounal.JournalingListActivity" />
+        <activity android:name=".ui.healthcam.NewHealthCamReportActivity" />
+        <activity android:name=".ui.jounal.MyJournalActivity" />
+        <activity android:name=".ui.jounal.EditJournalActivity" />
+        <activity android:name=".ui.thoughtoftheday.ThoughtOfTheDayDetailActivity" />
+        <activity android:name=".ui.Wellness.SeriesEpisodeDetailActivity" />
+        <activity android:name=".ui.jounal.new_journal.JournalNewActivity" />
+        <activity android:name=".ui.jounal.new_journal.JournalPromptActivity" />
+        <activity android:name=".ui.jounal.new_journal.Journal4QuestionsActivity" />
+        <activity android:name=".ui.jounal.new_journal.FreeFormJournalActivity" />
+        <activity android:name=".ui.jounal.new_journal.BulletJournalActivity" />
+        <activity android:name=".ui.jounal.new_journal.GriefJournalActivity" />
+        <activity android:name=".ui.jounal.new_journal.JournalListActivity" />
+        <activity android:name=".ui.affirmation.AffirmationLandingActivity1" />
+        <activity android:name=".ui.affirmation.AffirmationLandingActivity2" />
+        <activity android:name=".ui.affirmation.TodaysAffirmationActivity" />
+        <activity android:name=".ui.affirmation.PractiseAffirmationPlaylistActivity" />
+        <activity android:name=".newdashboard.HomeDashboardActivity" />
+        <activity android:name=".ui.breathwork.BreathworkActivity" />
+        <activity android:name=".ui.breathwork.BreathworkSessionActivity" />
+        <activity android:name=".ui.breathwork.BreathworkPracticeActivity" />
+        <activity android:name=".ui.settings.SettingsNewActivity" />
+        <activity android:name=".ui.settings.AppSettingsActivity" />
+        <activity android:name=".ui.settings.NotificationsNewActivity" />
+        <activity android:name=".ui.settings.EmailNotificationsNewActivity" />
+        <activity android:name=".ui.settings.SupportActivity" />
+        <activity android:name=".ui.settings.FAQNewActivity" />
+        <activity android:name=".ui.settings.FAQDetailsActivity" />
+        <activity android:name=".ui.settings.GeneralInformationActivity" />
+        <activity android:name=".ui.settings.HtmlTextActivity" />
+        <activity android:name=".ui.settings.SubscriptionPlansActivity" />
+        <activity android:name=".ui.profile_new.ProfileNewActivity" />
+        <activity android:name=".ui.profile_new.ProfileSettingsActivity" />
+        <activity android:name=".ui.profile_new.DeleteAccountSelectionActivity" />
+        <activity android:name=".ui.profile_new.DeleteAccountReasonActivity" />
+        <activity android:name=".ui.profile_new.DeleteAccountEmailDataActivity" />
+        <activity android:name=".ui.NewSleepSounds.NewSleepSoundActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -180,25 +190,9 @@
                 android:resource="@xml/paths" />
         </provider>
 
-
-        <receiver android:name=".ui.affirmation.ReminderReceiver" android:exported="true"/>
-
+        <receiver
+            android:name=".ui.affirmation.ReminderReceiver"
+            android:exported="true" />
     </application>
-
-    <uses-feature android:name="android.hardware.camera" />
-
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 </manifest>
