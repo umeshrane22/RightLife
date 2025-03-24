@@ -127,7 +127,7 @@ dependencies {
 
     //lottie
     implementation 'com.airbnb.android:lottie:4.2.2' // Check for the latest version
-    implementation 'com.google.android.exoplayer:exoplayer:2.19.0'
+
 
     // For SMS Retriever API (if you want to auto-read OTP)
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
