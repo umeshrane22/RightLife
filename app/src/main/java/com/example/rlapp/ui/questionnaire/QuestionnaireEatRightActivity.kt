@@ -6,10 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.rlapp.databinding.ActivityQuestionnaireBinding
-import com.example.rlapp.ui.questionnaire.adapter.QuestionnairePagerAdapter
+import com.example.rlapp.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 
-class QuestionnaireActivity : AppCompatActivity() {
+class QuestionnaireEatRightActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuestionnaireBinding
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
@@ -63,7 +63,7 @@ class QuestionnaireActivity : AppCompatActivity() {
             "BreaksToStretchFragment"
         )
 
-        questionnairePagerAdapter = QuestionnairePagerAdapter(this)
+        questionnairePagerAdapter = QuestionnaireEatRightPagerAdapter(this)
         questionnairePagerAdapter.setQuestionnaireData(fragmentList)
         binding.viewPagerQuestionnaire.adapter = questionnairePagerAdapter
 
@@ -81,7 +81,7 @@ class QuestionnaireActivity : AppCompatActivity() {
     companion object {
 
         private lateinit var viewPager: ViewPager2
-        private lateinit var questionnairePagerAdapter: QuestionnairePagerAdapter
+        private lateinit var questionnairePagerAdapter: QuestionnaireEatRightPagerAdapter
 
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {

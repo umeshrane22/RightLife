@@ -25,7 +25,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.BottomsheetFoodScheduleReminderBinding
 import com.example.rlapp.databinding.FragmentSchedulePreferenceBinding
 import com.example.rlapp.ui.affirmation.ReminderReceiver
-import com.example.rlapp.ui.questionnaire.QuestionnaireActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -91,7 +91,7 @@ class SchedulePreferenceFragment : Fragment() {
 
         dialogBinding.ivDialogClose.setOnClickListener {
             reminderBottomSheetDialog.dismiss()
-            QuestionnaireActivity.navigateToNextPage()
+            QuestionnaireEatRightActivity.navigateToNextPage()
         }
 
         dialogBinding.llBreakFastTime.setOnClickListener {
@@ -121,7 +121,7 @@ class SchedulePreferenceFragment : Fragment() {
                     selectedEveningTime?.let { it1 -> setReminder(it1) }
 
                 reminderBottomSheetDialog.dismiss()
-                QuestionnaireActivity.navigateToNextPage()
+                QuestionnaireEatRightActivity.navigateToNextPage()
             }
         }
 

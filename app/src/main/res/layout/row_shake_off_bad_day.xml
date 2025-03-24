@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/settingTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/txt_color_mind"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="14sp"
+        android:paddingVertical="8dp"
+        android:text="Title" />
+
+</LinearLayout>
