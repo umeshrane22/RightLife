@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -53,7 +54,10 @@ import com.example.rlapp.apimodel.userdata.UserProfileResponse;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.apimodel.welnessresponse.ContentWellness;
 import com.example.rlapp.apimodel.welnessresponse.WellnessApiResponse;
+import com.example.rlapp.databinding.ActivityHomeBinding;
+import com.example.rlapp.newdashboard.HomeDashboardActivity;
 import com.example.rlapp.ui.Articles.ArticlesDetailActivity;
+import com.example.rlapp.ui.NewSleepSounds.NewSleepSoundActivity;
 import com.example.rlapp.ui.Wellness.WellnessDetailViewActivity;
 import com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity;
 import com.example.rlapp.ui.affirmation.TodaysAffirmationActivity;
@@ -95,6 +99,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 import static com.example.rlapp.ui.utility.DateConverter.convertToDate;
 import static com.example.rlapp.ui.utility.DateConverter.convertToTime;
@@ -155,13 +160,75 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             getUserDetails("");
         }
     });
-
+    private boolean isAdd = true;
+    private ActivityHomeBinding   homeBinding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home);
+        homeBinding = ActivityHomeBinding.inflate(getLayoutInflater());
+        setContentView(homeBinding.getRoot());
+        //////--------
+        // Handle menu item clicks
+        homeBinding.menuHome.setOnClickListener(v -> {
+            // loadFragment(new HomeFragment());
+            updateMenuSelection(R.id.menu_home);
+            startActivity(new Intent(this, HomeDashboardActivity.class));
+            updateMenuSelection(R.id.menu_explore);
+        });
 
+        homeBinding.menuExplore.setOnClickListener(v -> {
+            // loadFragment(new ExploreFragment());
+            startActivity(new Intent(this, HomeActivity.class));
+            updateMenuSelection(R.id.menu_explore);
+        });
+
+// Set initial selection
+         updateMenuSelection(R.id.menu_explore);
+
+// Handle FAB click
+        homeBinding.fab.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.white));
+        homeBinding.fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+
+        homeBinding.fab.setOnClickListener(v -> {
+
+            if (bottom_sheet.getVisibility() == View.VISIBLE) {
+                bottom_sheet.setVisibility(View.GONE);
+                img_healthmenu.setBackgroundResource(R.drawable.homeselected);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.menuselected));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_bold);
+                txt_healthmenu.setTypeface(typeface);
+            } else {
+                bottom_sheet.setVisibility(View.VISIBLE);
+                img_healthmenu.setBackgroundColor(Color.TRANSPARENT);
+                txt_healthmenu.setTextColor(getResources().getColor(R.color.txt_color_header));
+                Typeface typeface = ResourcesCompat.getFont(this, R.font.dmsans_regular);
+                txt_healthmenu.setTypeface(typeface);
+
+            }
+            v.setSelected(!v.isSelected());
+
+    /*BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+    bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());*/
+
+            homeBinding.fab.animate().rotationBy(180f).setDuration(60).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
+                // Change icon after rotation
+                if (isAdd) {
+                    homeBinding.fab.setImageResource(R.drawable.icon_quicklink_plus_black);  // Change to close icon
+                    homeBinding.fab.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.rightlife));
+                    homeBinding.fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.black)));
+                } else {
+                    homeBinding.fab.setImageResource(R.drawable.icon_quicklink_plus);    // Change back to add icon
+                    homeBinding.fab.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.white));
+                    homeBinding.fab.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.rightlife)));
+                }
+                isAdd = !isAdd;  // Toggle the state
+            }).start();
+        });
+
+
+        //////--------
         SetupviewsIdWellness();
 
         profileImage = findViewById(R.id.profileImage);
@@ -476,6 +543,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
+
+
+    private void updateMenuSelection(int selectedMenuId) {
+        // Reset all icons and labels
+        homeBinding.iconHome.setImageResource(R.drawable.new_home_unselected_svg); // Unselected icon
+        homeBinding.iconExplore.setImageResource(R.drawable.new_explore_unselected_svg); // Unselected icon
+        homeBinding.labelHome.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        homeBinding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.gray));
+        homeBinding.labelHome.setTypeface(null, Typeface.NORMAL); // Reset to normal font
+        homeBinding.labelExplore.setTypeface(null, Typeface.NORMAL); // Reset to normal font
+
+        // Highlight selected icon and label
+        if (selectedMenuId == R.id.menu_home) {
+            homeBinding.iconHome.setImageResource(R.drawable.new_home_selected_svg); // Selected icon
+            homeBinding.labelHome.setTextColor(ContextCompat.getColor(this, R.color.rightlife));
+            homeBinding.labelHome.setTypeface(null, Typeface.BOLD); // Make text bold
+        } else if (selectedMenuId == R.id.menu_explore) {
+            homeBinding.iconExplore.setImageResource(R.drawable.new_explore_selected_svg); // Selected icon
+            homeBinding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.rightlife));
+            homeBinding.labelExplore.setTypeface(null, Typeface.BOLD); // Make text bold
+        }
+    }
+
 
     private void callAPIs() {
         getUserDetails("");
@@ -1335,7 +1425,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         } else if (viewId == R.id.ll_homemenuclick) {
               //Toast.makeText(HomeActivity.this, "New Home Coming Soon...", Toast.LENGTH_LONG).show();
-              startActivity(new Intent(HomeActivity.this, PractiseAffirmationPlaylistActivity.class));
+              startActivity(new Intent(HomeActivity.this, HomeDashboardActivity.class));
             /*if (bottom_sheet.getVisibility() == View.VISIBLE) {
                 bottom_sheet.setVisibility(View.GONE);
                 img_homemenu.setBackgroundResource(R.drawable.homeselected);
@@ -1481,7 +1571,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.ll_affirmations) {
             startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
         } else if (viewId == R.id.ll_sleepsounds) {
-            startActivity(new Intent(HomeActivity.this, ExploreSleepSoundsActivity.class));
+            startActivity(new Intent(HomeActivity.this, NewSleepSoundActivity.class));
         }else if (viewId == R.id.ll_breathwork) {
             startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         }else if (viewId == R.id.ll_health_cam_ql) {

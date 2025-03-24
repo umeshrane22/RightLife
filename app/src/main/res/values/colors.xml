@@ -150,7 +150,11 @@
 
     <color name="settings_bg_color">#F9F9F9</color>
 
+    <color name="player_bg_color_sleep_sound">#E6F0FE</color>
+
+
     <color name="questionnaire_green">#02B37B</color>
+
 
 
 

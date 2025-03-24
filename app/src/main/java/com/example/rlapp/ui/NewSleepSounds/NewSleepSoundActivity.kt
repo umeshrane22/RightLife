@@ -1,0 +1,252 @@
+package com.example.rlapp.ui.NewSleepSounds
+
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.databinding.ActivityNewSleepSoundBinding
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.Service
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategory
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategorySoundListResponse
+import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.SleepSoundPlaylistResponse
+import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class NewSleepSoundActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityNewSleepSoundBinding
+    private lateinit var categoryAdapter: SleepCategoryAdapter
+    private val categoryList = mutableListOf<SleepCategory>()
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private var sleepCategoryResponse: SleepCategoryResponse? = null
+    private var selectedCategoryForTitle: SleepCategory? = null
+    private var sleepSoundPlaylistResponse: SleepSoundPlaylistResponse? = null
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var sleepSoundAdapter: SleepSoundGridAdapter
+    private var useplaylistdata: ArrayList<Service> = ArrayList()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityNewSleepSoundBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+
+        //back button
+        binding.iconBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+        setupCategoryRecyclerView()
+        fetchCategories()
+        getUserCreatedPlaylist()
+    }
+
+    private fun setupCategoryRecyclerView() {
+        categoryAdapter = SleepCategoryAdapter(categoryList) { selectedCategory ->
+            // 🔥 Handle selected category here
+            selectedCategoryForTitle = selectedCategory;
+            Log.d("SleepCategory", "Selected: ${selectedCategory.title}")
+            Toast.makeText(this, "Selected: ${selectedCategory.title}", Toast.LENGTH_SHORT).show()
+            // You can perform an action, like loading content specific to the category!
+            fetchSleepSoundsByCategoryId(selectedCategory._id)
+        }
+
+        binding.recyclerCategory.apply {
+            layoutManager = LinearLayoutManager(
+                this@NewSleepSoundActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            adapter = categoryAdapter
+        }
+    }
+
+
+    private fun fetchCategories() {
+        Utils.showLoader(this)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.getSleepCategories(sharedPreferenceManager.accessToken)
+
+        call.enqueue(object : Callback<SleepCategoryResponse> {
+            override fun onResponse(
+                call: Call<SleepCategoryResponse>,
+                response: Response<SleepCategoryResponse>
+            ) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    sleepCategoryResponse = response.body()
+
+                    categoryList.clear()
+                    sleepCategoryResponse?.let { categoryList.addAll(it.data) }
+                    categoryAdapter.notifyDataSetChanged()
+                } else {
+                    showToast("Server Error: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<SleepCategoryResponse>, t: Throwable) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: " + t.message)
+            }
+
+        })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun fetchSleepSoundsByCategoryId(categoryId: String) {
+        Utils.showLoader(this)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val call = apiService.getSleepSoundsById(
+            sharedPreferenceManager.accessToken,
+            categoryId,
+            0,
+            10,
+            "catagory"
+        );
+
+
+        call.enqueue(object : Callback<SleepCategorySoundListResponse> {
+            override fun onResponse(
+                call: Call<SleepCategorySoundListResponse>,
+                response: Response<SleepCategorySoundListResponse>
+            ) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    val soundData = response.body()
+                    Log.d("SleepSound", "Data: ${soundData?.data?.services}")
+                    // Pass soundData.data.services to adapter
+                    binding.layoutVerticalCategoryList.visibility = View.VISIBLE
+                    setupVerticleRecyclerView(soundData?.data?.services)
+                } else {
+                    showToast("Server Error: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<SleepCategorySoundListResponse>, t: Throwable) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: ${t.message}")
+            }
+        })
+    }
+
+
+    private fun setupVerticleRecyclerView(services: ArrayList<Service>?) {
+        val adapter = services?.let { serviceList ->
+            SleepSoundGridAdapter(
+                serviceList,
+                onItemClick = { selectedList, position ->
+                    // Handle item click (open player screen)
+                    startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                        putExtra("SOUND_LIST", selectedList)
+                        putExtra("SELECTED_POSITION", position)
+                        putExtra("ISUSERPLAYLIST", false)
+                    })
+                },
+                onAddToPlaylistClick = { service, position ->
+                    // Handle add to playlist click here
+                    addToPlaylist(service._id, position)
+                    Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                }
+            )
+
+        }
+
+        binding.categorytTitle.text = selectedCategoryForTitle?.title
+        binding.categorytTitle.visibility = android.view.View.VISIBLE
+        binding.recyclerCategory.visibility = android.view.View.GONE
+        binding.recyclerViewVerticalList.visibility = android.view.View.VISIBLE
+        binding.categorytTitleDesciption.text = selectedCategoryForTitle?.subtitle
+        binding.categorytTitleDesciption.visibility = android.view.View.VISIBLE
+
+        binding.recyclerViewVerticalList.apply {
+            layoutManager = GridLayoutManager(this@NewSleepSoundActivity, 2)
+            this.adapter = adapter
+        }
+    }
+
+
+    // Add Sleep sound to using playlist api
+    private fun addToPlaylist(songId: String, position: Int) {
+        Utils.showLoader(this)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.addToPlaylist(sharedPreferenceManager.accessToken, songId)
+
+        call.enqueue(object : Callback<AddPlaylistResponse> {
+            override fun onResponse(
+                call: Call<AddPlaylistResponse>,
+                response: Response<AddPlaylistResponse>
+            ) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    showToast(response.body()?.successMessage ?: "Added to Playlist!")
+                } else {
+                    showToast("Failed to add to playlist: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<AddPlaylistResponse>, t: Throwable) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: ${t.message}")
+            }
+        })
+    }
+
+
+    // get user play list from api
+    private fun getUserCreatedPlaylist() {
+        Utils.showLoader(this)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.getUserCreatedPlaylist(sharedPreferenceManager.accessToken)
+
+        call.enqueue(object : Callback<SleepSoundPlaylistResponse> {
+            override fun onResponse(
+                call: Call<SleepSoundPlaylistResponse>,
+                response: Response<SleepSoundPlaylistResponse>
+            ) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    sleepSoundPlaylistResponse = response.body()
+
+
+                    useplaylistdata = sleepSoundPlaylistResponse?.data as ArrayList<Service>
+                    if (sleepSoundPlaylistResponse?.data?.isNotEmpty() == true) {
+                        val intent = Intent(
+                            this@NewSleepSoundActivity,
+                            SleepSoundPlayerActivity::class.java
+                        ).apply {
+                            putExtra("SOUND_LIST", useplaylistdata)
+                            putExtra("SELECTED_POSITION", 0)
+                            putExtra("ISUSERPLAYLIST", true)
+                        }
+                         startActivity(intent)
+                    } else {
+                        showToast("No playlist data available")
+                    }
+                } else {
+                    showToast("Server Error: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<SleepSoundPlaylistResponse>, t: Throwable) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: " + t.message)
+            }
+
+        })
+    }
+
+}

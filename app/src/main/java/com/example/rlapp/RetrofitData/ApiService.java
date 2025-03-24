@@ -17,6 +17,10 @@ import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
 import com.example.rlapp.ui.Articles.requestmodels.ArticleLikeRequest;
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse;
+import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategorySoundListResponse;
+import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.SleepSoundPlaylistResponse;
 import com.example.rlapp.ui.SubCategoryResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationSelectedCategoryResponse;
@@ -996,7 +1000,41 @@ public interface ApiService {
             @Header("Authorization") String authToken
     );
 
+    @Headers("Content-Type: application/json")
+    @GET("sleepCatagory")
+    Call<SleepCategoryResponse> getSleepCategories(
+            @Header("Authorization") String authToken
+    );
 
+    @Headers("Content-Type: application/json")
+    @GET("sleepSound")
+    Call<SleepCategorySoundListResponse> getSleepSoundsById(
+            @Header("Authorization") String authToken,
+            @Query("id") String categoryId,
+            @Query("skip") int skip,
+            @Query("limit") int limit,
+            @Query("type") String type
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("sleepSound/sleepSoundPlaylist")
+    Call<AddPlaylistResponse> addToPlaylist(
+            @Header("Authorization") String authToken,
+            @Query("id") String songId
+    );
+
+    @Headers("Content-Type: application/json")
+    @DELETE("sleepSound/sleepSoundPlaylist/{playlistId}")
+    Call<AddPlaylistResponse> removeFromPlaylist(
+            @Header("Authorization") String authToken,
+            @Path("playlistId") String playlistId
+    );
+// get user playlist
+@Headers("Content-Type: application/json")
+@GET("sleepSound/sleepSoundPlaylist")
+Call<SleepSoundPlaylistResponse> getUserCreatedPlaylist(
+        @Header("Authorization") String authToken
+);
 
 }
 

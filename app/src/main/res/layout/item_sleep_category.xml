@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="30dp"
+    android:orientation="horizontal"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:gravity="center"
+    android:id="@+id/cardCategory"
+    android:background="@drawable/roundedcornerblueborder"
+    android:layout_marginEnd="8dp">
+
+    <TextView
+        android:id="@+id/textCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="1dp"
+        android:text="Category"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
+</LinearLayout>
