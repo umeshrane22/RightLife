@@ -6,11 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentActiveDuringSessionBinding
-import com.example.rlapp.databinding.FragmentExercisePreferenceBinding
-import com.example.rlapp.ui.questionnaire.QuestionnaireActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.shawnlin.numberpicker.NumberPicker
 import java.util.Locale
 
@@ -59,7 +57,7 @@ class ActiveDuringSessionsFragment : Fragment() {
         }
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireActivity.navigateToNextPage()
+            QuestionnaireEatRightActivity.navigateToNextPage()
         }
 
     }

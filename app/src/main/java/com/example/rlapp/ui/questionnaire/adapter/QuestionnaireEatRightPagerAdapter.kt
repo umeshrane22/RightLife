@@ -10,15 +10,16 @@ import com.example.rlapp.ui.questionnaire.fragment.EnergyLevelFragment
 import com.example.rlapp.ui.questionnaire.fragment.ExerciseLocationFragment
 import com.example.rlapp.ui.questionnaire.fragment.ExercisePreferenceFragment
 import com.example.rlapp.ui.questionnaire.fragment.FastfoodPreferenceFragment
-import com.example.rlapp.ui.questionnaire.fragment.FoodServingFragment
-import com.example.rlapp.ui.questionnaire.fragment.SchedulePreferenceFragment
 import com.example.rlapp.ui.questionnaire.fragment.FoodPreferenceFragment
+import com.example.rlapp.ui.questionnaire.fragment.FoodServingFragment
 import com.example.rlapp.ui.questionnaire.fragment.MealPreferenceFragment
 import com.example.rlapp.ui.questionnaire.fragment.PhysicalActivitiesFragment
+import com.example.rlapp.ui.questionnaire.fragment.SchedulePreferenceFragment
 import com.example.rlapp.ui.questionnaire.fragment.StepsTakenFragment
 import com.example.rlapp.ui.questionnaire.fragment.WaterCaffeineIntakeFragment
 
-class QuestionnairePagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
+class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
+    FragmentStateAdapter(fragment) {
     private val fragmentList = ArrayList<String>()
 
     override fun getItemCount() = fragmentList.size

@@ -6,12 +6,11 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentMealPreferenceBinding
-import com.example.rlapp.ui.questionnaire.QuestionnaireActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.MealOptionAdapter
 import com.example.rlapp.ui.questionnaire.pojo.MealOption
 
@@ -38,7 +37,7 @@ class MealPreferenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = MealOptionAdapter(mealOptions) { selectedOption ->
             Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireActivity.navigateToNextPage()
+                QuestionnaireEatRightActivity.navigateToNextPage()
             },500)
         }
         binding.rvMealOptions.layoutManager = LinearLayoutManager(requireContext())

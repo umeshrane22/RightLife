@@ -29,6 +29,10 @@ class ScheduleOptionAdapter(
                         binding.scheduleItemRoot.setBackgroundResource(R.drawable.bg_food_item_selected)
                     "MoveRight" ->
                         binding.scheduleItemRoot.setBackgroundResource(R.drawable.bg_move_right_selected)
+                    "SleepRight" ->
+                        binding.scheduleItemRoot.setBackgroundResource(R.drawable.bg_item_selected_sleep_right)
+                    "ThinkRight" ->
+                        binding.scheduleItemRoot.setBackgroundResource(R.drawable.bg_item_selected_think_right)
                 }
 
             } else {

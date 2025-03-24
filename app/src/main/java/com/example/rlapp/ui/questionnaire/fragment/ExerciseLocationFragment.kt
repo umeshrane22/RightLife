@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentFastfoodPreferenceBinding
-import com.example.rlapp.ui.questionnaire.QuestionnaireActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.example.rlapp.ui.questionnaire.pojo.ScheduleOption
 
@@ -38,7 +38,7 @@ class ExerciseLocationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ScheduleOptionAdapter(scheduleOptions,"MoveRight") { selectedOption ->
             Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireActivity.navigateToNextPage()
+                QuestionnaireEatRightActivity.navigateToNextPage()
             }, 500)
         }
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())

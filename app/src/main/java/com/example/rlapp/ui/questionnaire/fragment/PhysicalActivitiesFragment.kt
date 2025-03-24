@@ -5,14 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentPhysicalActivitiesBinding
-import com.example.rlapp.databinding.FragmentServingBinding
-import com.example.rlapp.databinding.FragmentWaterCaffeineIntakeBinding
-import com.example.rlapp.ui.questionnaire.QuestionnaireActivity
-import com.example.rlapp.ui.questionnaire.adapter.ServingAdapter
-import com.example.rlapp.ui.questionnaire.pojo.ServingItem
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 
 class PhysicalActivitiesFragment : Fragment() {
 
@@ -31,7 +25,7 @@ class PhysicalActivitiesFragment : Fragment() {
 
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireActivity.navigateToNextPage()
+            QuestionnaireEatRightActivity.navigateToNextPage()
         }
     }
 

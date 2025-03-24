@@ -169,7 +169,8 @@
         <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountReasonActivity" />
         <activity android:name="com.example.rlapp.ui.profile_new.DeleteAccountEmailDataActivity" />
 
-        <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireActivity" />
+        <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity" />
+        <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity" />
 
 
         <provider
