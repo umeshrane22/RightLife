@@ -62,4 +62,10 @@
         <item name="android:layout_marginEnd">8dp</item>
     </style>
 
+    <style name="TimePickerTheme" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="android:textColorPrimary">#000000</item>
+        <item name="colorAccent">#2196F3</item>
+    </style>
+
+
 </resources>

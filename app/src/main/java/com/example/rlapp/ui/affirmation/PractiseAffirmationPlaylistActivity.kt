@@ -366,38 +366,45 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
         if (!checkPermission()) {
             return
         }
-        val timeArray = time.split(":")
-        val minuteArray = timeArray[1].split(" ")
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(this, ReminderReceiver::class.java).apply {
-            action = "PRACTICE_ALARM_TRIGGERED"
+            action = "EAT_ALARM_TRIGGERED"
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
             this,
-            0,
+            100, // Unique code
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE // Required for API 31+
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerTime = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, timeArray[0].toInt())
-            set(Calendar.MINUTE, minuteArray[0].toInt())
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            if (before(Calendar.getInstance())) {
-                add(Calendar.DATE, 1) // If time has already passed today, schedule for tomorrow
-            }
-        }.timeInMillis
+        // Parse "6:40 PM" properly
+        val sdf = SimpleDateFormat("h:mm a", Locale.getDefault())
+        val date = sdf.parse(time)
+
+        val calendar = Calendar.getInstance()
+        calendar.time = date!!
+        // Set today's date
+        val now = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, now.get(Calendar.YEAR))
+        calendar.set(Calendar.MONTH, now.get(Calendar.MONTH))
+        calendar.set(Calendar.DAY_OF_MONTH, now.get(Calendar.DAY_OF_MONTH))
+
+        // If time already passed, schedule for tomorrow
+        if (calendar.before(now)) {
+            calendar.add(Calendar.DATE, 1)
+        }
+
+        val triggerTime = calendar.timeInMillis
+
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             triggerTime,
             pendingIntent
         )
-
     }
 
     private fun setupReminderSetBottomSheet() {
