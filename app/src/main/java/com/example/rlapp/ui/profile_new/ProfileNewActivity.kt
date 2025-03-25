@@ -1,11 +1,19 @@
 package com.example.rlapp.ui.profile_new
 
 import android.Manifest
+import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Environment
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
@@ -22,18 +30,27 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.apimodel.userdata.Userdata
 import com.example.rlapp.databinding.ActivityProfileNewBinding
 import com.example.rlapp.databinding.BottomsheetAgeSelectionBinding
 import com.example.rlapp.databinding.BottomsheetGenderSelectionBinding
 import com.example.rlapp.databinding.BottomsheetHeightSelectionBinding
 import com.example.rlapp.databinding.BottomsheetWeightSelectionBinding
+import com.example.rlapp.databinding.DialogOtpVerificationBinding
 import com.example.rlapp.ui.new_design.RulerAdapter
 import com.example.rlapp.ui.new_design.RulerAdapterVertical
+import com.example.rlapp.ui.profile_new.pojo.OtpRequest
+import com.example.rlapp.ui.profile_new.pojo.VerifyOtpRequest
 import com.example.rlapp.ui.utility.ConversionUtils
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.shawnlin.numberpicker.NumberPicker
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -53,6 +70,7 @@ class ProfileNewActivity : AppCompatActivity() {
     private lateinit var adapterHeight: RulerAdapterVertical
     private var selectedLabel: String = " feet"
     private lateinit var adapterWeight: RulerAdapter
+    private lateinit var dialogOtp: Dialog
 
     // Activity Result Launcher to get image
     private val pickImageLauncher =
@@ -126,7 +144,14 @@ class ProfileNewActivity : AppCompatActivity() {
         }
 
         binding.btnVerify.setOnClickListener {
-            // Trigger phone verification logic
+            val mobileNumber = binding.etMobile.text.toString()
+            if (mobileNumber.isEmpty()) {
+                showToast("Please enter 10 digit mobile number")
+            } else if (mobileNumber.length != 10) {
+                showToast("Please enter correct mobile number")
+            } else {
+                generateOtp("+91$mobileNumber")
+            }
         }
 
         binding.btnSave.setOnClickListener {
@@ -142,6 +167,7 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.etMobile.setText(userData.phoneNumber)
         binding.tvGender.text = userData.gender
         binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
+        binding.tvProfileLetter.text = userData.firstName.first().toString()
 
         if (userData.heightUnit == "FT_AND_INCHES") {
             val height = userData.height.toString().split(".")
@@ -687,4 +713,129 @@ class ProfileNewActivity : AppCompatActivity() {
         adapterHeight.setType("feet")
         adapterHeight.notifyDataSetChanged()
     }
+
+    private fun generateOtp(mobileNumber: String) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.generateOtpForPhoneNumber(
+            sharedPreferenceManager.accessToken,
+            OtpRequest(mobileNumber)
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast("Otp sent to your mobile number")
+                    showOtpDialog(this@ProfileNewActivity, mobileNumber)
+                } else {
+                    showToast(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                showToast("Network Error: " + t.message)
+            }
+        })
+    }
+
+    private fun showOtpDialog(activity: Activity, mobileNumber: String) {
+        dialogOtp = Dialog(activity)
+        val binding = DialogOtpVerificationBinding.inflate(LayoutInflater.from(activity))
+        dialogOtp.setContentView(binding.root)
+        dialogOtp.setCancelable(false)
+        dialogOtp.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val otpFields = listOf(
+            binding.etOtp1, binding.etOtp2, binding.etOtp3,
+            binding.etOtp4, binding.etOtp5, binding.etOtp6
+        )
+
+        // Move focus automatically
+        otpFields.forEachIndexed { index, editText ->
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    if (s?.length == 1 && index < otpFields.size - 1) {
+                        otpFields[index + 1].requestFocus()
+                    }
+                }
+
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+        }
+
+        // Countdown Timer
+        val timer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                binding.tvCountdown.text = "${millisUntilFinished / 1000}"
+            }
+
+            override fun onFinish() {
+                binding.tvCountdown.text = "Expired"
+            }
+        }
+        timer.start()
+
+        // Cancel Button
+        binding.ivClose.setOnClickListener {
+            timer.cancel()
+            dialogOtp.dismiss()
+        }
+
+        // Verify Button
+        binding.btnVerify.setOnClickListener {
+            val otp = otpFields.joinToString("") { it.text.toString().trim() }
+            if (otp.length == 6) {
+                Toast.makeText(activity, "OTP Verified: $otp", Toast.LENGTH_SHORT).show()
+                verifyOtp(mobileNumber, otp, binding)
+                timer.cancel()
+            } else {
+                Toast.makeText(activity, "Enter all 6 digits", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogOtp.show()
+    }
+
+    private fun verifyOtp(
+        mobileNumber: String,
+        otp: String,
+        binding: DialogOtpVerificationBinding
+    ) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.verifyOtpForPhoneNumber(
+            sharedPreferenceManager.accessToken,
+            VerifyOtpRequest(
+                phoneNumber = mobileNumber,
+                otp = otp
+            )
+        )
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast(response.message())
+                    binding.tvResult.text = "(Verification Success)"
+                    binding.tvResult.setTextColor(getColor(R.color.color_green))
+                } else {
+                    showToast("Server Error: " + response.code())
+                    binding.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                    binding.tvResult.setTextColor(getColor(R.color.menuselected))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                showToast("Network Error: " + t.message)
+                binding.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                binding.tvResult.setTextColor(getColor(R.color.menuselected))
+            }
+
+        })
+    }
+
 }
