@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -10,7 +9,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="What types of physical activities do you include in your weekly routine?"
+        android:text="How have your emotions been over the past week?"
         android:textSize="18sp"
         android:fontFamily="@font/dmsans_bold"
         android:layout_marginBottom="16dp"
@@ -20,22 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/btnContinue">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:singleSelection="false"
-                android:layout_marginBottom="8dp"
-                app:chipSpacingVertical="0dp" />
-
-        </ScrollView>
 
         <Button
             android:id="@+id/btnContinue"
