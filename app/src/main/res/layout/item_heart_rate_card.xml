@@ -1,0 +1,153 @@
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardHeartRate"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="2dp"
+    android:layout_marginEnd="2dp"
+    android:layout_marginBottom="16dp"
+    android:clipToPadding="true"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <!-- Heart Rate Title and Icon -->
+        <RelativeLayout
+            android:id="@+id/rl_title_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <ImageView
+                android:id="@+id/ivHeartIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_db_report_heart_rate" />
+
+            <TextView
+                android:id="@+id/tvHeartRate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/ivHeartIcon"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Heart Rate"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Date -->
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:drawableEnd="@drawable/next_arrow_settings"
+                android:drawablePadding="5dp"
+                android:drawableTint="#707070"
+                android:fontFamily="@font/dmsans_regular"
+                android:gravity="center"
+                android:text="20 Fev"
+                android:textColor="#707070"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/rightarrowsmall"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_alignParentEnd="true"
+                android:gravity="center"
+                android:padding="3dp"
+                android:src="@drawable/next_arrow_settings"
+                android:visibility="gone"
+                app:tint="#707070" />
+        </RelativeLayout>
+        <!-- Heart Rate Value -->
+        <RelativeLayout
+            android:id="@+id/rl_content_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <TextView
+                android:id="@+id/tvValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="107"
+                android:textColor="@color/black"
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/tvValue"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/tvValue"
+                android:paddingBottom="5dp"
+                android:text="bpm"
+                android:textSize="16sp" />
+
+            <!-- Warning -->
+            <ImageView
+                android:id="@+id/ivWarning"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_below="@id/tvValue"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/breathing_green_tick" />
+
+            <TextView
+                android:id="@+id/tvWarning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/ivWarning"
+                android:layout_marginStart="4dp"
+                android:layout_toEndOf="@id/ivWarning"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="Above Normal"
+                android:textColor="#707070"
+                android:textSize="14sp" />
+
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/heartRateChart"
+                android:layout_width="160dp"
+                android:layout_height="80dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="10dp"
+                android:background="@android:color/transparent"
+                android:padding="10dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@id/tvWarning"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/barChart"
+                android:layout_width="160dp"
+                android:layout_height="100dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:background="@android:color/transparent"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/tvWarning"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
