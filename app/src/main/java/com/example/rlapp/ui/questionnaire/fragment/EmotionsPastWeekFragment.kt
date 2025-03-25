@@ -5,19 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.rlapp.databinding.FragmentEmotionsPastWeekBinding
 import com.example.rlapp.databinding.FragmentEnergyLevelBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 
-class EnergyLevelFragment : Fragment() {
+class EmotionsPastWeekFragment : Fragment() {
 
-    private var _binding: FragmentEnergyLevelBinding? = null
+    private var _binding: FragmentEmotionsPastWeekBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEnergyLevelBinding.inflate(inflater, container, false)
+        _binding = FragmentEmotionsPastWeekBinding.inflate(inflater, container, false)
         return binding.root
     }
 
