@@ -193,7 +193,7 @@ public class ThoughtOfTheDayDetailActivity extends AppCompatActivity {
 
     private void setupTextContent(ThoughtModuleContentDetail contentResponseObj) {
         binding.imgContentview.setVisibility(View.VISIBLE);
-        binding.exoPlayerView.setVisibility(View.GONE);
+        binding.rlVideoPlayerMain.setVisibility(View.GONE);
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + contentResponseObj.getData().getThumbnail().getUrl())
                 .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
@@ -201,7 +201,7 @@ public class ThoughtOfTheDayDetailActivity extends AppCompatActivity {
     }
 
     private void setupVideoContent(){
-        binding.exoPlayerView.setVisibility(View.VISIBLE);
+        binding.rlVideoPlayerMain.setVisibility(View.VISIBLE);
         binding.imgContentview.setVisibility(View.GONE);
         initializePlayer();
         player.setPlayWhenReady(true);
@@ -247,6 +247,7 @@ public class ThoughtOfTheDayDetailActivity extends AppCompatActivity {
                     // Show toast
                     Toast.makeText(ThoughtOfTheDayDetailActivity.this, "60% Complete", Toast.LENGTH_SHORT).show();
                     //is60PercentToastShown = true; // Set flag to prevent multiple toasts
+                    is60PercentConsumed = true;
                 }
             }
         });
