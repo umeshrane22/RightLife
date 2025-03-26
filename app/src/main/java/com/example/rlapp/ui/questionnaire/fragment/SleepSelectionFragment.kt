@@ -3,7 +3,6 @@ package com.example.rlapp.ui.questionnaire.fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentSleepSelectionBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.adapter.SleepSelectionAdapter
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.SleepOption
 
 class SleepSelectionFragment : Fragment() {
@@ -29,6 +29,26 @@ class SleepSelectionFragment : Fragment() {
         SleepOption("Frequently", "(almost every night)", R.drawable.ic_sleep_option_4)
     )
 
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): SleepSelectionFragment {
+            val fragment = SleepSelectionFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,7 +63,7 @@ class SleepSelectionFragment : Fragment() {
         adapter = SleepSelectionAdapter(sleepOptions) { sleepOption ->
             Handler(Looper.getMainLooper()).postDelayed({
                 QuestionnaireThinkRightActivity.navigateToNextPage()
-            },500)
+            }, 500)
         }
 
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)

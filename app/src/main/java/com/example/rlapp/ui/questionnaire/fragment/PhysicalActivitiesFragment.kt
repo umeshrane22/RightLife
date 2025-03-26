@@ -18,6 +18,7 @@ import com.example.rlapp.databinding.BottomsheetPhysicalActivityBinding
 import com.example.rlapp.databinding.FragmentPhysicalActivitiesBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.PhysicalActivity
+import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 
@@ -27,6 +28,26 @@ class PhysicalActivitiesFragment : Fragment() {
     private val binding get() = _binding!!
     private val selectedActivities: ArrayList<String> = ArrayList()
     private var activities: ArrayList<PhysicalActivity> = ArrayList()
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): PhysicalActivitiesFragment {
+            val fragment = PhysicalActivitiesFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
