@@ -6,13 +6,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentEmotionsPastWeekBinding
-import com.example.rlapp.databinding.FragmentEnergyLevelBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class EmotionsPastWeekFragment : Fragment() {
 
     private var _binding: FragmentEmotionsPastWeekBinding? = null
     private val binding get() = _binding!!
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): EmotionsPastWeekFragment {
+            val fragment = EmotionsPastWeekFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

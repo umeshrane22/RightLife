@@ -16,6 +16,7 @@ import com.example.rlapp.ui.questionnaire.fragment.SleepSelectionFragment
 import com.example.rlapp.ui.questionnaire.fragment.SleepTimeFragment
 import com.example.rlapp.ui.questionnaire.fragment.SocialInteractionFragment
 import com.example.rlapp.ui.questionnaire.fragment.WhatsInYourMindFragment
+import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class QuestionnaireThinkRightPagerAdapter(fragment: FragmentActivity) :
     FragmentStateAdapter(fragment) {
@@ -24,20 +25,21 @@ class QuestionnaireThinkRightPagerAdapter(fragment: FragmentActivity) :
     override fun getItemCount() = fragmentList.size
 
     override fun createFragment(position: Int): Fragment {
+        val question = Question("Q1", "How do you to feel?", "EatRight")
         return when (position) {
-            0 -> EmotionsPastWeekFragment()
-            1 -> ShakeOffBadDayFragment()
-            2 -> WhatsInYourMindFragment()
-            3 -> AnexityPowerFragment()
-            4 -> OverthinkingYourselfFragment()
-            5 -> SocialInteractionFragment()
-            6 -> RelaxAndUnwindFragment()
-            7 -> QualityOfSleepFragment()
-            8 -> SleepTimeFragment()
-            9 -> BedWakeupTimeFragment()
-            10 -> SleepSelectionFragment()
-            11 -> FeelAfterWakingFragment()
-            12 -> BeforeGoingToBedFragment()
+            0 -> EmotionsPastWeekFragment.newInstance(question)
+            1 -> ShakeOffBadDayFragment.newInstance(question)
+            2 -> WhatsInYourMindFragment.newInstance(question)
+            3 -> AnexityPowerFragment.newInstance(question)
+            4 -> OverthinkingYourselfFragment.newInstance(question)
+            5 -> SocialInteractionFragment.newInstance(question)
+            6 -> RelaxAndUnwindFragment.newInstance(question)
+            7 -> QualityOfSleepFragment.newInstance(question)
+            8 -> SleepTimeFragment.newInstance(question)
+            9 -> BedWakeupTimeFragment.newInstance(question)
+            10 -> SleepSelectionFragment.newInstance(question)
+            11 -> FeelAfterWakingFragment.newInstance(question)
+            12 -> BeforeGoingToBedFragment.newInstance(question)
             else -> throw IllegalStateException("Invalid position")
         }
     }

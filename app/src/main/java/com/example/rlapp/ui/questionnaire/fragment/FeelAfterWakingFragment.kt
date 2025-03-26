@@ -11,11 +11,32 @@ import com.example.rlapp.databinding.FragmentFeelAfterWakingBinding
 import com.example.rlapp.ui.jounal.new_journal.JournalMoodAdapter
 import com.example.rlapp.ui.jounal.new_journal.Mood
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class FeelAfterWakingFragment : Fragment() {
 
     private var _binding: FragmentFeelAfterWakingBinding? = null
     private val binding get() = _binding!!
+
+    private var question: Question? = null
+
+    companion object {
+        fun newInstance(question: Question): FeelAfterWakingFragment {
+            val fragment = FeelAfterWakingFragment()
+            val args = Bundle().apply {
+                putSerializable("question", question)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            question = it.getSerializable("question") as? Question
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
