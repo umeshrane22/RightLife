@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.SnapHelper
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.apimodel.userdata.UserProfileResponse
 import com.example.rlapp.apimodel.userdata.Userdata
 import com.example.rlapp.databinding.ActivityProfileNewBinding
 import com.example.rlapp.databinding.BottomsheetAgeSelectionBinding
@@ -45,6 +46,7 @@ import com.example.rlapp.ui.profile_new.pojo.OtpRequest
 import com.example.rlapp.ui.profile_new.pojo.VerifyOtpRequest
 import com.example.rlapp.ui.utility.ConversionUtils
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import com.example.rlapp.ui.utility.Utils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.shawnlin.numberpicker.NumberPicker
 import okhttp3.ResponseBody
@@ -71,6 +73,8 @@ class ProfileNewActivity : AppCompatActivity() {
     private var selectedLabel: String = " feet"
     private lateinit var adapterWeight: RulerAdapter
     private lateinit var dialogOtp: Dialog
+    private lateinit var userData: Userdata
+    private lateinit var userDataResponse: UserProfileResponse
 
     // Activity Result Launcher to get image
     private val pickImageLauncher =
@@ -105,9 +109,9 @@ class ProfileNewActivity : AppCompatActivity() {
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
-        val userData = sharedPreferenceManager.userProfile
-
-        userData.userdata?.let { setUserData(it) }
+        userDataResponse = sharedPreferenceManager.userProfile
+        userData = userDataResponse.userdata
+        setUserData(userData)
 
         // Non-editable field click listeners
         binding.llAge.setOnClickListener {
@@ -155,7 +159,7 @@ class ProfileNewActivity : AppCompatActivity() {
         }
 
         binding.btnSave.setOnClickListener {
-            // Save account details logic
+            saveData()
         }
         binding.ivBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -168,7 +172,10 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.etLastName.setText(userData.lastName)
         binding.etEmail.setText(userData.email)
         binding.etMobile.setText(userData.phoneNumber)
-        binding.tvGender.text = userData.gender
+        if (userData.gender == "M")
+            binding.tvGender.text = "Male"
+        else
+            binding.tvGender.text = "Female"
         binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
         binding.tvProfileLetter.text = userData.firstName.first().toString()
 
@@ -394,7 +401,7 @@ class ProfileNewActivity : AppCompatActivity() {
                 selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
                 setLbsValue()
             } else {
-                selectedLabel = " kg"
+                selectedLabel = " kgs"
                 selectedWeight = ConversionUtils.convertKgToLbs(w[0])
                 setKgsValue()
             }
@@ -471,6 +478,7 @@ class ProfileNewActivity : AppCompatActivity() {
 
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
+            dialogBinding.rulerView.adapter = null
             binding.tvWeight.text = selectedWeight
         }
 
@@ -596,10 +604,10 @@ class ProfileNewActivity : AppCompatActivity() {
             )
         }
 
-
         dialogBinding.btnConfirm.setOnClickListener {
             if (validateInput()) {
                 bottomSheetDialog.dismiss()
+                dialogBinding.rulerView.adapter = null
                 binding.tvHeight.text = selectedHeight
             }
         }
@@ -692,7 +700,7 @@ class ProfileNewActivity : AppCompatActivity() {
                 returnValue = true
             } else {
                 returnValue = false
-                showToast("Height should be in between 120 feet to 220 feet")
+                showToast("Height should be in between 120 cms to 220 cms")
             }
 
         }
@@ -838,6 +846,93 @@ class ProfileNewActivity : AppCompatActivity() {
                 binding.tvResult.setTextColor(getColor(R.color.menuselected))
             }
 
+        })
+    }
+
+    private fun saveData() {
+        val firstName = binding.etFirstName.text.toString()
+        val lastName = binding.etLastName.text.toString()
+        val email = binding.etEmail.text.toString()
+        val mobileNumber = binding.etMobile.text.toString()
+        val age = binding.tvAge.text.toString()
+        val height = binding.tvHeight.text.toString()
+        val weight = binding.tvWeight.text.toString()
+        val gender = binding.tvGender.text.toString()
+        if (firstName.isEmpty()) {
+            showToast("First Name is required")
+        } else if (lastName.isEmpty()) {
+            showToast("Last Name is required")
+        } else if (email.isEmpty()) {
+            showToast("Email is required")
+        } else if (!email.matches(Utils.emailPattern.toRegex())) {
+            showToast("Invalid Email format")
+        } else if (mobileNumber.isEmpty() || mobileNumber.length != 10) {
+            showToast("Phone Number is incorrect")
+        } else if (age.isEmpty()) {
+            showToast("Please select Age")
+        } else if (gender.isEmpty()) {
+            showToast("Please select Gender")
+        } else if (height.isEmpty()) {
+            showToast("Please select Height")
+        } else if (weight.isEmpty()) {
+            showToast("Please select Weight")
+        } else {
+            userData.firstName = firstName
+            userData.lastName = lastName
+            userData.email = email
+            userData.phoneNumber = mobileNumber
+            if (gender.equals("Male", ignoreCase = true)) {
+                userData.gender = "M"
+            } else {
+                userData.gender = "F"
+            }
+            val w = weight.split(" ")
+            userData.weight = w[0].toDouble()
+            if ("kgs".equals(w[1], ignoreCase = true)) {
+                userData.weightUnit = "KG"
+            } else {
+                userData.weightUnit = "LBS"
+            }
+
+            val h = height.split(" ")
+            if (h.size == 2) {
+                userData.height = h[0].toDouble()
+                userData.heightUnit = "CM"
+            } else {
+                userData.height = "${h[0]}.${h[2]}".toDouble()
+                userData.heightUnit = "FT_AND_INCHES"
+            }
+            updateUserData(userData)
+        }
+    }
+
+    private fun updateUserData(userdata: Userdata) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call: Call<ResponseBody> =
+            apiService.updateUser(sharedPreferenceManager.accessToken, userdata)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    setResult(RESULT_OK)
+                    userDataResponse.userdata = userdata
+                    sharedPreferenceManager.saveUserProfile(userDataResponse)
+                    finish()
+                } else {
+                    Toast.makeText(
+                        this@ProfileNewActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@ProfileNewActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         })
     }
 
