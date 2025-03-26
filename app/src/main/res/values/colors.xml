@@ -154,8 +154,14 @@
 
 
     <color name="questionnaire_green">#02B37B</color>
-
-
+    <color name="checklist_text_color_selflove">#FF6CE8</color>
+    <color name="checklist_text_color_manifestation">#BD6FFF</color>
+    <color name="checklist_text_color_health">#00FFAF</color>
+    <color name="checklist_text_color_abundance">#FFE577</color>
+    <color name="checklist_text_color_gratitude">#FF576A</color>
+    <color name="checklist_text_color_relationship">#C3FFFD</color>
+    <color name="checklist_text_color_mindfulness">#62EDFF</color>
+    <color name="checklist_text_color_stressrelief">#A4FA78</color>
 
 
 </resources>

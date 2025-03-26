@@ -157,6 +157,9 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.btnSave.setOnClickListener {
             // Save account details logic
         }
+        binding.ivBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun setUserData(userData: Userdata) {
