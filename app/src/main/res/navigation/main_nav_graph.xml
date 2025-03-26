@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph.xml"
+    app:startDestination="@id/homefragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.rlapp.ai_package.ui.splash.SplashFragment"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_homefragment"
+            app:destination="@id/homefragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/landingFragment"
+        android:name="com.example.rlapp.ai_package.ui.moveright.MoveRightLandingFragment"
+        android:label="Landing "
+        tools:layout="@layout/fragment_landing" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/homefragment"
+        android:name="com.example.rlapp.ai_package.ui.home.HomeFragment"
+        android:label="Home "
+        tools:layout="@layout/home_fragment_ai" >
+<!--        <action-->
+<!--            android:id="@+id/action_homefragment_to_signup"-->
+<!--            app:destination="@id/signup" />-->
+    </fragment>
+
+</navigation>
