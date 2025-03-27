@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentStepsTakenBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionFive
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionFour
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class StepsTakenFragment : Fragment() {
@@ -46,8 +48,18 @@ class StepsTakenFragment : Fragment() {
 
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            submit("")
         }
+    }
+
+    private fun submit(answer: String) {
+        val questionFive = MRQuestionFive()
+        questionFive.answer = answer
+        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionFive = questionFive
+        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
+            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

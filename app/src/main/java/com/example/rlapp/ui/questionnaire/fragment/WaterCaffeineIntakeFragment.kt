@@ -7,7 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentWaterCaffeineIntakeBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.AnswerWaterCoffee
+import com.example.rlapp.ui.questionnaire.pojo.Coffee
+import com.example.rlapp.ui.questionnaire.pojo.ERQuestionFive
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.Water
 
 class WaterCaffeineIntakeFragment : Fragment() {
 
@@ -46,8 +50,27 @@ class WaterCaffeineIntakeFragment : Fragment() {
 
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            val answerWaterCoffee = AnswerWaterCoffee()
+            val water = Water()
+            water.cups = ""
+            water.quantity = ""
+            answerWaterCoffee.water = water
+            val coffee = Coffee()
+            coffee.cups = ""
+            coffee.quantity = ""
+            answerWaterCoffee.coffee = coffee
+            submit(answerWaterCoffee)
         }
+    }
+
+    private fun submit(answer: AnswerWaterCoffee) {
+        val questionFive = ERQuestionFive()
+        questionFive.answer = answer
+        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionFive = questionFive
+        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
+            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {
