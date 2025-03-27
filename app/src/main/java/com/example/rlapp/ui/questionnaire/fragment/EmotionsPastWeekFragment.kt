@@ -4,12 +4,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEmotionsPastWeekBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class EmotionsPastWeekFragment : Fragment() {
+
+
+    private lateinit var emotionSelected: String
+    private val EmotionsList = arrayOf(
+        "Chaotic",
+        "UnStable",
+        "Uneven",
+        "Steady",
+        "Calm"
+
+    )
+    private val EmotionsBgCards = arrayOf(
+        R.drawable.chaotic_bg_card,
+        R.drawable.unstable_bg_card,
+        R.drawable.uneven_bg_card,
+        R.drawable.steady_bg_card,
+        R.drawable.calm_bg_card
+
+    )
 
     private var _binding: FragmentEmotionsPastWeekBinding? = null
     private val binding get() = _binding!!
@@ -46,6 +67,22 @@ class EmotionsPastWeekFragment : Fragment() {
         binding.btnContinue.setOnClickListener {
             QuestionnaireEatRightActivity.navigateToNextPage()
         }
+
+        //default color
+        binding.tvTitle.text = EmotionsList[0]
+        emotionSelected =  EmotionsList[0]
+        binding.cardView.setBackgroundResource(EmotionsBgCards[0])
+        // Set SeekBar listener to change background color dynamically
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                binding.tvTitle.text = EmotionsList[progress]
+                emotionSelected = EmotionsList[progress]
+                binding.cardView.setBackgroundResource(EmotionsBgCards[progress])
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
     }
 
     override fun onDestroyView() {
