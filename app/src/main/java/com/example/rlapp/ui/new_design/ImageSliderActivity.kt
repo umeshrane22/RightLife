@@ -317,6 +317,8 @@ class ImageSliderActivity : AppCompatActivity() {
                             }
                         }
                         if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
+                            val loggedInUser = LoggedInUser(email = mEmail, isOnboardingComplete = true)
+                            sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
                             startActivity(
                                 Intent(
                                     this@ImageSliderActivity,
