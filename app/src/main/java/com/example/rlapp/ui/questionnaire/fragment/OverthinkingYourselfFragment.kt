@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.example.rlapp.databinding.FragmentOverthiningYourselfBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
@@ -48,6 +49,29 @@ class OverthinkingYourselfFragment : Fragment() {
             //QuestionnaireThinkRightActivity.navigateToNextPage()
             submit("")
         }
+
+        // Set default state
+        binding.tvTitle.text = EmotionsList[0]
+
+        // SeekBar change listener
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (progress == 0) {
+                    binding.seekBar.progress = 1 // Reset to 1
+                    return
+                }
+                binding.tvTitle.text = EmotionsList[progress]
+                binding.triangleView.setProgress(progress, binding.seekBar.max)
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+        binding.seekBar.setProgress(1)
+        //binding.triangleView.setProgress(1, binding.seekBar.max)
+        binding.triangleView.post {
+            binding.triangleView.setProgress(1, binding.seekBar.max)
+        }
     }
 
     private fun submit(answer: String) {
@@ -63,4 +87,11 @@ class OverthinkingYourselfFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    private val EmotionsList = arrayOf(
+        "Never",
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "All the time",
+        )
 }

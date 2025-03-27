@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
     <TextView
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
@@ -22,13 +27,146 @@
         android:textSize="14sp"
         android:fontFamily="@font/dmsans_regular"
         android:textColor="@color/txt_color_header"
-        android:layout_margin="16dp" />
+        android:layout_marginBottom="30dp"
+         />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:id="@+id/rl_water"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content">
+
+
+
+            <com.example.rlapp.quiestionscustomviews.AnxietyLevelSelectorView
+                android:id="@+id/anxiety_slider_view"
+                android:layout_width="40dp"
+                android:layout_centerInParent="true"
+                android:layout_height="350dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_alignTop="@+id/anxiety_slider_view"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:layout_toLeftOf="@id/anxiety_slider_view"
+                android:orientation="vertical">
+
+
+
+                <TextView
+                    android:id="@+id/anxiety_level_text_5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="top"
+                    android:text="Extreme" />
+
+                <TextView
+                    android:id="@+id/anxiety_level_text_4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="top"
+                    android:text="High" />
+
+                <TextView
+                    android:id="@+id/anxiety_level_text_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="top"
+                    android:text="Moderate" />
+
+                <TextView
+                    android:id="@+id/anxiety_level_text_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="top"
+                    android:text="Mild" />
+
+                <TextView
+                    android:id="@+id/anxiety_level_text_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="16dp"
+                    android:gravity="top"
+                    android:text="Minimal" />
+            </LinearLayout>
+
+
+            <!--         recomended steps view -->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_alignTop="@+id/anxiety_slider_view"
+                android:gravity="center"
+                android:layout_toEndOf="@id/anxiety_slider_view"
+                android:orientation="vertical">
+
+                <ImageView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/happy_icon"
+                    android:gravity="top"
+                    />
+
+                <ImageView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/happy_icon"
+                    android:gravity="top"
+                     />
+
+                <ImageView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/happy_icon"
+                    android:gravity="top"
+                    />
+
+                <ImageView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/happy_icon"
+                    android:gravity="top"
+                    />
+
+                <ImageView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/happy_icon"
+                    android:gravity="top"
+                    />
+
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content">
         <Button
             android:id="@+id/btn_continue"
             android:layout_width="match_parent"
@@ -44,5 +182,4 @@
             android:textSize="@dimen/textsize_large"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

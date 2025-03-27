@@ -1,32 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:id="@+id/tvQuestion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="How often do you find yourself overthinking?"
-        android:textSize="18sp"
-        android:fontFamily="@font/dmsans_bold"
-        android:layout_marginBottom="16dp"
-        android:textColor="@color/menu_icon_color_unselected" />
-
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Slide the scale to select."
-        android:textSize="14sp"
-        android:fontFamily="@font/dmsans_regular"
-        android:textColor="@color/txt_color_header"
-        android:layout_margin="16dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="How often do you find yourself overthinking?"
+            android:textSize="18sp"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/menu_icon_color_unselected" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Slide the scale to select."
+            android:textSize="14sp"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_header" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_marginBottom="50dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:text="Never"
+                android:layout_gravity="center_horizontal"
+                android:textSize="24sp"
+                android:layout_above="@+id/rl_triangle"
+                android:layout_centerInParent="true"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="320dp"
+                android:layout_centerInParent="true"
+                android:id="@+id/rl_triangle"
+                android:layout_height="310dp">
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    app:cardElevation="1dp">
+
+                    <com.example.rlapp.quiestionscustomviews.TriangleView
+                        android:id="@+id/triangleView"
+                        android:layout_width="match_parent"
+                        android:paddingBottom="10dp"
+                        android:layout_height="match_parent" />
+                </androidx.cardview.widget.CardView>
+
+
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="315dp"
+                    android:layout_height="wrap_content"
+                    android:max="4"
+                    android:layout_alignParentBottom="true"
+                    android:thumb="@drawable/custom_thumb"
+                    android:elevation="5dp"
+                    android:layout_marginStart="-5dp"
+                    android:layout_marginBottom="-1dp"
+                    android:progress="0" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl_triangle"
+                android:text="Time"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center_horizontal"
+                android:textSize="@dimen/textsize_medium"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="@font/dmsans_medium"
+                />
+
+            <TextView
+                android:id="@+id/tvOverthinking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Overthinking"
+                android:textSize="@dimen/textsize_medium"
+                android:layout_centerVertical="true"
+                android:rotation="270"
+                android:fontFamily="@font/dmsans_medium"
+                />
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_alignParentBottom="true"
+        android:layout_height="100dp">
 
 
         <Button
@@ -44,5 +129,4 @@
             android:textSize="@dimen/textsize_large"
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>
