@@ -8,8 +8,9 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEmotionsPastWeekBinding
-import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
+import com.example.rlapp.ui.questionnaire.pojo.TRQuestionOne
 
 class EmotionsPastWeekFragment : Fragment() {
 
@@ -65,7 +66,7 @@ class EmotionsPastWeekFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            submit("")
         }
 
         //default color
@@ -83,6 +84,15 @@ class EmotionsPastWeekFragment : Fragment() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+    }
+
+    private fun submit(answer: String) {
+        val questionOne = TRQuestionOne()
+        questionOne.answer = answer
+        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionOne = questionOne
+        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
+            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {

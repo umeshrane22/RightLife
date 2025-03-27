@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment
 import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEnergyLevelBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
+import com.example.rlapp.ui.questionnaire.pojo.EnergyAnswer
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionFive
+import com.example.rlapp.ui.questionnaire.pojo.MRQuestionSix
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class EnergyLevelFragment : Fragment() {
@@ -67,7 +70,12 @@ class EnergyLevelFragment : Fragment() {
         )
 
         binding.btnContinue.setOnClickListener {
-            QuestionnaireEatRightActivity.navigateToNextPage()
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            val energyAnswer = EnergyAnswer()
+            energyAnswer.night = ""
+            energyAnswer.evening = ""
+            energyAnswer.morning = ""
+            submit(energyAnswer)
         }
         binding.morningSliderView.setMinSteps(0)
         binding.morningSliderView.setMaxSteps(12000)
@@ -124,6 +132,15 @@ class EnergyLevelFragment : Fragment() {
                 eveningEneryValue = energyValues.get(index)
             }
         }
+    }
+
+    private fun submit(answer: EnergyAnswer) {
+        val questionSix = MRQuestionSix()
+        questionSix.answer = answer
+        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionSix = questionSix
+        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
+            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        )
     }
 
     override fun onDestroyView() {
