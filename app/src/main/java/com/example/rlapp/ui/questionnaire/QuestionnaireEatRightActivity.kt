@@ -1,19 +1,24 @@
 package com.example.rlapp.ui.questionnaire
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.databinding.ActivityQuestionnaireBinding
 import com.example.rlapp.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
-import com.example.rlapp.ui.questionnaire.pojo.EatRightAnswerRequest
-import com.example.rlapp.ui.questionnaire.pojo.MoveRightAnswerRequest
+import com.example.rlapp.ui.questionnaire.pojo.QuestionnaireAnswerRequest
 import com.example.rlapp.ui.utility.SharedPreferenceManager
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class QuestionnaireEatRightActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuestionnaireBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,11 +79,10 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
     }
 
     private fun updateProgress(fragmentIndex: Int) {
-        // Set progress percentage based on the current fragment (out of 8)
         val progressPercentage =
             (((fragmentIndex + 1) / questionnairePagerAdapter.itemCount.toDouble()) * 100).toInt()
         binding.progressQuestionnaire.progress = progressPercentage
-        binding.tvFragmentCount.text = "${fragmentIndex + 1}/8"
+        binding.tvFragmentCount.text = "${fragmentIndex + 1}/${questionnairePagerAdapter.itemCount}"
     }
 
 
@@ -87,8 +91,8 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         private lateinit var viewPager: ViewPager2
         private lateinit var questionnairePagerAdapter: QuestionnaireEatRightPagerAdapter
         private var instance: QuestionnaireEatRightActivity? = null // Store Activity reference
-        val eatRightAnswerRequest: EatRightAnswerRequest = EatRightAnswerRequest()
-        val moveRightAnswerRequest: MoveRightAnswerRequest = MoveRightAnswerRequest()
+        val questionnaireAnswerRequest: QuestionnaireAnswerRequest = QuestionnaireAnswerRequest()
+        private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
@@ -102,19 +106,43 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
             }
         }
 
-        fun submitEatRightAnswerRequest(eatRightAnswerRequest: EatRightAnswerRequest) {
-            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
-                instance?.finish() // Finish activity safely
-            else
-                navigateToNextPage()
+        fun submitQuestionnaireAnswerRequest(questionnaireAnswerRequest: QuestionnaireAnswerRequest) {
+            val apiService = ApiClient.getClient().create(ApiService::class.java)
+            val call = apiService.submitERQuestionnaire(
+                sharedPreferenceManager.accessToken,
+                questionnaireAnswerRequest
+            )
 
-        }
+            call.enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        Toast.makeText(instance, response.message(), Toast.LENGTH_SHORT)
+                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                            instance?.finish() // Finish activity safely
+                        else
+                            navigateToNextPage()
+                    } else {
+                        Toast.makeText(
+                            instance,
+                            "Server Error: " + response.code(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
 
-        fun submitSMoveRightAnswerRequest(moveRightAnswerRequest: MoveRightAnswerRequest) {
-            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
-                instance?.finish() // Finish activity safely
-            else
-                navigateToNextPage()
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Toast.makeText(
+                        instance,
+                        "Network Error: " + t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            })
+
         }
     }
 

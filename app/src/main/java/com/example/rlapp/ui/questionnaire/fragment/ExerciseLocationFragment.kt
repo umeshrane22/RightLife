@@ -69,9 +69,9 @@ class ExerciseLocationFragment : Fragment() {
     private fun submit(answer: String) {
         val questionFour = MRQuestionFour()
         questionFour.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionFour = questionFour
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionFour = questionFour
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

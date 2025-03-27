@@ -1,7 +1,6 @@
 package com.example.rlapp.ui.scan_history
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +41,7 @@ class PastReportActivity : AppCompatActivity() {
                     call: Call<ScanHistoryResponse>,
                     response: Response<ScanHistoryResponse>
                 ) {
-                    if (response.isSuccessful) {
+                    if (response.isSuccessful && response.body() != null) {
                         val reports = response.body()?.data ?: emptyList()
                         val groupedList = processApiResponse(reports)
                         adapter = PastReportAdapter(groupedList) { reportItem ->
@@ -53,11 +52,21 @@ class PastReportActivity : AppCompatActivity() {
                             ).show()
                         }
                         binding.recyclerView.adapter = adapter
+                    } else {
+                        Toast.makeText(
+                            this@PastReportActivity,
+                            "Server Error: " + response.code(),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ScanHistoryResponse>, t: Throwable) {
-                    Log.e("API_ERROR", "Failed to fetch reports", t)
+                    Toast.makeText(
+                        this@PastReportActivity,
+                        "Network Error: " + t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
     }

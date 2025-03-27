@@ -70,9 +70,9 @@ class ShakeOffBadDayFragment : Fragment() {
     private fun submit(answer: String) {
         val questionTwo = TRQuestionTwo()
         questionTwo.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionTwo = questionTwo
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionTwo = questionTwo
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

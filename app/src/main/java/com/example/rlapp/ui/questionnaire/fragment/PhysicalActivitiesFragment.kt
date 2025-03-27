@@ -247,9 +247,9 @@ class PhysicalActivitiesFragment : Fragment() {
     private fun submit(answer: List<String>) {
         val questionThree = MRQuestionThree()
         questionThree.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionThree = questionThree
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionThree = questionThree
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 }

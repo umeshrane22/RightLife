@@ -68,9 +68,9 @@ class MealPreferenceFragment : Fragment() {
     private fun submit(answer: String) {
         val questionTwo = ERQuestionTwo()
         questionTwo.answer = answer
-        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionTwo = questionTwo
-        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
-            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionTwo = questionTwo
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

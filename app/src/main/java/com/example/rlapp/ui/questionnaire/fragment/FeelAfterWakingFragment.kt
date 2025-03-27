@@ -60,9 +60,9 @@ class FeelAfterWakingFragment : Fragment() {
     private fun submit(answer: String) {
         val questionFive = SRQuestionFive()
         questionFive.answer = answer
-        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionFive = questionFive
-        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
-            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionFive = questionFive
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

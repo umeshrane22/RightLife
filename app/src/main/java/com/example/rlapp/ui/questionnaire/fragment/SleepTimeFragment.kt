@@ -68,9 +68,9 @@ class SleepTimeFragment : Fragment() {
     private fun submit(answer: String) {
         val questionTwo = SRQuestionTwo()
         questionTwo.answer = answer
-        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionTwo = questionTwo
-        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
-            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionTwo = questionTwo
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

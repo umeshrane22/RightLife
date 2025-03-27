@@ -130,9 +130,9 @@ class WhatsInYourMindFragment : Fragment() {
     private fun submit(answer: String) {
         val questionThree = TRQuestionThree()
         questionThree.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionThree = questionThree
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionThree = questionThree
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 }

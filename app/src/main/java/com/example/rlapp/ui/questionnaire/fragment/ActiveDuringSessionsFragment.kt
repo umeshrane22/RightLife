@@ -89,9 +89,9 @@ class ActiveDuringSessionsFragment : Fragment() {
     private fun submit(answer: String) {
         val questionTwo = MRQuestionTwo()
         questionTwo.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionTwo = questionTwo
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionTwo = questionTwo
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

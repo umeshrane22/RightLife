@@ -75,6 +75,7 @@ import com.example.rlapp.ui.jounal.new_journal.JournalListActivity;
 import com.example.rlapp.ui.mindaudit.MindAuditActivity;
 import com.example.rlapp.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.example.rlapp.ui.profile_new.ProfileSettingsActivity;
+import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity;
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity;
 import com.example.rlapp.ui.scan_history.PastReportActivity;
 import com.example.rlapp.ui.settings.SettingsNewActivity;
@@ -1397,7 +1398,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         int viewId = view.getId();
 
         if (viewId == R.id.searchIcon) {
-            startActivity(new Intent(this, QuestionnaireThinkRightActivity.class));
+            startActivity(new Intent(this, QuestionnaireEatRightActivity.class));
         } else if (viewId == R.id.rlmenu) {
             //Toast.makeText(HomeActivity.this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
             // Start new activity here

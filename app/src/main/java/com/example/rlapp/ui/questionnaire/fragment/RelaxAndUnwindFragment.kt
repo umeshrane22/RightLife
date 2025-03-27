@@ -90,9 +90,9 @@ class RelaxAndUnwindFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSeven = TRQuestionSeven()
         questionSeven.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionSeven = questionSeven
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionSeven = questionSeven
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

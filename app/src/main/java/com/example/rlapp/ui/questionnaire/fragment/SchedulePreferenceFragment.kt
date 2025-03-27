@@ -96,9 +96,9 @@ class SchedulePreferenceFragment : Fragment() {
     private fun submit(answer: String) {
         val questionThree = ERQuestionThree()
         questionThree.answer = answer
-        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionThree = questionThree
-        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
-            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionThree = questionThree
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 
