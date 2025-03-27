@@ -73,9 +73,9 @@ class BreaksToStretchFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSeven = MRQuestionSeven()
         questionSeven.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionSeven = questionSeven
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionSeven = questionSeven
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

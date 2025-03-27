@@ -45,11 +45,6 @@ class OverthinkingYourselfFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.btnContinue.setOnClickListener {
-            //QuestionnaireThinkRightActivity.navigateToNextPage()
-            submit("")
-        }
-
         // Set default state
         binding.tvTitle.text = EmotionsList[0]
 
@@ -67,19 +62,25 @@ class OverthinkingYourselfFragment : Fragment() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        binding.seekBar.setProgress(1)
+        binding.seekBar.progress = 1
         //binding.triangleView.setProgress(1, binding.seekBar.max)
         binding.triangleView.post {
             binding.triangleView.setProgress(1, binding.seekBar.max)
+        }
+
+        binding.btnContinue.setOnClickListener {
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit(binding.tvTitle.text.toString())
         }
     }
 
     private fun submit(answer: String) {
         val questionFive = TRQuestionFive()
         questionFive.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionFive = questionFive
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionFive =
+            questionFive
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 
@@ -87,11 +88,12 @@ class OverthinkingYourselfFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
     private val EmotionsList = arrayOf(
         "Never",
         "Never",
         "Rarely",
         "Sometimes",
         "All the time",
-        )
+    )
 }

@@ -65,13 +65,9 @@ class EmotionsPastWeekFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        binding.btnContinue.setOnClickListener {
-            submit("")
-        }
-
         //default color
         binding.tvTitle.text = EmotionsList[0]
-        emotionSelected =  EmotionsList[0]
+        emotionSelected = EmotionsList[0]
         binding.cardView.setBackgroundResource(EmotionsBgCards[0])
         // Set SeekBar listener to change background color dynamically
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -84,14 +80,19 @@ class EmotionsPastWeekFragment : Fragment() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+
+        binding.btnContinue.setOnClickListener {
+            submit(emotionSelected)
+        }
     }
 
     private fun submit(answer: String) {
         val questionOne = TRQuestionOne()
         questionOne.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionOne = questionOne
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionOne =
+            questionOne
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

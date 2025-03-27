@@ -12,12 +12,12 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentStepsTakenBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.MRQuestionFive
-import com.example.rlapp.ui.questionnaire.pojo.MRQuestionFour
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class StepsTakenFragment : Fragment() {
 
     private lateinit var stepsCountTexts: Array<TextView>
+    private lateinit var selectedSteps: String
 
     private var _binding: FragmentStepsTakenBinding? = null
     private val binding get() = _binding!!
@@ -52,8 +52,7 @@ class StepsTakenFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-
-        stepsCountTexts = arrayOf<TextView>(
+        stepsCountTexts = arrayOf(
             binding.stepCountText1,
             binding.stepCountText2,
             binding.stepCountText3,
@@ -61,14 +60,16 @@ class StepsTakenFragment : Fragment() {
             binding.stepCountText5,
             binding.stepCountText6
         )
-        binding.btnContinue.setOnClickListener {
-            //QuestionnaireEatRightActivity.navigateToNextPage()
-            submit("")
-        }
+        selectedSteps = binding.stepCountText1.text.toString()
 
         binding.stepsSliderView.setMinSteps(0)
         binding.stepsSliderView.setMaxSteps(12000)
-        binding.stepsSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.stepsSliderView.setIntervalColors(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.steps_dark_color
+            )
+        )
         binding.stepsSliderView.setOnStepCountChangeListener { stepCount ->
 
             // Reset all TextViews to normal
@@ -78,18 +79,24 @@ class StepsTakenFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < stepsCountTexts.size) {
-                stepsCountTexts.get(index).setTypeface(null, Typeface.BOLD)
-
+                stepsCountTexts[index].setTypeface(null, Typeface.BOLD)
+                selectedSteps = stepsCountTexts[index].text.toString()
             }
+        }
+
+        binding.btnContinue.setOnClickListener {
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            submit(selectedSteps)
         }
     }
 
     private fun submit(answer: String) {
         val questionFive = MRQuestionFive()
         questionFive.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionFive = questionFive
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionFive =
+            questionFive
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

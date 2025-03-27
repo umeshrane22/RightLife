@@ -12,17 +12,15 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEnergyLevelBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.EnergyAnswer
-import com.example.rlapp.ui.questionnaire.pojo.MRQuestionFive
 import com.example.rlapp.ui.questionnaire.pojo.MRQuestionSix
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class EnergyLevelFragment : Fragment() {
     private lateinit var energyCountTexts: Array<TextView>
     private lateinit var energyValues: Array<String>
-    private var morningEneryValue:String = "Low"
-    private var afternoonEneryValue:String = "Low"
-    private var eveningEneryValue:String = "Low"
-
+    private var morningEneryValue: String = "Low"
+    private var afternoonEneryValue: String = "Low"
+    private var eveningEneryValue: String = "Low"
 
     private var _binding: FragmentEnergyLevelBinding? = null
     private val binding get() = _binding!!
@@ -57,30 +55,27 @@ class EnergyLevelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        energyCountTexts = arrayOf<TextView>(
+        energyCountTexts = arrayOf(
             binding.eneryCountText1,
             binding.eneryCountText2,
             binding.eneryCountText3,
 
-        )
-        energyValues = arrayOf<String>(
+            )
+        energyValues = arrayOf(
             "Low",
             "Medium",
             "High"
         )
 
-        binding.btnContinue.setOnClickListener {
-            //QuestionnaireEatRightActivity.navigateToNextPage()
-            val energyAnswer = EnergyAnswer()
-            energyAnswer.night = ""
-            energyAnswer.evening = ""
-            energyAnswer.morning = ""
-            submit(energyAnswer)
-        }
         binding.morningSliderView.setMinSteps(0)
         binding.morningSliderView.setMaxSteps(12000)
         binding.morningSliderView.setstepInterval(4000)
-        binding.morningSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.morningSliderView.setIntervalColors(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.steps_dark_color
+            )
+        )
         binding.morningSliderView.setOnStepCountChangeListener { stepCount ->
 
             // Reset all TextViews to normal
@@ -99,7 +94,12 @@ class EnergyLevelFragment : Fragment() {
         binding.afternoonSliderView.setMinSteps(0)
         binding.afternoonSliderView.setMaxSteps(12000)
         binding.afternoonSliderView.setstepInterval(4000)
-        binding.afternoonSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.afternoonSliderView.setIntervalColors(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.steps_dark_color
+            )
+        )
         binding.afternoonSliderView.setOnStepCountChangeListener { stepCount ->
 
             // Reset all TextViews to normal
@@ -114,11 +114,15 @@ class EnergyLevelFragment : Fragment() {
             }
         }
 
-
         binding.eveningSliderView.setMinSteps(0)
         binding.eveningSliderView.setMaxSteps(12000)
         binding.eveningSliderView.setstepInterval(4000)
-        binding.eveningSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.eveningSliderView.setIntervalColors(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.steps_dark_color
+            )
+        )
         binding.eveningSliderView.setOnStepCountChangeListener { stepCount ->
 
             // Reset all TextViews to normal
@@ -132,14 +136,24 @@ class EnergyLevelFragment : Fragment() {
                 eveningEneryValue = energyValues.get(index)
             }
         }
+
+        binding.btnContinue.setOnClickListener {
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            val energyAnswer = EnergyAnswer()
+            energyAnswer.morning = morningEneryValue
+            energyAnswer.evening = afternoonEneryValue
+            energyAnswer.night = eveningEneryValue
+            submit(energyAnswer)
+        }
     }
 
     private fun submit(answer: EnergyAnswer) {
         val questionSix = MRQuestionSix()
         questionSix.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionSix = questionSix
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionSix =
+            questionSix
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

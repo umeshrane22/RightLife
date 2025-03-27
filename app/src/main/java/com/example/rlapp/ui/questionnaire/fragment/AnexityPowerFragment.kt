@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentAnexityPowerBinding
+import com.example.rlapp.ui.mindaudit.Anxiety
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.TRQuestionFour
@@ -18,6 +19,7 @@ import com.example.rlapp.ui.questionnaire.pojo.TRQuestionThree
 class AnexityPowerFragment : Fragment() {
 
     private lateinit var anxietyLevelTexts: Array<TextView>
+    private lateinit var selectedAnxiety: String
     private var _binding: FragmentAnexityPowerBinding? = null
     private val binding get() = _binding!!
 
@@ -51,11 +53,8 @@ class AnexityPowerFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.btnContinue.setOnClickListener {
-            //QuestionnaireThinkRightActivity.navigateToNextPage()
-            submit("")
-        }
-        anxietyLevelTexts = arrayOf<TextView>(
+
+        anxietyLevelTexts = arrayOf(
             binding.anxietyLevelText1,
             binding.anxietyLevelText2,
             binding.anxietyLevelText3,
@@ -63,6 +62,7 @@ class AnexityPowerFragment : Fragment() {
             binding.anxietyLevelText5,
         )
 
+        selectedAnxiety = binding.anxietyLevelText1.text.toString()
         binding.anxietySliderView.setMinSteps(0)
         binding.anxietySliderView.setMaxSteps(10000)
         binding.anxietySliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
@@ -75,18 +75,23 @@ class AnexityPowerFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < anxietyLevelTexts.size) {
-                anxietyLevelTexts.get(index).setTypeface(null, Typeface.BOLD)
-
+                anxietyLevelTexts[index].setTypeface(null, Typeface.BOLD)
+                selectedAnxiety = anxietyLevelTexts[index].text.toString()
             }
+        }
+
+        binding.btnContinue.setOnClickListener {
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit(selectedAnxiety)
         }
     }
 
     private fun submit(answer: String) {
         val questionFour = TRQuestionFour()
         questionFour.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionFour = questionFour
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionFour = questionFour
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

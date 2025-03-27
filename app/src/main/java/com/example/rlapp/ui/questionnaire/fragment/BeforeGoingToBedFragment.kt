@@ -88,9 +88,9 @@ class BeforeGoingToBedFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSix = SRQuestionSix()
         questionSix.answer = answer
-        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionSix = questionSix
-        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
-            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionSix = questionSix
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

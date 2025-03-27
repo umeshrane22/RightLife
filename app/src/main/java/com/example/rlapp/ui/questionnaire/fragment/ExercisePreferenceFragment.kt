@@ -62,9 +62,9 @@ class ExercisePreferenceFragment : Fragment() {
     private fun submit(answer: String) {
         val questionOne = MRQuestionOne()
         questionOne.answer = answer
-        QuestionnaireEatRightActivity.moveRightAnswerRequest.questionOne = questionOne
-        QuestionnaireEatRightActivity.submitSMoveRightAnswerRequest(
-            QuestionnaireEatRightActivity.moveRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne = questionOne
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

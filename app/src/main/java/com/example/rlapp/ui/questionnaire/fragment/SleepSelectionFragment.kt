@@ -75,9 +75,9 @@ class SleepSelectionFragment : Fragment() {
     private fun submit(answer: String) {
         val questionFour = SRQuestionFour()
         questionFour.answer = answer
-        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionFour = questionFour
-        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
-            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionFour = questionFour
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

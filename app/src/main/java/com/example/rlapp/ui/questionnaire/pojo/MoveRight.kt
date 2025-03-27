@@ -3,28 +3,32 @@ package com.example.rlapp.ui.questionnaire.pojo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class SleepRightAnswerRequest {
+class MoveRight {
     @SerializedName("questionOne")
     @Expose
-    var questionOne: SRQuestionOne? = null
+    var questionOne: MRQuestionOne? = null
 
     @SerializedName("questionTwo")
     @Expose
-    var questionTwo: SRQuestionTwo? = null
+    var questionTwo: MRQuestionTwo? = null
 
     @SerializedName("questionThree")
     @Expose
-    var questionThree: SRQuestionThree? = null
+    var questionThree: MRQuestionThree? = null
 
     @SerializedName("questionFour")
     @Expose
-    var questionFour: SRQuestionFour? = null
+    var questionFour: MRQuestionFour? = null
 
     @SerializedName("questionFive")
     @Expose
-    var questionFive: SRQuestionFive? = null
+    var questionFive: MRQuestionFive? = null
 
     @SerializedName("questionSix")
     @Expose
-    var questionSix: SRQuestionSix? = null
+    var questionSix: MRQuestionSix? = null
+
+    @SerializedName("questionSeven")
+    @Expose
+    var questionSeven: MRQuestionSeven? = null
 }

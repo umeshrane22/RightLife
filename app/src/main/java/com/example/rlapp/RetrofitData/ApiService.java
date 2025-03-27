@@ -57,6 +57,7 @@ import com.example.rlapp.ui.new_design.pojo.SaveUserInterestResponse;
 import com.example.rlapp.ui.payment.PaymentCardResponse;
 import com.example.rlapp.ui.profile_new.pojo.OtpRequest;
 import com.example.rlapp.ui.profile_new.pojo.VerifyOtpRequest;
+import com.example.rlapp.ui.questionnaire.pojo.QuestionnaireAnswerRequest;
 import com.example.rlapp.ui.scan_history.ScanHistoryResponse;
 import com.example.rlapp.ui.settings.pojo.FAQResponse;
 import com.example.rlapp.ui.settings.pojo.GeneralInformationResponse;
@@ -1061,6 +1062,12 @@ public interface ApiService {
             @Header("Authorization") String authToken
     );
 
+    @Headers("Content-Type: application/json")
+    @POST("aiQuestionaries")
+    Call<ResponseBody> submitERQuestionnaire(
+            @Header("Authorization") String authToken,
+            @Body QuestionnaireAnswerRequest questionnaireAnswerRequest
+    );
 }
 
 

@@ -20,22 +20,14 @@ import com.example.rlapp.ui.questionnaire.pojo.Water
 
 class WaterCaffeineIntakeFragment : Fragment() {
 
-    var intervalColors: IntArray = intArrayOf(
-       R.color.red,  // 0-2k
-        Color.parseColor("#F8F836"),  // 2-4k
-        Color.parseColor("#84D348"),  // 4-6k
-        Color.parseColor("#49A2DB"),  // 6-8k
-        Color.parseColor("#49A2DB"),  // 8-10k
-        Color.parseColor("#49A2DB") // 10-12k
-    )
-
-
     private lateinit var waterCountTexts: Array<TextView>
     private lateinit var coffeeCountTexts: Array<TextView>
     private var _binding: FragmentWaterCaffeineIntakeBinding? = null
     private val binding get() = _binding!!
 
     private var question: Question? = null
+    private val water = Water()
+    val coffee = Coffee()
 
     companion object {
         fun newInstance(question: Question): WaterCaffeineIntakeFragment {
@@ -65,7 +57,7 @@ class WaterCaffeineIntakeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        waterCountTexts = arrayOf<TextView>(
+        waterCountTexts = arrayOf(
             binding.waterCountText1,
             binding.waterCountText2,
             binding.waterCountText3,
@@ -73,28 +65,19 @@ class WaterCaffeineIntakeFragment : Fragment() {
             binding.waterCountText5,
             binding.waterCountText6
         )
+        water.cups = waterCountTexts[0].text.toString()
+        water.quantity = (500).toString() + " ml"
 
-        coffeeCountTexts = arrayOf<TextView>(
+        coffeeCountTexts = arrayOf(
             binding.coffeeCountText1,
             binding.coffeeCountText2,
             binding.coffeeCountText3,
             binding.coffeeCountText4
-
         )
 
-        binding.btnContinue.setOnClickListener {
-            //QuestionnaireEatRightActivity.navigateToNextPage()
-            val answerWaterCoffee = AnswerWaterCoffee()
-            val water = Water()
-            water.cups = ""
-            water.quantity = ""
-            answerWaterCoffee.water = water
-            val coffee = Coffee()
-            coffee.cups = ""
-            coffee.quantity = ""
-            answerWaterCoffee.coffee = coffee
-            submit(answerWaterCoffee)
-        }
+        coffee.cups = coffeeCountTexts[0].text.toString()
+        coffee.quantity = (125 *1).toString() + " ml"
+
         binding.waterView.setMinSteps(0)
         binding.waterView.setMaxSteps(12000)
         binding.waterView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.water_dark_color))
@@ -107,8 +90,10 @@ class WaterCaffeineIntakeFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < waterCountTexts.size) {
-                waterCountTexts.get(index).setTypeface(null, Typeface.BOLD)
+                waterCountTexts[index].setTypeface(null, Typeface.BOLD)
                 binding.tvWaterQuantity.text = (500*(index+1)).toString() + " ml"
+                water.cups = waterCountTexts[index].text.toString()
+                water.quantity = (500*(index+1)).toString() + " ml"
             }
         }
 
@@ -136,16 +121,26 @@ class WaterCaffeineIntakeFragment : Fragment() {
                 }else if (index==3){
                     binding.tvCoffeeQuantity.text =  (125 *7).toString() + " ml"
                 }
+                coffee.cups = coffeeCountTexts[index].text.toString()
+                coffee.quantity = binding.tvCoffeeQuantity.text.toString()
             }
+        }
+
+        binding.btnContinue.setOnClickListener {
+            //QuestionnaireEatRightActivity.navigateToNextPage()
+            val answerWaterCoffee = AnswerWaterCoffee()
+            answerWaterCoffee.water = water
+            answerWaterCoffee.coffee = coffee
+            submit(answerWaterCoffee)
         }
     }
 
     private fun submit(answer: AnswerWaterCoffee) {
         val questionFive = ERQuestionFive()
         questionFive.answer = answer
-        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionFive = questionFive
-        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
-            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionFive = questionFive
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 

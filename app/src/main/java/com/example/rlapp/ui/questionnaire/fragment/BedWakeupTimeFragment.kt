@@ -124,9 +124,9 @@ class BedWakeupTimeFragment : Fragment() {
     private fun submit(answer: SleepTimeAnswer) {
         val questionThree = SRQuestionThree()
         questionThree.answer = answer
-        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionThree = questionThree
-        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
-            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionThree = questionThree
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

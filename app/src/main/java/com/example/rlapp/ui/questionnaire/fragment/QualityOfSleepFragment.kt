@@ -13,10 +13,10 @@ import com.example.rlapp.databinding.FragmentQualityOfSleepBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
 import com.example.rlapp.ui.questionnaire.pojo.SRQuestionOne
-import com.example.rlapp.ui.questionnaire.pojo.TRQuestionFour
 
 class QualityOfSleepFragment : Fragment() {
     private lateinit var sleepQualityLevelTexts: Array<TextView>
+    private lateinit var selectedSleepQuality: String
     private var _binding: FragmentQualityOfSleepBinding? = null
     private val binding get() = _binding!!
 
@@ -50,11 +50,7 @@ class QualityOfSleepFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.btnContinue.setOnClickListener {
-            //QuestionnaireThinkRightActivity.navigateToNextPage()
-            submit("")
-        }
-        sleepQualityLevelTexts = arrayOf<TextView>(
+        sleepQualityLevelTexts = arrayOf(
             binding.anxietyLevelText1,
             binding.anxietyLevelText2,
             binding.anxietyLevelText3,
@@ -62,9 +58,15 @@ class QualityOfSleepFragment : Fragment() {
             binding.anxietyLevelText5,
         )
 
+        selectedSleepQuality = binding.anxietyLevelText1.text.toString()
         binding.sleepQualitySliderView.setMinSteps(0)
         binding.sleepQualitySliderView.setMaxSteps(10000)
-        binding.sleepQualitySliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.sleepQualitySliderView.setIntervalColors(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.steps_dark_color
+            )
+        )
         binding.sleepQualitySliderView.setOnStepCountChangeListener { stepCount ->
 
             // Reset all TextViews to normal
@@ -74,18 +76,24 @@ class QualityOfSleepFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < sleepQualityLevelTexts.size) {
-                sleepQualityLevelTexts.get(index).setTypeface(null, Typeface.BOLD)
-
+                sleepQualityLevelTexts[index].setTypeface(null, Typeface.BOLD)
+                selectedSleepQuality = sleepQualityLevelTexts[index].text.toString()
             }
+        }
+
+        binding.btnContinue.setOnClickListener {
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
+            submit(selectedSleepQuality)
         }
     }
 
     private fun submit(answer: String) {
         val questionOne = SRQuestionOne()
         questionOne.answer = answer
-        QuestionnaireThinkRightActivity.sleepRightAnswerRequest.questionOne = questionOne
-        QuestionnaireThinkRightActivity.submitSleepRightAnswerRequest(
-            QuestionnaireThinkRightActivity.sleepRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionOne =
+            questionOne
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

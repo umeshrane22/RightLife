@@ -72,9 +72,9 @@ class SocialInteractionFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSix = TRQuestionSix()
         questionSix.answer = answer
-        QuestionnaireThinkRightActivity.thinkRightAnswerRequest.questionSix = questionSix
-        QuestionnaireThinkRightActivity.submitThinkRightRightAnswerRequest(
-            QuestionnaireThinkRightActivity.thinkRightAnswerRequest
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionSix = questionSix
+        QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
     }
 

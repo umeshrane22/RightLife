@@ -68,9 +68,9 @@ class EatAffectMoodFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSeven = ERQuestionSeven()
         questionSeven.answer = answer
-        QuestionnaireEatRightActivity.eatRightAnswerRequest.questionSeven = questionSeven
-        QuestionnaireEatRightActivity.submitEatRightAnswerRequest(
-            QuestionnaireEatRightActivity.eatRightAnswerRequest
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionSeven = questionSeven
+        QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
     }
 
