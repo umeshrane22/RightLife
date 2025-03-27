@@ -1,15 +1,25 @@
 package com.example.rlapp.ui.questionnaire.fragment
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.rlapp.R
 import com.example.rlapp.databinding.FragmentEnergyLevelBinding
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
 import com.example.rlapp.ui.questionnaire.pojo.Question
 
 class EnergyLevelFragment : Fragment() {
+    private lateinit var energyCountTexts: Array<TextView>
+    private lateinit var energyValues: Array<String>
+    private var morningEneryValue:String = "Low"
+    private var afternoonEneryValue:String = "Low"
+    private var eveningEneryValue:String = "Low"
+
 
     private var _binding: FragmentEnergyLevelBinding? = null
     private val binding get() = _binding!!
@@ -44,8 +54,75 @@ class EnergyLevelFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        energyCountTexts = arrayOf<TextView>(
+            binding.eneryCountText1,
+            binding.eneryCountText2,
+            binding.eneryCountText3,
+
+        )
+        energyValues = arrayOf<String>(
+            "Low",
+            "Medium",
+            "High"
+        )
+
         binding.btnContinue.setOnClickListener {
             QuestionnaireEatRightActivity.navigateToNextPage()
+        }
+        binding.morningSliderView.setMinSteps(0)
+        binding.morningSliderView.setMaxSteps(12000)
+        binding.morningSliderView.setstepInterval(4000)
+        binding.morningSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.morningSliderView.setOnStepCountChangeListener { stepCount ->
+
+            // Reset all TextViews to normal
+            for (textView in energyCountTexts) {
+                textView.setTypeface(null, Typeface.NORMAL)
+            }
+            // Determine which TextView to bold based on stepCount
+            val index = stepCount / 4000 - 1
+            if (index >= 0 && index < energyCountTexts.size) {
+                energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
+                morningEneryValue = energyValues.get(index)
+            }
+        }
+
+
+        binding.afternoonSliderView.setMinSteps(0)
+        binding.afternoonSliderView.setMaxSteps(12000)
+        binding.afternoonSliderView.setstepInterval(4000)
+        binding.afternoonSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.afternoonSliderView.setOnStepCountChangeListener { stepCount ->
+
+            // Reset all TextViews to normal
+            for (textView in energyCountTexts) {
+                textView.setTypeface(null, Typeface.NORMAL)
+            }
+            // Determine which TextView to bold based on stepCount
+            val index = stepCount / 4000 - 1
+            if (index >= 0 && index < energyCountTexts.size) {
+                energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
+                afternoonEneryValue = energyValues.get(index)
+            }
+        }
+
+
+        binding.eveningSliderView.setMinSteps(0)
+        binding.eveningSliderView.setMaxSteps(12000)
+        binding.eveningSliderView.setstepInterval(4000)
+        binding.eveningSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
+        binding.eveningSliderView.setOnStepCountChangeListener { stepCount ->
+
+            // Reset all TextViews to normal
+            for (textView in energyCountTexts) {
+                textView.setTypeface(null, Typeface.NORMAL)
+            }
+            // Determine which TextView to bold based on stepCount
+            val index = stepCount / 4000 - 1
+            if (index >= 0 && index < energyCountTexts.size) {
+                energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
+                eveningEneryValue = energyValues.get(index)
+            }
         }
     }
 
