@@ -15,8 +15,7 @@ class CarouselAdapter(
 ) : RecyclerView.Adapter<CarouselAdapter.CarouselViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarouselViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_card_view_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_card_view_ai, parent, false)
         return CarouselViewHolder(view, onGraphClick)
     }
 

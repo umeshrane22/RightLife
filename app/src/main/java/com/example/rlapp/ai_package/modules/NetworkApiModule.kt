@@ -1,4 +1,4 @@
-package com.example.rlapp.ai_package.di.modules
+package com.example.rlapp.ai_package.modules
 
 import com.example.rlapp.ai_package.data.remote.ApiResponseCallAdapterFactory
 import com.example.rlapp.ai_package.data.remote.UnsplashApiService

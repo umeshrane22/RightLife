@@ -26,8 +26,7 @@ class GridAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.grid_layout_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.grid_layout_ai, parent, false)
         return ViewHolder(view)
     }
 
