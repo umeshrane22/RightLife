@@ -9,12 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.NumberPicker
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.databinding.FragmentAddWorkoutSearchBinding
+import com.shawnlin.numberpicker.NumberPicker
 
 class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>() {
 
@@ -42,14 +42,12 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
 
         }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(YourActivityFragment(), "LandingFragment")
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(YourActivityFragment(), "LandingFragment")
 
-                }
-            })
+            }
+        })
         hourPicker.minValue = 1
         hourPicker.maxValue = 12
         minutePicker.minValue = 0
@@ -71,7 +69,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 e.printStackTrace()
             }
         }
-
         fun refreshPickers() {
             handler.post {
                 updateNumberPickerText(hourPicker)
@@ -85,22 +82,19 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         minutePicker.setOnValueChangedListener(listener)
         amPmPicker.setOnValueChangedListener(listener)
         refreshPickers()
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = YourActivityFragment()
-                    val args = Bundle()
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = YourActivityFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
-            })
+            }
+        })
     }
-
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)

@@ -19,19 +19,18 @@ import com.google.android.material.tabs.TabLayout
 
 class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
 
-    private lateinit var tabLayout: TabLayout
+    private lateinit var tabLayout : TabLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.meal_log_background
-            )
-        )
+        view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
         tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
 
         val tabTitles = arrayOf("Frequently Logged", "My Meal", "Meal Plan", "My Recipe")
@@ -62,7 +61,6 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 }
                 updateTabColors()
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
@@ -106,12 +104,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             } else {
                 val typeface = resources.getFont(R.font.dmsans_regular)
                 tabText?.typeface = typeface
-                tabText?.setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.tab_unselected_text
-                    )
-                )
+                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
             }
         }
     }

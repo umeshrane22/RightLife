@@ -14,20 +14,11 @@ import com.example.rlapp.databinding.FragmentFrequentlyLoggedSearchBinding
 
 
 class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSearchBinding>() {
-    private lateinit var myMealRecyclerView: RecyclerView
+    private lateinit var myMealRecyclerView : RecyclerView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentFrequentlyLoggedSearchBinding
         get() = FragmentFrequentlyLoggedSearchBinding::inflate
-    private val myMealListAdapter by lazy {
-        FrequentltLoggedSearchAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onMealLogDateItem
-        )
-    }
+    private val myMealListAdapter by lazy { FrequentltLoggedSearchAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,75 +31,35 @@ class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSear
 
     }
 
-    private fun onMyMealItemRefresh() {
+    private fun onMyMealItemRefresh (){
 
         val meal = listOf(
-            MyMealModel(
-                "Others",
-                "Functional Strength Training | Core Training | Others | Functional…",
-                "min",
-                "337",
-                "Low Intensity",
-                "308",
-                "17",
-                false
-            ),
-            MyMealModel(
-                "Functional Strength Training",
-                "Functional Strength Training | Core Training | Others | Functional…",
-                "min",
-                "337",
-                "Low Intensity",
-                "308",
-                "17",
-                false
-            )
+            MyMealModel("Others", "Functional Strength Training | Core Training | Others | Functional…", "min", "337", "Low Intensity", "308", "17", false),
+            MyMealModel("Functional Strength Training", "Functional Strength Training | Core Training | Others | Functional…", "min", "337", "Low Intensity", "308", "17", false)
         )
 
-        if (meal.size > 0) {
+        if (meal.size > 0){
             myMealRecyclerView.visibility = View.VISIBLE
             //layoutNoMeals.visibility = View.GONE
-        } else {
+        }else{
             // layoutNoMeals.visibility = View.VISIBLE
             myMealRecyclerView.visibility = View.GONE
         }
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(meal as Collection<MyMealModel>)
         val mealLogDateData: MyMealModel? = null
         myMealListAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogDateItem(
-        mealLogDateModel: MyMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogDateItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
 
         val mealLogs = listOf(
-            MyMealModel(
-                "Others",
-                "Functional Strength Training | Core Training | Others | Functional…",
-                "min",
-                "337",
-                "Low Intensity",
-                "308",
-                "17",
-                false
-            ),
-            MyMealModel(
-                "Functional Strength Training",
-                "Functional Strength Training | Core Training | Others | Functional…",
-                "min",
-                "337",
-                "Low Intensity",
-                "308",
-                "17",
-                false
-            )
+            MyMealModel("Others", "Functional Strength Training | Core Training | Others | Functional…", "min", "337", "Low Intensity", "308", "17", false),
+            MyMealModel("Functional Strength Training", "Functional Strength Training | Core Training | Others | Functional…", "min", "337", "Low Intensity", "308", "17",false)
         )
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MyMealModel>)
         //  mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }

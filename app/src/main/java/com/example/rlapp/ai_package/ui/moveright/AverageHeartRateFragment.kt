@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
 import androidx.activity.addCallback
-import androidx.fragment.app.Fragment
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentAverageHeartRateBinding
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -51,18 +50,16 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeFragment(), "landingFragment")
+            navigateToFragment(HomeBottomTabFragment(),"landingFragment")
         }
     }
-
-    private fun navigateToFragment(fragment: Fragment, tag: String) {
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
             commit()
         }
     }
-
     /** Update chart with new data and X-axis labels */
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
         val dataSet = LineDataSet(entries, "Heart Rate")

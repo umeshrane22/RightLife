@@ -26,11 +26,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var carouselViewPager: ViewPager2
     private lateinit var dotsLayout: LinearLayout
     private lateinit var dots: Array<ImageView?>
-    private lateinit var toolsRecyclerView: RecyclerView
-    private lateinit var journalingRecyclerView: RecyclerView
-    private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
+    private lateinit var toolsRecyclerView : RecyclerView
+    private lateinit var journalingRecyclerView : RecyclerView
+    private val toolsAdapter by lazy { ToolsAdapter(requireContext(),3) }
 
-    private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
+    private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(),4) }
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -42,22 +42,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         carouselViewPager = view.findViewById(R.id.viewPager)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         toolsRecyclerView = view.findViewById(R.id.rec_journaling_tools)
-        toolsRecyclerView.layoutManager =
-            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        toolsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL,false)
         toolsRecyclerView.adapter = toolsAdapter
 
         journalingRecyclerView = view.findViewById(R.id.rec_add_tools)
         journalingRecyclerView.layoutManager = GridLayoutManager(context, 4)
         journalingRecyclerView.adapter = toolsMoreAdapter
 
-        val cardItems = listOf(
+        /*val cardItems = listOf(
             CardItem("Functional Strength Training", "This is the first card."),
             CardItem("Functional Strength Training", "This is the second card."),
             CardItem("Functional Strength Training", "This is the third card.")
         )
         val adapter = CrousalTabAdapter(cardItems)
         carouselViewPager.adapter = adapter
-        addDotsIndicator(cardItems.size)
+        addDotsIndicator(cardItems.size)*/
         carouselViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 updateDots(position)
@@ -74,12 +73,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         dots = arrayOfNulls(count)
         for (i in 0 until count) {
             dots[i] = ImageView(requireContext()).apply {
-                setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.dot_unselected
-                    )
-                )
+                setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.dot_unselected))
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT

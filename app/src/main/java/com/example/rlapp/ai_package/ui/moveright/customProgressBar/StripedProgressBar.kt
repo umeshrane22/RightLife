@@ -1,20 +1,11 @@
 package com.example.rlapp.ai_package.ui.moveright.customProgressBar
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import com.example.rlapp.R
 
-class StripedProgressBar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
+class StripedProgressBar @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : View(context, attrs, defStyleAttr) {
     private val stripeHeight = 5f
     private val stripeAngle = -25f
     private val backgroundPaint = Paint().apply {
@@ -26,7 +17,7 @@ class StripedProgressBar @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val progressPaint = Paint().apply {
-        color = resources.getColor(R.color.red_orange_bar)
+        color = Color.RED
         style = Paint.Style.FILL
     }
     private val cornerRadius = 20f
@@ -44,32 +35,15 @@ class StripedProgressBar @JvmOverloads constructor(
         drawStripes(canvas)
         canvas.restore()
         val path = Path().apply {
-            addRoundRect(
-                0f,
-                0f,
-                widthProgress,
-                height.toFloat(),
-                cornerRadius,
-                cornerRadius,
-                Path.Direction.CW
-            )
+            addRoundRect(0f, 0f, widthProgress, height.toFloat(), cornerRadius, cornerRadius, Path.Direction.CW)
         }
         canvas.clipPath(path)
-        canvas.drawRoundRect(
-            0f,
-            0f,
-            widthProgress,
-            height.toFloat(),
-            cornerRadius,
-            cornerRadius,
-            progressPaint
-        )
+        canvas.drawRoundRect(0f, 0f, widthProgress, height.toFloat(), cornerRadius, cornerRadius, progressPaint)
     }
 
     private fun drawStripes(canvas: Canvas) {
         var isWhite = true
-        val stripeSpacing =
-            stripeHeight / Math.cos(Math.toRadians(stripeAngle.toDouble())).toFloat()
+        val stripeSpacing = stripeHeight / Math.cos(Math.toRadians(stripeAngle.toDouble())).toFloat()
         val cornerRadius = stripeHeight / 2f
         var i = -width.toFloat()
         while (i < height + width) {

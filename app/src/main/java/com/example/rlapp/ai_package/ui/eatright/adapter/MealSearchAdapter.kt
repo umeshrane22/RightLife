@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 
-
 class MealSearchAdapter(private val context: Context, private var dataLists: Int,)
                              : RecyclerView.Adapter<MealSearchAdapter.ViewHolder>() {
 

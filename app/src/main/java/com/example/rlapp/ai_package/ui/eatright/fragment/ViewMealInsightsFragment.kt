@@ -28,60 +28,43 @@ import com.example.rlapp.databinding.FragmentViewMealInsightsBinding
 
 class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>() {
 
-    private lateinit var progressBarConfirmation: ProgressBar
-    private lateinit var macroItemRecyclerView: RecyclerView
-    private lateinit var microItemRecyclerView: RecyclerView
-    private lateinit var lunchMealRecyclerView: RecyclerView
-    private lateinit var dinnerMealRecyclerView: RecyclerView
-    private lateinit var imageCalender: ImageView
-    private lateinit var breakfastDotMenu: ImageView
-    private lateinit var lunchDotMenu: ImageView
-    private lateinit var dinnerDotMenu: ImageView
-    private lateinit var btnLogMeal: LinearLayoutCompat
-    private lateinit var editDeleteBreakfast: CardView
-    private lateinit var editDeleteLunch: CardView
-    private lateinit var editDeleteDinner: CardView
-    private lateinit var layoutMain: ConstraintLayout
+    private lateinit var progressBarConfirmation :ProgressBar
+    private lateinit var macroItemRecyclerView : RecyclerView
+    private lateinit var microItemRecyclerView : RecyclerView
+    private lateinit var lunchMealRecyclerView : RecyclerView
+    private lateinit var dinnerMealRecyclerView : RecyclerView
+    private lateinit var imageCalender : ImageView
+    private lateinit var breakfastDotMenu : ImageView
+    private lateinit var lunchDotMenu : ImageView
+    private lateinit var dinnerDotMenu : ImageView
+    private lateinit var btnLogMeal : LinearLayoutCompat
+    private lateinit var editDeleteBreakfast : CardView
+    private lateinit var editDeleteLunch : CardView
+    private lateinit var editDeleteDinner : CardView
+    private lateinit var layoutMain : ConstraintLayout
     private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
-    private lateinit var layoutDelete: LinearLayoutCompat
+    private lateinit var layoutDelete :LinearLayoutCompat
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentViewMealInsightsBinding
         get() = FragmentViewMealInsightsBinding::inflate
 
-    private val macroNutientsAdapter by lazy {
-        MacroNutientsListAdapter(
-            requireContext(), arrayListOf(), -1,
-            null, false, ::onMacroNutrientsItem
-        )
-    }
-    private val microNutientsAdapter by lazy {
-        MicroNutientsListAdapter(
-            requireContext(), arrayListOf(), -1,
-            null, false, ::onMicroNutrientsItem
-        )
-    }
-    private val lunchMealLogsAdapter by lazy {
-        YourLunchMealLogsAdapter(
-            requireContext(), arrayListOf(), -1,
-            null, false, ::onLunchMealLogItem
-        )
-    }
-    private val dinnerMealLogsAdapter by lazy {
-        YourDinnerMealLogsAdapter(
-            requireContext(), arrayListOf(), -1,
-            null, false, ::onDinnerMealLogItem
-        )
+    private val macroNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMacroNutrientsItem) }
+    private val microNutientsAdapter by lazy { MicroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMicroNutrientsItem) }
+    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onLunchMealLogItem) }
+    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onDinnerMealLogItem) }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.meal_log_background
-            )
-        )
+        view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
         macroItemRecyclerView = view.findViewById(R.id.recyclerview_macro_item)
         microItemRecyclerView = view.findViewById(R.id.recyclerview_micro_item)
@@ -98,8 +81,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 //        layoutMain = view.findViewById(R.id.layout_main)
 //        layoutDelete = view.findViewById(R.id.layout_delete)
 //        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
-        //   val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
-        //       val transparentOverlay = view.findViewById<View>(R.id.transparentOverlay)
+     //   val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
+ //       val transparentOverlay = view.findViewById<View>(R.id.transparentOverlay)
 
 //        progressBar.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
 //            override fun onGlobalLayout() {
@@ -130,21 +113,19 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 //        dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
 //        dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = YourMealLogsFragment()
-                    val args = Bundle()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = YourMealLogsFragment()
+                val args = Bundle()
 
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
-            })
+            }
+        })
 
         onMacroNutrientsItemRefresh()
         onMicroNutrientsItemRefresh()
@@ -210,7 +191,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 //        }
     }
 
-    private fun onMacroNutrientsItemRefresh() {
+    private fun onMacroNutrientsItemRefresh (){
 
         val mealLogs = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
@@ -219,13 +200,13 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
 
-        val valueLists: ArrayList<MacroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
         val mealLogDateData: MacroNutrientsModel? = null
         macroNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMicroNutrientsItemRefresh() {
+    private fun onMicroNutrientsItemRefresh (){
 
         val mealLogs = listOf(
             MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
@@ -236,7 +217,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
         )
 
-        val valueLists: ArrayList<MicroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
         val mealLogDateData: MicroNutrientsModel? = null
         microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
@@ -244,118 +225,50 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
     private fun onBreakfastMealLogItemRefresh() {
         val mealLogs = listOf(
-            BreakfastMealModel(
-                "Breakfast",
-                "Poha",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            BreakfastMealModel(
-                "Breakfast",
-                "Apple",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
+            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
         )
-        val valueLists: ArrayList<BreakfastMealModel> = ArrayList()
+        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
         val breakfastMealData: BreakfastMealModel? = null
-        //  macroNutientsAdapter.addAll(valueLists, -1, breakfastMealData, false)
+      //  macroNutientsAdapter.addAll(valueLists, -1, breakfastMealData, false)
     }
 
     private fun onLunchMealLogItemRefresh() {
         val mealLogs = listOf(
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<LunchMealModel> = ArrayList()
+        val valueLists : ArrayList<LunchMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<LunchMealModel>)
         val lunchMealData: LunchMealModel? = null
-        //    lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
+    //    lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
     }
 
     private fun onDinnerMealLogItemRefresh() {
         val mealLogs = listOf(
-            DinnerMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            DinnerMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<DinnerMealModel> = ArrayList()
+        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
         val dinnerMealData: DinnerMealModel? = null
-        // dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
+       // dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
     }
 
-    private fun onMacroNutrientsItem(
-        macroNutrientsModel: MacroNutrientsModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMacroNutrientsItem(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
         val macroNutrients = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
             MacroNutrientsModel("11", "g", "protien", R.drawable.ic_proteins),
             MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_carbs),
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
-        val valueLists: ArrayList<MacroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(macroNutrients as Collection<MacroNutrientsModel>)
         macroNutientsAdapter.addAll(valueLists, position, macroNutrientsModel, isRefresh)
     }
 
-    private fun onMicroNutrientsItem(
-        microNutrientsModel: MicroNutrientsModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMicroNutrientsItem(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
 
         val microNutrients = listOf(
             MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
@@ -365,125 +278,48 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             MicroNutrientsModel("150", "mg", "Potassium", R.drawable.ic_fats),
             MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
         )
-        val valueLists: ArrayList<MicroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         valueLists.addAll(microNutrients as Collection<MicroNutrientsModel>)
         microNutientsAdapter.addAll(valueLists, position, microNutrientsModel, isRefresh)
     }
 
-    private fun onBreakfastMealLogItem(
-        mealLogDateModel: BreakfastMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onBreakfastMealLogItem(mealLogDateModel: BreakfastMealModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
-            BreakfastMealModel(
-                "Breakfast",
-                "Poha",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            BreakfastMealModel(
-                "Breakfast",
-                "Apple",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
+            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
         )
-        val valueLists: ArrayList<BreakfastMealModel> = ArrayList()
+        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-        // breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+       // breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onLunchMealLogItem(
-        mealLogDateModel: LunchMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onLunchMealLogItem(mealLogDateModel: LunchMealModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<LunchMealModel> = ArrayList()
+        val valueLists : ArrayList<LunchMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-        //  lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+      //  lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onDinnerMealLogItem(
-        mealLogDateModel: DinnerMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onDinnerMealLogItem(mealLogDateModel: DinnerMealModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
-            LunchMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            DinnerMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            LunchMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<DinnerMealModel> = ArrayList()
+        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-        // dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+       // dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun deleteMealDialog() {
+    private fun deleteMealDialog(){
 
         deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
-        bundle.putBoolean("test", false)
+        bundle.putBoolean("test",false)
         deleteBottomSheetFragment.arguments = bundle
-        activity?.supportFragmentManager?.let {
-            deleteBottomSheetFragment.show(
-                it,
-                "DeleteMealBottomSheet"
-            )
-        }
+        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
     }
 }

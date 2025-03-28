@@ -22,32 +22,27 @@ import com.google.android.material.snackbar.Snackbar
 
 class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
 
-    private lateinit var progressBarConfirmation: ProgressBar
-    private lateinit var recipeRecyclerView: RecyclerView
-    private lateinit var imageCalender: ImageView
-    private lateinit var addRecipeLayout: LinearLayoutCompat
-    private lateinit var layoutNoRecipe: LinearLayoutCompat
+    private lateinit var progressBarConfirmation :ProgressBar
+    private lateinit var recipeRecyclerView : RecyclerView
+    private lateinit var imageCalender : ImageView
+    private lateinit var addRecipeLayout : LinearLayoutCompat
+    private lateinit var layoutNoRecipe : LinearLayoutCompat
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRecipeBinding
         get() = FragmentMyRecipeBinding::inflate
     var snackbar: Snackbar? = null
 
-    private val recipeAdapter by lazy {
-        RecipeAdapter(
-            requireContext(), arrayListOf(), -1, null,
-            false, ::onMealDeleteItem, ::onMealLogItem
-        )
+    private val recipeAdapter by lazy { RecipeAdapter(requireContext(), arrayListOf(), -1, null,
+        false, :: onMealDeleteItem, :: onMealLogItem) }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.meal_log_background
-            )
-        )
+        view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
         recipeRecyclerView = view.findViewById(R.id.recyclerview_recipe_item)
         addRecipeLayout = view.findViewById(R.id.layout_add_recipe)
@@ -56,21 +51,19 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
         recipeRecyclerView.layoutManager = LinearLayoutManager(context)
         recipeRecyclerView.adapter = recipeAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = YourMealLogsFragment()
-                    val args = Bundle()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = YourMealLogsFragment()
+                val args = Bundle()
 
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
-            })
+            }
+        })
 
         onMyMealItemRefresh()
 
@@ -87,24 +80,24 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
         }
     }
 
-    private fun onMyMealItemRefresh() {
+    private fun onMyMealItemRefresh (){
 
         val meal = listOf(
             MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
             MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
         )
 
-        if (meal.size > 0) {
+        if (meal.size > 0){
             recipeRecyclerView.visibility = View.VISIBLE
-            //  layoutBottomCreateMeal.visibility = View.VISIBLE
+          //  layoutBottomCreateMeal.visibility = View.VISIBLE
             layoutNoRecipe.visibility = View.GONE
-        } else {
+        }else{
             layoutNoRecipe.visibility = View.VISIBLE
             recipeRecyclerView.visibility = View.GONE
-            //  layoutBottomCreateMeal.visibility = View.GONE
+          //  layoutBottomCreateMeal.visibility = View.GONE
         }
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(meal as Collection<MyMealModel>)
         val mealLogDateData: MyMealModel? = null
         recipeAdapter.addAll(valueLists, -1, mealLogDateData, false)
@@ -114,10 +107,10 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
 
         val mealLogs = listOf(
             MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
+            MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
         )
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MyMealModel>)
         recipeAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
@@ -126,9 +119,9 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
 
         val mealLogs = listOf(
             MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
+            MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
         )
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MyMealModel>)
         recipeAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }

@@ -10,7 +10,6 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-
 import com.example.rlapp.ai_package.ui.eatright.model.MealLogDateModel
 
 class YourworkoutsAdapter(private val context: Context, private var dataLists: ArrayList<MealLogDateModel>,

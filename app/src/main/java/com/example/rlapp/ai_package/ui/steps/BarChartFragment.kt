@@ -36,7 +36,7 @@ class BarChartFragment : BaseFragment<FragmentBarGraphBinding>() {
         val barDataSet = BarDataSet(entries, "Sample Data")
         barDataSet.color = resources.getColor(android.R.color.holo_blue_light)  // Set bar color
         barDataSet.setDrawValues(true)  // Show values on top of bars
-        barDataSet.barBorderWidth = 0f  // No border
+        barDataSet.setBarBorderWidth(0f)  // No border
 
         // Create BarData and set it to the BarChart
         val barData = BarData(barDataSet)

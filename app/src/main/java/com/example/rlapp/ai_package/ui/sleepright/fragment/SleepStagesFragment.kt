@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.rlapp.R
@@ -42,83 +43,17 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
 
         val sleepChart = view.findViewById<SleepChartView>(R.id.sleepChart)
         val sleepData = listOf(
-            SleepSegment(
-                0.001f,
-                0.100f,
-                resources.getColor(R.color.red_orange_bar),
-                110f,
-                Position.UPPER
-            ),
-            SleepSegment(
-                0.101f,
-                0.150f,
-                resources.getColor(R.color.blue_bar),
-                110f,
-                Position.MIDDLE2
-            ),
-            SleepSegment(
-                0.151f,
-                0.300f,
-                resources.getColor(R.color.purple_bar),
-                110f,
-                Position.LOWER
-            ),
-            SleepSegment(
-                0.301f,
-                0.410f,
-                resources.getColor(R.color.light_blue_bar),
-                110f,
-                Position.MIDDLE1
-            ),
-            SleepSegment(
-                0.401f,
-                0.440f,
-                resources.getColor(R.color.purple_bar),
-                110f,
-                Position.LOWER
-            ),
-            SleepSegment(
-                0.451f,
-                0.550f,
-                resources.getColor(R.color.blue_bar),
-                110f,
-                Position.MIDDLE2
-            ),
-            SleepSegment(
-                0.551f,
-                0.660f,
-                resources.getColor(R.color.light_blue_bar),
-                110f,
-                Position.MIDDLE1
-            ),
-            SleepSegment(
-                0.661f,
-                0.690f,
-                resources.getColor(R.color.red_orange_bar),
-                110f,
-                Position.UPPER
-            ),
-            SleepSegment(
-                0.691f,
-                0.700f,
-                resources.getColor(R.color.blue_bar),
-                110f,
-                Position.MIDDLE2
-            ),
-            SleepSegment(
-                0.701f,
-                0.860f,
-                resources.getColor(R.color.purple_bar),
-                110f,
-                Position.LOWER
-            ),
-            SleepSegment(
-                0.861f,
-                0.990f,
-                resources.getColor(R.color.light_blue_bar),
-                110f,
-                Position.MIDDLE1
-            )
+            SleepSegment(0.001f, 0.100f, resources.getColor(R.color.red_orange_bar), 110f,Position.UPPER),
+            SleepSegment(0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f,Position.MIDDLE2),
+            SleepSegment(0.151f, 0.300f, resources.getColor(R.color.purple_bar), 110f,Position.LOWER),
+            SleepSegment(0.301f, 0.410f, resources.getColor(R.color.light_blue_bar), 110f,Position.MIDDLE1),
+            SleepSegment(0.401f, 0.440f, resources.getColor(R.color.purple_bar), 110f,Position.LOWER),
+            SleepSegment(0.451f, 0.550f, resources.getColor(R.color.blue_bar), 110f,Position.MIDDLE2),
+            SleepSegment(0.551f, 0.660f, resources.getColor(R.color.light_blue_bar), 110f,Position.MIDDLE1),
+            SleepSegment(0.661f, 0.690f, resources.getColor(R.color.red_orange_bar), 110f,Position.UPPER),
+            SleepSegment(0.691f, 0.700f, resources.getColor(R.color.blue_bar), 110f,Position.MIDDLE2),
+            SleepSegment(0.701f, 0.860f, resources.getColor(R.color.purple_bar), 110f,Position.LOWER),
+            SleepSegment(0.861f, 0.990f, resources.getColor(R.color.light_blue_bar), 110f,Position.MIDDLE1)
         )
 
         sleepChart.setSleepData(sleepData)
@@ -144,8 +79,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         customProgressBarCardio.post {
             val progressBarWidth = customProgressBarCardio.width
             val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams =
-                transparentOverlayCardio.layoutParams as ConstraintLayout.LayoutParams
+            val layoutParams = transparentOverlayCardio.layoutParams as ConstraintLayout.LayoutParams
             layoutParams.width = overlayWidth
             transparentOverlayCardio.layoutParams = layoutParams
         }
@@ -161,8 +95,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         customProgressBarFatBurn.post {
             val progressBarWidth = customProgressBarFatBurn.width
             val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams =
-                transparentOverlayFatBurn.layoutParams as ConstraintLayout.LayoutParams
+            val layoutParams = transparentOverlayFatBurn.layoutParams as ConstraintLayout.LayoutParams
             layoutParams.width = overlayWidth
             transparentOverlayFatBurn.layoutParams = layoutParams
         }
@@ -173,13 +106,11 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
             navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
-                }
-            })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            }
+        })
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
@@ -236,13 +167,5 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
         }
     }
 }
-
-data class SleepSegment(
-    val start: Float,
-    val end: Float,
-    val color: Int,
-    val height: Float,
-    val position: Position
-)
-
+data class SleepSegment(val start: Float, val end: Float, val color: Int,val height: Float, val position: Position)
 enum class Position { UPPER, MIDDLE1, MIDDLE2, LOWER }

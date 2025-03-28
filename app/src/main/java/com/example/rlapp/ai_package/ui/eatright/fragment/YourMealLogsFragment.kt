@@ -41,7 +41,7 @@ import com.example.rlapp.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.BreakfastMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.DinnerMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.LunchMealModel
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.ai_package.utils.AppPreference
 import com.example.rlapp.databinding.FragmentYourMealLogsBinding
 import retrofit2.Call
@@ -50,83 +50,47 @@ import retrofit2.Response
 
 class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
-    private lateinit var layoutToolbar: ConstraintLayout
-    private lateinit var mealLogDateRecyclerView: RecyclerView
-    private lateinit var breakfastMealRecyclerView: RecyclerView
-    private lateinit var lunchMealRecyclerView: RecyclerView
-    private lateinit var dinnerMealRecyclerView: RecyclerView
-    private lateinit var imageCalender: ImageView
-    private lateinit var breakfastDotMenu: ImageView
-    private lateinit var lunchDotMenu: ImageView
-    private lateinit var dinnerDotMenu: ImageView
-    private lateinit var backButton: ImageView
-    private lateinit var btnLogMeal: LinearLayoutCompat
-    private lateinit var editDeleteBreakfast: CardView
-    private lateinit var editDeleteLunch: CardView
-    private lateinit var editDeleteDinner: CardView
-    private lateinit var layoutMain: ConstraintLayout
+    private lateinit var layoutToolbar :ConstraintLayout
+    private lateinit var mealLogDateRecyclerView : RecyclerView
+    private lateinit var breakfastMealRecyclerView : RecyclerView
+    private lateinit var lunchMealRecyclerView : RecyclerView
+    private lateinit var dinnerMealRecyclerView : RecyclerView
+    private lateinit var imageCalender : ImageView
+    private lateinit var breakfastDotMenu : ImageView
+    private lateinit var lunchDotMenu : ImageView
+    private lateinit var dinnerDotMenu : ImageView
+    private lateinit var backButton : ImageView
+    private lateinit var btnLogMeal : LinearLayoutCompat
+    private lateinit var editDeleteBreakfast : CardView
+    private lateinit var editDeleteLunch : CardView
+    private lateinit var editDeleteDinner : CardView
+    private lateinit var layoutMain : ConstraintLayout
     private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var selectMealTypeBottomSheet: SelectMealTypeBottomSheet
-    private lateinit var layoutDelete: LinearLayoutCompat
-    private lateinit var layoutViewFood: LinearLayoutCompat
-    private lateinit var addFoodLayout: LinearLayoutCompat
+    private lateinit var layoutDelete : LinearLayoutCompat
+    private lateinit var layoutViewFood : LinearLayoutCompat
+    private lateinit var addFoodLayout : LinearLayoutCompat
     private lateinit var appPreference: AppPreference
     private lateinit var progressDialog: ProgressDialog
-    private lateinit var calValue: TextView
-    private lateinit var carbsValue: TextView
-    private lateinit var proteinsValue: TextView
-    private lateinit var fatsValue: TextView
-    private lateinit var caloriesProgressBar: ProgressBar
-    private lateinit var carbsProgressBar: ProgressBar
-    private lateinit var proteinsProgressBar: ProgressBar
-    private lateinit var fatsProgressBar: ProgressBar
-    private lateinit var transparentOverlay: View
-    private var mealPlanData: ArrayList<MealLogData> = ArrayList()
+    private lateinit var calValue : TextView
+    private lateinit var carbsValue : TextView
+    private lateinit var proteinsValue : TextView
+    private lateinit var fatsValue : TextView
+    private lateinit var caloriesProgressBar : ProgressBar
+    private lateinit var carbsProgressBar : ProgressBar
+    private lateinit var proteinsProgressBar : ProgressBar
+    private lateinit var fatsProgressBar : ProgressBar
+    private lateinit var transparentOverlay : View
+    private var mealPlanData : ArrayList<MealLogData> = ArrayList()
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
 
-    private val mealLogDateAdapter by lazy {
-        MealLogDateListAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onMealLogDateItem
-        )
-    }
-    private val breakfastMealLogsAdapter by lazy {
-        YourBreakfastMealLogsAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onBreakfastMealLogItem
-        )
-    }
-    private val lunchMealLogsAdapter by lazy {
-        YourLunchMealLogsAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onLunchMealLogItem
-        )
-    }
-    private val dinnerMealLogsAdapter by lazy {
-        YourDinnerMealLogsAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onDinnerMealLogItem
-        )
-    }
+    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
+    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onBreakfastMealLogItem) }
+    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
+    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -141,12 +105,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
-        view.setBackgroundColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.meal_log_background
-            )
-        )
+        view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
         mealLogDateRecyclerView = view.findViewById(R.id.recyclerview_calender)
         breakfastMealRecyclerView = view.findViewById(R.id.recyclerview_breakfast_meals_item)
@@ -179,8 +138,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
         getMealPlanList()
 
-        mealLogDateRecyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        mealLogDateRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         mealLogDateRecyclerView.adapter = mealLogDateAdapter
 
         breakfastMealRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -192,20 +150,18 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
         dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = HomeFragment()
-                    val args = Bundle()
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
-            })
+            }
+        })
 
         onBreakfastMealLogItemRefresh()
         onLunchMealLogItemRefresh()
@@ -215,7 +171,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         showTooltipDialog(layoutToolbar)
 
         imageCalender.setOnClickListener {
-            //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
+          //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
             val fragment = MealLogCalenderFragment()
             val args = Bundle()
             fragment.arguments = args
@@ -230,7 +186,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         }
 
         backButton.setOnClickListener {
-            val fragment = HomeFragment()
+            val fragment = HomeBottomTabFragment()
             val args = Bundle()
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -252,22 +208,17 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
             selectMealTypeBottomSheet.isCancelable = true
             val bundle = Bundle()
-            bundle.putBoolean("test", false)
+            bundle.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = bundle
-            activity?.supportFragmentManager?.let {
-                selectMealTypeBottomSheet.show(
-                    it,
-                    "SelectMealTypeBottomSheet"
-                )
-            }
+            activity?.supportFragmentManager?.let { selectMealTypeBottomSheet.show(it, "SelectMealTypeBottomSheet") }
         }
 
         breakfastDotMenu.setOnClickListener {
-            if (editDeleteBreakfast.visibility == View.GONE) {
+            if (editDeleteBreakfast.visibility == View.GONE){
                 //layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
                 editDeleteBreakfast.visibility = View.VISIBLE
-            } else {
-                // layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
+            }else{
+               // layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
                 editDeleteBreakfast.visibility = View.GONE
             }
         }
@@ -284,21 +235,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         }
 
         lunchDotMenu.setOnClickListener {
-            if (editDeleteLunch.visibility == View.GONE) {
-                //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
+            if (editDeleteLunch.visibility == View.GONE){
+              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
                 editDeleteLunch.visibility = View.VISIBLE
-            } else {
-                //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
+            }else{
+              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
                 editDeleteLunch.visibility = View.GONE
             }
         }
 
         dinnerDotMenu.setOnClickListener {
-            if (editDeleteDinner.visibility == View.GONE) {
-                //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
+            if (editDeleteDinner.visibility == View.GONE){
+              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
                 editDeleteDinner.visibility = View.VISIBLE
-            } else {
-                //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
+            }else{
+              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
                 editDeleteDinner.visibility = View.GONE
             }
         }
@@ -319,129 +270,68 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         }
     }
 
-    private fun onMealLogDateItemRefresh() {
+    private fun onMealLogDateItemRefresh (){
 
-        val recipesLists: ArrayList<DailyRecipe> = ArrayList()
-        if (mealPlanData.get(0).recipes != null) {
+        val recipesLists : ArrayList<DailyRecipe> = ArrayList()
+        if (mealPlanData.get(0).recipes != null){
             recipesLists.addAll(mealPlanData.get(0).recipes as Collection<DailyRecipe>)
             val mealLogDateData: DailyRecipe? = null
             mealLogDateAdapter.addAll(recipesLists, -1, mealLogDateData, false)
-        } else {
+        }else{
 
         }
     }
 
     private fun onBreakfastMealLogItemRefresh() {
         val mealLogs = listOf(
-            BreakfastMealModel(
-                "Breakfast",
-                "Poha",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            BreakfastMealModel(
-                "Breakfast",
-                "Apple",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
+            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
         )
-        val valueLists: ArrayList<BreakfastMealModel> = ArrayList()
+        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
         val breakfastMealData: BreakfastMealModel? = null
-        // breakfastMealLogsAdapter.addAll(valueLists, -1, breakfastMealData, false)
+       // breakfastMealLogsAdapter.addAll(valueLists, -1, breakfastMealData, false)
     }
 
     private fun onLunchMealLogItemRefresh() {
         val mealLogs = listOf(
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<LunchMealModel> = ArrayList()
+        val valueLists : ArrayList<LunchMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<LunchMealModel>)
         val lunchMealData: LunchMealModel? = null
-        //    lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
+    //    lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
     }
 
     private fun onDinnerMealLogItemRefresh() {
         val mealLogs = listOf(
-            DinnerMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            DinnerMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<DinnerMealModel> = ArrayList()
+        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
         val dinnerMealData: DinnerMealModel? = null
-        // dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
+       // dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
     }
 
     private fun onMealLogDateItem(dailyRecipe: DailyRecipe, position: Int, isRefresh: Boolean) {
 
-        val recipesLists: ArrayList<DailyRecipe> = ArrayList()
+        val recipesLists : ArrayList<DailyRecipe> = ArrayList()
         recipesLists.addAll(mealPlanData.get(0).recipes as Collection<DailyRecipe>)
         mealLogDateAdapter.addAll(recipesLists, position, dailyRecipe, isRefresh)
 
         setGraphValue(dailyRecipe)
     }
 
-    private fun setGraphValue(dailyRecipe: DailyRecipe) {
+    private fun setGraphValue(dailyRecipe: DailyRecipe){
 
         calValue.text = dailyRecipe.calories.toInt().toString()
         carbsValue.text = dailyRecipe.carbs.toInt().toString()
         proteinsValue.text = dailyRecipe.proteins.toInt().toString()
         fatsValue.text = dailyRecipe.fats.toInt().toString()
 
-        caloriesProgressBar.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
+        caloriesProgressBar.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 caloriesProgressBar.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 val progressBarWidth = caloriesProgressBar.width.toFloat()
@@ -454,8 +344,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 //                circleIndicator.y = progressBar.y + (progressBar.height - circleIndicator.height) / 2f
                 val overlayRadius = transparentOverlay.width / 2f
                 transparentOverlay.x = overlayPosition - overlayRadius
-                transparentOverlay.y =
-                    caloriesProgressBar.y + (caloriesProgressBar.height - transparentOverlay.height) / 2f
+                transparentOverlay.y = caloriesProgressBar.y + (caloriesProgressBar.height - transparentOverlay.height) / 2f
             }
         })
         // Set progress programmatically
@@ -475,135 +364,58 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         val value = groupTourList.values
         val key = groupTourList.keys
 
-        val valueLists: ArrayList<ArrayList<MealList>> = ArrayList()
+        val valueLists : ArrayList<ArrayList<MealList>> = ArrayList()
         valueLists.addAll(value as Collection<java.util.ArrayList<MealList>>)
         val mealList: MealList? = null
-        for (item in key) {
-            if (item.contentEquals("breakfast")) {
+        for (item in key){
+            if (item.contentEquals("breakfast")){
                 breakfastMealLogsAdapter.addAll(valueLists.get(0), -1, mealList, false)
-            } else if (item.contentEquals("lunch")) {
+            }else if (item.contentEquals("lunch")){
                 lunchMealLogsAdapter.addAll(valueLists.get(1), -1, mealList, false)
-            } else if (item.contentEquals("dinner")) {
+            }else if  (item.contentEquals("dinner")){
                 dinnerMealLogsAdapter.addAll(valueLists.get(2), -1, mealList, false)
             }
         }
     }
 
-    private fun onBreakfastMealLogItem(
-        mealLogDateModel: BreakfastMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onBreakfastMealLogItem(mealLogDateModel: BreakfastMealModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
-            BreakfastMealModel(
-                "Breakfast",
-                "Poha",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            BreakfastMealModel(
-                "Breakfast",
-                "Apple",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
+            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
         )
-        val valueLists: ArrayList<BreakfastMealModel> = ArrayList()
+        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-        //  breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+      //  breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onLunchMealLogItem(
-        mealLogDateModel: LunchMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onLunchMealLogItem(mealLogDateModel: LunchMealModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            LunchMealModel(
-                "Lunch",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<LunchMealModel> = ArrayList()
+        val valueLists : ArrayList<LunchMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-        // lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+       // lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onDinnerMealLogItem(
-        mealLogDateModel: DinnerMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onDinnerMealLogItem(mealLogDateModel: DinnerMealModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
-            LunchMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            ),
-            DinnerMealModel(
-                "Dinner",
-                "Dal,Rice,Chapati,Spinach,Paneer",
-                "Vegeterian",
-                "25",
-                "1",
-                "1,157",
-                "8",
-                "308",
-                "17"
-            )
+            LunchMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
+            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
-        val valueLists: ArrayList<DinnerMealModel> = ArrayList()
+        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-        //  dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+      //  dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun deleteMealDialog() {
+    private fun deleteMealDialog(){
 
         deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
-        bundle.putBoolean("test", false)
+        bundle.putBoolean("test",false)
         deleteBottomSheetFragment.arguments = bundle
-        activity?.supportFragmentManager?.let {
-            deleteBottomSheetFragment.show(
-                it,
-                "DeleteMealBottomSheet"
-            )
-        }
+        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
     }
 
     private fun showTooltipDialog(anchorView: View) {
@@ -639,36 +451,23 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     }
 
     private fun getMealPlanList() {
+        progressDialog.show()
         val userId = appPreference.getUserId().toString()
-        val token =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.getMealLogLists(token)
         call.enqueue(object : Callback<MealLogsResponseModel> {
-            override fun onResponse(
-                call: Call<MealLogsResponseModel>,
-                response: Response<MealLogsResponseModel>
-            ) {
+            override fun onResponse(call: Call<MealLogsResponseModel>, response: Response<MealLogsResponseModel>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     mealPlanData.addAll(mealPlanLists)
                     onMealLogDateItemRefresh()
-                    // Pass click listener to adapter
-//                    adapter = WorkoutAdapter(context!!, workoutList) { selectedWorkout ->
-//                        openAddWorkoutFragment(selectedWorkout)
-//                    }
-//                    recyclerView.adapter = adapter
-//
-//                    workoutViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
-//                        filterWorkouts(query)
-//                    }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()

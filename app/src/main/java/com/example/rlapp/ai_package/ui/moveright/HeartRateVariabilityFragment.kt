@@ -9,7 +9,7 @@ import android.widget.RadioGroup
 import androidx.activity.addCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentHeartRateVariabilityBinding
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -49,10 +49,9 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeFragment(), "landingFragment")
+            navigateToFragment(HomeBottomTabFragment(),"landingFragment")
         }
     }
-
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)

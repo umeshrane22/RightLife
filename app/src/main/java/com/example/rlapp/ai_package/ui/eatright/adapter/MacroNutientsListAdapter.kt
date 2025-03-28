@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-
 import com.example.rlapp.ai_package.ui.eatright.model.MacroNutrientsModel
 
 class MacroNutientsListAdapter(private val context: Context, private var dataLists: ArrayList<MacroNutrientsModel>,

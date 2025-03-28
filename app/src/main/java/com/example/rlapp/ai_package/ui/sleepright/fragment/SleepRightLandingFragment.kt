@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentSleepRightLandingBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -29,14 +29,13 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.android.material.snackbar.Snackbar
 
-class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>(),
-    WakeUpTimeDialogFragment.BottomSheetListener {
+class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>(), WakeUpTimeDialogFragment.BottomSheetListener {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSleepRightLandingBinding
         get() = FragmentSleepRightLandingBinding::inflate
     var snackbar: Snackbar? = null
 
-    lateinit var wakeTime: TextView
+    lateinit var wakeTime : TextView
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
@@ -61,39 +60,37 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(HomeFragment(), "Home")
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(HomeBottomTabFragment(), "Home")
 
-                }
-            })
+            }
+        })
 
         backButton.setOnClickListener {
-            navigateToFragment(HomeFragment(), "Home")
+            navigateToFragment(HomeBottomTabFragment(),"Home")
         }
 
         sleepPerform.setOnClickListener {
-            navigateToFragment(SleepPerformanceFragment(), "Performance")
+            navigateToFragment(SleepPerformanceFragment(),"Performance")
         }
 
         sleepIdeal.setOnClickListener {
-            navigateToFragment(SleepIdealActualFragment(), "IdealActual")
+            navigateToFragment(SleepIdealActualFragment(),"IdealActual")
         }
 
         restoSleep.setOnClickListener {
-            navigateToFragment(RestorativeSleepFragment(), "Restorative")
+            navigateToFragment(RestorativeSleepFragment(),"Restorative")
         }
 
         consistencySleep.setOnClickListener {
-            navigateToFragment(SleepConsistencyFragment(), "Consistency")
+            navigateToFragment(SleepConsistencyFragment(),"Consistency")
         }
 
         setupBarChart(sleepBarChart)
 
         editWakeup.setOnClickListener {
-            openBottomSheet()
+           openBottomSheet()
         }
 
         // Sample data points for Ideal and Actual sleep times
@@ -157,7 +154,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         val blueDataSet = BarDataSet(barEntries, "Sleep Blocks")
         blueDataSet.color = Color.parseColor("#4444DD") // Dark blue
-        //  blueDataSet.barBorderRadius = 15f
+      //  blueDataSet.barBorderRadius = 15f
 
         // Creating bars for wakefulness
         val wakeEntries = ArrayList<BarEntry>()
@@ -168,7 +165,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         val lightBlueDataSet = BarDataSet(wakeEntries, "Wake Blocks")
         lightBlueDataSet.color = Color.parseColor("#66CCFF") // Light blue
-        // lightBlueDataSet.barBorderRadius = 15f
+       // lightBlueDataSet.barBorderRadius = 15f
 
         val dataSets = ArrayList<IBarDataSet>()
         dataSets.add(blueDataSet)
@@ -208,11 +205,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             SleepSegmentModel(0.301f, 0.400f, resources.getColor(R.color.light_blue_bar), 110f),
             SleepSegmentModel(0.401f, 0.450f, resources.getColor(R.color.black), 110f),
             SleepSegmentModel(0.451f, 0.550f, resources.getColor(R.color.red_orange_bar), 110f),
-            SleepSegmentModel(0.551f, 0.660f, resources.getColor(R.color.light_cyan_bar), 110f),
-            SleepSegmentModel(0.661f, 0.690f, resources.getColor(R.color.bright_blue_bar), 110f),
-            SleepSegmentModel(0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f),
-            SleepSegmentModel(0.751f, 0.860f, resources.getColor(R.color.sky_blue_bar), 110f),
-            SleepSegmentModel(0.861f, 0.990f, resources.getColor(R.color.dark_purple_bar), 110f)
+        SleepSegmentModel(0.551f, 0.660f, resources.getColor(R.color.light_cyan_bar), 110f),
+        SleepSegmentModel(0.661f, 0.690f, resources.getColor(R.color.bright_blue_bar), 110f),
+        SleepSegmentModel(0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f),
+        SleepSegmentModel(0.751f, 0.860f, resources.getColor(R.color.sky_blue_bar), 110f),
+        SleepSegmentModel(0.861f, 0.990f, resources.getColor(R.color.dark_purple_bar), 110f)
         )
 
         sleepStagesView.setSleepData(sleepData)
@@ -223,12 +220,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val sleepEntries = ArrayList<BarEntry>()
 
         // Example data: Start time (X-axis), duration in hours (Y-axis)
-        sleepEntries.add(
-            BarEntry(
-                0f,
-                floatArrayOf(2f, 6f)
-            )
-        )  // Monday (Start at 2 AM, sleep 6 hours)
+        sleepEntries.add(BarEntry(0f, floatArrayOf(2f, 6f)))  // Monday (Start at 2 AM, sleep 6 hours)
         sleepEntries.add(BarEntry(1f, floatArrayOf(12f, 6f))) // Tuesday
         sleepEntries.add(BarEntry(2f, floatArrayOf(10f, 6f))) // Wednesday
         sleepEntries.add(BarEntry(3f, floatArrayOf(11f, 6f))) // Thursday
@@ -302,10 +294,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
 }
 
-class SleepChartViewLanding(
-    context: android.content.Context,
-    attrs: android.util.AttributeSet? = null
-) :
+class SleepChartViewLanding(context: android.content.Context, attrs: android.util.AttributeSet? = null) :
     View(context, attrs) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)

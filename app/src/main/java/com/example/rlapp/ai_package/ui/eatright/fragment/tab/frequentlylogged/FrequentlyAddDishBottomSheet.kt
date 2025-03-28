@@ -21,15 +21,15 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
     private lateinit var flexboxLayout: FlexboxLayout
     private val ingredientsList = mutableListOf("Dal", "Rice", "Roti", "Spinach")
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(
-            R.layout.fragment_frequently_add_meal_bottom_sheet,
-            container,
-            false
-        )
+        return inflater.inflate(R.layout.fragment_frequently_add_meal_bottom_sheet, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -60,7 +60,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
 
         // Log Meal button click
         btnLogMeal.setOnClickListener {
-            //   Toast.makeText(context, "Meal Logged Successfully!", Toast.LENGTH_SHORT).show()
+         //   Toast.makeText(context, "Meal Logged Successfully!", Toast.LENGTH_SHORT).show()
             flexboxLayout.visibility = View.GONE
             layoutTitle.visibility = View.GONE
             btnLogMeal.visibility = View.GONE
@@ -74,8 +74,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
         flexboxLayout.removeAllViews() // Clear existing chips
 
         for (ingredient in ingredientsList) {
-            val chipView =
-                LayoutInflater.from(context).inflate(R.layout.chip_ingredient, flexboxLayout, false)
+            val chipView = LayoutInflater.from(context).inflate(R.layout.chip_ingredient, flexboxLayout, false)
             val tvIngredient: TextView = chipView.findViewById(R.id.tvIngredient)
             val btnRemove: ImageView = chipView.findViewById(R.id.btnRemove)
 
@@ -92,7 +91,6 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "LoggedBottomSheet"
-
         @JvmStatic
         fun newInstance() = FrequentlyAddDishBottomSheet().apply {
             arguments = Bundle().apply {

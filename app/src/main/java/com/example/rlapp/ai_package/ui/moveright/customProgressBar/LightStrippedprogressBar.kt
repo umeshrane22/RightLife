@@ -8,7 +8,6 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
-import com.example.rlapp.R
 
 class LightStrippedprogressBar @JvmOverloads constructor(
     context: Context,
@@ -26,7 +25,7 @@ class LightStrippedprogressBar @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val progressPaint = Paint().apply {
-        color = resources.getColor(R.color.deep_purple_bar)
+        color = Color.BLUE
         style = Paint.Style.FILL
     }
     private val cornerRadius = 20f
@@ -68,8 +67,7 @@ class LightStrippedprogressBar @JvmOverloads constructor(
 
     private fun drawStripes(canvas: Canvas) {
         var isWhite = true
-        val stripeSpacing =
-            stripeHeight / Math.cos(Math.toRadians(stripeAngle.toDouble())).toFloat()
+        val stripeSpacing = stripeHeight / Math.cos(Math.toRadians(stripeAngle.toDouble())).toFloat()
         val cornerRadius = stripeHeight / 2f
         var i = -width.toFloat()
         while (i < height + width) {

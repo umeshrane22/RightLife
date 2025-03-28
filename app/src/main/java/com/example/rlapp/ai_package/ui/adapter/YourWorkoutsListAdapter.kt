@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 

@@ -10,72 +10,148 @@ class GlassWithWaterView(context: Context, attrs: AttributeSet?) : View(context,
 
     private val glassPaint: Paint = Paint()
     private val waterPaint: Paint = Paint()
-    private var waterHeight = 0f // This will be animated
-    private val glassHeight = 500 // Height of the glass
-    private val glassTopWidth = 350  // Width at the top of the glass
-    private val glassBottomWidth = 200  // Width at the bottom of the glass
+    private val waterLevelPaint: Paint = Paint()
+    private val dashedLinePaint: Paint = Paint()
+    private val checkmarkPaint: Paint = Paint()
+    private val checkmarkIconPaint: Paint = Paint()
+
+    private var waterHeight = 0f
+    private val glassHeight = 120f // Increased from 95f to 120f (26% increase)
+    private val glassTopWidth = 100f // Increased from 80f to 100f (25% increase)
+    private val glassBottomWidth = 75f // Increased from 60f to 75f (25% increase)
+    private var targetWaterLevel = 0.8f // Default to 80%
+    private val glassPadding = 10f // Increased from 8f to 10f (25% increase)
+    private val checkmarkRadius = 10f // Increased from 8f to 10f (25% increase)
+    private val checkmarkMarginTop = 15f // Increased from 12f to 15f (25% increase)
+    private val checkmarkMarginEnd = 5f // Increased from 4f to 5f (25% increase)
 
     init {
-        // Initialize paint for glass
-        glassPaint.color = Color.GRAY
+        glassPaint.color = Color.parseColor("#B0BEC5")
         glassPaint.style = Paint.Style.STROKE
-        glassPaint.strokeWidth = 10f
+        glassPaint.strokeWidth = 5f // Increased from 4f to 5f (25% increase)
+        glassPaint.isAntiAlias = true
 
-        // Initialize paint for water
-        waterPaint.color = Color.BLUE
+        waterPaint.color = Color.parseColor("#4CAF50")
         waterPaint.style = Paint.Style.FILL
+        waterPaint.isAntiAlias = true
 
-        // Start the water animation when the view is created
+        waterLevelPaint.color = Color.parseColor("#4CAF50")
+        waterLevelPaint.style = Paint.Style.STROKE
+        waterLevelPaint.strokeWidth = 2.5f // Increased from 2f to 2.5f (25% increase)
+        waterLevelPaint.isAntiAlias = true
+
+        dashedLinePaint.color = Color.parseColor("#B0BEC5")
+        dashedLinePaint.style = Paint.Style.STROKE
+        dashedLinePaint.strokeWidth = 2.5f // Increased from 2f to 2.5f (25% increase)
+        dashedLinePaint.pathEffect = DashPathEffect(floatArrayOf(12.5f, 12.5f), 0f) // Increased dash pattern from 10f to 12.5f (25% increase)
+        dashedLinePaint.isAntiAlias = true
+
+        checkmarkPaint.color = Color.parseColor("#4CAF50")
+        checkmarkPaint.style = Paint.Style.FILL
+        checkmarkPaint.isAntiAlias = true
+
+        checkmarkIconPaint.color = Color.WHITE
+        checkmarkIconPaint.style = Paint.Style.STROKE
+        checkmarkIconPaint.strokeWidth = 2.5f // Increased from 2f to 2.5f (25% increase)
+        checkmarkIconPaint.strokeCap = Paint.Cap.ROUND
+        checkmarkIconPaint.strokeJoin = Paint.Join.ROUND
+        checkmarkIconPaint.isAntiAlias = true
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val width = resolveSize((glassTopWidth + 25f).toInt(), widthMeasureSpec) // Increased from 20f to 25f (25% increase)
+        val height = resolveSize(glassHeight.toInt(), heightMeasureSpec)
+        setMeasuredDimension(width, height)
+    }
+
+    fun setTargetWaterLevel(waterIntake: Float, waterGoal: Float) {
+        targetWaterLevel = (waterIntake / waterGoal).coerceIn(0f, 1f)
         startWaterAnimation()
     }
 
-    // Method to start the water animation
-     fun startWaterAnimation() {
-        val animator = ValueAnimator.ofFloat(0f, glassHeight.toFloat())
-        animator.duration = 3000 // Duration of the animation in milliseconds
+    fun startWaterAnimation() {
+        val animator = ValueAnimator.ofFloat(0f, glassHeight * targetWaterLevel)
+        animator.duration = 3000
         animator.addUpdateListener { animation ->
             waterHeight = animation.animatedValue as Float
-            invalidate() // Redraw the view as the water height changes
+            invalidate()
         }
         animator.start()
     }
 
-    // Override the onDraw method to draw the glass and water
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Draw the glass (trapezoidal shape)
+        val glassLeft = (width - glassTopWidth) / 2f
+        val glassRight = glassLeft + glassTopWidth
+        val glassTop = 0f
+        val glassBottom = glassHeight
+
         val glassPath = Path()
-        // Top-left
-        glassPath.moveTo(50f, 100f)
-        // Top-right
-        glassPath.lineTo((50 + glassTopWidth).toFloat(), 100f)
-        // Bottom-right
-        glassPath.lineTo((50 + glassBottomWidth).toFloat(), (100 + glassHeight).toFloat())
-        // Bottom-left
-        glassPath.lineTo(50f, (100 + glassHeight).toFloat())
+        glassPath.moveTo(glassLeft, glassTop)
+        glassPath.lineTo(glassRight, glassTop)
+        glassPath.lineTo(glassLeft + (glassTopWidth - glassBottomWidth) / 2 + glassBottomWidth, glassBottom)
+        glassPath.lineTo(glassLeft + (glassTopWidth - glassBottomWidth) / 2, glassBottom)
         glassPath.close()
 
-        // Draw the glass outline
         canvas.drawPath(glassPath, glassPaint)
 
-        // Calculate the width of the water at the current height
-        val waterWidthAtTop = glassTopWidth - ((glassTopWidth - glassBottomWidth) * (waterHeight / glassHeight))
-        val waterWidthAtBottom = glassBottomWidth - ((glassTopWidth - glassBottomWidth) * (waterHeight / glassHeight))
+        val innerLeft = glassLeft + glassPadding
+        val innerRight = glassRight - glassPadding
+        val innerBottom = glassBottom - glassPadding
+        val innerTopWidth = glassTopWidth - 2 * glassPadding
+        val innerBottomWidth = glassBottomWidth - 2 * glassPadding
 
-        // Draw the water inside the glass (adjusting width based on water height)
+        val waterLevelY = glassBottom - waterHeight
+        val waterWidthAtTop = innerTopWidth - ((innerTopWidth - innerBottomWidth) * (waterHeight / glassHeight))
+        val waterWidthAtBottom = innerBottomWidth
+
         val waterPath = Path()
-        // Top-left of the water
-        waterPath.moveTo(50f + (glassTopWidth - waterWidthAtTop) / 2, (100 + (glassHeight - waterHeight)))
-        // Top-right of the water
-        waterPath.lineTo(50f + (glassTopWidth + waterWidthAtTop) / 2, (100 + (glassHeight - waterHeight)))
-        // Bottom-right of the water
-        waterPath.lineTo(50f + (glassBottomWidth + waterWidthAtBottom) / 2, (100.0f + glassHeight))
-        // Bottom-left of the water
-        waterPath.lineTo(50f + (glassBottomWidth - waterWidthAtBottom) / 2, (100.0f + glassHeight))
+        waterPath.moveTo(innerLeft + (innerTopWidth - waterWidthAtTop) / 2, waterLevelY)
+        waterPath.lineTo(innerLeft + (innerTopWidth + waterWidthAtTop) / 2, waterLevelY)
+        waterPath.lineTo(innerLeft + (innerTopWidth - innerBottomWidth) / 2 + waterWidthAtBottom, innerBottom)
+        waterPath.lineTo(innerLeft + (innerTopWidth - innerBottomWidth) / 2, innerBottom)
         waterPath.close()
 
-        // Draw the water
+        val clipPath = Path()
+        clipPath.moveTo(innerLeft, glassTop + glassPadding)
+        clipPath.lineTo(innerRight, glassTop + glassPadding)
+        clipPath.lineTo(innerLeft + (innerTopWidth - innerBottomWidth) / 2 + innerBottomWidth, innerBottom)
+        clipPath.lineTo(innerLeft + (innerTopWidth - innerBottomWidth) / 2, innerBottom)
+        clipPath.close()
+
+        canvas.save()
+        canvas.clipPath(clipPath)
+
         canvas.drawPath(waterPath, waterPaint)
+
+        val waveHeight = 5f // Increased from 4f to 5f (25% increase)
+        val wavePath = Path()
+        wavePath.moveTo(innerLeft + (innerTopWidth - waterWidthAtTop) / 2, waterLevelY)
+        for (x in (innerLeft + (innerTopWidth - waterWidthAtTop) / 2).toInt() until (innerLeft + (innerTopWidth + waterWidthAtTop) / 2).toInt() step 10) { // Increased step from 8 to 10 (25% increase)
+            val y = waterLevelY + (Math.sin(x * 0.1).toFloat() * waveHeight)
+            wavePath.lineTo(x.toFloat(), y)
+        }
+        wavePath.lineTo(innerLeft + (innerTopWidth + waterWidthAtTop) / 2, waterLevelY)
+        canvas.drawPath(wavePath, waterLevelPaint)
+
+        canvas.restore()
+
+        val dashedLineY = glassHeight * (1 - targetWaterLevel)
+        canvas.drawLine(
+            glassLeft - 12.5f, dashedLineY, // Increased from 10f to 12.5f (25% increase)
+            glassRight + 12.5f, dashedLineY, // Increased from 10f to 12.5f (25% increase)
+            dashedLinePaint
+        )
+
+        val checkmarkCenterX = glassRight + 12.5f + checkmarkRadius + checkmarkMarginEnd // Adjusted for new dashed line extension
+        val checkmarkCenterY = dashedLineY - (checkmarkRadius + checkmarkMarginTop - dashedLineY)
+        canvas.drawCircle(checkmarkCenterX, checkmarkCenterY, checkmarkRadius, checkmarkPaint)
+
+        val checkmarkPath = Path()
+        checkmarkPath.moveTo(checkmarkCenterX - 5f, checkmarkCenterY) // Increased from 4f to 5f (25% increase)
+        checkmarkPath.lineTo(checkmarkCenterX - 1.25f, checkmarkCenterY + 3.75f) // Adjusted proportionally
+        checkmarkPath.lineTo(checkmarkCenterX + 5f, checkmarkCenterY - 2.5f) // Adjusted proportionally
+        canvas.drawPath(checkmarkPath, checkmarkIconPaint)
     }
 }

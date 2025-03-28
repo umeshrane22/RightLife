@@ -12,18 +12,15 @@ import com.example.rlapp.R
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 
-class CreateRoutineListAdapter(
-    private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-    private var clickPos: Int, private var mealLogListData: MyMealModel?,
-    private var isClickView: Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,
-) :
+class CreateRoutineListAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
+                                private var clickPos: Int, private var mealLogListData : MyMealModel?,
+                                private var isClickView : Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<CreateRoutineListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_layout_create_routine_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout_create_routine_ai, parent, false)
         return ViewHolder(view)
     }
 
@@ -39,10 +36,7 @@ class CreateRoutineListAdapter(
         holder.dewpointValue.text = item.dewpoint
         holder.edit.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet()
-            bottomSheet.show(
-                (context as AppCompatActivity).supportFragmentManager,
-                "EditWorkoutBottomSheet"
-            )
+            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -83,7 +77,7 @@ class CreateRoutineListAdapter(
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-        val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
+        val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
         val serves: TextView = itemView.findViewById(R.id.tv_serves)
@@ -102,12 +96,7 @@ class CreateRoutineListAdapter(
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(
-        item: ArrayList<MyMealModel>?,
-        pos: Int,
-        mealLogItem: MyMealModel?,
-        isClick: Boolean
-    ) {
+    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

@@ -58,14 +58,12 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
 
-                }
-            })
+            }
+        })
 
     }
 

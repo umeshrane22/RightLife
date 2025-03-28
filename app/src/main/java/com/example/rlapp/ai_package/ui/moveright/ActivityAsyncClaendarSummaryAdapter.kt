@@ -11,21 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.ui.eatright.model.CalendarSummaryModel
 
-class ActivityAsyncClaendarSummaryAdapter(
-    private val context: Context,
-    private var dataLists: ArrayList<CalendarSummaryModel>,
-    private var clickPos: Int,
-    private var mealLogListData: CalendarSummaryModel?,
-    private var isClickView: Boolean,
-    val onMealLogDateItem: (CalendarSummaryModel, Int, Boolean) -> Unit,
-) :
+class ActivityAsyncClaendarSummaryAdapter(private val context: Context, private var dataLists: ArrayList<CalendarSummaryModel>,
+                                          private var clickPos: Int, private var mealLogListData : CalendarSummaryModel?,
+                                          private var isClickView : Boolean, val onMealLogDateItem: (CalendarSummaryModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<ActivityAsyncClaendarSummaryAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_summary_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_summary_ai, parent, false)
         return ViewHolder(view)
     }
 
@@ -35,10 +29,10 @@ class ActivityAsyncClaendarSummaryAdapter(
         holder.txtSummary.text = item.surplusType
         holder.txtValue.text = item.surplusValue
 
-        if (item.surplusType.contentEquals("Deficit")) {
+        if (item.surplusType.contentEquals("Deficit")){
             holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.week_red))
             holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
-        } else {
+        }else{
             holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.border_green))
             holder.layoutValue.setBackgroundResource(R.drawable.circle_background)
         }
@@ -61,15 +55,10 @@ class ActivityAsyncClaendarSummaryAdapter(
 
         val txtSummary: TextView = itemView.findViewById(R.id.txtSummary)
         val txtValue: TextView = itemView.findViewById(R.id.txtValue)
-        val layoutValue: LinearLayoutCompat = itemView.findViewById(R.id.layoutValue)
+        val layoutValue : LinearLayoutCompat = itemView.findViewById(R.id.layoutValue)
     }
 
-    fun addAll(
-        item: ArrayList<CalendarSummaryModel>?,
-        pos: Int,
-        mealLogItem: CalendarSummaryModel?,
-        isClick: Boolean
-    ) {
+    fun addAll(item : ArrayList<CalendarSummaryModel>?, pos: Int, mealLogItem : CalendarSummaryModel?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

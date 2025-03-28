@@ -6,16 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.model.WorkoutList
 
-class WorkoutAdapter(
-    private var context: Context,
-    private var workoutList: List<WorkoutList>,
-    private val onItemClick: (WorkoutList) -> Unit
-) :
+class WorkoutAdapter(private var context :Context, private var workoutList: List<WorkoutList>, private val onItemClick: (WorkoutList) -> Unit) :
     RecyclerView.Adapter<WorkoutAdapter.WorkoutViewHolder>() {
 
     inner class WorkoutViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -31,7 +28,7 @@ class WorkoutAdapter(
                 .placeholder(R.drawable.athelete_search)
                 .error(R.drawable.athelete_search)
                 .into(workoutImage)
-            //  forwardIcon.setImageResource(item.icon2)
+          //  forwardIcon.setImageResource(item.icon2)
 
             // Handle item click
             itemView.setOnClickListener { onItemClick(item) }

@@ -15,18 +15,15 @@ import com.example.rlapp.R
 import com.example.rlapp.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 
-class FrequentltLoggedSearchAdapter(
-    private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-    private var clickPos: Int, private var mealLogListData: MyMealModel?,
-    private var isClickView: Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,
-) :
+class FrequentltLoggedSearchAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
+                                    private var clickPos: Int, private var mealLogListData : MyMealModel?,
+                                    private var isClickView : Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<FrequentltLoggedSearchAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_frequently_logged_search_layout_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_frequently_logged_search_layout_ai, parent, false)
         return ViewHolder(view)
     }
 
@@ -45,35 +42,32 @@ class FrequentltLoggedSearchAdapter(
         }
         holder.addToWorkout.setOnClickListener {
             val bottomSheet = LoggedBottomSheet()
-            bottomSheet.show(
-                (context as AppCompatActivity).supportFragmentManager,
-                "EditWorkoutBottomSheet"
-            )
+            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
-        // holder.editDeleteLayout.visibility = if (selectedItem == position) View.VISIBLE else View.GONE
-        /* holder.deleteLayout.setOnClickListener {
-             val bottomSheet = DeleteWorkoutBottomSheet()
-             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
-             holder.editDeleteLayout.visibility = View.GONE
-         }*/
+       // holder.editDeleteLayout.visibility = if (selectedItem == position) View.VISIBLE else View.GONE
+       /* holder.deleteLayout.setOnClickListener {
+            val bottomSheet = DeleteWorkoutBottomSheet()
+            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
+            holder.editDeleteLayout.visibility = View.GONE
+        }*/
 
         // Handle three-dot click
-        /*  holder.threedots.setOnClickListener {
-              // If the same item is clicked again, toggle visibility
-              if (selectedItem == position) {
-                  selectedItem = -1 // Hide the menu
-              } else {
-                  // Show the menu for the clicked item and hide the previous one
-                  val previousSelectedItem = selectedItem
-                  selectedItem = position
+      /*  holder.threedots.setOnClickListener {
+            // If the same item is clicked again, toggle visibility
+            if (selectedItem == position) {
+                selectedItem = -1 // Hide the menu
+            } else {
+                // Show the menu for the clicked item and hide the previous one
+                val previousSelectedItem = selectedItem
+                selectedItem = position
 
-                  // Notify the adapter to update the previous and current items
-                  if (previousSelectedItem != -1) {
-                      notifyItemChanged(previousSelectedItem)
-                  }
-                  notifyItemChanged(position)
-              }
-          }*/
+                // Notify the adapter to update the previous and current items
+                if (previousSelectedItem != -1) {
+                    notifyItemChanged(previousSelectedItem)
+                }
+                notifyItemChanged(position)
+            }
+        }*/
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -116,8 +110,8 @@ class FrequentltLoggedSearchAdapter(
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
         val editDeleteLayout: CardView = itemView.findViewById(R.id.btn_edit_delete)
         val addToWorkout: LinearLayoutCompat = itemView.findViewById(R.id.layout_btn_log)
-        val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
-        val threedots: ImageView = itemView.findViewById(R.id.image_circle_plus)
+        val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+        val threedots : ImageView = itemView.findViewById(R.id.image_circle_plus)
         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
         val serves: TextView = itemView.findViewById(R.id.tv_serves)
@@ -136,12 +130,7 @@ class FrequentltLoggedSearchAdapter(
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(
-        item: ArrayList<MyMealModel>?,
-        pos: Int,
-        mealLogItem: MyMealModel?,
-        isClick: Boolean
-    ) {
+    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

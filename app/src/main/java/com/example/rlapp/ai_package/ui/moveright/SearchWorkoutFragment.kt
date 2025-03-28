@@ -36,8 +36,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val tabTitles = arrayOf("All Workouts", "My Routine", "Frequently Logged")
         for (title in tabTitles) {
             val tab = tabLayout.newTab()
-            val customView =
-                LayoutInflater.from(context).inflate(R.layout.custom_search_tab, null) as TextView
+            val customView = LayoutInflater.from(context).inflate(R.layout.custom_search_tab, null) as TextView
             customView.text = title
             tab.customView = customView
             tabLayout.addTab(tab)
@@ -46,14 +45,12 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         if (savedInstanceState == null) {
             replaceFragment(AllWorkoutFragment())
         }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(YourActivityFragment(), "LandingFragment")
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(YourActivityFragment(), "LandingFragment")
 
-                }
-            })
+            }
+        })
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -64,7 +61,6 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                 }
                 updateTabColors()
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
@@ -73,7 +69,6 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 workoutViewModel.setSearchQuery(s.toString())
             }
-
             override fun afterTextChanged(s: Editable?) {}
         })
     }
@@ -87,13 +82,12 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             val tab = bi.tabLayout.getTabAt(i)
             val tabText = tab?.customView?.findViewById<TextView>(R.id.tabText)
             tabText?.setTextColor(
-                if (tab.isSelected == true) ContextCompat.getColor(requireContext(), R.color.white)
+                if (tab?.isSelected == true) ContextCompat.getColor(requireContext(), R.color.white)
                 else ContextCompat.getColor(requireContext(), R.color.dotted_red)
             )
         }
     }
-
-    private fun navigateToFragment(fragment: Fragment, tag: String) {
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)

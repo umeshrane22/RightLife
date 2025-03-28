@@ -9,7 +9,7 @@ import android.widget.RadioGroup
 import androidx.activity.addCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentRestingHeartRateBinding
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -20,7 +20,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 
 
-class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>() {
+class RestingHeartRateFragment: BaseFragment<FragmentRestingHeartRateBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRestingHeartRateBinding
         get() = FragmentRestingHeartRateBinding::inflate
@@ -50,10 +50,9 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeFragment(), "landingFragment")
+navigateToFragment(HomeBottomTabFragment(),"landingFragment")
         }
     }
-
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
@@ -61,7 +60,6 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
             commit()
         }
     }
-
     /** Update chart with new data and X-axis labels */
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
         val dataSet = LineDataSet(entries, "Heart Rate")

@@ -7,14 +7,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 
-class MoreToolsAdapter(private val context: Context, private var dataLists: Int) :
-    RecyclerView.Adapter<MoreToolsAdapter.ViewHolder>() {
+class MoreToolsAdapter (private val context: Context, private var dataLists: Int,)
+    : RecyclerView.Adapter<MoreToolsAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_tools_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_tools_ai, parent, false)
         return ViewHolder(view)
     }
 
@@ -27,6 +26,8 @@ class MoreToolsAdapter(private val context: Context, private var dataLists: Int)
         return 4
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+    }
 
 }

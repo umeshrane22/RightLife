@@ -10,7 +10,6 @@
         android:layout_height="73dp"
         android:background="@color/header_background"
         app:layout_constraintTop_toTopOf="parent"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -72,6 +71,7 @@
                 app:layout_constraintTop_toTopOf="@+id/functional_strength_icon" />
 
             <TextView
+                android:id="@+id/timeline_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -135,6 +135,7 @@
                             android:layout_height="match_parent">
 
                             <TextView
+                                android:id="@+id/duration_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -187,6 +188,7 @@
                             android:layout_height="match_parent">
 
                             <TextView
+                                android:id="@+id/calories_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -225,7 +227,6 @@
 
                     </androidx.cardview.widget.CardView>
 
-
                     <androidx.cardview.widget.CardView
                         android:id="@+id/avg_heartrate_Layout"
                         android:layout_width="110dp"
@@ -243,6 +244,7 @@
                             android:layout_height="match_parent">
 
                             <TextView
+                                android:id="@+id/avg_heart_rate_text_value"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -280,7 +282,6 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </androidx.cardview.widget.CardView>
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>

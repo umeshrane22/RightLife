@@ -1,5 +1,6 @@
 package com.example.rlapp.ai_package.ui.eatright.fragment
 
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,29 +25,25 @@ import java.util.Locale
 
 class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
 
-    private lateinit var icLeftArrow: ImageView
-    private lateinit var txtDate: TextView
-    private lateinit var icRightArrow: ImageView
-    private lateinit var btnClose: ImageView
-    private lateinit var recyclerCalendar: RecyclerView
-    private lateinit var recyclerSummary: RecyclerView
+    private lateinit var icLeftArrow : ImageView
+    private lateinit var txtDate : TextView
+    private lateinit var icRightArrow : ImageView
+    private lateinit var btnClose : ImageView
+    private lateinit var recyclerCalendar : RecyclerView
+    private lateinit var recyclerSummary : RecyclerView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealLogCalenderBinding
         get() = FragmentMealLogCalenderBinding::inflate
     var snackbar: Snackbar? = null
 
-    private val calendarAdapter by lazy {
-        CalendarAdapter(
-            requireContext(), arrayListOf(), -1, null,
-            false, ::onMealLogCalenderItem
-        )
-    }
+    private val calendarAdapter by lazy { CalendarAdapter(requireContext(), arrayListOf(), -1, null,
+        false, :: onMealLogCalenderItem) }
 
-    private val calendarSummaryAdapter by lazy {
-        CalendarSummaryAdapter(
-            requireContext(), arrayListOf(), -1, null,
-            false, ::onMealLogCalenderSummaryItem
-        )
+    private val calendarSummaryAdapter by lazy { CalendarSummaryAdapter(requireContext(), arrayListOf(), -1, null,
+        false, :: onMealLogCalenderSummaryItem) }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,20 +62,18 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         recyclerSummary.layoutManager = LinearLayoutManager(context)
         recyclerSummary.adapter = calendarSummaryAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = YourMealLogsFragment()
-                    val args = Bundle()
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = YourMealLogsFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
-            })
+            }
+        })
 
         btnClose.setOnClickListener {
             val fragment = YourMealLogsFragment()
@@ -103,10 +98,10 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         onMealLogCalenderSummaryRefresh()
     }
 
-    private fun onMealLogCalenderItemRefresh() {
+    private fun onMealLogCalenderItemRefresh (){
 
         val yearDays = generateYearCalendar()
-        // val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
+       // val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
 
 //        val calendarDays = listOf(
 //            MealLogDateModel("01", "M", true),
@@ -118,13 +113,13 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
 //            MealLogDateModel("07", "S", true)
 //        )
 
-        val valueLists: ArrayList<CalendarDateModel> = ArrayList()
+        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogCalenderSummaryRefresh() {
+    private fun onMealLogCalenderSummaryRefresh (){
 
         val summaryList = listOf(
             CalendarSummaryModel("Deficit", "2140"),
@@ -138,31 +133,23 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
             CalendarSummaryModel("Surplus", "0")
         )
 
-        val valueLists: ArrayList<CalendarSummaryModel> = ArrayList()
+        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
         valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         val mealLogDateData: CalendarSummaryModel? = null
         calendarSummaryAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogCalenderItem(
-        mealLogDateModel: CalendarDateModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogCalenderItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
 
         val yearDays = generateYearCalendar()
-        //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
+     //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
 
-        val valueLists: ArrayList<CalendarDateModel> = ArrayList()
+        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onMealLogCalenderSummaryItem(
-        mealLogDateModel: CalendarSummaryModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
 
         val summaryList = listOf(
             CalendarSummaryModel("Deficit", "2140"),
@@ -176,7 +163,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
             CalendarSummaryModel("Surplus", "0"),
             CalendarSummaryModel("Surplus", "0")
         )
-        val valueLists: ArrayList<CalendarSummaryModel> = ArrayList()
+        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
         valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         calendarSummaryAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }

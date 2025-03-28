@@ -13,6 +13,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class LoggedBottomSheet : BottomSheetDialogFragment() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,7 +40,6 @@ class LoggedBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "LoggedBottomSheet"
-
         @JvmStatic
         fun newInstance() = LoggedBottomSheet().apply {
             arguments = Bundle().apply {

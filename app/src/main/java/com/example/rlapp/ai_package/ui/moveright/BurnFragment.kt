@@ -9,7 +9,7 @@ import android.widget.RadioGroup
 import androidx.activity.addCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentBurnBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -50,7 +50,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeFragment(), "landingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
         }
     }
 

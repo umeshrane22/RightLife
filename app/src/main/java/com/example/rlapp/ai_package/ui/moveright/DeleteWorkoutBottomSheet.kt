@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.example.rlapp.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
+class DeleteWorkoutBottomSheet: BottomSheetDialogFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

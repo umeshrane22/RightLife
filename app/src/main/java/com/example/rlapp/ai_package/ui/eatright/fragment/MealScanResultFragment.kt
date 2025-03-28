@@ -17,46 +17,24 @@ import com.example.rlapp.ai_package.ui.eatright.adapter.MicroNutientsListAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.example.rlapp.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentMealScanResultsBinding
 import com.google.android.material.snackbar.Snackbar
 
-class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
-    private lateinit var macroItemRecyclerView: RecyclerView
-    private lateinit var microItemRecyclerView: RecyclerView
-    private lateinit var frequentlyLoggedRecyclerView: RecyclerView
+class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
+    private lateinit var macroItemRecyclerView : RecyclerView
+    private lateinit var microItemRecyclerView : RecyclerView
+    private lateinit var frequentlyLoggedRecyclerView : RecyclerView
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
     var snackbar: Snackbar? = null
-    private val microNutientsAdapter by lazy {
-        MicroNutientsListAdapter(
-            requireContext(), arrayListOf(), -1,
-            null, false, ::onMicroNutrientsItem
-        )
-    }
-    private val frequentlyLoggedListAdapter by lazy {
-        FrequentlyLoggedMealScanResultAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onFrequentlyLoggedItem
-        )
-    }
+    private val microNutientsAdapter by lazy { MicroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMicroNutrientsItem) }
+    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedMealScanResultAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
 
-    private val macroNutientsAdapter by lazy {
-        MacroNutientsListAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onMealLogDateItem
-        )
-    }
+    private val macroNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -75,13 +53,11 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
         microItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
         microItemRecyclerView.adapter = microNutientsAdapter
         onMicroNutrientsItemRefresh()
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(HomeFragment(), "LandingFragment")
-                }
-            })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(HomeBottomTabFragment(), "LandingFragment")
+            }
+        })
 
         btnChange.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -94,8 +70,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             }
         }
     }
-
-    private fun onMicroNutrientsItemRefresh() {
+    private fun onMicroNutrientsItemRefresh (){
 
         val mealLogs = listOf(
             MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
@@ -106,17 +81,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
         )
 
-        val valueLists: ArrayList<MicroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
         val mealLogDateData: MicroNutrientsModel? = null
         microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
-
-    private fun onMicroNutrientsItem(
-        microNutrientsModel: MicroNutrientsModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMicroNutrientsItem(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
 
         val microNutrients = listOf(
             MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
@@ -126,28 +96,22 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             MicroNutrientsModel("150", "mg", "Potassium", R.drawable.ic_fats),
             MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
         )
-        val valueLists: ArrayList<MicroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         valueLists.addAll(microNutrients as Collection<MicroNutrientsModel>)
         microNutientsAdapter.addAll(valueLists, position, microNutrientsModel, isRefresh)
     }
-
-    private fun onMealLogDateItem(
-        mealLogDateModel: MacroNutrientsModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogDateItem(mealLogDateModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
             MacroNutrientsModel("11", "g", "protien", R.drawable.ic_proteins),
             MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_carbs),
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
-        val valueLists: ArrayList<MacroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
         macroNutientsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
-
-    private fun onMealLogDateItemRefresh() {
+    private fun onMealLogDateItemRefresh (){
 
         val mealLogs = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
@@ -156,13 +120,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
 
-        val valueLists: ArrayList<MacroNutrientsModel> = ArrayList()
+        val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
         val mealLogDateData: MacroNutrientsModel? = null
         macroNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
         //microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
-
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
@@ -170,8 +133,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             commit()
         }
     }
-
-    private fun onFrequentlyLoggedItemRefresh() {
+    private fun onFrequentlyLoggedItemRefresh (){
 
         val meal = listOf(
             MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
@@ -180,25 +142,21 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
         )
 
-        if (meal.size > 0) {
+        if (meal.size > 0){
             frequentlyLoggedRecyclerView.visibility = View.VISIBLE
             //   layoutNoMeals.visibility = View.GONE
-        } else {
+        }else{
             //    layoutNoMeals.visibility = View.VISIBLE
             frequentlyLoggedRecyclerView.visibility = View.GONE
         }
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(meal as Collection<MyMealModel>)
         val mealLogDateData: MyMealModel? = null
         frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onFrequentlyLoggedItem(
-        mealLogDateModel: MyMealModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onFrequentlyLoggedItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
 
         val mealLogs = listOf(
             MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
@@ -207,7 +165,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>() {
             MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
         )
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
+        val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MyMealModel>)
         frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }

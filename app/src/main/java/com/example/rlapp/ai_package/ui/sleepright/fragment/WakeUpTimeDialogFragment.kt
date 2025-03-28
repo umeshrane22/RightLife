@@ -1,6 +1,7 @@
 package com.example.rlapp.ai_package.ui.sleepright.fragment
 
 import android.app.Dialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -70,14 +71,13 @@ class WakeUpTimeDialogFragment : BottomSheetDialogFragment() {
                 val field = NumberPicker::class.java.getDeclaredField("mInputText")
                 field.isAccessible = true
                 val editText = field.get(picker) as EditText
-                editText.setTextColor(resources.getColor(R.color.sleep_duration_blue))
+                editText.setTextColor( resources.getColor(R.color.sleep_duration_blue))
                 editText.textSize = 24f
                 editText.typeface = Typeface.DEFAULT_BOLD
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
-
         fun refreshPickers() {
             handler.post {
                 updateNumberPickerText(hourPicker)
