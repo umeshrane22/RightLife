@@ -243,7 +243,7 @@
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_carbs" />
+                    android:src="@drawable/ic_protein" />
 
                 <TextView
                     android:id="@+id/tv_subtraction_value"
@@ -280,7 +280,7 @@
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_proteins" />
+                    android:src="@drawable/ic_cabs" />
 
                 <TextView
                     android:id="@+id/tv_baguette_value"

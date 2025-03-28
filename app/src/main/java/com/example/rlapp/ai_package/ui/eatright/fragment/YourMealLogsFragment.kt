@@ -32,8 +32,10 @@ import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.model.DailyRecipe
 import com.example.rlapp.ai_package.model.MealList
+import com.example.rlapp.ai_package.model.MealLists
 import com.example.rlapp.ai_package.model.MealLogData
 import com.example.rlapp.ai_package.model.MealLogsResponseModel
+import com.example.rlapp.ai_package.model.MealsResponse
 import com.example.rlapp.ai_package.ui.eatright.adapter.MealLogDateListAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
@@ -81,16 +83,28 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var proteinsProgressBar : ProgressBar
     private lateinit var fatsProgressBar : ProgressBar
     private lateinit var transparentOverlay : View
+    private lateinit var layoutAdd : LinearLayoutCompat
+    private lateinit var layoutLunchAdd : LinearLayoutCompat
+    private lateinit var layoutDinnerAdd : LinearLayoutCompat
+
     private var mealPlanData : ArrayList<MealLogData> = ArrayList()
+    private var mealList : ArrayList<MealLists> = ArrayList()
+    var breakfastLists : ArrayList<MealList> = ArrayList()
+    var lunchLists : ArrayList<MealList> = ArrayList()
+    var dinnerLists : ArrayList<MealList> = ArrayList()
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
 
-    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
-    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onBreakfastMealLogItem) }
-    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
-    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
+    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMealLogDateItem) }
+    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
+    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onLunchMealLogItem) }
+    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onDinnerMealLogItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -132,11 +146,15 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         fatsProgressBar = view.findViewById(R.id.fats_progressBar)
         backButton = view.findViewById(R.id.backButton)
         addFoodLayout = view.findViewById(R.id.layout_add_food)
+        layoutAdd = view.findViewById(R.id.layout_btnAdd)
+        layoutLunchAdd = view.findViewById(R.id.layout_lunchAdd)
+        layoutDinnerAdd = view.findViewById(R.id.layout_dinnerAdd)
 
         layoutToolbar = view.findViewById(R.id.layoutToolbar)
         transparentOverlay = view.findViewById(R.id.transparentOverlay)
 
         getMealPlanList()
+        //getMealList()
 
         mealLogDateRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         mealLogDateRecyclerView.adapter = mealLogDateAdapter
@@ -367,12 +385,18 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         val valueLists : ArrayList<ArrayList<MealList>> = ArrayList()
         valueLists.addAll(value as Collection<java.util.ArrayList<MealList>>)
         val mealList: MealList? = null
+        breakfastLists.clear()
+        lunchLists.clear()
+        dinnerLists.clear()
         for (item in key){
             if (item.contentEquals("breakfast")){
+                breakfastLists = valueLists.get(0)
                 breakfastMealLogsAdapter.addAll(valueLists.get(0), -1, mealList, false)
             }else if (item.contentEquals("lunch")){
+                lunchLists = valueLists.get(1)
                 lunchMealLogsAdapter.addAll(valueLists.get(1), -1, mealList, false)
             }else if  (item.contentEquals("dinner")){
+                dinnerLists = valueLists.get(2)
                 dinnerMealLogsAdapter.addAll(valueLists.get(2), -1, mealList, false)
             }
         }
@@ -406,6 +430,26 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         val valueLists : ArrayList<DinnerMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
       //  dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    }
+
+    private fun onBreakfastDeleteItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
+
+        val valueLists : ArrayList<MealList> = ArrayList()
+        valueLists.addAll(breakfastLists as Collection<MealList>)
+        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+        deleteBottomSheetFragment = DeleteMealBottomSheet()
+        deleteBottomSheetFragment.isCancelable = true
+        val bundle = Bundle()
+        bundle.putBoolean("test",false)
+        deleteBottomSheetFragment.arguments = bundle
+        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+    }
+
+    private fun onBreakfastEditItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
+
+        val valueLists : ArrayList<MealList> = ArrayList()
+        valueLists.addAll(breakfastLists as Collection<MealList>)
+        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
     }
 
     private fun deleteMealDialog(){
@@ -469,6 +513,34 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                 }
             }
             override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun getMealList() {
+        progressDialog.show()
+       // val userId = appPreference.getUserId().toString()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "64763fe2fa0e40d9c0bc8264"
+        val startDate = "2025-03-22"
+        val call = ApiClient.apiServiceFastApi.getMeal(userId, startDate)
+        call.enqueue(object : Callback<MealsResponse> {
+            override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    val mealPlanLists = response.body()?.meals ?: emptyList()
+                    mealList.addAll(mealPlanLists)
+                  //  onMealLogDateItemRefresh()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()

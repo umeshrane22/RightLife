@@ -64,14 +64,23 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         tabEat.setOnClickListener { switchFragment(EatRightLandingFragment(), tabEat, "Eat") }
         tabSleep.setOnClickListener { switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep") }
 
-        // Set "Eat" as the default fragment
-        switchFragment(ThinkRightReportFragment(), tabThink, "Think")
-
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 requireActivity().finish()
             }
         })
+
+        val moduleName = arguments?.getString("ModuleName").toString()
+
+        if (moduleName.contentEquals("MoveRight")){
+            switchFragment(MoveRightLandingFragment(), tabMove, "Move")
+        }else if (moduleName.contentEquals("EatRight")){
+            switchFragment(EatRightLandingFragment(), tabEat, "Eat")
+        }else if (moduleName.contentEquals("SleepRight")){
+            switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep")
+        }else{
+            switchFragment(ThinkRightReportFragment(), tabThink, "Think")
+        }
     }
     
     private fun switchFragment(fragment: Fragment, selectedTab: LinearLayout, selectedTabName : String) {

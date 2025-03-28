@@ -1,20 +1,26 @@
 package com.example.rlapp.ai_package.ui.moveright
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient.apiService
+import com.example.rlapp.ai_package.data.repository.ApiClient.apiServiceFastApi
+import com.example.rlapp.ai_package.model.WorkoutMoveResponseRoutine
 import com.example.rlapp.ai_package.model.YourActivityLogMeal
 import com.example.rlapp.ai_package.ui.adapter.YourActivitiesListAdapter
 import com.example.rlapp.ai_package.ui.adapter.YourWorkoutsListAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.databinding.FragmentYourworkOutsBinding
+import kotlinx.coroutines.launch
 
 
 class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
@@ -28,6 +34,23 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
     private val myMealListAdapter by lazy { YourWorkoutsListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch {
+            val workouts = fetchWorkouts(
+                userId = "64763fe2fa0e40d9c0bc8264",
+                startDate = "2025-03-17",
+                endDate = "2025-03-25",
+                page = 1,
+                limit = 10,
+                includeStats = false
+            )
+
+            if (workouts != null) {
+                // Handle the workout data
+                Log.d("API_SUCCESS", "Fetched Workouts: $workouts")
+            } else {
+                Log.e("API_ERROR", "Failed to fetch workouts")
+            }
+        }
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
         myMealRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         saveWorkoutRoutine = view.findViewById(R.id.layout_btn_log)
@@ -128,6 +151,29 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
             commit()
         }
     }
+
+    suspend fun fetchWorkouts(
+        userId: String,
+        startDate: String,
+        endDate: String,
+        page: Int,
+        limit: Int,
+        includeStats: Boolean
+    ): WorkoutMoveResponseRoutine? {
+        return try {
+            val response = apiServiceFastApi.getFetchWorkouts(userId, startDate, endDate, page, limit, includeStats)
+            if (response.isSuccessful) {
+                response.body() // Return the parsed response
+            } else {
+                Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("API_ERROR", "Exception: ${e.message}")
+            null
+        }
+    }
+
 
 
 }

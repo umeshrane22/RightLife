@@ -1,20 +1,34 @@
 package com.example.rlapp.ai_package.ui.sleepright.fragment
 
+import android.app.ProgressDialog
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient
+import com.example.rlapp.ai_package.model.RestorativeSleepDetail
+import com.example.rlapp.ai_package.model.SleepLandingData
+import com.example.rlapp.ai_package.model.SleepLandingResponse
+import com.example.rlapp.ai_package.model.SleepPerformanceData
+import com.example.rlapp.ai_package.model.SleepPerformanceDetail
+import com.example.rlapp.ai_package.model.SleepStageData
+import com.example.rlapp.ai_package.ui.eatright.model.LandingPageResponse
 import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentSleepRightLandingBinding
+import com.example.rlapp.ui.NewSleepSounds.NewSleepSoundActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -28,6 +42,13 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.*
+import retrofit2.Callback
+import retrofit2.Response
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>(), WakeUpTimeDialogFragment.BottomSheetListener {
 
@@ -36,6 +57,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     var snackbar: Snackbar? = null
 
     lateinit var wakeTime : TextView
+    private lateinit var progressDialog: ProgressDialog
+    private lateinit var landingPageResponse : SleepLandingResponse
+    private lateinit var sleepLandingData : SleepLandingData
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
@@ -48,6 +73,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
         wakeTime = view.findViewById<TextView>(R.id.tv_wakeup_time)
+
+        progressDialog = ProgressDialog(activity)
+        progressDialog.setTitle("Loading")
+        progressDialog.setCancelable(false)
 
         sleepInfo.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -88,6 +117,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         setupBarChart(sleepBarChart)
+
+        fetchSleepData()
 
         editWakeup.setOnClickListener {
            openBottomSheet()
@@ -214,6 +245,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         sleepStagesView.setSleepData(sleepData)
 
+        view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
+            startActivity(Intent(requireContext(),NewSleepSoundActivity::class.java).apply {
+                putExtra("PlayList","PlayList")
+            })
+        }
     }
 
     private fun setupBarChart(barChart: BarChart) {
@@ -289,6 +325,68 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             addToBackStack(null)
             commit()
         }
+    }
+
+    private fun fetchSleepData() {
+        progressDialog.show()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "64763fe2fa0e40d9c0bc8264"
+        val date = "2025-03-18"
+        val source = "apple"
+        val preferences = "nature_sounds"
+        val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
+        call.enqueue(object : Callback<SleepLandingResponse> {
+            override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    landingPageResponse = response.body()!!
+                    println(landingPageResponse)
+//                    val mealPlanLists = response.body()?.data ?: emptyList()
+//                    recipesList.addAll(mealPlanLists)
+                    //setSleepRightLandingData(landingPageResponse)
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun setSleepRightLandingData(sleepLandingResponse: SleepLandingResponse){
+        sleepLandingData.userId = sleepLandingResponse.sleepLandingData?.userId ?: ""
+        sleepLandingData.source = sleepLandingResponse.sleepLandingData?.source ?: ""
+        sleepLandingData.endtime = sleepLandingResponse.sleepLandingData?.endtime ?: ""
+        sleepLandingData.starttime = sleepLandingResponse.sleepLandingData?.starttime ?: ""
+        sleepLandingData.recommendedSound = sleepLandingResponse.sleepLandingData?.recommendedSound ?: ""
+
+        val sleepStageData : ArrayList<SleepStageData> = arrayListOf()
+        val sleepPerformanceDetail : ArrayList<SleepPerformanceDetail> = arrayListOf()
+        val sleepRestorativeDetail : ArrayList<RestorativeSleepDetail> = arrayListOf()
+        if (sleepLandingResponse.sleepLandingData?.sleepStagesData != null) {
+            for (i in 0 until sleepLandingResponse.sleepLandingData?.sleepStagesData?.size!!) {
+                sleepLandingResponse.sleepLandingData?.sleepStagesData?.getOrNull(i)
+                    ?.let { sleepStageData.add(it) }
+            }
+        }
+        if (sleepLandingResponse.sleepLandingData?.sleepPerformanceDetail != null) {
+            for (i in 0 until sleepLandingResponse.sleepLandingData?.sleepPerformanceDetail?.size!!) {
+                sleepLandingResponse.sleepLandingData?.sleepPerformanceDetail?.getOrNull(i)
+                    ?.let { sleepPerformanceDetail.add(it) }
+            }
+        }
+        if (sleepLandingResponse.sleepLandingData?.sleepRestorativeDetail != null) {
+            for (i in 0 until sleepLandingResponse.sleepLandingData?.sleepRestorativeDetail?.size!!) {
+                sleepLandingResponse.sleepLandingData?.sleepRestorativeDetail?.getOrNull(i)
+                    ?.let { sleepRestorativeDetail.add(it) }
+            }
+        }
+
     }
 
 

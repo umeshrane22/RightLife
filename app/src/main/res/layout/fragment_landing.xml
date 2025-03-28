@@ -284,6 +284,7 @@
                             app:layout_constraintStart_toEndOf="@+id/balance_icon" />
 
                         <ImageView
+                            android:id="@+id/calorie_balance_icon"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/forwardicon"

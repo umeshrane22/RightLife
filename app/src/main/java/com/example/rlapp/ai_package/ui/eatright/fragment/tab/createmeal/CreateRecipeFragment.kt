@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.model.DailyRecipe
+import com.example.rlapp.ai_package.model.MealList
 import com.example.rlapp.ai_package.ui.eatright.adapter.MealLogDateListAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
@@ -50,15 +51,21 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private lateinit var layoutNoIngredients: LinearLayoutCompat
     private lateinit var addRecipeNameLayout : LinearLayoutCompat
     private lateinit var continueLayout : LinearLayoutCompat
+    var breakfastLists : ArrayList<MealList> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRecipeBinding
         get() = FragmentCreateRecipeBinding::inflate
 
-    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
-    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onBreakfastMealLogItem) }
-    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
-    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
+    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMealLogDateItem) }
+    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
+    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onLunchMealLogItem) }
+    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onDinnerMealLogItem) }
+    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -300,6 +307,22 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         val valueLists : ArrayList<DinnerMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
       //  dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    }
+
+    private fun onBreakfastDeleteItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
+
+        val valueLists : ArrayList<MealList> = ArrayList()
+        valueLists.addAll(breakfastLists as Collection<MealList>)
+        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+
+    }
+
+    private fun onBreakfastEditItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
+
+        val valueLists : ArrayList<MealList> = ArrayList()
+        valueLists.addAll(breakfastLists as Collection<MealList>)
+        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+
     }
 
 //    private fun deleteMealDialog(){

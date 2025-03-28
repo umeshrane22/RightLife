@@ -203,8 +203,8 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
 
         val mealLogs = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_proteins),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_carbs),
+            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
+            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
 
@@ -288,8 +288,8 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
     private fun onMealLogDateItem(mealLogDateModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_proteins),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_carbs),
+            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
+            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
         val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()

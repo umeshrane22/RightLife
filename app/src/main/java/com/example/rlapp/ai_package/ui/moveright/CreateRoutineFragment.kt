@@ -17,9 +17,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.ui.adapter.CreateRoutineListAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.databinding.FragmentCreateRoutineBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText : EditText
@@ -36,6 +41,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
+        fetchMoveRoutine()
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
 
@@ -120,6 +126,36 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MyMealModel>)
         //  mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    }
+    private fun fetchMoveRoutine() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.getMoveRoutine(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    providedDate = "2025-03-06"
+                )
+
+                if (response.isSuccessful) {
+                    val workoutResponse = response.body()
+                    workoutResponse?.let {
+                        // Handle the workout data
+                        withContext(Dispatchers.Main) {
+                            println("Workout Routines Fetched Successfully")
+                            // TODO: Update UI with workout data
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        println("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Exception: ${e.message}")
+                }
+            }
+        }
     }
 
 }
