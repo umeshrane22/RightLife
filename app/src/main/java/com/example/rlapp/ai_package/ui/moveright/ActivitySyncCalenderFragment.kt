@@ -21,29 +21,25 @@ import java.util.Locale
 
 
 class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBinding>() {
-    private lateinit var icLeftArrow: ImageView
-    private lateinit var txtDate: TextView
-    private lateinit var icRightArrow: ImageView
-    private lateinit var btnClose: ImageView
-    private lateinit var recyclerCalendar: RecyclerView
-    private lateinit var recyclerSummary: RecyclerView
+    private lateinit var icLeftArrow : ImageView
+    private lateinit var txtDate : TextView
+    private lateinit var icRightArrow : ImageView
+    private lateinit var btnClose : ImageView
+    private lateinit var recyclerCalendar : RecyclerView
+    private lateinit var recyclerSummary : RecyclerView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentActivitySyncCalenderBinding
         get() = FragmentActivitySyncCalenderBinding::inflate
     var snackbar: Snackbar? = null
 
-    private val calendarAdapter by lazy {
-        ActivityAsyncCalenderAdapter(
-            requireContext(), arrayListOf(), -1, null,
-            false, ::onMealLogCalenderItem
-        )
-    }
+    private val calendarAdapter by lazy { ActivityAsyncCalenderAdapter(requireContext(), arrayListOf(), -1, null,
+        false, :: onMealLogCalenderItem) }
 
-    private val calendarSummaryAdapter by lazy {
-        ActivityAsyncClaendarSummaryAdapter(
-            requireContext(), arrayListOf(), -1, null,
-            false, ::onMealLogCalenderSummaryItem
-        )
+    private val calendarSummaryAdapter by lazy { ActivityAsyncClaendarSummaryAdapter(requireContext(), arrayListOf(), -1, null,
+        false, :: onMealLogCalenderSummaryItem) }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,20 +58,18 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         recyclerSummary.layoutManager = LinearLayoutManager(context)
         recyclerSummary.adapter = calendarSummaryAdapter
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = YourMealLogsFragment()
-                    val args = Bundle()
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = YourMealLogsFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
                 }
-            })
+            }
+        })
 
         btnClose.setOnClickListener {
             val fragment = YourActivityFragment()
@@ -100,7 +94,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         onMealLogCalenderSummaryRefresh()
     }
 
-    private fun onMealLogCalenderItemRefresh() {
+    private fun onMealLogCalenderItemRefresh (){
 
         val yearDays = generateYearCalendar()
         // val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
@@ -115,13 +109,13 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
 //            MealLogDateModel("07", "S", true)
 //        )
 
-        val valueLists: ArrayList<CalendarDateModel> = ArrayList()
+        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogCalenderSummaryRefresh() {
+    private fun onMealLogCalenderSummaryRefresh (){
 
         val summaryList = listOf(
             CalendarSummaryModel("Over", "2140"),
@@ -135,31 +129,23 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
             CalendarSummaryModel("Under", "0")
         )
 
-        val valueLists: ArrayList<CalendarSummaryModel> = ArrayList()
+        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
         valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         val mealLogDateData: CalendarSummaryModel? = null
         calendarSummaryAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogCalenderItem(
-        mealLogDateModel: CalendarDateModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogCalenderItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
 
         val yearDays = generateYearCalendar()
         //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
 
-        val valueLists: ArrayList<CalendarDateModel> = ArrayList()
+        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onMealLogCalenderSummaryItem(
-        mealLogDateModel: CalendarSummaryModel,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
 
         val summaryList = listOf(
             CalendarSummaryModel("Over", "2140"),
@@ -173,7 +159,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
             CalendarSummaryModel("Under", "0"),
             CalendarSummaryModel("Under", "0")
         )
-        val valueLists: ArrayList<CalendarSummaryModel> = ArrayList()
+        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
         valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         calendarSummaryAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
@@ -211,12 +197,10 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
 
         // Set calendar to January 1st of the given year
         calendar.set(year, java.util.Calendar.JANUARY, 1)
-        val firstDayOfWeek =
-            calendar.get(java.util.Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
+        val firstDayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
 
         // Calculate how many previous year days we need to add to start from Monday
-        val daysToFill =
-            if (firstDayOfWeek == java.util.Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
+        val daysToFill = if (firstDayOfWeek == java.util.Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
 
         // Add previous year days
         calendar.add(java.util.Calendar.DAY_OF_YEAR, -daysToFill)

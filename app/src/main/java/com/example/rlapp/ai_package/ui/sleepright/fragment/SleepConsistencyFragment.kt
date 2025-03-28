@@ -52,14 +52,12 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
 
-                }
-            })
+            }
+        })
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {

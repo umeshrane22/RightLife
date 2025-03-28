@@ -9,12 +9,11 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-
 import com.example.rlapp.ai_package.ui.eatright.model.CalendarSummaryModel
 
 class CalendarSummaryAdapter(private val context: Context, private var dataLists: ArrayList<CalendarSummaryModel>,
-                      private var clickPos: Int, private var mealLogListData : CalendarSummaryModel?,
-                      private var isClickView : Boolean, val onMealLogDateItem: (CalendarSummaryModel, Int, Boolean) -> Unit,) :
+                             private var clickPos: Int, private var mealLogListData : CalendarSummaryModel?,
+                             private var isClickView : Boolean, val onMealLogDateItem: (CalendarSummaryModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<CalendarSummaryAdapter.ViewHolder>() {
 
     private var selectedItem = -1

@@ -21,14 +21,14 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         val btnProceed = view.findViewById<LinearLayout>(R.id.btn_proceed)
 
         btnProceed.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val snapMealFragment = SnapMealDescFragment()
-                val args = Bundle()
-                snapMealFragment.arguments = args
-                replace(R.id.flFragment, snapMealFragment, "Steps")
-                addToBackStack(null)
-                commit()
-            }
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    val snapMealFragment = SnapMealDescFragment()
+                    val args = Bundle()
+                    snapMealFragment.arguments = args
+                    replace(R.id.flFragment, snapMealFragment, "Steps")
+                    addToBackStack(null)
+                    commit()
+                }
         }
 
     }

@@ -24,7 +24,7 @@ import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.model.YourActivityLogMeal
 import com.example.rlapp.ai_package.ui.adapter.YourActivitiesListAdapter
-import com.example.rlapp.ai_package.ui.home.HomeFragment
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentYourActivityBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -52,6 +52,10 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             false,
             ::onMealLogDateItem
         )
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -91,7 +95,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val fragment = HomeFragment()
+                    val fragment = HomeBottomTabFragment()
                     val args = Bundle()
 
                     fragment.arguments = args
@@ -131,10 +135,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
     private fun showTooltipsSequentially() {
         Handler(Looper.getMainLooper()).postDelayed({
-            showTooltipDialogSync(
-                activitySync,
-                "You can sync to apple \n health / google health \n from here."
-            )
+            showTooltipDialogSync(activitySync, "You can sync to apple \n health / google health \n from here.")
         }, 1000)
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -180,7 +181,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             dialog.dismiss()
         }, 3000)
     }
-
     private fun showTooltipDialogSync(anchorView: View, tooltipText: String) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -221,6 +221,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
 
+
     private fun onMealLogDateItemRefresh() {
         val mealLogs = listOf(
             YourActivityLogMeal("01", "M", true),
@@ -238,11 +239,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         mealLogDateAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogDateItem(
-        mealLogDateModel: YourActivityLogMeal,
-        position: Int,
-        isRefresh: Boolean
-    ) {
+    private fun onMealLogDateItem(mealLogDateModel: YourActivityLogMeal, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
             YourActivityLogMeal("01", "M", true),
             YourActivityLogMeal("02", "T", false),

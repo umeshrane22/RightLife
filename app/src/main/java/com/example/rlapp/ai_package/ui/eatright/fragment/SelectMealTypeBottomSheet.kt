@@ -16,12 +16,16 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
 
-    private lateinit var layoutBreakfast: LinearLayoutCompat
-    private lateinit var layoutMorningSnack: LinearLayoutCompat
-    private lateinit var layoutLunch: LinearLayoutCompat
-    private lateinit var layoutEveningSnacks: LinearLayoutCompat
-    private lateinit var layoutDinner: LinearLayoutCompat
+    private lateinit var layoutBreakfast : LinearLayoutCompat
+    private lateinit var layoutMorningSnack : LinearLayoutCompat
+    private lateinit var layoutLunch : LinearLayoutCompat
+    private lateinit var layoutEveningSnacks : LinearLayoutCompat
+    private lateinit var layoutDinner : LinearLayoutCompat
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,7 +72,7 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun callTabMealFragment() {
+    private fun callTabMealFragment(){
         val fragment = HomeTabMealFragment()
         val args = Bundle()
         fragment.arguments = args
@@ -81,7 +85,6 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "LoggedBottomSheet"
-
         @JvmStatic
         fun newInstance() = SelectMealTypeBottomSheet().apply {
             arguments = Bundle().apply {

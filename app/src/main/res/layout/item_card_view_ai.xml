@@ -55,6 +55,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/duration_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -109,6 +110,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/calories_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -163,6 +165,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:id="@+id/avg_heart_rate_text_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"

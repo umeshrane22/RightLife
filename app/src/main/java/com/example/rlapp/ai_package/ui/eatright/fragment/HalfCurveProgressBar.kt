@@ -15,14 +15,14 @@ class HalfCurveProgressBar @JvmOverloads constructor(
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 20f
-        color = Color.LTGRAY // Background arc color
+        color = Color.LTGRAY
         strokeCap = Paint.Cap.ROUND
     }
 
     private val progressPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 20f
-        color = resources.getColor(R.color.border_green) // Green progress arc color
+        color = resources.getColor(R.color.border_green)
         strokeCap = Paint.Cap.ROUND
     }
 
@@ -47,34 +47,23 @@ class HalfCurveProgressBar @JvmOverloads constructor(
     }
 
     private val rectF = RectF()
-
-    // Progress values
     private var currentValue: Int = 2285
     private var maxValue: Int = 2000
     private var progress: Float = 0f
     private var animatedProgress: Float = 0f
-
-    // Arc dimensions
     private val startAngle = 150f
     private val sweepAngleMax = 240f
+    private val arcRadiusDp = 130f
 
     init {
-        val typedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.HalfCurveProgressBar, defStyleAttr, 0)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.HalfCurveProgressBar, defStyleAttr, 0)
         currentValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_currentValue, 2285)
         maxValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_maxValue, 2000)
-        backgroundPaint.color =
-            typedArray.getColor(R.styleable.HalfCurveProgressBar_backgroundColor, Color.LTGRAY)
-        progressPaint.color = typedArray.getColor(
-            R.styleable.HalfCurveProgressBar_progressColor,
-            resources.getColor(R.color.border_green)
-        )
-        backgroundPaint.strokeWidth =
-            typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 20f)
-        progressPaint.strokeWidth =
-            typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 20f)
-        textPaintMain.textSize =
-            typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 70f)
+        backgroundPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_backgroundColor, Color.LTGRAY)
+        progressPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_progressColor, resources.getColor(R.color.border_green))
+        backgroundPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
+        progressPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
+        textPaintMain.textSize = typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 70f)
         typedArray.recycle()
 
         updateProgress()
@@ -102,12 +91,13 @@ class HalfCurveProgressBar @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val density = resources.displayMetrics.density
-        val desiredWidth = (300 * density).toInt() // Default width
-        val desiredHeight = (150 * density).toInt() // Fixed height of 150dp
-
+        val arcRadius = arcRadiusDp * density
+        val arcDiameter = 2 * arcRadius
+        val strokeWidth = backgroundPaint.strokeWidth
+        val desiredWidth = ((arcDiameter + strokeWidth) + 0f).toInt()
+        val desiredHeight = (arcRadius + strokeWidth + 100f).toInt()
         val width = resolveSize(desiredWidth, widthMeasureSpec)
         val height = resolveSize(desiredHeight, heightMeasureSpec)
-
         setMeasuredDimension(width, height)
     }
 
@@ -117,11 +107,12 @@ class HalfCurveProgressBar @JvmOverloads constructor(
         val width = width.toFloat()
         val height = height.toFloat()
         val centerX = width / 2f
-        val paddingTop = 20f // Adjust this value to set padding from the top
-        val centerY = (height / 2f) + paddingTop // Move the progress bar down
+        val density = resources.displayMetrics.density
+        val radius = arcRadiusDp * density
+        val paddingTop = 20f // Padding from the top
+        val centerY = radius + paddingTop + backgroundPaint.strokeWidth / 2 // Center the arc vertically
 
-        val radius = (width.coerceAtMost(height) / 2f) - 40f
-
+        // Set the RectF for the arc
         rectF.set(
             centerX - radius,
             centerY - radius,
@@ -129,17 +120,20 @@ class HalfCurveProgressBar @JvmOverloads constructor(
             centerY + radius
         )
 
+        // Draw the background arc
         canvas.drawArc(rectF, startAngle, sweepAngleMax, false, backgroundPaint)
 
+        // Draw the progress arc
         val sweepAngle = (animatedProgress / 100f) * sweepAngleMax
         canvas.drawArc(rectF, startAngle, sweepAngle, false, progressPaint)
 
+        // Draw the text (adjust positions based on the new centerY)
         drawMainText(canvas, centerX, centerY)
-        drawLabel(canvas, centerX, centerY + 40f + 30f)
+        drawLabel(canvas, centerX, centerY + radius / 2 + 40f + 30f)
     }
 
     private fun drawMainText(canvas: Canvas, centerX: Float, centerY: Float) {
-        val textY = centerY - 20f
+        val textY = centerY - 40f // Adjusted to move the text up due to larger arc
         canvas.drawText("$currentValue", centerX, textY, textPaintMain)
         canvas.drawText("/ $maxValue KCal", centerX, textY + 40f, textPaintSecondary)
     }

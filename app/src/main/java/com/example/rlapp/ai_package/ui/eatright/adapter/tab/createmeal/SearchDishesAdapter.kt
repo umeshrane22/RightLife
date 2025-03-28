@@ -9,12 +9,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.bumptech.glide.Glide
+import com.example.rlapp.ai_package.model.RecipeList
 
-import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
-
-class SearchDishesAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                          private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                          private var isClickView : Boolean, val onSearchDishItem: (MyMealModel, Int, Boolean) -> Unit) :
+class SearchDishesAdapter(private val context: Context, private var dataLists: ArrayList<RecipeList>,
+                          private var clickPos: Int, private var mealLogListData : RecipeList?,
+                          private var isClickView : Boolean, val onSearchDishItem: (RecipeList, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<SearchDishesAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -27,37 +27,12 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.dishName.text = item.mealName
-//        if (item.status == true) {
-//            holder.circleStatus.setImageResource(R.drawable.circle_check)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.dark_green_meal_bg)
-//                    holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.white))
-//                    holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.white))
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                    holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//                    holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//                }
-//            }
-//        }else{
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_uncheck)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.dark_green_meal_bg)
-//                    holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.white))
-//                    holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.white))
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                    holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//                    holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//                }
-//            }
-//        }
-
+        holder.dishName.text = item.name
+        Glide.with(context)
+            .load(item.image)
+            .placeholder(R.drawable.ic_breakfast)
+            .error(R.drawable.ic_breakfast)
+            .into(holder.dishImage)
         holder.layoutMain.setOnClickListener {
             onSearchDishItem(item, position, true)
         }
@@ -75,7 +50,7 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
          val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
      }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<RecipeList>?, pos: Int, mealLogItem : RecipeList?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -83,6 +58,11 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
             mealLogListData = mealLogItem
             isClickView = isClick
         }
+        notifyDataSetChanged()
+    }
+
+    fun updateList(newList: List<RecipeList>) {
+        dataLists = newList as ArrayList<RecipeList>
         notifyDataSetChanged()
     }
 }

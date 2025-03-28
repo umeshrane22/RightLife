@@ -16,3 +16,6 @@ data class HeartRateDataWorkout(
 
     val trendData: ArrayList<String> = ArrayList() // Default to empty list; can be populated later
 ) : Serializable
+
+
+

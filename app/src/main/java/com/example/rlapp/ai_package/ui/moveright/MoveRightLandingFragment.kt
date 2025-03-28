@@ -1,5 +1,8 @@
 package com.example.rlapp.ai_package.ui.moveright
 
+import android.app.ProgressDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -20,14 +23,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.DistanceRecord
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.SpeedRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
-import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
@@ -36,15 +32,21 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.model.CardItem
 import com.example.rlapp.ai_package.model.GridItem
 import com.example.rlapp.ai_package.ui.adapter.CarouselAdapter
 import com.example.rlapp.ai_package.ui.adapter.GridAdapter
+import com.example.rlapp.ai_package.ui.eatright.fragment.HalfCurveProgressBar
 import com.example.rlapp.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.example.rlapp.ai_package.ui.moveright.graphs.LineGrapghViewSteps
 import com.example.rlapp.ai_package.ui.sleepright.fragment.SleepRightLandingFragment
+import com.example.rlapp.ai_package.utils.AppPreference
 import com.example.rlapp.databinding.FragmentLandingBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.math.abs
@@ -60,8 +62,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var tvBurnValue: TextView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var stepsTv: TextView
+    private lateinit var progressDialog: ProgressDialog
+    private lateinit var appPreference: AppPreference
+   // private lateinit var progressBar: HalfCurveProgressBar
 
-    //    // Define all required read permissions
+    // Define all required read permissions
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
@@ -76,77 +81,78 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLandingBinding
         get() = FragmentLandingBinding::inflate
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        appPreference = AppPreference(requireContext())
+    }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val workoutImageicon = view.findViewById<ImageView>(R.id.workout_forward_icon)
-        val activityFactorImageicon = view.findViewById<ImageView>(R.id.activity_forward_icon)
-        val logmealbutton = view.findViewById<ConstraintLayout>(R.id.log_meal_button)
-        val layoutAddWorkout = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
+        appPreference = AppPreference(requireContext())
+        progressDialog = ProgressDialog(activity)
+        progressDialog.setTitle("Loading")
+        progressDialog.setCancelable(false)
+
+        // Initialize UI components
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         tvBurnValue = view.findViewById(R.id.textViewBurnValue)
-        val cardItems = listOf(
-            CardItem("Functional Strength Training", "This is the first card."),
-            CardItem("Functional Strength Training", "This is the second card."),
-            CardItem("Functional Strength Training", "This is the third card.")
-        )
-        val adapter = CarouselAdapter(cardItems) { cardItem, position ->
-            navigateToFragment(WorkoutAnalyticsFragment(), "workoutanaysisFragment")
-        }
-        carouselViewPager.adapter = adapter
-        addDotsIndicator(cardItems.size)
-        carouselViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                updateDots(position)
-            }
-        })
-        carouselViewPager.setPageTransformer { page, position ->
-            val offset = abs(position)
-            page.scaleY = 1 - (offset * 0.1f)
-        }
+        stepLineGraphView = view.findViewById(R.id.line_graph_steps)
+        stepsTv = view.findViewById(R.id.steps_text)
+       // progressBar = view.findViewById(R.id.progressBarCalories)
 
-        if (isSamsungDevice()) {
-            println("This is a Samsung device.")
-        } else {
-            println("This is NOT a Samsung device.")
-            // Initialize Health Connect Client
-            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-            lifecycleScope.launch {
-                requestPermissionsAndReadSteps()
-            }
-        }
+        // Fetch workout data and set up the carousel
+        fetchUserWorkouts()
 
-        workoutImageicon.setOnClickListener {
+        // Set up click listeners
+        val workoutImageIcon = view.findViewById<ImageView>(R.id.workout_forward_icon)
+        val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
+        val logMealButton = view.findViewById<ConstraintLayout>(R.id.log_meal_button)
+        val layoutAddWorkout = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
+
+        workoutImageIcon.setOnClickListener {
             navigateToFragment(YourActivityFragment(), "YourActivityFragment")
         }
 
         layoutAddWorkout.setOnClickListener {
             navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
-        activityFactorImageicon.setOnClickListener {
+
+        activityFactorImageIcon.setOnClickListener {
             // Add click listener if needed
         }
 
-        logmealbutton.setOnClickListener {
+        logMealButton.setOnClickListener {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
-        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
+
+        // Set up Health Connect
+        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+            lifecycleScope.launch {
+                requestPermissionsAndReadSteps()
+            }
+        } else {
+            Toast.makeText(context, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+        }
+
+        // Set up progress bar layout
+        val progressBarSteps = view.findViewById<ProgressBar>(R.id.progressBar)
         val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
         val transparentOverlay = view.findViewById<View>(R.id.transparentOverlay)
         val belowTransparent = view.findViewById<ImageView>(R.id.imageViewBelowOverlay)
         val progressBarLayout = view.findViewById<ConstraintLayout>(R.id.progressBarLayout)
-        stepLineGraphView = view.findViewById<LineGrapghViewSteps>(R.id.line_graph_steps)
-        stepsTv = view.findViewById(R.id.steps_text)
 
-        progressBar.viewTreeObserver.addOnGlobalLayoutListener(object :
+        progressBarSteps.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
-                progressBar.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val progressBarWidth = progressBar.width.toFloat()
+                progressBarSteps.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val progressBarWidth = progressBarSteps.width.toFloat()
                 val overlayPositionPercentage = 0.6f
-                val progress = progressBar.progress
-                val max = progressBar.max
+                val progress = progressBarSteps.progress
+                val max = progressBarSteps.max
                 val progressPercentage = progress.toFloat() / max
                 println("Progress Percentage: $progressPercentage")
                 val constraintSet = ConstraintSet()
@@ -157,6 +163,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         })
 
+        // Set up grid RecyclerView
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         val items = listOf(
             GridItem("RHR", R.drawable.rhr_icon, "bpm", "64"),
@@ -170,18 +177,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 "RHR" -> {
                     navigateToFragment(AverageHeartRateFragment(), "AverageHeartRateFragment")
                 }
-
                 "Avg HR" -> {
                     navigateToFragment(RestingHeartRateFragment(), "RestingHeartRateFragment")
                 }
-
                 "HRV" -> {
-                    navigateToFragment(
-                        HeartRateVariabilityFragment(),
-                        "HeartRateVariabilityFragment"
-                    )
+                    navigateToFragment(HeartRateVariabilityFragment(), "HeartRateVariabilityFragment")
                 }
-
                 "Burn" -> {
                     navigateToFragment(BurnFragment(), "BurnFragment")
                 }
@@ -190,6 +191,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.adapter = adapter1
 
+        // Set up step line graph (placeholder data)
         val todaySteps = floatArrayOf(100f, 200f, 100f, 300f, 50f, 400f, 100f)
         val averageSteps = floatArrayOf(150f, 250f, 350f, 450f, 550f, 650f, 750f)
         val goalSteps = floatArrayOf(700f, 700f, 700f, 700f, 700f, 700f, 700f)
@@ -198,6 +200,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         stepLineGraphView.addDataSet(goalSteps, 0xFF03B27B.toInt())
         stepLineGraphView.invalidate()
 
+        // Handle back press
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -209,6 +212,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     private fun addDotsIndicator(count: Int) {
         dots = arrayOfNulls(count)
+        dotsLayout.removeAllViews()
         for (i in 0 until count) {
             dots[i] = ImageView(requireContext()).apply {
                 setImageDrawable(
@@ -273,10 +277,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     private suspend fun retrieveStepsData() {
         try {
-            // Set the date range for the query (last 7 days)
             val endTime = Instant.now()
             val startTime = endTime.minusSeconds(24 * 60 * 60)
-            // Read steps data within the specified time range
             val response = healthConnectClient.readRecords(
                 ReadRecordsRequest(
                     recordType = StepsRecord::class,
@@ -284,8 +286,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
             )
             stepsRecord = response.records
-            // Process and print the retrieved steps data
-
             for (record in response.records) {
                 val startDateTime = record.startTime.atZone(ZoneId.systemDefault())
                 val endDateTime = record.endTime.atZone(ZoneId.systemDefault())
@@ -315,8 +315,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     private suspend fun fetchActiveCaloriesBurned() {
         val timeRangeFilter = TimeRangeFilter.between(
-            Instant.now().minusSeconds(24 * 60 * 60),  // 24 hours ago
-            Instant.now()  // Now
+            Instant.now().minusSeconds(24 * 60 * 60),
+            Instant.now()
         )
         val response = healthConnectClient.readRecords(
             ReadRecordsRequest(
@@ -335,19 +335,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     private suspend fun fetchHeartRateData() {
-        //   val healthConnectClient = HealthConnectClient.getOrCreate(context)
-        // Define the time range (e.g., past 7 days)
         val endTime = Instant.now()
         val startTime = endTime.minusSeconds(7 * 24 * 60 * 60)
-        // Read steps data within the specified time range
-        // Query for HeartRateRecord
         val response = healthConnectClient.readRecords(
             ReadRecordsRequest(
                 recordType = HeartRateRecord::class,
                 timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
             )
         )
-        // Handle the retrieved heart rate records
         for (record in response.records) {
             Log.d(
                 "HeartRateRecord",
@@ -359,28 +354,138 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     private fun fillFloatArrayFromSteps(stepsRecords: List<StepsRecord>): FloatArray {
         return FloatArray(stepsRecords.size) { index ->
-            stepsRecords[index].count.toFloat()  // Accessing step count and converting to Float
+            stepsRecords[index].count.toFloat()
         }
     }
 
     private suspend fun fetchTodaySteps(healthConnectClient: HealthConnectClient): Long {
-        // Define time range for the past 24 hours
         val endTime = Instant.now()
         val startTime = endTime.minusSeconds(24 * 60 * 60)
-
-        // Try fetching the steps data within the specified time range
         val response = healthConnectClient.readRecords(
             ReadRecordsRequest(
                 recordType = StepsRecord::class,
                 timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
             )
         )
-        // Calculate total step count by summing all the steps from the retrieved records
         val totalSteps = response.records.sumOf { it.count }
         return totalSteps
     }
 
     fun isSamsungDevice(): Boolean {
         return Build.MANUFACTURER.equals("Samsung", ignoreCase = true)
+    }
+
+    private fun fetchUserWorkouts() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.getUserWorkouts(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    startDate = "2025-03-17",
+                    endDate = "2025-03-25",
+                    page = 1,
+                    limit = 10
+                )
+
+                if (response.isSuccessful) {
+                    val workouts = response.body()
+                    workouts?.let {
+                        // Calculate total calories burned from synced and unsynced workouts
+                        val totalSyncedCalories = it.syncedWorkouts.sumOf { workout ->
+                            workout.caloriesBurned.toIntOrNull() ?: 0
+                        }
+                        val totalUnsyncedCalories = it.unsyncedWorkouts.sumOf { it.caloriesBurned }
+                        val totalCalories = totalSyncedCalories + totalUnsyncedCalories
+
+                        // Convert synced_workouts to a list of CardItem objects
+                        val cardItems = it.syncedWorkouts.map { workout ->
+                            // Calculate duration in "X hr Y mins" format
+                            val durationMinutes = workout.duration.toIntOrNull() ?: 0
+                            val hours = durationMinutes / 60
+                            val minutes = durationMinutes % 60
+                            val durationText = if (hours > 0) {
+                                "$hours hr ${minutes.toString().padStart(2, '0')} mins"
+                            } else {
+                                "$minutes mins"
+                            }
+
+                            // Calories burned
+                            val caloriesText = "${workout.caloriesBurned} cal"
+
+                            // Calculate average heart rate
+                            val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
+                                val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
+                                val count = workout.heartRateData.size
+                                (totalHeartRate / count).toString() + " bpm"
+                            } else {
+                                "N/A"
+                            }
+
+                            // Optionally populate trendData for each HeartRateData (placeholder logic)
+                            workout.heartRateData.forEach { heartRateData ->
+                                heartRateData.trendData.addAll(
+                                    listOf("110", "112", "115", "118", "120", "122", "125")
+                                )
+                            }
+
+                            CardItem(
+                                title = workout.workoutType,
+                                duration = durationText,
+                                caloriesBurned = caloriesText,
+                                avgHeartRate = avgHeartRate,
+                                heartRateData = workout.heartRateData
+
+                            )
+                        }
+
+                        // Update the UI on the main thread
+                        withContext(Dispatchers.Main) {
+                            // Set the progress bar values
+                            val maxCalories = 3000
+                            //progressBar.setValues(totalCalories, maxCalories)
+
+                            // Animate the progress
+                            val progressPercentage = (totalCalories.toFloat() / maxCalories.toFloat() * 100f).coerceIn(0f, 100f)
+                            //progressBar.setProgress(progressPercentage)
+
+                            // Set up the carousel
+                            val adapter = CarouselAdapter(cardItems) { cardItem, position ->
+                                val fragment = WorkoutAnalyticsFragment().apply {
+                                    arguments = Bundle().apply {
+                                        putSerializable("cardItem", cardItem) // Use putSerializable() instead of putParcelable()
+                                    }
+                                }
+                                // Perform the fragment transaction directly
+                                requireActivity().supportFragmentManager.beginTransaction().apply {
+                                    replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
+                                    addToBackStack(null)
+                                    commit()
+                                }
+                            }
+                            carouselViewPager.adapter = adapter
+                            addDotsIndicator(cardItems.size)
+                            carouselViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                                override fun onPageSelected(position: Int) {
+                                    updateDots(position)
+                                }
+                            })
+                            carouselViewPager.setPageTransformer { page, position ->
+                                val offset = abs(position)
+                                page.scaleY = 1 - (offset * 0.1f)
+                            }
+                        }
+                    }
+                } else {
+                    // Handle error response
+                    withContext(Dispatchers.Main) {
+                        println("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Exception: ${e.message}")
+                }
+            }
+        }
     }
 }

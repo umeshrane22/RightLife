@@ -15,8 +15,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.data.repository.ApiClient
+import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.model.WorkoutList
 import com.example.rlapp.ai_package.model.WorkoutResponseModel
 import com.example.rlapp.ai_package.ui.adapter.WorkoutAdapter
@@ -36,7 +36,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private val workoutViewModel: WorkoutViewModel by activityViewModels()
     private lateinit var searchResultTextView: TextView
     private lateinit var searchResultView: View
-    private var workoutList: ArrayList<WorkoutList> = ArrayList()
+    private var workoutList : ArrayList<WorkoutList> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
         get() = FragmentAllWorkoutBinding::inflate
@@ -45,13 +45,11 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         super.onActivityCreated(savedInstanceState)
         appPreference = AppPreference(requireContext())
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
 
-                }
-            })
+            }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -97,14 +95,10 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
     private fun getWorkoutList() {
         val userId = appPreference.getUserId().toString()
-        val token =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjc4NTFmZTQ3MTZkOGQ0ZmQyZDhkNzEzIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVFAxQS4yMjA5MDUuMDAxIiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzM3MDE1Nzk5LCJleHAiOjE3NTI3NDA1OTl9.kNSe36d1dnlPrho7rxs7wKpAR6wwa9ToTguSJtifkmU"
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjc4NTFmZTQ3MTZkOGQ0ZmQyZDhkNzEzIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVFAxQS4yMjA5MDUuMDAxIiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzM3MDE1Nzk5LCJleHAiOjE3NTI3NDA1OTl9.kNSe36d1dnlPrho7rxs7wKpAR6wwa9ToTguSJtifkmU"
         val call = ApiClient.apiService.getWorkoutList(token)
         call.enqueue(object : Callback<WorkoutResponseModel> {
-            override fun onResponse(
-                call: Call<WorkoutResponseModel>,
-                response: Response<WorkoutResponseModel>
-            ) {
+            override fun onResponse(call: Call<WorkoutResponseModel>, response: Response<WorkoutResponseModel>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     val workoutLists = response.body()?.data ?: emptyList()
@@ -124,7 +118,6 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
                     progressDialog.dismiss()
                 }
             }
-
             override fun onFailure(call: Call<WorkoutResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
