@@ -814,6 +814,7 @@
                                 android:paddingStart="8dp" />
 
                             <ImageView
+                                android:id="@+id/ivSetting"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/white_bg_setting_icon" />
@@ -1431,6 +1432,7 @@
                         android:orientation="vertical">
 
                         <LinearLayout
+                            android:id="@+id/llGAD7"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -1463,6 +1465,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llDASS21"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
@@ -1504,6 +1507,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llOHQ"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"

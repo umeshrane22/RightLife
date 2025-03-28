@@ -1,11 +1,13 @@
 package com.example.rlapp.ai_package.ui.thinkright.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,11 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.model.CardItem
-import com.example.rlapp.ai_package.ui.thinkright.adapter.CrousalTabAdapter
 import com.example.rlapp.ai_package.ui.thinkright.adapter.MoreToolsAdapter
 import com.example.rlapp.ai_package.ui.thinkright.adapter.ToolsAdapter
 import com.example.rlapp.databinding.FragmentThinkRightLandingBinding
+import com.example.rlapp.ui.affirmation.PractiseAffirmationPlaylistActivity
+import com.example.rlapp.ui.affirmation.TodaysAffirmationActivity
+import com.example.rlapp.ui.breathwork.BreathworkActivity
+import com.example.rlapp.ui.jounal.new_journal.JournalListActivity
+import com.example.rlapp.ui.jounal.new_journal.JournalNewActivity
+import com.example.rlapp.ui.mindaudit.MASuggestedAssessmentActivity
+import com.example.rlapp.ui.mindaudit.MindAuditActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlin.math.abs
 
@@ -26,11 +33,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var carouselViewPager: ViewPager2
     private lateinit var dotsLayout: LinearLayout
     private lateinit var dots: Array<ImageView?>
-    private lateinit var toolsRecyclerView : RecyclerView
-    private lateinit var journalingRecyclerView : RecyclerView
-    private val toolsAdapter by lazy { ToolsAdapter(requireContext(),3) }
+    private lateinit var toolsRecyclerView: RecyclerView
+    private lateinit var journalingRecyclerView: RecyclerView
+    private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
 
-    private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(),4) }
+    private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -42,7 +49,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         carouselViewPager = view.findViewById(R.id.viewPager)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         toolsRecyclerView = view.findViewById(R.id.rec_journaling_tools)
-        toolsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL,false)
+        toolsRecyclerView.layoutManager =
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         toolsRecyclerView.adapter = toolsAdapter
 
         journalingRecyclerView = view.findViewById(R.id.rec_add_tools)
@@ -67,13 +75,62 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             page.scaleY = 1 - (offset * 0.1f)
         }
 
+        view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
+            startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
+        }
+        view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
+            startActivity(Intent(requireContext(), JournalListActivity::class.java))
+        }
+        view.findViewById<LinearLayout>(R.id.lyt_add_new).setOnClickListener {
+            startActivity(Intent(requireContext(), JournalNewActivity::class.java))
+        }
+        view.findViewById<LinearLayout>(R.id.lyt_breathing).setOnClickListener {
+            startActivity(Intent(requireContext(), BreathworkActivity::class.java))
+        }
+        view.findViewById<ConstraintLayout>(R.id.lyt_top_header).setOnClickListener {
+            startActivity(Intent(requireContext(), MindAuditActivity::class.java))
+        }
+        view.findViewById<ImageView>(R.id.ivSetting).setOnClickListener {
+            startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+        }
+        view.findViewById<LinearLayout>(R.id.llGAD7).setOnClickListener {
+            startActivity(Intent(
+                requireContext(),
+                MASuggestedAssessmentActivity::class.java
+            ).apply {
+                putExtra("SelectedAssessment", "GAD-7")
+            })
+        }
+        view.findViewById<LinearLayout>(R.id.llDASS21).setOnClickListener {
+            startActivity(Intent(
+                requireContext(),
+                MASuggestedAssessmentActivity::class.java
+            ).apply {
+                putExtra("SelectedAssessment", "DASS-21")
+            })
+        }
+        view.findViewById<LinearLayout>(R.id.llOHQ).setOnClickListener {
+            startActivity(Intent(
+                requireContext(),
+                MASuggestedAssessmentActivity::class.java
+            ).apply {
+                putExtra("SelectedAssessment", "OHQ")
+            })
+        }
+
+
     }
 
     private fun addDotsIndicator(count: Int) {
         dots = arrayOfNulls(count)
         for (i in 0 until count) {
             dots[i] = ImageView(requireContext()).apply {
-                setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.dot_unselected))
+                setImageDrawable(
+                    ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.dot_unselected
+                    )
+                )
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT

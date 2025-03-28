@@ -1,5 +1,6 @@
 package com.example.rlapp.ai_package.ui.sleepright.fragment
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -9,12 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentSleepRightLandingBinding
+import com.example.rlapp.ui.NewSleepSounds.NewSleepSoundActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -214,6 +217,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         sleepStagesView.setSleepData(sleepData)
 
+        view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
+            startActivity(Intent(requireContext(),NewSleepSoundActivity::class.java).apply {
+                putExtra("PlayList","PlayList")
+            })
+        }
     }
 
     private fun setupBarChart(barChart: BarChart) {
