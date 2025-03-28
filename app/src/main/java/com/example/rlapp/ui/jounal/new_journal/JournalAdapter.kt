@@ -38,7 +38,7 @@ class JournalAdapter(
 
             //imageViewAdd.imageTintList = Utils.getColorStateListFromColorCode("FD6967")
 
-            container.backgroundTintList = Utils.getColorStateListFromColorCode(item.color)
+            //container.backgroundTintList = Utils.getColorStateListFromColorCode(item.color)
 
             Glide.with(imageView.context)
                 .load(ApiClient.CDN_URL_QA + item.image)

@@ -81,31 +81,38 @@ class HomeDashboardActivity : AppCompatActivity() {
         updateMenuSelection(R.id.menu_home)
 
         // Handle FAB click
-        binding.fab.backgroundTintList = ContextCompat.getColorStateList(this, android.R.color.white)
+        binding.fab.backgroundTintList =
+            ContextCompat.getColorStateList(this, android.R.color.white)
         binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
         binding.fab.setOnClickListener {
             /*val bottomSheetFragment = BottomSheetFragment()
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)*/
-            binding.fab.animate().rotationBy(180f).setDuration(60).setInterpolator(DecelerateInterpolator()).withEndAction {
-                // Change icon after rotation
-                if (isAdd) {
-                    binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black)  // Change to close icon
-                    binding.fab.backgroundTintList = ContextCompat.getColorStateList(this, R.color.rightlife)
-                    binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
-                } else {
-                    binding.fab.setImageResource(R.drawable.icon_quicklink_plus)    // Change back to add icon
-                    binding.fab.backgroundTintList = ContextCompat.getColorStateList(this, R.color.white)
-                    binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.rightlife))
-                }
-                isAdd = !isAdd  // Toggle the state
-            }.start()
+            binding.fab.animate().rotationBy(180f).setDuration(60)
+                .setInterpolator(DecelerateInterpolator()).withEndAction {
+                    // Change icon after rotation
+                    if (isAdd) {
+                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black)  // Change to close icon
+                        binding.fab.backgroundTintList =
+                            ContextCompat.getColorStateList(this, R.color.rightlife)
+                        binding.fab.imageTintList =
+                            ColorStateList.valueOf(resources.getColor(R.color.black))
+                    } else {
+                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus)    // Change back to add icon
+                        binding.fab.backgroundTintList =
+                            ContextCompat.getColorStateList(this, R.color.white)
+                        binding.fab.imageTintList =
+                            ColorStateList.valueOf(resources.getColor(R.color.rightlife))
+                    }
+                    isAdd = !isAdd  // Toggle the state
+                }.start()
         }
         // Api calls
         getUserDetails("")
 
         binding.progressBarOnboarding.post {
-            val progressPercentage = binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
-            val progressWidth = binding.progressBarOnboarding.width+80
+            val progressPercentage =
+                binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
+            val progressWidth = binding.progressBarOnboarding.width + 80
             val thumbX = (progressPercentage) * progressWidth - binding.progressThumb.width / 2
             binding.progressThumb.translationX = thumbX
             binding.tvWeightlossZone.translationX = thumbX
@@ -132,31 +139,43 @@ class HomeDashboardActivity : AppCompatActivity() {
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
             Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
         }
-    binding.profileImage.setOnClickListener {
+        binding.profileImage.setOnClickListener {
 
-        /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
-            else drawer.closeDrawer(Gravity.RIGHT);*/
-        startActivity(Intent(this@HomeDashboardActivity, ProfileSettingsActivity::class.java))
-    }
+            /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
+                else drawer.closeDrawer(Gravity.RIGHT);*/
+            startActivity(Intent(this@HomeDashboardActivity, ProfileSettingsActivity::class.java))
+        }
 
-        binding.cardMoverightMain.setOnClickListener{
-            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
+        binding.cardMoverightMain.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "MoveRight")
+            })
             Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
-        binding.cardEatright.setOnClickListener{
-            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
+        binding.cardEatright.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "EatRight")
+            })
             Toast.makeText(this, "EatRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
-        binding.cardSleepright.setOnClickListener{
-            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
+        binding.cardSleepright.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "SleepRight")
+            })
             Toast.makeText(this, "SleepRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
-        binding.cardThinkright.setOnClickListener{
-            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
+        binding.cardThinkright.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
+                .apply {
+                    putExtra("ModuleName", "ThinkRight")
+                })
             Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
-        binding.cardMoveright.setOnClickListener{
-            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
+        binding.cardMoveright.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
+                .apply {
+                    putExtra("ModuleName", "MoveRight")
+                })
             Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
 
@@ -184,6 +203,7 @@ class HomeDashboardActivity : AppCompatActivity() {
                 binding.labelHome.setTextColor(ContextCompat.getColor(this, R.color.rightlife))
                 binding.labelHome.setTypeface(null, Typeface.BOLD) // Make text bold
             }
+
             R.id.menu_explore -> {
                 binding.iconExplore.setImageResource(R.drawable.new_explore_selected_svg) // Selected icon
                 binding.labelExplore.setTextColor(ContextCompat.getColor(this, R.color.rightlife))
@@ -234,7 +254,7 @@ class HomeDashboardActivity : AppCompatActivity() {
                             .placeholder(R.drawable.profile_man).error(R.drawable.profile_man)
                             .into(binding.profileImage)
                     }
-                    binding.userName.setText(ResponseObj.userdata.firstName)
+                    binding.userName.text = ResponseObj.userdata.firstName
 
 
                     Log.d(
@@ -248,7 +268,11 @@ class HomeDashboardActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
-                Toast.makeText(this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this@HomeDashboardActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 Log.e("API ERROR", "onFailure: " + t.message)
                 t.printStackTrace() // Print the full stack trace for more details
