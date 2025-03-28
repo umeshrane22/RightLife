@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
+import com.example.rlapp.ai_package.ui.MainAIActivity
 import com.example.rlapp.apimodel.userdata.UserProfileResponse
 import com.example.rlapp.databinding.ActivityHomeDashboardBinding
 import com.example.rlapp.newdashboard.NewHomeFragment.HomeFragment
@@ -139,19 +140,23 @@ class HomeDashboardActivity : AppCompatActivity() {
     }
 
         binding.cardMoverightMain.setOnClickListener{
-            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
             Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardEatright.setOnClickListener{
-            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
             Toast.makeText(this, "EatRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardSleepright.setOnClickListener{
-            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
             Toast.makeText(this, "SleepRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardThinkright.setOnClickListener{
-            //startActivity(Intent(this@HomeDashboardActivity, MoveRightActivity::class.java))
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
+            Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
+        }
+        binding.cardMoveright.setOnClickListener{
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java))
             Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
 
