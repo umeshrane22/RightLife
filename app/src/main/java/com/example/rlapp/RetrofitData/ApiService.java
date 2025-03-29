@@ -20,6 +20,7 @@ import com.example.rlapp.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse;
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategorySoundListResponse;
+import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.NewReleaseResponse;
 import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.SleepSoundPlaylistResponse;
 import com.example.rlapp.ui.SubCategoryResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
@@ -1040,6 +1041,13 @@ public interface ApiService {
     @GET("sleepSound/sleepSoundPlaylist")
     Call<SleepSoundPlaylistResponse> getUserCreatedPlaylist(
             @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("sleepSound")
+    Call<NewReleaseResponse> getNewReleases(
+            @Header("Authorization") String authToken,
+            @Query("type") String type
     );
 
     @Headers("Content-Type: application/json")

@@ -1,6 +1,7 @@
 package com.example.rlapp.ui.NewSleepSounds
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,15 +11,17 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.databinding.ItemHorizontalSongCardBinding
+import com.example.rlapp.databinding.ItemHorrizontalSongCardFullBinding
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.Service
 
-class SleepHorizontalListAdapter(
+class SleepHorizontalListFullAdapter(
     private val soundList: ArrayList<Service>,
+    private val type: String = "SleepSound",
     private val onItemClick: (ArrayList<Service>, position: Int) -> Unit,
     private val onAddToPlaylistClick: (Service, position: Int) -> Unit
-) : RecyclerView.Adapter<SleepHorizontalListAdapter.SoundViewHolder>() {
+) : RecyclerView.Adapter<SleepHorizontalListFullAdapter.SoundViewHolder>() {
 
-    inner class SoundViewHolder(val binding: ItemHorizontalSongCardBinding) :
+    inner class SoundViewHolder(val binding: ItemHorrizontalSongCardFullBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(service: Service) {
             binding.tvItemName.text = service.title
@@ -43,6 +46,10 @@ class SleepHorizontalListAdapter(
                 onItemClick(soundList, adapterPosition)
             }
 
+            if (type == "Playlist") {
+                binding.ivAddPlaylist.visibility = View.GONE
+            }
+
             binding.ivAddPlaylist.setOnClickListener {
                 // 🔥 Handle add to playlist here
                 //   Toast.makeText(binding.root.context, "Added to playlist", Toast.LENGTH_SHORT).show()
@@ -53,7 +60,7 @@ class SleepHorizontalListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SoundViewHolder {
-        val binding = ItemHorizontalSongCardBinding.inflate(
+        val binding = ItemHorrizontalSongCardFullBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return SoundViewHolder(binding)
