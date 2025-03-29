@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.databinding.ActivityNewSleepSoundBinding
@@ -17,6 +16,7 @@ import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.Service
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategory
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategorySoundListResponse
+import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.NewReleaseResponse
 import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.SleepSoundPlaylistResponse
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
@@ -33,8 +33,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
     private var sleepCategoryResponse: SleepCategoryResponse? = null
     private var selectedCategoryForTitle: SleepCategory? = null
     private var sleepSoundPlaylistResponse: SleepSoundPlaylistResponse? = null
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var sleepSoundAdapter: SleepSoundGridAdapter
     private var useplaylistdata: ArrayList<Service> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,19 +42,19 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
         //back button
         binding.iconBack.setOnClickListener {
-            if (binding.layoutVerticalCategoryList.visibility == View.VISIBLE){
-                binding.layoutVerticalCategoryList.visibility == View.GONE
-                binding.layouthorizontalMusicList.visibility == View.VISIBLE
+            if (binding.layoutVerticalCategoryList.visibility == View.VISIBLE) {
+                binding.layoutVerticalCategoryList.visibility = View.GONE
+                binding.layouthorizontalMusicList.visibility = View.VISIBLE
                 binding.recyclerViewHorizontalList.visibility = View.VISIBLE
                 binding.recyclerViewVerticalList.visibility = View.GONE
-                binding.recyclerCategory.visibility = android.view.View.VISIBLE
-                fetchSleepSoundsByCategoryId(categoryList.get(1)._id,true)
-            }else
-            onBackPressedDispatcher.onBackPressed()
+                fetchSleepSoundsByCategoryId(categoryList[1]._id, true)
+            } else
+                onBackPressedDispatcher.onBackPressed()
         }
         setupCategoryRecyclerView()
         fetchCategories()
-        //getUserCreatedPlaylist()
+        getUserCreatedPlaylist()
+        getNewReleases()
     }
 
     private fun setupCategoryRecyclerView() {
@@ -66,7 +64,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
             Log.d("SleepCategory", "Selected: ${selectedCategory.title}")
             Toast.makeText(this, "Selected: ${selectedCategory.title}", Toast.LENGTH_SHORT).show()
             // You can perform an action, like loading content specific to the category!
-            fetchSleepSoundsByCategoryId(selectedCategory._id,false)
+            fetchSleepSoundsByCategoryId(selectedCategory._id, false)
         }
 
         binding.recyclerCategory.apply {
@@ -77,7 +75,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
             )
             adapter = categoryAdapter
         }
-
     }
 
 
@@ -98,7 +95,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
                     categoryList.clear()
                     sleepCategoryResponse?.let { categoryList.addAll(it.data) }
                     categoryAdapter.notifyDataSetChanged()
-                    fetchSleepSoundsByCategoryId(categoryList.get(1)._id,true)
+                    fetchSleepSoundsByCategoryId(categoryList.get(1)._id, true)
                 } else {
                     showToast("Server Error: " + response.code())
                 }
@@ -116,7 +113,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun fetchSleepSoundsByCategoryId(categoryId: String,isForHome: Boolean) {
+    private fun fetchSleepSoundsByCategoryId(categoryId: String, isForHome: Boolean) {
         Utils.showLoader(this)
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
@@ -139,11 +136,11 @@ class NewSleepSoundActivity : AppCompatActivity() {
                     val soundData = response.body()
                     Log.d("SleepSound", "Data: ${soundData?.data?.services}")
                     // Pass soundData.data.services to adapter
-                    if (isForHome){
+                    if (isForHome) {
                         binding.layouthorizontalMusicList.visibility = View.VISIBLE
                         binding.layoutVerticalCategoryList.visibility = View.GONE
                         setupHorizontalRecyclerView(soundData?.data?.services)
-                    }else{
+                    } else {
                         binding.layouthorizontalMusicList.visibility = View.GONE
                         binding.layoutVerticalCategoryList.visibility = View.VISIBLE
                         setupVerticleRecyclerView(soundData?.data?.services)
@@ -182,19 +179,81 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
         }
 
-       // binding.categorytTitle.text = selectedCategoryForTitle?.title
-        //binding.categorytTitle.visibility = android.view.View.VISIBLE
-        //binding.recyclerCategory.visibility = android.view.View.GONE
-        binding.recyclerViewVerticalList.visibility = android.view.View.GONE
-        //binding.categorytTitleDesciption.text = selectedCategoryForTitle?.subtitle
-        //binding.categorytTitleDesciption.visibility = android.view.View.VISIBLE
+        binding.recyclerViewVerticalList.visibility = View.GONE
 
         binding.layoutVerticalCategoryList.visibility = View.GONE
         binding.layouthorizontalMusicList.visibility = View.VISIBLE
         binding.recyclerViewHorizontalList.visibility = View.VISIBLE
 
         binding.recyclerViewHorizontalList.apply {
-            layoutManager = LinearLayoutManager(this@NewSleepSoundActivity,LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(
+                this@NewSleepSoundActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            this.adapter = adapter
+        }
+    }
+
+    private fun setupYourPlayListRecyclerView(services: ArrayList<Service>?) {
+        val adapter = services?.let { serviceList ->
+            SleepHorizontalListFullAdapter(
+                serviceList,
+                "Playlist",
+                onItemClick = { selectedList, position ->
+                    // Handle item click (open player screen)
+                    startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                        putExtra("SOUND_LIST", selectedList)
+                        putExtra("SELECTED_POSITION", position)
+                        putExtra("ISUSERPLAYLIST", true)
+                    })
+                },
+                onAddToPlaylistClick = { service, position ->
+                    // Handle add to playlist click here
+                    //addToPlaylist(service._id, position)
+                    //Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                }
+            )
+
+        }
+
+        binding.recyclerViewPlayList.apply {
+            layoutManager = LinearLayoutManager(
+                this@NewSleepSoundActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+            this.adapter = adapter
+        }
+    }
+
+    private fun setupNewReleaseRecyclerView(services: ArrayList<Service>?) {
+        val adapter = services?.let { serviceList ->
+            SleepHorizontalListFullAdapter(
+                serviceList,
+                onItemClick = { selectedList, position ->
+                    // Handle item click (open player screen)
+                    startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                        putExtra("SOUND_LIST", selectedList)
+                        putExtra("SELECTED_POSITION", position)
+                        putExtra("ISUSERPLAYLIST", false)
+                    })
+                },
+                onAddToPlaylistClick = { service, position ->
+                    // Handle add to playlist click here
+                    addToPlaylist(service._id, position)
+                    Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                }
+            )
+
+        }
+
+        binding.recyclerViewNewRelease.apply {
+            layoutManager = LinearLayoutManager(
+                this@NewSleepSoundActivity,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
             this.adapter = adapter
         }
     }
@@ -222,11 +281,10 @@ class NewSleepSoundActivity : AppCompatActivity() {
         }
 
         binding.categorytTitle.text = selectedCategoryForTitle?.title
-        binding.categorytTitle.visibility = android.view.View.VISIBLE
-        binding.recyclerCategory.visibility = android.view.View.GONE
-        binding.recyclerViewVerticalList.visibility = android.view.View.VISIBLE
+        binding.categorytTitle.visibility = View.VISIBLE
+        binding.recyclerViewVerticalList.visibility = View.VISIBLE
         binding.categorytTitleDesciption.text = selectedCategoryForTitle?.subtitle
-        binding.categorytTitleDesciption.visibility = android.view.View.VISIBLE
+        binding.categorytTitleDesciption.visibility = View.VISIBLE
 
         binding.layoutVerticalCategoryList.visibility = View.VISIBLE
         binding.layouthorizontalMusicList.visibility = View.GONE
@@ -280,18 +338,9 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     sleepSoundPlaylistResponse = response.body()
 
-
                     useplaylistdata = sleepSoundPlaylistResponse?.data as ArrayList<Service>
                     if (sleepSoundPlaylistResponse?.data?.isNotEmpty() == true) {
-                        val intent = Intent(
-                            this@NewSleepSoundActivity,
-                            SleepSoundPlayerActivity::class.java
-                        ).apply {
-                            putExtra("SOUND_LIST", useplaylistdata)
-                            putExtra("SELECTED_POSITION", 0)
-                            putExtra("ISUSERPLAYLIST", true)
-                        }
-                         startActivity(intent)
+                        setupYourPlayListRecyclerView(useplaylistdata)
                     } else {
                         showToast("No playlist data available")
                     }
@@ -301,6 +350,38 @@ class NewSleepSoundActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SleepSoundPlaylistResponse>, t: Throwable) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: " + t.message)
+            }
+
+        })
+    }
+
+    // get New Release from api
+    private fun getNewReleases() {
+        Utils.showLoader(this)
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.getNewReleases(sharedPreferenceManager.accessToken, "recommended")
+
+        call.enqueue(object : Callback<NewReleaseResponse> {
+            override fun onResponse(
+                call: Call<NewReleaseResponse>,
+                response: Response<NewReleaseResponse>
+            ) {
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    if (response.body()?.data?.services?.isNotEmpty() == true) {
+                        setupNewReleaseRecyclerView(response.body()?.data?.services?.let { ArrayList(it) })
+                    } else {
+                        showToast("No Releases data available")
+                        binding.layoutNewRelease.visibility = View.GONE
+                    }
+                } else {
+                    showToast("Server Error: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<NewReleaseResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
                 showToast("Network Error: " + t.message)
             }
