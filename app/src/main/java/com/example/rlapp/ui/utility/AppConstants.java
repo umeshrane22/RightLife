@@ -6,6 +6,11 @@ public class AppConstants {
     public static final String SLEEP_RIGHT = "SleepRight";
     public static final String MOVE_RIGHT = "MoveRight";
 
+    public static final String THINK_RIGHT_MODULEID = "THINK_RIGHT";
+    public static final String EAT_RIGHT_MODULEID = "EAT_RIGHT";
+    public static final String SLEEP_RIGHT_MODULEID = "SLEEP_RIGHT";
+    public static final String MOVE_RIGHT_MODULEID = "MOVE_RIGHT";
+
     public static final String cas = "CAS";
     public static final String dass_21 = "DASS-21";
     public static final String phq_9 = "PHQ-9";

@@ -1076,6 +1076,22 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body QuestionnaireAnswerRequest questionnaireAnswerRequest
     );
+
+
+    //ai_dashboard
+    @Headers("Content-Type: application/json")
+    @GET("ai_dashboard")
+    Call<ResponseBody> getAiDashboard(
+            @Header("Authorization") String authToken
+    );
+    //dashboardChecklist status
+    @Headers("Content-Type: application/json")
+    @GET("user/dashboardChecklist")
+    Call<ResponseBody> getDashboardChecklist(
+            @Header("Authorization") String authToken
+    );
+
+
 }
 
 

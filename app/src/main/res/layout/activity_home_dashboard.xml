@@ -1,5 +1,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="#F7F7F7"
     android:layout_height="match_parent">
@@ -133,12 +134,15 @@
                     android:layout_marginBottom="20dp"
                     android:layout_width="match_parent" />
 
+                <!--main cards-->
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_moveright_main"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/margin_card_16dp">
 
                     <LinearLayout
@@ -378,6 +382,898 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_thinkright_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    app:cardCornerRadius="@dimen/margin_card_16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp">
+
+                            <ImageView
+                                android:id="@+id/iv_module_thinkright_main"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:src="@drawable/ic_db_thinkright" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="ThinkRight"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="@dimen/textsize_large"
+                                android:textColor="@color/color_think_right"
+                                android:layout_toRightOf="@id/iv_module_thinkright_main"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:layout_height="wrap_content"/>
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:src="@drawable/ic_db_report_right_arrow" />
+
+                        </RelativeLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/gray_light_bg" />
+
+                        <TextView
+                            android:id="@+id/tv_mindful_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="Mindfulness Metric"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:textColor="@color/color_think_right"
+                            android:textSize="@dimen/textsize_large" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_marginBottom="10dp"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:orientation="vertical"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:layout_marginBottom="10dp"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_regular"
+                                    android:gravity="center"
+                                    android:text="Mindfulness Minutes"
+                                    android:textColor="@color/color_think_right"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginBottom="10dp"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                                <LinearLayout
+                                    android:layout_width="150dp"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/thinkright"
+                                    android:padding="15dp"
+
+                                    android:layout_height="wrap_content">
+                                    <TextView
+                                        android:id="@+id/tv_minutes_text_value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="1hr 03min"
+                                        android:textColor="@color/color_think_right"
+                                        android:textSize="@dimen/textsize_large24sp" />
+                                    <TextView
+                                        android:id="@+id/tv_practiced_today"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/dmsans_regular"
+                                        android:text="practised today"
+                                        android:layout_margin="5dp"
+                                        android:textColor="@color/color_think_right"
+                                        android:textSize="@dimen/textsize_small" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+                            <View
+                                android:layout_width="1dp"
+                                android:background="@color/gray_light_bg"
+                                android:layout_height="match_parent"/>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:orientation="vertical"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:layout_marginBottom="10dp"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_regular"
+                                    android:gravity="center"
+                                    android:text="Wellness Days"
+                                    android:textColor="@color/color_think_right"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginBottom="10dp"
+                                    android:textSize="@dimen/textsize_medium" />
+
+                                <LinearLayout
+                                    android:layout_width="150dp"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    android:background="@drawable/roundedcornerbutton"
+                                    android:backgroundTint="@color/thinkright"
+                                    android:padding="15dp"
+                                    android:layout_height="wrap_content">
+                                    <TextView
+                                        android:id="@+id/tv_days_text_value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:gravity="center"
+                                        android:text="03 days"
+                                        android:textColor="@color/color_think_right"
+                                        android:textSize="@dimen/textsize_large24sp" />
+                                    <TextView
+                                        android:id="@+id/tv_this_week"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true"
+                                        android:layout_weight="1"
+                                        android:fontFamily="@font/dmsans_regular"
+                                        android:gravity="center"
+                                        android:text="this week"
+                                        android:layout_margin="5dp"
+                                        android:textColor="@color/color_think_right"
+                                        android:textSize="@dimen/textsize_small" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_eatright_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:visibility="gone"
+                    app:cardCornerRadius="@dimen/margin_card_16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp">
+
+                            <ImageView
+                                android:id="@+id/iv_module_eatright_main"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:src="@drawable/ic_db_eatright" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="EatRight"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="@dimen/textsize_large"
+                                android:textColor="@color/color_eat_right"
+                                android:layout_toRightOf="@id/iv_module_eatright_main"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:layout_height="wrap_content"/>
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:src="@drawable/ic_db_report_right_arrow" />
+
+                        </RelativeLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/gray_light_bg" />
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/today_macros_with_data_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="20dp"
+                            app:layout_constraintTop_toBottomOf="@+id/img_macro_arrow"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:text="Today’s Macros"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="@dimen/textsize_large"
+                                android:textColor="@color/color_eat_right"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                android:layout_height="wrap_content"/>
+
+                            <com.example.rlapp.ai_package.ui.eatright.fragment.HalfCurveProgressBar
+                                android:layout_width="match_parent"
+                                android:layout_height="170dp"
+                                android:layout_marginTop="10dp"
+                                android:id="@+id/halfCurveProgressBar"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:layout_centerInParent="true" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/layout_progress_cal_info"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="10dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/halfCurveProgressBar">
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layout_subtraction"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent">
+
+                                    <androidx.appcompat.widget.LinearLayoutCompat
+                                        android:id="@+id/layout_subtraction_cal_value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        android:layout_gravity="left"
+                                        android:orientation="horizontal"
+                                        android:gravity="center"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_marginEnd="10dp">
+
+                                        <ImageView
+                                            android:layout_width="11dp"
+                                            android:layout_height="11dp"
+                                            android:visibility="gone"
+                                            android:scaleType="fitXY"
+                                            android:src="@drawable/ic_carbs" />
+
+                                        <!-- Vertical Layout for TextViews -->
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            >
+
+                                            <TextView
+                                                android:id="@+id/tv_subtraction_cal_value"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="28sp"
+                                                android:fontFamily="@font/dmsans_bold"
+                                                android:textColor="#B50200"
+                                                android:text="95"
+                                                />
+
+                                            <TextView
+                                                android:id="@+id/tv_subtraction_cal_unit"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="12sp"
+                                                android:layout_marginBottom="3dp"
+                                                android:fontFamily="@font/dmsans_regular"
+                                                android:textColor="@color/text_color_kcal"
+                                                android:text="/ 84 g"
+                                                app:layout_constraintBottom_toBottomOf="@+id/tv_subtraction_cal_value"
+                                                app:layout_constraintStart_toEndOf="@+id/tv_subtraction_cal_value"/>
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                                    <RelativeLayout
+                                        android:id="@+id/progressBar_subtractionLayout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginBottom="10dp"
+                                        app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent">
+
+                                        <ProgressBar
+                                            android:id="@+id/carbs_progressBar"
+                                            style="?android:attr/progressBarStyleHorizontal"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="10dp"
+                                            android:progressDrawable="@drawable/progress_bar_subtraction_meal_log"
+                                            android:max="84"
+                                            android:progress="11" />
+
+                                    </RelativeLayout>
+                                    <androidx.appcompat.widget.LinearLayoutCompat
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:orientation="horizontal">
+                                        <ImageView
+                                            android:layout_width="14dp"
+                                            android:layout_height="14dp"
+                                            android:src="@drawable/ic_carbs"
+                                            android:layout_gravity="center_vertical"
+                                            />
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Protien"
+                                            android:textSize="14dp"
+                                            android:layout_marginStart="2dp"/>
+
+                                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layout_baguette"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent">
+
+                                    <androidx.appcompat.widget.LinearLayoutCompat
+                                        android:id="@+id/layout_baguette_cal_value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        android:layout_gravity="left"
+                                        android:orientation="horizontal"
+                                        android:gravity="center"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_marginEnd="10dp">
+
+                                        <ImageView
+                                            android:layout_width="11dp"
+                                            android:layout_height="11dp"
+                                            android:visibility="gone"
+                                            android:scaleType="fitXY"
+                                            android:src="@drawable/ic_carbs" />
+
+                                        <!-- Vertical Layout for TextViews -->
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            >
+
+                                            <TextView
+                                                android:id="@+id/tv_subtraction_carbs_value"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="28sp"
+                                                android:fontFamily="@font/dmsans_regular"
+                                                android:textColor="#B50200"
+                                                android:text="558"
+                                                tools:ignore="MissingConstraints" />
+
+                                            <TextView
+                                                android:id="@+id/tv_subtraction_carbs_unit"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="12sp"
+                                                android:layout_marginBottom="3dp"
+                                                android:fontFamily="@font/dmsans_regular"
+                                                android:textColor="@color/text_color_kcal"
+                                                android:text="/ 500g"
+                                                app:layout_constraintBottom_toBottomOf="@+id/tv_subtraction_carbs_value"
+                                                app:layout_constraintStart_toEndOf="@+id/tv_subtraction_carbs_value"/>
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                    <RelativeLayout
+                                        android:id="@+id/progressBar_baguetteLayout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginBottom="10dp"
+                                        app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent">
+
+                                        <ProgressBar
+                                            android:id="@+id/protien_progressBar"
+                                            style="?android:attr/progressBarStyleHorizontal"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="10dp"
+                                            android:progressDrawable="@drawable/progress_bar_baguette_meal_log"
+                                            android:max="500"
+                                            android:progress="338" />
+                                    </RelativeLayout>
+                                    <androidx.appcompat.widget.LinearLayoutCompat
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:orientation="horizontal">
+                                        <ImageView
+                                            android:layout_width="14dp"
+                                            android:layout_height="14dp"
+                                            android:src="@drawable/ic_proteins"
+                                            android:layout_gravity="center_vertical"
+                                            />
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Carbs"
+                                            android:textSize="14dp"
+                                            android:layout_marginStart="2dp"/>
+
+                                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                <androidx.appcompat.widget.LinearLayoutCompat
+                                    android:id="@+id/layout_dewpoint"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:gravity="center"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent">
+
+                                    <androidx.appcompat.widget.LinearLayoutCompat
+                                        android:id="@+id/layout_baguette_fats_value"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:layout_constraintTop_toTopOf="parent"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        android:layout_gravity="left"
+                                        android:orientation="horizontal"
+                                        android:gravity="center"
+                                        android:layout_marginTop="10dp"
+                                        android:layout_marginStart="10dp"
+                                        android:layout_marginEnd="10dp">
+
+                                        <ImageView
+                                            android:layout_width="11dp"
+                                            android:layout_height="11dp"
+                                            android:visibility="gone"
+                                            android:scaleType="fitXY"
+                                            android:src="@drawable/ic_carbs" />
+
+                                        <!-- Vertical Layout for TextViews -->
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            >
+
+                                            <TextView
+                                                android:id="@+id/tv_subtraction_fats_value"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="28sp"
+                                                android:fontFamily="@font/dmsans_bold"
+                                                android:textColor="#B50200"
+                                                android:text="75" />
+
+                                            <TextView
+                                                android:id="@+id/tv_subtraction_fats_unit"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:textSize="12sp"
+                                                android:layout_marginBottom="3dp"
+                                                android:fontFamily="@font/dmsans_regular"
+                                                android:textColor="@color/text_color_kcal"
+                                                android:text="/ 68 g"
+                                                app:layout_constraintBottom_toBottomOf="@+id/tv_subtraction_fats_value"
+                                                app:layout_constraintStart_toEndOf="@+id/tv_subtraction_fats_value"/>
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                                    <RelativeLayout
+                                        android:id="@+id/progressBar_dewpointLayout"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="5dp"
+                                        android:layout_marginBottom="10dp"
+                                        app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toEndOf="parent">
+
+                                        <ProgressBar
+                                            android:id="@+id/fats_progressBar"
+                                            style="?android:attr/progressBarStyleHorizontal"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="10dp"
+                                            android:progressDrawable="@drawable/progress_bar_dewpoint_meal_log"
+                                            android:max="65"
+                                            android:progress="25" />
+                                    </RelativeLayout>
+                                    <androidx.appcompat.widget.LinearLayoutCompat
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:orientation="horizontal">
+                                        <ImageView
+                                            android:layout_width="14dp"
+                                            android:layout_height="14dp"
+                                            android:src="@drawable/ic_fats"
+                                            android:layout_gravity="center_vertical"
+                                            />
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Fats"
+                                            android:textSize="14dp"
+                                            android:layout_marginStart="2dp"/>
+
+                                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_sleepright_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="4dp"
+                    android:background="@color/white"
+                    app:cardCornerRadius="10dp"
+                    android:paddingBottom="5dp"
+                    android:visibility="gone"
+                    android:layout_marginTop="20dp"
+                    app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:paddingBottom="10dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/balance_icon"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/sleep_smiley_icon"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="13dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:text="Sleep Stages"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:layout_marginStart="6dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
+                            app:layout_constraintStart_toEndOf="@+id/balance_icon" />
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/sleep_right_arrow_btn"
+                            android:id="@+id/img_sleep_right"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="15dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:id="@+id/total_sleep_title"
+                            android:text="Total Sleep:"
+                            android:textSize="16dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/img_sleep_right"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:text="8hr 30 mins"
+                            android:textStyle="bold"
+                            android:textSize="16dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/img_sleep_right"
+                            app:layout_constraintStart_toEndOf="@+id/total_sleep_title" />
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/apple_icon"
+                            android:id="@+id/img_apple_icon"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="20dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/img_sleep_right" />
+
+                        <com.example.rlapp.ai_package.ui.sleepright.fragment.SleepChartViewLanding
+                            android:id="@+id/sleepStagesView"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/img_apple_icon"
+                            android:layout_height="80dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:text="9:00 pm"
+                            android:textSize="12sp"
+                            android:layout_marginStart="6dp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/sleepStagesView"
+                            app:layout_constraintStart_toEndOf="@+id/img_bed_icon" />
+
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:src="@drawable/sleep_bed_mini_icon"
+                            android:id="@+id/img_bed_icon"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="15dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/sleepStagesView" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:text="5:30 am"
+                            android:textSize="12sp"
+                            android:id="@+id/tv_alarm_time"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/sleepStagesView"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:src="@drawable/sleep_clock_mini_icon"
+                            android:id="@+id/img_mini_clock_icon"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="6dp"
+                            app:layout_constraintEnd_toStartOf="@id/tv_alarm_time"
+                            app:layout_constraintTop_toBottomOf="@id/sleepStagesView" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/lyt_top_rem"
+                            app:layout_constraintTop_toBottomOf="@id/img_mini_clock_icon"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:weightSum="2"
+                            android:layout_marginTop="5dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:background="@drawable/white_grey_meal_bg"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginStart="15dp"
+                                    android:src="@drawable/rem_icon" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Rem"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="2 hr 10 mins"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:background="@drawable/white_grey_meal_bg"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="15dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginStart="10dp"
+                                    android:src="@drawable/core_icon" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Core"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="5 hr 20 mins"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/lyt_bottom_rem"
+                            app:layout_constraintTop_toBottomOf="@id/lyt_top_rem"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:weightSum="2"
+                            android:gravity="center"
+                            android:layout_marginTop="5dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical"
+                                android:background="@drawable/white_grey_meal_bg"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginTop="5dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginStart="15dp"
+                                    android:src="@drawable/deep_icon" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Deep"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="40 mins"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:background="@drawable/white_grey_meal_bg"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="15dp"
+                                android:layout_marginTop="5dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginStart="10dp"
+                                    android:src="@drawable/awake_icon" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Awake"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="20 mins"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/black"
+                                    android:layout_marginStart="5dp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintBottom_toBottomOf="parent" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
