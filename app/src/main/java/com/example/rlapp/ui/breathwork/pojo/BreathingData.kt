@@ -1,10 +1,10 @@
-package com.example.rlapp.ui.jounal.new_journal
+package com.example.rlapp.ui.breathwork.pojo
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-class JournalItem : Serializable {
+class BreathingData : Serializable {
     @SerializedName("_id")
     @Expose
     var id: String? = null
@@ -13,21 +13,25 @@ class JournalItem : Serializable {
     @Expose
     var title: String? = null
 
-    @SerializedName("image")
+    @SerializedName("subTitle")
     @Expose
-    var image: String? = null
+    var subTitle: String? = null
 
-    @SerializedName("color")
+    @SerializedName("thumbnail")
     @Expose
-    var color: String? = null
+    var thumbnail: String? = null
 
-    @SerializedName("section")
+    @SerializedName("breathInhaleTime")
     @Expose
-    var section: ArrayList<Section>? = null
+    var breathInhaleTime: String? = null
 
-    @SerializedName("isActive")
+    @SerializedName("breathExhaleTime")
     @Expose
-    var isActive: Boolean? = null
+    var breathExhaleTime: String? = null
+
+    @SerializedName("breathHoldTime")
+    @Expose
+    var breathHoldTime: String? = null
 
     @SerializedName("createdAt")
     @Expose
@@ -41,9 +45,9 @@ class JournalItem : Serializable {
     @Expose
     var v: Int? = null
 
-    @SerializedName("desc")
+    @SerializedName("totalTime")
     @Expose
-    var desc: String? = null
+    var totalTime: String? = null
 
     var isAddedToToolKit: Boolean = false
 }

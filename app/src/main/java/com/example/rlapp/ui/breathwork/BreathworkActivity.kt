@@ -2,16 +2,25 @@ package com.example.rlapp.ui.breathwork
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.rlapp.R
-import com.example.rlapp.newdashboard.HomeDashboardActivity
+import com.example.rlapp.RetrofitData.ApiClient
+import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.databinding.ActivityBreathworkBinding
+import com.example.rlapp.ui.CommonAPICall
+import com.example.rlapp.ui.breathwork.pojo.BreathingData
+import com.example.rlapp.ui.breathwork.pojo.GetBreathingResponse
+import com.example.rlapp.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 class BreathworkActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: BreathworkAdapter
+    private val breathWorks = ArrayList<BreathingData>()
 
     private lateinit var binding: ActivityBreathworkBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,30 +29,65 @@ class BreathworkActivity : AppCompatActivity() {
         binding = ActivityBreathworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        getBreathingWork()
+
         binding.icBackDialog.setOnClickListener {
             finish()
         }
 
         binding.recyclerView.layoutManager = GridLayoutManager(this, 2)
 
-        val items = listOf(
-            BreathworkPattern(1, R.drawable.breathing_equal,
-                BreathingPractice.EQUAL_BREATHING.toString(),"Equal Breathing", "Regulates the nervous system, reduces stress, and improves focus."),
-            BreathworkPattern(2, R.drawable.breathing_box, BreathingPractice.BOX_BREATHING.toString(),"Box Breathing(4-4-4-4)", "Enhances focus, reduces anxiety, and improves emotional regulation."),
-            BreathworkPattern(3, R.drawable.breathing_478, BreathingPractice.FOUR_SEVEN_EIGHT.toString(),"4-7-8 Breathing", "Lowers heart rate, promotes relaxation, and aids in sleep."),
-            BreathworkPattern(4, R.drawable.breathingholdtest, BreathingPractice.ALTERNATE_NOSTRIL.toString(),"Alternate Nostril Breathing (Nadi Shodhana)", "Balances the nervous system, reduces stress, and enhances mental clarity"),
-        )
+        adapter = BreathworkAdapter(breathWorks, object : BreathworkAdapter.OnItemClickListener {
+            override fun onClick(breathingData: BreathingData) {
+                val intent =
+                    Intent(this@BreathworkActivity, BreathworkSessionActivity::class.java).apply {
+                        putExtra("BREATHWORK", breathingData)
+                    }
+                startActivity(intent)
+            }
 
-        adapter = BreathworkAdapter(items) { selectedItem,position ->
-            val intent = Intent(this, BreathworkSessionActivity::class.java)
-            intent.putExtra("ITEM_ID", selectedItem.id)
-            intent.putExtra("ITEM_TITLE", selectedItem.title)
-            intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
-            intent.putExtra("PRACTICE_TYPE", selectedItem.practiceType)
+            override fun onAddToolTip(breathingData: BreathingData) {
+                CommonAPICall.addToToolKit(
+                    this@BreathworkActivity,
+                    breathingData.title,
+                    breathingData.id,
+                    breathingData.subTitle
+                )
+            }
 
-            startActivity(intent)
-        }
+        })
 
         binding.recyclerView.adapter = adapter
+    }
+
+    private fun getBreathingWork() {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        apiService.getBreathingWork(SharedPreferenceManager.getInstance(this).accessToken)
+            .enqueue(object : Callback<GetBreathingResponse> {
+                override fun onResponse(
+                    call: Call<GetBreathingResponse>,
+                    response: Response<GetBreathingResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()?.data?.let { breathWorks.addAll(it) }
+                        adapter.notifyDataSetChanged()
+                    } else {
+                        Toast.makeText(
+                            this@BreathworkActivity,
+                            "Server Error: " + response.code(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<GetBreathingResponse>, t: Throwable) {
+                    Toast.makeText(
+                        this@BreathworkActivity,
+                        "Network Error: " + t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            })
     }
 }

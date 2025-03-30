@@ -23,12 +23,14 @@ import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategorySoundListR
 import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.NewReleaseResponse;
 import com.example.rlapp.ui.NewSleepSounds.userplaylistmodel.SleepSoundPlaylistResponse;
 import com.example.rlapp.ui.SubCategoryResponse;
+import com.example.rlapp.ui.ToolKitRequest;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationCategoryListResponse;
 import com.example.rlapp.ui.affirmation.pojo.AffirmationSelectedCategoryResponse;
 import com.example.rlapp.ui.affirmation.pojo.CreateAffirmationPlaylistRequest;
 import com.example.rlapp.ui.affirmation.pojo.GetAffirmationPlaylistResponse;
 import com.example.rlapp.ui.affirmation.pojo.GetWatchedAffirmationPlaylistResponse;
 import com.example.rlapp.ui.affirmation.pojo.WatchAffirmationPlaylistRequest;
+import com.example.rlapp.ui.breathwork.pojo.GetBreathingResponse;
 import com.example.rlapp.ui.drawermenu.ChangePassword;
 import com.example.rlapp.ui.drawermenu.PreferenceAnswer;
 import com.example.rlapp.ui.healthcam.HealthCamFacialScanRequest;
@@ -43,6 +45,7 @@ import com.example.rlapp.ui.jounal.new_journal.JournalTagsResponse;
 import com.example.rlapp.ui.jounal.new_journal.JournalUpdateRequest;
 import com.example.rlapp.ui.jounal.new_journal.JournalUpdateTagsRequest;
 import com.example.rlapp.ui.mindaudit.MindAuditAssessmentSaveRequest;
+import com.example.rlapp.ui.mindaudit.MindAuditResultResponse;
 import com.example.rlapp.ui.mindaudit.UserEmotions;
 import com.example.rlapp.ui.mindaudit.curated.CuratedUserData;
 import com.example.rlapp.ui.new_design.pojo.GetInterestResponse;
@@ -50,6 +53,7 @@ import com.example.rlapp.ui.new_design.pojo.GoogleLoginTokenResponse;
 import com.example.rlapp.ui.new_design.pojo.GoogleSignInRequest;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse;
 import com.example.rlapp.ui.new_design.pojo.OnBoardingModuleResponse;
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleRequest;
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultRequest;
 import com.example.rlapp.ui.new_design.pojo.OnboardingModuleResultResponse;
 import com.example.rlapp.ui.new_design.pojo.OnboardingQuestionRequest;
@@ -432,7 +436,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json")
     @GET("mind-audit/q/get-assessment-result")
-    Call<ResponseBody> getMindAuditAssessmentResult(
+    Call<MindAuditResultResponse> getMindAuditAssessmentResult(
             @Header("Authorization") String authToken,
             @Query("assessment") String assessment
     );
@@ -734,7 +738,7 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
-    @POST("onboardingModuleResult")
+    @PUT("onboardingModuleResult")
     Call<OnboardingModuleResultResponse> getOnboardingModuleResult(
             @Header("Authorization") String authToken,
             @Query("moduleName") String moduleName,
@@ -1071,11 +1075,12 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
-    @POST("aiQuestionaries")
+    @PUT("aiQuestionaries")
     Call<ResponseBody> submitERQuestionnaire(
             @Header("Authorization") String authToken,
             @Body QuestionnaireAnswerRequest questionnaireAnswerRequest
     );
+
 
 
     //ai_dashboard
@@ -1091,6 +1096,27 @@ public interface ApiService {
             @Header("Authorization") String authToken
     );
 
+
+
+    @Headers("Content-Type: application/json")
+    @POST("onboardingModuleResult")
+    Call<ResponseBody> onboardingModuleResult(
+            @Header("Authorization") String authToken,
+            @Body OnboardingModuleRequest onboardingModuleRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @POST("tools")
+    Call<ResponseBody> addToToolKit(
+            @Header("Authorization") String authToken,
+            @Body ToolKitRequest toolKitRequest
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("breathing")
+    Call<GetBreathingResponse> getBreathingWork(
+            @Header("Authorization") String authToken
+    );
 
 }
 

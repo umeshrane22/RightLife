@@ -26,7 +26,7 @@ class AffirmationSelectedCategoryData {
 
     @SerializedName("artist")
     @Expose
-    var artist: Artist? = null
+    var artist: String? = null
 
     @SerializedName("catagoryId")
     @Expose

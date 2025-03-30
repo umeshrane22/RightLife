@@ -207,7 +207,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
         });
     }
 
-    private void getAssessmentResult(String assessment) {
+    /*private void getAssessmentResult(String assessment) {
         String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -242,7 +242,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                 Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
+    }*/
 
     private void saveAssessment(MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest) {
         String assessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
@@ -258,7 +258,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         Log.d("AAAAA", "Result  = " + jsonString);
 
-                        getAssessmentResult(header);
+                        //getAssessmentResult(header);
                         //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
 
                     } catch (IOException e) {

@@ -3,17 +3,23 @@ package com.example.rlapp.ui.breathwork
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.rlapp.R
+import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.databinding.ItemBreathworkBinding
+import com.example.rlapp.ui.breathwork.pojo.BreathingData
 
 class BreathworkAdapter(
-    private val items: List<BreathworkPattern>,
-    private val onItemClick: (BreathworkPattern,Int) -> Unit
+    private val items: List<BreathingData>,
+    private val onItemClick: OnItemClickListener
 ) : RecyclerView.Adapter<BreathworkAdapter.BreathworkViewHolder>() {
 
-    inner class BreathworkViewHolder(val binding: ItemBreathworkBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class BreathworkViewHolder(val binding: ItemBreathworkBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BreathworkViewHolder {
-        val binding = ItemBreathworkBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemBreathworkBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BreathworkViewHolder(binding)
     }
 
@@ -21,18 +27,33 @@ class BreathworkAdapter(
         val item = items[position]
         holder.binding.apply {
             titleTextView.text = item.title
-            descriptionTextView.text = item.description
-            imageView.setImageResource(item.imageResId)
+            descriptionTextView.text = item.subTitle
+            //imageView.setImageResource()
+
+            Glide.with(imageView.context)
+                .load(ApiClient.CDN_URL_QA + item.thumbnail)
+                .into(imageView)
+
+            plusButton.setImageResource(
+                if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_journal
+            )
 
             plusButton.setOnClickListener {
-                onItemClick(item,position)
+                onItemClick.onAddToolTip(item)
+                item.isAddedToToolKit = !item.isAddedToToolKit
+                notifyDataSetChanged()
             }
 
             cardView.setOnClickListener {
-                onItemClick(item,position)
+                onItemClick.onClick(item)
             }
         }
     }
 
     override fun getItemCount() = items.size
+
+    interface OnItemClickListener {
+        fun onClick(breathingData: BreathingData)
+        fun onAddToolTip(breathingData: BreathingData)
+    }
 }

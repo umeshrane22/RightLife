@@ -61,6 +61,9 @@ class OnBoardingModuleListAdapter(
         holder.rlOnBoardingModule.background =
             if (selectedPosition == position) wrappedDrawable else bgDrawable
 
+       /* holder.rlOnBoardingModule.background =
+            if (moduleService.isSelected) wrappedDrawable else bgDrawable*/
+
 
         holder.itemView.setOnClickListener {
 
