@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ import com.example.rlapp.ai_package.ui.MainAIActivity
 import com.example.rlapp.apimodel.userdata.UserProfileResponse
 import com.example.rlapp.databinding.ActivityHomeDashboardBinding
 import com.example.rlapp.newdashboard.NewHomeFragment.HomeFragment
+import com.example.rlapp.newdashboard.model.AiDashboardResponseMain
 import com.example.rlapp.ui.HomeActivity
 import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity
@@ -28,6 +30,7 @@ import com.example.rlapp.ui.utility.SharedPreferenceConstants
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -60,10 +63,10 @@ class HomeDashboardActivity : AppCompatActivity() {
             )
         }
 
-        recyclerView.adapter = HeartRateAdapter(
+    /*    recyclerView.adapter = HeartRateAdapter(
             heartRateList,
             this
-        )
+        )*/
 
         // Handle menu item clicks
         binding.menuHome.setOnClickListener {
@@ -109,6 +112,9 @@ class HomeDashboardActivity : AppCompatActivity() {
         // Api calls
         getUserDetails("")
 
+        getAiDashboard("")
+        getDashboardChecklist("")
+
         binding.progressBarOnboarding.post {
             val progressPercentage =
                 binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
@@ -144,6 +150,19 @@ class HomeDashboardActivity : AppCompatActivity() {
             /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
                 else drawer.closeDrawer(Gravity.RIGHT);*/
             startActivity(Intent(this@HomeDashboardActivity, ProfileSettingsActivity::class.java))
+        }
+
+        binding.cardThinkrightMain.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "ThinkRight")
+            })
+            Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
+        }
+        binding.cardEatrightMain.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "EatRight")
+            })
+            Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
 
         binding.cardMoverightMain.setOnClickListener {
@@ -279,4 +298,172 @@ class HomeDashboardActivity : AppCompatActivity() {
             }
         })
     }
+
+
+    // get AI Dashboard Data
+    private fun getAiDashboard(s: String) {
+        //-----------
+        val sharedPreferences =
+            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
+
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        // Make the API call
+        val call = apiService.getAiDashboard(accessToken)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val promotionResponse2 = response.body()!!.string()
+
+
+                    val gson = Gson()
+
+
+                    val aiDashboardResponseMain = gson.fromJson(
+                        promotionResponse2,
+                        AiDashboardResponseMain::class.java
+                    )
+                    Log.d(
+                        "dashboard",
+                        "Success: Scan Details" + aiDashboardResponseMain.data?.facialScan?.get(0)!!.avgParameter
+                    )
+                    handleSelectedModule(aiDashboardResponseMain)
+                    binding.recyclerView.adapter = HeartRateAdapter(
+                        aiDashboardResponseMain.data?.facialScan,
+                        this@HomeDashboardActivity
+                    )
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@HomeDashboardActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.e("API ERROR", "onFailure: " + t.message)
+                t.printStackTrace() // Print the full stack trace for more details
+            }
+        })
+    }
+
+    private fun handleSelectedModule(aiDashboardResponseMain: AiDashboardResponseMain?) {
+        for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
+            val moduleId = module.moduleId
+            val isSelected = module.isSelectedModule
+
+            if (isSelected == true) {
+                when (moduleId) {
+                    "MOVE_RIGHT" -> {
+                        binding.cardMoverightMain.visibility = View.VISIBLE
+                        binding.cardMoveright.visibility = View.GONE
+                        //set data on card once resposne works
+                    }
+
+                    "THINK_RIGHT" -> {
+                        binding.cardThinkrightMain.visibility = View.VISIBLE
+                        binding.cardThinkright.visibility = View.GONE
+                    }
+
+                    "EAT_RIGHT" -> {
+                        binding.cardEatrightMain.visibility = View.VISIBLE
+                        binding.cardEatrightMain.visibility = View.GONE
+                    }
+
+                    "SLEEP_RIGHT" -> {
+                        binding.cardSleeprightMain.visibility = View.VISIBLE
+                        binding.cardSleepright.visibility = View.GONE
+                    }
+
+                    else -> {
+                        binding.cardMoverightMain.visibility = View.VISIBLE
+                        binding.cardMoveright.visibility = View.GONE
+                    }
+                }
+            }
+
+        }
+    }
+    /*private fun dummyLogic(aiDashboardResponseMain: AiDashboardResponseMain?) {
+        for () {
+            val moduleId = module.moduleId
+            val isSelected = module.isSelectedModule
+
+            if (isSelected == true) {
+                when (moduleId) {
+                    "MOVE_RIGHT" -> {
+                        binding.cardMoverightMain.visibility = View.VISIBLE
+                        binding.cardMoveright.visibility = View.GONE
+                        //set data on card once resposne works
+                    }
+
+                    "THINK_RIGHT" -> {
+                        binding.cardThinkrightMain.visibility = View.VISIBLE
+                        binding.cardThinkright.visibility = View.GONE
+                    }
+
+                    "EAT_RIGHT" -> {
+                        binding.cardEatrightMain.visibility = View.VISIBLE
+                        binding.cardEatrightMain.visibility = View.GONE
+                    }
+
+                    "SLEEP_RIGHT" -> {
+                        binding.cardSleeprightMain.visibility = View.VISIBLE
+                        binding.cardSleepright.visibility = View.GONE
+                    }
+
+                    else -> {
+                        binding.cardMoverightMain.visibility = View.VISIBLE
+                        binding.cardMoveright.visibility = View.GONE
+                    }
+                }
+            }
+
+        }
+    }*/
+
+
+    //getDashboardChecklist
+    private fun getDashboardChecklist(s: String) {
+        //-----------
+        val sharedPreferences =
+            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
+        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
+
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        // Make the API call
+        val call = apiService.getDashboardChecklist(accessToken)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val promotionResponse2 = response.body()!!.string()
+                    Log.d("API Response", "User Details: " + promotionResponse2.toString())
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+
+
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@HomeDashboardActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                Log.e("API ERROR", "onFailure: " + t.message)
+                t.printStackTrace() // Print the full stack trace for more details
+            }
+        })
+    }
+
+
 }

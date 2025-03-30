@@ -1081,6 +1081,23 @@ public interface ApiService {
             @Body QuestionnaireAnswerRequest questionnaireAnswerRequest
     );
 
+
+
+    //ai_dashboard
+    @Headers("Content-Type: application/json")
+    @GET("ai_dashboard")
+    Call<ResponseBody> getAiDashboard(
+            @Header("Authorization") String authToken
+    );
+    //dashboardChecklist status
+    @Headers("Content-Type: application/json")
+    @GET("user/dashboardChecklist")
+    Call<ResponseBody> getDashboardChecklist(
+            @Header("Authorization") String authToken
+    );
+
+
+
     @Headers("Content-Type: application/json")
     @POST("onboardingModuleResult")
     Call<ResponseBody> onboardingModuleResult(
@@ -1100,6 +1117,7 @@ public interface ApiService {
     Call<GetBreathingResponse> getBreathingWork(
             @Header("Authorization") String authToken
     );
+
 }
 
 

@@ -9,6 +9,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.databinding.ItemHeartRateCardBinding
+import com.example.rlapp.newdashboard.model.FacialScan
+import com.example.rlapp.ui.utility.DateConverter
+import com.example.rlapp.ui.utility.Utils
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -19,7 +22,7 @@ import java.util.Date
 import java.util.Locale
 
 class HeartRateAdapter(
-    private val heartRateList: List<HeartRateData>,
+    private val heartRateList: ArrayList<FacialScan>?,
     private val context: Context
 ) : RecyclerView.Adapter<HeartRateAdapter.HeartRateViewHolder>() {
 
@@ -34,26 +37,39 @@ class HeartRateAdapter(
     }
 
     override fun onBindViewHolder(holder: HeartRateViewHolder, position: Int) {
-        val item = heartRateList[position]
+        val item = heartRateList?.get(position)
         val binding = holder.binding
 
-        binding.tvValue.text = item.heartRate.toString()
-        binding.tvDate.text = item.date
+        if (item != null) {
+            binding.tvValue.text = item.avgValue.toString()
+        }
+        if (item != null) {
+            binding.tvDate.text = DateConverter.convertToDate(item.data?.get(0)?.createdAt)
+        }
+        if (item != null) {
+            binding.tvUnit.text = item.avgUnit
+        }
+        if (item != null) {
+            binding.tvHeartRate.text = item.avgParameter
+        }
         // show date
         val dateFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
         val currentDate = dateFormat.format(Date())
-        binding.tvDate.text = currentDate
+        //binding.tvDate.text = currentDate
 
 
+        if (item != null) {
+            binding.tvWarning.text = item.avgIndicator
+        }
         // Show warning if heart rate is above normal
-        if (item.heartRate > 100) {
+      /*  if (item.heartRate > 100) {
             binding.ivWarning.visibility = android.view.View.VISIBLE
             //binding.tvWarning.visibility = android.view.View.VISIBLE
             //binding.tvWarning.text = "Above Normal"
         } else {
             binding.ivWarning.visibility = android.view.View.VISIBLE
             //binding.tvWarning.visibility = android.view.View.GONE
-        }
+        }*/
         val iconRes = getWarningIconByType("normal")
         binding.ivWarning.setImageResource(iconRes)
 
@@ -61,7 +77,7 @@ class HeartRateAdapter(
         binding.ivHeartIcon.setImageResource(iconResReport)
 
 
-        if (holder.bindingAdapterPosition != 2) {
+        /*if (holder.bindingAdapterPosition != 2) {
             binding.heartRateChart.visibility = android.view.View.VISIBLE
             setupChart(binding.heartRateChart, item.trendData)
             binding.barChart.visibility = android.view.View.GONE
@@ -73,7 +89,7 @@ class HeartRateAdapter(
                 listOf(120f, 122f, 118f, 125f, 130f, 128f, 124f),
                 listOf(80f, 82f, 78f, 85f, 88f, 86f, 83f)
             )
-        }
+        }*/
 
         // Optional: click listener
         /*binding.cardHeartRate.setOnClickListener {
@@ -167,6 +183,6 @@ class HeartRateAdapter(
         }
     }
 
-    override fun getItemCount() = heartRateList.size
+    override fun getItemCount() = heartRateList?.let { it.size }?:0
 }
 
