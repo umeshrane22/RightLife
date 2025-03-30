@@ -83,7 +83,14 @@
         <activity android:name=".ui.new_design.DataControlActivity" />
         <activity android:name=".ui.new_design.ImageSliderActivity" />
         <activity android:name=".ui.new_design.CreateUsernameActivity" />
-        <activity android:name=".ui.new_design.WellnessFocusActivity" />
+        <activity android:name=".ui.new_design.WellnessFocusActivity"
+            android:exported="true">
+        <!--<intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>-->
+        </activity>
         <activity android:name=".ui.new_design.WellnessFocusListActivity" />
         <activity android:name=".ui.new_design.UnlockPowerOfYourMindActivity" />
         <activity android:name=".ui.new_design.ThirdFillerScreenActivity" />

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -17,18 +16,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.rlapp.R;
+import com.example.rlapp.RetrofitData.ApiClient;
+import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.ui.healthaudit.HealthAuditPagerAdapter;
-import com.example.rlapp.ui.voicescan.VoiceScanActivity;
-import com.example.rlapp.ui.voicescan.VoiceScanFromActivity;
+import com.example.rlapp.ui.utility.SharedPreferenceManager;
 import com.zhpan.indicator.IndicatorView;
 
 import me.relex.circleindicator.CircleIndicator3;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MindAuditActivity extends AppCompatActivity {
 
     ImageView ic_back_dialog, close_dialog;
     HealthAuditPagerAdapter adapter;
     Button btn_howitworks;
+
     /**
      * {@inheritDoc}
      * <p>
@@ -41,15 +45,17 @@ public class MindAuditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mindaudit);
 
+        getAssessmentResult("CAS");
+
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
         btn_howitworks = findViewById(R.id.btn_howitworks);
 
         CircleIndicator3 indicator = findViewById(R.id.indicator);
-       IndicatorView indicator_view = findViewById(R.id.indicator_view);
-       indicator_view.setSliderHeight(21);
-       indicator_view.setSliderWidth(80);
+        IndicatorView indicator_view = findViewById(R.id.indicator_view);
+        indicator_view.setSliderHeight(21);
+        indicator_view.setSliderWidth(80);
         // Array of layout resources to use in the ViewPager
         int[] layouts = {
                 R.layout.page_one_mind, // Define these layout files in your res/layout directory
@@ -77,13 +83,10 @@ public class MindAuditActivity extends AppCompatActivity {
             }
         });
 
-        
-        close_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //finish();
-                showExitDialog();
-            }
+
+        close_dialog.setOnClickListener(view -> {
+            //finish();
+            showExitDialog();
         });
 
         btn_howitworks.setOnClickListener(view -> {
@@ -118,118 +121,11 @@ public class MindAuditActivity extends AppCompatActivity {
             btn_howitworks.setText("Next Page");
         }
     }
-    private void showCustomDialog() {
-        // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_dialog);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        ImageView dialogIcon = dialog.findViewById(R.id.dialog_icon);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButton = dialog.findViewById(R.id.dialog_button);
-
-        // Optional: Set dynamic content
-        dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
-        dialogButton.setOnClickListener(v -> {
-            // Perform your action
-            dialog.dismiss();
-        });
-
-        // Show the dialog
-        dialog.show();
-    }
-
-
-    private void showBirthDayDialog() {
-        // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_bday_dialog);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButton = dialog.findViewById(R.id.dialog_button);
-
-        // Optional: Set dynamic content
-        dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
-        dialogButton.setOnClickListener(v -> {
-            // Perform your action
-            dialog.dismiss();
-            Toast.makeText(MindAuditActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-
-
-        });
-        dialogIcon.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
-
-        // Show the dialog
-        dialog.show();
-    }
 
     private void showExitDialog() {
         // Create the dialog
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.layout_exit_dialog_mind);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
-        // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
-
-        // Find views from the dialog layout
-        //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
-        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
-
-        // Optional: Set dynamic content
-       // dialogText.setText("Please find a quiet and comfortable place before starting");
-
-        // Set button click listener
-        dialogButtonStay.setOnClickListener(v -> {
-            // Perform your action
-            dialog.dismiss();
-            //Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-
-
-        });
-        dialogButtonExit.setOnClickListener(v -> {
-            dialog.dismiss();
-            this.finish();
-        });
-
-        // Show the dialog
-        dialog.show();
-    }
-
-    private void showDisclaimerDialog() {
-        // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_disclaimer_health);
         dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         Window window = dialog.getWindow();
@@ -264,4 +160,29 @@ public class MindAuditActivity extends AppCompatActivity {
         // Show the dialog
         dialog.show();
     }
+
+    private void getAssessmentResult(String assessment) {
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<MindAuditResultResponse> call = apiService.getMindAuditAssessmentResult(accessToken, assessment);
+        call.enqueue(new Callback<MindAuditResultResponse>() {
+            @Override
+            public void onResponse(Call<MindAuditResultResponse> call, Response<MindAuditResultResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+
+                    Log.d("AAAA", response.toString());
+
+                } else {
+                    Toast.makeText(MindAuditActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MindAuditResultResponse> call, Throwable t) {
+                Toast.makeText(MindAuditActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

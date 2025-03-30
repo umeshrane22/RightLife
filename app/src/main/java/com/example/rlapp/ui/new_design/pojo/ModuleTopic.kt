@@ -44,6 +44,8 @@ class ModuleTopic : Serializable{
     @SerializedName("__v")
     @Expose
      val v: Int? = null
-    
+
+    @SerializedName("isSelectedModule")
+    @Expose
     var isSelected = false
 }

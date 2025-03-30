@@ -12,7 +12,7 @@ import com.example.rlapp.R
 import com.example.rlapp.databinding.ActivityBreathworkPracticeBinding
 import com.example.rlapp.databinding.BottomsheetBreathworkCompleteBinding
 import com.example.rlapp.databinding.BottomsheetDeleteTagBinding
-import com.example.rlapp.ui.jounal.new_journal.JournalEntry
+import com.example.rlapp.ui.breathwork.pojo.BreathingData
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class BreathworkPracticeActivity : AppCompatActivity() {
@@ -23,8 +23,10 @@ class BreathworkPracticeActivity : AppCompatActivity() {
     private var currentSet = 1
     private var sessionDurationSeconds = 135 // Default session duration
     private var countDownTimer: CountDownTimer? = null
-
-    private lateinit var breathingPractice: BreathingPractice
+    private var breathingData: BreathingData? = null
+    private var inhaleTime: Long = 0
+    private var exhaleTime: Long = 0
+    private var holdTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,16 +34,19 @@ class BreathworkPracticeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Retrieve the selected breathing practice from the intent
-        val practiceType = intent.getStringExtra("PRACTICE_TYPE") ?: "ALTERNATE_NOSTRIL"
-        breathingPractice = BreathingPractice.valueOf(practiceType)
+        breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
+
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
+        inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
+        exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
+        holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
 
         // Calculate session duration based on the selected practice
-        val cycleDuration = breathingPractice.inhaleDuration +
-                breathingPractice.holdDuration +
-                breathingPractice.exhaleDuration +
-                (if (breathingPractice == BreathingPractice.BOX_BREATHING) breathingPractice.holdDuration else 0L)
+        val cycleDuration = inhaleTime +
+                holdTime +
+                exhaleTime +
+                (if (breathingData?.title == "Box Breathing") holdTime else 0L)
         sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
 
         // Set initial values
@@ -89,23 +94,23 @@ class BreathworkPracticeActivity : AppCompatActivity() {
 
     private fun startBreathIn() {
         binding.breathingPhase.text = "Breath In"
-        animateCircle(1f, 1.5f, breathingPractice.inhaleDuration)
-        startCountdown(breathingPractice.inhaleDuration) {
-            if (breathingPractice.holdDuration > 0) startHold() else startBreathOut()
+        animateCircle(1f, 1.5f, inhaleTime)
+        startCountdown(inhaleTime) {
+            if (holdTime > 0) startHold() else startBreathOut()
         }
     }
 
     private fun startHold() {
         binding.breathingPhase.text = "Hold"
-        animateCircle(1.5f, 1.5f, breathingPractice.holdDuration)
-        startCountdown(breathingPractice.holdDuration) { startBreathOut() }
+        animateCircle(1.5f, 1.5f, holdTime)
+        startCountdown(holdTime) { startBreathOut() }
     }
 
     private fun startBreathOut() {
         binding.breathingPhase.text = "Breath Out"
-        animateCircle(1.5f, 1f, breathingPractice.exhaleDuration)
-        startCountdown(breathingPractice.exhaleDuration) {
-            if (breathingPractice == BreathingPractice.BOX_BREATHING) {
+        animateCircle(1.5f, 1f, exhaleTime)
+        startCountdown(exhaleTime) {
+            if (breathingData?.title == "Box Breathing") {
                 startFinalHold()
             } else {
                 currentSet++
@@ -116,8 +121,8 @@ class BreathworkPracticeActivity : AppCompatActivity() {
 
     private fun startFinalHold() {
         binding.breathingPhase.text = "Hold"
-        animateCircle(1f, 1f, breathingPractice.holdDuration)
-        startCountdown(breathingPractice.holdDuration) {
+        animateCircle(1f, 1f, holdTime)
+        startCountdown(holdTime) {
             currentSet++
             startBreathingCycle()
         }
@@ -177,7 +182,8 @@ class BreathworkPracticeActivity : AppCompatActivity() {
         }
 
         dialogBinding.tvTitle.text = "Leaving early?"
-        dialogBinding.tvDescription.text = "A few more minutes of breathing practise will make a world of difference."
+        dialogBinding.tvDescription.text =
+            "A few more minutes of breathing practise will make a world of difference."
 
         dialogBinding.btnCancel.text = "Continue Practise"
         dialogBinding.btnYes.text = "Leave"
@@ -221,7 +227,8 @@ class BreathworkPracticeActivity : AppCompatActivity() {
         }
 
         dialogBinding.tvTitle.text = "How do you feel after the exercise?"
-        dialogBinding.tvDescription.text = "A few more minutes of breathing practise will make a world of difference."
+        dialogBinding.tvDescription.text =
+            "A few more minutes of breathing practise will make a world of difference."
 
         dialogBinding.btnBetter.text = "better than before"
         dialogBinding.btnSame.text = "same as before"
