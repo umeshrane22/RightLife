@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.databinding.ActivityJournalNewBinding
+import com.example.rlapp.ui.CommonAPICall
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -44,15 +45,38 @@ class JournalNewActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     val journalList = response.body()?.data ?: emptyList()
 
-                    adapter = JournalAdapter(journalList) { journalItem ->
-                        val intent = when (journalItem.title) {
-                            "Free Form" -> Intent(this@JournalNewActivity, FreeFormJournalActivity::class.java)
-                            "Bullet" -> Intent(this@JournalNewActivity, BulletJournalActivity::class.java)
-                            else -> Intent(this@JournalNewActivity, JournalPromptActivity::class.java)
-                        }
-                        intent.putExtra("Section", journalItem)
-                        startActivity(intent)
-                    }
+                    adapter =
+                        JournalAdapter(journalList, object : JournalAdapter.OnItemClickListener {
+                            override fun onClick(journalItem: JournalItem) {
+                                val intent = when (journalItem.title) {
+                                    "Free Form" -> Intent(
+                                        this@JournalNewActivity,
+                                        FreeFormJournalActivity::class.java
+                                    )
+
+                                    "Bullet" -> Intent(
+                                        this@JournalNewActivity,
+                                        BulletJournalActivity::class.java
+                                    )
+
+                                    else -> Intent(
+                                        this@JournalNewActivity,
+                                        JournalPromptActivity::class.java
+                                    )
+                                }
+                                intent.putExtra("Section", journalItem)
+                                startActivity(intent)
+                            }
+
+                            override fun onAddToolTip(journalItem: JournalItem) {
+                                CommonAPICall.addToToolKit(
+                                    this@JournalNewActivity,
+                                    journalItem.title,
+                                    journalItem.id,
+                                )
+                            }
+
+                        })
 
                     runOnUiThread {
                         binding.recyclerView.adapter = adapter

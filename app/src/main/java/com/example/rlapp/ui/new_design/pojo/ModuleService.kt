@@ -48,5 +48,7 @@ class ModuleService {
     @Expose
     var v: Int? = null
 
+    @SerializedName("isSelectedModule")
+    @Expose
     var isSelected = false
 }

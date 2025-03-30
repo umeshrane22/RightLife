@@ -1,13 +1,14 @@
 package com.example.rlapp.ui.jounal.new_journal
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.rlapp.R
 import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.databinding.RowJournalNewBinding
-import com.example.rlapp.ui.utility.Utils
 
 class JournalAdapter(
     private val items: List<JournalItem>,
@@ -30,29 +31,56 @@ class JournalAdapter(
             titleText.text = item.title
             descText.text = item.desc
 
-            /***
-             * 000000 is replaced with actual color when get it from API
-             */
-            titleText.setTextColor(Utils.getColorFromColorCode("000000"))
-            descText.setTextColor(Utils.getColorFromColorCode("000000"))
-
             //imageViewAdd.imageTintList = Utils.getColorStateListFromColorCode("FD6967")
+            imageViewAdd.setImageResource(
+                if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_journal
+            )
 
-            //container.backgroundTintList = Utils.getColorStateListFromColorCode(item.color)
+            val colorStateList: ColorStateList
+            when (item.title) {
+                "Free Form" -> {
+                    colorStateList = ColorStateList.valueOf(Color.parseColor("#F7E6B7"))
+                    imageView.setImageResource(R.drawable.ic_freeform_journal)
+                }
 
-            Glide.with(imageView.context)
+                "Bullet" -> {
+                    colorStateList = ColorStateList.valueOf(Color.parseColor("#FDD3D2"))
+                    imageView.setImageResource(R.drawable.ic_bullet_journal)
+                }
+
+                "Gratitude" -> {
+                    colorStateList = ColorStateList.valueOf(Color.parseColor("#A6E0CE"))
+                    imageView.setImageResource(R.drawable.ic_gratitude_journal)
+                }
+
+                else -> {
+                    colorStateList = ColorStateList.valueOf(Color.parseColor("#E6F0FE"))
+                    imageView.setImageResource(R.drawable.ic_grief_journal)
+                }
+            }
+
+            container.backgroundTintList = colorStateList
+
+            /*Glide.with(imageView.context)
                 .load(ApiClient.CDN_URL_QA + item.image)
-                .into(imageView)
+                .into(imageView)*/
 
-            root.setOnClickListener{
+            root.setOnClickListener {
                 onItemClickListener.onClick(item)
+            }
+            imageViewAdd.setOnClickListener {
+                onItemClickListener.onAddToolTip(item)
+                item.isAddedToToolKit = !item.isAddedToToolKit
+                notifyDataSetChanged()
             }
         }
     }
 
-    fun interface OnItemClickListener {
+    interface OnItemClickListener {
         fun onClick(journalItem: JournalItem)
+        fun onAddToolTip(journalItem: JournalItem)
     }
+
 
     override fun getItemCount(): Int = items.size
 }

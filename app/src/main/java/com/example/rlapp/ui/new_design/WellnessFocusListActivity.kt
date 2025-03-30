@@ -15,9 +15,11 @@ import com.example.rlapp.RetrofitData.ApiClient
 import com.example.rlapp.RetrofitData.ApiService
 import com.example.rlapp.ui.new_design.pojo.ModuleTopic
 import com.example.rlapp.ui.new_design.pojo.OnBoardingDataModuleResponse
+import com.example.rlapp.ui.new_design.pojo.OnboardingModuleRequest
 import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.example.rlapp.ui.utility.SharedPreferenceManager
 import com.example.rlapp.ui.utility.Utils
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,7 +54,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
         }
         tvHeader.text = header
 
-        if (!isFrom.isNullOrEmpty() && isFrom == "ProfileSetting")
+        if (isFrom.isNotEmpty() && isFrom == "ProfileSetting")
             btnContinue.text = "Save"
 
         tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
@@ -89,10 +91,12 @@ class WellnessFocusListActivity : AppCompatActivity() {
         rvWellnessFocusList.adapter = wellnessFocusListAdapter
 
         btnContinue.setOnClickListener {
-            val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
-            intent.putExtra("WellnessFocus", header)
-            intent.putExtra("SelectedTopic", selectedWellnessFocus)
-            if (!isFrom.isNullOrEmpty() && isFrom == "ProfileSetting") {
+            val selectedOptions = ArrayList<String>()
+            selectedWellnessFocus.forEach {
+                it.id?.let { it1 -> selectedOptions.add(it1) }
+            }
+            updateOnBoardingModule(header, selectedOptions)
+            if (isFrom.isNotEmpty() && isFrom == "ProfileSetting") {
                 finish()
                 startActivity(
                     Intent(
@@ -103,6 +107,9 @@ class WellnessFocusListActivity : AppCompatActivity() {
                         putExtra("start_profile", true)
                     })
             } else {
+                val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
+                intent.putExtra("WellnessFocus", header)
+                intent.putExtra("SelectedTopic", selectedWellnessFocus)
                 SharedPreferenceManager.getInstance(this)
                     .setWellnessFocusTopics(selectedWellnessFocus)
                 startActivity(intent)
@@ -140,6 +147,43 @@ class WellnessFocusListActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<OnBoardingDataModuleResponse>, t: Throwable) {
                 Utils.dismissLoader(this@WellnessFocusListActivity)
+                Toast.makeText(
+                    this@WellnessFocusListActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        })
+    }
+
+    private fun updateOnBoardingModule(selectedModule: String, selectedOptions: List<String>) {
+        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val onboardingModuleRequest = OnboardingModuleRequest()
+        onboardingModuleRequest.selectedModule = selectedModule
+        onboardingModuleRequest.selectedOptions = selectedOptions
+
+        val call = apiService.onboardingModuleResult(authToken, onboardingModuleRequest)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    Toast.makeText(
+                        this@WellnessFocusListActivity,
+                        "Updated data",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this@WellnessFocusListActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Toast.makeText(
                     this@WellnessFocusListActivity,
                     "Network Error: " + t.message,

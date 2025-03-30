@@ -99,7 +99,7 @@ class AffirmationCardPagerAdapter(
 
 
         tvAffirmationTitle.text = item.title
-        tvAffirmationAuthor.text = "${item.artist?.firstName} ${item.artist?.firstName}"
+        tvAffirmationAuthor.text = "${item.artist}"
 
 
         // Load image using Glide
