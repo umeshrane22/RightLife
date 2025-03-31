@@ -23,12 +23,15 @@ class GeneralInformationActivity : AppCompatActivity() {
     private lateinit var settingsAdapter: SettingsAdapter
     private var generalInformationResponse: GeneralInformationResponse? = null
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private lateinit var whichInfo: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGeneralInformationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        whichInfo = intent.getStringExtra("INFO") ?: ""
+
 
         getGeneralInfo()
 
@@ -48,25 +51,7 @@ class GeneralInformationActivity : AppCompatActivity() {
         )
 
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
-
-            val intent = Intent(this, HtmlTextActivity::class.java)
-            when (item.title) {
-                "About Us" ->
-                    intent.putExtra("GeneralInformation", generalInformationResponse?.data?.aboutus)
-
-                "Terms & Conditions" ->
-                    intent.putExtra(
-                        "GeneralInformation",
-                        generalInformationResponse?.data?.termsConditions
-                    )
-
-                "Policies" ->
-                    intent.putExtra(
-                        "GeneralInformation",
-                        generalInformationResponse?.data?.privacyPolicy
-                    )
-            }
-            startActivity(intent)
+            startNextActivity(item.title)
         }
 
         binding.rvGeneralInformation.apply {
@@ -75,20 +60,45 @@ class GeneralInformationActivity : AppCompatActivity() {
         }
     }
 
-    private fun getGeneralInfo(){
+    private fun startNextActivity(title: String) {
+        val intent = Intent(this, HtmlTextActivity::class.java)
+        when (title) {
+            "About Us" ->
+                intent.putExtra("GeneralInformation", generalInformationResponse?.data?.aboutus)
+
+            "Terms & Conditions" ->
+                intent.putExtra(
+                    "GeneralInformation",
+                    generalInformationResponse?.data?.termsConditions
+                )
+
+            "Policies" ->
+                intent.putExtra(
+                    "GeneralInformation",
+                    generalInformationResponse?.data?.privacyPolicy
+                )
+        }
+        startActivity(intent)
+    }
+
+    private fun getGeneralInfo() {
         Utils.showLoader(this)
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getGeneralInformation(sharedPreferenceManager.accessToken)
 
-        call.enqueue(object : Callback<GeneralInformationResponse>{
+        call.enqueue(object : Callback<GeneralInformationResponse> {
             override fun onResponse(
                 call: Call<GeneralInformationResponse>,
                 response: Response<GeneralInformationResponse>
             ) {
                 Utils.dismissLoader(this@GeneralInformationActivity)
                 if (response.isSuccessful && response.body() != null) {
-                        generalInformationResponse = response.body()
-                }else{
+                    generalInformationResponse = response.body()
+                    if (whichInfo.isNotEmpty()) {
+                        finish()
+                        startNextActivity(whichInfo)
+                    }
+                } else {
                     showToast("Server Error: " + response.code())
                 }
             }

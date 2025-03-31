@@ -41,7 +41,7 @@ class AccessPaymentCardAdapter(
         holder.tvCardName.text = paymentCard.card.title
         holder.tvCardType.text = paymentCard.card.subTitle
         holder.tvCardDesc.text = paymentCard.card.desc
-        holder.tvPrice.text = "\u20B9 " + paymentCard.price.inr
+        holder.tvPrice.text = "\u20B9 " + paymentCard.price.inr/1000
         holder.tvOfferNumbers.text = "${paymentCard.card.items.size} Offers Available"
 
         holder.tvOfferNumbers.setOnClickListener {
