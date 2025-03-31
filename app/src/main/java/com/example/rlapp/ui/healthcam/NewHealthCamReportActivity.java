@@ -25,8 +25,10 @@ import com.example.rlapp.RetrofitData.ApiService;
 import com.example.rlapp.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.example.rlapp.apimodel.newreportfacescan.HealthCamItem;
 import com.example.rlapp.databinding.ActivityNewhealthcamreportBinding;
-import com.example.rlapp.ui.healthaudit.HealthCamActivity;
+import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.rlpagemain.RLContinueListAdapter;
+import com.example.rlapp.ui.utility.DateConverter;
+import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
@@ -52,6 +54,12 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             finish();
+        });
+        binding.cardviewLastCheckin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamActivity.class));
+            }
         });
         getMyRLHealthCamResult();
     }
@@ -98,7 +106,11 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         if (facialReportResponseNew.success) {
 
             binding.txtWellnessScore.setText(String.valueOf(facialReportResponseNew.data.overallWellnessScore.value));
+            binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
+
+
             binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);
+            binding.tvLastReportDate.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(facialReportResponseNew.data.createdAt));
             if (facialReportResponseNew.data.lastCheckin) {
                 binding.cardviewLastCheckin.setVisibility(View.GONE);
             }else {

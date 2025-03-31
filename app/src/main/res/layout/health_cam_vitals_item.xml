@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-
+        android:id="@+id/rl_main_bg"
         android:background="@drawable/roundedcornerbutton"
         android:backgroundTint="@color/rightlife">
 
@@ -39,7 +39,9 @@
                 android:gravity="center"
                 android:text="166/67"
                 android:textSize="32dp" />
-
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/unitTextView"
                 android:layout_width="match_parent"
@@ -49,7 +51,11 @@
                 android:text="kg/m²"
                 android:padding="5dp"
                 android:textSize="@dimen/textsize_small" />
-
+                <ImageView
+                    android:id="@+id/img_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
             <TextView
                 android:id="@+id/indicatorTextView"
                 android:layout_width="match_parent"

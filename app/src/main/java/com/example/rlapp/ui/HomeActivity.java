@@ -83,6 +83,7 @@ import com.example.rlapp.ui.therledit.ViewCountRequest;
 import com.example.rlapp.ui.utility.DateTimeUtils;
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.SharedPreferenceManager;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.ui.voicescan.VoiceScanActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -1952,6 +1953,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void getMyRLHealthCamResult() {
+        Utils.showLoader(this);
         String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -1979,12 +1981,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d("MyRLHealthCamResult", "Error:" + response.message());
                     startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
                 }
+                Utils.dismissLoader(HomeActivity.this);
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
+                Utils.dismissLoader(HomeActivity.this);
             }
         });
     }
