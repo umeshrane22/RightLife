@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
@@ -64,13 +65,13 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
 //            }
    //     }
 
-        holder.circlePlus.setOnClickListener {
+//        holder.circlePlus.setOnClickListener {
+//            onOtherReciepeDateItem(item, position, true)
+//        }
+
+        holder.layoutMain.setOnClickListener {
             onOtherReciepeDateItem(item, position, true)
         }
-
-//        holder.layoutMain.setOnClickListener {
-//            onMealLogDateItem(item, position, true)
-//        }
     }
 
     override fun getItemCount(): Int {
@@ -79,6 +80,7 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        val layoutMain : ConstraintLayout = itemView.findViewById(R.id.layout_main)
         val iamgeFood : ImageView = itemView.findViewById(R.id.iamgeFood)
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)

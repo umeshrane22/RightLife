@@ -13,8 +13,9 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:id="@+id/img_back"
             android:src="@drawable/eat_right_back"
             android:layout_marginStart="22dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -98,6 +99,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/eatright_text_color"
+                        android:id="@+id/tv_author"
                         android:text="-Michael Jordan"
                         android:textStyle="bold"
                         android:textSize="14dp"

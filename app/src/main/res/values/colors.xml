@@ -253,6 +253,14 @@
     <color name="water_dark_color">#1292E5</color>
     <color name="coffee_dark_color">#6C4D3F</color>
     <color name="steps_dark_color">#FF4836</color>
+    <color name="meditate_text_color">#005C83</color>
+
+    <color name="minimal_green">#00FF00</color>
+    <color name="mild_light_green">#90EE90</color>
+    <color name="moderate_yellow">#FFFF00</color>
+    <color name="severe_orange">#FFA500</color>
+    <color name="extremely_severe_red">#FF0000</color>
+    <color name="brown">#8B4513</color>
 
 
 </resources>

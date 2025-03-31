@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Close Button -->
+    <ImageView
+        android:id="@+id/btn_close"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end"
+        android:src="@drawable/close"
+         />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Mindfulness Review"
+        android:textColor="@color/eatright_text_color"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- What It Tracks Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What It Tracks"
+        android:textColor="@color/eatright_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The Your Mindfulness Review section provides a simple yet insightful summary of your mindfulness habits, focusing on:"
+        android:textColor="@color/black"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Mindful Minutes – Total time spent engaging with mindfulness tools"
+        android:textColor="@color/black"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Days Practiced – The number of days you actively used any mindfulness tool"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Why It Matters Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Why It Matters"
+        android:textColor="@color/eatright_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Regular mindfulness practice can improve mental clarity, emotional resilience, and overall well-being. This review helps you track consistency and progress without overwhelming you with excessive details."
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- How It Works Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="How It Works"
+        android:textColor="@color/eatright_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Mindful Minutes are automatically logged when you use any mental wellness feature"
+        android:textColor="@color/black"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Days Practiced reflects how often you engage with mindfulness tools across the week"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- How to Use Your Insights Section -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="How to Use Your Insights"
+        android:textColor="@color/eatright_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Aim to increase consistency by practicing mindfulness on more days"
+        android:textColor="@color/black"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• Use Mindful Minutes to understand your time dedication"
+        android:textColor="@color/black"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="• If you're just starting, begin with short daily sessions"
+        android:textColor="@color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Got It Button -->
+    <Button
+        android:id="@+id/got_it"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="GOT IT"
+        android:backgroundTint="@color/eatright_text_color"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:layout_marginTop="8dp"
+       />
+
+</LinearLayout>

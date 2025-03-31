@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
@@ -21,11 +22,13 @@ import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutientsListAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
+import com.example.rlapp.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.example.rlapp.ai_package.ui.eatright.model.BreakfastMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.DinnerMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.LunchMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
+import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentDishBinding
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -127,15 +130,29 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragment = SearchDishFragment()
-                val args = Bundle()
 
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                if (searchType.contentEquals("EatRight")){
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
+
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }else{
+                    val fragment = SearchDishFragment()
+                    val args = Bundle()
+
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }
+
             }
         })
 
@@ -158,16 +175,17 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
 //            }
 //        }
 //
-//        btnLogMeal.setOnClickListener {
-//            val fragment = HomeTabMealFragment()
-//            val args = Bundle()
-//            fragment.arguments = args
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flFragment, fragment, "mealLog")
-//                addToBackStack("mealLog")
-//                commit()
-//            }
-//        }
+        addToTheMealLayout.setOnClickListener {
+            Toast.makeText(context, "Meal Added", Toast.LENGTH_SHORT).show()
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
 //
 //        breakfastDotMenu.setOnClickListener {
 //            if (editDeleteBreakfast.visibility == View.GONE){

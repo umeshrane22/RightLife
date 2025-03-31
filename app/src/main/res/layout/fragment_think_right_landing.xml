@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/eatright_bg"
@@ -39,13 +40,14 @@
             android:layout_height="25dp"
             android:src="@drawable/eatright_setting_icon"
             android:layout_marginEnd="20dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
         <ImageView
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="20dp"
             android:src="@drawable/eatright_download_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/setting_icon" />
@@ -85,6 +87,7 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
+                    android:id="@+id/instruction_your_mindfullness_review"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_marginEnd="20dp"
@@ -108,6 +111,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/heading_one"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
+
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -144,6 +148,42 @@
                         android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/noDataMindFullnessMetric"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintTop_toBottomOf="@+id/img_macro_arrow"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+                        <TextView
+                            android:id="@+id/tvNoData"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="No Data"
+                            android:layout_marginStart="20dp"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="8dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <!-- Description -->
+                        <TextView
+                            android:id="@+id/tvDescription"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley"
+                            android:textSize="14sp"
+                            android:layout_marginStart="20dp"
+                            android:textColor="#757575"
+                            android:layout_marginTop="4dp"
+                            app:layout_constraintTop_toBottomOf="@+id/tvNoData"
+                            app:layout_constraintStart_toStartOf="parent"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -314,6 +354,14 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/img_quote" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="Anxiety, anger, stress —our clinical tools can help you track it all. Try one and take a real check-in."
+                        tools:layout_editor_absoluteY="1586dp" />
 
                     <TextView
                         android:id="@+id/tv_quote_author"
@@ -686,7 +734,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:paddingBottom="30dp"
+                android:paddingBottom="20dp"
                 android:orientation="vertical">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -707,46 +755,101 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <LinearLayout
+                    <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:gravity="center"
-                        android:background="@drawable/brown_round_bg"
                         android:layout_marginEnd="20dp"
                         android:layout_marginTop="20dp"
-                        android:orientation="horizontal"
+                        android:src="@drawable/eat_right_info"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:id="@+id/img_setting"
-                            android:src="@drawable/settingicon" />
-                    </LinearLayout>
+                        app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                <androidx.cardview.widget.CardView
+                    android:layout_width="100dp"
+                    android:layout_height="120dp"
                     android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/brown_add_icon" />
+                    android:id="@+id/card_add_tools"
+                    android:visibility="gone"
+                    android:layout_marginTop="15dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    android:padding="16dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/iconImageView"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/brown_add_icon"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="20dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/tool_list_think_right"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/add_tools_think_right"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/add_tools_think_right"
+                        android:layout_marginEnd="10dp"
+                        android:layout_width="100dp"
+                        android:layout_marginTop="22dp"
+                        app:cardCornerRadius="10dp"
+                        android:visibility="visible"
+                        android:layout_height="130dp"
+                        android:layout_marginStart="10dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        >
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/brown_add_icon"
+                           />
+
+                    </androidx.cardview.widget.CardView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rec_add_tools"
                     android:layout_width="match_parent"
-                    android:layout_height="150dp"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:scrollbars="none"
                     android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
-                    android:padding="5dp"
-                    android:scrollbars="horizontal" />
+                    android:padding="16dp"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <TextView
@@ -776,6 +879,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="4dp"
+                    android:visibility="gone"
                     android:background="@color/white"
                     app:cardCornerRadius="10dp"
                     android:paddingBottom="5dp"
@@ -932,6 +1036,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="4dp"
+                    android:visibility="gone"
                     android:background="@color/white"
                     app:cardCornerRadius="10dp"
                     android:paddingBottom="5dp"
@@ -981,7 +1086,7 @@
                             android:id="@+id/tv_journaling_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Thursday 27 Feb, 2025"
+                            android:text="Sunday 30 Mar, 2025"
                             android:fontFamily="@font/dmsans_regular"
                             android:textSize="14sp"
                             android:textColor="@color/black"
@@ -1054,6 +1159,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="4dp"
+                    android:visibility="gone"
                     android:background="@color/white"
                     app:cardCornerRadius="10dp"
                     android:paddingBottom="5dp"
@@ -1264,6 +1370,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Explore More Tools"
+                    android:visibility="gone"
                     android:textSize="18sp"
                     android:textColor="@color/eatright_text_color"
                     android:fontFamily="@font/dmsans_medium"
@@ -1275,6 +1382,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:padding="5dp"
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="15dp"
@@ -1303,15 +1411,130 @@
                         android:layout_height="20dp"
                         android:layout_marginEnd="20dp"
                         android:layout_marginTop="20dp"
+                        android:visibility="invisible"
                         android:src="@drawable/eat_right_info"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="gone"
+                    android:gravity="center_horizontal">
+
+                    <!-- Title: Mind Audit -->
+                    <TextView
+                        android:id="@+id/titleTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mind Audit"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- PHQ-9 Label -->
+                    <TextView
+                        android:id="@+id/phq9LabelTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PHQ-9"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <!-- Score Display -->
+                    <TextView
+                        android:id="@+id/scoreTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="YOUR SCORE: 7"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:background="#F5F5F5"
+                        android:padding="16dp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <!-- Severity Range Bar -->
+                    <LinearLayout
+                        android:id="@+id/severityRangeLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"/>
+
+                    <!-- Score Range Labels -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="16dp">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="12sp"
+                            android:gravity="start"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="4"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="9"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="14"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="19"
+                            android:textSize="12sp"
+                            android:gravity="center"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="27"
+                            android:textSize="12sp"
+                            android:gravity="end"/>
+                    </LinearLayout>
+
+                    <!-- Next Scan Info -->
+                    <TextView
+                        android:id="@+id/nextScanTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NEXT SCAN IN 29 DAYS"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#8B4513"/> <!-- Brown color -->
+                </LinearLayout>
+
+
+
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="4dp"
+                    android:visibility="visible"
                     android:background="@color/white"
                     app:cardCornerRadius="10dp"
                     android:paddingBottom="5dp"
@@ -1365,12 +1588,75 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/no_data_mind_audit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:layout_constraintTop_toBottomOf="@+id/lyt_top_header"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent">
+                            <TextView
+                                android:id="@+id/no_data_mind_audit_heading"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="18dp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textColor="@color/black"
+                                android:text="Your Mental Vitals Matter"
+                                android:layout_marginStart="20dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"/>
+                            <TextView
+                                android:id="@+id/no_data_mind_audit_description"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="20dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@color/black"
+                                android:text="Anxiety, anger, stress —our clinical tools can help you track it all. Try one and take a real check-in."
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toBottomOf="@+id/no_data_mind_audit_heading"/>
+
+                            <LinearLayout
+                                android:layout_width="300dp"
+                                android:layout_height="45dp"
+                                android:id="@+id/play_now_mind_audit"
+                                android:orientation="horizontal"
+                                android:layout_marginBottom="10dp"
+                                android:background="@drawable/think_brown_bg"
+                                android:gravity="center"
+                                android:visibility="visible"
+                                android:layout_marginTop="15dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/no_data_mind_audit_description">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/practice_icon" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Assess your mental health"
+                                    android:textSize="14sp"
+                                    android:textColor="@color/eatright_text_color"
+                                    android:textStyle="bold"
+                                    android:paddingStart="8dp" />
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="200dp"
                             android:orientation="vertical"
                             android:gravity="center"
+                            android:visibility="gone"
                             android:id="@+id/lyt_phq_tab"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -1403,6 +1689,7 @@
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
                             android:paddingBottom="10dp"
+                            android:visibility="gone"
                             android:text="Next Scan In 29 Days"
                             android:fontFamily="@font/dmsans_bold"
                             android:textColor="@color/thinkright_text_color"
@@ -1429,6 +1716,7 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/white_grey_meal_bg"
                         android:layout_weight="2"
+                        android:visibility="gone"
                         android:orientation="vertical">
 
                         <LinearLayout
@@ -1467,6 +1755,7 @@
                     <LinearLayout
                         android:id="@+id/llDASS21"
                         android:layout_width="0dp"
+                        android:visibility="gone"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
                         android:layout_marginStart="10dp"
@@ -1511,6 +1800,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
+                        android:visibility="gone"
                         android:layout_marginStart="10dp"
                         android:background="@drawable/white_grey_meal_bg"
                         android:layout_weight="2"

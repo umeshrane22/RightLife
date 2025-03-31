@@ -1,5 +1,6 @@
 package com.example.rlapp.ai_package.data.repository
 
+import com.example.rlapp.ai_package.model.AddToolRequest
 import com.example.rlapp.ai_package.model.HealthSummaryResponse
 import com.example.rlapp.ai_package.model.MealLogsResponseModel
 import com.example.rlapp.ai_package.model.MealsResponse
@@ -8,6 +9,7 @@ import com.example.rlapp.ai_package.model.RecipeResponseModel
 import com.example.rlapp.ai_package.model.RestorativeSleepResponse
 import com.example.rlapp.ai_package.model.AnalysisRequest
 import com.example.rlapp.ai_package.model.AnalysisResponse
+import com.example.rlapp.ai_package.model.ModuleResponse
 import com.example.rlapp.ai_package.model.ScanMealNutritionResponse
 import com.example.rlapp.ai_package.model.SleepConsistencyResponse
 import com.example.rlapp.ai_package.model.SleepIdealActualResponse
@@ -15,6 +17,7 @@ import com.example.rlapp.ai_package.model.SleepLandingResponse
 import com.example.rlapp.ai_package.model.SleepPerformanceResponse
 import com.example.rlapp.ai_package.model.SleepStageResponse
 import com.example.rlapp.ai_package.model.ThinkQuoteResponse
+import com.example.rlapp.ai_package.model.ToolsResponse
 import com.example.rlapp.ai_package.model.WorkoutMoveMainResponseRoutine
 import com.example.rlapp.ai_package.model.WorkoutMoveResponseRoutine
 import com.example.rlapp.ai_package.model.WorkoutResponse
@@ -44,6 +47,11 @@ interface ApiService {
     @GET("app/api/meal-plan/meal-recipes-lists")
     fun getMealRecipesList(
         @Header("Authorization") authToken: String): Call<RecipeResponseModel>
+    @GET("app/api/tools")
+    fun getToolList(
+        @Header("Authorization") authToken: String,
+        @Query("userId") userId: String
+    ): Call<ModuleResponse>
 
     @GET("app/api/meal-plan/meal-logs")
     fun getMealLogLists(
@@ -74,8 +82,21 @@ interface ApiService {
         @Query("date") date: String
     ): Call<SleepStageResponse>
 
-    @GET("api/quoteOfDay")
-    fun quoteOfDay(): Call<ThinkQuoteResponse>
+    @GET("app/api/quoteOfDay")
+    fun quoteOfDay(@Header("Authorization") authToken: String): Call<ThinkQuoteResponse>
+
+    @GET("app/api/tools")
+    fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
+
+    @GET("app/api/tools")
+    fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("userId") userId: String): Call<ToolsResponse>
+
+
+    @POST("app/api/tools")
+    fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<ToolsResponse>
+
+    @GET("app/api/tools")
+    fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
