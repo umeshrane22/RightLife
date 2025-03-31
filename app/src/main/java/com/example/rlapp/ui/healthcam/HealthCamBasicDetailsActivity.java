@@ -454,8 +454,6 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                    Log.d("AAAA API Response", "ReportId submit - : " + jsonResponse);
-
                     HealthCamSubmitResponse healthCamSubmitResponse = gson.fromJson(jsonResponse, HealthCamSubmitResponse.class);
                     if (healthCamSubmitResponse.getStatus().equalsIgnoreCase("PAYMENT_INPROGRESS")) {
                         Intent intent = new Intent(HealthCamBasicDetailsActivity.this, AccessPaymentActivity.class);

@@ -2,25 +2,29 @@ package com.example.rlapp.ui.healthcam;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-// Update with your binding path
-import com.example.rlapp.R;
 import com.example.rlapp.apimodel.newreportfacescan.HealthCamItem;
 import com.example.rlapp.databinding.HealthCamVitalsItemBinding;
 import com.example.rlapp.ui.utility.Utils;
+import com.example.rlapp.newdashboard.FacialScanReportDetailsActivity;
 
 import java.util.List;
 
 public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitalsAdapter.HealthCamVitalsViewHolder> {
 
     private List<HealthCamItem> healthCamItems;
+    private Context context;
 
-    public HealthCamVitalsAdapter(List<HealthCamItem> healthCamItems) {
+    public HealthCamVitalsAdapter(Context context, List<HealthCamItem> healthCamItems) {
         this.healthCamItems = healthCamItems;
+        this.context = context;
     }
 
     @NonNull
@@ -40,6 +44,10 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         holder.binding.indicatorTextView.setText(item.indicator);
         holder.binding.parameterTextView.setText(item.parameter);
         holder.binding.rlMainBg.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.colour)));
+
+        holder.itemView.setOnClickListener(view -> {
+            context.startActivity(new Intent(context, FacialScanReportDetailsActivity.class));
+        });
 
         // Set Indicator Image and Color based on item.indicator
    /*     if (item.indicator.equals("Normal")) {

@@ -29,6 +29,7 @@ import com.example.rlapp.ui.HomeActivity;
 import com.example.rlapp.ui.rlpagemain.RLContinueListAdapter;
 import com.example.rlapp.ui.utility.DateConverter;
 import com.example.rlapp.ui.utility.DateTimeUtils;
+
 import com.example.rlapp.ui.utility.SharedPreferenceConstants;
 import com.example.rlapp.ui.utility.Utils;
 import com.google.gson.Gson;
@@ -113,7 +114,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             binding.tvLastReportDate.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(facialReportResponseNew.data.createdAt));
             if (facialReportResponseNew.data.lastCheckin) {
                 binding.cardviewLastCheckin.setVisibility(View.GONE);
-            }else {
+            } else {
                 binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
             }
 
@@ -127,7 +128,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             allHealthCamItems.addAll(healthCamGoodItems);
             allHealthCamItems.addAll(healthCamPayAttentionItems);
 
-            HealthCamVitalsAdapter adapter = new HealthCamVitalsAdapter(allHealthCamItems);
+            HealthCamVitalsAdapter adapter = new HealthCamVitalsAdapter(this, allHealthCamItems);
 
             binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
             binding.recyclerViewVitalCards.setAdapter(adapter);
@@ -139,7 +140,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             //txt_continue_view_header.setVisibility(View.VISIBLE);
             HealthCamRecommendationAdapter adapter = new HealthCamRecommendationAdapter(this, facialReportResponseNew.data.recommendation);
             LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-          binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
+            binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
             binding.recyclerViewContinue.setAdapter(adapter);
         } else {
             //txt_continue_view_header.setVisibility(View.GONE);
