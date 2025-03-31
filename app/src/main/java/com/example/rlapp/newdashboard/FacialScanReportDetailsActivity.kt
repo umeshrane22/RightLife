@@ -35,6 +35,10 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         binding = ActivityFacialScanReportDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.backButton.setOnClickListener{
+            finish()
+        }
+
         //updateChart(getWeekData(), getWeekLabels())
 
         // Handle Radio Button Selection

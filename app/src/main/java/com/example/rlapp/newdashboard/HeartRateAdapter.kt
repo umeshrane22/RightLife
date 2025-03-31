@@ -94,14 +94,14 @@ class HeartRateAdapter(
         }*/
 
         // open report detail: click listener
-        /*binding.cardHeartRate.setOnClickListener {
-            val intent = Intent(context, HeartRateDetailActivity::class.java).apply {
-                putExtra("HEART_RATE", item.heartRate)
+        binding.cardHeartRate.setOnClickListener {
+            val intent = Intent(context, FacialScanReportDetailsActivity::class.java).apply {
+                /*putExtra("HEART_RATE", item.heartRate)
                 putExtra("DATE", item.date)
-                putStringArrayListExtra("TREND_DATA", item.trendData)
+                putStringArrayListExtra("TREND_DATA", item.trendData)*/
             }
             context.startActivity(intent)
-        }*/
+        }
     }
     private fun getWarningIconByType(type: String): Int {
         return when (type) {
