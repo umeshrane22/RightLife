@@ -16,12 +16,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
 import com.example.rlapp.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
 import com.example.rlapp.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
 import com.example.rlapp.ai_package.ui.moveright.customProgressBar.StripedProgressBar
 import com.example.rlapp.databinding.FragmentSleepStagesBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
 
@@ -57,6 +62,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         )
 
         sleepChart.setSleepData(sleepData)
+        fetchSleepData()
 
         customProgressBar = view.findViewById(R.id.customProgressBar)
         transparentOverlay = view.findViewById(R.id.transparentOverlay)
@@ -111,6 +117,41 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                 navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
             }
         })
+    }
+
+    private fun fetchSleepData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.fetchSleepStage(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    date = "2025-03-18", // Fixed variable name
+                    source = "apple"
+                )
+
+                if (response.isSuccessful) {
+                    val healthSummary = response.body()
+                    healthSummary?.let {
+                        // Store heart rate zones for use in fetchUserWorkouts
+                        // = it.heartRateZones
+
+                        // Update UI with health summary data
+                        withContext(Dispatchers.Main) {
+                            println("Health Summary Fetched Successfully")
+                            // TODO: Update UI here
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        println("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Exception: ${e.message}")
+                }
+            }
+        }
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {

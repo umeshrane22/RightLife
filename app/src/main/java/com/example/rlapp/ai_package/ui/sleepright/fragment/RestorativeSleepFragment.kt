@@ -13,6 +13,7 @@ import android.widget.RadioGroup
 import androidx.activity.OnBackPressedCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.databinding.FragmentRestorativeSleepBinding
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
@@ -25,6 +26,10 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
 
@@ -45,6 +50,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
+        fetchSleepData()
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -140,6 +146,42 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         barChart.renderer = RoundedBarChartRenderer(barChart, ChartAnimator(), ViewPortHandler())
 
         barChart.invalidate() // Refresh the chart
+    }
+
+    private fun fetchSleepData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    source = "apple",
+                    date = "2025-03-18",
+                    period = "weekly"
+                )
+
+                if (response.isSuccessful) {
+                    val healthSummary = response.body()
+                    healthSummary?.let {
+                        // Store heart rate zones for use in fetchUserWorkouts
+                        // = it.heartRateZones
+
+                        // Update UI with health summary data
+                        withContext(Dispatchers.Main) {
+                            println("Health Summary Fetched Successfully")
+                            // TODO: Update UI here
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        println("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Exception: ${e.message}")
+                }
+            }
+        }
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>) {

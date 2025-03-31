@@ -195,8 +195,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
         val mealLogs = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_proteins),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_carbs),
+            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
+            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
 
@@ -210,8 +210,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
         val mealLogs = listOf(
             MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
-            MicroNutrientsModel("3", "mg", "Iron", R.drawable.ic_proteins),
-            MicroNutrientsModel("25", "mg", "Magnesium", R.drawable.ic_carbs),
+            MicroNutrientsModel("3", "mg", "Iron", R.drawable.ic_cabs),
+            MicroNutrientsModel("25", "mg", "Magnesium", R.drawable.ic_protein),
             MicroNutrientsModel("65", "mg", "Phasphorus", R.drawable.ic_fats),
             MicroNutrientsModel("150", "mg", "Potassium", R.drawable.ic_fats),
             MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
@@ -259,8 +259,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
     private fun onMacroNutrientsItem(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
         val macroNutrients = listOf(
             MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_proteins),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_carbs),
+            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
+            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
             MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
         )
         val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
@@ -272,8 +272,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
         val microNutrients = listOf(
             MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
-            MicroNutrientsModel("3", "mg", "Iron", R.drawable.ic_proteins),
-            MicroNutrientsModel("25", "mg", "Magnesium", R.drawable.ic_carbs),
+            MicroNutrientsModel("3", "mg", "Iron", R.drawable.ic_cabs),
+            MicroNutrientsModel("25", "mg", "Magnesium", R.drawable.ic_protein),
             MicroNutrientsModel("65", "mg", "Phasphorus", R.drawable.ic_fats),
             MicroNutrientsModel("150", "mg", "Potassium", R.drawable.ic_fats),
             MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)

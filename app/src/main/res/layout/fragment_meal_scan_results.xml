@@ -1,7 +1,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/meal_log_background"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,6 +36,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -46,10 +47,12 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:id="@+id/imageFood"
+                android:layout_width="350dp"
+                android:layout_height="300dp"
+                android:layout_gravity="center"
                 android:src="@drawable/poha_image"
-                android:scaleType="fitXY" />
+                android:scaleType="centerCrop" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -70,21 +73,22 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tvFoodName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Poha"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/dmsans_bold"
                     android:layout_weight="0.8"
                     android:layout_gravity="center"
                     android:layout_marginStart="15dp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black_no_meals" />
 
                 <ImageView
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_weight="0.1"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
+                    android:layout_weight="0.1"
+                    android:visibility="gone"
                     android:src="@drawable/material_edit" />
 
                 <TextView
@@ -94,6 +98,7 @@
                     android:id="@+id/change_btn"
                     android:textAlignment="center"
                     android:textSize="12sp"
+                    android:visibility="gone"
                     android:layout_weight="0.1"
                     android:layout_gravity="center"
                     android:textColor="@color/meal_log_title" />
@@ -142,17 +147,19 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/tvSelectedDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="13 Feb 2025"
                         android:textSize="14sp"
-                        android:textStyle="bold"
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:layout_marginStart="15dp"
-                        android:textColor="@color/black" />
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/black_no_meals" />
 
                     <ImageView
+                        android:id="@+id/ivDatePicker"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_weight="0.1"
@@ -169,12 +176,28 @@
                     android:background="@drawable/white_meal_date_bg"
                     android:orientation="horizontal">
 
+                    <Spinner
+                        android:id="@+id/spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:textSize="14sp"
+                        android:padding="2dp"
+                        android:textStyle="bold"
+                        android:layout_weight="0.9"
+                        android:background="@color/white"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="15dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/black_no_meals"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Breakfast"
                         android:textSize="14sp"
                         android:textStyle="bold"
+                        android:visibility="gone"
+                        android:fontFamily="@font/dmsans_bold"
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:layout_marginStart="15dp"
@@ -211,30 +234,32 @@
                     android:textColor="@color/black" />
 
                 <ImageView
+                    android:id="@+id/ivDecrease"
                     android:layout_width="12dp"
-                    android:layout_height="2dp"
+                    android:layout_height="12dp"
                     android:layout_weight="0.1"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_minus" />
+                    android:src="@drawable/ic_minus" />
 
                 <TextView
+                    android:id="@+id/tvQuantity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="1"
                     android:textSize="14sp"
-                    android:textStyle="bold"
+                    android:fontFamily="@font/dmsans_bold"
                     android:layout_weight="0.1"
                     android:textAlignment="center"
                     android:layout_gravity="center"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/black_no_meals" />
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:padding="4dp"
+                    android:id="@+id/ivIncrease"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
                     android:layout_weight="0.1"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/icon_plus" />
+                    android:src="@drawable/ic_plus" />
             </LinearLayout>
 
             <LinearLayout
@@ -268,6 +293,7 @@
                         android:layout_height="20dp"
                         android:layout_marginTop="5dp"
                         android:padding="6dp"
+                        android:visibility="gone"
                         android:layout_weight="0.1"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/caret_up" />
@@ -385,7 +411,7 @@
                                 android:layout_width="6dp"
                                 android:layout_height="6dp"
                                 android:layout_gravity="center_vertical"
-                                android:src="@drawable/ic_carbs" />
+                                android:src="@drawable/ic_protein" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -438,7 +464,7 @@
                             <ImageView
                                 android:layout_width="6dp"
                                 android:layout_height="6dp"
-                                android:src="@drawable/ic_proteins"
+                                android:src="@drawable/ic_cabs"
                                 android:layout_gravity="center_vertical" />
 
                             <TextView
@@ -552,6 +578,7 @@
                         android:layout_height="16dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
+                        android:visibility="gone"
                         android:scaleType="center"
                         android:src="@drawable/caret_up"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -592,6 +619,7 @@
                 android:background="@drawable/white_meal_date_bg"
                 android:layout_marginTop="15dp"
                 android:padding="8dp"
+                android:visibility="gone"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="10dp"
                 android:orientation="vertical">
@@ -644,7 +672,7 @@
                     android:textStyle="bold"
                     android:text="Dishes amp Ingredients Detected"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/caret_up" />
+                    />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -653,6 +681,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
+                    android:visibility="gone"
                     android:background="@drawable/green_meal_bg"
                     android:orientation="horizontal">
 
@@ -1155,7 +1184,7 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layout_save_meal"
+            android:id="@+id/saveMealLayout"
             android:layout_width="150dp"
             android:layout_height="40dp"
             android:orientation="horizontal"
@@ -1174,7 +1203,7 @@
                 android:layout_gravity="center"
                 android:scaleType="fitXY"
                 android:visibility="visible"
-                android:src="@drawable/green_circle"
+                android:src="@drawable/meal_plan_green_icon"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -1185,7 +1214,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="5dp"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textSize="14sp"
@@ -1196,7 +1225,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/layout_add_to_log"
+            android:id="@+id/addToLogLayout"
             android:layout_width="150dp"
             android:layout_height="40dp"
             android:orientation="horizontal"
@@ -1225,7 +1254,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="5dp"
                 android:layout_gravity="center"
                 android:textSize="14sp"
                 android:textColor="@color/white"

@@ -268,33 +268,28 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "MoveRight")
             })
-            Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardEatright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
             })
-            Toast.makeText(this, "EatRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardSleepright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "SleepRight")
             })
-            Toast.makeText(this, "SleepRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardThinkright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
                 .apply {
                     putExtra("ModuleName", "ThinkRight")
                 })
-            Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardMoveright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
                 .apply {
                     putExtra("ModuleName", "MoveRight")
                 })
-            Toast.makeText(this, "ThinkRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
 
     }

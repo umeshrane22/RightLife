@@ -15,6 +15,7 @@ import android.widget.RadioGroup
 import androidx.activity.OnBackPressedCallback
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.databinding.FragmentSleepPerformanceBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
@@ -32,6 +33,10 @@ import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>() {
 
@@ -58,6 +63,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
+        fetchSleepData()
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -100,6 +106,41 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
 
 
+    }
+
+    private fun fetchSleepData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.fetchSleepPerformance(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    source = "apple",
+                    period = "weekly"
+                )
+
+                if (response.isSuccessful) {
+                    val healthSummary = response.body()
+                    healthSummary?.let {
+                        // Store heart rate zones for use in fetchUserWorkouts
+                        // = it.heartRateZones
+
+                        // Update UI with health summary data
+                        withContext(Dispatchers.Main) {
+                            println("Health Summary Fetched Successfully")
+                            // TODO: Update UI here
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        println("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Exception: ${e.message}")
+                }
+            }
+        }
     }
 
     private fun lineChartForSixMonths(){

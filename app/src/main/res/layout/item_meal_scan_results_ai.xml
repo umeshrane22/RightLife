@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:aapp="http://schemas.android.com/tools"
     android:layout_marginTop="10dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
@@ -26,15 +27,18 @@
             app:layout_constraintTop_toTopOf="parent"
             android:visibility="visible"
             android:scaleType="fitXY"
-            android:src="@drawable/poha_image" />
+            android:src="@drawable/ic_breakfast" />
 
         <TextView
             android:id="@+id/tv_meal_title"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:maxLines="1"
             app:layout_constraintStart_toEndOf="@+id/image_meal"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="14sp"
@@ -64,7 +68,7 @@
                 android:id="@+id/image_edit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:scaleType="fitXY"
                 android:layout_marginStart="10dp"
                 android:src="@drawable/delete_icon_green" />
@@ -74,6 +78,7 @@
                 android:id="@+id/image_circle_plus"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:visibility="gone"
                 android:scaleType="fitXY"
                 android:src="@drawable/edit_green_icon" />
 
@@ -132,7 +137,7 @@
                     android:id="@+id/tv_serves"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
@@ -142,7 +147,7 @@
                     android:id="@+id/tv_serves_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -169,7 +174,7 @@
                     android:id="@+id/tv_cal_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -179,7 +184,7 @@
                     android:id="@+id/tv_cal_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
@@ -200,13 +205,13 @@
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_carbs" />
+                    android:src="@drawable/ic_protein" />
 
                 <TextView
-                    android:id="@+id/tv_subtraction_value"
+                    android:id="@+id/tv_protein_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -216,7 +221,7 @@
                     android:id="@+id/tv_subtraction_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
@@ -237,13 +242,13 @@
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_proteins" />
+                    android:src="@drawable/ic_cabs" />
 
                 <TextView
-                    android:id="@+id/tv_baguette_value"
+                    android:id="@+id/tv_cabs_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -253,7 +258,7 @@
                     android:id="@+id/tv_baguette_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
@@ -276,10 +281,10 @@
                     android:src="@drawable/ic_fats" />
 
                 <TextView
-                    android:id="@+id/tv_dewpoint_value"
+                    android:id="@+id/tv_fats_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -289,7 +294,7 @@
                     android:id="@+id/tv_dewpoint_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="3dp"
                     android:textSize="10sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"

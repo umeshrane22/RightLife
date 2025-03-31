@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -53,6 +54,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var appPreference: AppPreference
     private lateinit var progressDialog: ProgressDialog
     private lateinit var landingPageResponse : LandingPageResponse
+    private lateinit var tvProteinValue : TextView
+    private lateinit var tvFatsValue : TextView
+    private lateinit var tvCabsValue : TextView
+    private lateinit var tvCaloriesValue : TextView
+    private lateinit var fatsProgressBar : ProgressBar
+    private lateinit var proteinProgressBar : ProgressBar
+    private lateinit var cabsProgressBar : ProgressBar
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
@@ -76,6 +84,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val mealLogLayout = view.findViewById<LinearLayout>(R.id.layout_meal_log)
         mealPlanRecyclerView = view.findViewById(R.id.recyclerview_meal_plan_item)
         todayMacrosWithDataLayout = view.findViewById(R.id.today_macros_with_data_layout)
+        tvProteinValue = view.findViewById(R.id.tv_protien_value)
+        tvFatsValue = view.findViewById(R.id.tv_fats_value)
+        tvCabsValue = view.findViewById(R.id.tv_carbs_value)
+        fatsProgressBar = view.findViewById(R.id.fats_progressBar)
+        proteinProgressBar = view.findViewById(R.id.protein_progressBar)
+        cabsProgressBar = view.findViewById(R.id.carbs_progressBar)
+      //  tvCaloriesValue = view.findViewById(R.id.tvCaloriesValue)
         todayMacroNoDataLayout = view.findViewById(R.id.today_macro_no_data_layout)
         todayMicrosWithDataLayout = view.findViewById(R.id.today_micros_with_data_layout)
         todayMacroNoDataLayoutOne = view.findViewById(R.id.today_macro_no_data_layout_one)
@@ -117,7 +132,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
         snapMealBtn.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = MealScanResultFragment()
+                val mealSearchFragment = SnapMealFragment()
                 val args = Bundle()
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
@@ -282,7 +297,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
         val startDate = "2025-03-22"
-        val call = ApiClient.apiServiceFastApi.getMealSummary(startDate)
+        val call = ApiClient.apiServiceFastApi.getMealSummary(userId, startDate)
         call.enqueue(object : Callback<LandingPageResponse> {
             override fun onResponse(call: Call<LandingPageResponse>, response: Response<LandingPageResponse>) {
                 if (response.isSuccessful) {
@@ -307,6 +322,18 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun setMealSummaryData(landingPageResponse: LandingPageResponse){
+
+      //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
+        tvProteinValue.text = landingPageResponse.total_protein.toString()
+        tvCabsValue.text = landingPageResponse.total_carbs.toString()
+        tvFatsValue.text = landingPageResponse.total_fat.toString()
+
+        cabsProgressBar.max = 500
+        cabsProgressBar.progress = landingPageResponse.total_carbs
+        proteinProgressBar.max = 84
+        proteinProgressBar.progress = landingPageResponse.total_protein
+        fatsProgressBar.max = 68
+        fatsProgressBar.progress = landingPageResponse.total_fat
 
     }
 }

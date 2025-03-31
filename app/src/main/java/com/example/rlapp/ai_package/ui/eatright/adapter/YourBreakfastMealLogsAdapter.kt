@@ -14,7 +14,9 @@ import com.example.rlapp.ai_package.ui.eatright.model.BreakfastMealModel
 
 class YourBreakfastMealLogsAdapter(private val context: Context, private var dataLists: ArrayList<MealList>,
                                    private var clickPos: Int, private var mealLogListData : MealList?,
-                                   private var isClickView : Boolean, val onMealLogDateItem: (BreakfastMealModel, Int, Boolean) -> Unit,) :
+                                   private var isClickView : Boolean, val onMealLogDateItem: (BreakfastMealModel, Int, Boolean) -> Unit,
+                                   val onBreakfastDeleteItem: (MealList, Int, Boolean) -> Unit,
+                                   val onBreakfastEditItem: (MealList, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<YourBreakfastMealLogsAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -65,10 +67,13 @@ class YourBreakfastMealLogsAdapter(private val context: Context, private var dat
 //            }
    //     }
 
-//        holder.layoutMain.setOnClickListener {
-//           // holder.createNewVersionCard.visibility = View.GONE
-//            onMealLogDateItem(item, position, true)
-//        }
+        holder.delete.setOnClickListener {
+            onBreakfastDeleteItem(item, position, true)
+        }
+
+        holder.edit.setOnClickListener {
+            onBreakfastEditItem(item, position, true)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -78,9 +83,9 @@ class YourBreakfastMealLogsAdapter(private val context: Context, private var dat
      inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
          val mealTime: TextView = itemView.findViewById(R.id.tv_eat_time)
-//         val delete: ImageView = itemView.findViewById(R.id.image_delete)
-//         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-//         val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+         val delete: ImageView = itemView.findViewById(R.id.image_delete)
+         val edit: ImageView = itemView.findViewById(R.id.image_edit)
+         val imageUpDown : ImageView = itemView.findViewById(R.id.imageUpDown)
          val mealImage : ImageView = itemView.findViewById(R.id.image_meal)
          val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
          val serve: ImageView = itemView.findViewById(R.id.image_serve)

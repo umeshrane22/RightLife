@@ -8,12 +8,11 @@
     tools:context=".ai_package.ui.MainAIActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/navHostMain"
-        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:id="@+id/homeBottomTab"
+        android:name="com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/main_nav_graph" />
+        tools:layout="@layout/home_bottom_tab_fragment_ai" />
 
     <FrameLayout
         android:id="@+id/flFragment"
