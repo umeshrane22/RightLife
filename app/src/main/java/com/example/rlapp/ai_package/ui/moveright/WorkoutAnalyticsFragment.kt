@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -29,6 +30,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private lateinit var heartRateGraph: CustomHeartRateGraph
     private lateinit var customProgressBar: StripedProgressBar
     private lateinit var transparentOverlay: View
+    private lateinit var workOutsAnalyticsBackButton: ImageView
     private lateinit var customProgressBarCardio: CardioStrippedProgressBar
     private lateinit var transparentOverlayCardio: View
     private lateinit var customProgressBarLight: LightStrippedprogressBar
@@ -62,6 +64,10 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         transparentOverlayLight = view.findViewById(R.id.transparentOverlayLight)
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         transparentOverlayFatBurn = view.findViewById(R.id.transparentOverlayFatBurn)
+        workOutsAnalyticsBackButton = view.findViewById(R.id.back_button)
+        workOutsAnalyticsBackButton.setOnClickListener {
+            navigateToFragment(HomeBottomTabFragment(), "LandingFragment")
+        }
 
         // Setup progress bars
         customProgressBar.post {

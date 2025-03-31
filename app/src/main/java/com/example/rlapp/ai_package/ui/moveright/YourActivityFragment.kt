@@ -32,6 +32,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var usernameReset: EditText
     private lateinit var signupConfirm: TextView
     private lateinit var activitySync: ImageView
+    private lateinit var yourActivityBackButton: ImageView
     private lateinit var confirmResetBtn: AppCompatButton
     private lateinit var progressBarConfirmation: ProgressBar
     private lateinit var mealLogDateListAdapter: RecyclerView
@@ -68,6 +69,18 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
         activitySync = view.findViewById(R.id.activities_sync)
         addWorkout = view.findViewById(R.id.apple_health_sync_button)
+        yourActivityBackButton = view.findViewById(R.id.back_button)
+        yourActivityBackButton.setOnClickListener {
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
 
         showTooltipsSequentially()
 

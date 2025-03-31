@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -16,6 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
+            android:id="@+id/moveright_image_back"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/back"
@@ -309,7 +311,7 @@
                             android:id="@+id/calorie_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1500"
+                            android:text="1466"
                             android:textSize="45dp"
                             android:textStyle="bold"
                             android:textColor="@color/text_color_1500"
@@ -572,6 +574,14 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/view_border_line">
 
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                android:text="{&#xA;  &quot;message&quot;: &quot;On Track\nGreat job! You’re in a calorie deficit today, which helps you stay on track for your weight loss goal. Keep nourishing your body with balanced meals and stay consistent!&quot;,&#xA;  &quot;heart_rate&quot;: [&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;unit&quot;: &quot;bpm&quot;,&#xA;      &quot;value&quot;: 85&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;unit&quot;: &quot;bpm&quot;,&#xA;      &quot;value&quot;: 85&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;unit&quot;: &quot;bpm&quot;,&#xA;      &quot;value&quot;: 85&#xA;    }&#xA;  ],&#xA;  &quot;resting_heart_rate&quot;: [&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T07:00:00&quot;,&#xA;      &quot;unit&quot;: &quot;bpm&quot;,&#xA;      &quot;value&quot;: 60&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T07:00:00&quot;,&#xA;      &quot;unit&quot;: &quot;bpm&quot;,&#xA;      &quot;value&quot;: 60&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T07:00:00&quot;,&#xA;      &quot;unit&quot;: &quot;bpm&quot;,&#xA;      &quot;value&quot;: 60&#xA;    }&#xA;  ],&#xA;  &quot;heart_rate_variability_SDNN&quot;: [&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;unit&quot;: &quot;ms&quot;,&#xA;      &quot;value&quot;: 50&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;unit&quot;: &quot;ms&quot;,&#xA;      &quot;value&quot;: 50&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;unit&quot;: &quot;ms&quot;,&#xA;      &quot;value&quot;: 50&#xA;    }&#xA;  ],&#xA;  &quot;calories&quot;: [&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T09:00:00&quot;,&#xA;      &quot;unit&quot;: &quot;Cal&quot;,&#xA;      &quot;value&quot;: 120&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T09:00:00&quot;,&#xA;      &quot;unit&quot;: &quot;Cal&quot;,&#xA;      &quot;value&quot;: 120&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T09:00:00&quot;,&#xA;      &quot;unit&quot;: &quot;Cal&quot;,&#xA;      &quot;value&quot;: 120&#xA;    }&#xA;  ],&#xA;  &quot;heart_rate_zones&quot;: {&#xA;    &quot;Light Zone&quot;: [&#xA;      117,&#xA;      128&#xA;    ],&#xA;    &quot;Fat Burn Zone&quot;: [&#xA;      128,&#xA;      139&#xA;    ],&#xA;    &quot;Cardio Zone&quot;: [&#xA;      139,&#xA;      161&#xA;    ],&#xA;    &quot;Peak Zone&quot;: [&#xA;      161,&#xA;      183&#xA;    ]&#xA;  },&#xA;  &quot;steps&quot;: [&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;end_datetime&quot;: &quot;2025-03-24T08:30:00&quot;,&#xA;      &quot;source_version&quot;: &quot;16&quot;,&#xA;      &quot;start_datetime&quot;: &quot;2025-03-24T08:00:00&quot;,&#xA;      &quot;record_type&quot;: &quot;StepCount&quot;,&#xA;      &quot;unit&quot;: &quot;count&quot;,&#xA;      &quot;value&quot;: &quot;3000&quot;,&#xA;      &quot;_id&quot;: &quot;67e12530e1cfe49f7b0c92f8&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;end_datetime&quot;: &quot;2025-03-24T08:30:00&quot;,&#xA;      &quot;source_version&quot;: &quot;16&quot;,&#xA;      &quot;start_datetime&quot;: &quot;2025-03-24T08:00:00&quot;,&#xA;      &quot;record_type&quot;: &quot;StepCount&quot;,&#xA;      &quot;unit&quot;: &quot;count&quot;,&#xA;      &quot;value&quot;: &quot;3000&quot;,&#xA;      &quot;_id&quot;: &quot;67e12595e1cfe49f7b0c92f9&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T08:35:00&quot;,&#xA;      &quot;end_datetime&quot;: &quot;2025-03-24T08:30:00&quot;,&#xA;      &quot;source_version&quot;: &quot;16&quot;,&#xA;      &quot;start_datetime&quot;: &quot;2025-03-24T08:00:00&quot;,&#xA;      &quot;record_type&quot;: &quot;StepCount&quot;,&#xA;      &quot;unit&quot;: &quot;count&quot;,&#xA;      &quot;value&quot;: &quot;3000&quot;,&#xA;      &quot;_id&quot;: &quot;67e1317722a2406f2eceb627&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;&#xA;    }&#xA;  ],&#xA;  &quot;total_steps_sum&quot;: 9000,&#xA;  &quot;avg_steps&quot;: [&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-18&quot;,&#xA;      &quot;avg_steps&quot;: 2500&#xA;    },&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-19&quot;,&#xA;      &quot;avg_steps&quot;: 3000&#xA;    },&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-20&quot;,&#xA;      &quot;avg_steps&quot;: 2800&#xA;    },&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-21&quot;,&#xA;      &quot;avg_steps&quot;: 3200&#xA;    },&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-22&quot;,&#xA;      &quot;avg_steps&quot;: 2900&#xA;    },&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-23&quot;,&#xA;      &quot;avg_steps&quot;: 3100&#xA;    },&#xA;    {&#xA;      &quot;date&quot;: &quot;2025-03-24&quot;,&#xA;      &quot;avg_steps&quot;: 3000&#xA;    }&#xA;  ],&#xA;  &quot;steps_goal&quot;: &quot;12500&quot;,&#xA;  &quot;total_burned&quot;: [&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T09:00:00&quot;,&#xA;      &quot;end_datetime&quot;: &quot;2025-03-24T08:30:00&quot;,&#xA;      &quot;source_version&quot;: &quot;16&quot;,&#xA;      &quot;start_datetime&quot;: &quot;2025-03-24T08:00:00&quot;,&#xA;      &quot;record_type&quot;: &quot;ActiveEnergyBurned&quot;,&#xA;      &quot;unit&quot;: &quot;Cal&quot;,&#xA;      &quot;value&quot;: &quot;120&quot;,&#xA;      &quot;_id&quot;: &quot;67e12530e1cfe49f7b0c92f8&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T09:00:00&quot;,&#xA;      &quot;end_datetime&quot;: &quot;2025-03-24T08:30:00&quot;,&#xA;      &quot;source_version&quot;: &quot;16&quot;,&#xA;      &quot;start_datetime&quot;: &quot;2025-03-24T08:00:00&quot;,&#xA;      &quot;record_type&quot;: &quot;ActiveEnergyBurned&quot;,&#xA;      &quot;unit&quot;: &quot;Cal&quot;,&#xA;      &quot;value&quot;: &quot;120&quot;,&#xA;      &quot;_id&quot;: &quot;67e12595e1cfe49f7b0c92f9&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;&#xA;    },&#xA;    {&#xA;      &quot;creation_datetime&quot;: &quot;2025-03-24T09:00:00&quot;,&#xA;      &quot;end_datetime&quot;: &quot;2025-03-24T08:30:00&quot;,&#xA;      &quot;source_version&quot;: &quot;16&quot;,&#xA;      &quot;start_datetime&quot;: &quot;2025-03-24T08:00:00&quot;,&#xA;      &quot;record_type&quot;: &quot;ActiveEnergyBurned&quot;,&#xA;      &quot;unit&quot;: &quot;Cal&quot;,&#xA;      &quot;value&quot;: &quot;120&quot;,&#xA;      &quot;_id&quot;: &quot;67e1317722a2406f2eceb627&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;&#xA;    }&#xA;  ],&#xA;  &quot;total_burned_sum&quot;: 360,&#xA;  &quot;total_intake_calories&quot;: [&#xA;    {&#xA;      &quot;_id&quot;: &quot;67e0e91105b80d8823623e26&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;,&#xA;      &quot;calories&quot;: 450&#xA;    },&#xA;    {&#xA;      &quot;_id&quot;: &quot;67e0eade43ac4059db5ba368&quot;,&#xA;      &quot;user_id&quot;: &quot;64763fe2fa0e40d9c0bc8264&quot;,&#xA;      &quot;calories&quot;: 450&#xA;    }&#xA;  ],&#xA;  &quot;total_intake_calories_sum&quot;: 900&#xA;}"
+                                tools:layout_editor_absoluteY="370dp" />
+
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -669,7 +679,7 @@
                 android:elevation="4dp"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
@@ -1169,7 +1179,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="188"
+                        android:text="113"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -1224,7 +1234,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="188"
+                        android:text="124"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -1290,7 +1300,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="188"
+                        android:text="139"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -1343,7 +1353,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="188"
+                        android:text="152"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         android:textColor="@color/black"

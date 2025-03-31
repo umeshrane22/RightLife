@@ -154,4 +154,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             dots[i]?.setImageResource(drawable)
         }
     }
+
+
 }

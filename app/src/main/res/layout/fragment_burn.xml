@@ -231,7 +231,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
+                android:text="Active Burn – Your Energy Output in Motion"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
@@ -245,7 +245,10 @@
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
-                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+                android:text="Active Calories refer to the energy you burn through movement and physical activity. Unlike Basal Metabolic Rate (BMR), which accounts for the calories your body uses at rest, Active Calories are the additional calories expended during activities like exercise, walking, and other forms of movement.
+The more intense your activity, the higher your Active Burn. Factors such as workout type, duration, and heart rate influence the number of Active Calories burned.
+While wearable devices are popular for estimating calorie burn, [studies have shown](https://lifehacker.com/you-cant-trust-your-fitness-tracker-on-calorie-burn#:~:text=What studies say about fitness,overestimated 39%25 of the time.) that they may not always provide accurate measurements. For instance, research indicates that these devices can have varying degrees of accuracy when measuring energy expenditure.
+At RightLife, we recognize that these tools serve as motivational aids to encourage an active lifestyle. For precise tracking, we focus on monitoring calorie intake and logging changes in weight over time, ensuring a more accurate and personalized approach to your fitness journey. You can do both of these right here, on the app."
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>

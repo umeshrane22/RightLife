@@ -250,7 +250,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
+                android:text="RHR – The Pulse of Your Recovery"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
@@ -264,7 +264,9 @@
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
-                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+                android:text="Resting Heart Rate (RHR) is the number of times your heart beats per minute while at complete rest. It is a key indicator of cardiovascular fitness and overall heart health. A lower RHR typically reflects better heart efficiency and aerobic fitness, while a higher RHR may indicate stress, fatigue, dehydration, or other factors affecting your recovery.
+Several factors influence RHR, including sleep quality, hydration, stress levels, and overall fitness. Tracking your RHR over time can help you understand trends in your health, detect early signs of overtraining, and gauge improvements in your fitness level.
+At RightLife, we use RHR as a foundational metric to assess recovery, overall cardiovascular health, and fitness progress. It also plays a role in refining other key insights, such as Workout Zones and Ideal Sleep, to provide a well-rounded view of your well-being."
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />

@@ -9,15 +9,17 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
-import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.ai_package.ui.moveright.DeleteWorkoutBottomSheet
+import com.example.rlapp.ai_package.ui.moveright.WorkoutModel
 
-class YourWorkoutsListAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                              private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                              private var isClickView : Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,) :
-    RecyclerView.Adapter<YourWorkoutsListAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
+class YourWorkoutsListAdapter(
+    private val context: Context,
+    private var dataLists: ArrayList<WorkoutModel>,
+    private var clickPos: Int,
+    private var workoutData: WorkoutModel?,
+    private var isClickView: Boolean,
+    val onWorkoutItemClick: (WorkoutModel, Int, Boolean) -> Unit
+) : RecyclerView.Adapter<YourWorkoutsListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_your_workouts_ai, parent, false)
@@ -27,45 +29,27 @@ class YourWorkoutsListAdapter(private val context: Context, private var dataList
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
+        // Bind data to views
+        holder.mealTitle.text = item.workoutType
+        holder.servesCount.text = item.duration
+        holder.calValue.text = item.caloriesBurned
+        holder.subtractionValue.text = item.intensity
+
+        // Hide unused views
+        holder.mealName.visibility = View.GONE
+        holder.delete.visibility = View.GONE
+        holder.circlePlus.visibility = View.VISIBLE
+
+        // Set up edit button click listener
         holder.edit.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet()
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
-//        if (item.status == true) {
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_check)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-//        }else{
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_uncheck)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-        //     }
 
-//        holder.layoutMain.setOnClickListener {
-//           // holder.createNewVersionCard.visibility = View.GONE
-//            onMealLogDateItem(item, position, true)
-//        }
+        // Set up item click listener
+        holder.itemView.setOnClickListener {
+            onWorkoutItemClick(item, position, true)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -73,11 +57,10 @@ class YourWorkoutsListAdapter(private val context: Context, private var dataList
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-        val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+        val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
         val serves: TextView = itemView.findViewById(R.id.tv_serves)
@@ -96,12 +79,12 @@ class YourWorkoutsListAdapter(private val context: Context, private var dataList
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(items: ArrayList<WorkoutModel>?, pos: Int, workoutItem: WorkoutModel?, isClick: Boolean) {
         dataLists.clear()
-        if (item != null) {
-            dataLists = item
+        if (items != null) {
+            dataLists = items
             clickPos = pos
-            mealLogListData = mealLogItem
+            workoutData = workoutItem
             isClickView = isClick
         }
         notifyDataSetChanged()

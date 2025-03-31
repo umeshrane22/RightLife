@@ -14,6 +14,7 @@ import com.example.rlapp.ai_package.model.SleepIdealActualResponse
 import com.example.rlapp.ai_package.model.SleepLandingResponse
 import com.example.rlapp.ai_package.model.SleepPerformanceResponse
 import com.example.rlapp.ai_package.model.SleepStageResponse
+import com.example.rlapp.ai_package.model.ThinkQuoteResponse
 import com.example.rlapp.ai_package.model.WorkoutMoveMainResponseRoutine
 import com.example.rlapp.ai_package.model.WorkoutMoveResponseRoutine
 import com.example.rlapp.ai_package.model.WorkoutResponse
@@ -45,12 +46,12 @@ interface ApiService {
         @Header("Authorization") authToken: String): Call<RecipeResponseModel>
 
     @GET("app/api/meal-plan/meal-logs")
-     fun getMealLogLists(
+    fun getMealLogLists(
         @Header("Authorization") authToken: String): Call<MealLogsResponseModel>
 
-     @GET("eat/get-meals/")
-     fun getMeal(@Query("user_id") userId: String,
-                 @Query("date") startDate: String): Call<MealsResponse>
+    @GET("eat/get-meals/")
+    fun getMeal(@Query("user_id") userId: String,
+                @Query("date") startDate: String): Call<MealsResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(
@@ -71,39 +72,42 @@ interface ApiService {
         @Query("user_id") userId: String,
         @Query("source") source: String,
         @Query("date") date: String
-    ): Response<SleepStageResponse>
+    ): Call<SleepStageResponse>
+
+    @GET("api/quoteOfDay")
+    fun quoteOfDay(): Call<ThinkQuoteResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
         @Query("user_id") userId: String,
         @Query("source") source: String,
         @Query("period") period: String
-    ): Response<SleepPerformanceResponse>
+    ): Call<SleepPerformanceResponse>
 
     @GET("sleep/ideal_vs_actual_sleepTime_detail/")
     fun fetchSleepIdealActual(
         @Query("user_id") userId: String,
         @Query("source") source: String,
         @Query("period") period: String
-    ): Response<SleepIdealActualResponse>
+    ): Call<SleepIdealActualResponse>
 
     @GET("sleep/sleep_consistency_details/")
-     fun fetchSleepConsistencyDetail(
+    fun fetchSleepConsistencyDetail(
         @Query("user_id") userId: String,
         @Query("source") source: String,
         @Query("period") period: String
-    ): Response<SleepConsistencyResponse>
+    ): Call<SleepConsistencyResponse>
 
     @GET("sleep/restorative_sleep_detail/")
-     fun fetchSleepRestorativeDetail(
+    fun fetchSleepRestorativeDetail(
         @Query("user_id") userId: String,
         @Query("source") source: String,
         @Query("period") period: String,
         @Query("date") date: String
-    ): Response<RestorativeSleepResponse>
+    ): Call<RestorativeSleepResponse>
 
     @GET("sleep/landing_page/")
-     fun fetchSleepLandingPage(
+    fun fetchSleepLandingPage(
         @Query("user_id") userId: String,
         @Query("source") source: String,
         @Query("date") date: String,

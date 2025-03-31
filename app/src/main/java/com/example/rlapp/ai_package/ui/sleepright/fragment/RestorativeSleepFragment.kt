@@ -60,7 +60,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             when (checkedId) {
                 R.id.rbWeek ->{
                     setupBarChart(barChart)
-                   // updateChart(getWeekData(), getWeekLabels())
+                    // updateChart(getWeekData(), getWeekLabels())
                 }
                 R.id.rbMonth ->{
                     updateChart(getMonthData(), getMonthLabels())
@@ -149,39 +149,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     }
 
     private fun fetchSleepData() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    source = "apple",
-                    date = "2025-03-18",
-                    period = "weekly"
-                )
 
-                if (response.isSuccessful) {
-                    val healthSummary = response.body()
-                    healthSummary?.let {
-                        // Store heart rate zones for use in fetchUserWorkouts
-                        // = it.heartRateZones
-
-                        // Update UI with health summary data
-                        withContext(Dispatchers.Main) {
-                            println("Health Summary Fetched Successfully")
-                            // TODO: Update UI here
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        println("Error: ${response.code()} - ${response.message()}")
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    println("Exception: ${e.message}")
-                }
-            }
-        }
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>) {

@@ -2,6 +2,7 @@ package com.example.rlapp.ai_package.ui.eatright.fragment
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -40,6 +41,8 @@ import com.example.rlapp.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.example.rlapp.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentMealScanResultsBinding
+import com.example.rlapp.newdashboard.HomeDashboardActivity
+import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 import java.text.SimpleDateFormat
@@ -175,10 +178,40 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
         saveMealLayout.setOnClickListener {
             Toast.makeText(context, "Save Meal", Toast.LENGTH_SHORT).show()
+            val moduleName = arguments?.getString("ModuleName").toString()
+            if (moduleName.contentEquals("EatRight")){
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    val snapMealFragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    snapMealFragment.arguments = args
+                    replace(R.id.flFragment, snapMealFragment, "Steps")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }
         }
 
         addToLogLayout.setOnClickListener {
             Toast.makeText(context, "Added To Log", Toast.LENGTH_SHORT).show()
+            val moduleName = arguments?.getString("ModuleName").toString()
+            if (moduleName.contentEquals("EatRight")){
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    val snapMealFragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    snapMealFragment.arguments = args
+                    replace(R.id.flFragment, snapMealFragment, "Steps")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }
         }
     }
     private fun onMicroNutrientsItemRefresh (nutrition: NutritionDetails){
