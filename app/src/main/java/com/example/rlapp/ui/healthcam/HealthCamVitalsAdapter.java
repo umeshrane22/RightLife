@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rlapp.R;
 import com.example.rlapp.apimodel.newreportfacescan.HealthCamItem;
 import com.example.rlapp.databinding.HealthCamVitalsItemBinding;
 import com.example.rlapp.ui.utility.Utils;
