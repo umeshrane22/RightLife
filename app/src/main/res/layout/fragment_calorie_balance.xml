@@ -15,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         <ImageView
+            android:id="@+id/back_button"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/back"
@@ -261,7 +262,8 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
+                android:visibility="visible"
+                android:text="Caloric Balance – The Math Behind Your Progress"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
@@ -275,7 +277,11 @@
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
-                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+                android:visibility="visible"
+                android:text="Caloric Balance shows the relationship between how many calories you consume and how many you burn—giving you a real-time view of whether you're in a deficit, surplus, or maintenance zone.
+A calorie deficit supports fat loss, a surplus supports muscle gain, and balance helps with weight maintenance and steady energy. But it’s not just numbers—it’s about making smart, sustainable choices that align with your goals.
+At RightLife, we calculate Caloric Balance using your logged food intake, activity data, and changes in weight over time—so the feedback gets more precise the more consistent you are.
+Whether you’re trying to lose fat, build muscle, or just eat more mindfully, Caloric Balance gives you the daily clarity you need to make informed decisions."
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>

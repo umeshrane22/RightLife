@@ -74,7 +74,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 R.id.rbWeek ->{
                     barChart.visibility = View.VISIBLE
                     layoutLineChart.visibility = View.GONE
-                   // updateChart(getWeekData(), getWeekLabels())
+                    // updateChart(getWeekData(), getWeekLabels())
                     monthChart()
                 }
                 R.id.rbMonth ->{
@@ -86,7 +86,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                     barChart.visibility = View.GONE
                     layoutLineChart.visibility = View.VISIBLE
                     lineChartForSixMonths()
-                   // updateChart(getSixMonthData(), getSixMonthLabels())
+                    // updateChart(getSixMonthData(), getSixMonthLabels())
                 }
             }
         }
@@ -109,38 +109,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun fetchSleepData() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = ApiClient.apiServiceFastApi.fetchSleepPerformance(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    source = "apple",
-                    period = "weekly"
-                )
 
-                if (response.isSuccessful) {
-                    val healthSummary = response.body()
-                    healthSummary?.let {
-                        // Store heart rate zones for use in fetchUserWorkouts
-                        // = it.heartRateZones
-
-                        // Update UI with health summary data
-                        withContext(Dispatchers.Main) {
-                            println("Health Summary Fetched Successfully")
-                            // TODO: Update UI here
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        println("Error: ${response.code()} - ${response.message()}")
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    println("Exception: ${e.message}")
-                }
-            }
-        }
     }
 
     private fun lineChartForSixMonths(){

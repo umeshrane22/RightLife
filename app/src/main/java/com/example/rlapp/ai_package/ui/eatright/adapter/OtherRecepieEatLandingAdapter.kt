@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.rlapp.R
+import com.example.rlapp.ai_package.model.RecipeList
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
+import com.example.rlapp.ai_package.ui.eatright.model.RecipeSuggestion
 
-class OtherRecepieEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                                    private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                                    private var isClickView : Boolean, val onOtherReciepeDateItem: (MyMealModel, Int, Boolean) -> Unit,) :
+class OtherRecepieEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<RecipeList>,
+                                    private var clickPos: Int, private var mealLogListData : RecipeList?,
+                                    private var isClickView : Boolean, val onOtherReciepeDateItem: (RecipeList, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<OtherRecepieEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -25,17 +28,22 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealName
+        holder.mealTitle.text = item.name
         // holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
-        if (item.isAddDish == true) {
+       // holder.iamgeFood.text = item.serve
+        Glide.with(context)
+            .load(item.image)
+            .placeholder(R.drawable.ic_breakfast)
+            .error(R.drawable.ic_breakfast)
+            .into(holder.iamgeFood)
+//        holder.calValue.text = item.calories.toString()
+//        holder.subtractionValue.text = item.protein.toString()
+//        holder.baguetteValue.text = item.carbs.toString()
+//        holder.dewpointValue.text = item.fats.toString()
+     //   if (item.isAddDish == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-            holder.circlePlus.setImageResource(R.drawable.circle_check)
+   //         holder.circlePlus.setImageResource(R.drawable.circle_check)
 //            if (mealLogListData != null){
 //                if (clickPos == position && mealLogListData == item && isClickView == true){
 //                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
@@ -43,10 +51,10 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
 //                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
 //                }
 //            }
-        }else{
+  //      }else{
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-            holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
+   //         holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
 //            if (mealLogListData != null){
 //                if (clickPos == position && mealLogListData == item && isClickView == true){
 //                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
@@ -54,7 +62,7 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
 //                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
 //                }
 //            }
-        }
+   //     }
 
         holder.circlePlus.setOnClickListener {
             onOtherReciepeDateItem(item, position, true)
@@ -71,6 +79,7 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        val iamgeFood : ImageView = itemView.findViewById(R.id.iamgeFood)
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
@@ -93,7 +102,7 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<RecipeList>?, pos: Int, mealLogItem : RecipeList?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

@@ -24,9 +24,9 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-
-                android:layout_width="102dp"
-                android:layout_height="102dp"
+                android:id="@+id/iamgeFood"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:visibility="visible"
                 android:scaleType="fitXY"
                 android:src="@drawable/poha_image" />
@@ -37,7 +37,7 @@
             android:id="@+id/tv_meal_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintStart_toEndOf="@+id/image_meal"
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="60dp"
             android:layout_marginStart="10dp"
             android:gravity="left"
             app:layout_constraintStart_toEndOf="@+id/image_meal"
@@ -99,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp">
 
                 <ImageView
@@ -249,7 +249,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:orientation="horizontal">

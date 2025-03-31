@@ -61,11 +61,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var tvBurnValue: TextView
     private lateinit var calorieBalanceIcon: ImageView
+    private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var stepsTv: TextView
+    private lateinit var calorieBalanceDescription: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var appPreference: AppPreference
-   // private lateinit var progressBar: HalfCurveProgressBar
+    // private lateinit var progressBar: HalfCurveProgressBar
 
     // Define all required read permissions
     private val allReadPermissions = setOf(
@@ -99,10 +101,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
         calorieBalanceIcon = view.findViewById(R.id.calorie_balance_icon)
         dotsLayout = view.findViewById(R.id.dotsLayout)
+        moveRightImageBack = view.findViewById(R.id.moveright_image_back)
+        calorieBalanceDescription = view.findViewById(R.id.on_track_textLine)
         tvBurnValue = view.findViewById(R.id.textViewBurnValue)
         stepLineGraphView = view.findViewById(R.id.line_graph_steps)
         stepsTv = view.findViewById(R.id.steps_text)
-       // progressBar = view.findViewById(R.id.progressBarCalories)
+        moveRightImageBack.setOnClickListener {
+            activity?.finish()
+        }
+        // progressBar = view.findViewById(R.id.progressBarCalories)
 
         // Fetch workout data and set up the carousel
         fetchUserWorkouts()
@@ -494,8 +501,45 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
     }
-
     private fun fetchHealthSummary() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.getMoveLanding(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    date = "2025-03-24"
+                )
+
+                if (response.isSuccessful) {
+                    val healthSummary = response.body()
+                    healthSummary?.let {
+                        it.heartRateMoveLanding
+                        it.steps
+                        it.totalBurnedSum
+                        it.heartRateVariabilitySDNN
+                        it.heartRateZones
+                        withContext(Dispatchers.Main) {
+                            calorieBalanceDescription.text = it.message.toString()
+                            println("Health Summary: $it")
+                            println("Total Steps Sum: ${it.totalStepsSum}")
+                            println("Total Burned Sum: ${it.totalBurnedSum}")
+                            println("Total Intake Calories Sum: ${it.totalIntakeCaloriesSum}")
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        println("Error: ${response.code()} - ${response.message()}")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    println("Exception: ${e.message}")
+                }
+            }
+        }
+    }
+
+    /*private fun fetchHealthSummary() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = ApiClient.apiServiceFastApi.getMoveLanding(
@@ -506,11 +550,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 if (response.isSuccessful) {
                     val healthSummary = response.body()
                     healthSummary?.let {
+
+
                         // Store heart rate zones for use in fetchUserWorkouts
                        // heartRateZones = it.heartRateZones
 
                         // Update UI with health summary data
                         withContext(Dispatchers.Main) {
+                            calorieBalanceDescription.text = it.message.toString()
                             println("Health Summary Fetched Successfully")
                             // TODO: Update UI here
                         }
@@ -527,6 +574,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }
         }
-    }
+    }*/
 
 }

@@ -17,6 +17,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
+            android:id="@+id/imageBack"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/left_arrow_reclangle"
@@ -87,6 +88,7 @@
                     android:layout_height="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginTop="20dp"
+                    android:visibility="invisible"
                     android:src="@drawable/ic_info_circle"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
@@ -134,6 +136,7 @@
                         android:src="@drawable/forwardicon"
                         android:id="@+id/img_macro_arrow"
                         android:layout_marginTop="14dp"
+                        android:visibility="invisible"
                         android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
@@ -900,6 +903,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
+                            android:visibility="invisible"
                             android:src="@drawable/forward_green_color_meal"
                             android:layout_marginEnd="8dp" />
                     </LinearLayout>
@@ -959,6 +963,7 @@
                     android:id="@+id/img_more_meals"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
+                    android:visibility="invisible"
                     android:src="@drawable/forward_green_color_meal"
                     android:layout_marginEnd="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1264,6 +1269,7 @@
                     android:layout_height="25dp"
                     android:layout_weight="1"
                     android:textSize="20sp"
+                    android:visibility="invisible"
                     android:src="@drawable/recipes_right_icon"
                     android:textStyle="bold"
                     android:layout_gravity="center"
@@ -1281,6 +1287,7 @@
                 android:visibility="gone"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
                 app:layout_constraintTop_toBottomOf="@+id/layout_meal_plan_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -1293,6 +1300,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center"
                 android:weightSum="10"
+                android:visibility="gone"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
@@ -1323,6 +1331,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:visibility="gone"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -1466,6 +1475,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center"
                 android:weightSum="10"
+                android:visibility="gone"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
@@ -1496,6 +1506,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:visibility="gone"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -1667,6 +1678,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:textSize="18sp"
+                android:visibility="gone"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="15dp"
@@ -1680,6 +1692,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="7dp"
+                android:visibility="gone"
                 app:cardUseCompatPadding="true">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -1763,6 +1776,7 @@
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="15dp"
+                android:visibility="gone"
                 android:id="@+id/tv_go_deeper"
                 android:text="Go Deeper"/>
 
@@ -1773,6 +1787,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="7dp"
+                android:visibility="gone"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -1854,6 +1869,7 @@
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="15dp"
+                android:visibility="gone"
                 android:id="@+id/tv_health_title"
                 android:text="Check Your Health Snapshot"/>
 
@@ -1864,6 +1880,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="7dp"
+                android:visibility="gone"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -1907,6 +1924,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center"
                 android:weightSum="10"
+                android:visibility="invisible"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">

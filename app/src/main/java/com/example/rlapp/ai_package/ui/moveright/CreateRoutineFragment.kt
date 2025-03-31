@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -29,6 +30,7 @@ import kotlinx.coroutines.withContext
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText : EditText
     private lateinit var textViewRoutine : TextView
+    private lateinit var createRoutineBackButton : ImageView
     private lateinit var createRoutineRecyclerView : RecyclerView
     private lateinit var layoutBtnLog : LinearLayoutCompat
     private lateinit var addNameLayout : ConstraintLayout
@@ -41,13 +43,14 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-        fetchMoveRoutine()
+
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
 
         editText = view.findViewById(R.id.editText)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
         layoutBtnLog  = view.findViewById(R.id.layout_btn_log)
+        createRoutineBackButton  = view.findViewById(R.id.back_button)
         addNameLayout = view.findViewById(R.id.add_name_layout)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
         addNameLayout.visibility = View.VISIBLE
@@ -58,6 +61,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = myMealListAdapter
         onMyMealItemRefresh()
 
+        createRoutineBackButton.setOnClickListener {
+            navigateToFragment(YourworkOutsFragment(), "LandingFragment")
+        }
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
 
@@ -83,6 +89,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             addNameLayout.visibility = View.GONE
             createListRoutineLayout.visibility = View.VISIBLE
             textViewRoutine.text = editText.text
+            fetchMoveRoutine()
 
 
         }

@@ -191,6 +191,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         val snapMealFragment = MealScanResultFragment()
                         val args = Bundle()
+                        args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                         args.putString("ImagePath", imagePath)
                         args.putParcelable("foodDataResponses", response.body())
                         snapMealFragment.arguments = args
@@ -228,6 +229,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 val snapMealFragment = MealScanResultFragment()
                                 val args = Bundle()
+                                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                                 args.putString("ImagePath", imagePath)
                                 args.putParcelable("foodDataResponses", response.body())
                                 snapMealFragment.arguments = args

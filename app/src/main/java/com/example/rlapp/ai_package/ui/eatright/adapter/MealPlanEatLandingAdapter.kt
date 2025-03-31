@@ -8,11 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
+import com.example.rlapp.ai_package.ui.eatright.model.Meal
 import com.example.rlapp.ai_package.ui.eatright.model.MealPlanModel
 
-class MealPlanEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<MealPlanModel>,
-                                private var clickPos: Int, private var mealLogListData : MealPlanModel?,
-                                private var isClickView : Boolean, val onMealLogDateItem: (MealPlanModel, Int, Boolean) -> Unit,) :
+class MealPlanEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<Meal>,
+                                private var clickPos: Int, private var mealLogListData : Meal?,
+                                private var isClickView : Boolean, val onMealLogDateItem: (Meal, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<MealPlanEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -26,12 +27,12 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
         val item = dataLists[position]
 
         holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
+        holder.mealName.text = item.name
+        holder.servesCount.text = "1"
+        holder.calValue.text = item.calories.toString()
+        holder.subtractionValue.text = item.protein.toString()
+        holder.baguetteValue.text = item.carbs.toString()
+        holder.dewpointValue.text = item.fats.toString()
         if (item.mealType.contentEquals("Breakfast")){
             holder.mealTypeIc.setImageResource(R.drawable.ic_breakfast)
         }else if (item.mealType.contentEquals("Lunch")){
@@ -98,7 +99,7 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
         val mealTypeIc : ImageView = itemView.findViewById(R.id.image_meal_type)
     }
 
-    fun addAll(item : ArrayList<MealPlanModel>?, pos: Int, mealLogItem : MealPlanModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<Meal>?, pos: Int, mealLogItem : Meal?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

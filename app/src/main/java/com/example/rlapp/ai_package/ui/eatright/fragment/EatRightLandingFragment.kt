@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -21,11 +22,14 @@ import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.model.RecipeList
 import com.example.rlapp.ai_package.model.RecipeResponseModel
 import com.example.rlapp.ai_package.ui.eatright.adapter.MealPlanEatLandingAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MealSuggestionListAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.OtherRecepieEatLandingAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.LandingPageResponse
+import com.example.rlapp.ai_package.ui.eatright.model.Meal
 import com.example.rlapp.ai_package.ui.eatright.model.MealPlanModel
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
+import com.example.rlapp.ai_package.ui.eatright.model.RecipeSuggestion
 import com.example.rlapp.ai_package.utils.AppPreference
 import com.example.rlapp.databinding.FragmentEatRightLandingBinding
 import com.google.android.material.snackbar.Snackbar
@@ -61,14 +65,19 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var fatsProgressBar : ProgressBar
     private lateinit var proteinProgressBar : ProgressBar
     private lateinit var cabsProgressBar : ProgressBar
+    private lateinit var imageBack : ImageView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
 
     var snackbar: Snackbar? = null
-    private val mealPlanAdapter by lazy { MealPlanEatLandingAdapter(requireContext(), arrayListOf(), -1, null, false, ::onMealPlanDateItem) }
-    private val otherReciepeAdapter by lazy { OtherRecepieEatLandingAdapter(requireContext(), arrayListOf(), -1, null, false, ::onOtherReciepeDateItem) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, ::onFrequentlyLoggedItem) }
+    private val mealPlanAdapter by lazy { MealPlanEatLandingAdapter(requireContext(), arrayListOf(), -1,
+        null, false, ::onMealPlanDateItem) }
+    private val otherReciepeAdapter by lazy { OtherRecepieEatLandingAdapter(requireContext(), arrayListOf(), -1,
+        null, false, ::onOtherReciepeDateItem) }
+    private val frequentlyLoggedListAdapter by lazy { MealSuggestionListAdapter(requireContext(), arrayListOf(),
+        -1,
+        null, false, ::onFrequentlyLoggedItem) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -90,6 +99,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         fatsProgressBar = view.findViewById(R.id.fats_progressBar)
         proteinProgressBar = view.findViewById(R.id.protein_progressBar)
         cabsProgressBar = view.findViewById(R.id.carbs_progressBar)
+        imageBack = view.findViewById(R.id.imageBack)
       //  tvCaloriesValue = view.findViewById(R.id.tvCaloriesValue)
         todayMacroNoDataLayout = view.findViewById(R.id.today_macro_no_data_layout)
         todayMicrosWithDataLayout = view.findViewById(R.id.today_micros_with_data_layout)
@@ -110,13 +120,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
 
         getMealRecipesList()
-        onOtherReciepeDateItemRefresh()
+        getMealRecipesLists()
+       // onOtherReciepeDateItemRefresh()
         mealPlanRecyclerView.layoutManager = LinearLayoutManager(context)
         mealPlanRecyclerView.adapter = mealPlanAdapter
-        onMealPlanItemRefresh()
+       // onMealPlanItemRefresh()
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
-        onFrequentlyLoggedItemRefresh()
+       // onFrequentlyLoggedItemRefresh()
         halfCurveProgressBar.setProgress(50f)
         val animator = ValueAnimator.ofFloat(0f, 70f)
         animator.duration = 2000
@@ -134,11 +145,16 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = SnapMealFragment()
                 val args = Bundle()
+                args.putString("ModuleName", "EatRight")
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
                 addToBackStack(null)
                 commit()
             }
+        }
+
+        imageBack.setOnClickListener {
+            activity?.finish()
         }
 
         mealLogLayout.setOnClickListener {
@@ -187,12 +203,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
     }
 
-    private fun onFrequentlyLoggedItemRefresh() {
+    private fun onFrequentlyLoggedItemRefresh(landingPageResponse : LandingPageResponse) {
         val meal = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
+            MyMealModel("Breakfast", landingPageResponse.next_meal_suggestion.meal_name, "1",
+                landingPageResponse.next_meal_suggestion.calories.toString(),
+                landingPageResponse.next_meal_suggestion.protein.toString(),
+                landingPageResponse.next_meal_suggestion.carbs.toString(),
+                landingPageResponse.next_meal_suggestion.fats.toString(),
+                true),
+//            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
         )
 
         if (meal.size > 0) {
@@ -227,31 +248,31 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
     }
 
-    private fun onMealPlanItemRefresh() {
+    private fun onMealPlanItemRefresh(landingPageResponse : LandingPageResponse) {
         val meal = listOf(
             MealPlanModel("Breakfast", "Poha", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17")
         )
 
-        val valueLists: ArrayList<MealPlanModel> = ArrayList()
-        valueLists.addAll(meal as Collection<MealPlanModel>)
-        val mealPlanData: MealPlanModel? = null
+        val valueLists: ArrayList<Meal> = ArrayList()
+        valueLists.addAll(landingPageResponse.meals as Collection<Meal>)
+        val mealPlanData: Meal? = null
         mealPlanAdapter.addAll(valueLists, -1, mealPlanData, false)
     }
 
-    private fun onMealPlanDateItem(mealLogDateModel: MealPlanModel, position: Int, isRefresh: Boolean) {
+    private fun onMealPlanDateItem(mealLogDateModel: Meal, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
             MealPlanModel("Breakfast", "Poha", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17")
         )
 
-        val valueLists: ArrayList<MealPlanModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MealPlanModel>)
+//        val valueLists: ArrayList<MealPlanModel> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<MealPlanModel>)
     }
 
-    private fun onOtherReciepeDateItemRefresh() {
+    private fun onOtherReciepeDateItemRefresh(landingPageResponse: List<RecipeList>) {
         val meal = listOf(
             MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
             MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
@@ -265,30 +286,31 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             frequentlyLoggedRecyclerView.visibility = View.GONE
         }
 
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(meal as Collection<MyMealModel>)
-        val mealLogDateData: MyMealModel? = null
+
+        val valueLists: ArrayList<RecipeList> = ArrayList()
+        valueLists.addAll(landingPageResponse as Collection<RecipeList>)
+        val mealLogDateData: RecipeList? = null
         otherReciepeAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onOtherReciepeDateItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
-        )
-
-        val valueLists: ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        otherReciepeAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-
-        val newIngredient = mealLogDateModel
-        for (ingredient in valueLists) {
-            if (ingredient.isAddDish == true) {
-                // Handle ingredient addition if needed
-            }
-        }
+    private fun onOtherReciepeDateItem(mealLogDateModel: RecipeList, position: Int, isRefresh: Boolean) {
+//        val mealLogs = listOf(
+//            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
+//            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
+//        )
+//
+//        val valueLists: ArrayList<MyMealModel> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
+//        otherReciepeAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+//
+//        val newIngredient = mealLogDateModel
+//        for (ingredient in valueLists) {
+//            if (ingredient.isAddDish == true) {
+//                // Handle ingredient addition if needed
+//            }
+//        }
     }
 
     private fun getMealRecipesList() {
@@ -296,7 +318,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
        // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
-        val startDate = "2025-03-22"
+        val startDate = "2025-03-24"
         val call = ApiClient.apiServiceFastApi.getMealSummary(userId, startDate)
         call.enqueue(object : Callback<LandingPageResponse> {
             override fun onResponse(call: Call<LandingPageResponse>, response: Response<LandingPageResponse>) {
@@ -307,6 +329,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 //                    val mealPlanLists = response.body()?.data ?: emptyList()
 //                    recipesList.addAll(mealPlanLists)
                     setMealSummaryData(landingPageResponse)
+                    onMealPlanItemRefresh(landingPageResponse)
+                    onFrequentlyLoggedItemRefresh(landingPageResponse)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -335,5 +359,33 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         fatsProgressBar.max = 68
         fatsProgressBar.progress = landingPageResponse.total_fat
 
+      //  onOtherReciepeDateItemRefresh(landingPageResponse)
+
+    }
+
+    private fun getMealRecipesLists() {
+        progressDialog.show()
+        val userId = appPreference.getUserId().toString()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val call = ApiClient.apiService.getMealRecipesList(token)
+        call.enqueue(object : Callback<RecipeResponseModel> {
+            override fun onResponse(call: Call<RecipeResponseModel>, response: Response<RecipeResponseModel>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    val mealPlanLists = response.body()?.data ?: emptyList()
+                        //  recipesList.addAll(mealPlanLists)
+                    onOtherReciepeDateItemRefresh(mealPlanLists)
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<RecipeResponseModel>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
     }
 }

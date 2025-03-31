@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import com.example.rlapp.R
@@ -30,6 +31,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         val minutePicker = view.findViewById<NumberPicker>(R.id.minutePicker)
         val amPmPicker = view.findViewById<NumberPicker>(R.id.amPmPicker)
         val addLog = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
+        val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
+        addSearchFragmentBackButton.setOnClickListener {
+            navigateToFragment(YourActivityFragment(), "LandingFragment")
+        }
         addLog.setOnClickListener {
             val fragment = YourworkOutsFragment()
             val args = Bundle()

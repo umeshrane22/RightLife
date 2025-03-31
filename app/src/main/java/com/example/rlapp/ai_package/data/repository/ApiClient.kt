@@ -1,5 +1,7 @@
 package com.example.rlapp.ai_package.data.repository
 
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,12 +19,17 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+    private val json = Json {
+        ignoreUnknownKeys = true // Ignore unknown keys in JSON
+        coerceInputValues = true // Coerce invalid values to default (e.g., null for missing fields)
+    }
     val retrofitFastApi: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FAST_API)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
 
     val retrofitFoodCaptureApi: Retrofit by lazy {
         Retrofit.Builder()

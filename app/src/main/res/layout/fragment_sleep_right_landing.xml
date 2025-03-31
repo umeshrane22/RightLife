@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/sleep_bg"
@@ -187,6 +188,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
                         android:text="9:00 pm"
+                        android:id="@+id/tv_start_sleep_time"
                         android:textSize="12sp"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="10dp"
@@ -642,6 +644,7 @@
                         android:src="@drawable/yellow_info"
                         android:id="@+id/img_yellow_info"
                         android:layout_marginTop="20dp"
+                        android:visibility="gone"
                         android:layout_marginStart="15dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/lyt_sleep_time_title" />
@@ -651,6 +654,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:padding="5dp"
+                        android:visibility="gone"
                         android:textAlignment="center"
                         android:textColor="@color/black"
                         android:layout_marginTop="20dp"
@@ -667,6 +671,7 @@
                         android:layout_marginEnd="15dp"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="10dp"
+                        android:visibility="gone"
                         android:padding="5dp"
                         android:textColor="@color/black"
                         app:layout_constraintTop_toBottomOf="@id/tv_under"
@@ -680,6 +685,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:id="@+id/btn_log_nap"
+                android:visibility="gone"
                 android:weightSum="10"
                 android:gravity="center_vertical"
                 android:background="@drawable/blue_sleep_btn_bg"

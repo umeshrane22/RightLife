@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -38,6 +39,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         get() = FragmentCalorieBalanceBinding::inflate
 
     private lateinit var barChart: BarChart
+    private lateinit var calorieBalanceBackButton: ImageView
     private lateinit var radioGroup: RadioGroup
     private lateinit var lineChart: LineChart
     private lateinit var layoutLineChart: FrameLayout
@@ -52,6 +54,10 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        calorieBalanceBackButton = view.findViewById(R.id.back_button)
+        calorieBalanceBackButton.setOnClickListener {
+            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+        }
 
         //fetchCalorieAnalysis("weekly")
 
@@ -270,6 +276,11 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 val response = ApiClient.apiServiceFastApi.getFetchCalorieAnalysis(userId, source, period)
                 if (response.isSuccessful) {
                     response.body()?.let { data ->
+                        data.end_date
+                        data.basal_energy_burned
+                        data.active_energy_burned
+                        data.period
+
                         /*val entries = processCalorieData(data)
                         val labels = getLabelsForPeriod(period)
                         updateChart(entries, labels)*/
