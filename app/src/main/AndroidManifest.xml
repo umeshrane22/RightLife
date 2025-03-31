@@ -94,6 +94,7 @@
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
         <activity android:name=".ui.new_design.OnboardingFinalActivity" />
+        <activity android:name=".ui.new_design.FreeTrailActivity" />
         <activity android:name=".ui.new_design.WelcomeActivity" />
         <activity android:name=".ui.voicescan.VoiceScanActivity" />
         <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />
@@ -162,6 +163,8 @@
         <activity android:name=".ui.affirmation.TodaysAffirmationActivity" />
         <activity android:name=".ui.affirmation.PractiseAffirmationPlaylistActivity" />
         <activity android:name=".newdashboard.HomeDashboardActivity" />
+        <activity android:name=".newdashboard.FacialScanReportDetailsActivity" />
+
         <activity android:name=".ui.breathwork.BreathworkActivity" />
         <activity android:name=".ui.breathwork.BreathworkSessionActivity" />
         <activity android:name=".ui.breathwork.BreathworkPracticeActivity" />

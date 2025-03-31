@@ -16,6 +16,7 @@ import com.example.rlapp.apimodel.emaillogin.EmailOtpRequest;
 import com.example.rlapp.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.example.rlapp.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.example.rlapp.apimodel.userdata.Userdata;
+import com.example.rlapp.newdashboard.model.FacialScanReportResponse;
 import com.example.rlapp.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
 import com.example.rlapp.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse;
@@ -1082,20 +1083,19 @@ public interface ApiService {
     );
 
 
-
     //ai_dashboard
     @Headers("Content-Type: application/json")
     @GET("ai_dashboard")
     Call<ResponseBody> getAiDashboard(
             @Header("Authorization") String authToken
     );
+
     //dashboardChecklist status
     @Headers("Content-Type: application/json")
     @GET("user/dashboardChecklist")
     Call<ResponseBody> getDashboardChecklist(
             @Header("Authorization") String authToken
     );
-
 
 
     @Headers("Content-Type: application/json")
@@ -1116,6 +1116,15 @@ public interface ApiService {
     @GET("breathing")
     Call<GetBreathingResponse> getBreathingWork(
             @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("facial-scan/past-report")
+    Call<FacialScanReportResponse> getPastReport(
+            @Header("Authorization") String authToken,
+            @Query("startDate") String startDate,
+            @Query("endDate") String endDate,
+            @Query("key") String key
     );
 
 }
