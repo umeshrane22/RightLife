@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class UserAnswer(
     @SerializedName("question") val question: String?,
-    @SerializedName("answer") val answer: Int?
+    @SerializedName("answer") val answer: String?
 )
 

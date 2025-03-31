@@ -132,6 +132,7 @@
                     android:id="@+id/include_checklist"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
+                    android:visibility="gone"
                     android:layout_width="match_parent" />
 
                 <!--main cards-->
@@ -963,20 +964,14 @@
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
-
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card_sleepright_main"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:elevation="4dp"
-                    android:background="@color/white"
-                    app:cardCornerRadius="10dp"
-                    android:paddingBottom="5dp"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
                     android:visibility="gone"
-                    android:layout_marginTop="20dp"
-                    app:layout_constraintTop_toBottomOf="@+id/heading_one"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
+                    app:cardCornerRadius="@dimen/margin_card_16dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -987,7 +982,7 @@
                             android:id="@+id/balance_icon"
                             android:layout_width="26dp"
                             android:layout_height="26dp"
-                            android:src="@drawable/sleep_smiley_icon"
+                            android:src="@drawable/ic_db_sleepright"
                             android:layout_marginStart="15dp"
                             android:layout_marginTop="13dp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -997,10 +992,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
-                            android:text="Sleep Stages"
-                            android:textStyle="bold"
-                            android:textSize="16dp"
-                            android:layout_marginStart="6dp"
+                            android:text="SleepRight"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="@dimen/textsize_large"
+                            android:layout_marginStart="10dp"
                             app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
                             app:layout_constraintStart_toEndOf="@+id/balance_icon" />
 
@@ -1019,10 +1014,11 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
                             android:id="@+id/total_sleep_title"
-                            android:text="Total Sleep:"
+                            android:text="Your Sleep Analysis"
                             android:textSize="16dp"
                             android:layout_marginStart="15dp"
                             android:layout_marginTop="10dp"
+                            android:fontFamily="@font/dmsans_bold"
                             app:layout_constraintTop_toBottomOf="@+id/img_sleep_right"
                             app:layout_constraintStart_toStartOf="parent" />
 
@@ -1030,7 +1026,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
-                            android:text="8hr 30 mins"
+                            android:text=""
                             android:textStyle="bold"
                             android:textSize="16dp"
                             android:layout_marginStart="6dp"
@@ -1046,6 +1042,7 @@
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="20dp"
                             app:layout_constraintEnd_toEndOf="parent"
+                            android:visibility="invisible"
                             app:layout_constraintTop_toBottomOf="@id/img_sleep_right" />
 
                         <com.example.rlapp.ai_package.ui.sleepright.fragment.SleepChartViewLanding
@@ -1057,9 +1054,11 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/img_apple_icon"
+                            android:visibility="visible"
                             android:layout_height="80dp" />
 
                         <TextView
+                            android:id="@+id/tv_sleep_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
@@ -1086,7 +1085,7 @@
                             android:textColor="@color/sleep_text_color"
                             android:text="5:30 am"
                             android:textSize="12sp"
-                            android:id="@+id/tv_alarm_time"
+                            android:id="@+id/tv_wakeup_time"
                             android:layout_marginEnd="10dp"
                             android:layout_marginTop="10dp"
                             app:layout_constraintTop_toBottomOf="@+id/sleepStagesView"
@@ -1099,7 +1098,7 @@
                             android:id="@+id/img_mini_clock_icon"
                             android:layout_marginTop="10dp"
                             android:layout_marginEnd="6dp"
-                            app:layout_constraintEnd_toStartOf="@id/tv_alarm_time"
+                            app:layout_constraintEnd_toStartOf="@id/tv_wakeup_time"
                             app:layout_constraintTop_toBottomOf="@id/sleepStagesView" />
 
                         <LinearLayout
@@ -1138,6 +1137,7 @@
                                     android:layout_marginStart="5dp" />
 
                                 <TextView
+                                    android:id="@+id/tv_rem"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="2 hr 10 mins"
@@ -1175,6 +1175,7 @@
                                     app:layout_constraintBottom_toBottomOf="parent" />
 
                                 <TextView
+                                    android:id="@+id/tv_core"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="5 hr 20 mins"
@@ -1224,6 +1225,7 @@
                                     android:layout_marginStart="5dp" />
 
                                 <TextView
+                                    android:id="@+id/tv_deep"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="40 mins"
@@ -1261,6 +1263,7 @@
                                     app:layout_constraintBottom_toBottomOf="parent" />
 
                                 <TextView
+                                    android:id="@+id/tv_awake"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="20 mins"
@@ -1274,6 +1277,8 @@
                         </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
+
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -1392,6 +1397,8 @@
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:text="Calories"
+                                android:minLines="2"
+                                android:maxLines="2"
                                 android:textColor="@color/color_eat_right"
                                 android:textSize="@dimen/textsize_small" />
 
@@ -1406,9 +1413,9 @@
                                 android:gravity="center"
                                 android:minWidth="100dp">
 
-                                <TextView
+                                <!--<TextView
                                     android:id="@+id/tv_module_value_eatright"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="100dp"
                                     android:layout_height="wrap_content"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
@@ -1416,7 +1423,24 @@
                                     android:padding="5dp"
                                     android:text="3808"
                                     android:textColor="@color/color_eat_right"
-                                    android:textSize="@dimen/textsize_medium" />
+                                    android:textSize="@dimen/textsize_medium" />-->
+                                <TextView
+                                    android:id="@+id/tv_module_value_eatright"
+                                    android:layout_width="100dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerVertical="true"
+                                    android:fontFamily="@font/dmsans_bold"
+                                    android:gravity="center"
+                                    android:padding="5dp"
+                                    android:text="3808"
+                                    android:textColor="@color/color_eat_right"
+                                    android:textSize="@dimen/textsize_medium"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:autoSizeTextType="uniform"
+                                    android:autoSizeMinTextSize="8sp"
+                                    android:autoSizeMaxTextSize="14sp"
+                                    android:autoSizeStepGranularity="1sp"/>
 
                                 <TextView
                                     android:id="@+id/tv_module_value_unit"
@@ -1426,6 +1450,7 @@
                                     android:layout_toRightOf="@+id/tv_module_value_eatright"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:text="kcal"
+                                    android:visibility="gone"
                                     android:textColor="@color/color_eat_right"
                                     android:textSize="10sp" />
 
@@ -1468,6 +1493,8 @@
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:text="Sleep Duration"
+                                android:minLines="2"
+                                android:maxLines="2"
                                 android:textColor="@color/color_sleep_right"
                                 android:textSize="@dimen/textsize_small" />
 
@@ -1484,7 +1511,7 @@
 
                                 <TextView
                                     android:id="@+id/tv_module_value_sleepright"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="100dp"
                                     android:layout_height="wrap_content"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
@@ -1492,7 +1519,12 @@
                                     android:padding="5dp"
                                     android:text="8hr 30min"
                                     android:textColor="@color/color_sleep_right"
-                                    android:textSize="@dimen/textsize_medium" />
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:autoSizeTextType="uniform"
+                                    android:autoSizeMinTextSize="8sp"
+                                    android:autoSizeMaxTextSize="14sp"
+                                    android:autoSizeStepGranularity="1sp"/>
 
 
                             </RelativeLayout>
@@ -1534,6 +1566,8 @@
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:text="Mindful Time"
+                                android:minLines="2"
+                                android:maxLines="2"
                                 android:textColor="@color/color_think_right"
                                 android:textSize="@dimen/textsize_small" />
 
@@ -1558,7 +1592,12 @@
                                     android:padding="5dp"
                                     android:text="1hr 30min"
                                     android:textColor="@color/color_think_right"
-                                    android:textSize="@dimen/textsize_medium" />
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:autoSizeTextType="uniform"
+                                    android:autoSizeMinTextSize="8sp"
+                                    android:autoSizeMaxTextSize="14sp"
+                                    android:autoSizeStepGranularity="1sp"/>
 
 
                             </RelativeLayout>
@@ -1597,6 +1636,14 @@
     </androidx.core.widget.NestedScrollView>
 
 
+
+    <include layout="@layout/home_bottomsheet"
+        android:id="@+id/includedhomebottomsheet"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginBottom="77dp"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"/>
     <!-- Custom Bottom Menu -->
     <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

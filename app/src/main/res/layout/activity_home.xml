@@ -2361,6 +2361,7 @@
                         </ScrollView>
 
                         <include layout="@layout/home_bottomsheet"
+                            android:id="@+id/includedhomebottomsheet"
                             android:layout_height="wrap_content"
                             android:layout_width="match_parent"
                             android:layout_marginBottom="77dp"
@@ -2637,7 +2638,7 @@
         </LinearLayout>
     </LinearLayout>
 
-
+    <include layout="@layout/loader_layout"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 

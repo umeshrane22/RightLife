@@ -1,5 +1,7 @@
 package com.example.rlapp.ui.healthcam;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -8,8 +10,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.rlapp.R;
 import com.example.rlapp.apimodel.newreportfacescan.HealthCamItem;
 import com.example.rlapp.databinding.HealthCamVitalsItemBinding;
+import com.example.rlapp.ui.utility.Utils;
 import com.example.rlapp.newdashboard.FacialScanReportDetailsActivity;
 
 import java.util.List;
@@ -40,6 +44,7 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         holder.binding.unitTextView.setText(item.unit);
         holder.binding.indicatorTextView.setText(item.indicator);
         holder.binding.parameterTextView.setText(item.parameter);
+        holder.binding.rlMainBg.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.colour)));
 
         holder.itemView.setOnClickListener(view -> {
             context.startActivity(new Intent(context, FacialScanReportDetailsActivity.class));
@@ -62,7 +67,26 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         // ... set other indicator conditions and colors as needed
 
     }
-
+    private int getReportIconByType(String type) {
+        switch (type) {
+            case "BMI_CALC":
+                return R.drawable.ic_db_report_bmi;
+            case "BP_RPP":
+                return R.drawable.ic_db_report_cardiak_workload;
+            case "BP_SYSTOLIC":
+                return R.drawable.ic_db_report_bloodpressure;
+            case "BP_CVD":
+                return R.drawable.ic_db_report_cvdrisk;
+            case "MSI":
+                return R.drawable.ic_db_report_stresslevel;
+            case "BR_BPM":
+                return R.drawable.ic_db_report_respiratory_rate;
+            case "HRV_SDNN":
+                return R.drawable.ic_db_report_heart_variability;
+            default:
+                return R.drawable.ic_db_report_heart_rate;
+        }
+    }
 
     @Override
     public int getItemCount() {

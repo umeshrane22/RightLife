@@ -3,6 +3,7 @@ package com.example.rlapp.newdashboard
 
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.databinding.ItemHeartRateCardBinding
 import com.example.rlapp.newdashboard.model.FacialScan
+import com.example.rlapp.newdashboard.model.ScanData
 import com.example.rlapp.ui.utility.DateConverter
-import com.example.rlapp.ui.utility.Utils
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -73,15 +74,16 @@ class HeartRateAdapter(
         val iconRes = getWarningIconByType("normal")
         binding.ivWarning.setImageResource(iconRes)
 
-        val iconResReport = getReportIconByType("normal")
+        val iconResReport = getReportIconByType(item?.key.toString())
         binding.ivHeartIcon.setImageResource(iconResReport)
 
 
-        /*if (holder.bindingAdapterPosition != 2) {
+        //if (holder.bindingAdapterPosition != 2) {}
+
             binding.heartRateChart.visibility = android.view.View.VISIBLE
-            setupChart(binding.heartRateChart, item.trendData)
+            setupChart(binding.heartRateChart, item?.data)
             binding.barChart.visibility = android.view.View.GONE
-        } else {
+         /*else {
             binding.barChart.visibility = android.view.View.VISIBLE
             binding.heartRateChart.visibility = android.view.View.GONE
             setupStackedBarChart(
@@ -91,7 +93,7 @@ class HeartRateAdapter(
             )
         }*/
 
-        // Optional: click listener
+        // open report detail: click listener
         /*binding.cardHeartRate.setOnClickListener {
             val intent = Intent(context, HeartRateDetailActivity::class.java).apply {
                 putExtra("HEART_RATE", item.heartRate)
@@ -104,16 +106,21 @@ class HeartRateAdapter(
     private fun getWarningIconByType(type: String): Int {
         return when (type) {
             "normal" -> R.drawable.breathing_green_tick
-            "warning" -> R.drawable.breathing_green_tick
-            "critical" -> R.drawable.breathing_green_tick
+            "Borderline" -> R.drawable.ic_alert_report_page
+            "Productive" -> R.drawable.breathing_green_tick
+            "Optimal" -> R.drawable.breathing_green_tick
             else -> R.drawable.breathing_green_tick
         }
     }private fun getReportIconByType(type: String): Int {
         return when (type) {
-            "normal" -> R.drawable.ic_db_report_heart_rate
-            "warning" -> R.drawable.ic_db_report_bodyfat
-            "critical" -> R.drawable.ic_db_report_metabolicrate
-            else -> R.drawable.ic_db_report_weight
+            "BMI_CALC" -> R.drawable.ic_db_report_bmi
+            "BP_RPP" -> R.drawable.ic_db_report_cardiak_workload
+            "BP_SYSTOLIC" -> R.drawable.ic_db_report_bloodpressure
+            "BP_CVD" -> R.drawable.ic_db_report_cvdrisk
+            "MSI" -> R.drawable.ic_db_report_stresslevel
+            "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
+            "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
+            else -> R.drawable.ic_db_report_heart_rate
         }
     }
 
@@ -149,10 +156,12 @@ class HeartRateAdapter(
         }
     }
 
-    private fun setupChart(chart: LineChart, trendData: ArrayList<String>) {
+    private fun setupChart(chart: LineChart, trendData: ArrayList<ScanData>?) {
         val entries = mutableListOf<Entry>()
-        for (i in trendData.indices) {
-            entries.add(Entry(i.toFloat(), trendData[i].toFloat()))
+        if (trendData != null) {
+            for ((index, data) in trendData.withIndex()) {
+                entries.add(Entry(index.toFloat(), data.value?.toFloat() ?: 1f))
+            }
         }
 
         val dataSet = LineDataSet(entries, "Heart Rate").apply {

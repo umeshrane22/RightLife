@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FacialScan(
     @SerializedName("totalCount") val totalCount: Int?,
-    @SerializedName("data") val data: List<ScanData>?,
+    @SerializedName("data") val data: ArrayList<ScanData>?,
     @SerializedName("key") val key: String?,
     @SerializedName("minValue") val minValue: Double?,
     @SerializedName("maxValue") val maxValue: Double?,
