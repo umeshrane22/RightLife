@@ -107,11 +107,12 @@ class HeartRateAdapter(
         return when (type) {
             "normal" -> R.drawable.breathing_green_tick
             "Borderline" -> R.drawable.ic_alert_report_page
-            "Productive" -> R.drawable.breathing_green_tick
-            "Optimal" -> R.drawable.breathing_green_tick
+            "Productive" -> R.drawable.ic_report_warning
+            "Optimal" -> R.drawable.ic_report_warning
             else -> R.drawable.breathing_green_tick
         }
-    }private fun getReportIconByType(type: String): Int {
+    }
+    private fun getReportIconByType(type: String): Int {
         return when (type) {
             "BMI_CALC" -> R.drawable.ic_db_report_bmi
             "BP_RPP" -> R.drawable.ic_db_report_cardiak_workload

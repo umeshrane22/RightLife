@@ -64,7 +64,7 @@
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="11dp">
@@ -107,7 +107,7 @@
                             android:layout_gravity="center"
                             android:layout_margin="1dp"
 
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="11dp">
@@ -150,7 +150,7 @@
                             android:layout_gravity="center"
                             android:layout_margin="1dp"
 
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="11dp">
@@ -204,7 +204,7 @@
                             android:layout_gravity="center"
                             android:layout_margin="1dp"
 
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="11dp">
@@ -248,7 +248,7 @@
                             android:layout_gravity="center"
                             android:layout_margin="1dp"
 
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="11dp">
@@ -292,7 +292,7 @@
                             android:layout_gravity="center"
                             android:layout_margin="1dp"
 
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="11dp">
@@ -363,7 +363,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:backgroundTint="#FDEDED"
                             android:gravity="center"
                             android:orientation="vertical"
@@ -413,7 +413,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:backgroundTint="#DEFFF5"
                             android:gravity="center"
                             android:orientation="vertical"
@@ -464,7 +464,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:backgroundTint="@color/ql_sleepsounds_color_bg"
                             android:gravity="center"
                             android:orientation="vertical"
@@ -527,7 +527,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:backgroundTint="@color/ql_affirmation_color_bg"
                             android:gravity="center"
                             android:orientation="vertical"
@@ -578,7 +578,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:backgroundTint="@color/ql_journaling_color_bg"
                             android:gravity="center"
                             android:orientation="vertical"
@@ -629,7 +629,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_margin="1dp"
-                            android:background="@drawable/rounded_corder_border_gray_radius_small"
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
                             android:backgroundTint="@color/ql_breathwork_color_bg"
                             android:gravity="center"
                             android:orientation="vertical"

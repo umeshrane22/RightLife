@@ -257,6 +257,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="12dp"
+                android:gravity="center"
+                android:layout_weight="1"
                 android:background="@drawable/bg_edittext_gray"
                 android:layout_marginEnd="16dp">
 
@@ -284,8 +286,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="89 bpm"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="8dp" />
 
             </LinearLayout>
@@ -295,6 +299,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="12dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_edittext_gray"
                 android:layout_marginEnd="16dp">
 
@@ -302,7 +307,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -322,8 +327,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="89 bpm"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="8dp" />
 
             </LinearLayout>
@@ -360,8 +367,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="89 bpm"
-                    android:textSize="24sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="8dp" />
 
             </LinearLayout>

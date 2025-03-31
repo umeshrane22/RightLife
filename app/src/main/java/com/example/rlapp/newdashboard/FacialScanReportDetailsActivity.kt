@@ -21,8 +21,10 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 
@@ -35,7 +37,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         binding = ActivityFacialScanReportDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.backButton.setOnClickListener{
+        binding.backButton.setOnClickListener {
             finish()
         }
 
@@ -171,6 +173,17 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     }
 
     private fun fetchPastFacialScanReport(key: String, startDate: String, endDate: String) {
+
+        //Dummy data
+        val entries = mutableListOf<Entry>()
+
+        for (i in 1..7) {
+            val entry = (60..120).random() // Random heart rate
+            // Add entry to the list
+            entries.add(Entry(i.toFloat(), entry.toFloat()))
+        }
+        updateChart(entries, getWeekLabels())
+
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getPastReport(
             SharedPreferenceManager.getInstance(this).accessToken,
@@ -196,16 +209,18 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                     binding.tvMinimum.text = graphData?.minValue.toString()
 
 
-                    val entries: ArrayList<Entry> = ArrayList()
+                    // val entries: ArrayList<Entry> = ArrayList()
 
-                    for ((index, item) in graphData?.data?.withIndex()!!) {
+                    /*for ((index, item) in graphData?.data?.withIndex()!!) {
                         binding.averageNumber.text = item.unit
                         binding.tvDescription.text = item.implication
                         item.value?.let {
                             val a: Float = it.toFloat()
                             entries.add(Entry(index.toFloat(), a))
                         }
-                    }
+                    }*/
+
+                    val entries = mutableListOf<Entry>()
 
                     updateChart(entries, getWeekLabels())
                 } else {
@@ -302,5 +317,20 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         val endDate = dateFormat.format(calendar.time) // 7 days earlier
 
         return "$endDate - $startDate"
+    }
+
+    private fun formatDateRange(startDateStr: String?, endDateStr: String?): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-d", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM - d MMM, yyyy", Locale.getDefault())
+
+        try {
+            val startDate: Date = inputFormat.parse(startDateStr)
+            val endDate: Date = inputFormat.parse(endDateStr)
+
+            return outputFormat.format(startDate) + " - " + outputFormat.format(endDate)
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            return ""
+        }
     }
 }
