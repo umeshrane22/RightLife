@@ -2,7 +2,6 @@ package com.example.rlapp.newdashboard
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -48,6 +47,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
 
 class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
 
@@ -66,7 +69,7 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val heartRateList = mutableListOf<HeartRateData>()
-        for (i in 1..52) {
+        for (i in 1..7) {
             heartRateList.add(
                 HeartRateData(
                     heartRate = (60..120).random(),  // Random heart rate
@@ -94,6 +97,15 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
                 Toast.makeText(this@HomeDashboardActivity, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show()
             }
         }
+
+        val todayDate = SimpleDateFormat(
+            "EEEE, d MMMM",
+            Locale.getDefault()
+        ).format(Calendar.getInstance().time)
+
+
+        // Set to TextView
+        binding.tvDateDashboard.text = todayDate
 
         // Handle menu item clicks
         binding.menuHome.setOnClickListener {
