@@ -25,6 +25,7 @@ import com.example.rlapp.ai_package.ui.eatright.adapter.MealPlanEatLandingAdapte
 import com.example.rlapp.ai_package.ui.eatright.adapter.MealSuggestionListAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.OtherRecepieEatLandingAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
+import com.example.rlapp.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
 import com.example.rlapp.ai_package.ui.eatright.model.LandingPageResponse
 import com.example.rlapp.ai_package.ui.eatright.model.Meal
 import com.example.rlapp.ai_package.ui.eatright.model.MealPlanModel
@@ -293,24 +294,23 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         otherReciepeAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onOtherReciepeDateItem(mealLogDateModel: RecipeList, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-//            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
-//        )
-//
-//        val valueLists: ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        otherReciepeAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-//
-//        val newIngredient = mealLogDateModel
-//        for (ingredient in valueLists) {
-//            if (ingredient.isAddDish == true) {
-//                // Handle ingredient addition if needed
-//            }
-//        }
+    private fun onOtherReciepeDateItem(recipesModel: RecipeList, position: Int, isRefresh: Boolean) {
+
+//        val valueLists : ArrayList<RecipeList> = ArrayList()
+//        valueLists.addAll(recipesList as Collection<RecipeList>)
+//        searchDishAdapter.addAll(valueLists, position, recipesModel, isRefresh)
+
+        val fragment = DishFragment()
+        val args = Bundle()
+        args.putString("searchType", "EatRight")
+        args.putString("recipeName", recipesModel.name)
+        args.putString("recipeImage", recipesModel.image)
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "landing")
+            addToBackStack("landing")
+            commit()
+        }
     }
 
     private fun getMealRecipesList() {

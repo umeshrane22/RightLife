@@ -276,6 +276,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:scaleType="fitXY"
+                android:visibility="invisible"
                 android:src="@drawable/ic_plus_circle" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

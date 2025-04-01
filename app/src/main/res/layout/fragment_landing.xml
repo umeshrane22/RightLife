@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/backgroundimage">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
@@ -41,6 +42,7 @@
             android:id="@+id/setting_icon"
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:visibility="gone"
             android:src="@drawable/settingicon"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -49,8 +51,8 @@
         <ImageView
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="12dp"
             android:src="@drawable/download"
+            android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/setting_icon" />
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -942,6 +944,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/forwardicon"
                         android:layout_marginTop="14dp"
+                        android:visibility="invisible"
                         android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

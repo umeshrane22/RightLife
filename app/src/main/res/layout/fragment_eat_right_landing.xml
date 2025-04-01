@@ -42,6 +42,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/ic_green_setting"
+            android:visibility="gone"
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
@@ -49,7 +50,7 @@
         <ImageView
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="20dp"
             android:src="@drawable/ic_green_download"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/setting_icon"/>
