@@ -1,6 +1,7 @@
 package com.example.rlapp.ai_package.ui.sleepright.fragment
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
@@ -20,6 +21,7 @@ import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
 import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.model.RestorativeSleepDetail
+import com.example.rlapp.ai_package.model.SleepIdealActualResponse
 import com.example.rlapp.ai_package.model.SleepLandingData
 import com.example.rlapp.ai_package.model.SleepLandingResponse
 import com.example.rlapp.ai_package.model.SleepPerformanceDetail
@@ -29,6 +31,8 @@ import com.example.rlapp.databinding.FragmentSleepRightLandingBinding
 import com.example.rlapp.ui.NewSleepSounds.NewSleepSoundActivity
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -37,14 +41,18 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
+import com.github.mikephil.charting.utils.MPPointF
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>(), WakeUpTimeDialogFragment.BottomSheetListener {
 
@@ -55,16 +63,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var progressDialog: ProgressDialog
     private lateinit var landingPageResponse: SleepLandingResponse
     private lateinit var sleepLandingData: SleepLandingData
+    private lateinit var lineChart:LineChart
     private val remData: ArrayList<Float> = arrayListOf()
     private val awakeData: ArrayList<Float> = arrayListOf()
     private val coreData: ArrayList<Float> = arrayListOf()
     private val deepData: ArrayList<Float> = arrayListOf()
     private val formatters = DateTimeFormatter.ISO_DATE_TIME
+    private lateinit var idealActualResponse: SleepIdealActualResponse
     private lateinit var sleepStagesView: SleepChartViewLanding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
+         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         val sleepBarChart = view.findViewById<BarChart>(R.id.sleepConsistentChart)
         val sleepInfo = view.findViewById<ImageView>(R.id.img_sleep_right)
@@ -89,6 +100,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 commit()
             }
         }
+
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -116,16 +128,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             navigateToFragment(SleepConsistencyFragment(), "Consistency")
         }
 
-        setupBarChart(sleepBarChart)
+      //  setupBarChart(sleepBarChart)
 
         fetchSleepData()
+        fetchIdealActualData()
 
         editWakeup.setOnClickListener {
             openBottomSheet()
         }
 
         // Sample data for Ideal vs Actual Sleep Time chart
-        val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        /*val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         val idealEntries = listOf(
             Entry(0f, 8.3f), Entry(1f, 8.5f), Entry(2f, 9f),
             Entry(3f, 8.2f), Entry(4f, 8.7f), Entry(5f, 8.3f),
@@ -167,7 +180,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             xAxis.granularity = 1f
             xAxis.labelCount = weekdays.size
             invalidate()
-        }
+        }*/
 
         // Sleep Stages Bar Chart
         val barChart = view.findViewById<BarChart>(R.id.barChart)
@@ -365,6 +378,98 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = sleepLandingData.recommendedSound
     }
 
+    private fun fetchIdealActualData() {
+        progressDialog.show()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "user_test_1"
+        val period = "weekly"
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
+        call.enqueue(object : Callback<SleepIdealActualResponse> {
+            override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    idealActualResponse = response.body()!!
+                    // setSleepRightLandingData(idealActualResponse)
+                    val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
+                        val formattedDate = detail.sleepDuration.first().startDatetime?.let {
+                            formatDate(
+                                it
+                            )
+                        }
+                        return@map formattedDate?.let {
+                            detail.sleepTimeData?.idealSleepData?.toFloat()?.let { it1 ->
+                                detail.sleepTimeData!!.actualSleepData?.toFloat()?.let { it2 ->
+                                    SleepGraphData(
+                                        date = it,
+                                        idealSleep = it1,
+                                        actualSleep = it2
+                                    )
+                                }
+                            }
+                        }!!
+                    }
+
+                    if (sleepDataList != null) {
+                        setupChart(lineChart, sleepDataList)
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+
+            override fun onFailure(call: Call<SleepIdealActualResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun setupChart(chart: LineChart, newData: List<SleepGraphData>) {
+        val idealEntries = ArrayList<Entry>()
+        val actualEntries = ArrayList<Entry>()
+
+        for ((index, item) in newData.withIndex()) {
+            idealEntries.add(Entry(index.toFloat(), item.idealSleep))
+            actualEntries.add(Entry(index.toFloat(), item.actualSleep))
+        }
+
+        val idealSet = LineDataSet(idealEntries, "Ideal Sleep").apply {
+            color = Color.GREEN
+            setCircleColor(Color.GREEN)
+            valueTextSize = 10f
+        }
+
+        val actualSet = LineDataSet(actualEntries, "Actual Sleep").apply {
+            color = Color.BLUE
+            setCircleColor(Color.BLUE)
+            valueTextSize = 10f
+        }
+
+        val lineData = LineData(idealSet, actualSet) // ✅ Convert to LineData
+
+        val markerView = SleepMarkerView(chart.context, newData)
+        chart.marker = markerView
+
+        chart.apply {
+            data = lineData // ✅ Assign LineData to Chart
+            description.isEnabled = false
+            xAxis.setDrawGridLines(false)
+            legend.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+            legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+            invalidate() // Refresh chart
+        }
+    }
+
+    private fun formatDate(dateTime: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("EEE dd MMM", Locale.getDefault())
+        return outputFormat.format(inputFormat.parse(dateTime)!!)
+    }
+
     private fun setSleepRightStageData(sleepStageResponse: ArrayList<SleepStageData>) {
         remData.clear()
         awakeData.clear()
@@ -552,6 +657,32 @@ class SleepChartViewLanding(context: android.content.Context, attrs: android.uti
 
             canvas.drawRoundRect(RectF(left, top, right, bottom), cornerRadius, cornerRadius, paint)
         }
+    }
+}
+
+class SleepMarkerView(context: Context, private val data: List<SleepGraphData>) : MarkerView(context, R.layout.marker_view) {
+
+    private val tvContent: TextView = findViewById(R.id.tv_content_type)
+
+    override fun refreshContent(e: Entry?, highlight: Highlight?) {
+        if (e != null) {
+            val xIndex = e.x.toInt()
+
+            // Find the corresponding data entry by index
+            val selectedData = data.getOrNull(xIndex)
+
+            selectedData?.let {
+                val ideal = it.idealSleep
+                val actual = it.actualSleep
+
+                tvContent.text = "Ideal: $ideal hrs\nActual: $actual hrs"
+            }
+        }
+        super.refreshContent(e, highlight)
+    }
+
+    override fun getOffset(): MPPointF {
+        return MPPointF(-(width / 2).toFloat(), -height.toFloat())
     }
 }
 

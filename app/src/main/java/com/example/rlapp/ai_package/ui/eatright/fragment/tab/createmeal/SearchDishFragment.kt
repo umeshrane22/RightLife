@@ -1,6 +1,7 @@
 package com.example.rlapp.ai_package.ui.eatright.fragment.tab.createmeal
 
 import android.app.ProgressDialog
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,9 +23,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.data.repository.ApiClient
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.model.FoodDetailsResponse
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.createmeal.SearchDishesAdapter
 import com.example.rlapp.ai_package.model.RecipeList
 import com.example.rlapp.ai_package.model.RecipeResponseModel
+import com.example.rlapp.ai_package.model.ScanMealNutritionResponse
+import com.example.rlapp.ai_package.ui.eatright.fragment.MealScanResultFragment
 import com.example.rlapp.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.example.rlapp.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.example.rlapp.ai_package.utils.AppPreference
@@ -82,7 +86,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
 
         searchType = arguments?.getString("searchType").toString()
 
-
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -134,17 +137,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         valueLists.addAll(recipesList as Collection<RecipeList>)
         searchDishAdapter.addAll(valueLists, position, recipesModel, isRefresh)
 
-        val fragment = DishFragment()
-        val args = Bundle()
-        args.putString("searchType", searchType)
-        args.putString("recipeName", recipesModel.name)
-        args.putString("recipeImage", recipesModel.image)
-        fragment.arguments = args
-        requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, fragment, "landing")
-            addToBackStack("landing")
-            commit()
-        }
+        getMealRecipesDetails(recipesModel._id)
     }
 
     private fun filterDishes(query: String) {
@@ -184,6 +177,43 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 }
             }
             override fun onFailure(call: Call<RecipeResponseModel>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun getMealRecipesDetails(foodId : String) {
+        progressDialog.show()
+        val userId = appPreference.getUserId().toString()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val call = ApiClient.apiService.getMealRecipesDetails(foodId, token)
+        call.enqueue(object : Callback<FoodDetailsResponse> {
+            override fun onResponse(call: Call<FoodDetailsResponse>, response: Response<FoodDetailsResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    val mealDetails = response.body()?.data
+                    println(mealDetails)
+                   if (mealDetails != null){
+                       requireActivity().supportFragmentManager.beginTransaction().apply {
+                           val snapMealFragment = DishFragment()
+                           val args = Bundle()
+                           args.putString("searchType", searchType)
+                           args.putParcelable("foodDetailsResponse", response.body()?.data)
+                           snapMealFragment.arguments = args
+                           replace(R.id.flFragment, snapMealFragment, "Steps")
+                           addToBackStack(null)
+                           commit()
+                       }
+                   }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<FoodDetailsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()

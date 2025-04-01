@@ -53,6 +53,8 @@ import com.example.rlapp.ai_package.ui.adapter.WorkoutAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.ai_package.ui.sleepright.fragment.SleepPerformanceFragment
 import com.example.rlapp.ai_package.ui.sleepright.fragment.SleepRightLandingFragment
+import com.example.rlapp.ai_package.ui.sleepright.model.AssessmentResponse
+import com.example.rlapp.ai_package.ui.thinkright.adapter.MindAuditCarouselAdapter
 import com.example.rlapp.ai_package.ui.thinkright.adapter.MoreToolsAdapter
 import com.example.rlapp.ai_package.ui.thinkright.adapter.Phq9Adapter
 import com.example.rlapp.ai_package.ui.thinkright.adapter.ToolAdapter
@@ -113,9 +115,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         super.onViewCreated(view, savedInstanceState)
         fetchToolList()
         fetchQuoteData()
-        carouselViewPager = view.findViewById(R.id.viewPager)
+        fetchAssessmentResult()
+        carouselViewPager = view.findViewById(R.id.carouselViewPager)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
-        dotsLayout = view.findViewById(R.id.dotsLayout)
+        dotsLayout = view.findViewById(R.id.dotsLayoutMindAudit)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -157,13 +160,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         val adapter = CrousalTabAdapter(cardItems)
         carouselViewPager.adapter = adapter
         addDotsIndicator(cardItems.size)*/
+        val images = listOf(R.drawable.sleep_right, R.drawable.sleep_right, R.drawable.sleep_right)
+        val adapter = MindAuditCarouselAdapter(images)
+        carouselViewPager.adapter = adapter
+
+        addDotsIndicator(images.size)
+
         carouselViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 updateDots(position)
             }
         })
+
+        // Smooth Scaling Effect
         carouselViewPager.setPageTransformer { page, position ->
-            val offset = abs(position)
+            val offset = kotlin.math.abs(position)
             page.scaleY = 1 - (offset * 0.1f)
         }
 
@@ -475,6 +486,30 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 //progressDialog.dismiss()
+            }
+        })
+    }
+    private fun fetchAssessmentResult() {
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"  // Replace with actual token
+        val call = ApiClient.apiService.getAssessmentResult(token)
+
+        call.enqueue(object : Callback<AssessmentResponse> {
+            override fun onResponse(call: Call<AssessmentResponse>, response: Response<AssessmentResponse>) {
+                if (response.isSuccessful) {
+                    val assessmentResponse = response.body()
+                    if (assessmentResponse != null) {
+                       // tvResult.text = assessmentResponse.data.getOrNull(0)?.result
+                        //tvRecommendation.text = assessmentResponse.data.getOrNull(0)?.recommendation
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<AssessmentResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -1,10 +1,13 @@
 package com.example.rlapp.ai_package.ui.moveright
 
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -139,6 +142,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         logMealButton.setOnClickListener {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
+
 
         // Set up Health Connect
         val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
@@ -575,5 +579,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
     }*/
+
+    fun openAppSettings(context: Context) {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:" + context.packageName)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(context, "Unable to open settings", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
 }

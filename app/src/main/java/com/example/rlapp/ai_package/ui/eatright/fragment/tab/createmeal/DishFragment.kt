@@ -1,5 +1,6 @@
 package com.example.rlapp.ai_package.ui.eatright.fragment.tab.createmeal
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,11 +19,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
+import com.example.rlapp.ai_package.model.FoodDetailsResponse
 import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutientsListAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
-import com.example.rlapp.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.example.rlapp.ai_package.ui.eatright.model.BreakfastMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.DinnerMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.LunchMealModel
@@ -90,9 +91,14 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         tvMealName = view.findViewById(R.id.tvMealName)
         imgFood = view.findViewById(R.id.imgFood)
 
-        searchType = arguments?.getString("searchType").toString()
-        recipeName = arguments?.getString("recipeName").toString()
-        recipeImage = arguments?.getString("recipeImage").toString()
+       // searchType = arguments?.getString("searchType").toString()
+        val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("foodDetailsResponse", FoodDetailsResponse::class.java)
+        } else {
+            arguments?.getParcelable("foodDetailsResponse")
+        }
+
+        println(foodDetailsResponse)
 
 //        view.findViewById<ImageView>(R.id.ivDatePicker).setOnClickListener {
 //            // Open Date Picker
@@ -156,7 +162,14 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             }
         })
 
-        setDishData()
+        if (foodDetailsResponse?.data != null){
+            setDishData(foodDetailsResponse)
+           // onFrequentlyLoggedItemRefresh(foodDetailsResponse.data)
+//            if (foodDataResponses.data.size > 0){
+//                onMicroNutrientsItemRefresh(foodDataResponses.data.get(0).nutrition_per_100g)
+//                onMacroNutrientsItemRefresh(foodDataResponses.data.get(0).nutrition_per_100g)
+//            }
+        }
 
         onMealLogDateItemRefresh()
 //        onBreakfastMealLogItemRefresh()
@@ -223,14 +236,14 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         onFrequentlyLoggedItemRefresh()
     }
 
-    private fun setDishData(){
+    private fun setDishData(foodDetailsResponse: FoodDetailsResponse) {
         if (searchType.contentEquals("createRecipe")){
             addToTheMealTV.text = "Add To The Recipe"
         }else{
             addToTheMealTV.text = "Add To The Meal"
-            tvMealName.text = recipeName
+            tvMealName.text = foodDetailsResponse.data.name
             Glide.with(this)
-                .load(recipeImage)
+                .load(foodDetailsResponse.data.image)
                 .placeholder(R.drawable.ic_breakfast)
                 .error(R.drawable.ic_breakfast)
                 .into(imgFood)

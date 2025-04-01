@@ -78,7 +78,7 @@ class SplashScreenActivity : AppCompatActivity() {
                     startActivity(intent)
                 } else {
                     if (sharedPreferenceManager.userName.isNullOrEmpty()) {
-                        val intent = Intent(this, CreateUsernameActivity::class.java)
+                        val intent = Intent(this, HomeActivity::class.java)
                         startActivity(intent)
                     } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()) {
                         val intent = Intent(this, WellnessFocusActivity::class.java)
