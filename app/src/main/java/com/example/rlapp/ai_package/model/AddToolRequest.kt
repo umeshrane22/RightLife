@@ -1,6 +1,7 @@
 package com.example.rlapp.ai_package.model
 
 data class AddToolRequest(
+    var toolId :String?,
     var userId : String?,
     var moduleName : String?,
     var moduleId : String?,
