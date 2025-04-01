@@ -3,7 +3,6 @@ package com.example.rlapp.ui.mindaudit;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -171,7 +170,10 @@ public class MindAuditActivity extends AppCompatActivity {
             public void onResponse(Call<MindAuditResultResponse> call, Response<MindAuditResultResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
 
-                    Log.d("AAAA", response.toString());
+                    /*if (!response.body().getResult().isEmpty()) {
+                        startActivity(new Intent(MindAuditActivity.this, MindAuditResultActivity.class));
+                        finish();
+                    }*/
 
                 } else {
                     Toast.makeText(MindAuditActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
