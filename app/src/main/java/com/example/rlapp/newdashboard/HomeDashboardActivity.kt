@@ -237,24 +237,26 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            Toast.makeText(this, "Eat Right", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Eat Right", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
-            //Toast.makeText(this, "Sync Health", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Sync Health", Toast.LENGTH_SHORT).show()
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
             Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
-            Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this@HomeDashboardActivity, HealthCamActivity::class.java))
         }
         binding.profileImage.setOnClickListener {
 

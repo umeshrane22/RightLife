@@ -1126,7 +1126,12 @@ public interface ApiService {
             @Query("endDate") String endDate,
             @Query("key") String key
     );
-
+    @Headers("Content-Type: application/json")
+    @POST("mindFull")
+    Call<ResponseBody> addMindfulTime(
+            @Header("Authorization") String authToken,
+            @Body ToolKitRequest toolKitRequest
+    );
 }
 
 
