@@ -71,12 +71,11 @@
                     android:layout_height="200dp"
                     android:layout_marginTop="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/icon_feather_search"
+                    android:src="@drawable/poha_image"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-                <!-- Name Field with Edit Icon -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/layout_food_name"
                     android:layout_width="match_parent"

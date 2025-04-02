@@ -1,11 +1,13 @@
 package com.example.rlapp.ai_package.ui.eatright.fragment.tab.createmeal
 
+import android.app.AlertDialog
+import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -18,33 +20,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutientsListAdapter
-import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
-import com.example.rlapp.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
+import com.example.rlapp.ai_package.model.FoodDetailsResponse
+import com.example.rlapp.ai_package.model.MealDetails
+import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
-import com.example.rlapp.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
-import com.example.rlapp.ai_package.ui.eatright.model.BreakfastMealModel
-import com.example.rlapp.ai_package.ui.eatright.model.DinnerMealModel
-import com.example.rlapp.ai_package.ui.eatright.model.LunchMealModel
 import com.example.rlapp.ai_package.ui.eatright.model.MacroNutrientsModel
+import com.example.rlapp.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.example.rlapp.ai_package.ui.eatright.model.MyMealModel
 import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentDishBinding
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
 class DishFragment : BaseFragment<FragmentDishBinding>() {
 
-    private lateinit var progressBarConfirmation :ProgressBar
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
-    private lateinit var lunchMealRecyclerView : RecyclerView
-    private lateinit var dinnerMealRecyclerView : RecyclerView
     private lateinit var addToTheMealLayout : LinearLayoutCompat
     private lateinit var imageCalender : ImageView
-    private lateinit var breakfastDotMenu : ImageView
-    private lateinit var lunchDotMenu : ImageView
     private lateinit var imgFood : ImageView
     private lateinit var btnLogMeal : LinearLayoutCompat
     private lateinit var editDeleteBreakfast : CardView
@@ -64,11 +60,12 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
 
-    private val macroNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
-    private val microNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
-    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
-    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
+    private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMacroNutrientsItemClick) }
+    private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMicroNutrientsItemClick) }
+    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -91,8 +88,11 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         imgFood = view.findViewById(R.id.imgFood)
 
         searchType = arguments?.getString("searchType").toString()
-        recipeName = arguments?.getString("recipeName").toString()
-        recipeImage = arguments?.getString("recipeImage").toString()
+        val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("foodDetailsResponse", FoodDetailsResponse::class.java)
+        } else {
+            arguments?.getParcelable("foodDetailsResponse")
+        }
 
 //        view.findViewById<ImageView>(R.id.ivDatePicker).setOnClickListener {
 //            // Open Date Picker
@@ -117,16 +117,9 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         }
 
         macroItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        macroItemRecyclerView.adapter = macroNutientsAdapter
-//
+        macroItemRecyclerView.adapter = macroNutrientsAdapter
         microItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        microItemRecyclerView.adapter = microNutientsAdapter
-//
-//        lunchMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        lunchMealRecyclerView.adapter = lunchMealLogsAdapter
-//
-//        dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
+        microItemRecyclerView.adapter = microNutrientsAdapter
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -156,25 +149,13 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             }
         })
 
-        setDishData()
+        if (foodDetailsResponse?.data != null){
+            setDishData(foodDetailsResponse)
+            onMacroNutrientsList(foodDetailsResponse.data)
+            onMicroNutrientsList(foodDetailsResponse.data)
+            // onFrequentlyLoggedItemRefresh(foodDetailsResponse.data)
+        }
 
-        onMealLogDateItemRefresh()
-//        onBreakfastMealLogItemRefresh()
-//        onLunchMealLogItemRefresh()
-//        onDinnerMealLogItemRefresh()
-//
-//        imageCalender.setOnClickListener {
-//            val fragment = MealLogCalenderFragment()
-//            val args = Bundle()
-//
-//            fragment.arguments = args
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flFragment, fragment, "mealLog")
-//                addToBackStack("mealLog")
-//                commit()
-//            }
-//        }
-//
         addToTheMealLayout.setOnClickListener {
             Toast.makeText(context, "Meal Added", Toast.LENGTH_SHORT).show()
             val fragment = HomeBottomTabFragment()
@@ -186,71 +167,93 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                 commit()
             }
         }
-//
-//        breakfastDotMenu.setOnClickListener {
-//            if (editDeleteBreakfast.visibility == View.GONE){
-//                //layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteBreakfast.visibility = View.VISIBLE
-//            }else{
-//               // layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteBreakfast.visibility = View.GONE
-//            }
-//        }
-//
-//        lunchDotMenu.setOnClickListener {
-//            if (editDeleteLunch.visibility == View.GONE){
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteLunch.visibility = View.VISIBLE
-//            }else{
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteLunch.visibility = View.GONE
-//            }
-//        }
-//
-//        dinnerDotMenu.setOnClickListener {
-//            if (editDeleteDinner.visibility == View.GONE){
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteDinner.visibility = View.VISIBLE
-//            }else{
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteDinner.visibility = View.GONE
-//            }
-//        }
-//
-//        layoutDelete.setOnClickListener {
-//            deleteMealDialog()
-//        }
         onFrequentlyLoggedItemRefresh()
     }
 
-    private fun setDishData(){
+    private fun setDishData(foodDetailsResponse: FoodDetailsResponse) {
         if (searchType.contentEquals("createRecipe")){
             addToTheMealTV.text = "Add To The Recipe"
         }else{
             addToTheMealTV.text = "Add To The Meal"
-            tvMealName.text = recipeName
+            tvMealName.text = foodDetailsResponse.data.name
             Glide.with(this)
-                .load(recipeImage)
+                .load(foodDetailsResponse.data.image)
                 .placeholder(R.drawable.ic_breakfast)
                 .error(R.drawable.ic_breakfast)
                 .into(imgFood)
         }
     }
 
-    private fun onMealLogDateItemRefresh (){
+    private fun onMacroNutrientsList(mealDetails : MealDetails) {
+
+        val calories_kcal : String = mealDetails.calories.toInt().toString()?: "NA"
+        val protein_g : String = mealDetails.protein.toInt().toString()?: "NA"
+        val carb_g : String = mealDetails.carbs.toInt().toString()?: "NA"
+        val fat_g : String = mealDetails.fats.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
-            MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
-            MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
+            MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
+            MacroNutrientsModel(protein_g, "g", "Protein", R.drawable.ic_cabs),
+            MacroNutrientsModel(carb_g, "g", "Carbs", R.drawable.ic_protein),
+            MacroNutrientsModel(fat_g, "g", "Fats", R.drawable.ic_fats),
         )
 
         val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
         val mealLogDateData: MacroNutrientsModel? = null
-        macroNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
-        microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        macroNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
+    }
+
+    private fun onMicroNutrientsList(mealDetails : MealDetails) {
+
+        val b12_mcg = if (null != null){
+            mealDetails.vitaminD.toInt().toString()
+        }else{
+            "5"
+        }
+
+        val iron_mg = if (mealDetails.iron != null){
+            mealDetails.iron.toInt().toString()
+        }else{
+            "8"
+        }
+        val magnesium_mg = if (null != null){
+            mealDetails.iron.toInt().toString()
+        }else{
+            "6"
+        }
+
+        val phosphorus_mg = if (null != null){
+            mealDetails.potassium.toInt().toString()
+        }else{
+            "10"
+        }
+
+        val potassium_mg = if (mealDetails.potassium != null){
+            mealDetails.potassium.toInt().toString()
+        }else{
+            "2"
+        }
+
+        val zinc_mg = if (null != null){
+            mealDetails.potassium.toInt().toString()
+        }else{
+            "7"
+        }
+
+        val mealLogs = listOf(
+            MicroNutrientsModel(b12_mcg, "mg", "Vitamin B", R.drawable.ic_cal),
+            MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_cabs),
+            MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_protein),
+            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
+            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
+            MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats)
+        )
+
+        val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
+        valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        val mealLogDateData: MicroNutrientsModel? = null
+        microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun onFrequentlyLoggedItemRefresh (){
@@ -268,119 +271,42 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onFrequentlyLoggedItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
+    private fun onFrequentlyLoggedItem(myMealModel: MyMealModel, position: Int, isRefresh: Boolean) {
 
-        val mealLogs = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
-        )
-
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onBreakfastMealLogItemRefresh() {
-        val mealLogs = listOf(
-            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-        )
-        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-        val breakfastMealData: BreakfastMealModel? = null
-      //  macroNutientsAdapter.addAll(valueLists, -1, breakfastMealData, false)
+    private fun onMacroNutrientsItemClick(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
+
     }
 
-    private fun onLunchMealLogItemRefresh() {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-        val lunchMealData: LunchMealModel? = null
-    //    lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
+    private fun onMicroNutrientsItemClick(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
+
     }
 
-    private fun onDinnerMealLogItemRefresh() {
-        val mealLogs = listOf(
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
+    private fun showDatePicker() {
+        val calendar = Calendar.getInstance()
+        val datePicker = DatePickerDialog(
+            requireContext(), { _, year, month, dayOfMonth ->
+                val date = "$dayOfMonth ${getMonthName(month)} $year"
+             //   tvSelectedDate.text = date
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         )
-        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-        val dinnerMealData: DinnerMealModel? = null
-     //   dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
+        datePicker.show()
     }
-
-    private fun onMealLogDateItem(mealLogDateModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
-            MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
-        )
-        val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
-        macroNutientsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onBreakfastMealLogItem(mealLogDateModel: BreakfastMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-        )
-        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-       // breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onLunchMealLogItem(mealLogDateModel: LunchMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-     //   lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onDinnerMealLogItem(mealLogDateModel: DinnerMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-     //   dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-//    private fun showDatePicker() {
-//        val calendar = Calendar.getInstance()
-//        val datePicker = DatePickerDialog(
-//            context!!, { _, year, month, dayOfMonth ->
-//                val date = "$dayOfMonth ${getMonthName(month)} $year"
-//                tvSelectedDate.text = date
-//            },
-//            calendar.get(Calendar.YEAR),
-//            calendar.get(Calendar.MONTH),
-//            calendar.get(Calendar.DAY_OF_MONTH)
-//        )
-//        datePicker.show()
-//    }
 
     private fun getMonthName(month: Int): String {
         return SimpleDateFormat("MMMM", Locale.getDefault()).format(Date(0, month, 0))
     }
 
-//    private fun showMealSelection() {
-//        val meals = arrayOf("Breakfast", "Lunch", "Dinner")
-//        val builder = AlertDialog.Builder(context!!)
-//        builder.setItems(meals) { _, which ->
-//            tvMealType.text = meals[which]
-//        }
-//        builder.show()
-//    }
+    private fun showMealSelection() {
+        val meals = arrayOf("Breakfast", "Lunch", "Dinner")
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setItems(meals) { _, which ->
+          //  tvMealType.text = meals[which]
+        }
+        builder.show()
+    }
 }

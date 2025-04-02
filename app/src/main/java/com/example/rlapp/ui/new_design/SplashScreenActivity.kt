@@ -15,8 +15,6 @@ import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.rlapp.R
-import com.example.rlapp.ai_package.ui.MainAIActivity
-import com.example.rlapp.newdashboard.HomeDashboardActivity
 import com.example.rlapp.ui.HomeActivity
 import com.example.rlapp.ui.new_design.pojo.LoggedInUser
 import com.example.rlapp.ui.utility.SharedPreferenceManager
@@ -80,7 +78,7 @@ class SplashScreenActivity : AppCompatActivity() {
                     startActivity(intent)
                 } else {
                     if (sharedPreferenceManager.userName.isNullOrEmpty()) {
-                        val intent = Intent(this, MainAIActivity::class.java)
+                        val intent = Intent(this, HomeActivity::class.java)
                         startActivity(intent)
                     } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()) {
                         val intent = Intent(this, WellnessFocusActivity::class.java)

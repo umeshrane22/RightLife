@@ -9,6 +9,7 @@ import com.example.rlapp.ai_package.model.RecipeResponseModel
 import com.example.rlapp.ai_package.model.RestorativeSleepResponse
 import com.example.rlapp.ai_package.model.AnalysisRequest
 import com.example.rlapp.ai_package.model.AnalysisResponse
+import com.example.rlapp.ai_package.model.FoodDetailsResponse
 import com.example.rlapp.ai_package.model.ModuleResponse
 import com.example.rlapp.ai_package.model.ScanMealNutritionResponse
 import com.example.rlapp.ai_package.model.SleepConsistencyResponse
@@ -24,6 +25,7 @@ import com.example.rlapp.ai_package.model.WorkoutResponse
 import com.example.rlapp.ai_package.model.WorkoutResponseModel
 import com.example.rlapp.ai_package.model.WorkoutResponseRoutine
 import com.example.rlapp.ai_package.ui.eatright.model.LandingPageResponse
+import com.example.rlapp.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -36,6 +38,7 @@ import retrofit2.http.Header
 import retrofit2.http.Query
 import retrofit2.http.Body
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Url
 
 interface ApiService {
@@ -47,6 +50,12 @@ interface ApiService {
     @GET("app/api/meal-plan/meal-recipes-lists")
     fun getMealRecipesList(
         @Header("Authorization") authToken: String): Call<RecipeResponseModel>
+
+    @GET("app/api/meal-plan/meal-recipes-lists/{foodId}")
+    fun getMealRecipesDetails(
+        @Path("foodId") foodId: String,
+        @Header("Authorization") authToken: String): Call<FoodDetailsResponse>
+
     @GET("app/api/tools")
     fun getToolList(
         @Header("Authorization") authToken: String,
@@ -84,6 +93,9 @@ interface ApiService {
 
     @GET("app/api/quoteOfDay")
     fun quoteOfDay(@Header("Authorization") authToken: String): Call<ThinkQuoteResponse>
+
+    @GET("app/api/mind-audit/q/get-assessment-result")
+    fun getAssessmentResult(@Header("Authorization") authToken: String): Call<AssessmentResponse>
 
     @GET("app/api/tools")
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>

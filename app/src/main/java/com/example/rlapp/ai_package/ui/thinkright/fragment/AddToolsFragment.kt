@@ -168,7 +168,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         toolsAdapter = ToolsAdapterList(tools) { position,toolsData ->
             tools[position].isSelectedModule = !tools[position].isSelectedModule!!
             toolsAdapter.notifyItemChanged(position)
-           //  toolsId = toolsData.toolsId ?: ""
+             toolsId = toolsData.toolsId ?: ""
              userId = toolsData.userId ?: ""
              moduleName = toolsData.moduleName ?: ""
              moduleId = toolsData.moduleId ?: ""
@@ -241,16 +241,18 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private fun selectTools() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-        val userId = "67a5fae9197992511e71b1c8"
-        val call = ApiClient.apiService.selectTools(token,AddToolRequest(userId =userId, moduleName = moduleName, moduleId = moduleId, subtitle = subtitle, moduleType = moduleType, categoryId = categoryId, isSelectedModule = isSelectedModule))
+        val call = ApiClient.apiService.selectTools(token,AddToolRequest(toolId = toolsId, userId =userId, moduleName = moduleName, moduleId = moduleId, subtitle = subtitle, moduleType = moduleType, categoryId = categoryId, isSelectedModule = isSelectedModule))
         call.enqueue(object : Callback<ToolsResponse> {
             override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     toolsResponse = response.body()!!
-                    for (i in 0 until toolsResponse.data.size) {
-                        toolsResponse.data.getOrNull(i)?.let {
-                            tools.add(it) }
+                    if (toolsResponse.data != null) {
+                        for (i in 0 until toolsResponse.data.size) {
+                            toolsResponse.data.getOrNull(i)?.let { tools.add(it) }
+                        }
+                    } else {
+                        Log.e("AddToolsFragment", "toolsResponse.data is null")
                     }
                     Toast.makeText(requireContext(),"${moduleName} Added Successfully!", Toast.LENGTH_SHORT).show()
                     toolsAdapter.notifyDataSetChanged()
