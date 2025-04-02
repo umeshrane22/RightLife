@@ -20,9 +20,10 @@ class OnBoardingModuleListAdapter(
     private val context: Context,
     private val onItemClickListener: OnItemClickListener,
     private val moduleServices: List<ModuleService>,
+    private var selectedPosition: Int = -1
 
     ) : RecyclerView.Adapter<OnBoardingModuleListAdapter.OnBoardingModuleViewHolder>() {
-    private var selectedPosition = -1
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OnBoardingModuleViewHolder {
@@ -78,6 +79,11 @@ class OnBoardingModuleListAdapter(
 
     fun interface OnItemClickListener {
         fun onItemClick(service: ModuleService)
+    }
+
+    fun setSelectedPosition(position: Int){
+        selectedPosition = position
+        notifyDataSetChanged()
     }
 
     class OnBoardingModuleViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
