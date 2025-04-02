@@ -27,7 +27,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
         setContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         instance = this
-        //binding.viewPagerQuestionnaire.isUserInputEnabled = false
+        binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
         viewPager = binding.viewPagerQuestionnaire
 
@@ -107,7 +107,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
 
         fun submitQuestionnaireAnswerRequest(questionnaireAnswerRequest: QuestionnaireAnswerRequest) {
 
-            val apiService = ApiClient.getClient().create(ApiService::class.java)
+           /* val apiService = ApiClient.getClient().create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
                 sharedPreferenceManager.accessToken,
                 questionnaireAnswerRequest
@@ -141,7 +141,11 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                     ).show()
                 }
 
-            })
+            })*/
+            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                instance?.finish() // Finish activity safely
+            else
+                navigateToNextPage()
         }
     }
 

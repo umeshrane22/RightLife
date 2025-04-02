@@ -28,7 +28,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         // Store activity reference
         instance = this
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-        //binding.viewPagerQuestionnaire.isUserInputEnabled = false
+        binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
         viewPager = binding.viewPagerQuestionnaire
 
@@ -107,7 +107,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         }
 
         fun submitQuestionnaireAnswerRequest(questionnaireAnswerRequest: QuestionnaireAnswerRequest) {
-            val apiService = ApiClient.getClient().create(ApiService::class.java)
+            /*val apiService = ApiClient.getClient().create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
                 sharedPreferenceManager.accessToken,
                 questionnaireAnswerRequest
@@ -142,7 +142,11 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 }
 
             })
-
+            */
+            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                instance?.finish() // Finish activity safely
+            else
+                navigateToNextPage()
         }
     }
 
