@@ -1,6 +1,7 @@
 package com.example.rlapp.ui.mindaudit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -258,6 +259,8 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                         Gson gson = new Gson();
                         Log.d("AAAAA", "Result  = " + jsonString);
 
+                        Toast.makeText(MAAssessmentQuestionaireActivity.this, "Submitted successfully", Toast.LENGTH_SHORT).show();
+                        finish();
                         //getAssessmentResult(header);
                         //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
 

@@ -1,6 +1,7 @@
 package com.example.rlapp.ui.new_design
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
@@ -27,28 +28,21 @@ class WellnessFocusActivity : AppCompatActivity() {
     private lateinit var adapter: OnBoardingModuleListAdapter
     private val moduleList: ArrayList<ModuleService> = ArrayList()
     private lateinit var isFrom: String
+    private lateinit var colorStateListSelected: ColorStateList
+    private lateinit var btnContinue: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wellness_focus)
 
-        val btnContinue = findViewById<Button>(R.id.btn_continue)
+        btnContinue = findViewById(R.id.btn_continue)
         val recyclerView = findViewById<RecyclerView>(R.id.rv_onboarding_module)
 
-        val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
+        colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
 
         isFrom = intent.getStringExtra("FROM").toString()
 
-
-        adapter = OnBoardingModuleListAdapter(this, { moduleService ->
-            selectedWellness = Utils.getModuleText(moduleService.moduleName)
-            selectedService = moduleService
-            SharedPreferenceManager.getInstance(this@WellnessFocusActivity).selectedOnboardingModule =
-                selectedService?.moduleName
-            btnContinue.backgroundTintList = colorStateListSelected
-            btnContinue.isEnabled = true
-        }, moduleList)
-
+        setAdapter(-1)
         recyclerView.setLayoutManager(LinearLayoutManager(this))
         recyclerView.adapter = adapter
 
@@ -85,7 +79,19 @@ class WellnessFocusActivity : AppCompatActivity() {
                     // Access the 'data' and 'services' fields
                     val data = apiResponse?.data
                     data?.services?.let { moduleList.addAll(it) }
-                    adapter.notifyDataSetChanged()
+                    var position = -1
+                    for ((index, item) in moduleList.withIndex()) {
+                        if (item.isSelected) {
+                            position = index
+                            selectedWellness = Utils.getModuleText(item.moduleName)
+                            selectedService = item
+                            SharedPreferenceManager.getInstance(this@WellnessFocusActivity).selectedOnboardingModule =
+                                selectedService?.moduleName
+                            btnContinue.backgroundTintList = colorStateListSelected
+                            btnContinue.isEnabled = true
+                        }
+                    }
+                    adapter.setSelectedPosition(position)
                 } else {
                     Toast.makeText(
                         this@WellnessFocusActivity,
@@ -106,5 +112,16 @@ class WellnessFocusActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun setAdapter(position: Int) {
+        adapter = OnBoardingModuleListAdapter(this, { moduleService ->
+            selectedWellness = Utils.getModuleText(moduleService.moduleName)
+            selectedService = moduleService
+            SharedPreferenceManager.getInstance(this@WellnessFocusActivity).selectedOnboardingModule =
+                selectedService?.moduleName
+            btnContinue.backgroundTintList = colorStateListSelected
+            btnContinue.isEnabled = true
+        }, moduleList, position)
     }
 }

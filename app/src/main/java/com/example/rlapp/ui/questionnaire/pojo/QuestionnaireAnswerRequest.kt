@@ -6,17 +6,17 @@ import com.google.gson.annotations.SerializedName
 class QuestionnaireAnswerRequest {
     @SerializedName("move_right")
     @Expose
-    var moveRight: MoveRight? = null
+    var moveRight: MoveRight? = MoveRight()
 
     @SerializedName("eat_right")
     @Expose
-    var eatRight: EatRight? = null
+    var eatRight: EatRight? = EatRight()
 
     @SerializedName("sleep_right")
     @Expose
-    var sleepRight: SleepRight? = null
+    var sleepRight: SleepRight? = SleepRight()
 
     @SerializedName("think_right")
     @Expose
-    var thinkRight: ThinkRight? = null
+    var thinkRight: ThinkRight? = ThinkRight()
 }
