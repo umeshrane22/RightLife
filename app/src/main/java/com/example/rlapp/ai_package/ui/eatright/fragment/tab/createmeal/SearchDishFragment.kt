@@ -193,20 +193,18 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             override fun onResponse(call: Call<FoodDetailsResponse>, response: Response<FoodDetailsResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    val mealDetails = response.body()?.data
-                    println(mealDetails)
-                   if (mealDetails != null){
-                       requireActivity().supportFragmentManager.beginTransaction().apply {
+                    if (response.body()?.data != null){
+                        requireActivity().supportFragmentManager.beginTransaction().apply {
                            val snapMealFragment = DishFragment()
                            val args = Bundle()
                            args.putString("searchType", searchType)
-                           args.putParcelable("foodDetailsResponse", response.body()?.data)
+                           args.putParcelable("foodDetailsResponse", response.body())
                            snapMealFragment.arguments = args
                            replace(R.id.flFragment, snapMealFragment, "Steps")
                            addToBackStack(null)
                            commit()
                        }
-                   }
+                    }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.ui.eatright.model.MicroNutrientsModel
 
-class MicroNutientsListAdapter(private val context: Context, private var dataLists: ArrayList<MicroNutrientsModel>,
-                               private var clickPos: Int, private var mealLogListData : MicroNutrientsModel?,
-                               private var isClickView : Boolean, val onMicroNutrientsItem: (MicroNutrientsModel, Int, Boolean) -> Unit,) :
-    RecyclerView.Adapter<MicroNutientsListAdapter.ViewHolder>() {
+class MicroNutrientsAdapter(private val context: Context, private var dataLists: ArrayList<MicroNutrientsModel>,
+                            private var clickPos: Int, private var microNutrientsModel : MicroNutrientsModel?,
+                            private var isClickView : Boolean, val onMicroNutrientsItem: (MicroNutrientsModel, Int, Boolean) -> Unit,) :
+    RecyclerView.Adapter<MicroNutrientsAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -77,12 +77,12 @@ class MicroNutientsListAdapter(private val context: Context, private var dataLis
          val icCal : ImageView = itemView.findViewById(R.id.image_dewpoint)
      }
 
-    fun addAll(item : ArrayList<MicroNutrientsModel>?, pos: Int, mealLogItem : MicroNutrientsModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MicroNutrientsModel>?, pos: Int, microNutrients : MicroNutrientsModel?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
             clickPos = pos
-            mealLogListData = mealLogItem
+            microNutrientsModel = microNutrients
             isClickView = isClick
         }
         notifyDataSetChanged()

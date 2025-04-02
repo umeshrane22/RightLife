@@ -278,7 +278,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/heartRateChart"
+                        android:id="@+id/sleepConsistencyChart"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:layout_marginTop="10dp"
@@ -291,7 +291,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"
-                        app:layout_constraintTop_toBottomOf="@id/heartRateChart"
+                        app:layout_constraintTop_toBottomOf="@id/sleepConsistencyChart"
                         android:weightSum="10"
                         android:orientation="horizontal">
 

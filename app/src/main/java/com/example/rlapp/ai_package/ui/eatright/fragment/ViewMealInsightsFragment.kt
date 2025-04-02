@@ -15,8 +15,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutientsListAdapter
-import com.example.rlapp.ai_package.ui.eatright.adapter.MicroNutientsListAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.BreakfastMealModel
@@ -48,9 +48,9 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentViewMealInsightsBinding
         get() = FragmentViewMealInsightsBinding::inflate
 
-    private val macroNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+    private val macroNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMacroNutrientsItem) }
-    private val microNutientsAdapter by lazy { MicroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+    private val microNutientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItem) }
     private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onLunchMealLogItem) }

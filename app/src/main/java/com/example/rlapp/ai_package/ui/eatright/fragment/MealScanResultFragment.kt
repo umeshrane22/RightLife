@@ -28,21 +28,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.model.Nutrition
 import com.example.rlapp.ai_package.model.NutritionData
 import com.example.rlapp.ai_package.model.NutritionDetails
-import com.example.rlapp.ai_package.model.NutritionResponse
-import com.example.rlapp.ai_package.model.RecipeLists
 import com.example.rlapp.ai_package.model.ScanMealNutritionResponse
 import com.example.rlapp.ai_package.ui.eatright.adapter.FrequentlyLoggedMealScanResultAdapter
-import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutientsListAdapter
-import com.example.rlapp.ai_package.ui.eatright.adapter.MicroNutientsListAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.example.rlapp.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.example.rlapp.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment
 import com.example.rlapp.databinding.FragmentMealScanResultsBinding
 import com.example.rlapp.newdashboard.HomeDashboardActivity
-import com.example.rlapp.ui.profile_new.ProfileSettingsActivity
 import com.google.android.material.snackbar.Snackbar
 import java.io.File
 import java.text.SimpleDateFormat
@@ -67,13 +63,13 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
-    var snackbar: Snackbar? = null
-    private val microNutientsAdapter by lazy { MicroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+
+    private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItem) }
     private val mealListAdapter by lazy { FrequentlyLoggedMealScanResultAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onFrequentlyLoggedItem) }
 
-    private val macroNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1,
+    private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMealLogDateItem) }
 
 
@@ -95,10 +91,10 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         frequentlyLoggedRecyclerView.adapter = mealListAdapter
 
         macroItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        macroItemRecyclerView.adapter = macroNutientsAdapter
+        macroItemRecyclerView.adapter = macroNutrientsAdapter
 
         microItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        microItemRecyclerView.adapter = microNutientsAdapter
+        microItemRecyclerView.adapter = microNutrientsAdapter
 
         // Data for Spinner
         val items = arrayOf("Breakfast", "Lunch", "Dinner")
@@ -154,8 +150,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             setFoodData(foodDataResponses)
             onFrequentlyLoggedItemRefresh(foodDataResponses.data)
             if (foodDataResponses.data.size > 0){
-                onMicroNutrientsItemRefresh(foodDataResponses.data.get(0).nutrition_per_100g)
-                onMacroNutrientsItemRefresh(foodDataResponses.data.get(0).nutrition_per_100g)
+                onMicroNutrientsList(foodDataResponses.data.get(0).nutrition_per_100g)
+                onMacroNutrientsList(foodDataResponses.data.get(0).nutrition_per_100g)
             }
         }
 
@@ -214,7 +210,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             }
         }
     }
-    private fun onMicroNutrientsItemRefresh (nutrition: NutritionDetails){
+    private fun onMicroNutrientsList (nutrition: NutritionDetails){
 
         val b12_mcg = if (nutrition.b12_mcg != null){
             nutrition.b12_mcg.toInt().toString()
@@ -263,7 +259,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
         val mealLogDateData: MicroNutrientsModel? = null
-        microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
     private fun onMicroNutrientsItem(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
 
@@ -290,7 +286,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 //        valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
 //        macroNutientsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
-    private fun onMacroNutrientsItemRefresh(nutrition: NutritionDetails) {
+    private fun onMacroNutrientsList(nutrition: NutritionDetails) {
 
         val calories_kcal : String = nutrition.calories_kcal.toInt().toString()?: "NA"
         val protein_g : String = nutrition.protein_g.toInt().toString()?: "NA"
@@ -307,8 +303,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
         val mealLogDateData: MacroNutrientsModel? = null
-        macroNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
-        //microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        macroNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {

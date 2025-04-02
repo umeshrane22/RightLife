@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rlapp.R
 import com.example.rlapp.ai_package.base.BaseFragment
-import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutientsListAdapter
+import com.example.rlapp.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.example.rlapp.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
@@ -62,8 +62,8 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLogMealBinding
         get() = FragmentLogMealBinding::inflate
 
-    private val macroNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
-    private val microNutientsAdapter by lazy { MacroNutientsListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
+    private val macroNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
+    private val microNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
     private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
     private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
     private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
