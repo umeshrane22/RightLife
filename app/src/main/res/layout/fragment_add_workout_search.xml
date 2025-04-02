@@ -244,7 +244,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.example.rlapp.ai_package.ui.moveright.customProgressBar.CustomProgressBar
+                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CustomProgressBar
                         android:id="@+id/customSeekBar"
                         android:layout_width="match_parent"
                         android:layout_height="120dp"

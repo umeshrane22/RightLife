@@ -76,7 +76,7 @@
                 android:id="@+id/rl_morning_slider"
                 android:layout_weight="1"
                 android:layout_height="wrap_content">
-            <com.example.rlapp.quiestionscustomviews.EnergyLevelSelectorView
+            <com.jetsynthesys.rightlife.quiestionscustomviews.EnergyLevelSelectorView
                 android:id="@+id/morning_slider_view"
                 android:layout_width="50dp"
                 android:layout_centerInParent="true"
@@ -87,7 +87,7 @@
                 android:id="@+id/rl_afternon_slider"
                 android:layout_weight="1"
                 android:layout_height="wrap_content">
-                <com.example.rlapp.quiestionscustomviews.EnergyLevelSelectorView
+                <com.jetsynthesys.rightlife.quiestionscustomviews.EnergyLevelSelectorView
                     android:id="@+id/afternoon_slider_view"
                     android:layout_width="50dp"
                     android:layout_centerInParent="true"
@@ -98,7 +98,7 @@
                 android:id="@+id/rl_evening_slider"
                 android:layout_weight="1"
                 android:layout_height="wrap_content">
-                <com.example.rlapp.quiestionscustomviews.EnergyLevelSelectorView
+                <com.jetsynthesys.rightlife.quiestionscustomviews.EnergyLevelSelectorView
                     android:id="@+id/evening_slider_view"
                     android:layout_width="50dp"
                     android:layout_centerInParent="true"

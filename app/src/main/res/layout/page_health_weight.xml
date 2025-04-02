@@ -36,7 +36,7 @@
     </RelativeLayout>
 
     <!-- Date of Birth Prompt -->
-    <com.example.rlapp.ui.utility.DmSansBoldTextview
+    <com.jetsynthesys.rightlife.ui.utility.DmSansBoldTextview
         android:id="@+id/dobPrompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

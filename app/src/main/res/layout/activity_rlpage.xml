@@ -389,7 +389,7 @@
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="16sp" />
 
-                            <com.example.rlapp.ui.utility.UnderlinedTextView
+                            <com.jetsynthesys.rightlife.ui.utility.UnderlinedTextView
                                 android:id="@+id/txt_titl2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -804,7 +804,7 @@
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="16sp" />
 
-                            <com.example.rlapp.ui.utility.UnderlinedTextView
+                            <com.jetsynthesys.rightlife.ui.utility.UnderlinedTextView
                                 android:id="@+id/txt_titl4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"

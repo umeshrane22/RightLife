@@ -9,7 +9,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/homeBottomTab"
-        android:name="com.example.rlapp.ai_package.ui.home.HomeBottomTabFragment"
+        android:name="com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/home_bottom_tab_fragment_ai" />

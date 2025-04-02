@@ -67,7 +67,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.example.rlapp.ai_package.ui.moveright.graphs.LineGraphView
+        <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphView
             android:id="@+id/line_graph"
             android:layout_width="124dp"
             android:visibility="gone"
@@ -79,7 +79,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.example.rlapp.ai_package.ui.moveright.graphs.BarGraphView
+        <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.BarGraphView
             android:id="@+id/BarGraphView"
             android:layout_width="124dp"
             android:layout_height="36dp"

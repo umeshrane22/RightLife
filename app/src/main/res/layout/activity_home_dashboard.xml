@@ -629,7 +629,7 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 android:layout_height="wrap_content"/>
 
-                            <com.example.rlapp.ai_package.ui.eatright.fragment.HalfCurveProgressBar
+                            <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.HalfCurveProgressBar
                                 android:layout_width="match_parent"
                                 android:layout_height="170dp"
                                 android:layout_marginTop="10dp"
@@ -1045,7 +1045,7 @@
                             android:visibility="invisible"
                             app:layout_constraintTop_toBottomOf="@id/img_sleep_right" />
 
-                        <com.example.rlapp.ai_package.ui.sleepright.fragment.SleepChartViewLanding
+                        <com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepChartViewLanding
                             android:id="@+id/sleepStagesView"
                             android:layout_marginTop="10dp"
                             android:layout_width="match_parent"
