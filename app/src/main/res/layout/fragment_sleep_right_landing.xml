@@ -172,7 +172,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/img_sleep_right" />
 
-                    <com.example.rlapp.ai_package.ui.sleepright.fragment.SleepChartViewLanding
+                    <com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepChartViewLanding
                         android:id="@+id/sleepStagesView"
                         android:layout_marginTop="10dp"
                         android:layout_width="match_parent"

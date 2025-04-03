@@ -745,7 +745,7 @@
                         app:layout_constraintStart_toStartOf="@+id/text_activity"
                         app:layout_constraintEnd_toEndOf="@+id/text_activity" />
 
-                    <com.example.rlapp.ai_package.ui.moveright.graphs.LineGraphView
+                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphView
                         android:id="@+id/line_graph"
                         android:layout_width="155dp"
                         android:layout_height="40dp"
@@ -962,7 +962,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent" />
 
-                    <com.example.rlapp.ai_package.ui.moveright.graphs.LineGrapghViewSteps
+                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
                         android:id="@+id/line_graph_steps"
                         android:layout_width="310dp"
                         android:layout_height="100dp"

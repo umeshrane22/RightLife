@@ -111,7 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <com.example.rlapp.ai_package.ui.moveright.CustomHeartRateGraph
+                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.CustomHeartRateGraph
                         android:id="@+id/heartRateGraph"
                         android:layout_width="match_parent"
                         android:layout_height="350dp"
@@ -356,7 +356,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/peak_text_heading">
 
-                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.StripedProgressBar
+                <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.StripedProgressBar
                     android:id="@+id/customProgressBar"
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
@@ -433,7 +433,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardio_text_heading">
 
-                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
+                <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
                     android:id="@+id/customProgressBarCardio"
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
@@ -510,7 +510,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/fat_burn_text_heading">
 
-                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
+                <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
                     android:id="@+id/customProgressBarFatBurn"
                     android:layout_width="match_parent"
                     android:layout_height="20dp"
@@ -587,7 +587,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/light_text_heading">
 
-                <com.example.rlapp.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
+                <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
                     android:id="@+id/customProgressBarLight"
                     android:layout_width="match_parent"
                     android:layout_height="20dp"

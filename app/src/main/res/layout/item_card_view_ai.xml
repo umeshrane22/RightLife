@@ -228,7 +228,7 @@
             app:layout_constraintEnd_toEndOf="@+id/no_data_workout_icon"
             app:layout_constraintTop_toBottomOf="@+id/no_data_workout_icon" />
 
-        <com.example.rlapp.ai_package.ui.moveright.graphs.LineGraphViewWorkout
+        <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphViewWorkout
             android:id="@+id/line_graph_workout"
             android:layout_width="166dp"
             android:layout_height="123dp"

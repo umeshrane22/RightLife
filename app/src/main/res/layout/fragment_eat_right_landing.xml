@@ -151,7 +151,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
-                        <com.example.rlapp.ai_package.ui.eatright.fragment.HalfCurveProgressBar
+                        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.HalfCurveProgressBar
                             android:layout_width="match_parent"
                             android:layout_height="170dp"
                             android:layout_marginTop="10dp"
@@ -1432,7 +1432,7 @@
                                 />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <com.example.rlapp.ai_package.ui.eatright.fragment.GlassWithWaterView
+                        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.GlassWithWaterView
                             android:id="@+id/glass_with_water_view"
                             android:layout_width="wrap_content"
                             android:layout_height="95dp"

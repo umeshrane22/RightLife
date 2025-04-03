@@ -70,7 +70,7 @@
                     android:gravity="center"
                     android:layout_height="wrap_content"/>
 
-                <com.example.rlapp.quiestionscustomviews.CoffeWaterIntakeView
+                <com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
                     android:id="@+id/water_view"
                     android:layout_width="80dp"
                     android:layout_below="@+id/ll_water_icon"
@@ -188,7 +188,7 @@
                     android:gravity="center"
                     android:layout_height="wrap_content"/>
 
-                <com.example.rlapp.quiestionscustomviews.CoffeWaterIntakeView
+                <com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
                     android:id="@+id/coffee_view"
                     android:layout_width="80dp"
                     android:layout_below="@+id/ll_cofee_icon"

@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.rlapp'
+    namespace 'com.jetsynthesys.rightlife'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.rlapp"
+        applicationId "com.jetsynthesys.rightlife"
         minSdk 26
         targetSdk 34
         versionCode 1
@@ -80,6 +80,21 @@ android {
     }
     viewBinding {
         enabled = true
+    }
+
+    flavorDimensions 'environment'
+
+    productFlavors {
+        create("development") {
+            dimension = "environment"
+            // applicationIdSuffix = ".qa"
+            // versionNameSuffix = "-qa"
+            // buildConfigField("String", "BASE_URL", "\"https://"")
+        }
+        create("production") {
+            dimension = "environment"
+            // buildConfigField("String", "BASE_URL", "\"https://\"")
+        }
     }
 }
 

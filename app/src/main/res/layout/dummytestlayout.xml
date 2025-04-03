@@ -337,7 +337,7 @@
                 android:visibility="invisible"
                 app:layout_constraintTop_toBottomOf="@id/img_sleep_right" />
 
-            <com.example.rlapp.ai_package.ui.sleepright.fragment.SleepChartViewLanding
+            <com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepChartViewLanding
                 android:id="@+id/sleepStagesView"
                 android:layout_marginTop="10dp"
                 android:layout_width="match_parent"
@@ -1272,7 +1272,7 @@
                     android:textColor="@color/txt_color_header"
                     android:textSize="16sp" />
 
-                <com.example.rlapp.ui.utility.UnderlinedTextView
+                <com.jetsynthesys.rightlife.ui.utility.UnderlinedTextView
                     android:id="@+id/txt_titl4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

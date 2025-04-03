@@ -204,12 +204,12 @@
 
 
 
-        <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireEatRightActivity" />
-        <activity android:name="com.example.rlapp.ui.questionnaire.QuestionnaireThinkRightActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity" />
 
-        <activity android:name="com.example.rlapp.ai_package.ui.MainAIActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity" />
 
-        <activity android:name="com.example.rlapp.ui.scan_history.PastReportActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity" />
 
 
 

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.rlapp.ai_package.ui.moveright.AllWorkoutFragment">
+    tools:context="com.jetsynthesys.rightlife.ai_package.ui.moveright.AllWorkoutFragment">
 
 <TextView
     android:id="@+id/search_result_allWorkouts"

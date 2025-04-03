@@ -59,7 +59,7 @@
                     android:layout_height="300dp"
                     app:cardElevation="1dp">
 
-                    <com.example.rlapp.quiestionscustomviews.TriangleView
+                    <com.jetsynthesys.rightlife.quiestionscustomviews.TriangleView
                         android:id="@+id/triangleView"
                         android:layout_width="match_parent"
                         android:paddingBottom="10dp"

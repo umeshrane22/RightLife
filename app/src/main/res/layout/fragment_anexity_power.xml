@@ -38,7 +38,7 @@
 
 
 
-            <com.example.rlapp.quiestionscustomviews.AnxietyLevelSelectorView
+            <com.jetsynthesys.rightlife.quiestionscustomviews.AnxietyLevelSelectorView
                 android:id="@+id/anxiety_slider_view"
                 android:layout_width="40dp"
                 android:layout_centerInParent="true"
