@@ -207,11 +207,22 @@
         <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity" />
         <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity" />
 
-        <activity android:name="com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity" />
+        <activity
+            android:name="com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+
+            <!-- Permission handling for Android 14 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS"/>
+            </intent-filter>
+            />
+        </activity>
 
         <activity android:name="com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity" />
-
-
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -226,6 +237,19 @@
         <receiver
             android:name=".ui.affirmation.ReminderReceiver"
             android:exported="true" />
+
     </application>
+
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+        <!--
+             This is required such that the app can query and resolve packages that have written
+             Health Connect data, and obtain their friendly App Name and Icon to show for data
+             attribution in the app
+        -->
+        <intent>
+            <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+        </intent>
+    </queries>
 
 </manifest>
