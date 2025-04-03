@@ -6,15 +6,11 @@ data class ToolsData(
     @SerializedName("userId"       )
     var userId       : String?,
     @SerializedName("_id"       )
-    var toolsId       : String?,
-    @SerializedName("categoryId"       )
-    var categoryId       : String?,
+    var _id       : String?,
     @SerializedName("moduleId"         )
     var moduleId         : String?,
-    @SerializedName("moduleName"       )
-    var moduleName       : String?,
-    @SerializedName("subtitle"         )
-    var subtitle         : String?,
+    @SerializedName("title"         )
+    var title         : String?,
     @SerializedName("moduleType"       )
     var moduleType       : String?,
     @SerializedName("isSelectedModule" )

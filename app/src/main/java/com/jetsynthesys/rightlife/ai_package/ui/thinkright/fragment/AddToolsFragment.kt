@@ -50,11 +50,11 @@ class ToolsAdapterList(private val tools: ArrayList<ToolsData>, private val onIt
     override fun onBindViewHolder(holder: ToolViewHolder, position: Int) {
         val tool = tools[position]
         //holder.icon.setImageResource(tools.getOrNull(position).)
-        holder.name.text = tools.getOrNull(position)?.moduleName
-        holder.description.text = tools.getOrNull(position)?.subtitle
-        if (tools.getOrNull(position)?.moduleName == "Breathing"){
+        holder.name.text = tools.getOrNull(position)?.title
+     //   holder.description.text = tools.getOrNull(position)?.subtitle
+        if (tools.getOrNull(position)?.title == "Breathing"){
              holder.icon.setImageResource(R.drawable.breathing_male)
-        }else if (tools.getOrNull(position)?.moduleName == "Affirmation"){
+        }else if (tools.getOrNull(position)?.title == "Affirmation"){
             holder.icon.setImageResource(R.drawable.write_note_icon)
         }
 
@@ -114,7 +114,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     var userId =""
     var moduleName = ""
     var moduleId = ""
-    var subtitle = ""
+    var title = ""
     var moduleType = ""
     var categoryId = ""
     var isSelectedModule = false
@@ -168,13 +168,9 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         toolsAdapter = ToolsAdapterList(tools) { position,toolsData ->
             tools[position].isSelectedModule = !tools[position].isSelectedModule!!
             toolsAdapter.notifyItemChanged(position)
-             toolsId = toolsData.toolsId ?: ""
-             userId = toolsData.userId ?: ""
-             moduleName = toolsData.moduleName ?: ""
              moduleId = toolsData.moduleId ?: ""
-             subtitle = toolsData.subtitle ?: ""
+             title = toolsData.title ?: ""
              moduleType = toolsData.moduleType ?: ""
-             categoryId = toolsData.categoryId ?: ""
              isSelectedModule = toolsData.isSelectedModule ?: false
             selectTools()
         }
@@ -241,7 +237,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private fun selectTools() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-        val call = ApiClient.apiService.selectTools(token,AddToolRequest(toolId = toolsId, userId =userId, moduleName = moduleName, moduleId = moduleId, subtitle = subtitle, moduleType = moduleType, categoryId = categoryId, isSelectedModule = isSelectedModule))
+        val call = ApiClient.apiService.selectTools(token,AddToolRequest(moduleId = moduleId, title = title, moduleType = moduleType, isSelectedModule = isSelectedModule))
         call.enqueue(object : Callback<ToolsResponse> {
             override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                 if (response.isSuccessful) {
