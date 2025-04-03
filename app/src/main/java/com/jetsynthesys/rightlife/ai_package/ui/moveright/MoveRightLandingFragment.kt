@@ -69,9 +69,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var calorieBalanceDescription: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var appPreference: AppPreference
-    // private lateinit var progressBar: HalfCurveProgressBar
 
-    // Define all required read permissions
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
@@ -111,9 +109,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         moveRightImageBack.setOnClickListener {
             activity?.finish()
         }
-        // progressBar = view.findViewById(R.id.progressBarCalories)
 
-        // Fetch workout data and set up the carousel
         fetchUserWorkouts()
         fetchHealthSummary()
 
