@@ -164,7 +164,6 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         return sleepSegments
     }
 
-
 private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
         val dataSet = BarDataSet(entries, "Calories Burned")
         dataSet.color = resources.getColor(R.color.sleep_duration_blue)
