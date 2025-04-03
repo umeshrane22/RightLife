@@ -212,7 +212,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 true),
 //            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
 //            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
         )
 
         if (meal.size > 0) {
