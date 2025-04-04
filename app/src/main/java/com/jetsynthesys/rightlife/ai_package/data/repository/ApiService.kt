@@ -72,6 +72,10 @@ interface ApiService {
     fun getMeal(@Query("user_id") userId: String,
                 @Query("date") startDate: String): Call<MealsResponse>
 
+    @GET("eat/log-meal/")
+    fun logMeal(@Query("user_id") userId: String,
+                @Query("date") startDate: String): Call<MealsResponse>
+
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(
         @Query("user_id") userId: String,
