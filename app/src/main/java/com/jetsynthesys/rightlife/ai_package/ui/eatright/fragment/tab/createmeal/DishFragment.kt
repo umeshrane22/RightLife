@@ -362,7 +362,6 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                     Utils.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.meals ?: emptyList()
 //                    mealLogLists.addAll(mealPlanLists)
-//                    onMealLoggedList()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
