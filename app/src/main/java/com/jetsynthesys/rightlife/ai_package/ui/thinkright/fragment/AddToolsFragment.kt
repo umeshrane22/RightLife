@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -13,25 +14,27 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentAllToolsListBinding
-import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class ToolsAdapterList(private val tools: ArrayList<ToolsData>, private val onItemClick: (Int,ToolsData) -> Unit) :
+class ToolsAdapterList(context1:Context, private val tools: ArrayList<ToolsData>, private val onItemClick: (Int,ToolsData) -> Unit) :
     RecyclerView.Adapter<ToolsAdapterList.ToolViewHolder>() {
-
+        val contexts = context1
     class ToolViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.tool_icon)
         val name: TextView = itemView.findViewById(R.id.tool_name)
@@ -49,9 +52,12 @@ class ToolsAdapterList(private val tools: ArrayList<ToolsData>, private val onIt
 
     override fun onBindViewHolder(holder: ToolViewHolder, position: Int) {
         val tool = tools[position]
-        //holder.icon.setImageResource(tools.getOrNull(position).)
+        Glide.with(contexts)
+            .load(tools.getOrNull(position)?.image)
+            .placeholder(R.drawable.ic_plus)
+            .into(holder.icon)
         holder.name.text = tools.getOrNull(position)?.title
-     //   holder.description.text = tools.getOrNull(position)?.subtitle
+        holder.description.text = tools.getOrNull(position)?.desc
         if (tools.getOrNull(position)?.title == "Breathing"){
              holder.icon.setImageResource(R.drawable.breathing_male)
         }else if (tools.getOrNull(position)?.title == "Affirmation"){
@@ -105,6 +111,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private lateinit var progressDialog: ProgressDialog
     private lateinit var thinkQuoteResponse : ThinkQuoteResponse
     private lateinit var toolsResponse : ToolsResponse
+    private lateinit var baseResponse: BaseResponse
     private lateinit var toolsAdapter: ToolsAdapterList
     private lateinit var filterRecyclerView: RecyclerView
     private lateinit var filterAdapter: FilterAdapter
@@ -165,12 +172,10 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         }
         filterRecyclerView.adapter = filterAdapter
 
-        toolsAdapter = ToolsAdapterList(tools) { position,toolsData ->
+        toolsAdapter = ToolsAdapterList(requireContext(),tools) { position,toolsData ->
             tools[position].isSelectedModule = !tools[position].isSelectedModule!!
             toolsAdapter.notifyItemChanged(position)
-             moduleId = toolsData.moduleId ?: ""
              title = toolsData.title ?: ""
-             moduleType = toolsData.moduleType ?: ""
              isSelectedModule = toolsData.isSelectedModule ?: false
             selectTools()
         }
@@ -237,20 +242,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private fun selectTools() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-        val call = ApiClient.apiService.selectTools(token,AddToolRequest(moduleId = moduleId, title = title, moduleType = moduleType, isSelectedModule = isSelectedModule))
-        call.enqueue(object : Callback<ToolsResponse> {
-            override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
+        val call = ApiClient.apiService.selectTools(token,AddToolRequest(moduleId = moduleId, isSelectedModule = isSelectedModule))
+        call.enqueue(object : Callback<BaseResponse> {
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    toolsResponse = response.body()!!
-                    if (toolsResponse.data != null) {
-                        for (i in 0 until toolsResponse.data.size) {
-                            toolsResponse.data.getOrNull(i)?.let { tools.add(it) }
-                        }
-                    } else {
-                        Log.e("AddToolsFragment", "toolsResponse.data is null")
-                    }
-                    Toast.makeText(requireContext(),"${moduleName} Added Successfully!", Toast.LENGTH_SHORT).show()
+                    baseResponse = response.body()!!
+                    Toast.makeText(requireContext(),"${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
                     toolsAdapter.notifyDataSetChanged()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -258,7 +256,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                     progressDialog.dismiss()
                 }
             }
-            override fun onFailure(call: Call<ToolsResponse>, t: Throwable) {
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
