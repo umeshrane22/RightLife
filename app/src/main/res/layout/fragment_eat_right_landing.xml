@@ -62,16 +62,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:layout_constraintBottom_toBottomOf="parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:orientation="vertical">
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/heading_one"
                     android:layout_width="wrap_content"
@@ -84,6 +87,7 @@
                     android:layout_marginStart="20dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>
+
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
@@ -94,6 +98,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/calorie_balance_layout"
                 android:layout_width="match_parent"
@@ -108,10 +113,12 @@
                 app:layout_constraintTop_toBottomOf="@+id/heading_one"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:paddingBottom="10dp"
                     android:layout_height="wrap_content">
+
                     <ImageView
                         android:id="@+id/balance_icon"
                         android:layout_width="26dp"
@@ -121,6 +128,7 @@
                         android:layout_marginTop="13dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -131,6 +139,7 @@
                         android:layout_marginStart="6dp"
                         app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
                         app:layout_constraintStart_toEndOf="@+id/balance_icon"/>
+
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
@@ -590,7 +599,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/run"
+                                    android:src="@drawable/ic_scan"
                                     android:layout_marginEnd="8dp" />
 
                                 <TextView
@@ -708,7 +717,7 @@
                                 <ImageView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:src="@drawable/run"
+                                    android:src="@drawable/ic_scan"
                                     android:layout_marginEnd="8dp" />
 
                                 <TextView
@@ -952,6 +961,7 @@
                             android:layout_marginEnd="8dp" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -1480,6 +1490,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
@@ -1517,10 +1528,12 @@
                 app:layout_constraintTop_toBottomOf="@+id/heading_one"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -1530,6 +1543,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="15dp"
                         android:orientation="horizontal">
+
                         <ImageView
                             android:layout_width="25dp"
                             android:layout_height="25dp"
@@ -1540,6 +1554,7 @@
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title"
                             />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
@@ -1561,6 +1576,7 @@
                             android:textColor="@color/black"
                             />
                     </LinearLayout>
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1695,14 +1711,17 @@
                 app:cardCornerRadius="7dp"
                 android:visibility="gone"
                 app:cardUseCompatPadding="true">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="20dp">
+
                         <ImageView
                             android:layout_width="130dp"
                             android:layout_height="100dp"
@@ -1710,6 +1729,7 @@
                             android:layout_marginStart="10dp"
                             android:src="@drawable/health_icon"
                             android:id="@+id/img_health"/>
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -1976,6 +1996,12 @@
                         />
                 </LinearLayout>
             </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/loader_layout"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

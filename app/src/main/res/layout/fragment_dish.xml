@@ -108,6 +108,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         android:layout_marginEnd="10dp"
+                        android:visibility="gone"
                         android:layout_marginTop="3dp"
                         android:orientation="horizontal">
 
@@ -163,7 +164,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginEnd="10dp"
-                        android:src="@drawable/right_arrow" />
+                        android:src="@drawable/ic_right_green_arrow" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -223,6 +224,7 @@
                                 android:layout_width="12dp"
                                 android:layout_height="18dp"
                                 android:scaleType="fitXY"
+                                android:visibility="invisible"
                                 android:src="@drawable/updown_icon"
                                 />
                         </LinearLayout>
@@ -268,6 +270,7 @@
                                 android:id="@+id/ivMealDropdown"
                                 android:layout_width="12dp"
                                 android:layout_height="18dp"
+                                android:visibility="invisible"
                                 android:src="@drawable/updown_icon"
                                 />
                         </LinearLayout>
@@ -286,7 +289,7 @@
                     app:layout_constraintEnd_toEndOf="parent">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/layout_macro_title"
+                        android:id="@+id/layoutMacroTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -312,14 +315,14 @@
                             android:text="Macro Nutrients Breakdown" />
 
                         <ImageView
-                            android:id="@+id/image_right_arrow"
+                            android:id="@+id/icMacroUP"
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:layout_gravity="right"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/right_arrow"
+                            android:src="@drawable/ic_up"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             />
@@ -333,7 +336,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:background="@color/view_border"
-                        app:layout_constraintTop_toBottomOf="@+id/layout_macro_title">
+                        app:layout_constraintTop_toBottomOf="@+id/layoutMacroTitle">
                     </View>
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -364,7 +367,7 @@
                     app:layout_constraintEnd_toEndOf="parent">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/layout_micro_title"
+                        android:id="@+id/layoutMicroTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -390,14 +393,14 @@
                             android:text="Micro Nutrients Breakdown" />
 
                         <ImageView
-                            android:id="@+id/image_micro_right_arrow"
+                            android:id="@+id/microUP"
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:layout_gravity="right"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/right_arrow"
+                            android:src="@drawable/ic_up"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             />
@@ -411,7 +414,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:background="@color/view_border"
-                        app:layout_constraintTop_toBottomOf="@+id/layout_micro_title">
+                        app:layout_constraintTop_toBottomOf="@+id/layoutMicroTitle">
                     </View>
 
                     <androidx.recyclerview.widget.RecyclerView

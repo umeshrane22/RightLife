@@ -241,7 +241,9 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private fun selectTools() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-        val call = ApiClient.apiService.selectTools(token,AddToolRequest(toolId = toolsId, userId =userId, moduleName = moduleName, moduleId = moduleId, subtitle = subtitle, moduleType = moduleType, categoryId = categoryId, isSelectedModule = isSelectedModule))
+        val call = ApiClient.apiService.selectTools(token,AddToolRequest(toolId = toolsId, userId =userId,
+            moduleName = moduleName, moduleId = moduleId, subtitle = subtitle, moduleType = moduleType,
+            categoryId = categoryId, isSelectedModule = isSelectedModule))
         call.enqueue(object : Callback<ToolsResponse> {
             override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                 if (response.isSuccessful) {

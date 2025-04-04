@@ -30,6 +30,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFr
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentSearchDishBinding
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -46,7 +47,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var allDishesRecyclerview : RecyclerView
     private lateinit var searchType : String
     private lateinit var appPreference: AppPreference
-    private lateinit var progressDialog: ProgressDialog
     private val dishesViewModel: DishesViewModel by activityViewModels()
     private var recipesList : ArrayList<RecipeList> = ArrayList()
 
@@ -65,9 +65,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
         appPreference = AppPreference(requireContext())
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Loading")
-        progressDialog.setCancelable(false)
 
         searchLayout = view.findViewById(R.id.layout_search)
         searchEditText = view.findViewById(R.id.et_search)
@@ -156,40 +153,40 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     }
 
     private fun getMealRecipesList() {
-        progressDialog.show()
+        Utils.showLoader(requireActivity())
         val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.getMealRecipesList(token)
         call.enqueue(object : Callback<RecipeResponseModel> {
             override fun onResponse(call: Call<RecipeResponseModel>, response: Response<RecipeResponseModel>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     recipesList.addAll(mealPlanLists)
                     onSearchDishItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<RecipeResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+                Utils.dismissLoader(requireActivity())
             }
         })
     }
 
     private fun getMealRecipesDetails(foodId : String) {
-        progressDialog.show()
+        Utils.showLoader(requireActivity())
         val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.getMealRecipesDetails(foodId, token)
         call.enqueue(object : Callback<FoodDetailsResponse> {
             override fun onResponse(call: Call<FoodDetailsResponse>, response: Response<FoodDetailsResponse>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                     if (response.body()?.data != null){
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                            val snapMealFragment = DishFragment()
@@ -205,13 +202,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<FoodDetailsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+                Utils.dismissLoader(requireActivity())
             }
         })
     }

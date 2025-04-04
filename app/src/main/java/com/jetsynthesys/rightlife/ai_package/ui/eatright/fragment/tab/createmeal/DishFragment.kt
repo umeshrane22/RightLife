@@ -34,13 +34,17 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.core.view.isVisible
 
 class DishFragment : BaseFragment<FragmentDishBinding>() {
 
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
     private lateinit var addToTheMealLayout : LinearLayoutCompat
-    private lateinit var imageCalender : ImageView
+    private lateinit var layoutMicroTitle : ConstraintLayout
+    private lateinit var layoutMacroTitle : ConstraintLayout
+    private lateinit var icMacroUP : ImageView
+    private lateinit var microUP : ImageView
     private lateinit var imgFood : ImageView
     private lateinit var btnLogMeal : LinearLayoutCompat
     private lateinit var editDeleteBreakfast : CardView
@@ -86,6 +90,10 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealTV = view.findViewById(R.id.tv_addToTheMeal)
         tvMealName = view.findViewById(R.id.tvMealName)
         imgFood = view.findViewById(R.id.imgFood)
+        layoutMicroTitle = view.findViewById(R.id.layoutMicroTitle)
+        layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
+        microUP = view.findViewById(R.id.microUP)
+        icMacroUP = view.findViewById(R.id.icMacroUP)
 
         searchType = arguments?.getString("searchType").toString()
         val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
@@ -110,6 +118,30 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
 //                tvQuantity.text = quantity.toString()
 //            }
 //        }
+
+        layoutMacroTitle.setOnClickListener {
+          if (macroItemRecyclerView.isVisible){
+              macroItemRecyclerView.visibility = View.GONE
+              icMacroUP.setImageResource(R.drawable.ic_down)
+              view.findViewById<View>(R.id.view_macro).visibility = View.GONE
+          }else{
+              macroItemRecyclerView.visibility = View.VISIBLE
+              icMacroUP.setImageResource(R.drawable.ic_up)
+              view.findViewById<View>(R.id.view_macro).visibility = View.VISIBLE
+          }
+        }
+
+        layoutMicroTitle.setOnClickListener {
+            if (microItemRecyclerView.isVisible){
+                microItemRecyclerView.visibility = View.GONE
+                microUP.setImageResource(R.drawable.ic_down)
+                view.findViewById<View>(R.id.view_micro).visibility = View.GONE
+            }else{
+                microItemRecyclerView.visibility = View.VISIBLE
+                microUP.setImageResource(R.drawable.ic_up)
+                view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
+            }
+        }
 
         view.findViewById<ImageView>(R.id.ivIncrease).setOnClickListener {
             quantity++

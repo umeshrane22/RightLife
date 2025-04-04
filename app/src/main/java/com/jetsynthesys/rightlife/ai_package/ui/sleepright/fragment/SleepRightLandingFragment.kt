@@ -44,6 +44,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -59,7 +60,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         get() = FragmentSleepRightLandingBinding::inflate
 
     private lateinit var wakeTime: TextView
-    private lateinit var progressDialog: ProgressDialog
     private lateinit var landingPageResponse: SleepLandingResponse
     private lateinit var sleepLandingData: SleepLandingData
     private lateinit var lineChart:LineChart
@@ -84,10 +84,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
         wakeTime = view.findViewById<TextView>(R.id.tv_wakeup_time)
-
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Loading")
-        progressDialog.setCancelable(false)
 
         sleepInfo.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -302,7 +298,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchSleepData() {
-        progressDialog.show()
+        Utils.showLoader(requireActivity())
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
         val date = "2025-03-18"
@@ -312,21 +308,21 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<SleepLandingResponse> {
             override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                     landingPageResponse = response.body()!!
                     println(landingPageResponse)
                     setSleepRightLandingData(landingPageResponse)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                 }
             }
 
             override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+                Utils.dismissLoader(requireActivity())
             }
         })
     }
@@ -378,7 +374,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchIdealActualData() {
-        progressDialog.show()
+        Utils.showLoader(requireActivity())
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "user_test_1"
         val period = "weekly"
@@ -387,7 +383,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<SleepIdealActualResponse> {
             override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                     idealActualResponse = response.body()!!
                     // setSleepRightLandingData(idealActualResponse)
                     val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
@@ -415,14 +411,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                 }
             }
 
             override fun onFailure(call: Call<SleepIdealActualResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+                Utils.dismissLoader(requireActivity())
             }
         })
     }

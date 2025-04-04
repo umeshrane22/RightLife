@@ -68,7 +68,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         imageCalender = view.findViewById(R.id.image_calender)
         btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
         activitySync = view.findViewById(R.id.activities_sync)
-        addWorkout = view.findViewById(R.id.apple_health_sync_button)
+        addWorkout = view.findViewById(R.id.health_connect_sync_button)
         yourActivityBackButton = view.findViewById(R.id.back_button)
         yourActivityBackButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()

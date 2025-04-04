@@ -46,6 +46,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentYourMealLogsBinding
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -73,7 +74,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var layoutViewFood : LinearLayoutCompat
     private lateinit var addFoodLayout : LinearLayoutCompat
     private lateinit var appPreference: AppPreference
-    private lateinit var progressDialog: ProgressDialog
     private lateinit var calValue : TextView
     private lateinit var carbsValue : TextView
     private lateinit var proteinsValue : TextView
@@ -116,9 +116,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         appPreference = AppPreference(requireContext())
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Loading")
-        progressDialog.setCancelable(false)
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
         mealLogDateRecyclerView = view.findViewById(R.id.recyclerview_calender)
@@ -186,7 +183,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         onDinnerMealLogItemRefresh()
 
         //Set Tooltip
-        showTooltipDialog(layoutToolbar)
+       // showTooltipDialog(layoutToolbar)
 
         imageCalender.setOnClickListener {
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
@@ -495,33 +492,33 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     }
 
     private fun getMealPlanList() {
-        progressDialog.show()
+        Utils.showLoader(requireActivity())
         val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.getMealLogLists(token)
         call.enqueue(object : Callback<MealLogsResponseModel> {
             override fun onResponse(call: Call<MealLogsResponseModel>, response: Response<MealLogsResponseModel>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                  //  Utils.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     mealPlanData.addAll(mealPlanLists)
                     onMealLogDateItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                 //   Utils.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+              //  Utils.dismissLoader(requireActivity())
             }
         })
     }
 
     private fun getMealList() {
-        progressDialog.show()
+        Utils.showLoader(requireActivity())
        // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
@@ -530,20 +527,20 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.meals ?: emptyList()
                     mealList.addAll(mealPlanLists)
                   //  onMealLogDateItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                    Utils.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+                Utils.dismissLoader(requireActivity())
             }
         })
     }

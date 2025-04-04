@@ -48,7 +48,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var imageFood : ImageView
     private lateinit var imageCap : ImageView
     private var imagePath : String = ""
-    private lateinit var progressDialog: ProgressDialog
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSnapMealBinding
         get() = FragmentSnapMealBinding::inflate
@@ -56,10 +55,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Fetching food info")
-        progressDialog.setMessage("Food is loading, please wait")
-        progressDialog.setCancelable(false)
+
         val proceed = view.findViewById<LinearLayoutCompat>(R.id.layout_proceed)
          imageFood = view.findViewById(R.id.imageFood)
         imageCap = view.findViewById(R.id.imageCap)
@@ -74,7 +70,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         proceed.setOnClickListener {
             if (imagePath != ""){
-              //  uploadFoodPath(imagePath)
                 uploadFoodImagePath(imagePath)
             }else{
                 Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
@@ -160,49 +155,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
     companion object {
         private const val REQUEST_IMAGE_CAPTURE = 101
-    }
-
-    private fun uploadFoodPath(filePath: String) {
-        progressDialog.show()
-        // Prepare the file to be uploaded
-        val file = File(filePath)
-        val requestFile = RequestBody.create("multipart/form-data".toMediaTypeOrNull(), file)
-        val filePart = MultipartBody.Part.createFormData("file", file.name, requestFile)
-        //val apiKey = "f0e1c21987214e76b497ce49a2ff5f29"
-        val apiKey = "7a7a9fd3dec24f22b821243970afb26c"
-
-        // Prepare additional form fields if any (e.g., a description)
-        val description = RequestBody.create("multipart/form-data".toMediaTypeOrNull(), "File upload description")
-
-        // Make the API call
-        val call = ApiClient.apiServiceFoodCaptureApi.uploadFoodFile(filePart, description, apiKey)
-        call.enqueue(object : Callback<NutritionResponse> {
-            override fun onResponse(call: Call<NutritionResponse>, response: Response<NutritionResponse>) {
-                if (response.isSuccessful) {
-                    progressDialog.dismiss()
-                    println("File upload successful: ${response.body()?.status}")
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        val snapMealFragment = MealScanResultFragment()
-                        val args = Bundle()
-                        args.putString("ModuleName", arguments?.getString("ModuleName").toString())
-                        args.putString("ImagePath", imagePath)
-                        args.putParcelable("foodDataResponses", response.body())
-                        snapMealFragment.arguments = args
-                        replace(R.id.flFragment, snapMealFragment, "Steps")
-                        addToBackStack(null)
-                        commit()
-                    }
-                } else {
-                    println("File upload failed: ${response.code()}")
-                    progressDialog.dismiss()
-                }
-            }
-
-            override fun onFailure(call: Call<NutritionResponse>, t: Throwable) {
-                println("Error: ${t.message}")
-                progressDialog.dismiss()
-            }
-        })
     }
 
     private fun uploadFoodImagePath(imagePath: String) {
