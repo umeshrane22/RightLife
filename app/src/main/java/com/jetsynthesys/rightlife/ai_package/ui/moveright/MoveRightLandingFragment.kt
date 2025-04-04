@@ -29,6 +29,7 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.units.calories
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +38,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.CardItem
+import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.GridItem
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
@@ -49,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.math.abs
@@ -69,7 +72,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var calorieBalanceDescription: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var appPreference: AppPreference
+    // private lateinit var progressBar: HalfCurveProgressBar
 
+    // Define all required read permissions
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
@@ -109,7 +114,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         moveRightImageBack.setOnClickListener {
             activity?.finish()
         }
+        // progressBar = view.findViewById(R.id.progressBarCalories)
 
+        // Fetch workout data and set up the carousel
         fetchUserWorkouts()
         fetchHealthSummary()
 
@@ -501,38 +508,61 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
     private fun fetchHealthSummary() {
+        // Use the lifecycleScope if this is called from a Fragment/Activity to avoid memory leaks
+        // If this is in a ViewModel, use viewModelScope instead
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiClient.apiServiceFastApi.getMoveLanding(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    date = "2025-03-24"
+                // Make the API call
+                val userId: String = "64763fe2fa0e40d9c0bc8264"
+                val date: String = "2025-03-24"
+
+                val response: Response<FitnessResponse> = ApiClient.apiServiceFastApi.getMoveLanding(
+                    userId = userId,
+                    date = date
                 )
 
+                // Process the response
                 if (response.isSuccessful) {
-                    val healthSummary = response.body()
-                    healthSummary?.let {
-                        it.heartRateMoveLanding
-                        it.steps
-                        it.totalBurnedSum
-                        it.heartRateVariabilitySDNN
-                        it.heartRateZones
+                    val healthSummary: FitnessResponse? = response.body()
+                    if (healthSummary != null) {
+                        // Access the data (for debugging or further processing)
+                        val heartRateZones = healthSummary.heartRateZones
+                        val steps = healthSummary.steps
+                        val totalBurnedSum = healthSummary.totalBurnedSum
+                        val heartRateVariabilitySDNN = healthSummary.heartRateVariabilitySDNN
+                        val totalStepsSum = healthSummary.totalStepsSum
+                        val totalIntakeCaloriesSum = healthSummary.totalIntakeCaloriesSum.calories
+                        val message = healthSummary.message
+
+                        // Update the UI on the Main thread
                         withContext(Dispatchers.Main) {
-                            calorieBalanceDescription.text = it.message.toString()
-                            println("Health Summary: $it")
-                            println("Total Steps Sum: ${it.totalStepsSum}")
-                            println("Total Burned Sum: ${it.totalBurnedSum}")
-                            println("Total Intake Calories Sum: ${it.totalIntakeCaloriesSum}")
+                            // calorieBalanceDescription.text = message
+                            // Log the data for debugging
+                            Log.d("HealthSummary", "Full Response: $healthSummary")
+                            Log.d("HealthSummary", "Total Steps Sum: $totalStepsSum")
+                            Log.d("HealthSummary", "Total Burned Sum: $totalBurnedSum")
+                            Log.d("HealthSummary", "Total Intake Calories Sum: $totalIntakeCaloriesSum")
+                        }
+                    } else {
+                        // Handle null response body
+                        withContext(Dispatchers.Main) {
+                            Log.e("HealthSummary", "Response body is null")
+                            // calorieBalanceDescription.text = "No data available"
                         }
                     }
                 } else {
+                    // Handle unsuccessful response (e.g., 404, 500)
                     withContext(Dispatchers.Main) {
-                        println("Error: ${response.code()} - ${response.message()}")
+                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
+                        Log.e("HealthSummary", errorMessage)
+                        // calorieBalanceDescription.text = "Failed to load data"
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                // Handle network or unexpected errors
                 withContext(Dispatchers.Main) {
-                    println("Exception: ${e.message}")
+                    Log.e("HealthSummary", "Exception: ${e.message}", e)
+                    //calorieBalanceDescription.text = "An error occurred"
                 }
             }
         }

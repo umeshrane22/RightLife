@@ -8,6 +8,9 @@ import com.jetsynthesys.rightlife.ai_package.model.NutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.RecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
 import com.jetsynthesys.rightlife.ai_package.model.AnalysisRequest
+import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
+import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
@@ -150,13 +153,20 @@ interface ApiService {
     suspend fun getMoveLanding(
         @Query("user_id") userId: String,
         @Query("date") date: String // Ensure lowercase
-    ): Response<HealthSummaryResponse>
+    ): Response<FitnessResponse>
 
     @GET("move/fetch_routines/")
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
         @Query("provided_date") providedDate: String // Ensure lowercase
     ): Response<WorkoutResponseRoutine>
+
+    @POST("move/assign_routine/")
+    suspend fun assignRoutine(
+        @Query("_id") id: String,
+        @Query("user_id") userId: String,
+        @Body request: AssignRoutineRequest
+    ): Response<AssignRoutineResponse>
 
     @GET("move/data/get_calories/")
     suspend fun getFetchWorkouts(

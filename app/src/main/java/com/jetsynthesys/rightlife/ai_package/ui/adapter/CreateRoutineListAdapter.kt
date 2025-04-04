@@ -9,13 +9,18 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.Workout
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 
-class CreateRoutineListAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                                private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                                private var isClickView : Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,) :
-    RecyclerView.Adapter<CreateRoutineListAdapter.ViewHolder>() {
+class CreateRoutineListAdapter(
+    private val context: Context,
+    private var dataLists: ArrayList<Workout>,
+    private var clickPos: Int,
+    private var selectedWorkout: Workout?,
+    private var isClickView: Boolean,
+    val onWorkoutItemClick: (Workout, Int, Boolean) -> Unit
+) : RecyclerView.Adapter<CreateRoutineListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -25,47 +30,51 @@ class CreateRoutineListAdapter(private val context: Context, private var dataLis
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = dataLists[position]
+        val workout = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
+        // Populate the UI with workout data
+        holder.mealTitle.text = workout.recordType // e.g., "Running"
+        holder.mealName.text = "Workout" // You can customize this (e.g., workout name if available)
+        holder.serves.text = "${workout.durationInt / 60}" // Hours part
+        holder.servesCount.text = "${workout.durationInt % 60} ${workout.durationUnit}" // Minutes part, e.g., "30 min"
+        holder.calValue.text = workout.caloriesBurned // e.g., "250"
+        holder.calUnit.text = workout.caloriesUnit // e.g., "kcal"
+
+        // Calculate average heart rate for intensity (Low Intensity, etc.)
+        val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
+            workout.heartRateData.map { it.heartRate }.average().toInt()
+        } else {
+            0
+        }
+        holder.subtractionValue.text = when {
+            avgHeartRate < 128 -> "Low Intensity"
+            avgHeartRate < 139 -> "Fat Burn"
+            avgHeartRate < 161 -> "Cardio"
+            else -> "Peak"
+        }
+
+        // Distance (using baguette field, since it's not used for workouts)
+        holder.baguette.visibility = View.VISIBLE
+        holder.baguetteValue.visibility = View.VISIBLE
+        holder.baguetteUnit.visibility = View.VISIBLE
+        holder.baguetteValue.text = workout.distance // e.g., "4"
+        holder.baguetteUnit.text = workout.distanceUnit // e.g., "km"
+
+        // Hide dewpoint fields (not relevant for workouts)
+        holder.dewpoint.visibility = View.GONE
+        holder.dewpointValue.visibility = View.GONE
+        holder.dewpointUnit.visibility = View.GONE
+
+        // Edit button to show the bottom sheet
         holder.edit.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet()
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
-//        if (item.status == true) {
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_check)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-//        }else{
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_uncheck)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-        //     }
 
-//        holder.layoutMain.setOnClickListener {
-//           // holder.createNewVersionCard.visibility = View.GONE
-//            onMealLogDateItem(item, position, true)
-//        }
+        // Handle click on the item
+        holder.itemView.setOnClickListener {
+            onWorkoutItemClick(workout, position, true)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -73,11 +82,10 @@ class CreateRoutineListAdapter(private val context: Context, private var dataLis
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-        val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+        val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
         val serves: TextView = itemView.findViewById(R.id.tv_serves)
@@ -96,12 +104,12 @@ class CreateRoutineListAdapter(private val context: Context, private var dataLis
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(items: ArrayList<Workout>?, pos: Int, selectedItem: Workout?, isClick: Boolean) {
         dataLists.clear()
-        if (item != null) {
-            dataLists = item
+        if (items != null) {
+            dataLists = items
             clickPos = pos
-            mealLogListData = mealLogItem
+            selectedWorkout = selectedItem
             isClickView = isClick
         }
         notifyDataSetChanged()
