@@ -1,9 +1,11 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,6 +27,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
@@ -33,6 +36,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.fitness.data.HealthDataTypes
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -138,17 +142,25 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
 
+        checkHealthConnectPermission()
+
 
         // Set up Health Connect
-        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
-        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-            lifecycleScope.launch {
-                requestPermissionsAndReadSteps()
-            }
-        } else {
-            Toast.makeText(context, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
-        }
+//        if (!isHealthConnectAvailable(requireContext())) {
+//            installHealthConnect(requireContext())
+//        }else{
+//            requestHealthConnectPermission(requireActivity())
+//        }
+
+//        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+//        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+//            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+//            lifecycleScope.launch {
+//                requestPermissionsAndReadSteps()
+//            }
+//        } else {
+//            Toast.makeText(context, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+//        }
 
         // Set up progress bar layout
         val progressBarSteps = view.findViewById<ProgressBar>(R.id.progressBar)
@@ -274,6 +286,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 fetchHeartRateData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+                requestHealthConnectPermission(requireActivity())
             }
         }
     }
@@ -587,5 +600,81 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
+    fun isHealthConnectAvailable(context: Context): Boolean {
+        val packageManager = context.packageManager
+        return try {
+            packageManager.getPackageInfo("com.google.android.apps.healthdata", 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
 
+    fun installHealthConnect(context: Context) {
+        val uri = Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
+
+    fun requestHealthConnectPermission(activity: Activity) {
+        val permissions = setOf(
+            HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+            HealthPermission.getReadPermission(StepsRecord::class),
+            HealthPermission.getReadPermission(HeartRateRecord::class),
+            HealthPermission.getReadPermission(SleepSessionRecord::class),
+            HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+            HealthPermission.getReadPermission(SpeedRecord::class),
+            HealthPermission.getReadPermission(WeightRecord::class),
+            HealthPermission.getReadPermission(DistanceRecord::class)
+        )
+
+        val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
+
+        val permissionLauncher = requireActivity().registerForActivityResult(requestPermissionActivityContract) { granted ->
+            if (granted.containsAll(permissions)) {
+                Toast.makeText(activity, "Health Connect Permissions Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(activity, "Permissions Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+        permissionLauncher.launch(permissions)
+    }
+
+    private fun checkHealthConnectPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {  // Android 14+
+            requestPermissions(arrayOf("android.permission.ACCESS_HEALTH_DATA"), 101)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13+
+            val packageManager = context?.packageManager
+            val healthConnectIntent = packageManager?.getLaunchIntentForPackage("com.google.android.apps.healthdata")
+
+            if (healthConnectIntent != null) {
+                startActivity(healthConnectIntent)
+            } else {
+                // If Health Connect is not installed, prompt the user to install it
+                val installIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata"))
+                startActivity(installIntent)
+            }
+        } else {
+            Toast.makeText(context, "Health Connect is only available on Android 13+", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(context, "Health Connect Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Health Connect Permission Denied", Toast.LENGTH_SHORT).show()
+                openAppSettings()
+            }
+        }
+    }
+
+    private fun openAppSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.data = Uri.parse("com.google.android.apps.healthdata")
+        startActivity(intent)
+    }
 }
