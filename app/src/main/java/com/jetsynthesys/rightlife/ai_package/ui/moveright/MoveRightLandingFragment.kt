@@ -37,7 +37,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.gms.fitness.data.HealthDataTypes
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -138,7 +137,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+           // navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 
         activityFactorImageIcon.setOnClickListener {
