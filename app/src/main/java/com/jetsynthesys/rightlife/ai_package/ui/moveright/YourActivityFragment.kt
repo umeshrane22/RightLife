@@ -38,7 +38,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var mealLogDateListAdapter: RecyclerView
     private lateinit var imageCalender: ImageView
     private lateinit var btnLogMeal: LinearLayoutCompat
-    private lateinit var addWorkout: LinearLayoutCompat
+    private lateinit var healthConnectSyncButton: LinearLayoutCompat
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -68,7 +68,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         imageCalender = view.findViewById(R.id.image_calender)
         btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
         activitySync = view.findViewById(R.id.activities_sync)
-        addWorkout = view.findViewById(R.id.health_connect_sync_button)
+        healthConnectSyncButton = view.findViewById(R.id.health_connect_sync_button)
         yourActivityBackButton = view.findViewById(R.id.back_button)
         yourActivityBackButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
@@ -89,7 +89,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             bottomSheet.show(parentFragmentManager, "ActivitySyncBottomSheet")
         }
 
-        addWorkout.setOnClickListener {
+        healthConnectSyncButton.setOnClickListener {
             val fragment = AddWorkoutSearchFragment()
             val args = Bundle()
             fragment.arguments = args

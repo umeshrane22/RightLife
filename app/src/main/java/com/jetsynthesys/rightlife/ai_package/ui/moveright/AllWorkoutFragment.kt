@@ -86,11 +86,14 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     }
 
     private fun openAddWorkoutFragment(workout: WorkoutList) {
-        val fragment = AddWorkoutFragment()
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .addToBackStack(null) // Allows back navigation
-            .commit()
+        val fragment = AddWorkoutSearchFragment()
+        val args = Bundle()
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "addWorkoutFragment")
+            addToBackStack("addWorkoutFragment")
+            commit()
+        }
     }
 
     private fun getWorkoutList() {

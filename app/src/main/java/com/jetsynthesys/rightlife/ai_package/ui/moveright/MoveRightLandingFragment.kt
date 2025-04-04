@@ -149,7 +149,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
 
-        checkHealthConnectPermission()
+       // checkHealthConnectPermission()
 
 
         // Set up Health Connect
