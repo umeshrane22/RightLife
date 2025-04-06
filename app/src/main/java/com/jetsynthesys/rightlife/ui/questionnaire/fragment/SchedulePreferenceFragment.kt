@@ -137,10 +137,10 @@ class SchedulePreferenceFragment : Fragment() {
         }
 
         dialogBinding.btnSetNow.setOnClickListener {
-            if (!(selectedMorningTime.isNullOrEmpty() || selectedAfternoonTime.isNullOrEmpty() || selectedEveningTime.isNullOrEmpty())) {
+            if ((selectedMorningTime.isNullOrEmpty() || selectedAfternoonTime.isNullOrEmpty() || selectedEveningTime.isNullOrEmpty())) {
                 Toast.makeText(
                     requireContext(),
-                    "Please at least one reminder!!", Toast.LENGTH_SHORT
+                    "Please select at least one reminder!!", Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             } else {

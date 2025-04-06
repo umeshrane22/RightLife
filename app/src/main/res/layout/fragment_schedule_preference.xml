@@ -9,7 +9,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How many meals do you usually eat in a day?"
+        android:text="Do you eat your meals at the same time every day?"
         android:textSize="18sp"
         android:fontFamily="@font/dmsans_bold"
         android:layout_marginBottom="16dp"

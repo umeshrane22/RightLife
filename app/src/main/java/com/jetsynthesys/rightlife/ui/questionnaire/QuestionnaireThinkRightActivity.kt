@@ -1,14 +1,21 @@
 package com.jetsynthesys.rightlife.ui.questionnaire
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityQuestionnaireBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireThinkRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class QuestionnaireThinkRightActivity : AppCompatActivity() {
     private lateinit var binding: ActivityQuestionnaireBinding
@@ -100,7 +107,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
 
         fun submitQuestionnaireAnswerRequest(questionnaireAnswerRequest: QuestionnaireAnswerRequest) {
 
-           /* val apiService = ApiClient.getClient().create(ApiService::class.java)
+            val apiService = ApiClient.getClient().create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
                 sharedPreferenceManager.accessToken,
                 questionnaireAnswerRequest
@@ -134,11 +141,11 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                     ).show()
                 }
 
-            })*/
-            if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+            })
+            /*if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
                 instance?.finish() // Finish activity safely
             else
-                navigateToNextPage()
+                navigateToNextPage()*/
         }
     }
 

@@ -9,7 +9,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How often do you eat processed, packaged, or fast foods in a week?"
+        android:text="Where do you usually exercise?"
         android:textSize="18sp"
         android:fontFamily="@font/dmsans_bold"
         android:layout_marginBottom="16dp"

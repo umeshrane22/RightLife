@@ -10,7 +10,7 @@
         android:id="@+id/tvQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How many meals do you usually eat in a day?"
+        android:text="How colorful is your plate when it comes to fruits and vegetables?"
         android:textSize="18sp"
         android:fontFamily="@font/dmsans_bold"
         android:layout_marginBottom="16dp"

@@ -77,7 +77,7 @@ class BeforeGoingToBedFragment : Fragment() {
         binding.btnContinue.setOnClickListener {
             if (selectedList.isNotEmpty())
                 submit(selectedList[0].title)
-                //QuestionnaireThinkRightActivity.navigateToNextPage()
+            //QuestionnaireThinkRightActivity.navigateToNextPage()
             else
                 Toast.makeText(requireContext(), "Please select at least one", Toast.LENGTH_SHORT)
                     .show()
@@ -87,10 +87,13 @@ class BeforeGoingToBedFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSix = SRQuestionSix()
         questionSix.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionSix = questionSix
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionSix =
+            questionSix
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
+
+        Toast.makeText(requireContext(), "Saved!!  Have a Great Day!!", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
