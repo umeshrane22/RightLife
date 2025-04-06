@@ -49,6 +49,7 @@ class JournalListAdapter(
             if (entry.emotion.isNullOrEmpty())
                 llEmotion.visibility = View.GONE
             else {
+                llEmotion.visibility = View.VISIBLE
                 chipEmotion.text = entry.emotion
                 var colorStateList: ColorStateList? = null
                 when (entry.emotion) {

@@ -26,6 +26,8 @@ import com.jetsynthesys.rightlife.ui.healthcam.ReportData
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
+import com.jetsynthesys.rightlife.databinding.ActivityHealthcamRecorderBinding
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -36,6 +38,7 @@ import kotlin.system.exitProcess
 
 class HealthCamRecorderActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityHealthcamRecorderBinding
     private val exampleStartViewModel: StartViewModel by viewModels { StartViewModel.Factory }
 
     private var faceIndex = 0
@@ -72,6 +75,8 @@ class HealthCamRecorderActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityHealthcamRecorderBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         REPORT_ID = intent.getStringExtra("reportID").toString()
         USER_PROFILE_HEIGHT = intent.getStringExtra("USER_PROFILE_HEIGHT").toString()
@@ -117,6 +122,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
         ) {
             validateInputs(measurementQuestionnaire)
         } else {
+            Utils.showLoader(this)
             launchRLAnuraMeasurementActivity()
         }
     }
@@ -274,6 +280,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
         if (invalidInputs.isNotBlank()) {
             showInvalidInputErrorToast(invalidInputs)
         } else {
+            Utils.showLoader(this)
             launchRLAnuraMeasurementActivity()
         }
     }
@@ -294,6 +301,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Utils.dismissLoader(this)
         if (resultCode == Activity.RESULT_OK && requestCode == ANURA_REQUEST) {
             Log.d(TAG, "results222=${data?.getStringExtra("result")}")
 

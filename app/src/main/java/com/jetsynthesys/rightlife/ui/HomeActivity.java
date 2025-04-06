@@ -1626,8 +1626,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private void CallExploreModuleActivity(SubModuleResponse responseJson) {
         Gson gson = new Gson();
         String json = gson.toJson(responseJson);
-        Intent intent = new Intent(HomeActivity.this, ExploreModuleListActivity.class);
-        intent.putExtra("responseJson", json);
+        Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+        intent.putExtra("moduleId", responseJson.getData().get(0).getModuleId());
+        //intent.putExtra("responseJson", json);
         //intent.putExtra("position", position);
         startActivity(intent);
     }

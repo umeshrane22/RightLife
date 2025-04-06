@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -55,6 +56,14 @@ class FreeFormJournalActivity : AppCompatActivity() {
                 binding.btnSave.setTextColor(
                     if (hasText) 0xFF984C01.toInt() else 0xFFBFBFBF.toInt()
                 )
+
+                if ((s?.trim()?.length ?: 0) == 5000) {
+                    Toast.makeText(
+                        this@FreeFormJournalActivity,
+                        "Maximum character limit reached!!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}

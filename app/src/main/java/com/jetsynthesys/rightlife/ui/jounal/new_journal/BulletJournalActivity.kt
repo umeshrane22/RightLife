@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -79,6 +80,14 @@ class BulletJournalActivity : AppCompatActivity() {
                     binding.etJournalEntry.addTextChangedListener(this)
 
 
+                }
+
+                if ((s?.trim()?.length ?: 0) == 5000) {
+                    Toast.makeText(
+                        this@BulletJournalActivity,
+                        "Maximum character limit reached!!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
