@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,27 +16,21 @@ import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import com.github.mikephil.charting.data.BarEntry
+import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
 import com.jetsynthesys.rightlife.databinding.FragmentSleepConsistencyBinding
-import com.github.mikephil.charting.animation.ChartAnimator
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import com.github.mikephil.charting.renderer.BarChartRenderer
-import com.github.mikephil.charting.utils.ViewPortHandler
-import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>() {
 
@@ -42,11 +38,10 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         get() = FragmentSleepConsistencyBinding::inflate
     var snackbar: Snackbar? = null
 
-    private lateinit var barChart: BarChart
+    private lateinit var barChart: SleepGraphView
     private lateinit var radioGroup: RadioGroup
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
-    private var sleepData: List<SleepConsistencySegment> = listOf()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,13 +61,13 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek ->{
-                    updateChart(getWeekData(), getWeekLabels())
+                  //  updateChart(getWeekData(), getWeekLabels())
                 }
                 R.id.rbMonth ->{
-                    updateChart(getMonthData(), getMonthLabels())
+                 //   updateChart(getMonthData(), getMonthLabels())
                 }
                 R.id.rbSixMonths ->{
-                    updateChart(getSixMonthData(), getSixMonthLabels())
+                 //   updateChart(getSixMonthData(), getSixMonthLabels())
                 }
             }
         }
@@ -104,11 +99,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepConsistencyResponse = response.body()!!
-                    if (sleepConsistencyResponse.sleepConsistencyData?.sleepDetails != null) {
-                        sleepData = sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.let {
-                            parseSleepData(it) }!!
+                    sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.let {
+                        setData(it)
                     }
-                    setupChart()
 
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -125,47 +118,25 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         })
     }
 
-    private fun setupChart() {
-        val entries = sleepData.mapIndexed { index, segment ->
-            BarEntry(index.toFloat(), 18.0f)
-        }
-
-        val dataSet = BarDataSet(entries, "Sleep Duration").apply {
-            color = Color.BLUE
-            setDrawValues(false)
-        }
-
-        val barData = BarData(dataSet)
-        barChart.data = barData // Set data before assigning custom renderer
-
-        // Initialize buffers before drawing
-        val customRenderer = RoundedBarChartRenderer1(barChart, barChart.animator, barChart.viewPortHandler)
-        customRenderer.initBuffers()
-        barChart.renderer = customRenderer
-
-        barChart.description.isEnabled = false
-        barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        barChart.xAxis.setDrawGridLines(false)
-        barChart.axisLeft.setDrawGridLines(false)
-        barChart.axisRight.isEnabled = false
-        barChart.setFitBars(true)
-        barChart.invalidate()
-        barChart.notifyDataSetChanged()
+    fun setData(parseSleepData: ArrayList<SleepDurationData>) = runBlocking {
+        val result = async {
+            parseSleepData(parseSleepData)
+        }.await()
+        barChart.setSleepData(result)
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDurationData>): List<SleepConsistencySegment> {
-        val sleepSegments = mutableListOf<SleepConsistencySegment>()
+    private fun parseSleepData(sleepDetails: List<SleepDurationData>): List<SleepEntry> {
+        val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.startDatetime ?: ""
             val endTime = sleepEntry.endDatetime ?: ""
-            val duration = sleepEntry.value?.toDoubleOrNull() ?: 0.0
-            sleepSegments.add(SleepConsistencySegment(startTime, endTime, duration))
+            val duration = sleepEntry.value?.toFloat()!!
+            sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
     }
 
-
-private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
+/*private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
         val dataSet = BarDataSet(entries, "Calories Burned")
         dataSet.color = resources.getColor(R.color.sleep_duration_blue)
         dataSet.valueTextColor = Color.BLACK
@@ -198,7 +169,7 @@ private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
         barChart.description.isEnabled = false
         barChart.animateY(1000) // Smooth animation
         barChart.invalidate()
-    }
+    }*/
 
     private fun getWeekData(): List<BarEntry> {
         return listOf(
@@ -260,36 +231,104 @@ private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
 
 }
 
-class RoundedBarChartRenderer1(
-    chart: BarChart,
-    animator: ChartAnimator,
-    viewPortHandler: ViewPortHandler
-) : BarChartRenderer(chart, animator, viewPortHandler) {
+class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
-    private val barRadius = 30f  // Adjust for roundness
+    private val sleepData = mutableListOf<SleepEntry>()
 
-    override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
-        if (mBarBuffers.isEmpty() || index >= mBarBuffers.size) return
+    private val paintGrid = Paint().apply {
+        color = Color.LTGRAY
+        strokeWidth = 2f
+    }
 
-        val barBuffer = mBarBuffers[index]
+    private val paintSleep = Paint().apply {
+        color = Color.parseColor("#70A1FF") // Light blue for sleep bars
+        style = Paint.Style.FILL
+    }
 
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.BLUE  // Ensure blue color is set explicitly
-            style = Paint.Style.FILL
+    private val paintSleepHighlight = Paint().apply {
+        color = Color.parseColor("#007BFF") // Dark blue for the last sleep bar
+        style = Paint.Style.FILL
+    }
+
+    private val paintText = Paint().apply {
+        color = Color.BLACK
+        textSize = 36f
+    }
+
+    fun setSleepData(data: List<SleepEntry>) {
+        sleepData.clear()
+        sleepData.addAll(data)
+        invalidate()
+    }
+
+    val markerView1 = SleepMarkerView1(context, sleepData)
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
+        val padding = 100f
+        val widthPerDay = (width - 2 * padding) / sleepData.size
+        val heightPerHour = (height - 2 * padding) / 12f // Assuming 12-hour range (from 6 PM to 6 AM)
+
+        // Draw grid lines for hours
+        val hours = listOf("8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8")
+        for (i in hours.indices) {
+            val y = height - padding - (i * heightPerHour)
+            canvas.drawText(hours[i], 10f, y, paintText)
+            canvas.drawLine(padding, y, width - padding, y, paintGrid)
         }
 
-        for (j in barBuffer.buffer.indices step 4) {
-            val left = barBuffer.buffer[j]
-            val top = barBuffer.buffer[j + 1]
-            val right = barBuffer.buffer[j + 2]
-            val bottom = barBuffer.buffer[j + 3]
+        // Draw sleep bars
+        sleepData.forEachIndexed { index, entry ->
+            val x = padding + index * widthPerDay
+            val startHour = entry.getStartLocalDateTime().hour + entry.getStartLocalDateTime().minute / 60f
+            val duration = entry.value
 
-            val rectF = RectF(left, top, right, bottom)
+            // Convert start hour to Y position (adjusting for 24-hour format)
+            val startY = height - padding - ((startHour - 18).coerceIn(0f, 12f) * heightPerHour)
+            val endY = (startY - (duration * heightPerHour)).coerceAtLeast(padding)
 
-            // Draw rounded rectangle for bar
-            c.drawRoundRect(rectF, barRadius, barRadius, paint)
+            val paint = if (index == sleepData.size - 1) paintSleepHighlight else paintSleep
+            canvas.drawRoundRect(x, endY, x + widthPerDay * 0.8f, startY, 20f, 20f, paint)
+
+            // Draw date labels
+            val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
+            canvas.drawText(dateLabel, x, height - 30f, paintText)
         }
     }
 }
 
-data class SleepConsistencySegment(val startTime: String, val endTime: String, val duration: Double)
+
+data class SleepEntry(
+    val startDatetime: String,
+    val endDatetime: String,
+    val value: Float
+) {
+    fun getStartLocalDateTime(): LocalDateTime {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        return LocalDateTime.parse(startDatetime, formatter)
+    }
+
+    fun getEndLocalDateTime(): LocalDateTime {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        return LocalDateTime.parse(endDatetime, formatter)
+    }
+
+    companion object {
+        fun fromJson(json: String): List<SleepEntry> {
+            val entries = mutableListOf<SleepEntry>()
+            val jsonArray = org.json.JSONArray(json)
+
+            for (i in 0 until jsonArray.length()) {
+                val obj = jsonArray.getJSONObject(i)
+
+                val startDateTime = obj.getString("start_datetime")
+                val endDateTime = obj.getString("end_datetime")
+                val value = obj.getDouble("value").toFloat()
+
+                entries.add(SleepEntry(startDateTime, endDateTime, value))
+            }
+            return entries
+        }
+    }
+}

@@ -2268,4 +2268,5 @@
                 android:textColor="@color/meal_log_title" />
         </LinearLayout>
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

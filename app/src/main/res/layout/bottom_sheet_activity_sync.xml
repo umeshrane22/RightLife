@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -10,6 +11,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/activity_sync_main_layout"
                 android:layout_width="match_parent"
@@ -20,6 +22,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="76dp"
                     android:layout_height="58dp"
@@ -28,10 +31,12 @@
                     android:layout_marginStart="45dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/cardview_border">
+
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -45,6 +50,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="92dp"
                     android:layout_height="70dp"
@@ -54,10 +60,12 @@
                     android:layout_marginEnd="17dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/card_view_border_second">
+
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -71,6 +79,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="89dp"
                     android:layout_height="68dp"
@@ -80,10 +89,12 @@
                     android:layout_marginStart="18dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/card_activity_sync_third">
+
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -97,6 +108,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="74dp"
                     android:layout_height="57dp"
@@ -106,10 +118,12 @@
                     android:layout_marginEnd="23dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/card_activity_sync_forth">
+
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -123,33 +137,41 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
+                <ImageView
+                    android:layout_width="118dp"
+                    android:layout_height="118dp"
+                    android:src="@drawable/ic_health_connect"
+                    android:layout_marginTop="72dp"
+                    android:scaleType="fitXY"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+
+                    />
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="118dp"
                     android:layout_height="118dp"
                     android:elevation="10dp"
+                    android:visibility="gone"
                     app:cardCornerRadius="30dp"
                     android:layout_marginTop="72dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/card_activity_sync_fifth">
-                        <ImageView
-                            android:layout_width="43dp"
-                            android:layout_height="38dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:src="@drawable/activity_icon_forth"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
 
-                            />
+
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/think_right_card"
                     android:layout_width="163dp"
@@ -159,10 +181,12 @@
                     android:layout_marginTop="253dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/activity_sync_think_right_button">
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/layout_btn_log_meal"
                             android:layout_width="match_parent"
@@ -216,10 +240,12 @@
                     android:layout_marginTop="253dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/activity_sync_sleep_right_btn">
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/sleep_right_btn_layout"
                             android:layout_width="match_parent"
@@ -262,6 +288,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/eat_right_card"
                     android:layout_width="163dp"
@@ -270,10 +297,12 @@
                     app:cardCornerRadius="21dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/activity_sync_eat_right_btn">
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/eat_right_btn_layout"
                             android:layout_width="match_parent"
@@ -316,6 +345,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.cardview.widget.CardView>
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/move_right_card"
                     android:layout_width="163dp"
@@ -325,10 +355,12 @@
                     android:layout_marginStart="31dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent">
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/activity_sync_move_right_btn">
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/move_right_btn_layout"
                             android:layout_width="match_parent"
@@ -374,18 +406,20 @@
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <TextView
-                android:id="@+id/sync_apple_main_heading"
+                android:id="@+id/sync_health_main_heading"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="52dp"
-                android:text="Sync With Apple Health"
+                android:text="Sync With Health Connect"
                 android:textSize="24dp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 app:layout_constraintTop_toBottomOf="@+id/activity_sync_main_layout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
+
             <TextView
                 android:id="@+id/sync_now_description"
                 android:layout_width="344dp"
@@ -393,11 +427,12 @@
                 android:textSize="18dp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_regular"
-                android:text="Connect your Apple Health to seamlessly track and integrate your fitness, sleep, and wellness data. With real-time insights, we’ll personalize your journey to better health!"
+                android:text="Connect your Health Connect to seamlessly track and integrate your fitness, sleep, and wellness data. With real-time insights, we’ll personalize your journey to better health!"
                 android:layout_marginTop="28dp"
-                app:layout_constraintTop_toBottomOf="@+id/sync_apple_main_heading"
+                app:layout_constraintTop_toBottomOf="@+id/sync_health_main_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/layout_sync_now"
                 android:layout_width="300dp"
@@ -413,11 +448,11 @@
 
                 <ImageView
                     android:id="@+id/sync_now_icon_plus"
-                    android:layout_width="27dp"
-                    android:layout_height="27dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:scaleType="fitXY"
-                    android:src="@drawable/sync_now_heart"
+                    android:src="@drawable/ic_health_connect"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />
@@ -429,7 +464,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="5dp"
                     android:layout_gravity="center"
                     android:textSize="20sp"
                     android:textColor="@color/white"
@@ -437,6 +472,7 @@
                     android:text="Sync Now"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
             <Button
                 android:id="@+id/btn_sync_now"
                 android:layout_width="wrap_content"
@@ -448,11 +484,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="10dp"/>
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

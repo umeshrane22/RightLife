@@ -9,4 +9,5 @@ data class ToolsResponse(
     var statusCode : Int?,
     @SerializedName("data"       )
     var data       : ArrayList<ToolsData> = arrayListOf()
+
 )

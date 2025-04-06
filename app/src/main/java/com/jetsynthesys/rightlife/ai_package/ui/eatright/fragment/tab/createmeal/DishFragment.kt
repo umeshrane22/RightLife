@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,13 +35,23 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.core.view.isVisible
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class DishFragment : BaseFragment<FragmentDishBinding>() {
 
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
     private lateinit var addToTheMealLayout : LinearLayoutCompat
-    private lateinit var imageCalender : ImageView
+    private lateinit var layoutMicroTitle : ConstraintLayout
+    private lateinit var layoutMacroTitle : ConstraintLayout
+    private lateinit var icMacroUP : ImageView
+    private lateinit var microUP : ImageView
     private lateinit var imgFood : ImageView
     private lateinit var btnLogMeal : LinearLayoutCompat
     private lateinit var editDeleteBreakfast : CardView
@@ -86,6 +97,10 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealTV = view.findViewById(R.id.tv_addToTheMeal)
         tvMealName = view.findViewById(R.id.tvMealName)
         imgFood = view.findViewById(R.id.imgFood)
+        layoutMicroTitle = view.findViewById(R.id.layoutMicroTitle)
+        layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
+        microUP = view.findViewById(R.id.microUP)
+        icMacroUP = view.findViewById(R.id.icMacroUP)
 
         searchType = arguments?.getString("searchType").toString()
         val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
@@ -110,6 +125,30 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
 //                tvQuantity.text = quantity.toString()
 //            }
 //        }
+
+        layoutMacroTitle.setOnClickListener {
+          if (macroItemRecyclerView.isVisible){
+              macroItemRecyclerView.visibility = View.GONE
+              icMacroUP.setImageResource(R.drawable.ic_down)
+              view.findViewById<View>(R.id.view_macro).visibility = View.GONE
+          }else{
+              macroItemRecyclerView.visibility = View.VISIBLE
+              icMacroUP.setImageResource(R.drawable.ic_up)
+              view.findViewById<View>(R.id.view_macro).visibility = View.VISIBLE
+          }
+        }
+
+        layoutMicroTitle.setOnClickListener {
+            if (microItemRecyclerView.isVisible){
+                microItemRecyclerView.visibility = View.GONE
+                microUP.setImageResource(R.drawable.ic_down)
+                view.findViewById<View>(R.id.view_micro).visibility = View.GONE
+            }else{
+                microItemRecyclerView.visibility = View.VISIBLE
+                microUP.setImageResource(R.drawable.ic_up)
+                view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
+            }
+        }
 
         view.findViewById<ImageView>(R.id.ivIncrease).setOnClickListener {
             quantity++
@@ -308,5 +347,31 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
           //  tvMealType.text = meals[which]
         }
         builder.show()
+    }
+
+    private fun getMealList() {
+        Utils.showLoader(requireActivity())
+        // val userId = appPreference.getUserId().toString()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "64763fe2fa0e40d9c0bc8264"
+        val startDate = "2025-03-24"
+        val call = ApiClient.apiServiceFastApi.getMeal(userId, startDate)
+        call.enqueue(object : Callback<MealsResponse> {
+            override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
+                if (response.isSuccessful) {
+                    Utils.dismissLoader(requireActivity())
+                    val mealPlanLists = response.body()?.meals ?: emptyList()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Utils.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                Utils.dismissLoader(requireActivity())
+            }
+        })
     }
 }

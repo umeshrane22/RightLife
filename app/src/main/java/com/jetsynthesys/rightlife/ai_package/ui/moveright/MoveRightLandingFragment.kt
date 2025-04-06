@@ -1,9 +1,11 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -25,10 +27,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.health.connect.client.units.calories
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +41,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.CardItem
+import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.GridItem
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
@@ -49,9 +54,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 import java.time.Instant
 import java.time.ZoneId
 import kotlin.math.abs
+import androidx.core.net.toUri
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
@@ -131,7 +138,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+           // navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 
         activityFactorImageIcon.setOnClickListener {
@@ -144,6 +151,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
 
         // Set up Health Connect
+//        if (!isHealthConnectAvailable(requireContext())) {
+//            installHealthConnect(requireContext())
+//        }else{
+//            requestHealthConnectPermission(requireActivity())
+//        }
+
         val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
             healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
@@ -278,6 +291,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 fetchHeartRateData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+              //  requestHealthConnectPermission(requireActivity())
             }
         }
     }
@@ -505,38 +519,61 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
     private fun fetchHealthSummary() {
+        // Use the lifecycleScope if this is called from a Fragment/Activity to avoid memory leaks
+        // If this is in a ViewModel, use viewModelScope instead
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiClient.apiServiceFastApi.getMoveLanding(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    date = "2025-03-24"
+                // Make the API call
+                val userId: String = "64763fe2fa0e40d9c0bc8264"
+                val date: String = "2025-03-24"
+
+                val response: Response<FitnessResponse> = ApiClient.apiServiceFastApi.getMoveLanding(
+                    userId = userId,
+                    date = date
                 )
 
+                // Process the response
                 if (response.isSuccessful) {
-                    val healthSummary = response.body()
-                    healthSummary?.let {
-                        it.heartRateMoveLanding
-                        it.steps
-                        it.totalBurnedSum
-                        it.heartRateVariabilitySDNN
-                        it.heartRateZones
+                    val healthSummary: FitnessResponse? = response.body()
+                    if (healthSummary != null) {
+                        // Access the data (for debugging or further processing)
+                        val heartRateZones = healthSummary.heartRateZones
+                        val steps = healthSummary.steps
+                        val totalBurnedSum = healthSummary.totalBurnedSum
+                        val heartRateVariabilitySDNN = healthSummary.heartRateVariabilitySDNN
+                        val totalStepsSum = healthSummary.totalStepsSum
+                        val totalIntakeCaloriesSum = healthSummary.totalIntakeCaloriesSum.calories
+                        val message = healthSummary.message
+
+                        // Update the UI on the Main thread
                         withContext(Dispatchers.Main) {
-                            calorieBalanceDescription.text = it.message.toString()
-                            println("Health Summary: $it")
-                            println("Total Steps Sum: ${it.totalStepsSum}")
-                            println("Total Burned Sum: ${it.totalBurnedSum}")
-                            println("Total Intake Calories Sum: ${it.totalIntakeCaloriesSum}")
+                            // calorieBalanceDescription.text = message
+                            // Log the data for debugging
+                            Log.d("HealthSummary", "Full Response: $healthSummary")
+                            Log.d("HealthSummary", "Total Steps Sum: $totalStepsSum")
+                            Log.d("HealthSummary", "Total Burned Sum: $totalBurnedSum")
+                            Log.d("HealthSummary", "Total Intake Calories Sum: $totalIntakeCaloriesSum")
+                        }
+                    } else {
+                        // Handle null response body
+                        withContext(Dispatchers.Main) {
+                            Log.e("HealthSummary", "Response body is null")
+                            // calorieBalanceDescription.text = "No data available"
                         }
                     }
                 } else {
+                    // Handle unsuccessful response (e.g., 404, 500)
                     withContext(Dispatchers.Main) {
-                        println("Error: ${response.code()} - ${response.message()}")
+                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
+                        Log.e("HealthSummary", errorMessage)
+                        // calorieBalanceDescription.text = "Failed to load data"
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
+                // Handle network or unexpected errors
                 withContext(Dispatchers.Main) {
-                    println("Exception: ${e.message}")
+                    Log.e("HealthSummary", "Exception: ${e.message}", e)
+                    //calorieBalanceDescription.text = "An error occurred"
                 }
             }
         }
@@ -582,7 +619,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     fun openAppSettings(context: Context) {
         try {
             val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.parse("package:" + context.packageName)
+                data = ("package:" + context.packageName).toUri()
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)
@@ -591,5 +628,45 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
+    fun isHealthConnectAvailable(context: Context): Boolean {
+        val packageManager = context.packageManager
+        return try {
+            packageManager.getPackageInfo("com.google.android.apps.healthdata", 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
 
+    fun installHealthConnect(context: Context) {
+        val uri =
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
+
+    fun requestHealthConnectPermission(activity: Activity) {
+        val permissions = setOf(
+            HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+            HealthPermission.getReadPermission(StepsRecord::class),
+            HealthPermission.getReadPermission(HeartRateRecord::class),
+            HealthPermission.getReadPermission(SleepSessionRecord::class),
+            HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+            HealthPermission.getReadPermission(SpeedRecord::class),
+            HealthPermission.getReadPermission(WeightRecord::class),
+            HealthPermission.getReadPermission(DistanceRecord::class)
+        )
+
+        val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
+
+        val permissionLauncher = requireActivity().registerForActivityResult(requestPermissionActivityContract) { granted ->
+            if (granted.containsAll(permissions)) {
+                Toast.makeText(activity, "Health Connect Permissions Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(activity, "Permissions Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+        permissionLauncher.launch(permissions)
+    }
 }

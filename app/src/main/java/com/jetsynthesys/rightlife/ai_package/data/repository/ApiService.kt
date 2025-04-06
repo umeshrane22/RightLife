@@ -8,6 +8,10 @@ import com.jetsynthesys.rightlife.ai_package.model.NutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.RecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
 import com.jetsynthesys.rightlife.ai_package.model.AnalysisRequest
+import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
+import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
@@ -69,6 +73,10 @@ interface ApiService {
     fun getMeal(@Query("user_id") userId: String,
                 @Query("date") startDate: String): Call<MealsResponse>
 
+    @GET("eat/log-meal/")
+    fun logMeal(@Query("user_id") userId: String,
+                @Query("date") startDate: String): Call<MealsResponse>
+
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(
         @Query("user_id") userId: String,
@@ -104,7 +112,7 @@ interface ApiService {
 
 
     @POST("app/api/tools")
-    fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<ToolsResponse>
+    fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<BaseResponse>
 
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsResponse>
@@ -150,13 +158,20 @@ interface ApiService {
     suspend fun getMoveLanding(
         @Query("user_id") userId: String,
         @Query("date") date: String // Ensure lowercase
-    ): Response<HealthSummaryResponse>
+    ): Response<FitnessResponse>
 
     @GET("move/fetch_routines/")
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
         @Query("provided_date") providedDate: String // Ensure lowercase
     ): Response<WorkoutResponseRoutine>
+
+    @POST("move/assign_routine/")
+    suspend fun assignRoutine(
+        @Query("_id") id: String,
+        @Query("user_id") userId: String,
+        @Body request: AssignRoutineRequest
+    ): Response<AssignRoutineResponse>
 
     @GET("move/data/get_calories/")
     suspend fun getFetchWorkouts(

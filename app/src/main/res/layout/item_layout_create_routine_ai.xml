@@ -132,6 +132,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:visibility="gone"
                     android:textSize="18sp"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
@@ -142,6 +143,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
+                    android:visibility="gone"
                     android:textSize="12sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
@@ -152,6 +154,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:textSize="18sp"
+                    android:visibility="gone"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
                     android:text="30" />

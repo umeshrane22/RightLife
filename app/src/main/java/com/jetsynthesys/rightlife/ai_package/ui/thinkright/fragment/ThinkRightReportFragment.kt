@@ -507,11 +507,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
     private fun onToolsItem(toolsData: ToolsData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.moduleName.contentEquals("Breathing")){
+        if (toolsData.title.contentEquals("Breathing")){
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
-        }else if (toolsData.moduleName.contentEquals("Journalling")){
+        }else if (toolsData.title.contentEquals("Journalling")){
             startActivity(Intent(requireContext(), JournalListActivity::class.java))
-        }else if (toolsData.moduleName.contentEquals("Affirmation")){
+        }else if (toolsData.title.contentEquals("Affirmation")){
             startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
         }
     }

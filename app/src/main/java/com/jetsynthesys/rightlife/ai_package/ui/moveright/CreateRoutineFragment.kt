@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
+import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CreateRoutineListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
@@ -26,44 +30,58 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Response
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
-    private lateinit var editText : EditText
-    private lateinit var textViewRoutine : TextView
-    private lateinit var createRoutineBackButton : ImageView
-    private lateinit var createRoutineRecyclerView : RecyclerView
-    private lateinit var layoutBtnLog : LinearLayoutCompat
-    private lateinit var addNameLayout : ConstraintLayout
-    private lateinit var createListRoutineLayout : ConstraintLayout
+    private lateinit var editText: EditText
+    private lateinit var textViewRoutine: TextView
+    private lateinit var createRoutineBackButton: ImageView
+    private lateinit var createRoutineRecyclerView: RecyclerView
+    private lateinit var layoutBtnLog: LinearLayoutCompat
+    private lateinit var addNameLayout: ConstraintLayout
+    private lateinit var createListRoutineLayout: ConstraintLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
-    private val myMealListAdapter by lazy { CreateRoutineListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
+
+    private val myRoutineListAdapter by lazy {
+        CreateRoutineListAdapter(
+            context = requireContext(),
+            dataLists = arrayListOf(),
+            clickPos = -1,
+            selectedWorkout = null,
+            isClickView = false,
+            onWorkoutItemClick = { workout, position, isClicked ->
+                Log.d("RoutineAdapter", "Workout clicked: ${workout.workoutType} at position $position")
+            }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
 
-
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
-
         editText = view.findViewById(R.id.editText)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
-        layoutBtnLog  = view.findViewById(R.id.layout_btn_log)
-        createRoutineBackButton  = view.findViewById(R.id.back_button)
+        layoutBtnLog = view.findViewById(R.id.layout_btn_log)
+        createRoutineBackButton = view.findViewById(R.id.back_button)
         addNameLayout = view.findViewById(R.id.add_name_layout)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
+
         addNameLayout.visibility = View.VISIBLE
         createListRoutineLayout.visibility = View.GONE
+
         val defaultBackground: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.add_cart_button_background)
         val filledBackground: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.button_background_filled)
+
         createRoutineRecyclerView.layoutManager = LinearLayoutManager(context)
-        createRoutineRecyclerView.adapter = myMealListAdapter
-        onMyMealItemRefresh()
+        createRoutineRecyclerView.adapter = myRoutineListAdapter
 
         createRoutineBackButton.setOnClickListener {
             navigateToFragment(YourworkOutsFragment(), "LandingFragment")
         }
+
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
 
@@ -79,22 +97,22 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 }
             }
         })
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navigateToFragment(YourworkOutsFragment(), "LandingFragment")
-
             }
         })
+
         layoutBtnLog.setOnClickListener {
             addNameLayout.visibility = View.GONE
             createListRoutineLayout.visibility = View.VISIBLE
             textViewRoutine.text = editText.text
-            fetchMoveRoutine()
-
-
+            // assignWorkoutRoutine() // Assign the routine first
+            fetchMoveRoutine()     // Then fetch the updated routine data
         }
-
     }
+
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
@@ -102,67 +120,94 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             commit()
         }
     }
-    private fun onMyMealItemRefresh (){
 
-        val meal = listOf(
-            MyMealModel("Functional Strength Training", "Poha, Sev", "min", "337", "134", "308", "17", false),
-            MyMealModel("Functional Strength Training", "Poha, Sev", "min", "337", "134", "308", "17", false)
-        )
-
-        if (meal.size > 0){
-            createRoutineRecyclerView.visibility = View.VISIBLE
-            //layoutNoMeals.visibility = View.GONE
-        }else{
-            // layoutNoMeals.visibility = View.VISIBLE
-            createRoutineRecyclerView.visibility = View.GONE
-        }
-
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(meal as Collection<MyMealModel>)
-        val mealLogDateData: MyMealModel? = null
-        myMealListAdapter.addAll(valueLists, -1, mealLogDateData, false)
-    }
-
-    private fun onMealLogDateItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
-
-        val mealLogs = listOf(
-            MyMealModel("Functional Strength Training", "Poha, Sev", "min", "337", "134", "308", "17", false),
-            MyMealModel("Functional Strength Training", "Poha, Sev", "min", "337", "134", "308", "17",false)
-        )
-
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        //  mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-    private fun fetchMoveRoutine() {
+    private fun assignWorkoutRoutine() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiClient.apiServiceFastApi.getMoveRoutine(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    providedDate = "2025-03-06"
+                val id: String = "67e1317722a2406f2eceb627"
+                val userId: String = "64763fe2fa0e40d9c0bc8264"
+                val routineName: String = editText.text.toString() // Use the user-entered routine name
+                val workoutIds: List<String> = listOf("67e1317722a2406f2eceb63a")
+                val date: String = "2025-03-24"
+
+                // Create the request body
+                val request = AssignRoutineRequest(
+                    routineName = routineName,
+                    workoutIds = workoutIds,
+                    date = date
                 )
 
+                // Make the API call
+                val response: Response<AssignRoutineResponse> = ApiClient.apiServiceFastApi.assignRoutine(
+                    id = id,
+                    userId = userId,
+                    request = request
+                )
+
+                // Process the response
                 if (response.isSuccessful) {
-                    val workoutResponse = response.body()
-                    workoutResponse?.let {
-                        // Handle the workout data
+                    val assignResponse: AssignRoutineResponse? = response.body()
+                    if (assignResponse != null) {
                         withContext(Dispatchers.Main) {
-                            println("Workout Routines Fetched Successfully")
-                            // TODO: Update UI with workout data
+                            Log.d("AssignRoutine", "Success: ${assignResponse.message}")
+                            Log.d("AssignRoutine", "Document ID: ${assignResponse.documentId}")
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Log.e("AssignRoutine", "Response body is null")
                         }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        println("Error: ${response.code()} - ${response.message()}")
+                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
+                        Log.e("AssignRoutine", errorMessage)
                     }
                 }
             } catch (e: Exception) {
-                e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    println("Exception: ${e.message}")
+                    Log.e("AssignRoutine", "Exception: ${e.message}", e)
                 }
             }
         }
     }
 
+    private fun fetchMoveRoutine() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.getMoveRoutine(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    providedDate = "2025-03-24"
+                )
+
+                if (response.isSuccessful) {
+                    val workoutResponse: WorkoutResponseRoutine? = response.body()
+                    workoutResponse?.let { routineResponse ->
+                        // Flatten the list of workouts from all routines in the map
+                        val allWorkouts = routineResponse.routines.values.flatMap { it.workouts }.toCollection(ArrayList())
+                        withContext(Dispatchers.Main) {
+                            Log.d("FetchMoveRoutine", "Workout Routines Fetched Successfully: ${allWorkouts.size} workouts")
+                            // Update the RecyclerView adapter with the workout data
+                            myRoutineListAdapter.addAll(allWorkouts, -1, null, false)
+                            createRoutineRecyclerView.visibility = if (allWorkouts.isNotEmpty()) View.VISIBLE else View.GONE
+                        }
+                    } ?: run {
+                        withContext(Dispatchers.Main) {
+                            Log.e("FetchMoveRoutine", "Response body is null")
+                            createRoutineRecyclerView.visibility = View.GONE
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Log.e("FetchMoveRoutine", "Error: ${response.code()} - ${response.message()}")
+                        createRoutineRecyclerView.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("FetchMoveRoutine", "Exception: ${e.message}", e)
+                    createRoutineRecyclerView.visibility = View.GONE
+                }
+            }
+        }
+    }
 }
