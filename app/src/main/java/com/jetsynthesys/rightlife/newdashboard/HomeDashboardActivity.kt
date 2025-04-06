@@ -42,6 +42,7 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -249,7 +250,7 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
             //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
+            startActivity(Intent(this, ProfileNewActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
             Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()

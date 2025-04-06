@@ -22,15 +22,13 @@
         android:textSize="14sp"
         android:fontFamily="@font/dmsans_regular"
         android:textColor="@color/txt_color_header"
-        android:layout_marginBottom="30dp"
-         />
+        android:layout_marginBottom="30dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:id="@+id/rl_water"
         android:layout_margin="10dp"
         android:layout_height="wrap_content">
-
 
 
         <com.jetsynthesys.rightlife.quiestionscustomviews.AnxietyLevelSelectorView
@@ -47,7 +45,6 @@
             android:gravity="center"
             android:layout_toLeftOf="@id/sleep_quality_slider_view"
             android:orientation="vertical">
-
 
 
             <TextView
@@ -108,49 +105,45 @@
             android:orientation="vertical">
 
             <ImageView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:src="@drawable/happy_icon"
-                android:gravity="top"
-                />
+                android:layout_margin="1dp"
+                android:src="@drawable/ic_exellent"
+                android:gravity="top" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="1dp"
+                android:src="@drawable/ic_good"
+                android:gravity="top" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="1dp"
+                android:src="@drawable/ic_average"
+                android:gravity="top" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_margin="1dp"
+                android:src="@drawable/ic_poor"
+                android:gravity="top" />
 
             <ImageView
 
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:src="@drawable/happy_icon"
-                android:gravity="top"
-                />
-
-            <ImageView
-
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:src="@drawable/happy_icon"
-                android:gravity="top"
-                />
-
-            <ImageView
-
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:src="@drawable/happy_icon"
-                android:gravity="top"
-                />
-
-            <ImageView
-
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:src="@drawable/happy_icon"
-                android:gravity="top"
-                />
+                android:layout_margin="1dp"
+                android:src="@drawable/ic_very_poor"
+                android:gravity="top" />
 
         </LinearLayout>
     </RelativeLayout>

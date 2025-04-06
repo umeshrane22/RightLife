@@ -1076,7 +1076,7 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
-    @PUT("aiQuestionaries")
+    @POST("aiQuestionaries")
     Call<ResponseBody> submitERQuestionnaire(
             @Header("Authorization") String authToken,
             @Body QuestionnaireAnswerRequest questionnaireAnswerRequest

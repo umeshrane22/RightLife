@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.R
@@ -73,10 +74,12 @@ class BreaksToStretchFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSeven = MRQuestionSeven()
         questionSeven.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionSeven = questionSeven
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionSeven =
+            questionSeven
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
+        Toast.makeText(requireContext(), "Saved!!  Have a Great Day!!", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {
