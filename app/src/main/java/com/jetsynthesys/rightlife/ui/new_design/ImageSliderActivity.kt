@@ -316,7 +316,7 @@ class ImageSliderActivity : AppCompatActivity() {
                                 loggedInUser = user
                             }
                         }
-                        if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
+                        if (/*apiResponse.isNewUser == false ||*/ loggedInUser?.isOnboardingComplete == true) {
                             val loggedInUser = LoggedInUser(email = mEmail, isOnboardingComplete = true)
                             sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
                             startActivity(

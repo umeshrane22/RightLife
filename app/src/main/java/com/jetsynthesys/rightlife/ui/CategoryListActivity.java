@@ -41,6 +41,7 @@ import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -188,6 +189,8 @@ public class CategoryListActivity extends AppCompatActivity {
         if (categoryId.equals(selectedCategoryId)) {
             chip.setChecked(true);
         }
+        if (selectedCategoryId == null && Objects.equals(category, "All"))
+            chip.setChecked(true);
 
         chip.setTextSize(12);
 

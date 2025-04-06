@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.BottomsheetPhysicalActivityBinding
 import com.jetsynthesys.rightlife.databinding.FragmentPhysicalActivitiesBinding
@@ -20,8 +22,6 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.PhysicalActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.chip.Chip
 
 class PhysicalActivitiesFragment : Fragment() {
 
@@ -61,23 +61,62 @@ class PhysicalActivitiesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         activities = arrayListOf(
-            PhysicalActivity("Field Events"),
-            PhysicalActivity("Pranayama"),
-            PhysicalActivity("Stretching"),
-            PhysicalActivity("Badminton"),
-            PhysicalActivity("Walking"),
+            PhysicalActivity("American Football"),
             PhysicalActivity("Archery"),
-            PhysicalActivity("Running"),
-            PhysicalActivity("Strength Training"),
-            PhysicalActivity("Yoga"),
-            PhysicalActivity("High-Intensity Interval Training (HIIT)"),
+            PhysicalActivity("Athletics"),
+            PhysicalActivity("Australian Football"),
+            PhysicalActivity("Badminton"),
+            PhysicalActivity("Barre"),
+            PhysicalActivity("Baseball"),
             PhysicalActivity("Basketball"),
             PhysicalActivity("Boxing"),
+            PhysicalActivity("Climbing"),
+            PhysicalActivity("Core Training"),
             PhysicalActivity("Cricket"),
-            PhysicalActivity("Weightlifting"),
+            PhysicalActivity("Cross Training"),
+            PhysicalActivity("Cycling"),
+            PhysicalActivity("Dance (Zumba, Hip-Hop)"),
+            PhysicalActivity("Disc Sports"),
+            PhysicalActivity("Elliptical"),
+            PhysicalActivity("Field Events"),
+            PhysicalActivity("Football"),
+            PhysicalActivity("Functional Strength Training"),
+            PhysicalActivity("Golf"),
+            PhysicalActivity("Gymnastics"),
+            PhysicalActivity("Handball"),
+            PhysicalActivity("Hiking"),
+            PhysicalActivity("HIIT"),
+            PhysicalActivity("Hockey"),
+            PhysicalActivity("Kickboxing"),
+            PhysicalActivity("Martial Arts"),
+            PhysicalActivity("Other"),
+            PhysicalActivity("Pickleball"),
+            PhysicalActivity("Pilates"),
+            PhysicalActivity("Power Yoga"),
+            PhysicalActivity("Powerlifting"),
+            PhysicalActivity("Pranayama"),
+            PhysicalActivity("Rowing Machine"),
+            PhysicalActivity("Rugby"),
+            PhysicalActivity("Running"),
+            PhysicalActivity("Skating"),
+            PhysicalActivity("Skipping"),
+            PhysicalActivity("Squash"),
+            PhysicalActivity("Stairs"),
+            PhysicalActivity("Stretching"),
+            PhysicalActivity("Swimming"),
+            PhysicalActivity("Table Tennis"),
+            PhysicalActivity("Tennis"),
+            PhysicalActivity("Track and Field Events"),
+            PhysicalActivity("Traditional Strength Training"),
             PhysicalActivity("Trekking"),
-            PhysicalActivity("Wrestling")
+            PhysicalActivity("Volleyball"),
+            PhysicalActivity("Walking"),
+            PhysicalActivity("Watersports"),
+            PhysicalActivity("Weightlifting"),
+            PhysicalActivity("Wrestling"),
+            PhysicalActivity("Yoga")
         )
+
 
         activities.forEach { physicalActivity ->
             addChip(physicalActivity.title)
@@ -235,9 +274,22 @@ class PhysicalActivitiesFragment : Fragment() {
         }
 
         dialogBinding.btnSetNow.setOnClickListener {
-            bottomSheetDialog.dismiss()
-            //QuestionnaireEatRightActivity.navigateToNextPage()
-            submit(selectedActivities)
+            val calculation = dialogBinding.textCount1.text.toString().toInt().plus(
+                dialogBinding.textCount2.text.toString().toInt()
+            ).plus(
+                dialogBinding.textCount3.text.toString().toInt()
+            )
+            if (QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!! >= calculation) {
+                bottomSheetDialog.dismiss()
+                //QuestionnaireEatRightActivity.navigateToNextPage()
+                submit(selectedActivities)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Please set correct activity frequency",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
         bottomSheetDialog.show()
@@ -246,7 +298,8 @@ class PhysicalActivitiesFragment : Fragment() {
     private fun submit(answer: List<String>) {
         val questionThree = MRQuestionThree()
         questionThree.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionThree = questionThree
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionThree =
+            questionThree
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
