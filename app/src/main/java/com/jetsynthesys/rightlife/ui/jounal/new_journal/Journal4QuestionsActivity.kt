@@ -65,7 +65,10 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         val questionId = intent.getStringExtra("QuestionId")
 
 
-
+        //back button
+        binding.btnBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
         binding.tvEntryDate.text = DateTimeUtils.formatCurrentDate()
         binding.tvEntryText.text = answer
 

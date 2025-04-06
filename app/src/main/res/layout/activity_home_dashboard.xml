@@ -102,6 +102,35 @@
                         android:src="@drawable/ic_search"
                         android:visibility="gone"
                         app:tint="@android:color/black" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="20dp"
+                        android:padding="6dp"
+                        android:gravity="center_vertical"
+                        android:background="@drawable/roundedcornerborderred"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_db_flash"
+                            android:layout_height="wrap_content"
+                            app:tint="@color/days_border_trialdays" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="1/7"
+                            android:fontFamily="@font/dmsans_semibold"
+                            android:textSize="@dimen/textsize_large"
+                            android:textColor="@color/days_border_trialdays"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:text="days"
+                            android:layout_marginEnd="5dp"
+                            android:textColor="@color/days_border_trialdays"
+                            android:textSize="@dimen/textsize_extrasmall"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
 
                 </RelativeLayout>
 
