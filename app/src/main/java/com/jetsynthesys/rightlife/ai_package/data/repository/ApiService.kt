@@ -10,6 +10,7 @@ import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
 import com.jetsynthesys.rightlife.ai_package.model.AnalysisRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
@@ -111,7 +112,7 @@ interface ApiService {
 
 
     @POST("app/api/tools")
-    fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<ToolsResponse>
+    fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<BaseResponse>
 
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsResponse>

@@ -16,24 +16,14 @@ import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import com.github.mikephil.charting.data.BarEntry
+import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
 import com.jetsynthesys.rightlife.databinding.FragmentSleepConsistencyBinding
-import com.github.mikephil.charting.animation.ChartAnimator
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import com.github.mikephil.charting.renderer.BarChartRenderer
-import com.github.mikephil.charting.utils.ViewPortHandler
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import retrofit2.Call
@@ -270,6 +260,8 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
         sleepData.addAll(data)
         invalidate()
     }
+
+    val markerView1 = SleepMarkerView1(context, sleepData)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
