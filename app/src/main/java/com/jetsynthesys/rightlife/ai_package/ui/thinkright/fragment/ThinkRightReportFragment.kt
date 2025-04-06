@@ -449,12 +449,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolItem(toolsData: ModuleData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.moduleName.contentEquals("Breathing")){
-            startActivity(Intent(requireContext(), BreathworkActivity::class.java))
-        }else if (toolsData.moduleName.contentEquals("Journalling")){
-            startActivity(Intent(requireContext(), JournalListActivity::class.java))
-        }else if (toolsData.moduleName.contentEquals("Affirmation")){
-            startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+        if (toolsData.moduleName != null){
+            if (toolsData.moduleName.contentEquals("Breathing")){
+                startActivity(Intent(requireContext(), BreathworkActivity::class.java))
+            }else if (toolsData.moduleName.contentEquals("Journalling")){
+                startActivity(Intent(requireContext(), JournalListActivity::class.java))
+            }else if (toolsData.moduleName.contentEquals("Affirmation")){
+                startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+            }
         }
     }
     private fun fetchQuoteData() {

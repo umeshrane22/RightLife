@@ -39,10 +39,12 @@ class ToolAdapter(
 
         fun bind(tool: ModuleData) {
             moduleName.text = tool.moduleName
-            if (tool.moduleName.equals("Affirmation")) {
-                selectedIcon.setImageResource(R.drawable.affirmation_bookmark) // Replace with your actual drawable
-            } else {
-                selectedIcon.setImageResource(R.drawable.breathwork_icon) // Replace with your fallback drawable
+            if (tool.moduleName != null){
+                if (tool.moduleName.equals("Affirmation")) {
+                    selectedIcon.setImageResource(R.drawable.affirmation_bookmark) // Replace with your actual drawable
+                } else {
+                    selectedIcon.setImageResource(R.drawable.breathwork_icon) // Replace with your fallback drawable
+                }
             }
            // moduleType.text = tool.moduleType
            // subtitle.text = tool.subtitle
