@@ -93,7 +93,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     var lunchLists : ArrayList<MealList> = ArrayList()
     var dinnerLists : ArrayList<MealList> = ArrayList()
 
-
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
 
