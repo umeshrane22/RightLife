@@ -21,6 +21,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepLandingResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
+import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveMainResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
@@ -108,14 +109,14 @@ interface ApiService {
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
     @GET("app/api/tools")
-    fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("userId") userId: String): Call<ToolsResponse>
+    fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
 
     @POST("app/api/tools")
     fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<BaseResponse>
 
     @GET("app/api/tools")
-    fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsResponse>
+    fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
