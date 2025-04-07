@@ -1,20 +1,22 @@
 package com.jetsynthesys.rightlife.ai_package.model
 
+import com.google.gson.annotations.SerializedName
+
 data class ModuleResponse(
-    val success: Boolean,
-    val statusCode: Int,
-    val data: List<ModuleData>
+    @SerializedName("success"    )
+    var success    : Boolean? ,
+    @SerializedName("statusCode" )
+    var statusCode : Int?,
+    @SerializedName("data"       )
+    var data       : ArrayList<ModuleData> = arrayListOf()
 )
 data class ModuleData(
-    val _id: String,
-    val moduleName: String,
-    val moduleType: String,
-    val moduleId: String,
-    val categoryId: String,
-    val subtitle: String,
-    val userId: String,
-    val isSelectedModule: Boolean,
-    val createdAt: String,
-    val updatedAt: String,
-    val __v: Int
+    @SerializedName("_id"       )
+    var _id       : String?,
+    @SerializedName("title"         )
+    var title         : String?,
+    @SerializedName("desc"       )
+    var desc       : String?,
+    @SerializedName("image"        )
+    var image        : String?
 )

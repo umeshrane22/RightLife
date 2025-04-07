@@ -62,6 +62,8 @@ import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
+import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -96,6 +98,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var toolsResponse : ToolsResponse
     private lateinit var mainView : LinearLayout
     private var toolsArray : ArrayList<ToolsData> = arrayListOf()
+    private lateinit var toolGridResponse : ToolsGridResponse
+    private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
     private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
 
@@ -136,16 +140,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         toolsRecyclerView.adapter = toolsMoreAdapter
         downloadView = view.findViewById(R.id.view_download_icon)
         mainView = view.findViewById(R.id.lyt_main_page)
-        toolsAdapter = ToolsAdapter(requireContext(), toolsArray, :: onToolsItem)
+        toolsAdapter = ToolsAdapter(requireContext(), toolsGridArray, :: onToolsItem)
         journalingRecyclerView = view.findViewById(R.id.rec_add_tools)
         journalingRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         journalingRecyclerView.adapter = toolsAdapter
 
 
         toolRecyclerView = view.findViewById(R.id.tool_list_think_right)
-        toolAdapter = ToolAdapter(toolsList, :: onToolItem)
-        toolRecyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        toolAdapter = ToolAdapter(requireContext(),toolsList, :: onToolItem)
+        toolRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         toolRecyclerView.adapter = toolAdapter
         /*val cardItems = listOf(
             CardItem("Functional Strength Training", "This is the first card."),
@@ -279,21 +282,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             }
         })
 
-        fetchToolsData()
+        fetchToolGridData()
     }
 
-    private fun fetchToolsData() {
+    private fun fetchToolGridData() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.thinkTools(token)
-        call.enqueue(object : Callback<ToolsResponse> {
-            override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
+        call.enqueue(object : Callback<ToolsGridResponse> {
+            override fun onResponse(call: Call<ToolsGridResponse>, response: Response<ToolsGridResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    toolsResponse = response.body()!!
-                    for (i in 0 until toolsResponse.data.size) {
-                        toolsResponse.data.getOrNull(i)?.let {
-                            toolsArray.add(it) }
+                    toolGridResponse = response.body()!!
+                    for (i in 0 until toolGridResponse.data.size) {
+                        toolGridResponse.data.getOrNull(i)?.let {
+                            toolsGridArray.add(it) }
                     }
                     toolsAdapter.notifyDataSetChanged()
                 } else {
@@ -302,7 +305,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     progressDialog.dismiss()
                 }
             }
-            override fun onFailure(call: Call<ToolsResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
@@ -360,7 +363,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                    // progressDialog.dismiss()
                     val toolResponse = response.body()
                     toolResponse?.let {
-                        if (it.success) {
+                        if (it.success == true) {
                             val tools = it.data
                             setToolListData(tools)
                         } else {
@@ -452,12 +455,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolItem(toolsData: ModuleData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.moduleName != null){
-            if (toolsData.moduleName.contentEquals("Breathing")){
+        if (toolsData.title != null){
+            if (toolsData.title.contentEquals("Breathing")){
                 startActivity(Intent(requireContext(), BreathworkActivity::class.java))
-            }else if (toolsData.moduleName.contentEquals("Journalling")){
+            }else if (toolsData.title.contentEquals("Journalling")){
                 startActivity(Intent(requireContext(), JournalListActivity::class.java))
-            }else if (toolsData.moduleName.contentEquals("Affirmation")){
+            }else if (toolsData.title.contentEquals("Affirmation")){
                 startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
             }
         }
@@ -510,13 +513,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             }
         })
     }
-    private fun onToolsItem(toolsData: ToolsData, position: Int, isRefresh: Boolean) {
+    private fun onToolsItem(toolsData: ToolGridData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.title.contentEquals("Breathing")){
+        if (toolsData.moduleName.contentEquals("Breathing")){
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
-        }else if (toolsData.title.contentEquals("Journalling")){
+        }else if (toolsData.moduleName.contentEquals("Journalling")){
             startActivity(Intent(requireContext(), JournalListActivity::class.java))
-        }else if (toolsData.title.contentEquals("Affirmation")){
+        }else if (toolsData.moduleName.contentEquals("Affirmation")){
             startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
         }
     }

@@ -58,11 +58,11 @@ class ToolsAdapterList(context1:Context, private val tools: ArrayList<ToolsData>
             .into(holder.icon)
         holder.name.text = tools.getOrNull(position)?.title
         holder.description.text = tools.getOrNull(position)?.desc
-        if (tools.getOrNull(position)?.title == "Breathing"){
+        /*if (tools.getOrNull(position)?.title == "Breathing"){
              holder.icon.setImageResource(R.drawable.breathing_male)
         }else if (tools.getOrNull(position)?.title == "Affirmation"){
             holder.icon.setImageResource(R.drawable.write_note_icon)
-        }
+        }*/
 
         holder.selectButton.setImageResource(if (tool.isSelectedModule == true) R.drawable.green_check_item else R.drawable.add_think_brown_icon)
 
@@ -124,17 +124,15 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     var title = ""
     var moduleType = ""
     var categoryId = ""
+    var filterName = "All"
     var isSelectedModule = false
 
     private val filters = mutableListOf(
         FilterItem("All", true),
         FilterItem("Breathing", false),
         FilterItem("Journaling", false),
-        FilterItem("Affirmations", false)
+        FilterItem("Affirmation", false)
     )
-
-
-    private lateinit var sleepStageResponse: SleepStageResponse
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllToolsListBinding
         get() = FragmentAllToolsListBinding::inflate
@@ -143,7 +141,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.recycler_view)
-        progressDialog = ProgressDialog(activity)
+        progressDialog = ProgressDialog(requireActivity())
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
@@ -157,15 +155,17 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                 navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
             }
         })
-        fetchToolsList("")
+        fetchToolsList("All")
 
         filterRecyclerView = view.findViewById(R.id.filter_recycler_view)
         filterRecyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         filterAdapter = FilterAdapter(filters) { position, filterItem ->
             if (filterItem.name == "All") {
-                fetchToolsList("")
+                filterName = "All"
+                fetchToolsList("All")
             }else  {
                 tools.clear()
+                filterName = filterItem.name
                 fetchToolsList(filterItem.name)
 
             }
@@ -173,10 +173,8 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         filterRecyclerView.adapter = filterAdapter
 
         toolsAdapter = ToolsAdapterList(requireContext(),tools) { position,toolsData ->
-            tools[position].isSelectedModule = !tools[position].isSelectedModule!!
-            toolsAdapter.notifyItemChanged(position)
-             title = toolsData.title ?: ""
-             isSelectedModule = toolsData.isSelectedModule ?: false
+            moduleId = toolsData._id ?: ""
+             isSelectedModule = if(toolsData.isSelectedModule == true) false else true
             selectTools()
         }
         recyclerView.adapter = toolsAdapter
@@ -185,20 +183,24 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private fun fetchToolsList( filterKey:String) {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-        val userId = "67a5fae9197992511e71b1c8"
+       // val userId = "67a5fae9197992511e71b1c8"
         val filter_key = filterKey
-        if (filter_key == ""){
-            val call = ApiClient.apiService.fetchToolsListAll(token,userId)
+        if (filter_key == "All"){
+            val call = ApiClient.apiService.fetchToolsListAll(token,filter_key)
             call.enqueue(object : Callback<ToolsResponse> {
                 override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                     if (response.isSuccessful) {
                         progressDialog.dismiss()
-                        toolsResponse = response.body()!!
-                        for (i in 0 until toolsResponse.data.size) {
-                            toolsResponse.data.getOrNull(i)?.let {
-                                tools.add(it) }
+                        if (response.body()!=null) {
+                            toolsResponse = response.body()!!
+                            tools.clear()
+                            for (i in 0 until toolsResponse.data.size) {
+                                toolsResponse.data.getOrNull(i)?.let {
+                                    tools.add(it)
+                                }
+                            }
+                            toolsAdapter.notifyDataSetChanged()
                         }
-                        toolsAdapter.notifyDataSetChanged()
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -212,17 +214,21 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                 }
             })
         }else{
-            val call = ApiClient.apiService.fetchToolsList(token,userId,filter_key)
+            val call = ApiClient.apiService.fetchToolsListAll(token,filter_key)
             call.enqueue(object : Callback<ToolsResponse> {
                 override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                     if (response.isSuccessful) {
                         progressDialog.dismiss()
-                        toolsResponse = response.body()!!
-                        for (i in 0 until toolsResponse.data.size) {
-                            toolsResponse.data.getOrNull(i)?.let {
-                                tools.add(it) }
+                        if (response.body()!=null) {
+                            toolsResponse = response.body()!!
+                            tools.clear()
+                            for (i in 0 until toolsResponse.data.size) {
+                                toolsResponse.data.getOrNull(i)?.let {
+                                    tools.add(it)
+                                }
+                            }
+                            toolsAdapter.notifyDataSetChanged()
                         }
-                        toolsAdapter.notifyDataSetChanged()
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -247,9 +253,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    baseResponse = response.body()!!
-                    Toast.makeText(requireContext(),"${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
-                    toolsAdapter.notifyDataSetChanged()
+                    if (response.body()!=null) {
+                        baseResponse = response.body()!!
+                        Toast.makeText(requireContext(), "${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
+                        toolsAdapter.notifyDataSetChanged()
+                        fetchToolsList(filterName)
+                        Log.e("Success", "Response is successful: ${response.isSuccessful}")
+                    }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
