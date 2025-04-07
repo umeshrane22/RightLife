@@ -57,6 +57,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
+    private var checkListCount = 0;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeDashboardBinding.inflate(layoutInflater)
@@ -777,6 +778,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             binding.includeChecklist.imgCheckEatright,
             binding.includeChecklist.rlChecklistEatright
         )
+        binding.includeChecklist.tvChecklistNumber.text ="$checkListCount of 6 tasks completed"
     }
 
     private fun setStatusOfChecklist(
@@ -796,6 +798,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             "COMPLETED" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_complete)
                 relativeLayout.setOnClickListener(null)
+                checkListCount++
             }
         }
     }
