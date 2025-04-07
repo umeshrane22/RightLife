@@ -71,7 +71,6 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         })
 
         val moduleName = arguments?.getString("ModuleName").toString()
-
         if (moduleName.contentEquals("MoveRight")){
             switchFragment(MoveRightLandingFragment(), tabMove, "Move")
         }else if (moduleName.contentEquals("EatRight")){
@@ -87,7 +86,6 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
-        // Reset all tabs to unselected background
         tabThink.setBackgroundResource(R.drawable.tab_unselected_bg)
         tabMove.setBackgroundResource(R.drawable.tab_unselected_bg)
         tabEat.setBackgroundResource(R.drawable.tab_unselected_bg)
