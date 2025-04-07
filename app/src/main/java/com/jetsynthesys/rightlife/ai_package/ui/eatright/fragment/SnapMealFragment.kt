@@ -36,6 +36,8 @@ import retrofit2.Response
 import android.util.Base64
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
@@ -66,7 +68,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var skipTV : TextView
     private lateinit var mealDescriptionET : EditText
     private lateinit var imageFood : ImageView
-    private lateinit var imageCap : ImageView
+    private lateinit var videoView : VideoView
     private var imagePath : String = ""
     private var isProceedResult : Boolean = false
 
@@ -79,7 +81,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         proceedLayout = view.findViewById(R.id.layout_proceed)
         imageFood = view.findViewById(R.id.imageFood)
-        imageCap = view.findViewById(R.id.imageCap)
+        videoView = view.findViewById(R.id.videoView)
         takePhotoInfoLayout = view.findViewById(R.id.takePhotoInfoLayout)
         enterMealDescriptionLayout = view.findViewById(R.id.enterMealDescriptionLayout)
         skipTV = view.findViewById(R.id.skipTV)
@@ -89,12 +91,15 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             takePhotoInfoLayout.visibility = View.VISIBLE
             enterMealDescriptionLayout.visibility = View.GONE
             skipTV.visibility = View.GONE
-            imageCap.visibility = View.VISIBLE
+            videoView.visibility = View.VISIBLE
             imageFood.visibility = View.GONE
             isProceedResult = false
             proceedLayout.isEnabled = true
             proceedLayout.setBackgroundResource(R.drawable.green_meal_bg)
+            videoPlay()
         }
+
+        videoPlay()
 
         proceedLayout.setOnClickListener {
             // Request all permissions at once
@@ -189,7 +194,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             "${requireContext().packageName}.fileprovider", file)
                         val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
                         // Set the image in the UI
-                        imageCap.visibility = View.GONE
+                        videoView.visibility = View.GONE
                         imageFood.visibility = View.VISIBLE
                         imageFood.setImageBitmap(rotatedBitmap)
                         // Save image details
@@ -318,5 +323,19 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 Toast.makeText(context, "Permissions denied: $deniedPermissions", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun videoPlay(){
+        val videoUri = Uri.parse("android.resource://${requireContext().packageName}/${R.raw.mealsnap_v31}")
+        videoView.setVideoURI(videoUri)
+        val mediaController = MediaController(context)
+        mediaController.setAnchorView(videoView)
+        videoView.setMediaController(null)
+        videoView.start()
+//        videoView.setOnPreparedListener { mp ->
+//            mp.isLooping = true  // ✅ This enables auto-continuous playback
+//            videoView.setMediaController(null)
+//            videoView.start()
+//        }
     }
 }

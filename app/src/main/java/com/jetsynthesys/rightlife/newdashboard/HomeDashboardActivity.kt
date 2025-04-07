@@ -296,7 +296,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
-                putExtra("BottomSeatName", "Not")
+                putExtra("BottomSeatName", "SnapMealTypeEat")
             })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
