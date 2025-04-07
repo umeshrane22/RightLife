@@ -59,10 +59,13 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         tvEat = view.findViewById(R.id.tvEat)
         tvSleep = view.findViewById(R.id.tvSleep)
 
-        tabThink.setOnClickListener { switchFragment(ThinkRightReportFragment(), tabThink, "Think") }
-        tabMove.setOnClickListener { switchFragment(MoveRightLandingFragment(), tabMove, "Move") }
-        tabEat.setOnClickListener { switchFragment(EatRightLandingFragment(), tabEat, "Eat") }
-        tabSleep.setOnClickListener { switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep") }
+        val moduleName = arguments?.getString("ModuleName").toString()
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+
+        tabThink.setOnClickListener { switchFragment(ThinkRightReportFragment(), tabThink, "Think", bottomSeatName) }
+        tabMove.setOnClickListener { switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName) }
+        tabEat.setOnClickListener { switchFragment(EatRightLandingFragment(), tabEat, "Eat", bottomSeatName) }
+        tabSleep.setOnClickListener { switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep", bottomSeatName) }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -70,23 +73,26 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
             }
         })
 
-        val moduleName = arguments?.getString("ModuleName").toString()
-
         if (moduleName.contentEquals("MoveRight")){
-            switchFragment(MoveRightLandingFragment(), tabMove, "Move")
+            switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName)
         }else if (moduleName.contentEquals("EatRight")){
-            switchFragment(EatRightLandingFragment(), tabEat, "Eat")
+            switchFragment(EatRightLandingFragment(), tabEat, "Eat", bottomSeatName)
         }else if (moduleName.contentEquals("SleepRight")){
-            switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep")
+            switchFragment(SleepRightLandingFragment(), tabSleep, "Sleep", bottomSeatName)
         }else{
-            switchFragment(ThinkRightReportFragment(), tabThink, "Think")
+            switchFragment(ThinkRightReportFragment(), tabThink, "Think", bottomSeatName)
         }
     }
     
-    private fun switchFragment(fragment: Fragment, selectedTab: LinearLayout, selectedTabName : String) {
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
+    private fun switchFragment(fragment: Fragment, selectedTab: LinearLayout, selectedTabName : String , bottomSeatName : String) {
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            val args = Bundle()
+            args.putString("BottomSeatName", bottomSeatName)
+            fragment.arguments = args
+            replace(R.id.fragment_container, fragment, selectedTabName)
+            addToBackStack(null)
+            commit()
+        }
         // Reset all tabs to unselected background
         tabThink.setBackgroundResource(R.drawable.tab_unselected_bg)
         tabMove.setBackgroundResource(R.drawable.tab_unselected_bg)

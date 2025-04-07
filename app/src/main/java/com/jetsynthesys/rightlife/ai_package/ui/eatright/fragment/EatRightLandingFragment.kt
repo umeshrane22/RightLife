@@ -115,6 +115,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         otherReciepeRecyclerView.adapter = otherReciepeAdapter
 
 
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        //SelectMealTypeEat
+        //LogWeightEat
+        //LogWaterIntakeEat
+        //Not
         getMealRecipesList()
         getMealRecipesLists()
        // onOtherReciepeDateItemRefresh()

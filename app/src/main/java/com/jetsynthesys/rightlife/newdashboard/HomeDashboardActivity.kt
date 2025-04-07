@@ -133,7 +133,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             includedhomebottomsheet.llFoodLog.setOnClickListener {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("selectMealTypeEat", "selectMealTypeEat")
+                    putExtra("BottomSeatName", "SelectMealTypeEat")
                 })
             }
 
@@ -296,6 +296,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
@@ -312,12 +313,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.cardThinkrightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "ThinkRight")
+                putExtra("BottomSeatName", "Not")
             })
             //Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardEatrightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "Not")
             })
             //Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
@@ -325,28 +328,33 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.cardMoverightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "MoveRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.cardEatright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.cardSleepright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "SleepRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.cardThinkright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
                 .apply {
                     putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
                 })
         }
         binding.cardMoveright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
                 .apply {
                     putExtra("ModuleName", "MoveRight")
+                    putExtra("BottomSeatName", "Not")
                 })
         }
 
@@ -813,37 +821,37 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             R.id.ll_food_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("selectMealTypeEat", "selectMealTypeEat")
+                    putExtra("BottomSeatName", "SelectMealTypeEat")
                 })
             }
             R.id.ll_activity_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
-                    putExtra("SearchActivityMove", "SearchActivityMove")
+                    putExtra("BottomSeatName", "SearchActivityMove")
                 })
             }
             R.id.ll_mood_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
-                    putExtra("recordEmotionThink", "recordEmotionThink")
+                    putExtra("BottomSeatName", "RecordEmotionThink")
                 })
             }
             R.id.ll_sleep_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
-                    putExtra("logLastNightSleep", "logLastNightSleep")
+                    putExtra("BottomSeatName", "LogLastNightSleep")
                 })
             }
             R.id.ll_weight_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("logWeightEat", "logWeightEat")
+                    putExtra("BottomSeatName", "LogWeightEat")
                 })
             }
             R.id.ll_water_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("logWaterIntakeEat", "logWaterIntakeEat")
+                    putExtra("BottomSeatName", "LogWaterIntakeEat")
                 })
             }
 

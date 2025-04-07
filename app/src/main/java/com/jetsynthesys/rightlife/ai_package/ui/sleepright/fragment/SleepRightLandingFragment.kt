@@ -81,6 +81,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        //Not
+        //LogLastNightSleep
+
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
@@ -92,6 +96,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
         wakeTime = view.findViewById<TextView>(R.id.tv_wakeup_time)
+
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)

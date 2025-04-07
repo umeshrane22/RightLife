@@ -105,6 +105,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        //RecordEmotionThink
+        //Not
         fetchToolList()
         fetchQuoteData()
         fetchAssessmentResult()

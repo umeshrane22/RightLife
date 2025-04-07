@@ -104,6 +104,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        //Not
+        //SearchActivityMove
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
