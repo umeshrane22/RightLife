@@ -72,6 +72,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var stepsTv: TextView
+    private lateinit var calorieCountText: TextView
+    private lateinit var totalIntakeCalorieText: TextView
+    private lateinit var totalBurnedCalorieText: TextView
     private lateinit var calorieBalanceDescription: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var appPreference: AppPreference
@@ -107,11 +110,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
         // Initialize UI components
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
+        totalIntakeCalorieText= view.findViewById(R.id.textView1)
+        calorieCountText= view.findViewById(R.id.calorie_count)
+        totalBurnedCalorieText= view.findViewById(R.id.textViewBurnValue)
         calorieBalanceIcon = view.findViewById(R.id.calorie_balance_icon)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         moveRightImageBack = view.findViewById(R.id.moveright_image_back)
         calorieBalanceDescription = view.findViewById(R.id.on_track_textLine)
-        tvBurnValue = view.findViewById(R.id.textViewBurnValue)
+       // tvBurnValue = view.findViewById(R.id.textViewBurnValue)
         stepLineGraphView = view.findViewById(R.id.line_graph_steps)
         stepsTv = view.findViewById(R.id.steps_text)
         moveRightImageBack.setOnClickListener {
@@ -539,17 +545,23 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     if (healthSummary != null) {
                         // Access the data (for debugging or further processing)
                         val heartRateZones = healthSummary.heartRateZones
+
                         val steps = healthSummary.steps
                         val totalBurnedSum = healthSummary.totalBurnedSum
                         val heartRateVariabilitySDNN = healthSummary.heartRateVariabilitySDNN
                         val totalStepsSum = healthSummary.totalStepsSum
-                        val totalIntakeCaloriesSum = healthSummary.totalIntakeCaloriesSum.calories
+                        val totalIntakeCaloriesSum = healthSummary.totalIntakeCaloriesSum
+                        val burnedCaloriesSum = healthSummary.totalBurnedSum
                         val message = healthSummary.message
-
+                        val measuredValue = totalIntakeCaloriesSum - totalBurnedSum
                         // Update the UI on the Main thread
                         withContext(Dispatchers.Main) {
                             // calorieBalanceDescription.text = message
                             // Log the data for debugging
+                            calorieCountText.text = measuredValue.toString()
+                            totalBurnedCalorieText.text = totalBurnedSum.toString()
+                            totalIntakeCalorieText.text = totalIntakeCaloriesSum.toString()
+                            calorieBalanceDescription.text = message.toString()
                             Log.d("HealthSummary", "Full Response: $healthSummary")
                             Log.d("HealthSummary", "Total Steps Sum: $totalStepsSum")
                             Log.d("HealthSummary", "Total Burned Sum: $totalBurnedSum")

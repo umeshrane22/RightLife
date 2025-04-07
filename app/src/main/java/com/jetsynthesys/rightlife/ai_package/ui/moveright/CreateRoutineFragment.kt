@@ -123,28 +123,25 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
     private fun assignWorkoutRoutine() {
         CoroutineScope(Dispatchers.IO).launch {
+
             try {
                 val id: String = "67e1317722a2406f2eceb627"
                 val userId: String = "64763fe2fa0e40d9c0bc8264"
-                val routineName: String = editText.text.toString() // Use the user-entered routine name
+                val routineName: String = editText.text.toString()
                 val workoutIds: List<String> = listOf("67e1317722a2406f2eceb63a")
                 val date: String = "2025-03-24"
 
-                // Create the request body
                 val request = AssignRoutineRequest(
                     routineName = routineName,
                     workoutIds = workoutIds,
                     date = date
                 )
-
-                // Make the API call
                 val response: Response<AssignRoutineResponse> = ApiClient.apiServiceFastApi.assignRoutine(
                     id = id,
                     userId = userId,
                     request = request
                 )
 
-                // Process the response
                 if (response.isSuccessful) {
                     val assignResponse: AssignRoutineResponse? = response.body()
                     if (assignResponse != null) {

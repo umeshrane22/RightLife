@@ -90,14 +90,14 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         healthConnectSyncButton.setOnClickListener {
-            val fragment = AddWorkoutSearchFragment()
+            /*val fragment = AddWorkoutSearchFragment()
             val args = Bundle()
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "AddWorkoutSearchFragment")
                 addToBackStack("AddWorkoutSearchFragment")
                 commit()
-            }
+            }*/
         }
 
         mealLogDateListAdapter.layoutManager =
