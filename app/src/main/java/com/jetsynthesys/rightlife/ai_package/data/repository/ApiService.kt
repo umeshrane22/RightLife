@@ -11,6 +11,7 @@ import com.jetsynthesys.rightlife.ai_package.model.AnalysisRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
@@ -22,6 +23,8 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
+import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
+import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveMainResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
@@ -40,6 +43,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Query
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Url
@@ -159,6 +163,19 @@ interface ApiService {
         @Query("user_id") userId: String,
         @Query("date") date: String // Ensure lowercase
     ): Response<FitnessResponse>
+
+
+    @DELETE("move/data/delete_calories/")
+    suspend fun deleteCalorie(
+        @Query("calorie_id") calorieId: String,
+        @Query("user_id") userId: String
+    ): Response<DeleteCalorieResponse>
+
+    @PUT("move/data/update_calories/")
+    suspend fun updateCalorie(
+        @Query("calorie_id") calorieId: String,
+        @Body request: UpdateCalorieRequest
+    ): Response<UpdateCalorieResponse>
 
     @GET("move/fetch_routines/")
     suspend fun getMoveRoutine(

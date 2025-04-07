@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -32,7 +31,6 @@ import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.*
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
-import androidx.health.connect.client.units.calories
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,7 +45,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
-import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
 import kotlinx.coroutines.CoroutineScope
@@ -111,17 +108,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
-
-        // Initialize UI components
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
         totalIntakeCalorieText= view.findViewById(R.id.textView1)
         calorieCountText= view.findViewById(R.id.calorie_count)
-        totalBurnedCalorieText= view.findViewById(R.id.textViewBurnValue)
+       // totalBurnedCalorieText= view.findViewById(R.id.textViewBurnValue)
         calorieBalanceIcon = view.findViewById(R.id.calorie_balance_icon)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         moveRightImageBack = view.findViewById(R.id.moveright_image_back)
         calorieBalanceDescription = view.findViewById(R.id.on_track_textLine)
-       // tvBurnValue = view.findViewById(R.id.textViewBurnValue)
+        tvBurnValue = view.findViewById(R.id.textViewBurnValue)
         stepLineGraphView = view.findViewById(R.id.line_graph_steps)
         stepsTv = view.findViewById(R.id.steps_text)
         moveRightImageBack.setOnClickListener {
@@ -176,7 +171,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             Toast.makeText(context, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
         }
 
-        // Set up progress bar layout
         val progressBarSteps = view.findViewById<ProgressBar>(R.id.progressBar)
         val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
         val transparentOverlay = view.findViewById<View>(R.id.transparentOverlay)
@@ -201,7 +195,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         })
 
-        // Set up grid RecyclerView
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         val items = listOf(
             GridItem("RHR", R.drawable.rhr_icon, "bpm", "64"),
@@ -229,7 +222,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.adapter = adapter1
 
-        // Set up step line graph (placeholder data)
         val todaySteps = floatArrayOf(100f, 200f, 100f, 300f, 50f, 400f, 100f)
         val averageSteps = floatArrayOf(150f, 250f, 350f, 450f, 550f, 650f, 750f)
         val goalSteps = floatArrayOf(700f, 700f, 700f, 700f, 700f, 700f, 700f)
@@ -428,16 +420,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
-                        // Calculate total calories burned from synced and unsynced workouts
                         val totalSyncedCalories = it.syncedWorkouts.sumOf { workout ->
                             workout.caloriesBurned.toIntOrNull() ?: 0
                         }
                         val totalUnsyncedCalories = it.unsyncedWorkouts.sumOf { it.caloriesBurned }
                         val totalCalories = totalSyncedCalories + totalUnsyncedCalories
 
-                        // Convert synced_workouts to a list of CardItem objects
                         val cardItems = it.syncedWorkouts.map { workout ->
-                            // Calculate duration in "X hr Y mins" format
                             val durationMinutes = workout.duration.toIntOrNull() ?: 0
                             val hours = durationMinutes / 60
                             val minutes = durationMinutes % 60
@@ -446,11 +435,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             } else {
                                 "$minutes mins"
                             }
-
-                            // Calories burned
                             val caloriesText = "${workout.caloriesBurned} cal"
-
-                            // Calculate average heart rate
                             val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
                                 val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
                                 val count = workout.heartRateData.size
@@ -459,7 +444,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 "N/A"
                             }
 
-                            // Optionally populate trendData for each HeartRateData (placeholder logic)
                             workout.heartRateData.forEach { heartRateData ->
                                 heartRateData.trendData.addAll(
                                     listOf("110", "112", "115", "118", "120", "122", "125")
@@ -475,25 +459,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
                             )
                         }
-
-                        // Update the UI on the main thread
                         withContext(Dispatchers.Main) {
-                            // Set the progress bar values
                             val maxCalories = 3000
-                            //progressBar.setValues(totalCalories, maxCalories)
-
-                            // Animate the progress
                             val progressPercentage = (totalCalories.toFloat() / maxCalories.toFloat() * 100f).coerceIn(0f, 100f)
-                            //progressBar.setProgress(progressPercentage)
-
-                            // Set up the carousel
                             val adapter = CarouselAdapter(cardItems) { cardItem, position ->
                                 val fragment = WorkoutAnalyticsFragment().apply {
                                     arguments = Bundle().apply {
                                         putSerializable("cardItem", cardItem) // Use putSerializable() instead of putParcelable()
                                     }
                                 }
-                                // Perform the fragment transaction directly
                                 requireActivity().supportFragmentManager.beginTransaction().apply {
                                     replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
                                     addToBackStack(null)
@@ -514,7 +488,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         }
                     }
                 } else {
-                    // Handle error response
                     withContext(Dispatchers.Main) {
                         println("Error: ${response.code()} - ${response.message()}")
                     }
@@ -528,11 +501,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
     private fun fetchHealthSummary() {
-        // Use the lifecycleScope if this is called from a Fragment/Activity to avoid memory leaks
-        // If this is in a ViewModel, use viewModelScope instead
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Make the API call
                 val userId: String = "64763fe2fa0e40d9c0bc8264"
                 val date: String = "2025-03-24"
 
@@ -541,13 +511,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     date = date
                 )
 
-                // Process the response
                 if (response.isSuccessful) {
                     val healthSummary: FitnessResponse? = response.body()
                     if (healthSummary != null) {
-                        // Access the data (for debugging or further processing)
                         val heartRateZones = healthSummary.heartRateZones
-
                         val steps = healthSummary.steps
                         val totalBurnedSum = healthSummary.totalBurnedSum
                         val heartRateVariabilitySDNN = healthSummary.heartRateVariabilitySDNN
@@ -556,11 +523,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         val burnedCaloriesSum = healthSummary.totalBurnedSum
                         val message = healthSummary.message
                         val measuredValue = totalIntakeCaloriesSum - totalBurnedSum
-                        // Update the UI on the Main thread
                         withContext(Dispatchers.Main) {
-                            // calorieBalanceDescription.text = message
-                            // Log the data for debugging
-                            calorieCountText.text = measuredValue.toString()
+                          //  tvBurnValue.text = measuredValue.toString()
                             totalBurnedCalorieText.text = totalBurnedSum.toString()
                             totalIntakeCalorieText.text = totalIntakeCaloriesSum.toString()
                             calorieBalanceDescription.text = message.toString()
@@ -570,25 +534,19 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             Log.d("HealthSummary", "Total Intake Calories Sum: $totalIntakeCaloriesSum")
                         }
                     } else {
-                        // Handle null response body
                         withContext(Dispatchers.Main) {
                             Log.e("HealthSummary", "Response body is null")
-                            // calorieBalanceDescription.text = "No data available"
                         }
                     }
                 } else {
-                    // Handle unsuccessful response (e.g., 404, 500)
                     withContext(Dispatchers.Main) {
                         val errorMessage = "Error: ${response.code()} - ${response.message()}"
                         Log.e("HealthSummary", errorMessage)
-                        // calorieBalanceDescription.text = "Failed to load data"
                     }
                 }
             } catch (e: Exception) {
-                // Handle network or unexpected errors
                 withContext(Dispatchers.Main) {
                     Log.e("HealthSummary", "Exception: ${e.message}", e)
-                    //calorieBalanceDescription.text = "An error occurred"
                 }
             }
         }
