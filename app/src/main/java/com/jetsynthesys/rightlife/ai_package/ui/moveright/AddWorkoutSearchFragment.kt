@@ -33,12 +33,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         val addLog = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
         val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
         addSearchFragmentBackButton.setOnClickListener {
-            navigateToFragment(YourActivityFragment(), "LandingFragment")
+            navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
         }
         addLog.setOnClickListener {
             val fragment = YourworkOutsFragment()
             val args = Bundle()
-
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "YourworkOutsFragment")
@@ -49,7 +48,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(YourActivityFragment(), "LandingFragment")
+                navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
 
             }
         })
