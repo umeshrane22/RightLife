@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 
 class PopupMenuAdapter(private val context: Context, private val menuItems: List<MenuItemData>,
@@ -24,7 +25,7 @@ private val onItemClickListener: OnItemClickListener) : BaseAdapter() {
 
         val item = menuItems[position]
         menuText.text = item.title
-        menuText.setTextColor(item.color)
+        menuText.setTextColor(ContextCompat.getColor(context, item.color))
         menuIcon.setImageResource(item.iconRes)
 
         view.setOnClickListener{

@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -35,14 +37,12 @@ import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
+import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -53,7 +53,7 @@ import java.util.Calendar
 import java.util.Locale
 
 
-class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
+class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
@@ -89,15 +89,60 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
         //handle bottom menu
 
         with(binding) {
-            binding.includedhomebottomsheet.llJournal.setOnClickListener { startActivity(Intent(this@HomeDashboardActivity, JournalListActivity::class.java)) }
-            binding.includedhomebottomsheet.llAffirmations.setOnClickListener { startActivity(Intent(this@HomeDashboardActivity, TodaysAffirmationActivity::class.java)) }
-            binding.includedhomebottomsheet.llSleepsounds.setOnClickListener { startActivity(Intent(this@HomeDashboardActivity, NewSleepSoundActivity::class.java)) }
-            binding.includedhomebottomsheet.llBreathwork.setOnClickListener { startActivity(Intent(this@HomeDashboardActivity, BreathworkActivity::class.java)) }
+            binding.includedhomebottomsheet.llJournal.setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@HomeDashboardActivity,
+                        JournalListActivity::class.java
+                    )
+                )
+            }
+            binding.includedhomebottomsheet.llAffirmations.setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@HomeDashboardActivity,
+                        TodaysAffirmationActivity::class.java
+                    )
+                )
+            }
+            binding.includedhomebottomsheet.llSleepsounds.setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@HomeDashboardActivity,
+                        NewSleepSoundActivity::class.java
+                    )
+                )
+            }
+            binding.includedhomebottomsheet.llBreathwork.setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@HomeDashboardActivity,
+                        BreathworkActivity::class.java
+                    )
+                )
+            }
             binding.includedhomebottomsheet.llHealthCamQl.setOnClickListener { getMyRLHealthCamResult() }
             binding.includedhomebottomsheet.llMealplan.setOnClickListener {
-                Toast.makeText(this@HomeDashboardActivity, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@HomeDashboardActivity,
+                    "Meal Plan Coming Soon...",
+                    Toast.LENGTH_LONG
+                ).show()
             }
+            includedhomebottomsheet.llFoodLog.setOnClickListener {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("selectMealTypeEat", "selectMealTypeEat")
+                })
+            }
+
         }
+        binding.includedhomebottomsheet.llFoodLog.setOnClickListener(this)
+        binding.includedhomebottomsheet.llActivityLog.setOnClickListener(this)
+        binding.includedhomebottomsheet.llMoodLog.setOnClickListener(this)
+        binding.includedhomebottomsheet.llSleepLog.setOnClickListener(this)
+        binding.includedhomebottomsheet.llWeightLog.setOnClickListener(this)
+        binding.includedhomebottomsheet.llWaterLog.setOnClickListener(this)
 
         val todayDate = SimpleDateFormat(
             "EEEE, d MMMM",
@@ -129,31 +174,29 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
 
 
         // Handle FAB click
-        binding.fab.setBackgroundTintList(
-            ContextCompat.getColorStateList(
-                this,
-                android.R.color.white
-            )
+        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+            this,
+            android.R.color.white
         )
         binding.fab.setImageTintList(ColorStateList.valueOf(resources.getColor(R.color.black)))
         val bottom_sheet = binding.includedhomebottomsheet.bottomSheet
         binding.fab.setOnClickListener { v ->
-            if (binding.includedhomebottomsheet.bottomSheet.getVisibility() == View.VISIBLE) {
-                bottom_sheet.setVisibility(View.GONE)
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                bottom_sheet.visibility = View.GONE
                 binding.iconHome.setBackgroundResource(R.drawable.homeselected)
                 binding.labelHome.setTextColor(resources.getColor(R.color.menuselected))
                 val typeface =
                     ResourcesCompat.getFont(this, R.font.dmsans_bold)
                 binding.labelHome.setTypeface(typeface)
             } else {
-                bottom_sheet.setVisibility(View.VISIBLE)
+                bottom_sheet.visibility = View.VISIBLE
                 //binding.iconHome.setBackgroundColor(Color.TRANSPARENT)
                 //binding.labelHome.setTextColor(resources.getColor(R.color.txt_color_header))
                 val typeface =
                     ResourcesCompat.getFont(this, R.font.dmsans_regular)
                 //binding.labelHome.setTypeface(typeface)
             }
-            v.setSelected(!v.isSelected())
+            v.isSelected = !v.isSelected
 
             /*BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
             bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());*/
@@ -162,11 +205,9 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
                     // Change icon after rotation
                     if (isAdd) {
                         binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
-                        binding.fab.setBackgroundTintList(
-                            ContextCompat.getColorStateList(
-                                this,
-                                R.color.rightlife
-                            )
+                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                            this,
+                            R.color.rightlife
                         )
                         binding.fab.setImageTintList(
                             ColorStateList.valueOf(
@@ -177,11 +218,9 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
                         )
                     } else {
                         binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
-                        binding.fab.setBackgroundTintList(
-                            ContextCompat.getColorStateList(
-                                this,
-                                R.color.white
-                            )
+                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                            this,
+                            R.color.white
                         )
                         binding.fab.setImageTintList(
                             ColorStateList.valueOf(
@@ -253,7 +292,10 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
             startActivity(Intent(this, ProfileNewActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
-            Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "EatRight")
+            })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
             //Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
@@ -270,13 +312,13 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "ThinkRight")
             })
-            Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardEatrightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
             })
-            Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
 
         binding.cardMoverightMain.setOnClickListener {
@@ -523,8 +565,8 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
                         binding.cardThinkrightMain.visibility = View.VISIBLE
                         binding.cardThinkright.visibility = View.GONE
                     }
-                    binding.tvMinutesTextValue.setText(module.mindfulnessMinutes)
-                    binding.tvDaysTextValue.setText(module.wellnessDays)
+                    binding.tvMinutesTextValue.text = module.mindfulnessMinutes
+                    binding.tvDaysTextValue.text = module.wellnessDays
                 }
 
                 "EAT_RIGHT" -> {
@@ -574,17 +616,67 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
                     binding.tvWakeupTime.text = module.wakeUpTime.toString()
 
                     val sleepData = listOf(
-                        SleepSegmentModel(0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f),
-                        SleepSegmentModel(0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f),
-                        SleepSegmentModel(0.151f, 0.300f, resources.getColor(R.color.purple_bar), 110f),
-                        SleepSegmentModel(0.301f, 0.400f, resources.getColor(R.color.light_blue_bar), 110f),
+                        SleepSegmentModel(
+                            0.001f,
+                            0.100f,
+                            resources.getColor(R.color.blue_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.101f,
+                            0.150f,
+                            resources.getColor(R.color.blue_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.151f,
+                            0.300f,
+                            resources.getColor(R.color.purple_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.301f,
+                            0.400f,
+                            resources.getColor(R.color.light_blue_bar),
+                            110f
+                        ),
                         SleepSegmentModel(0.401f, 0.450f, resources.getColor(R.color.black), 110f),
-                        SleepSegmentModel(0.451f, 0.550f, resources.getColor(R.color.red_orange_bar), 110f),
-                        SleepSegmentModel(0.551f, 0.660f, resources.getColor(R.color.light_cyan_bar), 110f),
-                        SleepSegmentModel(0.661f, 0.690f, resources.getColor(R.color.bright_blue_bar), 110f),
-                        SleepSegmentModel(0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f),
-                        SleepSegmentModel(0.751f, 0.860f, resources.getColor(R.color.sky_blue_bar), 110f),
-                        SleepSegmentModel(0.861f, 0.990f, resources.getColor(R.color.dark_purple_bar), 110f)
+                        SleepSegmentModel(
+                            0.451f,
+                            0.550f,
+                            resources.getColor(R.color.red_orange_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.551f,
+                            0.660f,
+                            resources.getColor(R.color.light_cyan_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.661f,
+                            0.690f,
+                            resources.getColor(R.color.bright_blue_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.691f,
+                            0.750f,
+                            resources.getColor(R.color.deep_purple_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.751f,
+                            0.860f,
+                            resources.getColor(R.color.sky_blue_bar),
+                            110f
+                        ),
+                        SleepSegmentModel(
+                            0.861f,
+                            0.990f,
+                            resources.getColor(R.color.dark_purple_bar),
+                            110f
+                        )
                     )
 
                     binding.sleepStagesView.setSleepData(sleepData)
@@ -600,44 +692,6 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
 
         }
     }
-    /*private fun dummyLogic(aiDashboardResponseMain: AiDashboardResponseMain?) {
-        for () {
-            val moduleId = module.moduleId
-            val isSelected = module.isSelectedModule
-
-            if (isSelected == true) {
-                when (moduleId) {
-                    "MOVE_RIGHT" -> {
-                        binding.cardMoverightMain.visibility = View.VISIBLE
-                        binding.cardMoveright.visibility = View.GONE
-                        //set data on card once resposne works
-                    }
-
-                    "THINK_RIGHT" -> {
-                        binding.cardThinkrightMain.visibility = View.VISIBLE
-                        binding.cardThinkright.visibility = View.GONE
-                    }
-
-                    "EAT_RIGHT" -> {
-                        binding.cardEatrightMain.visibility = View.VISIBLE
-                        binding.cardEatrightMain.visibility = View.GONE
-                    }
-
-                    "SLEEP_RIGHT" -> {
-                        binding.cardSleeprightMain.visibility = View.VISIBLE
-                        binding.cardSleepright.visibility = View.GONE
-                    }
-
-                    else -> {
-                        binding.cardMoverightMain.visibility = View.VISIBLE
-                        binding.cardMoveright.visibility = View.GONE
-                    }
-                }
-            }
-
-        }
-    }*/
-
 
     //getDashboardChecklist
     private fun getDashboardChecklist(s: String) {
@@ -752,7 +806,45 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
      * @param v The view that was clicked.
      */
     override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.ll_food_log -> {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("selectMealTypeEat", "selectMealTypeEat")
+                })
+            }
+            R.id.ll_activity_log -> {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "MoveRight")
+                    putExtra("SearchActivityMove", "SearchActivityMove")
+                })
+            }
+            R.id.ll_mood_log -> {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("recordEmotionThink", "recordEmotionThink")
+                })
+            }
+            R.id.ll_sleep_log -> {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("logLastNightSleep", "logLastNightSleep")
+                })
+            }
+            R.id.ll_weight_log -> {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("logWeightEat", "logWeightEat")
+                })
+            }
+            R.id.ll_water_log -> {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("logWaterIntakeEat", "logWaterIntakeEat")
+                })
+            }
 
+        }
     }
 
     private fun getMyRLHealthCamResult() {
@@ -797,7 +889,11 @@ class HomeDashboardActivity : AppCompatActivity() , View.OnClickListener {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this@HomeDashboardActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 startActivity(Intent(this@HomeDashboardActivity, HealthCamActivity::class.java))
             }

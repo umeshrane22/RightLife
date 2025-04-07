@@ -28,7 +28,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:fontFamily="@font/dmsans_regular"
-        android:text="Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting"
+        android:text="Let your words catch up with your feelings.\nPick a style and start journaling."
         android:textColor="@color/txt_color_mind"
         android:textSize="14sp" />
 

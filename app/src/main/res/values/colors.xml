@@ -261,6 +261,7 @@
     <color name="severe_orange">#FFA500</color>
     <color name="extremely_severe_red">#FF0000</color>
     <color name="brown">#8B4513</color>
+    <color name="days_border_trialdays">#FD6968</color>
 
 
 </resources>
