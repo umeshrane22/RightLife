@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.Articles;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -25,6 +26,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.ui.StyledPlayerView;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -35,12 +42,6 @@ import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.ui.PlayerControlView;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.util.List;
 
@@ -88,7 +89,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                 txt_inthisarticle_list.setVisibility(View.VISIBLE);
                 iconArrow.setRotation(180f); // Rotate by 180 degrees
             }
-                });
+        });
         txt_inthisarticle.setOnClickListener(v -> {
             if (txt_inthisarticle_list.getVisibility() == View.VISIBLE) {
                 txt_inthisarticle_list.setVisibility(View.GONE);
@@ -109,7 +110,21 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         binding.imageLikeArticle.setOnClickListener(v -> {
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
             postArticleLike(articleDetailsResponse.getData().getId());
+            if (articleDetailsResponse.getData().getIsLike()) {
+                binding.imageLikeArticle.setImageResource(R.drawable.like);
+                articleDetailsResponse.getData().setIsLike(false);
+            } else {
+                binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe);
+                articleDetailsResponse.getData().setIsLike(true);
+            }
         });
+        binding.imageShareArticle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareIntent();
+            }
+        });
+
         txt_inthisarticle_list.setText("• Introduction \n\n• Benefits \n\n• Considerations \n\n• Dosage and Side effects \n\n• Conclusion");
 
         contentId = getIntent().getStringExtra("contentId");
@@ -125,11 +140,11 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
-       // contentId = "679b1e6d4199ddf6752fdb20";
+        // contentId = "679b1e6d4199ddf6752fdb20";
         contentId = "67a9aeed7864652954596ecb";
 
         // Make the API call
-        Call<JsonElement> call = apiService.getArticleDetails(accessToken,contentId);
+        Call<JsonElement> call = apiService.getArticleDetails(accessToken, contentId);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -139,7 +154,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
-                     articleDetailsResponse = gson.fromJson(jsonResponse, ArticleDetailsResponse.class);
+                    articleDetailsResponse = gson.fromJson(jsonResponse, ArticleDetailsResponse.class);
 
                     Log.d("API Response body", "Article Title" + articleDetailsResponse.getData().getTitle());
                     if (articleDetailsResponse != null && articleDetailsResponse.getData() != null) {
@@ -175,7 +190,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                 .into(binding.authorImage);
         binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
         setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
-        binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime()+" min read");
+        binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime() + " min read");
         Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
                 .transform(new RoundedCorners(1))
                 .into(binding.articleImageMain);
@@ -320,8 +335,6 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     }
 
 
-
-
     private void postArticleLike(String contentId) {
         //-----------
 
@@ -333,7 +346,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
         ArticleLikeRequest request = new ArticleLikeRequest(contentId, true);
         // Make the API call
-        Call<ResponseBody> call = apiService.ArticleLikeRequest(accessToken,request);
+        Call<ResponseBody> call = apiService.ArticleLikeRequest(accessToken, request);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -358,6 +371,20 @@ public class ArticlesDetailActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void shareIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+
+        String shareText = "I'm inviting you to join me on the RightLife App, where health meets happiness in every tap.\n" +
+                "HealthCam and Voice Scan: Get insights into your physical and emotional well-being through facial recognition and voice pattern analysis.\n\n" +
+                "Together, let's craft our own adventure towards wellbeing!\n" +
+                "Download Now:  https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd";
+
+        intent.putExtra(Intent.EXTRA_TEXT, shareText);
+
+        startActivity(Intent.createChooser(intent, "Share"));
     }
 
 }

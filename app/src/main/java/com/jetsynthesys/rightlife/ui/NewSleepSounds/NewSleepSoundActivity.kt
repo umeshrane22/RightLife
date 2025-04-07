@@ -225,6 +225,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
             )
             this.adapter = adapter
         }
+        binding.tvYourPlayList.visibility = View.VISIBLE
     }
 
     private fun setupNewReleaseRecyclerView(services: ArrayList<Service>?) {

@@ -54,7 +54,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:text="Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting"
+            android:text="When things feel too fast, breathing helps slow it all down. Pick a technique to begin."
             android:textSize="@dimen/textsize_large"
             android:fontFamily="@font/dmsans_medium"
             android:textColor="@color/txt_color_journal_gray"
