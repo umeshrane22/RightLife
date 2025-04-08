@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/bottomsheet_bg"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="50dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/top_lyt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10"
+        android:orientation="horizontal">
+    <TextView
+        android:text="Record Emotion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:fontFamily="@font/merriweather_bold"
+        android:textAlignment="center"
+        android:layout_centerInParent="true"
+        android:paddingBottom="16dp"
+        android:textColor="@android:color/black" />
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/img_cancel"
+            android:src="@drawable/red_cross_btn"/>
+</RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/emotionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <!-- Icons added dynamically -->
+
+    </LinearLayout>
+
+    <TextView
+        android:text="Tap an emotion to record your feeling."
+        android:textSize="14sp"
+        android:textColor="#888"
+        android:gravity="center"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"/>
+</LinearLayout>

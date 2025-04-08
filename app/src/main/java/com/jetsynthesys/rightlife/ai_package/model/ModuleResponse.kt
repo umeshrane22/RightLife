@@ -18,5 +18,7 @@ data class ModuleData(
     @SerializedName("desc"       )
     var desc       : String?,
     @SerializedName("image"        )
-    var image        : String?
+    var image        : String?,
+    @SerializedName("isSelectedModule" )
+    var isSelectedModule : Boolean?
 )
