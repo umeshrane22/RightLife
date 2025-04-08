@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -262,6 +263,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                         finish();
                         //getAssessmentResult(header);
                         //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
+                        startActivity(new Intent(MAAssessmentQuestionaireActivity.this,MindAuditResultActivity.class));
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
