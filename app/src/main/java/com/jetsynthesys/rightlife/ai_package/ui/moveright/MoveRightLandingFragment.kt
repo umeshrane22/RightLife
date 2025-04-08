@@ -120,12 +120,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             activity?.finish()
         }
         // progressBar = view.findViewById(R.id.progressBarCalories)
-
-        // Fetch workout data and set up the carousel
         fetchUserWorkouts()
         fetchHealthSummary()
-
-        // Set up click listeners
         val workoutImageIcon = view.findViewById<ImageView>(R.id.workout_forward_icon)
         val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
         val logMealButton = view.findViewById<ConstraintLayout>(R.id.log_meal_button)
@@ -149,7 +145,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         logMealButton.setOnClickListener {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
-
 
         // Set up Health Connect
 //        if (!isHealthConnectAvailable(requireContext())) {
@@ -191,7 +186,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 constraintSet.applyTo(progressBarLayout)
             }
         })
-
         val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
         val items = listOf(
             GridItem("RHR", R.drawable.rhr_icon, "bpm", "64"),
@@ -199,7 +193,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             GridItem("HRV", R.drawable.hrv_icon, "ms", "71"),
             GridItem("Burn", R.drawable.burn_icon, "Kcal", "844")
         )
-
         val adapter1 = GridAdapter(items) { itemName ->
             when (itemName) {
                 "RHR" -> {
@@ -227,7 +220,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         stepLineGraphView.addDataSet(goalSteps, 0xFF03B27B.toInt())
         stepLineGraphView.invalidate()
 
-        // Handle back press
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -522,7 +514,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         val measuredValue = totalIntakeCaloriesSum - totalBurnedSum
                         withContext(Dispatchers.Main) {
                           //  tvBurnValue.text = measuredValue.toString()
-                            totalBurnedCalorieText.text = totalBurnedSum.toString()
+                            //totalBurnedCalorieText.text = totalBurnedSum.toString()
                             totalIntakeCalorieText.text = totalIntakeCaloriesSum.toString()
                             calorieBalanceDescription.text = message.toString()
                             Log.d("HealthSummary", "Full Response: $healthSummary")

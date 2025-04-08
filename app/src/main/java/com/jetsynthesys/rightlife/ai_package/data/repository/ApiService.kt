@@ -161,7 +161,7 @@ interface ApiService {
     @GET("move/landing_page/")
     suspend fun getMoveLanding(
         @Query("user_id") userId: String,
-        @Query("date") date: String // Ensure lowercase
+        @Query("date") date: String
     ): Response<FitnessResponse>
 
 
@@ -180,7 +180,7 @@ interface ApiService {
     @GET("move/fetch_routines/")
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
-        @Query("provided_date") providedDate: String // Ensure lowercase
+        @Query("provided_date") providedDate: String
     ): Response<WorkoutResponseRoutine>
 
     @POST("move/assign_routine/")
