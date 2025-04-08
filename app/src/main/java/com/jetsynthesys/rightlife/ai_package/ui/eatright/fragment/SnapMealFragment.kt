@@ -330,12 +330,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         videoView.setVideoURI(videoUri)
         val mediaController = MediaController(context)
         mediaController.setAnchorView(videoView)
-        videoView.setMediaController(null)
-        videoView.start()
-//        videoView.setOnPreparedListener { mp ->
-//            mp.isLooping = true  // ✅ This enables auto-continuous playback
-//            videoView.setMediaController(null)
-//            videoView.start()
-//        }
+//        videoView.setMediaController(null)
+//        videoView.start()
+        videoView.setOnPreparedListener { mp ->
+            mp.isLooping = true  // ✅ This enables auto-continuous playback
+            videoView.setMediaController(null)
+            videoView.start()
+        }
     }
 }
