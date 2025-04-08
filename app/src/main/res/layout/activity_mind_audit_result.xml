@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
     android:background="@color/settings_bg_color">
 
@@ -32,6 +33,14 @@
                 android:textColor="@color/txt_color_mind"
                 android:layout_marginStart="4dp" />
         </LinearLayout>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroup1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:singleSelection="true"
+            android:layout_marginBottom="8dp"
+            app:chipSpacingVertical="0dp"/>
 
         <TextView
             android:id="@+id/tvScore"
