@@ -301,7 +301,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Utils.dismissLoader(this)
+        binding.tvNotify.text = "Please wait!! Generating Result"
         if (resultCode == Activity.RESULT_OK && requestCode == ANURA_REQUEST) {
             Log.d(TAG, "results222=${data?.getStringExtra("result")}")
 
@@ -335,6 +335,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
         val call = apiService.submitHealthCamReport(accessToken, healthCamFacialScanRequest)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                Utils.dismissLoader(this@HealthCamRecorderActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body()?.string())
@@ -350,11 +351,13 @@ class HealthCamRecorderActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
+                    Utils.dismissLoader(this@HealthCamRecorderActivity)
                     Toast.makeText(
                         this@HealthCamRecorderActivity,
                         "Server Error: " + response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    finish()
                 }
             }
 

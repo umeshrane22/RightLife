@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,8 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -28,8 +31,7 @@ import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,10 +91,10 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             String diabetic = edtDiabetic.getText().toString();
 
             if (firstName.isEmpty()) {
-                Toast.makeText(this, "First Name is required", Toast.LENGTH_SHORT).show();
-            } else if (lastName.isEmpty()) {
+                Toast.makeText(this, "Name is required", Toast.LENGTH_SHORT).show();
+            } /*else if (lastName.isEmpty()) {
                 Toast.makeText(this, "Last Name is required", Toast.LENGTH_SHORT).show();
-            } else if (height.isEmpty()) {
+            }*/ else if (height.isEmpty()) {
                 Toast.makeText(this, "Height is required", Toast.LENGTH_SHORT).show();
             } else if (weight.isEmpty()) {
                 Toast.makeText(this, "Weight is required", Toast.LENGTH_SHORT).show();
@@ -169,6 +171,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                         }
                     }
 
+                    btnStartScan.setEnabled(false);
+                    new Handler().postDelayed(() -> btnStartScan.setEnabled(true), 5000);
                     submitData(answers);
                 }
             }
@@ -180,14 +184,15 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         for (Question question : responseObj.getQuestionData().getQuestionList()) {
             switch (question.getQuestion()) {
                 case "first_name":
-                    tvFirstName.setText(question.getQuestionTxt());
+                    //tvFirstName.setText(question.getQuestionTxt());
+                    tvFirstName.setText("Name");
                     tvFirstName.setVisibility(View.VISIBLE);
                     edtFirstName.setVisibility(View.VISIBLE);
                     break;
                 case "last_name":
-                    tvLastName.setText(question.getQuestionTxt());
-                    tvLastName.setVisibility(View.VISIBLE);
-                    edtLastName.setVisibility(View.VISIBLE);
+//                    tvLastName.setText(question.getQuestionTxt());
+//                    tvLastName.setVisibility(View.VISIBLE);
+//                    edtLastName.setVisibility(View.VISIBLE);
                     break;
                 case "height":
                     tvHeight.setText(question.getQuestionTxt());
@@ -434,6 +439,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     }
 
     private void submitData(ArrayList formData) {
+        Utils.showLoader(this);
 
         List<Answer> answers = new ArrayList<>(formData);
         UserAnswerRequest request = new UserAnswerRequest("", responseObj.getQuestionData().getId(), answers);
@@ -450,6 +456,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
@@ -470,12 +477,14 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
+                Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
                 Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void submitFacialScan(String reportId) {
+        Utils.showLoader(this);
         String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -483,6 +492,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
                     Gson gson = new Gson();
                     String jsonResponse = null;
@@ -510,6 +520,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
                 Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

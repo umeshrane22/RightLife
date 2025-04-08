@@ -24,7 +24,6 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
-import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
@@ -35,7 +34,6 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
-import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
@@ -47,7 +45,6 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -122,7 +119,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     )
                 )
             }
-            binding.includedhomebottomsheet.llHealthCamQl.setOnClickListener { getMyRLHealthCamResult() }
+            binding.includedhomebottomsheet.llHealthCamQl.setOnClickListener {
+                startActivity(
+                    Intent(
+                        this@HomeDashboardActivity,
+                        HealthCamActivity::class.java
+                    )
+                )
+            }
             binding.includedhomebottomsheet.llMealplan.setOnClickListener {
                 Toast.makeText(
                     this@HomeDashboardActivity,
@@ -778,7 +782,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             binding.includeChecklist.imgCheckEatright,
             binding.includeChecklist.rlChecklistEatright
         )
-        binding.includeChecklist.tvChecklistNumber.text ="$checkListCount of 6 tasks completed"
+        binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
     }
 
     private fun setStatusOfChecklist(
@@ -816,30 +820,35 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     putExtra("selectMealTypeEat", "selectMealTypeEat")
                 })
             }
+
             R.id.ll_activity_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("SearchActivityMove", "SearchActivityMove")
                 })
             }
+
             R.id.ll_mood_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
                     putExtra("recordEmotionThink", "recordEmotionThink")
                 })
             }
+
             R.id.ll_sleep_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
                     putExtra("logLastNightSleep", "logLastNightSleep")
                 })
             }
+
             R.id.ll_weight_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
                     putExtra("logWeightEat", "logWeightEat")
                 })
             }
+
             R.id.ll_water_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -848,59 +857,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
 
         }
-    }
-
-    private fun getMyRLHealthCamResult() {
-        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(
-            ApiService::class.java
-        )
-
-        val call = apiService.getMyRLHealthCamResult(accessToken)
-
-        call.enqueue(object : Callback<ResponseBody?> {
-            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-                if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@HomeDashboardActivity,
-                        "Success: " + response.code(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    try {
-                        val jsonString = response.body()!!.string()
-                        Log.d("Response Body", " My RL HEalth Cam Result - $jsonString")
-                        val gson = Gson()
-                        val facialReportResponseNew = gson.fromJson(
-                            jsonString,
-                            FacialReportResponseNew::class.java
-                        )
-
-                        startActivity(
-                            Intent(
-                                this@HomeDashboardActivity,
-                                NewHealthCamReportActivity::class.java
-                            )
-                        )
-                    } catch (e: IOException) {
-                        throw RuntimeException(e)
-                    }
-                } else {
-                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.d("MyRLHealthCamResult", "Error:" + response.message())
-                    startActivity(Intent(this@HomeDashboardActivity, HealthCamActivity::class.java))
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@HomeDashboardActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-                startActivity(Intent(this@HomeDashboardActivity, HealthCamActivity::class.java))
-            }
-        })
     }
 
 }
