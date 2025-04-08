@@ -3,9 +3,12 @@ package com.jetsynthesys.rightlife.ui.profile_new
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
@@ -16,7 +19,6 @@ import com.jetsynthesys.rightlife.ui.settings.SupportActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
 
 class ProfileSettingsActivity : AppCompatActivity() {
 
@@ -110,10 +112,13 @@ class ProfileSettingsActivity : AppCompatActivity() {
         if (user.profilePicture.isNullOrEmpty()) {
             binding.tvProfileLetter.text = user.firstName.first().toString()
         } else {
-            GlideApp.with(this)
+            binding.ivProfileImage.visibility = VISIBLE
+            binding.tvProfileLetter.visibility = GONE
+            Glide.with(this)
                 .load(ApiClient.CDN_URL_QA + user.profilePicture)
                 .into(binding.ivProfileImage)
         }
+
         //binding.tvUserAge.text = user.age
         binding.tvUserCity.text = user.country
     }

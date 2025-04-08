@@ -62,6 +62,7 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse;
 import com.jetsynthesys.rightlife.ui.payment.PaymentCardResponse;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest;
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest;
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest;
 import com.jetsynthesys.rightlife.ui.scan_history.ScanHistoryResponse;
@@ -480,8 +481,8 @@ public interface ApiService {
 
 
     @Headers("Content-Type: application/json")
-    @POST("s3/presigned-url-generate")
-    Call<ResponseBody> getPreSignedUrl(
+    @PUT("s3/presigned-url-generate")
+    Call<PreSignedUrlResponse> getPreSignedUrl(
             @Header("Authorization") String authToken,
             @Body UploadImage uploadImage);
 

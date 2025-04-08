@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.profile_new
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -11,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Environment
+import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -29,9 +31,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.apimodel.UploadImage
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.ActivityProfileNewBinding
@@ -40,20 +45,23 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetGenderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.DialogOtpVerificationBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.shawnlin.numberpicker.NumberPicker
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.io.FileOutputStream
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -75,6 +83,7 @@ class ProfileNewActivity : AppCompatActivity() {
     private lateinit var dialogOtp: Dialog
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
+    private var preSignedUrlData: PreSignedUrlData? = null
 
     // Activity Result Launcher to get image
     private val pickImageLauncher =
@@ -84,6 +93,7 @@ class ProfileNewActivity : AppCompatActivity() {
                     binding.ivProfileImage.setImageURI(it)
                     binding.ivProfileImage.visibility = VISIBLE
                     binding.tvProfileLetter.visibility = GONE
+                    getUrlFromURI(it)
                 } ?: run {
                     showToast("No image selected")
                 }
@@ -100,6 +110,7 @@ class ProfileNewActivity : AppCompatActivity() {
                 binding.ivProfileImage.setImageURI(cameraImageUri)
                 binding.ivProfileImage.visibility = VISIBLE
                 binding.tvProfileLetter.visibility = GONE
+                getUrlFromURI(cameraImageUri!!)
             }
         }
 
@@ -176,8 +187,18 @@ class ProfileNewActivity : AppCompatActivity() {
             binding.tvGender.text = "Male"
         else
             binding.tvGender.text = "Female"
+
         binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
-        binding.tvProfileLetter.text = userData.firstName.first().toString()
+
+        if (userData.profilePicture.isNullOrEmpty())
+            binding.tvProfileLetter.text = userData.firstName.first().toString()
+        else {
+            binding.ivProfileImage.visibility = VISIBLE
+            binding.tvProfileLetter.visibility = GONE
+            Glide.with(this)
+                .load(ApiClient.CDN_URL_QA + userData.profilePicture)
+                .into(binding.ivProfileImage)
+        }
 
         if (userData.heightUnit == "FT_AND_INCHES") {
             val height = userData.height.toString().split(".")
@@ -198,6 +219,33 @@ class ProfileNewActivity : AppCompatActivity() {
             cameraLauncher.launch(uri)
         }
     }
+
+    private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
+        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            if (it.moveToFirst()) {
+                val name = it.getString(nameIndex)
+                val size = it.getLong(sizeIndex)
+                return Pair(name, size)
+            }
+        }
+        return null
+    }
+
+    private fun getUrlFromURI(uri: Uri) {
+        val uploadImage = UploadImage()
+        uploadImage.isPublic = false
+        uploadImage.fileType = "USER_FILES"
+        if (uri != null) {
+            val (fileName, fileSize) = getFileNameAndSize(this, uri) ?: return
+            uploadImage.fileSize = fileSize
+            uploadImage.fileName = fileName
+        }
+        uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
+    }
+
 
     private fun createImageFile(): File {
         val timeStamp: String =
@@ -803,11 +851,11 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.btnVerify.setOnClickListener {
             val otp = otpFields.joinToString("") { it.text.toString().trim() }
             if (otp.length == 6) {
-                Toast.makeText(activity, "OTP Verified: $otp", Toast.LENGTH_SHORT).show()
+                showToast("OTP Verified: $otp")
                 verifyOtp(mobileNumber, otp, binding)
                 timer.cancel()
             } else {
-                Toast.makeText(activity, "Enter all 6 digits", Toast.LENGTH_SHORT).show()
+                showToast("Enter all 6 digits")
             }
         }
 
@@ -848,6 +896,37 @@ class ProfileNewActivity : AppCompatActivity() {
 
         })
     }
+
+    private fun uriToFile(uri: Uri): File? {
+        val contentResolver = contentResolver
+        val fileName = getFileName(uri) ?: "temp_image_file"
+        val tempFile = File(cacheDir, fileName)
+
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val outputStream = FileOutputStream(tempFile)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        var name: String? = null
+        val returnCursor = contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && it.moveToFirst()) {
+                name = it.getString(nameIndex)
+            }
+        }
+        return name
+    }
+
 
     private fun saveData() {
         val firstName = binding.etFirstName.text.toString()
@@ -902,6 +981,10 @@ class ProfileNewActivity : AppCompatActivity() {
                 userData.height = "${h[0]}.${h[2]}".toDouble()
                 userData.heightUnit = "FT_AND_INCHES"
             }
+
+            if (preSignedUrlData != null) {
+                userData.profilePicture = preSignedUrlData?.file?.url
+            }
             updateUserData(userData)
         }
     }
@@ -916,24 +999,51 @@ class ProfileNewActivity : AppCompatActivity() {
                     setResult(RESULT_OK)
                     userDataResponse.userdata = userdata
                     sharedPreferenceManager.saveUserProfile(userDataResponse)
+                    showToast("Profile Updated Successfully")
                     finish()
                 } else {
-                    Toast.makeText(
-                        this@ProfileNewActivity,
-                        "Server Error: " + response.code(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast("Server Error: " + response.code())
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@ProfileNewActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                showToast("Network Error: " + t.message)
             }
         })
     }
 
+    private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call: Call<PreSignedUrlResponse> =
+            apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
+
+        call.enqueue(object : Callback<PreSignedUrlResponse?> {
+            override fun onResponse(
+                call: Call<PreSignedUrlResponse?>,
+                response: Response<PreSignedUrlResponse?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.let { preSignedUrlData = it }
+                    response.body()?.data?.url?.let {
+                        CommonAPICall.uploadImageToPreSignedUrl(
+                            this@ProfileNewActivity,
+                            file, it
+                        ) { success ->
+                            if (success) {
+                                showToast("Image uploaded successfully!")
+                            } else {
+                                showToast("Upload failed!")
+                            }
+                        }
+                    }
+                } else {
+                    showToast("Server Error: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
+                showToast("Network Error: " + t.message)
+            }
+        })
+    }
 }
