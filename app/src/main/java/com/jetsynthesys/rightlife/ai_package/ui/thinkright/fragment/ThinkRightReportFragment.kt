@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
@@ -18,6 +19,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,10 +34,12 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -49,7 +53,6 @@ import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MindAuditCarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MoreToolsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolsAdapter
@@ -62,8 +65,11 @@ import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResult
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -75,7 +81,8 @@ import java.time.LocalDate
 
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
 
-    private lateinit var carouselViewPager: ViewPager2
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
     private lateinit var dotsLayout: LinearLayout
     private lateinit var add_tools_think_right: ImageView
     private lateinit var instruction_your_mindfullness_review: ImageView
@@ -117,9 +124,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchToolList()
         fetchQuoteData()
         fetchAssessmentResult()
-        carouselViewPager = view.findViewById(R.id.carouselViewPager)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
-        dotsLayout = view.findViewById(R.id.dotsLayoutMindAudit)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
         progressDialog = ProgressDialog(activity)
@@ -130,6 +135,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         noDataMindFullnessMetric = view.findViewById(R.id.noDataMindFullnessMetric)
         instruction_your_mindfullness_review =
             view.findViewById(R.id.instruction_your_mindfullness_review)
+        viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
+        tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
+
+
+
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
             val dialog = MindfulnessReviewDialog.newInstance()
@@ -153,31 +163,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         toolAdapter = ToolAdapter(requireContext(),toolsList, :: onToolItem)
         toolRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         toolRecyclerView.adapter = toolAdapter
-        /*val cardItems = listOf(
-            CardItem("Functional Strength Training", "This is the first card."),
-            CardItem("Functional Strength Training", "This is the second card."),
-            CardItem("Functional Strength Training", "This is the third card.")
-        )
-        val adapter = CrousalTabAdapter(cardItems)
-        carouselViewPager.adapter = adapter
-        addDotsIndicator(cardItems.size)*/
-        val images = listOf(R.drawable.sleep_right, R.drawable.sleep_right, R.drawable.sleep_right)
-        val adapter = MindAuditCarouselAdapter(images)
-        carouselViewPager.adapter = adapter
-
-        addDotsIndicator(images.size)
-
-        carouselViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                updateDots(position)
-            }
-        })
-
-        // Smooth Scaling Effect
-        carouselViewPager.setPageTransformer { page, position ->
-            val offset = kotlin.math.abs(position)
-            page.scaleY = 1 - (offset * 0.1f)
-        }
 
         tvQuote.setOnClickListener {
             navigateToFragment(ViewQuoteFragment(),"ViewQuote")
@@ -318,40 +303,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 progressDialog.dismiss()
             }
         })
-    }
-
-    private fun addDotsIndicator(count: Int) {
-        dots = arrayOfNulls(count)
-        for (i in 0 until count) {
-            dots[i] = ImageView(requireContext()).apply {
-                setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.dot_unselected
-                    )
-                )
-                val params = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                params.setMargins(8, 0, 8, 0)
-                layoutParams = params
-            }
-            dotsLayout.addView(dots[i])
-        }
-
-        updateDots(0)
-    }
-
-    private fun updateDots(position: Int) {
-        for (i in dots.indices) {
-            val drawable = if (i == position) {
-                R.drawable.think_dot_selected
-            } else {
-                R.drawable.dot_unselected
-            }
-            dots[i]?.setImageResource(drawable)
-        }
     }
 
     private fun fetchToolList() {
@@ -496,17 +447,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
     }
     private fun fetchAssessmentResult() {
-        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-      //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"  // Replace with actual token
+       // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAssessmentResult(token)
 
         call.enqueue(object : Callback<AssessmentResponse> {
             override fun onResponse(call: Call<AssessmentResponse>, response: Response<AssessmentResponse>) {
                 if (response.isSuccessful) {
                     val assessmentResponse = response.body()
+
                     if (assessmentResponse != null) {
-                       // tvResult.text = assessmentResponse.data.getOrNull(0)?.result
-                        //tvRecommendation.text = assessmentResponse.data.getOrNull(0)?.recommendation
+                        val assessmentList = parseAssessmentData(assessmentResponse.result) // replace with real parsing
+                        val adapter = AssessmentPagerAdapter(assessmentList)
+
+                        viewPager.adapter = adapter
+                        TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -520,6 +475,28 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             }
         })
     }
+
+    private fun parseAssessmentData(listData: List<AssessmentResult>): List<AssessmentResultData> {
+        val resultList = mutableListOf<AssessmentResultData>()
+
+        for (assessmentResult in listData) {
+            for (taken in assessmentResult.assessmentsTaken) {
+                for ((_, interpretation) in taken.interpretations) {
+                    resultList.add(
+                        AssessmentResultData(
+                            assessment = taken.assessment,
+                            score = interpretation.score,
+                            level = interpretation.level
+                        )
+                    )
+                }
+            }
+        }
+
+        return resultList
+    }
+
+
     private fun onToolsItem(toolsData: ToolGridData, position: Int, isRefresh: Boolean) {
 
         if (toolsData.moduleName.contentEquals("Breathing")){
@@ -627,3 +604,74 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         NotificationManagerCompat.from(context).notify(1, notification)
     }
 }
+
+class AssessmentPagerAdapter(
+    private val assessments: List<AssessmentResultData>
+) : RecyclerView.Adapter<AssessmentPagerAdapter.ViewHolder>() {
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val title = itemView.findViewById<TextView>(R.id.tvAssessmentTitle)
+        val scoreText = itemView.findViewById<TextView>(R.id.tvScore)
+        val scaleLayout = itemView.findViewById<LinearLayout>(R.id.scoreScaleLayout)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.assessment_result_item, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun getItemCount(): Int = assessments.size
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = assessments[position]
+
+        holder.title.text = item.assessment
+        holder.scoreText.text = "Your Score: ${item.score}"
+
+        // Clear old views if recycled
+        holder.scaleLayout.removeAllViews()
+
+        val context = holder.itemView.context
+        val score = item.score.toFloatOrNull() ?: 0f
+
+        // Range and labels
+        val thresholds = listOf(0, 4, 9, 14, 19, 27)
+        val labels = listOf("Minimal", "Mild", "Moderate", "Severe", "Ext Severe")
+        val colors = listOf(
+            Color.parseColor("#2ECC71"), // green
+            Color.parseColor("#1ABC9C"), // teal
+            Color.parseColor("#3498DB"), // blue
+            Color.parseColor("#F39C12"), // orange
+            Color.parseColor("#E74C3C")  // red
+        )
+
+        for (i in 0 until labels.size) {
+            val labelView = TextView(context).apply {
+                text = labels[i]
+                setPadding(16, 8, 16, 8)
+                setTextColor(Color.WHITE)
+                setBackgroundColor(colors[i])
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            }
+            holder.scaleLayout.addView(labelView)
+
+            // Add vertical score pointer if score falls in this bucket
+            if (score >= thresholds[i] && (i == labels.size - 1 || score < thresholds[i + 1])) {
+                labelView.setBackgroundColor(Color.BLACK)
+            }
+        }
+    }
+}
+
+
+data class AssessmentResultData(
+    val assessment: String,
+    val score: String,
+    val level: String
+)
+
+data class Interpretation(
+    val score: String,
+    val level: String
+)
