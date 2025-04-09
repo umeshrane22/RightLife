@@ -3,6 +3,8 @@ package com.jetsynthesys.rightlife.ui.utility;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditAssessmentSaveRequest;
 import com.jetsynthesys.rightlife.ui.mindaudit.UserEmotions;
@@ -10,8 +12,6 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestDataList;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -64,6 +64,7 @@ public class SharedPreferenceManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(SharedPreferenceConstants.ACCESS_TOKEN);
         editor.remove(SharedPreferenceConstants.USER_ID);
+        editor.clear();
         editor.apply();
     }
 
@@ -119,24 +120,24 @@ public class SharedPreferenceManager {
         Gson gson = new Gson();
         String json = sharedPreferences.getString(SharedPreferenceConstants.ON_BOARDING_QUESTIONS, "");
         OnboardingQuestionRequest obj = gson.fromJson(json, OnboardingQuestionRequest.class);
-        if (obj == null){
+        if (obj == null) {
             obj = new OnboardingQuestionRequest();
         }
         return obj;
     }
 
-    public void clearOnboardingQuestionRequest(){
+    public void clearOnboardingQuestionRequest() {
         sharedPreferences.edit().remove(SharedPreferenceConstants.ON_BOARDING_QUESTIONS).apply();
-    }
-
-    public void setSelectedOnboardingModule(String moduleName){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedPreferenceConstants.ON_BOARDING_SELECTED_MODULE, moduleName);
-        editor.apply();
     }
 
     public String getSelectedOnboardingModule() {
         return sharedPreferences.getString(SharedPreferenceConstants.ON_BOARDING_SELECTED_MODULE, "");
+    }
+
+    public void setSelectedOnboardingModule(String moduleName) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.ON_BOARDING_SELECTED_MODULE, moduleName);
+        editor.apply();
     }
 
     public void saveMindAuditRequest(MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest) {
@@ -151,17 +152,17 @@ public class SharedPreferenceManager {
         Gson gson = new Gson();
         String json = sharedPreferences.getString(SharedPreferenceConstants.MIND_AUDIT_FEELINGS, "");
         MindAuditAssessmentSaveRequest obj = gson.fromJson(json, MindAuditAssessmentSaveRequest.class);
-        if (obj == null){
+        if (obj == null) {
             obj = new MindAuditAssessmentSaveRequest();
         }
         return obj;
     }
 
-    public void clearMindAuditRequest(){
+    public void clearMindAuditRequest() {
         sharedPreferences.edit().remove(SharedPreferenceConstants.MIND_AUDIT_FEELINGS).apply();
     }
 
-    public void saveAppMode(String mode){
+    public void saveAppMode(String mode) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(SharedPreferenceConstants.APP_MODE, mode);
         editor.apply();
@@ -180,31 +181,25 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
-    public ArrayList<LoggedInUser> getLoggedUserList(){
+    public ArrayList<LoggedInUser> getLoggedUserList() {
         ArrayList<LoggedInUser> arrayItems = new ArrayList<>();
         String serializedObject = sharedPreferences.getString(SharedPreferenceConstants.LOGGED_IN_USER, null);
         if (serializedObject != null) {
             Gson gson = new Gson();
-            Type type = new TypeToken<List<LoggedInUser>>(){}.getType();
+            Type type = new TypeToken<List<LoggedInUser>>() {
+            }.getType();
             arrayItems = gson.fromJson(serializedObject, type);
         }
         return arrayItems;
-    }
-
-
-    public void setUserName(String username){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedPreferenceConstants.USERNAME, username);
-        editor.apply();
     }
 
     public String getUserName() {
         return sharedPreferences.getString(SharedPreferenceConstants.USERNAME, "");
     }
 
-    public void setDisplayName(String displayName){
+    public void setUserName(String username) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedPreferenceConstants.DISPLAY_NAME, displayName);
+        editor.putString(SharedPreferenceConstants.USERNAME, username);
         editor.apply();
     }
 
@@ -212,9 +207,9 @@ public class SharedPreferenceManager {
         return sharedPreferences.getString(SharedPreferenceConstants.DISPLAY_NAME, "");
     }
 
-    public void setEmail(String email){
+    public void setDisplayName(String displayName) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedPreferenceConstants.USER_EMAIL, email);
+        editor.putString(SharedPreferenceConstants.DISPLAY_NAME, displayName);
         editor.apply();
     }
 
@@ -222,14 +217,32 @@ public class SharedPreferenceManager {
         return sharedPreferences.getString(SharedPreferenceConstants.USER_EMAIL, "");
     }
 
-    public void setSelectedWellnessFocus(String wellnessFocus){
+    public void setEmail(String email) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedPreferenceConstants.SELECTED_WELLNESS_FOCUS, wellnessFocus);
+        editor.putString(SharedPreferenceConstants.USER_EMAIL, email);
         editor.apply();
     }
 
     public String getSelectedWellnessFocus() {
         return sharedPreferences.getString(SharedPreferenceConstants.SELECTED_WELLNESS_FOCUS, "");
+    }
+
+    public void setSelectedWellnessFocus(String wellnessFocus) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.SELECTED_WELLNESS_FOCUS, wellnessFocus);
+        editor.apply();
+    }
+
+    public ArrayList<ModuleTopic> getWellnessFocusTopics() {
+        ArrayList<ModuleTopic> arrayItems = new ArrayList<>();
+        String serializedObject = sharedPreferences.getString(SharedPreferenceConstants.SELECTED_WELLNESS_FOCUS_TOPICS, null);
+        if (serializedObject != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<ModuleTopic>>() {
+            }.getType();
+            arrayItems = gson.fromJson(serializedObject, type);
+        }
+        return arrayItems;
     }
 
     public <ModuleTopic> void setWellnessFocusTopics(ArrayList<ModuleTopic> list) {
@@ -241,30 +254,13 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
-    public ArrayList<ModuleTopic> getWellnessFocusTopics(){
-        ArrayList<ModuleTopic> arrayItems = new ArrayList<>();
-        String serializedObject = sharedPreferences.getString(SharedPreferenceConstants.SELECTED_WELLNESS_FOCUS_TOPICS, null);
-        if (serializedObject != null) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<ModuleTopic>>(){}.getType();
-            arrayItems = gson.fromJson(serializedObject, type);
-        }
-        return arrayItems;
-    }
-
-    public void setUnLockPower(boolean isUnlock){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SharedPreferenceConstants.UNLOCK_POWER, isUnlock);
-        editor.apply();
-    }
-
     public Boolean getUnLockPower() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.UNLOCK_POWER, false);
     }
 
-    public void setThirdFiller(boolean isThirdFiller){
+    public void setUnLockPower(boolean isUnlock) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SharedPreferenceConstants.THIRD_FILLER, isThirdFiller);
+        editor.putBoolean(SharedPreferenceConstants.UNLOCK_POWER, isUnlock);
         editor.apply();
     }
 
@@ -272,14 +268,32 @@ public class SharedPreferenceManager {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.THIRD_FILLER, false);
     }
 
-    public void setInterest(boolean isThirdFiller){
+    public void setThirdFiller(boolean isThirdFiller) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SharedPreferenceConstants.INTEREST, isThirdFiller);
+        editor.putBoolean(SharedPreferenceConstants.THIRD_FILLER, isThirdFiller);
         editor.apply();
     }
 
     public Boolean getInterest() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.INTEREST, false);
+    }
+
+    public void setInterest(boolean isThirdFiller) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.INTEREST, isThirdFiller);
+        editor.apply();
+    }
+
+    public ArrayList<InterestDataList> getSavedInterest() {
+        ArrayList<InterestDataList> arrayItems = new ArrayList<>();
+        String serializedObject = sharedPreferences.getString(SharedPreferenceConstants.SAVED_INTEREST, null);
+        if (serializedObject != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<InterestDataList>>() {
+            }.getType();
+            arrayItems = gson.fromJson(serializedObject, type);
+        }
+        return arrayItems;
     }
 
     public <InterestDataList> void setSavedInterest(ArrayList<InterestDataList> list) {
@@ -291,30 +305,13 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
-    public ArrayList<InterestDataList> getSavedInterest(){
-        ArrayList<InterestDataList> arrayItems = new ArrayList<>();
-        String serializedObject = sharedPreferences.getString(SharedPreferenceConstants.SAVED_INTEREST, null);
-        if (serializedObject != null) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<InterestDataList>>(){}.getType();
-            arrayItems = gson.fromJson(serializedObject, type);
-        }
-        return arrayItems;
-    }
-
-    public void setAllowPersonalization(boolean isPersonalisation){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SharedPreferenceConstants.PERSONALIZATION, isPersonalisation);
-        editor.apply();
-    }
-
     public Boolean getAllowPersonalization() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.PERSONALIZATION, false);
     }
 
-    public void setSyncNow(boolean isSyncNow){
+    public void setAllowPersonalization(boolean isPersonalisation) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SharedPreferenceConstants.SYNC_NOW, isSyncNow);
+        editor.putBoolean(SharedPreferenceConstants.PERSONALIZATION, isPersonalisation);
         editor.apply();
     }
 
@@ -322,9 +319,9 @@ public class SharedPreferenceManager {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.SYNC_NOW, false);
     }
 
-    public void setCurrentQuestion(int position){
+    public void setSyncNow(boolean isSyncNow) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(SharedPreferenceConstants.CURRENT_QUESTION, position);
+        editor.putBoolean(SharedPreferenceConstants.SYNC_NOW, isSyncNow);
         editor.apply();
     }
 
@@ -332,9 +329,9 @@ public class SharedPreferenceManager {
         return sharedPreferences.getInt(SharedPreferenceConstants.CURRENT_QUESTION, 0);
     }
 
-    public void setOnBoardingQuestion(boolean isOnBoardingQuestion){
+    public void setCurrentQuestion(int position) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(SharedPreferenceConstants.ONBOARDING_QUESTION, isOnBoardingQuestion);
+        editor.putInt(SharedPreferenceConstants.CURRENT_QUESTION, position);
         editor.apply();
     }
 
@@ -342,8 +339,14 @@ public class SharedPreferenceManager {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.ONBOARDING_QUESTION, false);
     }
 
-    public void clearOnboardingData(){
-        SharedPreferences.Editor editor= sharedPreferences.edit();
+    public void setOnBoardingQuestion(boolean isOnBoardingQuestion) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.ONBOARDING_QUESTION, isOnBoardingQuestion);
+        editor.apply();
+    }
+
+    public void clearOnboardingData() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(SharedPreferenceConstants.USER_EMAIL).apply();
         editor.remove(SharedPreferenceConstants.USERNAME).apply();
         editor.remove(SharedPreferenceConstants.DISPLAY_NAME).apply();
@@ -359,14 +362,24 @@ public class SharedPreferenceManager {
         editor.remove(SharedPreferenceConstants.ONBOARDING_QUESTION).apply();
     }
 
-    public void setFirstTimeUserForAffirmation(boolean isUnlock){
+    public Boolean getFirstTimeUserForAffirmation() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
+    }
+
+    public void setFirstTimeUserForAffirmation(boolean isUnlock) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, isUnlock);
         editor.apply();
     }
 
-    public Boolean getFirstTimeUserForAffirmation() {
-        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_AFFIRMATION, true);
+    public void saveTooltip(String prefKey, boolean isShowed) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(prefKey, isShowed);
+        editor.apply();
+    }
+
+    public Boolean isTooltipShowed(String prefKey) {
+        return sharedPreferences.getBoolean(prefKey, false);
     }
 }
 

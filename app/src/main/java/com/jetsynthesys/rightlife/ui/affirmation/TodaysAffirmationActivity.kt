@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -27,9 +28,10 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategor
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategoryResponse
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.CreateAffirmationPlaylistRequest
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResponse
+import com.jetsynthesys.rightlife.ui.showBalloon
+import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -62,6 +64,8 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         getAffirmationPlaylist()
         getCategoryList()
 
+        if (sharedPreferenceManager.firstTimeUserForAffirmation)
+            showInfoDialog()
 
         binding.llCategorySelection.setOnClickListener {
             categoryBottomSheetDialog.show()
@@ -85,7 +89,8 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         }
 
         binding.btnCreateAffirmation.setOnClickListener {
-            createAffirmationPlaylist()
+            if (affirmationPlaylistRequest.isNotEmpty())
+                createAffirmationPlaylist()
         }
 
         setSelectedCategoryAdapter(affirmationList)
@@ -93,6 +98,8 @@ class TodaysAffirmationActivity : AppCompatActivity() {
     }
 
     private fun addCardToPlaylist() {
+        val yOff = -200
+        val xOff = 10
         binding.addAffirmation.isEnabled = false
         affirmationPlaylist.add(affirmationList[binding.cardViewPager.currentItem])
         binding.addAffirmation.setImageResource(R.drawable.playlist_added)
@@ -107,44 +114,91 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         if (sharedPreferenceManager.firstTimeUserForAffirmation) {
             when (affirmationPlaylist.size) {
                 1 -> {
-                    Toast.makeText(this, "Great choice, keep going.", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "Great choice, keep going.", Toast.LENGTH_SHORT).show()
+                    showBalloon(
+                        binding.addAffirmation, "Great choice, keep going.",
+                        xOff = xOff, yOff = yOff
+                    )
                 }
 
                 2 -> {
-                    Toast.makeText(
+                    /*Toast.makeText(
                         this,
                         "One more and your playlist is ready to go.",
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
+                    showBalloon(
+                        binding.addAffirmation,
+                        "One more and your playlist is ready to go.", xOff = xOff, yOff = yOff
+                    )
                 }
 
                 3 -> {
-                    Toast.makeText(this, "Playlist Unlocked!", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "Playlist Unlocked!", Toast.LENGTH_SHORT).show()
+                    showBalloon(
+                        binding.addAffirmation,
+                        "Playlist Unlocked!",
+                        xOff = xOff,
+                        yOff = yOff
+                    )
                 }
 
                 else -> {
-                    Toast.makeText(
+                    /*Toast.makeText(
                         this,
                         "${affirmationPlaylist.size} Affirmation Added!",
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
+                    showBalloon(
+                        binding.addAffirmation,
+                        "${affirmationPlaylist.size} Affirmation Added!", xOff = xOff, yOff = yOff
+                    )
                 }
             }
         } else {
-            Toast.makeText(
+            /*Toast.makeText(
                 this,
                 "${affirmationPlaylistRequest.size} Affirmation Added!",
                 Toast.LENGTH_SHORT
-            ).show()
+            ).show()*/
+            showBalloon(
+                binding.addAffirmation,
+                "${affirmationPlaylistRequest.size} Affirmation Added!", xOff = xOff, yOff = yOff
+            )
         }
     }
 
-   /* private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
+    /* private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
+         affirmationCardPagerAdapter =
+             AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
+         binding.cardViewPager.setPageTransformer(true, AffirmationPageTransformer())
+         binding.cardViewPager.adapter = affirmationCardPagerAdapter
+         updateAddButtonImage(0)
+         binding.cardViewPager.addOnPageChangeListener(object : OnPageChangeListener {
+             override fun onPageScrolled(
+                 position: Int,
+                 positionOffset: Float,
+                 positionOffsetPixels: Int
+             ) {
+
+             }
+
+             override fun onPageSelected(position: Int) {
+                 updateAddButtonImage(position)
+             }
+
+             override fun onPageScrollStateChanged(state: Int) {
+
+             }
+         })
+     }*/
+    private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
         affirmationCardPagerAdapter =
             AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
         binding.cardViewPager.setPageTransformer(true, AffirmationPageTransformer())
         binding.cardViewPager.adapter = affirmationCardPagerAdapter
-        updateAddButtonImage(0)
+        if (affirmationList.isNotEmpty())
+            updateAddButtonImage(0)
         binding.cardViewPager.addOnPageChangeListener(object : OnPageChangeListener {
             override fun onPageScrolled(
                 position: Int,
@@ -162,32 +216,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
             }
         })
-    }*/
-   private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
-       affirmationCardPagerAdapter =
-           AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
-       binding.cardViewPager.setPageTransformer(true, AffirmationPageTransformer())
-       binding.cardViewPager.adapter = affirmationCardPagerAdapter
-       if (affirmationList.isNotEmpty())
-           updateAddButtonImage(0)
-       binding.cardViewPager.addOnPageChangeListener(object : OnPageChangeListener {
-           override fun onPageScrolled(
-               position: Int,
-               positionOffset: Float,
-               positionOffsetPixels: Int
-           ) {
-
-           }
-
-           override fun onPageSelected(position: Int) {
-               updateAddButtonImage(position)
-           }
-
-           override fun onPageScrollStateChanged(state: Int) {
-
-           }
-       })
-   }
+    }
 
     private fun updateAddButtonImage(position: Int) {
         var flag = false
@@ -474,9 +503,20 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
         layoutParams?.width = width
 
-        /*dialog.setOnCancelListener {
-
-        }*/
+        dialog.setOnCancelListener {
+            if (sharedPreferenceManager.firstTimeUserForAffirmation)
+                showBalloonWithDim(
+                    binding.btnCreateAffirmation,
+                    "Select at least 3 affirmations to build your personal affirmation playlist!",
+                    "AffirmationCreateButton", xOff = -200, yOff = 20
+                ){
+                    showBalloonWithDim(
+                        binding.addAffirmation,
+                        "Save to your Playlist",
+                        "AffirmationAddButton", xOff = 10, yOff = -200
+                    )
+                }
+        }
         dialog.show()
     }
 
@@ -509,4 +549,5 @@ class TodaysAffirmationActivity : AppCompatActivity() {
             finish()
         }, 1000)
     }
+
 }
