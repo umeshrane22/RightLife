@@ -262,6 +262,11 @@
     <color name="extremely_severe_red">#FF0000</color>
     <color name="brown">#8B4513</color>
     <color name="days_border_trialdays">#FD6968</color>
+    <color name="green_minimal">#06B27B</color>
+    <color name="cyan_mild">#54C8DB</color>
+    <color name="blue_moderate">#57A3FC</color>
+    <color name="orange_severe">#FFBD44</color>
+    <color name="red_ext_severe">#FC6656</color>
 
 
 </resources>
