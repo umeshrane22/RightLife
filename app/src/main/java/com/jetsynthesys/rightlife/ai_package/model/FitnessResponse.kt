@@ -1,120 +1,120 @@
 package com.jetsynthesys.rightlife.ai_package.model
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class FitnessResponse(
     val message: String,
-
     @SerializedName("heart_rate")
-    val heartRate: List<Int>,
-
+    val heartRate: List<HeartRateData>,
     @SerializedName("resting_heart_rate")
-    val restingHeartRate: List<Int>,
-
+    val restingHeartRate: List<HeartRateData>,
     @SerializedName("heart_rate_variability_SDNN")
-    val heartRateVariabilitySDNN: List<Int>,
-
-    val calories: List<Int>,
-
+    val heartRateVariabilitySDNN: List<HeartRateVariabilityData>,
+    @SerializedName("calories")
+    val calories: List<CalorieData>,
     @SerializedName("heart_rate_zones")
-    val heartRateZones: HeartRateZonesMove,
-
+    val heartRateZones: Map<String, List<Int>>,
+    @SerializedName("steps")
     val steps: List<StepData>,
-
     @SerializedName("total_steps_sum")
     val totalStepsSum: Int,
-
     @SerializedName("avg_steps")
-    val avgSteps: List<AvgStepsData>,
-
+    val avgSteps: List<AvgStepData>,
+    @SerializedName("avg_step_sum")
+    val avgStepSum: Int,
     @SerializedName("steps_goal")
     val stepsGoal: String,
-
     @SerializedName("total_burned")
-    val totalBurned: List<BurnedCaloriesData>,
-
+    val totalBurned: List<BurnedData>,
     @SerializedName("total_burned_sum")
-    val totalBurnedSum: Int,
-
+    val totalBurnedSum: Double,
     @SerializedName("total_intake_calories")
-    val totalIntakeCalories: List<IntakeCaloriesData>,
-
+    val totalIntakeCalories: List<IntakeCalorieData>,
     @SerializedName("total_intake_calories_sum")
-    val totalIntakeCaloriesSum: Int
-) : Parcelable
+    val totalIntakeCaloriesSum: Double
+)
 
-// Data class for heart_rate_zones
-@Parcelize
-data class HeartRateZonesMove(
-    @SerializedName("Light Zone")
-    val lightZone: List<Int>,
+data class HeartRateData(
+    @SerializedName("creation_datetime")
+    val creationDatetime: String,
+    @SerializedName("unit")
+    val unit: String,
+    @SerializedName("value")
+    val value: Int
+)
 
-    @SerializedName("Fat Burn Zone")
-    val fatBurnZone: List<Int>,
+data class HeartRateVariabilityData(
+    @SerializedName("creation_datetime")
+    val creationDatetime: String,
+    @SerializedName("unit")
+    val unit: String,
+    @SerializedName("value")
+    val value: Int
+)
 
-    @SerializedName("Cardio Zone")
-    val cardioZone: List<Int>,
+data class CalorieData(
+    @SerializedName("creation_datetime")
+    val creationDatetime: String,
+    @SerializedName("unit")
+    val unit: String,
+    @SerializedName("value")
+    val value: Double
+)
 
-    @SerializedName("Peak Zone")
-    val peakZone: List<Int>
-) : Parcelable
-
-// Data class for steps array
-@Parcelize
 data class StepData(
     @SerializedName("creation_datetime")
     val creationDatetime: String,
-
     @SerializedName("end_datetime")
     val endDatetime: String,
-
     @SerializedName("source_version")
     val sourceVersion: String,
-
     @SerializedName("start_datetime")
     val startDatetime: String,
-
     @SerializedName("record_type")
     val recordType: String,
-
+    @SerializedName("unit")
     val unit: String,
-    val value: String,
-
+    @SerializedName("value")
+    val value: String, // Stored as String in JSON, convert to Int if needed
     @SerializedName("_id")
     val id: String,
-
     @SerializedName("user_id")
     val userId: String
-) : Parcelable
+)
 
-// Data class for avg_steps array
-@Parcelize
-data class AvgStepsData(
-    val date: String,
+data class AvgStepData(
+    @SerializedName("time")
+    val time: String,
+    @SerializedName("avg_steps")
     val avgSteps: Int
-) : Parcelable
+)
 
-// Data class for total_burned array
-@Parcelize
-data class BurnedCaloriesData(
+data class BurnedData(
+    @SerializedName("creation_datetime")
     val creationDatetime: String,
+    @SerializedName("end_datetime")
     val endDatetime: String,
+    @SerializedName("source_version")
     val sourceVersion: String,
+    @SerializedName("start_datetime")
     val startDatetime: String,
+    @SerializedName("record_type")
     val recordType: String,
+    @SerializedName("unit")
     val unit: String,
-    val value: Int, // Changed from String to Int
-    val id: String, // JSON field `_id`
+    @SerializedName("value")
+    val value: String, // Stored as String in JSON, convert to Double if needed
+    @SerializedName("_id")
+    val id: String,
+    @SerializedName("user_id")
     val userId: String
-) : Parcelable
+)
 
-// Data class for total_intake_calories array
-@Parcelize
-data class IntakeCaloriesData(
-    val id: String, // JSON field `_id`
+data class IntakeCalorieData(
+    @SerializedName("_id")
+    val id: String,
+    @SerializedName("user_id")
     val userId: String,
-    val calories: Int
-) : Parcelable
+    @SerializedName("calories")
+    val calories: Double
+)

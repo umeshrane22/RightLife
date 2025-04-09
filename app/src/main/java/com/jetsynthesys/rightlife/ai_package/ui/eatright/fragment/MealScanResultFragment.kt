@@ -284,8 +284,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             "0"
         }
 
-        val vitaminD = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val vitaminD = if (nutrition.vitamin_d_iu != null){
+            nutrition.vitamin_d_iu.toInt().toString()
         }else{
             "0"
         }
@@ -314,8 +314,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             "0"
         }
 
-        val calcium = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val calcium = if (nutrition.calcium_mg != null){
+            nutrition.calcium_mg.toInt().toString()
         }else{
             "0"
         }
@@ -326,20 +326,20 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             "0"
         }
 
-        val sodium = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val sodium = if (nutrition.sodium_mg != null){
+            nutrition.sodium_mg.toInt().toString()
         }else{
             "0"
         }
 
-        val cholesterol = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val cholesterol = if (nutrition.cholesterol_mg != null){
+            nutrition.cholesterol_mg.toInt().toString()
         }else{
             "0"
         }
 
-        val sugar = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val sugar = if (nutrition.sugar_g != null){
+            nutrition.sugar_g.toInt().toString()
         }else{
             "0"
         }
