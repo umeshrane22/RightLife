@@ -16,5 +16,6 @@
     <dimen name="margin_card_16dp">16dp</dimen>
     <dimen name="spacing">3dp</dimen>
 
-
+    <dimen name="emoji_size">28dp</dimen>
+    <dimen name="emoji_big_size">48dp</dimen>
 </resources>

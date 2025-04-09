@@ -262,6 +262,7 @@
     <color name="extremely_severe_red">#FF0000</color>
     <color name="brown">#8B4513</color>
     <color name="days_border_trialdays">#FD6968</color>
+    <color name="record_emotion_bg">#00000029</color>
 
 
 </resources>

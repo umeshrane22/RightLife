@@ -10,6 +10,34 @@
 
     </style>
 
+    <style name="WeekDayStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/eatright_text_color</item>
+    </style>
+
+    <style name="SectionLabel">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginTop">16dp</item>
+    </style>
+
+    <style name="ChipGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+    </style>
+
+    <style name="CustomChipStyle" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="chipBackgroundColor">@null</item>
+        <item name="chipStrokeColor">@null</item>
+        <item name="chipIconTint">@null</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="chipSurfaceColor">@null</item>
+    </style>
 
     <style name="Theme.RLapp" parent="Base.Theme.RLapp" />
 

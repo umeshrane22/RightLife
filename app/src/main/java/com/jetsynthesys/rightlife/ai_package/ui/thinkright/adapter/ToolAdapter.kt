@@ -12,10 +12,7 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.ModuleData
 
-class ToolAdapter(
-    context: Context,
-    private val tools: List<ModuleData>,
-    val onToolItem: (ModuleData, Int, Boolean) -> Unit
+class ToolAdapter(context: Context, private val tools: List<ModuleData>, val onToolItem: (ModuleData, Int, Boolean) -> Unit
 ) : RecyclerView.Adapter<ToolAdapter.ToolViewHolder>() {
 
     val mContext = context
@@ -38,10 +35,10 @@ class ToolAdapter(
     override fun getItemCount(): Int = tools.size
 
     class ToolViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val moduleName: TextView = itemView.findViewById(R.id.tv_module_name)
-        private val moduleType: TextView = itemView.findViewById(R.id.tv_module_type)
-        private val subtitle: TextView = itemView.findViewById(R.id.tv_subtitle)
-        private val selectedIcon: ImageView = itemView.findViewById(R.id.iv_selected)
+     //   private val moduleName: TextView = itemView.findViewById(R.id.tv_module_name)
+     //   private val moduleType: TextView = itemView.findViewById(R.id.tv_module_type)
+     //   private val subtitle: TextView = itemView.findViewById(R.id.tv_subtitle)
+    //    private val selectedIcon: ImageView = itemView.findViewById(R.id.iv_selected)
         val mainLayout: CardView = itemView.findViewById<CardView>(R.id.mainLayout)
 
         // moduleType.text = tool.moduleType
