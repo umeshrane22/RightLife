@@ -12,12 +12,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp">
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="40dp">
 
         <ImageView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:src="@drawable/playlist_added"/>
 
         <TextView
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="Playlist Created"
             android:fontFamily="@font/dmsans_bold"
-            android:textSize="22sp"
+            android:textSize="20sp"
             android:layout_marginTop="20dp"/>
 
     </LinearLayout>

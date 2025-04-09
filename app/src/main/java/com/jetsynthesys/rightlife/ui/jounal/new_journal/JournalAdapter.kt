@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.jounal.new_journal
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -7,8 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowJournalNewBinding
+import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 
 class JournalAdapter(
+    private val context: Context,
     private val items: List<JournalItem>,
     private val onItemClickListener: OnItemClickListener
 ) :
@@ -24,6 +27,16 @@ class JournalAdapter(
     }
 
     override fun onBindViewHolder(holder: JournalViewHolder, position: Int) {
+
+        if (position == 0) {
+            context.showBalloonWithDim(
+                holder.binding.imageViewAdd,
+                "Tap to add this journaling type to your toolkit.",
+                "JournalAdapter",
+                xOff = -200
+            )
+        }
+
         val item = items[position]
         with(holder.binding) {
             titleText.text = item.title

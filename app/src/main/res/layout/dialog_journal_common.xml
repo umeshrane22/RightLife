@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_food_item"
+    android:gravity="center">
+
+    <!-- Close Button (Top Right) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free Form"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/txt_color_header" />
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/close_journal" />
+    </RelativeLayout>
+
+    <!-- Body -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/txt_color_header"
+        android:textAlignment="center"
+        android:text="Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.\n\nYou can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.\n\nLet go of how it should sound and focus on what you feel." />
+</LinearLayout>

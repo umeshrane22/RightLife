@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class BulletJournalActivity : AppCompatActivity() {
@@ -43,12 +44,18 @@ class BulletJournalActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        val htmlText = """
+    <p>Bullet Journaling helps organize your inner world in small, manageable pieces.</p>
+    <p>Use it to list your moods, wins, worries, intentions—or anything else on your mind.</p>
+    <p>It’s a great option when you don’t feel like writing full paragraphs but still want to check in with yourself.</p>
+""".trimIndent()
+
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
         binding.btnInfo.setOnClickListener {
-            // Show tooltip or info dialog
+            DialogUtils.showJournalCommonDialog(this, "Bullet", htmlText)
         }
 
         binding.etJournalEntry.addTextChangedListener(object : TextWatcher {

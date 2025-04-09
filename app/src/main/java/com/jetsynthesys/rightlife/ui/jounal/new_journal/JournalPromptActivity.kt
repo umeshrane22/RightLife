@@ -10,13 +10,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityJournalPromptBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,7 +46,22 @@ class JournalPromptActivity : AppCompatActivity() {
         }
 
         binding.btnInfo.setOnClickListener {
-            Toast.makeText(this, "Info clicked", Toast.LENGTH_SHORT).show()
+            val htmlText = if (journalItem.title == "Gratitude") {
+                """
+    <p>This practice centers on noticing what’s going well—no matter how big or small.</p>
+    <p>Gratitude Journaling has been shown to boost mood, shift perspective, and build emotional resilience.</p>
+    <p>Even a few simple entries can help rewire your focus toward the positive.</p>
+""".trimIndent()
+            } else {
+                """
+    <p>Grief Journaling is a safe place to hold pain, memories, questions, or anger.</p>
+    <p>It’s for anyone navigating loss, change, or heartache.</p>
+    <p>There’s no right way to grieve—this space is here to let your feelings breathe, however they show up.</p>
+""".trimIndent()
+            }
+
+
+            DialogUtils.showJournalCommonDialog(this, journalItem.title!!, htmlText)
         }
 
         getSections(journalItem.id!!)
