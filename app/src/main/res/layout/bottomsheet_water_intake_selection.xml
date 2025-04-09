@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/tools"
+    card_view:cardCornerRadius="20dp"
+    card_view:cardElevation="10dp"
+    app:ignore="NamespaceTypo">
+
+    <LinearLayout
+        android:id="@+id/layout_log_water"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:gravity="center_horizontal"
+        android:background="#FFFFFF">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="15dp">
+
+            <TextView
+                android:id="@+id/titleTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/merriweather_bold"
+                android:textColor="@color/black_no_meals"
+                android:gravity="center"
+                android:textSize="@dimen/textsize_large24sp"
+                android:textStyle="bold"
+                android:text="Log Water Intake"
+                card_view:layout_constraintStart_toStartOf="parent"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                card_view:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/closeIV"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_close_circle_red"
+                android:gravity="center"
+                card_view:layout_constraintTop_toTopOf="parent"
+                card_view:layout_constraintEnd_toEndOf="parent"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scroll to select cups."
+            android:textSize="16sp"
+            android:textColor="@color/black_no_meals"
+            android:fontFamily="@font/dmsans_regular"
+            android:layout_marginTop="20dp"
+            />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/selectedValueText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="500"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="15dp"
+                />
+
+            <TextView
+                android:id="@+id/selectedUnitText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ml"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/black_no_meals"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="15dp"
+               />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/cupRecyclerView"
+            android:layout_width="100dp"
+            android:layout_height="400dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
+
+        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.VerticalProgressBar
+            android:id="@+id/verticalProgressBar"
+            android:layout_width="40dp"
+            android:layout_height="300dp"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:background="#E0F2F1" />
+
+        <LinearLayout
+            android:id="@+id/rulerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:layout_marginStart="25dp"
+            android:gravity="bottom|center">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="300dp"
+                android:layout_marginBottom="15dp"
+                android:weightSum="6"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text=">12 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="10 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="8 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="6 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="4 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="2 cups"
+                    />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/progressBarContainer"
+                android:layout_width="100dp"
+                android:layout_height="330dp"
+                android:visibility="visible"
+                android:layout_marginStart="15dp"
+                android:background="@drawable/water_progress_background"
+                android:layout_gravity="center"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <View
+                    android:id="@+id/progressFill"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/progress_fill_water"
+                    />
+
+                <ImageView
+                    android:id="@+id/ivCupIcon"
+                    android:layout_width="90dp"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="2dp"
+                    android:src="@drawable/ic_cup_line"
+                    android:layout_gravity="bottom|center" />
+
+            </FrameLayout>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3000ml"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black_no_meals"
+                    android:textSize="16sp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Water Intake Goal"
+                    android:textColor="@color/black_no_meals"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textSize="12sp"
+                    />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:visibility="visible"
+            android:layout_marginStart="5dp"
+            android:text="(1 cup = 250 ml)"
+            android:textColor="@color/black_no_meals"
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="12sp"
+            />
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="36dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="36dp"
+            android:backgroundTint="@color/border_green"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Confirm"
+            android:textColor="@color/white"
+            android:textSize="@dimen/textsize_large" />
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -124,11 +124,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
             binding.includedhomebottomsheet.llHealthCamQl.setOnClickListener { getMyRLHealthCamResult() }
             binding.includedhomebottomsheet.llMealplan.setOnClickListener {
-                Toast.makeText(
-                    this@HomeDashboardActivity,
-                    "Meal Plan Coming Soon...",
-                    Toast.LENGTH_LONG
-                ).show()
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "SelectMealTypeEat")
+                })
             }
             includedhomebottomsheet.llFoodLog.setOnClickListener {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
@@ -821,19 +820,19 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             R.id.ll_food_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "SelectMealTypeEat")
+                    putExtra("BottomSeatName", "MealLogTypeEat")
                 })
             }
             R.id.ll_activity_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
-                    putExtra("BottomSeatName", "SearchActivityMove")
+                    putExtra("BottomSeatName", "SearchActivityLogMove")
                 })
             }
             R.id.ll_mood_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "RecordEmotionThink")
+                    putExtra("BottomSeatName", "RecordEmotionMoodTracThink")
                 })
             }
             R.id.ll_sleep_log -> {

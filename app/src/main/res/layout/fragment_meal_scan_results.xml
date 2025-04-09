@@ -41,7 +41,7 @@
         app:layout_constraintTop_toBottomOf="@id/header_layout"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -63,7 +63,7 @@
                 android:layout_marginTop="15dp"
                 android:textColor="@color/text_color_kcal" />
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
@@ -102,9 +102,9 @@
                     android:layout_weight="0.1"
                     android:layout_gravity="center"
                     android:textColor="@color/meal_log_title" />
-            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="2"
@@ -129,15 +129,15 @@
                     android:layout_marginStart="25dp"
                     android:textColor="@color/text_color_kcal"
                     android:layout_marginTop="15dp" />
-            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="2"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="15dp"
@@ -165,9 +165,9 @@
                         android:layout_weight="0.1"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/updown_icon" />
-                </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="15dp"
@@ -209,10 +209,10 @@
                         android:layout_weight="0.1"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/updown_icon" />
-                </LinearLayout>
-            </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
@@ -260,7 +260,7 @@
                     android:layout_weight="0.1"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_plus" />
-            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_macro_list"
@@ -413,7 +413,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -453,9 +453,9 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginStart="5dp"
                     android:textColor="@color/meal_log_title" />
-            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:weightSum="1"
@@ -475,14 +475,15 @@
                     android:layout_gravity="center_vertical"
                     />
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/addLayout"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_weight="0.2"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:background="@drawable/green_meal_bg"
                     android:orientation="horizontal">
 
@@ -500,8 +501,8 @@
                         android:textStyle="bold"
                         android:textSize="14sp"
                         android:textColor="@color/white" />
-                </LinearLayout>
-            </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview_frequently_logged_item"
@@ -516,7 +517,7 @@
 
             </androidx.recyclerview.widget.RecyclerView>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:background="@drawable/white_meal_date_bg"
                 android:orientation="vertical"
@@ -528,7 +529,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="1"
@@ -576,9 +577,9 @@
                         android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/meal_log_title" />
-                </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="5"
@@ -590,7 +591,7 @@
                     android:paddingBottom="10dp"
                     android:orientation="horizontal">
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -618,9 +619,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -648,9 +649,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -678,9 +679,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -709,9 +710,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -739,11 +740,11 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:background="@drawable/white_meal_date_bg"
                 android:orientation="vertical"
@@ -755,7 +756,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="1"
@@ -803,9 +804,9 @@
                         android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/meal_log_title" />
-                </LinearLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <LinearLayout
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="5"
@@ -817,7 +818,7 @@
                     android:paddingBottom="10dp"
                     android:orientation="horizontal">
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -845,9 +846,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -875,9 +876,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -905,9 +906,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -936,9 +937,9 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <LinearLayout
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -966,10 +967,10 @@
                             android:layout_weight="0.9"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.core.widget.NestedScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout

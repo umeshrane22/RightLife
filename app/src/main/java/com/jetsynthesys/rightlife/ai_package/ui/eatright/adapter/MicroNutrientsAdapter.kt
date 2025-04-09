@@ -31,9 +31,9 @@ class MicroNutrientsAdapter(private val context: Context, private var dataLists:
         holder.energyType.text = item.nutrientsEnergy
         holder.icCal.visibility = View.GONE
         if (item.nutrientsValue != "0"){
-            holder.mainLayout.visibility = View.VISIBLE
+            holder.itemView.visibility = View.VISIBLE
         }else{
-            holder.mainLayout.visibility = View.GONE
+            holder.itemView.visibility = View.GONE
         }
 //        if (item.status == true) {
 //            holder.circleStatus.setImageResource(R.drawable.circle_check)

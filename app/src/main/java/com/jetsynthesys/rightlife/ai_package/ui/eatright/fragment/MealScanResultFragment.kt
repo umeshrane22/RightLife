@@ -37,6 +37,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.FrequentlyLoggedMealScanResultAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.SearchDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
@@ -64,6 +65,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var layoutMacroTitle : ConstraintLayout
     private lateinit var icMacroUP : ImageView
     private lateinit var microUP : ImageView
+    private lateinit var addLayout : LinearLayoutCompat
 
     private var quantity = 1
 
@@ -97,6 +99,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
         microUP = view.findViewById(R.id.microUP)
         icMacroUP = view.findViewById(R.id.icMacroUP)
+        addLayout = view.findViewById(R.id.addLayout)
 
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = mealListAdapter
@@ -183,6 +186,18 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             }
         }
 
+        addLayout.setOnClickListener {
+            val fragment = SearchDishFragment()
+            val args = Bundle()
+            args.putString("searchType", "mealScanResult")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
+
         saveMealLayout.setOnClickListener {
             Toast.makeText(context, "Save Meal", Toast.LENGTH_SHORT).show()
             val moduleName = arguments?.getString("ModuleName").toString()
@@ -244,45 +259,9 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
-
     }
 
     private fun onMicroNutrientsList (nutrition: NutritionDetails){
-
-        val b12_mcg = if (nutrition.b12_mcg != null){
-            nutrition.b12_mcg.toInt().toString()
-        }else{
-            "0"
-        }
-
-        val iron_mg = if (nutrition.iron_mg != null){
-            nutrition.iron_mg.toInt().toString()
-        }else{
-            "0"
-        }
-        val magnesium_mg = if (nutrition.magnesium_mg != null){
-            nutrition.magnesium_mg.toInt().toString()
-        }else{
-            "0"
-        }
-
-        val phosphorus_mg = if (nutrition.phosphorus_mg != null){
-            nutrition.phosphorus_mg.toInt().toString()
-        }else{
-            "0"
-        }
-
-        val potassium_mg = if (nutrition.potassium_mg != null){
-            nutrition.potassium_mg.toInt().toString()
-        }else{
-            "0"
-        }
-
-        val zinc_mg = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
-        }else{
-            "0"
-        }
 
         val vitaminD = if (nutrition.vitamin_d_iu != null){
             nutrition.vitamin_d_iu.toInt().toString()
@@ -290,26 +269,38 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             "0"
         }
 
-        val folate = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val b12_mcg = if (nutrition.b12_mcg != null){
+            nutrition.b12_mcg.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminC = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val folate = if (nutrition.folate_mcg != null){
+            nutrition.folate_mcg.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminA = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val vitaminC = if (nutrition.vitamin_c_mg != null){
+            nutrition.vitamin_c_mg.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminK = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val vitaminA = if (nutrition.vitamin_a_mcg != null){
+            nutrition.vitamin_a_mcg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val vitaminK = if (nutrition.vitamin_k_mcg != null){
+            nutrition.vitamin_k_mcg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val iron_mg = if (nutrition.iron_mg != null){
+            nutrition.iron_mg.toInt().toString()
         }else{
             "0"
         }
@@ -320,8 +311,20 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             "0"
         }
 
-        val omega = if (nutrition.zinc_mg != null){
+        val magnesium_mg = if (nutrition.magnesium_mg != null){
+            nutrition.magnesium_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val zinc_mg = if (nutrition.zinc_mg != null){
             nutrition.zinc_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val omega3 = if (nutrition.omega_3_fatty_acids_g != null){
+            nutrition.omega_3_fatty_acids_g.toInt().toString()
         }else{
             "0"
         }
@@ -344,6 +347,17 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             "0"
         }
 
+        val phosphorus_mg = if (nutrition.phosphorus_mg != null){
+            nutrition.phosphorus_mg.toInt().toString()
+        }else{
+            "0"
+        }
+        val potassium_mg = if (nutrition.potassium_mg != null){
+            nutrition.potassium_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
         val mealLogs = listOf(
 //            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
 //            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
@@ -357,15 +371,19 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
             MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_fats),
             MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats),
-            MicroNutrientsModel(omega, "mg", "Omega-3", R.drawable.ic_fats),
+            MicroNutrientsModel(omega3, "mg", "Omega-3", R.drawable.ic_fats),
             MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
             MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
             MicroNutrientsModel(sugar, "mg", "Sugar", R.drawable.ic_fats)
 
         )
-
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+       // valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        for (item in mealLogs){
+            if (item.nutrientsValue != "0"){
+                valueLists.add(item)
+            }
+        }
         val mealLogDateData: MicroNutrientsModel? = null
         microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }

@@ -115,8 +115,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         appPreference = AppPreference(requireContext())
+        val moduleName = arguments?.getString("ModuleName").toString()
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
-
         mealLogDateRecyclerView = view.findViewById(R.id.recyclerview_calender)
         breakfastMealRecyclerView = view.findViewById(R.id.recyclerview_breakfast_meals_item)
         lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
@@ -145,9 +145,17 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         layoutAdd = view.findViewById(R.id.layout_btnAdd)
         layoutLunchAdd = view.findViewById(R.id.layout_lunchAdd)
         layoutDinnerAdd = view.findViewById(R.id.layout_dinnerAdd)
-
         layoutToolbar = view.findViewById(R.id.layoutToolbar)
         transparentOverlay = view.findViewById(R.id.transparentOverlay)
+
+        if (moduleName.contentEquals("HomeDashboard")){
+            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+            selectMealTypeBottomSheet.isCancelable = true
+            val bundle = Bundle()
+            bundle.putBoolean("test",false)
+            selectMealTypeBottomSheet.arguments = bundle
+            activity?.supportFragmentManager?.let { selectMealTypeBottomSheet.show(it, "SelectMealTypeBottomSheet") }
+        }
 
         getMealPlanList()
         //getMealList()
