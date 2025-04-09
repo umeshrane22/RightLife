@@ -28,7 +28,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(){
+class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEmotionDialogFragment.BottomSheetListener{
     private lateinit var calendarGrid: GridLayout
     private lateinit var textMonth: TextView
     private lateinit var btnPrev: ImageView
@@ -118,6 +118,8 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(){
     private fun renderEmotionCircles(stats: List<EmotionStat>) {
         container.removeAllViews()
 
+        container.removeAllViews()
+
         val maxPercentage = stats.maxOf { it.percentage }.coerceAtLeast(1)
         val baseSize = 200 // max circle size in dp
 
@@ -126,18 +128,14 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(){
             val sizePx = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP, sizeDp, resources.displayMetrics).toInt()
 
-            val circleView = FrameLayout(requireContext()).apply {
-                layoutParams = RelativeLayout.LayoutParams(sizePx, sizePx).apply {
-                    addRule(RelativeLayout.CENTER_VERTICAL)
-                    if (index == 0) addRule(RelativeLayout.ALIGN_PARENT_START)
-                    else addRule(RelativeLayout.ALIGN_PARENT_END)
-                    marginStart = 32
-                    marginEnd = 32
-                }
-                background = GradientDrawable().apply {
-                    shape = GradientDrawable.OVAL
-                    setColor(stat.color)
-                }
+            // Vertical container inside the circle
+            val verticalLayout = LinearLayout(requireContext(),).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
             }
 
             val percentText = TextView(requireContext()).apply {
@@ -155,11 +153,23 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(){
                 gravity = Gravity.CENTER
             }
 
-            circleView.addView(percentText)
-            circleView.addView(labelText)
+            verticalLayout.addView(percentText)
+            verticalLayout.addView(labelText)
 
-            // Arrange labelText below percentText
-            (labelText.layoutParams as? FrameLayout.LayoutParams)?.topMargin = 24
+            val circleView = FrameLayout(requireContext()).apply {
+                layoutParams = RelativeLayout.LayoutParams(sizePx, sizePx).apply {
+                    addRule(RelativeLayout.CENTER_VERTICAL)
+                    if (index == 0) addRule(RelativeLayout.ALIGN_PARENT_START)
+                    else addRule(RelativeLayout.ALIGN_PARENT_END)
+                    marginStart = 32
+                    marginEnd = 32
+                }
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(stat.color)
+                }
+                addView(verticalLayout)
+            }
 
             container.addView(circleView)
         }
@@ -265,6 +275,8 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(){
                 }
                 setOnClickListener {
                     onEmotionSelected(emojiRes)
+                    val bottomSheet = RecordEmotionDialogFragment()
+                    bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
                     dialog.dismiss()
                 }
             }
@@ -272,6 +284,10 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(){
         }
 
         dialog.show()
+    }
+
+    override fun onDataReceived(data: Int) {
+
     }
 }
 
