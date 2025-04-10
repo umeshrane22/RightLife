@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.data.repository
 
+import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.HealthSummaryResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
@@ -16,6 +17,8 @@ import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
+import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
@@ -91,6 +94,39 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): Response<WorkoutResponse>
+
+    @GET("move/data/new_user_workouts/")
+    suspend fun getNewUserWorkouts(
+        @Query("user_id") userId: String,
+        @Query("range_type") rangeType: String,
+        @Query("date") date: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int
+    ): Response<WorkoutResponse>
+
+    @GET("move/fetch_active_burned/")
+    suspend fun getActiveCalories(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ActiveCaloriesResponse>
+
+    @GET("move/fetch_heart_rate_variabililty/")
+    suspend fun getHeartRateVariability(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<HeartRateVariabilityResponse>
+
+    @GET("move/data/user_workouts/frequent/")
+    suspend fun getUserFrequentlyWorkouts(
+        @Query("user_id") userId: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+        @Query("min_count") minCount: Int? = null
+    ): Response<FrequentlyLoggedResponse>
 
     @GET("eat/landing-page/")
     fun getMealSummary(

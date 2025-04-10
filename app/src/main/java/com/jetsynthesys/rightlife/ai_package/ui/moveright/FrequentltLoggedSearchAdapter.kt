@@ -30,8 +30,8 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
     override fun onBindViewHolder(holder: ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
+        holder.mealTitle.text = item.mealName
+        holder.mealName.text = item.mealType
         holder.servesCount.text = item.serve
         holder.calValue.text = item.cal
         holder.subtractionValue.text = item.subtraction

@@ -31,7 +31,7 @@ data class UnsyncedWorkout(
     val activityFactor: Float,
 
     @SerializedName("calories_burned")
-    val caloriesBurned: Int,
+    val caloriesBurned: Double,
 
     @SerializedName("timestamp")
     val timestamp: String,
