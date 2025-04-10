@@ -12,14 +12,18 @@ import com.jetsynthesys.rightlife.ai_package.model.AnalysisRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesRequest
+import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
+import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
@@ -117,6 +121,25 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<HeartRateVariabilityResponse>
+
+    @GET("move/fetch_resting_heart_rate/")
+    suspend fun getRestingHeartRate(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<RestingHeartRateResponse>
+
+    @GET("move/fetch_heart_rate/")
+    suspend fun getHeartRate(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<HeartRateResponse>
+
+    @POST("move/data/calculate_calories/")
+    suspend fun calculateCalories(
+        @Body request: CalculateCaloriesRequest
+    ): Response<CalculateCaloriesResponse>
 
     @GET("move/data/user_workouts/frequent/")
     suspend fun getUserFrequentlyWorkouts(

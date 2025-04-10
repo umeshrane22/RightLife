@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentHeartRateVariabilityBinding
 import com.github.mikephil.charting.charts.LineChart
@@ -19,11 +20,13 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBinding>() {
 
@@ -42,32 +45,25 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
-        //fetchHeartRateVariability("last_weekly")
+        fetchHeartRateVariability("last_weekly") // Fetch data on load
+
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rbWeek ->{
-                    updateChart(getWeekData(), getWeekLabels())
-                   // fetchHeartRateVariability("last_weekly")
-                }
-                R.id.rbMonth -> {
-                    updateChart(getMonthData(), getMonthLabels())
-                   // fetchHeartRateVariability("last_monthly")
-                }
-                R.id.rbSixMonths ->{
-                    updateChart(getSixMonthData(), getSixMonthLabels())
-                   // fetchHeartRateVariability("last_six_months")
-
-                }
+                R.id.rbWeek -> fetchHeartRateVariability("last_weekly")
+                R.id.rbMonth -> fetchHeartRateVariability("last_monthly")
+                R.id.rbSixMonths -> fetchHeartRateVariability("last_six_months")
             }
         }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(),"landingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
         }
     }
+
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
@@ -78,7 +74,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
     /** Update chart with new data and X-axis labels */
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
-        val dataSet = LineDataSet(entries, "Heart Rate")
+        val dataSet = LineDataSet(entries, "Heart Rate Variability (ms)")
         dataSet.color = Color.RED
         dataSet.valueTextColor = Color.BLACK
         dataSet.setCircleColor(Color.RED)
@@ -116,53 +112,40 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
     /** Sample Data for Week */
     private fun getWeekData(): List<Entry> {
         return listOf(
-            Entry(1f, 65f),
-            Entry(2f, 75f),
-            Entry(3f, 70f),
-            Entry(4f, 85f),
-            Entry(5f, 80f),
-            Entry(6f, 60f),
-            Entry(7f, 90f)
+            Entry(0f, 65f), Entry(1f, 75f), Entry(2f, 70f),
+            Entry(3f, 85f), Entry(4f, 80f), Entry(5f, 60f), Entry(6f, 90f)
         )
     }
 
-    /** X-Axis Labels for Week */
     private fun getWeekLabels(): List<String> {
         return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     }
 
-    /** Sample Data for Month (4 weeks) */
+    /** Sample Data for Month */
     private fun getMonthData(): List<Entry> {
         return listOf(
-            Entry(0f, 40f), // 1-7 Jan
-            Entry(1f, 55f), // 8-14 Jan
-            Entry(2f, 35f), // 15-21 Jan
-            Entry(3f, 50f), // 22-28 Jan
-            Entry(4f, 30f)  // 29-31 Jan
+            Entry(0f, 40f), Entry(1f, 55f), Entry(2f, 35f),
+            Entry(3f, 50f), Entry(4f, 30f)
         )
     }
 
-    /** X-Axis Labels for Month */
     private fun getMonthLabels(): List<String> {
-        return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
+        return listOf("1-7", "8-14", "15-21", "22-28", "29-31")
     }
 
     /** Sample Data for 6 Months */
     private fun getSixMonthData(): List<Entry> {
         return listOf(
-            Entry(0f, 45f), // Jan
-            Entry(1f, 55f), // Feb
-            Entry(2f, 50f), // Mar
-            Entry(3f, 65f), // Apr
-            Entry(4f, 70f), // May
-            Entry(5f, 60f)  // Jun
+            Entry(0f, 45f), Entry(1f, 55f), Entry(2f, 50f),
+            Entry(3f, 65f), Entry(4f, 70f), Entry(5f, 60f)
         )
     }
 
-    /** X-Axis Labels for 6 Months */
     private fun getSixMonthLabels(): List<String> {
         return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
     }
+
+    /** Fetch and update chart with API data */
     private fun fetchHeartRateVariability(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -175,16 +158,25 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
                 if (response.isSuccessful) {
                     val heartRateVariability = response.body()
                     heartRateVariability?.let { data ->
-
-                        val totalCalories = data.heartRateVariability.sumOf { it.value.toDoubleOrNull() ?: 0.0 }
-                        withContext(Dispatchers.Main) {
-                           // updateChart(entries, labels)
-                            /* Toast.makeText(
-                                 requireContext(),
-                                 "Total Active Calories: $totalCalories kcal",
-                                 Toast.LENGTH_LONG
-                             ).show()*/
+                        val (entries, labels) = when (period) {
+                            "last_weekly" -> processWeeklyData(data)
+                            "last_monthly" -> processMonthlyData(data)
+                            "last_six_months" -> processSixMonthsData(data)
+                            else -> Pair(getWeekData(), getWeekLabels()) // Fallback
                         }
+                        val averageHrv = data.heartRateVariability
+                            .mapNotNull { it.value.toDoubleOrNull() }
+                            .average()
+                        withContext(Dispatchers.Main) {
+                            updateChart(entries, labels)
+                            /*Toast.makeText(
+                                requireContext(),
+                                "Average HRV: ${String.format("%.2f", averageHrv)} ms",
+                                Toast.LENGTH_LONG
+                            ).show()*/
+                        }
+                    } ?: withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "No HRV data received", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -201,5 +193,116 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
                 }
             }
         }
+    }
+
+    /** Process API data for last_weekly (7 days) */
+    private fun processWeeklyData(data: HeartRateVariabilityResponse): Pair<List<Entry>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.set(2025, Calendar.MARCH, 24) // Reference date
+        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week (March 18)
+
+        val hrvMap = mutableMapOf<String, MutableList<Float>>()
+        val labels = mutableListOf<String>()
+        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault()) // e.g., "Mon"
+
+        // Initialize 7 days
+        repeat(7) {
+            val dateStr = dateFormat.format(calendar.time)
+            hrvMap[dateStr] = mutableListOf()
+            labels.add(dayFormat.format(calendar.time))
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
+        // Aggregate HRV by day
+        data.heartRateVariability.forEach { hrv ->
+            val startDate = dateFormat.parse(hrv.startDatetime)?.let { Date(it.time) }
+            if (startDate != null) {
+                val dayKey = dateFormat.format(startDate)
+                hrvMap[dayKey]?.add(hrv.value.toFloatOrNull() ?: 0f)
+            }
+        }
+
+        // Average HRV per day
+        val entries = hrvMap.values.mapIndexed { index, values ->
+            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
+            Entry(index.toFloat(), average)
+        }
+        return Pair(entries, labels)
+    }
+
+    /** Process API data for last_monthly (5 weeks) */
+    private fun processMonthlyData(data: HeartRateVariabilityResponse): Pair<List<Entry>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.set(2025, Calendar.MARCH, 1) // Start of March
+
+        val hrvMap = mutableMapOf<Int, MutableList<Float>>()
+        val labels = mutableListOf<String>()
+
+        // Initialize 5 weeks
+        repeat(5) { week ->
+            val startDay = week * 7 + 1
+            val endDay = if (week == 4) 31 else startDay + 6
+            hrvMap[week] = mutableListOf()
+            labels.add("$startDay-$endDay")
+        }
+
+        // Aggregate HRV by week
+        data.heartRateVariability.forEach { hrv ->
+            val startDate = dateFormat.parse(hrv.startDatetime)?.let { Date(it.time) }
+            if (startDate != null) {
+                calendar.time = startDate
+                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+                val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
+                hrvMap[weekIndex]?.add(hrv.value.toFloatOrNull() ?: 0f)
+            }
+        }
+
+        // Average HRV per week
+        val entries = hrvMap.values.mapIndexed { index, values ->
+            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
+            Entry(index.toFloat(), average)
+        }
+        return Pair(entries, labels)
+    }
+
+    /** Process API data for last_six_months (6 months) */
+    private fun processSixMonthsData(data: HeartRateVariabilityResponse): Pair<List<Entry>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.set(2025, Calendar.MARCH, 24)
+        calendar.add(Calendar.MONTH, -5) // Start 6 months back (Oct 2024)
+
+        val hrvMap = mutableMapOf<Int, MutableList<Float>>()
+        val labels = mutableListOf<String>()
+
+        // Initialize 6 months
+        repeat(6) { month ->
+            hrvMap[month] = mutableListOf()
+            labels.add(monthFormat.format(calendar.time))
+            calendar.add(Calendar.MONTH, 1)
+        }
+
+        // Aggregate HRV by month
+        data.heartRateVariability.forEach { hrv ->
+            val startDate = dateFormat.parse(hrv.startDatetime)?.let { Date(it.time) }
+            if (startDate != null) {
+                calendar.time = startDate
+                val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
+                val monthIndex = 5 - monthDiff // Reverse to align with labels
+                if (monthIndex in 0..5) {
+                    hrvMap[monthIndex]?.add(hrv.value.toFloatOrNull() ?: 0f)
+                }
+            }
+        }
+
+        // Average HRV per month
+        val entries = hrvMap.values.mapIndexed { index, values ->
+            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
+            Entry(index.toFloat(), average)
+        }
+        return Pair(entries, labels)
     }
 }
