@@ -14,7 +14,9 @@ import android.widget.RelativeLayout
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import com.jetsynthesys.rightlife.MainActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -74,11 +76,11 @@ class SplashScreenActivity : AppCompatActivity() {
                     }
                 }
                 if (loggedInUser?.isOnboardingComplete == true) {
-                    val intent = Intent(this, HomeActivity::class.java)
+                    val intent = Intent(this, MainAIActivity::class.java)
                     startActivity(intent)
                 } else {
                     if (sharedPreferenceManager.userName.isNullOrEmpty()) {
-                        val intent = Intent(this, HomeActivity::class.java)
+                        val intent = Intent(this, MainAIActivity::class.java)
                         startActivity(intent)
                     } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()) {
                         val intent = Intent(this, WellnessFocusActivity::class.java)
