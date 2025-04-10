@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.RetrofitData;
 
+import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.apimodel.CheckRegistrationResponse;
 import com.jetsynthesys.rightlife.apimodel.LoginRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginResponse;
@@ -18,6 +19,7 @@ import com.jetsynthesys.rightlife.apimodel.exploremodules.sleepsounds.SleepAidsR
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
+import com.jetsynthesys.rightlife.ui.CommonResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.SleepCategorySoundListResponse;
@@ -68,12 +70,12 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerReque
 import com.jetsynthesys.rightlife.ui.scan_history.ScanHistoryResponse;
 import com.jetsynthesys.rightlife.ui.settings.pojo.FAQResponse;
 import com.jetsynthesys.rightlife.ui.settings.pojo.GeneralInformationResponse;
+import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse;
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteRequest;
 import com.jetsynthesys.rightlife.ui.therledit.StatiticsRequest;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanCheckInRequest;
-import com.google.gson.JsonElement;
 
 import java.util.Map;
 
@@ -1064,7 +1066,7 @@ public interface ApiService {
     );
 
     @Headers("Content-Type: application/json")
-    @POST("user/verifyPhoneNumber?actionType=verifyNewPhoneNumber")
+    @PUT("user/verifyPhoneNumber?actionType=verifyNewPhoneNumber")
     Call<ResponseBody> verifyOtpForPhoneNumber(
             @Header("Authorization") String authToken,
             @Body VerifyOtpRequest verifyOtpRequest
@@ -1127,11 +1129,29 @@ public interface ApiService {
             @Query("endDate") String endDate,
             @Query("key") String key
     );
+
     @Headers("Content-Type: application/json")
     @POST("mindFull")
     Call<ResponseBody> addMindfulTime(
             @Header("Authorization") String authToken,
             @Body ToolKitRequest toolKitRequest
+    );
+
+    @POST("user/notification-setting")
+    Call<CommonResponse> updateNotificationSettings(
+            @Header("Authorization") String authToken,
+            @Body Map<String, Boolean> requestBody
+    );
+
+    @GET("user/notification-setting")
+    Call<NotificationsResponse> getNotificationSettings(
+            @Header("Authorization") String authToken
+    );
+
+    @POST("common/contactus")
+    Call<CommonResponse> deleteAccount(
+            @Header("Authorization") String authToken,
+            @Body Map<String, String> requestBody
     );
 }
 

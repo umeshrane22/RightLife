@@ -209,6 +209,7 @@
                 android:textColor="@color/txt_color_mind" />
 
             <ImageView
+                android:id="@+id/arrowAge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/right_arrow_journal"
@@ -248,6 +249,7 @@
                 android:textColor="@color/txt_color_mind" />
 
             <ImageView
+                android:id="@+id/arrowGender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/right_arrow_journal" />
@@ -284,6 +286,7 @@
                 android:textColor="@color/txt_color_mind" />
 
             <ImageView
+                android:id="@+id/arrowHeight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/right_arrow_journal" />
@@ -320,6 +323,7 @@
                 android:textColor="@color/txt_color_mind" />
 
             <ImageView
+                android:id="@+id/arrowWeight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/right_arrow_journal" />
@@ -347,6 +351,7 @@
                 android:textColor="@color/txt_color_mind" />
 
             <ImageView
+                android:id="@+id/arrowDeleteAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/right_arrow_journal" />

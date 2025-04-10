@@ -37,11 +37,13 @@ class AppSettingsActivity : AppCompatActivity() {
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
             when (item.title) {
                 "Notifications" -> {
-                    startActivity(Intent(this,NotificationsNewActivity::class.java))
+                    startActivity(Intent(this, NotificationsNewActivity::class.java))
                 }
-                "Export All Health Data" ->{
-                    showToast("Export All Health Data clicked")
+
+                "Export All Health Data" -> {
+                    startActivity(Intent(this, ExportHealthDataActivity::class.java))
                 }
+
                 "Integrations" -> {
                     showToast("Integrations clicked")
                 }
