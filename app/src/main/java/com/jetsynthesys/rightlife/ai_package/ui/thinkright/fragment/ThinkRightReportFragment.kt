@@ -9,9 +9,12 @@ import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
@@ -20,6 +23,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,12 +38,16 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -71,6 +79,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResult
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import kotlinx.coroutines.NonCancellable.parent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -78,12 +87,14 @@ import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.time.LocalDate
+import kotlin.math.abs
 
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
 
     private lateinit var viewPager: ViewPager2
-    private lateinit var tabLayout: TabLayout
+   // private lateinit var tabLayout: TabLayout
     private lateinit var dotsLayout: LinearLayout
+    private lateinit var adapter : AssessmentPagerAdapter
     private lateinit var add_tools_think_right: ImageView
     private lateinit var instruction_your_mindfullness_review: ImageView
     private lateinit var dots: Array<ImageView?>
@@ -101,6 +112,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var toolRecyclerView: RecyclerView
     private lateinit var toolAdapter: ToolAdapter
     private val toolsList: ArrayList<ModuleData> = arrayListOf()
+    private var assessmentList: MutableList<AssessmentResultData> = mutableListOf()
  //   private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
 
     private lateinit var progressDialog: ProgressDialog
@@ -111,6 +123,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
     private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
+    var itemCount = 0
+    var dotSize = 16
+    var dotMargin = 8
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -136,7 +151,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         instruction_your_mindfullness_review =
             view.findViewById(R.id.instruction_your_mindfullness_review)
         viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
-        tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
+    //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
+        dotsLayout = view.findViewById(R.id.customDotsContainer)
 
 
 
@@ -457,11 +473,55 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     val assessmentResponse = response.body()
 
                     if (assessmentResponse != null) {
-                        val assessmentList = parseAssessmentData(assessmentResponse.result) // replace with real parsing
-                        val adapter = AssessmentPagerAdapter(assessmentList)
-
+                        assessmentList = parseAssessmentData(assessmentResponse.result) // replace with real parsing
+                        adapter = AssessmentPagerAdapter(assessmentList)
                         viewPager.adapter = adapter
-                        TabLayoutMediator(tabLayout, viewPager) { _, _ -> }.attach()
+                        val transformer = CompositePageTransformer().apply {
+                            // Space between pages
+                            addTransformer(MarginPageTransformer(16))  // <- Adjust this to your desired gap
+
+                            // Optional: slight shrink for visual depth
+                            addTransformer { page, position ->
+                                val scale = 0.95f + (1 - abs(position)) * 0.05f
+                                page.scaleY = scale
+                            }
+                        }
+
+                        viewPager.setPageTransformer(transformer)
+                        viewPager.offscreenPageLimit = 3
+                        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                            override fun onPageSelected(position: Int) {
+                                for (i in 0 until itemCount) {
+                                    val dot = dotsLayout.getChildAt(i)
+                                    val isActive = i == position
+                                    val layoutParams = dot.layoutParams
+                                    layoutParams.width = if (isActive) 32.dpToPx() else dotSize.dpToPx()
+                                    dot.layoutParams = layoutParams
+                                    dot.background = ContextCompat.getDrawable(
+                                        requireContext(),
+                                        if (isActive) R.drawable.active_dots else R.drawable.inactive_dots
+                                    )
+                                }
+                            }
+                        })
+                         itemCount = adapter.itemCount
+                         dotSize = 14
+                         dotMargin = 6
+                        for (i in 0 until itemCount) {
+                            val dot = View(requireContext()).apply {
+                                layoutParams = LinearLayout.LayoutParams(
+                                    if (i == 0) 32 else dotSize.dpToPx(),  // Active is pill
+                                    dotSize.dpToPx()
+                                ).apply {
+                                    setMargins(dotMargin.dpToPx(), 0, dotMargin.dpToPx(), 0)
+                                }
+                                background = ContextCompat.getDrawable(
+                                    requireContext(),
+                                    if (i == 0) R.drawable.active_dots else R.drawable.inactive_dots
+                                )
+                            }
+                            dotsLayout.addView(dot)
+                        }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -476,7 +536,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
     }
 
-    private fun parseAssessmentData(listData: List<AssessmentResult>): List<AssessmentResultData> {
+    fun Int.dpToPx(): Int =
+        (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    private fun parseAssessmentData(listData: List<AssessmentResult>): MutableList<AssessmentResultData> {
         val resultList = mutableListOf<AssessmentResultData>()
 
         for (assessmentResult in listData) {
@@ -639,29 +702,77 @@ class AssessmentPagerAdapter(
         val thresholds = listOf(0, 4, 9, 14, 19, 27)
         val labels = listOf("Minimal", "Mild", "Moderate", "Severe", "Ext Severe")
         val colors = listOf(
-            Color.parseColor("#2ECC71"), // green
-            Color.parseColor("#1ABC9C"), // teal
-            Color.parseColor("#3498DB"), // blue
-            Color.parseColor("#F39C12"), // orange
-            Color.parseColor("#E74C3C")  // red
+            Color.parseColor("#2ECC71"), // Minimal - green
+            Color.parseColor("#1ABC9C"), // Mild - teal
+            Color.parseColor("#3498DB"), // Moderate - blue
+            Color.parseColor("#F39C12"), // Severe - orange
+            Color.parseColor("#E74C3C")  // Ext Severe - red
         )
 
-        for (i in 0 until labels.size) {
-            val labelView = TextView(context).apply {
-                text = labels[i]
-                setPadding(16, 8, 16, 8)
-                setTextColor(Color.WHITE)
-                setBackgroundColor(colors[i])
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-            }
-            holder.scaleLayout.addView(labelView)
+        holder.scaleLayout.removeAllViews()
 
-            // Add vertical score pointer if score falls in this bucket
-            if (score >= thresholds[i] && (i == labels.size - 1 || score < thresholds[i + 1])) {
-                labelView.setBackgroundColor(Color.BLACK)
+        for (i in 0 until labels.size) {
+            val column = LinearLayout(context).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams =
+                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                gravity = Gravity.CENTER
             }
+
+            // Number label
+            val numberText = TextView(context).apply {
+                text = thresholds[i].toString()
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
+                setTextColor(Color.DKGRAY)
+            }
+
+            // Category label
+            val radius = 24f
+
+            val bgDrawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadii = when (i) {
+                    0 -> floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius) // left round
+                    labels.lastIndex -> floatArrayOf(0f, 0f, radius, radius, radius, radius, 0f, 0f) // right round
+                    else -> FloatArray(8) { 0f }
+                }
+
+                setColor(colors[i])
+
+                if (score >= thresholds[i] && score < thresholds[i + 1]) {
+                    setStroke(4, Color.BLACK) // 4dp black border
+                }
+            }
+
+            val labelText = TextView(context).apply {
+                text = labels[i]
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 8f)
+                setTextColor(Color.WHITE)
+                setTypeface(null, Typeface.BOLD)
+                gravity = Gravity.CENTER
+                setPadding(0, 8, 0, 8)
+                background = bgDrawable
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    topMargin = 4
+                }
+            }
+
+            column.addView(numberText)
+            column.addView(labelText)
+
+            holder.scaleLayout.addView(column)
+
         }
+
     }
+
+    fun Int.dpToPx(context: Context): Int {
+        return (this * context.resources.displayMetrics.density).toInt()
+    }
+
 }
 
 

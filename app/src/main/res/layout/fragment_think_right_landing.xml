@@ -1544,6 +1544,7 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingBottom="20dp"
                         android:background="#FFFFFF">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -1669,22 +1670,21 @@
                                 <androidx.viewpager2.widget.ViewPager2
                                     android:id="@+id/assessmentViewPager"
                                     android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:layout_gravity="center" />
-
-                                <com.google.android.material.tabs.TabLayout
-                                    android:id="@+id/tabDots"
+                                    android:layout_height="wrap_content"
+                                    android:clipToPadding="false"
+                                    android:clipChildren="false"
+                                    android:paddingStart="20dp"
+                                    android:paddingEnd="20dp"
+                                    android:overScrollMode="never" />
+                                <LinearLayout
+                                    android:id="@+id/customDotsContainer"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    style="@style/Widget.MaterialComponents.TabLayout"
+                                    android:orientation="horizontal"
+                                    android:layout_gravity="center_horizontal"
                                     android:layout_marginTop="12dp"
-                                    app:tabIndicatorColor="@color/brown"
-                                    app:tabSelectedTextColor="@color/brown"
-                                    app:tabIndicatorHeight="0dp"
-                                    app:tabBackground="@drawable/dot_selector"
-                                    app:tabRippleColor="@android:color/transparent"
-                                    app:tabGravity="center"
-                                    app:tabMode="scrollable" />
+                                    android:gravity="center">
+                                </LinearLayout>
                             </LinearLayout>
 
 
@@ -1695,16 +1695,51 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
+                            android:paddingBottom="20dp"
                             android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/data_filled_mind_audit"
                             android:text="Next Scan In 29 Days"
                             android:fontFamily="@font/dmsans_bold"
                             android:textColor="@color/thinkright_text_color"
                             android:textSize="16sp"
                             android:layout_marginTop="10dp"
+                             />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/data_filled_mind_audit" />
+                            app:layout_constraintTop_toBottomOf="@+id/data_filled_mind_audit"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginTop="15dp"
+                            android:gravity="center"
+                            android:background="@drawable/yellow_btn_bg"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/checkbox_outline"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Reassess Your Mental Health"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textColor="@color/eatright_text_color"
+                                android:textSize="14sp"
+                                android:layout_marginStart="5dp"
+                                app:layout_constraintStart_toEndOf="@id/img_mind_icon"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                        </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -1844,38 +1879,6 @@
                                 android:src="@drawable/grey_info_icon" />
                         </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:background="@drawable/yellow_btn_bg"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/checkbox_outline"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Reassess Your Mental Health"
-                        android:textStyle="bold"
-                        android:textColor="@color/eatright_text_color"
-                        android:textSize="18sp"
-                        android:layout_marginStart="5dp"
-                        app:layout_constraintStart_toEndOf="@id/img_mind_icon"
-                        app:layout_constraintTop_toTopOf="parent" />
-
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
