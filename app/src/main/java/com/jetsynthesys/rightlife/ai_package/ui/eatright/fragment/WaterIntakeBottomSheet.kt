@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.R.color.transparent
+import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -43,6 +44,20 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         return inflater.inflate(R.layout.bottomsheet_water_intake_selection, container, false)
     }
 
+//    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+//        val bottomSheetDialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+//        bottomSheetDialog.setOnShowListener {
+//            val bottomSheet = bottomSheetDialog
+//                .findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
+//
+//            if (bottomSheet != null) {
+//                val behavior: BottomSheetBehavior<*> = BottomSheetBehavior.from(bottomSheet)
+//                behavior.isDraggable = false
+//            }
+//        }
+//        return bottomSheetDialog
+//    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,8 +65,6 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         val dialog = BottomSheetDialog(requireContext(), R.style.LoggedBottomSheetDialogTheme)
         dialog.setContentView(R.layout.fragment_eat_right_landing)
         dialog.window?.setBackgroundDrawableResource(transparent)
-        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        dialog.behavior.isDraggable = false
         val closeIV = view.findViewById<ImageView>(R.id.closeIV)
         progressFill = view.findViewById(R.id.progressFill)
         progressBarContainer = view.findViewById(R.id.progressBarContainer)
@@ -113,7 +126,6 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         waterIntake = clampedSteps * 250
         updateUI()
     }
-
 
 //    private fun updateValueBasedOnPosition(y: Float) {
 //        val containerHeight = progressBarContainer.height - ivCupIcon.height
