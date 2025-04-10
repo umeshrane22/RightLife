@@ -8,6 +8,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragme
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MoodTrackerFragment
 import com.jetsynthesys.rightlife.databinding.ActivityMainAiBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,16 +56,15 @@ class MainAIActivity : BaseActivity() {
                 commit()
             }
         }else if (bottomSeatName.contentEquals("RecordEmotionMoodTracThink")) {
-            Toast.makeText(this, "MoodTrackingFragment", Toast.LENGTH_SHORT).show()
-//            supportFragmentManager.beginTransaction().apply {
-//                val homeBottomTabFragment = MoodTrackingFragment()
-//                val args = Bundle()
-//                args.putString("ModuleName", "HomeDashboard")
-//                homeBottomTabFragment.arguments = args
-//                replace(R.id.flFragment, homeBottomTabFragment, "homeBottom")
-//                addToBackStack(null)
-//                commit()
-//            }
+            supportFragmentManager.beginTransaction().apply {
+                val homeBottomTabFragment = MoodTrackerFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "HomeDashboard")
+                homeBottomTabFragment.arguments = args
+                replace(R.id.flFragment, homeBottomTabFragment, "homeBottom")
+                addToBackStack(null)
+                commit()
+            }
         }else{
             supportFragmentManager.beginTransaction().apply {
                 val homeBottomTabFragment = HomeBottomTabFragment()

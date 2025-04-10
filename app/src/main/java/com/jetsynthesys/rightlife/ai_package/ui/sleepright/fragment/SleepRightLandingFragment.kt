@@ -104,6 +104,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
+        if (bottomSeatName.contentEquals("LogLastNightSleep")){
+            val bottomSheet = LogYourNapDialogFragment()
+            bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+        }
+
         sleepInfo.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val stepGoalFragment = SleepStagesFragment()
