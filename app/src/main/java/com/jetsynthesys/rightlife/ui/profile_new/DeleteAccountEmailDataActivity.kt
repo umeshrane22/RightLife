@@ -55,7 +55,6 @@ class DeleteAccountEmailDataActivity : AppCompatActivity() {
             "phoneNumber" to sharedPreferenceManager.userProfile.userdata.phoneNumber,
             "option" to reason,
             "message" to message
-
         )
 
         apiService.deleteAccount(authToken, body).enqueue(object : Callback<CommonResponse> {
