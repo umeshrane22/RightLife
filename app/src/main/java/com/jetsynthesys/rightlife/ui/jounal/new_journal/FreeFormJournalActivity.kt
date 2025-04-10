@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class FreeFormJournalActivity : AppCompatActivity() {
@@ -41,12 +42,19 @@ class FreeFormJournalActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+
+        val htmlText = """
+        <p>Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.</p>
+        <p>You can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.</p>
+        <p>Let go of how it should sound and focus on what you feel.</p>
+    """.trimIndent()
+
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
         binding.btnInfo.setOnClickListener {
-            // Show tooltip or info dialog
+            DialogUtils.showJournalCommonDialog(this, "Free Form", htmlText)
         }
 
         binding.etJournalEntry.addTextChangedListener(object : TextWatcher {

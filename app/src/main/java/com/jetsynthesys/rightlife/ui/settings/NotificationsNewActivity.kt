@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.databinding.ActivityNotificationsNewBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 
@@ -24,8 +25,17 @@ class NotificationsNewActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        CommonAPICall.getNotificationSettings(this){
+            data ->
+            binding.pushNotificationsSwitch.isChecked = data.pushNotification == true
+        }
+
         binding.pushNotificationsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            showToast(if (isChecked) "Now push notification is ON" else "Now push notification is OFF")
+            val requestBody = mapOf("pushNotification" to isChecked)
+            CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+                showToast(message)
+                if (!result) binding.pushNotificationsSwitch.isChecked = !isChecked
+            }
         }
     }
 
@@ -37,7 +47,7 @@ class NotificationsNewActivity : AppCompatActivity() {
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
             when (item.title) {
                 "Email Notifications" -> {
-                    startActivity(Intent(this,EmailNotificationsNewActivity::class.java))
+                    startActivity(Intent(this, EmailNotificationsNewActivity::class.java))
                 }
             }
         }

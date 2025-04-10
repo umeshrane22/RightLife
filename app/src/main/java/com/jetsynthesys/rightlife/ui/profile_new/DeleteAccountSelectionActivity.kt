@@ -6,18 +6,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountSelectionBinding
-import com.jetsynthesys.rightlife.ui.profile_new.adapter.ReasonAdapter
+import com.jetsynthesys.rightlife.ui.profile_new.adapter.DeleteReasonAdapter
 
 class DeleteAccountSelectionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDeleteAccountSelectionBinding
-    private lateinit var adapter: ReasonAdapter
+    private lateinit var adapter: DeleteReasonAdapter
 
     private val reasons = listOf(
-        "Lorem Ipsum Is Simply Dummy 1",
-        "Lorem Ipsum Is Simply Dummy 2",
-        "Lorem Ipsum Is Simply Dummy 3",
-        "Lorem Ipsum Is Simply Dummy 4"
+        "I've achieved my health goals and no longer need the app",
+        "I found a different app that better suits my needs",
+        "The app is too complicated or difficult to use",
+        "Other Reasons"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +25,7 @@ class DeleteAccountSelectionActivity : AppCompatActivity() {
         binding = ActivityDeleteAccountSelectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = ReasonAdapter(reasons)
+        adapter = DeleteReasonAdapter(reasons)
         binding.reasonRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.reasonRecyclerView.adapter = adapter
 
@@ -34,15 +34,14 @@ class DeleteAccountSelectionActivity : AppCompatActivity() {
         }
 
         binding.btnContinue.setOnClickListener {
-            val selectedReasons = adapter.getSelectedReasons()
-            if (selectedReasons.isEmpty()) {
+            val selectedReasons = adapter.getSelectedReason()
+            if (selectedReasons?.isEmpty() == true) {
                 Toast.makeText(this, "Please select at least one reason.", Toast.LENGTH_SHORT)
                     .show()
             } else {
-                Toast.makeText(this, "Selected: $selectedReasons", Toast.LENGTH_SHORT).show()
-                val arrayList = ArrayList(selectedReasons)
-                startActivity(Intent(this,DeleteAccountReasonActivity::class.java).apply {
-                    putStringArrayListExtra("SelectedReasons",arrayList)
+                //Toast.makeText(this, "Selected: $selectedReasons", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, DeleteAccountReasonActivity::class.java).apply {
+                    putExtra("SelectedReasons", selectedReasons)
                 })
             }
         }

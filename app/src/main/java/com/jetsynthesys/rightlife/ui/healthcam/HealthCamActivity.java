@@ -3,26 +3,39 @@ package com.jetsynthesys.rightlife.ui.healthcam;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.zhpan.indicator.IndicatorView;
 
+import java.io.IOException;
+
 import me.relex.circleindicator.CircleIndicator3;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HealthCamActivity extends AppCompatActivity {
 
     ImageView ic_back_dialog, close_dialog;
     HealthCamPagerAdapter adapter;
     Button btn_howitworks;
+
     /**
      * {@inheritDoc}
      * <p>
@@ -39,11 +52,14 @@ public class HealthCamActivity extends AppCompatActivity {
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
         btn_howitworks = findViewById(R.id.btn_howitworks);
+        getHealthCamResult();
+
+        btn_howitworks.setEnabled(false);
 
         CircleIndicator3 indicator = findViewById(R.id.indicator);
-       IndicatorView indicator_view = findViewById(R.id.indicator_view);
-       indicator_view.setSliderHeight(21);
-       indicator_view.setSliderWidth(80);
+        IndicatorView indicator_view = findViewById(R.id.indicator_view);
+        indicator_view.setSliderHeight(21);
+        indicator_view.setSliderWidth(80);
         // Array of layout resources to use in the ViewPager
         int[] layouts = {
                 R.layout.page_one_health_cam, // Define these layout files in your res/layout directory
@@ -56,7 +72,7 @@ public class HealthCamActivity extends AppCompatActivity {
         indicator.setViewPager(viewPager);
         indicator_view.setupWithViewPager(viewPager);
 
-       // showCustomDialog();
+        // showCustomDialog();
 
 
         ic_back_dialog.setOnClickListener(view -> {
@@ -72,7 +88,7 @@ public class HealthCamActivity extends AppCompatActivity {
             }
         });
 
-        
+
         close_dialog.setOnClickListener(view -> {
             //finish();
             showExitDialog();
@@ -176,6 +192,42 @@ public class HealthCamActivity extends AppCompatActivity {
 
         // Show the dialog
         dialog.show();
+    }
+
+    private void getHealthCamResult() {
+        Utils.showLoader(this);
+        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                btn_howitworks.setEnabled(true);
+                Utils.dismissLoader(HealthCamActivity.this);
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = response.body().string();
+                        Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
+                        startActivity(new Intent(HealthCamActivity.this, NewHealthCamReportActivity.class));
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    Log.d("HealthCamResult", "Error:" + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(HealthCamActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Utils.dismissLoader(HealthCamActivity.this);
+                btn_howitworks.setEnabled(true);
+            }
+        });
     }
 
 }

@@ -17,6 +17,11 @@ public class Interpretations {
     @SerializedName("depression")
     @Expose
     private Depression depression;
+    @SerializedName("stress")
+    @Expose
+    private Stress stress;
+
+
 
     public Anger getAnger() {
         return anger;
@@ -50,4 +55,11 @@ public class Interpretations {
         this.depression = depression;
     }
 
+    public Stress getStress() {
+        return stress;
+    }
+
+    public void setStress(Stress stress) {
+        this.stress = stress;
+    }
 }

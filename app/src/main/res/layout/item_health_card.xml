@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/roundedcornershape"
+    android:padding="20dp"
+    android:layout_marginEnd="12dp"
+    android:elevation="4dp">
+
+    <!-- Top: Icon + Title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/imageCard"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/icon_heart" />
+
+        <TextView
+            android:id="@+id/cardTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Heart Rate"
+            android:textSize="14sp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_header"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <!-- "No Data" Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Data"
+            android:textSize="18sp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_header"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp" />
+
+        <!-- Placeholder Graph Image -->
+        <ImageView
+            android:id="@+id/imageGraph"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_heart_rate"/>
+
+    </LinearLayout>
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your heart’s talking—we just can’t hear it yet. Track this essential metric with a facial scan or wearable sync to better understand your body’s current state and physical readiness."
+        android:textSize="12sp"
+        android:textColor="@color/txt_color_header"
+        android:lineSpacingExtra="2dp"
+        android:layout_marginTop="10dp" />
+
+    <!-- Discover Button -->
+    <Button
+        android:id="@+id/btnDiscover"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Discover"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/menuselected"
+        android:minWidth="100dp" />
+</LinearLayout>

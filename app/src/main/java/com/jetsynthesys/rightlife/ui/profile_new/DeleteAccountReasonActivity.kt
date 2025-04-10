@@ -2,11 +2,10 @@ package com.jetsynthesys.rightlife.ui.profile_new
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountReasonBinding
 
-class DeleteAccountReasonActivity: AppCompatActivity() {
+class DeleteAccountReasonActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDeleteAccountReasonBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +13,7 @@ class DeleteAccountReasonActivity: AppCompatActivity() {
         binding = ActivityDeleteAccountReasonBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val reasonsList = intent.getStringArrayListExtra("SelectedReasons")
+        val reasonsList = intent.getStringExtra("SelectedReasons")
 
         binding.btnCancel.setOnClickListener {
             finish()
@@ -29,12 +28,14 @@ class DeleteAccountReasonActivity: AppCompatActivity() {
         }
 
         binding.btnContinue.setOnClickListener {
-            if (binding.etMessage.text.isEmpty()){
+            /*if (binding.etMessage.text.isEmpty()){
                 Toast.makeText(this,"Please enter message",Toast.LENGTH_SHORT).show()
             }else{
-                //delete API call pending
-                startActivity(Intent(this,DeleteAccountEmailDataActivity::class.java))
-            }
+                //delete API call pending*/
+            startActivity(Intent(this, DeleteAccountEmailDataActivity::class.java).apply {
+                putExtra("SelectedReasons", reasonsList)
+                putExtra("Message",binding.etMessage.text.toString())
+            })
         }
     }
 }

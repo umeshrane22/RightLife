@@ -264,5 +264,19 @@
     <color name="days_border_trialdays">#FD6968</color>
     <color name="record_emotion_bg">#00000029</color>
 
+    <color name="green_minimal">#06B27B</color>
+    <color name="cyan_mild">#54C8DB</color>
+    <color name="blue_moderate">#57A3FC</color>
+    <color name="orange_severe">#FFBD44</color>
+    <color name="red_ext_severe">#FC6656</color>
+
+    <!--happiness colors-->
+    <color name="pastel_lavender">#D9DBE9</color>
+    <color name="soft_lilac">#D5C6ED</color>
+    <color name="light_sky_blue">#C5DEF9</color>
+    <color name="mint_green">#A6E0CE</color>
+    <color name="soft_peach">#FDD3D2</color>
+    <color name="light_pink_lavender">#FDE6FF</color>
+    <color name="soft_beige">#F7E6B7</color>
 
 </resources>
