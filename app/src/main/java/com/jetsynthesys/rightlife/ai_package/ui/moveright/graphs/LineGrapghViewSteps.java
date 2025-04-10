@@ -6,8 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.DashPathEffect;
 import android.util.AttributeSet;
-import android.view.View;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -60,6 +60,7 @@ public class LineGrapghViewSteps extends View {
     public void addDataSet(float[] data, int color) {
         dataSets.add(data);
         lineColors.add(color);
+        invalidate(); // Trigger a redraw after adding data
     }
 
     @Override
@@ -72,6 +73,11 @@ public class LineGrapghViewSteps extends View {
 
         // Log the view dimensions to debug
         Log.d("LineGrapghViewSteps", "View Width: " + width + ", View Height: " + height);
+
+        if (dataSets.isEmpty()) {
+            Log.w("LineGrapghViewSteps", "No datasets available, skipping draw.");
+            return; // Exit if no data to draw
+        }
 
         // Reserve space at the bottom for the X-axis labels
         float paddingBottom = 50f; // Space for X-axis labels
@@ -89,6 +95,13 @@ public class LineGrapghViewSteps extends View {
                 if (value < minValue) minValue = value;
                 if (value > maxValue) maxValue = value;
             }
+        }
+
+        // Ensure minValue and maxValue are valid
+        if (minValue == Float.MAX_VALUE || maxValue == Float.MIN_VALUE) {
+            minValue = 0f; // Default min if no data
+            maxValue = 100f; // Default max if no data
+            Log.w("LineGrapghViewSteps", "No valid data range, using defaults (0-100).");
         }
 
         // Scale the data points to fit within the graph's height and effective width
@@ -169,5 +182,12 @@ public class LineGrapghViewSteps extends View {
             Log.d("LineGrapghViewSteps", "Drawing label: " + timeLabels[i] + " at x: " + x + ", y: " + y);
             canvas.drawText(timeLabels[i], x, y, axisPaint);
         }
+    }
+
+    // Optional: Clear all datasets
+    public void clear() {
+        dataSets.clear();
+        lineColors.clear();
+        invalidate(); // Trigger a redraw
     }
 }
