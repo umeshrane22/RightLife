@@ -6,6 +6,7 @@
     android:layout_marginTop="10dp"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
+    android:id="@+id/mainLayout"
     android:background="@drawable/white_meal_date_bg">
 
     <LinearLayout
@@ -56,6 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
+                android:gravity="center"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/workout_textcolor"
                 android:text="Calorie" />

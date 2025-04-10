@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+   android:id="@+id/logNapContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/bottomsheet_bg">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/btnClose"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_gravity="end"
+        android:src="@drawable/red_cross_btn" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Log Your Nap"
+        android:textColor="#0B1215"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:fontFamily="@font/merriweather_bold"
+        android:textSize="24sp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Date Picker -->
+    <LinearLayout
+        android:id="@+id/btnDatePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/grey_border_bg"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/calendar_mini_icon" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="28 February 2025"
+            android:fontFamily="@font/dmsans_medium"
+            android:textSize="16sp"
+            android:textColor="#002C5F"
+            android:paddingStart="8dp" />
+    </LinearLayout>
+
+    <!-- Duration -->
+    <TextView
+        android:id="@+id/tvDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8 hr 30 mins"
+        android:textSize="24sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:textColor="#002C5F"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Duration"
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="#002C5F"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <!-- Time Pickers -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp">
+
+        <!-- Start Time -->
+        <LinearLayout
+            android:id="@+id/startTimeContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Time"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="#0B1215" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:background="@drawable/grey_round_border"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/sleep_bed_mini_icon" />
+
+                <TextView
+                    android:id="@+id/tvStartTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="09:00 PM"
+                    android:paddingStart="8dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_medium"
+                    android:textColor="#0B1215" />
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/time_selector_icon" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- End Time -->
+        <LinearLayout
+            android:id="@+id/endTimeContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Time"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="#0B1215" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/grey_round_border"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp">
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/sleep_clock_mini_icon" />
+
+                <TextView
+                    android:id="@+id/tvEndTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="05:30 AM"
+                    android:paddingStart="8dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_medium"
+                    android:textColor="#0B1215" />
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/time_selector_icon" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Save Button -->
+    <TextView
+        android:id="@+id/btnSaveLog"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Save Log"
+        android:textAlignment="center"
+        android:fontFamily="@font/dmsans_bold"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#007BFF"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/blue_curved_bg" />
+</LinearLayout>

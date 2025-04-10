@@ -44,32 +44,92 @@ data class NutritionDetails(
     val fat_g: Double,
     @SerializedName("protein_g")
     val protein_g: Double,
+    @SerializedName("b1_mg")
+    val b1_mg : Double?,
+    @SerializedName("b2_mg")
+    val b2_mg : Double?,
+    @SerializedName("b3_mg")
+    val b3_mg : Double?,
+    @SerializedName("b5_mg")
+    val b5_mg : Double?,
+    @SerializedName("b6_mg")
+    val b6_mg : Double?,
     @SerializedName("b12_mcg")
     val b12_mcg : Double?,
+    @SerializedName("folate_mcg")
+    val folate_mcg : Double?,
+    @SerializedName("vitamin_a_mcg")
+    val vitamin_a_mcg: Double?,
+    @SerializedName("vitamin_c_mg")
+    val vitamin_c_mg: Double?,
     @SerializedName("vitamin_d_iu")
     val vitamin_d_iu: Double?,
+    @SerializedName("vitamin_e_mg")
+    val vitamin_e_mg: Double?,
+    @SerializedName("vitamin_k_mcg")
+    val vitamin_k_mcg: Double?,
     @SerializedName("calcium_mg")
     val calcium_mg: Double?,
+    @SerializedName("copper_mg")
+    val copper_mg: Double?,
     @SerializedName("iron_mg")
     val iron_mg: Double?,
     @SerializedName("magnesium_mg")
     val magnesium_mg : Double?,
+    @SerializedName("manganese_mg")
+    val manganese_mg : Double?,
     @SerializedName("phosphorus_mg")
     val phosphorus_mg : Double?,
     @SerializedName("potassium_mg")
     val potassium_mg: Double?,
+    @SerializedName("selenium_mcg")
+    val selenium_mcg: Double?,
     @SerializedName("sodium_mg")
     val sodium_mg: Double?,
+    @SerializedName("zinc_mg")
+    val zinc_mg : Double?,
     @SerializedName("fiber_g")
     val fiber_g: Double?,
+    @SerializedName("starch_g")
+    val starch_g: Double?,
     @SerializedName("sugar_g")
     val sugar_g: Double?,
+    @SerializedName("monounsaturated_g")
+    val monounsaturated_g: Double?,
+    @SerializedName("polyunsaturated_g")
+    val polyunsaturated_g: Double?,
+    @SerializedName("omega_3_fatty_acids_g")
+    val omega_3_fatty_acids_g: Double?,
+    @SerializedName("omega_6_fatty_acids_g")
+    val omega_6_fatty_acids_g: Double?,
     @SerializedName("saturated_fats_g")
     val saturated_fats_g: Double?,
     @SerializedName("trans_fats_g")
     val trans_fats_g: Double?,
     @SerializedName("cholesterol_mg")
     val cholesterol_mg: Double?,
+    @SerializedName("cystine_g")
+    val cystine_g: Double?,
+    @SerializedName("histidine_g")
+    val histidine_g: Double?,
+    @SerializedName("isoleucine_g")
+    val isoleucine_g: Double?,
+    @SerializedName("leucine_g")
+    val leucine_g: Double?,
+    @SerializedName("lysine_g")
+    val lysine_g: Double?,
+    @SerializedName("methionine_g")
+    val methionine_g: Double?,
+    @SerializedName("phenylalanine_g")
+    val phenylalanine_g: Double?,
+    @SerializedName("threonine_g")
+    val threonine_g: Double?,
+    @SerializedName("tryptophan_g")
+    val tryptophan_g: Double?,
+    @SerializedName("tyrosine_g")
+    val tyrosine_g: Double?,
+    @SerializedName("valine_g")
+    val valine_g: Double?,
     @SerializedName("percent_fruit")
     val percent_fruit: Double?,
     @SerializedName("percent_vegetable")
@@ -78,8 +138,6 @@ data class NutritionDetails(
     val percent_legume_or_nuts: Double?,
     @SerializedName("is_beverage")
     val is_beverage: Boolean?,
-    @SerializedName("zinc_mg")
-    val zinc_mg : Double?,
     @SerializedName("source_urls")
     val source_urls: List<String>?
 ): Parcelable

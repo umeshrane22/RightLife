@@ -1,32 +1,19 @@
 package com.jetsynthesys.rightlife.ai_package.ui
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MoodTrackerFragment
 import com.jetsynthesys.rightlife.databinding.ActivityMainAiBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainAIActivity : BaseActivity() {
-
-    private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
-            Manifest.permission.CAMERA
-        )
-    } else {
-        arrayOf(
-            Manifest.permission.CAMERA
-        )
-    }
-
-    private val PERMISSION_REQUEST_CODE = 100
 
     lateinit var bi: ActivityMainAiBinding
 
@@ -36,51 +23,58 @@ class MainAIActivity : BaseActivity() {
         setContentView(bi.root)
 
         val moduleName = intent.getStringExtra("ModuleName")
-        supportFragmentManager.beginTransaction().apply {
-            val homeBottomTabFragment = HomeBottomTabFragment()
-            val args = Bundle()
-            args.putString("ModuleName", moduleName)
-            homeBottomTabFragment.arguments = args
-            replace(R.id.flFragment, homeBottomTabFragment, "homeBottom")
-            addToBackStack(null)
-            commit()
-        }
+        val bottomSeatName = intent.getStringExtra("BottomSeatName")
 
-        // Request all permissions at once
-        if (!hasAllPermissions()) {
-            requestAllPermissions()
-        }
-    }
-
-    // Check if all required permissions are granted
-    private fun hasAllPermissions(): Boolean {
-        return REQUIRED_PERMISSIONS.all {
-            ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
-
-    // Request all permissions in one go
-    private fun requestAllPermissions() {
-        ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSION_REQUEST_CODE)
-    }
-
-    // Handle permissions result
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            val deniedPermissions = permissions.zip(grantResults.toTypedArray())
-                .filter { it.second != PackageManager.PERMISSION_GRANTED }
-                .map { it.first }
-
-            if (deniedPermissions.isEmpty()) {
-                Toast.makeText(this, "All permissions granted!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Permissions denied: $deniedPermissions", Toast.LENGTH_LONG).show()
+        if (bottomSeatName.contentEquals("SnapMealTypeEat")){
+            supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = SnapMealFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "HomeDashboard")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }else  if (bottomSeatName.contentEquals("MealLogTypeEat")){
+            supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = YourMealLogsFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "HomeDashboard")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }else if (bottomSeatName.contentEquals("SearchActivityLogMove")) {
+            supportFragmentManager.beginTransaction().apply {
+                val searchWorkoutFragment = SearchWorkoutFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "HomeDashboard")
+                searchWorkoutFragment.arguments = args
+                replace(R.id.flFragment, searchWorkoutFragment, "searchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
+        }else if (bottomSeatName.contentEquals("RecordEmotionMoodTracThink")) {
+            supportFragmentManager.beginTransaction().apply {
+                val homeBottomTabFragment = MoodTrackerFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "HomeDashboard")
+                homeBottomTabFragment.arguments = args
+                replace(R.id.flFragment, homeBottomTabFragment, "homeBottom")
+                addToBackStack(null)
+                commit()
+            }
+        }else{
+            supportFragmentManager.beginTransaction().apply {
+                val homeBottomTabFragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", moduleName)
+                args.putString("BottomSeatName", bottomSeatName)
+                homeBottomTabFragment.arguments = args
+                replace(R.id.flFragment, homeBottomTabFragment, "homeBottom")
+                addToBackStack(null)
+                commit()
             }
         }
     }

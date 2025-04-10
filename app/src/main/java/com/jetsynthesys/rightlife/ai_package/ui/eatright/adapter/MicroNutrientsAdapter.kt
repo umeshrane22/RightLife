@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
@@ -29,6 +30,11 @@ class MicroNutrientsAdapter(private val context: Context, private var dataLists:
         holder.unit.text = item.nutrientsUnit
         holder.energyType.text = item.nutrientsEnergy
         holder.icCal.visibility = View.GONE
+        if (item.nutrientsValue != "0"){
+            holder.itemView.visibility = View.VISIBLE
+        }else{
+            holder.itemView.visibility = View.GONE
+        }
 //        if (item.status == true) {
 //            holder.circleStatus.setImageResource(R.drawable.circle_check)
 //            if (mealLogListData != null){
@@ -75,6 +81,7 @@ class MicroNutrientsAdapter(private val context: Context, private var dataLists:
          val unit: TextView = itemView.findViewById(R.id.tv_unit)
          val energyType: TextView = itemView.findViewById(R.id.tv_energy_type)
          val icCal : ImageView = itemView.findViewById(R.id.image_dewpoint)
+         val mainLayout : ConstraintLayout = itemView.findViewById(R.id.mainLayout)
      }
 
     fun addAll(item : ArrayList<MicroNutrientsModel>?, pos: Int, microNutrients : MicroNutrientsModel?, isClick : Boolean) {

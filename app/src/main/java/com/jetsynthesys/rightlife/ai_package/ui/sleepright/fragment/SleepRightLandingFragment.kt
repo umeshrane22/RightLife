@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RadioGroup
@@ -78,13 +79,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var sleepConsistencyChart: SleepGraphView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
+    private lateinit var logYourNap : LinearLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        //Not
+        //LogLastNightSleep
+
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
+        logYourNap = view.findViewById(R.id.btn_log_nap)
         val sleepInfo = view.findViewById<ImageView>(R.id.img_sleep_right)
         val editWakeup = view.findViewById<ImageView>(R.id.img_edit_wakeup_time)
         val sleepPerform = view.findViewById<ImageView>(R.id.img_sleep_perform_right)
@@ -92,9 +99,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
         wakeTime = view.findViewById<TextView>(R.id.tv_wakeup_time)
+
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
+
+        if (bottomSeatName.contentEquals("LogLastNightSleep")){
+            val bottomSheet = LogYourNapDialogFragment()
+            bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+        }
 
         sleepInfo.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -107,6 +120,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }
 
+        logYourNap.setOnClickListener {
+            val bottomSheet = LogYourNapDialogFragment()
+            bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -136,7 +153,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
       //  setupBarChart(sleepBarChart)
 
-        fetchSleepData()
+        fetchSleepLandingData()
         fetchIdealActualData()
         fetchSleepConsistencyData()
 
@@ -309,7 +326,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    private fun fetchSleepData() {
+    private fun fetchSleepLandingData() {
         Utils.showLoader(requireActivity())
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"

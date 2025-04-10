@@ -8,13 +8,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.ModuleData
+import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 
-class ToolsAdapter(private val context: Context, private var dataLists: ArrayList<ToolsData>?,
-                   val onToolItem: (ToolsData, Int, Boolean) -> Unit)
+class ToolsAdapter( context: Context, private var dataLists: ArrayList<ToolGridData>?,
+                   val onToolItem: (ToolGridData, Int, Boolean) -> Unit)
     : RecyclerView.Adapter<ToolsAdapter.ViewHolder>() {
 
+        val mContext = context
     val imageList = arrayListOf(
         R.drawable.breathwork_icon,    // Replace with actual drawable names
         R.drawable.journaling_ink_icon,
@@ -36,8 +40,12 @@ class ToolsAdapter(private val context: Context, private var dataLists: ArrayLis
     }
 
     override fun onBindViewHolder(holder: ToolsAdapter.ViewHolder, position: Int) {
-        imageList.getOrNull(position)?.let { holder.itemView.findViewById<ImageView>(R.id.iconImageView).setImageResource(it) }
-        holder.itemView.findViewById<TextView>(R.id.titleTextView).setText(dataLists?.getOrNull(position)?.title)
+        Glide.with(mContext)
+            .load( imageList.get(position))
+            .placeholder(R.drawable.ic_plus)
+            .into(holder.itemView.findViewById<ImageView>(R.id.iconImageView))
+       // dataLists?.getOrNull(position)?.image.let { holder.itemView.findViewById<ImageView>(R.id.iconImageView).setImageResource(it) }
+        holder.itemView.findViewById<TextView>(R.id.titleTextView).setText(dataLists?.getOrNull(position)?.moduleName)
         colorList.getOrNull(position)?.let { holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(it) }
       //  holder.itemView.findViewById<TextView>(R.id.subtitleTextView).setText(dataLists?.getOrNull(position)?.subtitle)
 

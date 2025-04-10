@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/record_emotion_bg">
+<androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toTopOf="@+id/btn_save"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <!-- Title Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Record Emotion"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/closeButton"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/red_cross_btn"
+                android:contentDescription="Close" />
+        </LinearLayout>
+
+        <!-- Emotion Icon -->
+        <ImageView
+            android:id="@+id/emotionIcon"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/happy_icon"
+            android:layout_marginTop="16dp" />
+
+        <!-- Emotion Label -->
+    <LinearLayout
+        android:id="@+id/emotionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="16dp">
+        <TextView
+            android:id="@+id/emotionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Happy"
+            android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/emotionEdit"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:visibility="gone"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/edit_black_icon" />
+    </LinearLayout>
+
+        <!-- Add Journal Entry -->
+        <LinearLayout
+            android:id="@+id/journalEntryLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/addJournalEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="+ Add A New Journal Entry"
+                android:textColor="#9C5812"
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="@drawable/dashed_border_bg" />
+
+            <EditText
+                android:id="@+id/journalEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Write your thoughts..."
+                android:visibility="gone"
+                android:minLines="3"
+                android:maxLines="5"
+                android:background="@drawable/white_meal_date_bg"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:gravity="top|start"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Sections -->
+        <TextView android:text="What are you doing?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            style="@style/SectionLabel"/>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/activityFlexbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView android:text="Who were you with?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            style="@style/SectionLabel"/>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/withFlexbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView android:text="Where were you?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            style="@style/SectionLabel"/>
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/locationFlexbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:id="@+id/btn_save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:background="@drawable/yellow_btn_bg"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/thinkright_text_color"
+            android:fontFamily="@font/dmsans_bold"
+            android:text="Save"
+            android:textSize="18sp" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
