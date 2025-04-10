@@ -49,6 +49,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private lateinit var layoutNoDishes: LinearLayoutCompat
     private lateinit var addMealNameLayout : LinearLayoutCompat
     private lateinit var continueLayout : LinearLayoutCompat
+    private lateinit var addedNameTv : TextView
     var mealLogLists : ArrayList<MealLists> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
@@ -75,6 +76,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         editMeal = view.findViewById(R.id.ic_edit)
         addedMealListLayout = view.findViewById(R.id.layout_added_meal_list)
         btnAddLayout = view.findViewById(R.id.layout_btnAdd)
+        addedNameTv = view.findViewById(R.id.addedNameTv)
 //        editDeleteLunch = view.findViewById(R.id.btn_edit_delete_lunch)
 //        editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
 //        layoutMain = view.findViewById(R.id.layout_main)
@@ -144,6 +146,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             if (layoutNoDishes.visibility == View.GONE){
                 saveMealLayout.isEnabled = true
                 saveMealLayout.setBackgroundResource(R.drawable.green_meal_bg)
+                addedNameTv.text = etAddName.text
             }else{
                 saveMealLayout.isEnabled = false
                 saveMealLayout.setBackgroundResource(R.drawable.light_green_bg)
@@ -246,8 +249,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
-        val startDate = "2025-03-24"
-        val call = ApiClient.apiServiceFastApi.getMeal(userId, startDate)
+        val startDate = "2025-04-10"
+        val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {

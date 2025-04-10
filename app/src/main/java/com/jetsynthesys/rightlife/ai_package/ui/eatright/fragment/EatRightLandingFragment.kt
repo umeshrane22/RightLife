@@ -2,20 +2,30 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.animation.ValueAnimator
 import android.app.ProgressDialog
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -32,10 +42,17 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
+import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetWaterIntakeSelectionBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
+import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
+import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.math.floor
 
 class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
@@ -65,6 +82,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var proteinProgressBar : ProgressBar
     private lateinit var cabsProgressBar : ProgressBar
     private lateinit var imageBack : ImageView
+    private lateinit var logWeightRulerAdapter: LogWeightRulerAdapter
+    private val numbers = mutableListOf<Float>()
+    private lateinit var waterIntakeBottomSheet: WaterIntakeBottomSheet
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
@@ -80,9 +100,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         newBoolean = true
         appPreference = AppPreference(requireContext())
+        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        //SelectMealTypeEat
+        //LogWeightEat
+        //LogWaterIntakeEat
+        //Not
 
         val halfCurveProgressBar = view.findViewById<HalfCurveProgressBar>(R.id.halfCurveProgressBar)
         val snapMealBtn = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
@@ -114,6 +138,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         otherReciepeRecyclerView.layoutManager = LinearLayoutManager(context)
         otherReciepeRecyclerView.adapter = otherReciepeAdapter
 
+        if (bottomSeatName.contentEquals("LogWeightEat")){
+            showLogWeightBottomSheet()
+        }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
+            showWaterIntakeBottomSheet()
+        }
 
         getMealRecipesList()
         getMealRecipesLists()
@@ -312,7 +341,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
        // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
-        val startDate = "2025-03-24"
+        val startDate = "2025-03-25"
         val call = ApiClient.apiServiceFastApi.getMealSummary(userId, startDate)
         call.enqueue(object : Callback<LandingPageResponse> {
             override fun onResponse(call: Call<LandingPageResponse>, response: Response<LandingPageResponse>) {
@@ -381,5 +410,172 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 Utils.dismissLoader(requireActivity())
             }
         })
+    }
+
+    private fun showLogWeightBottomSheet() {
+        // Create and configure BottomSheetDialog
+        val bottomSheetDialog = BottomSheetDialog(requireActivity())
+        var selectedLabel = " kg"
+        var selectedWeight = ""//binding.tvWeight.text.toString()
+        if (selectedWeight.isEmpty()) {
+            selectedWeight = "50 kg"
+        } else {
+            val w = selectedWeight.split(" ")
+            selectedLabel = " ${w[1]}"
+        }
+
+
+        // Inflate the BottomSheet layout
+        val dialogBinding = BottomsheetLogWeightSelectionBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+//        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+//        if (bottomSheetLayout != null) {
+//            val slideUpAnimation: Animation =
+//                AnimationUtils.loadAnimation(context, R.anim.bottom_sheet_slide_up)
+//            bottomSheetLayout.animation = slideUpAnimation
+//        }
+
+        dialogBinding.selectedNumberText.text = selectedWeight
+        if (selectedLabel == " lbs") {
+            dialogBinding.switchWeightMetric.isChecked = true
+        }
+
+        val thumbColors = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(Color.parseColor("#03B27B"), Color.parseColor("#03B27B"))
+        )
+
+        val trackColors = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+            intArrayOf(Color.parseColor("#F2F2F2"), Color.parseColor("#F2F2F2"))
+        )
+
+        dialogBinding.switchWeightMetric.thumbTintList = thumbColors
+        dialogBinding.switchWeightMetric.trackTintList = trackColors
+
+        dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
+            val w = selectedWeight.split(" ")
+            if (isChecked) {
+                selectedLabel = " lbs"
+                selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+                setLbsValue()
+            } else {
+                selectedLabel = " kgs"
+                selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+                setKgsValue()
+            }
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+            selectedWeight += selectedLabel
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
+
+        val layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        dialogBinding.rulerView.layoutManager = layoutManager
+
+        // Generate numbers with increments of 0.1
+
+        for (i in 0..1000) {
+            numbers.add(i / 10f) // Increment by 0.1
+        }
+
+
+        logWeightRulerAdapter = LogWeightRulerAdapter(numbers) { number ->
+            // Handle the selected number
+        }
+        dialogBinding.rulerView.adapter = logWeightRulerAdapter
+
+
+        // Center number with snap alignment
+        val snapHelper: SnapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(dialogBinding.rulerView)
+
+        dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // Get the currently snapped position
+                    val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
+                    if (snappedView != null) {
+                        val position = recyclerView.layoutManager!!.getPosition(snappedView)
+                        val snappedNumber = numbers[position]
+                        //selected_number_text.setText("$snappedNumber Kg")
+                        dialogBinding.selectedNumberText.text = "$snappedNumber $selectedLabel"
+                        selectedWeight = dialogBinding.selectedNumberText.text.toString()
+                    }
+                }
+            }
+        })
+
+        dialogBinding.rlRulerContainer.post {
+            // Get the width of the parent LinearLayout
+            val parentWidth: Int = dialogBinding.rlRulerContainer.width
+
+            // Calculate horizontal padding (half of parent width)
+            val paddingHorizontal = parentWidth / 2
+
+            // Set horizontal padding programmatically
+            dialogBinding.rulerView.setPadding(
+                paddingHorizontal,
+                dialogBinding.rulerView.paddingTop,
+                paddingHorizontal,
+                dialogBinding.rulerView.paddingBottom
+            )
+        }
+
+        // Scroll to the center after layout is measured
+        dialogBinding.rulerView.post {
+            // Calculate the center position
+            val itemCount =
+                if (dialogBinding.rulerView.adapter != null) dialogBinding.rulerView.adapter!!.itemCount else 0
+            val centerPosition = itemCount / 2
+
+            // Scroll to the center position
+            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
+        }
+
+        dialogBinding.btnConfirm.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            dialogBinding.rulerView.adapter = null
+         //   binding.tvWeight.text = selectedWeight
+        }
+
+        dialogBinding.closeIV.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            dialogBinding.rulerView.adapter = null
+        }
+
+        bottomSheetDialog.show()
+    }
+
+    private fun setKgsValue() {
+        numbers.clear()
+        for (i in 0..1000) {
+            numbers.add(i / 10f) // Increment by 0.1
+        }
+        logWeightRulerAdapter.notifyDataSetChanged()
+    }
+
+    private fun setLbsValue() {
+        numbers.clear()
+        for (i in 0..2204) {
+            numbers.add(i / 10f)
+        }
+        logWeightRulerAdapter.notifyDataSetChanged()
+    }
+
+    private fun showWaterIntakeBottomSheet(){
+
+        waterIntakeBottomSheet = WaterIntakeBottomSheet()
+        waterIntakeBottomSheet.isCancelable = false
+        val bundle = Bundle()
+        bundle.putBoolean("test",false)
+        waterIntakeBottomSheet.arguments = bundle
+        activity?.supportFragmentManager?.let { waterIntakeBottomSheet.show(it, "DeleteMealBottomSheet") }
     }
 }

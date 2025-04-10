@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.addCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -18,6 +19,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBinding>() {
 
@@ -36,16 +42,26 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
-
+        //fetchHeartRateVariability("last_weekly")
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rbWeek -> updateChart(getWeekData(), getWeekLabels())
-                R.id.rbMonth -> updateChart(getMonthData(), getMonthLabels())
-                R.id.rbSixMonths -> updateChart(getSixMonthData(), getSixMonthLabels())
+                R.id.rbWeek ->{
+                    updateChart(getWeekData(), getWeekLabels())
+                   // fetchHeartRateVariability("last_weekly")
+                }
+                R.id.rbMonth -> {
+                    updateChart(getMonthData(), getMonthLabels())
+                   // fetchHeartRateVariability("last_monthly")
+                }
+                R.id.rbSixMonths ->{
+                    updateChart(getSixMonthData(), getSixMonthLabels())
+                   // fetchHeartRateVariability("last_six_months")
+
+                }
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -146,5 +162,44 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
     /** X-Axis Labels for 6 Months */
     private fun getSixMonthLabels(): List<String> {
         return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
+    }
+    private fun fetchHeartRateVariability(period: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.getHeartRateVariability(
+                    userId = "64763fe2fa0e40d9c0bc8264",
+                    period = period,
+                    date = "2025-03-24"
+                )
+
+                if (response.isSuccessful) {
+                    val heartRateVariability = response.body()
+                    heartRateVariability?.let { data ->
+
+                        val totalCalories = data.heartRateVariability.sumOf { it.value.toDoubleOrNull() ?: 0.0 }
+                        withContext(Dispatchers.Main) {
+                           // updateChart(entries, labels)
+                            /* Toast.makeText(
+                                 requireContext(),
+                                 "Total Active Calories: $totalCalories kcal",
+                                 Toast.LENGTH_LONG
+                             ).show()*/
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Error: ${response.code()} - ${response.message()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 }

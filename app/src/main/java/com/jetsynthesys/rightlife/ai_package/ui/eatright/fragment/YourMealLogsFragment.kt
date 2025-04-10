@@ -93,7 +93,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     var lunchLists : ArrayList<MealList> = ArrayList()
     var dinnerLists : ArrayList<MealList> = ArrayList()
 
-
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
 
@@ -116,8 +115,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         appPreference = AppPreference(requireContext())
+        val moduleName = arguments?.getString("ModuleName").toString()
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
-
         mealLogDateRecyclerView = view.findViewById(R.id.recyclerview_calender)
         breakfastMealRecyclerView = view.findViewById(R.id.recyclerview_breakfast_meals_item)
         lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
@@ -146,9 +145,17 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         layoutAdd = view.findViewById(R.id.layout_btnAdd)
         layoutLunchAdd = view.findViewById(R.id.layout_lunchAdd)
         layoutDinnerAdd = view.findViewById(R.id.layout_dinnerAdd)
-
         layoutToolbar = view.findViewById(R.id.layoutToolbar)
         transparentOverlay = view.findViewById(R.id.transparentOverlay)
+
+        if (moduleName.contentEquals("HomeDashboard")){
+            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+            selectMealTypeBottomSheet.isCancelable = true
+            val bundle = Bundle()
+            bundle.putBoolean("test",false)
+            selectMealTypeBottomSheet.arguments = bundle
+            activity?.supportFragmentManager?.let { selectMealTypeBottomSheet.show(it, "SelectMealTypeBottomSheet") }
+        }
 
         getMealPlanList()
         //getMealList()
@@ -523,7 +530,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
         val startDate = "2025-03-22"
-        val call = ApiClient.apiServiceFastApi.getMeal(userId, startDate)
+        val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {

@@ -22,6 +22,9 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
+import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CreateRoutineListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
@@ -71,6 +74,8 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         addNameLayout.visibility = View.VISIBLE
         createListRoutineLayout.visibility = View.GONE
+        //deleteCalorieRecord()
+       // updateCalorieRecord()
 
         val defaultBackground: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.add_cart_button_background)
         val filledBackground: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.button_background_filled)
@@ -123,28 +128,25 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
     private fun assignWorkoutRoutine() {
         CoroutineScope(Dispatchers.IO).launch {
+
             try {
                 val id: String = "67e1317722a2406f2eceb627"
                 val userId: String = "64763fe2fa0e40d9c0bc8264"
-                val routineName: String = editText.text.toString() // Use the user-entered routine name
+                val routineName: String = editText.text.toString()
                 val workoutIds: List<String> = listOf("67e1317722a2406f2eceb63a")
                 val date: String = "2025-03-24"
 
-                // Create the request body
                 val request = AssignRoutineRequest(
                     routineName = routineName,
                     workoutIds = workoutIds,
                     date = date
                 )
-
-                // Make the API call
                 val response: Response<AssignRoutineResponse> = ApiClient.apiServiceFastApi.assignRoutine(
                     id = id,
                     userId = userId,
                     request = request
                 )
 
-                // Process the response
                 if (response.isSuccessful) {
                     val assignResponse: AssignRoutineResponse? = response.body()
                     if (assignResponse != null) {
@@ -170,6 +172,8 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             }
         }
     }
+
+
 
     private fun fetchMoveRoutine() {
         CoroutineScope(Dispatchers.IO).launch {

@@ -6,8 +6,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.DashPathEffect;
 import android.util.AttributeSet;
-import android.view.View;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -60,6 +60,7 @@ public class LineGrapghViewSteps extends View {
     public void addDataSet(float[] data, int color) {
         dataSets.add(data);
         lineColors.add(color);
+        invalidate(); // Trigger a redraw after adding data
     }
 
     @Override
@@ -73,6 +74,11 @@ public class LineGrapghViewSteps extends View {
         // Log the view dimensions to debug
         Log.d("LineGrapghViewSteps", "View Width: " + width + ", View Height: " + height);
 
+        if (dataSets.isEmpty()) {
+            Log.w("LineGrapghViewSteps", "No datasets available, skipping draw.");
+            return; // Exit if no data to draw
+        }
+
         // Reserve space at the bottom for the X-axis labels
         float paddingBottom = 50f; // Space for X-axis labels
         float graphHeight = height - paddingBottom;
@@ -85,15 +91,24 @@ public class LineGrapghViewSteps extends View {
         float minValue = Float.MAX_VALUE;
         float maxValue = Float.MIN_VALUE;
         for (float[] data : dataSets) {
-            for (float value : data) {
-                if (value < minValue) minValue = value;
-                if (value > maxValue) maxValue = value;
+            if (data != null && data.length > 0) { // Check for null or empty array
+                for (float value : data) {
+                    if (value < minValue) minValue = value;
+                    if (value > maxValue) maxValue = value;
+                }
             }
+        }
+
+        // Ensure minValue and maxValue are valid
+        if (minValue == Float.MAX_VALUE || maxValue == Float.MIN_VALUE) {
+            minValue = 0f; // Default min if no data
+            maxValue = 100f; // Default max if no data
+            Log.w("LineGrapghViewSteps", "No valid data range, using defaults (0-100).");
         }
 
         // Scale the data points to fit within the graph's height and effective width
         float scaleY = graphHeight / (maxValue - minValue);
-        float scaleX = effectiveWidth / (dataSets.get(0).length - 1); // Scale based on effective width
+        float scaleX = effectiveWidth / (dataSets.get(0).length - 1); // Safe to access now
 
         // Draw each dataset as a separate line
         for (int i = 0; i < dataSets.size(); i++) {
@@ -114,30 +129,32 @@ public class LineGrapghViewSteps extends View {
             path.reset();
             float lastX = 0f;
             float lastY = 0f;
-            for (int j = 0; j < data.length; j++) {
-                // Adjust the x position to account for the start padding
-                float x = paddingHorizontal + (j * scaleX);
-                float y = graphHeight - ((data[j] - minValue) * scaleY);
+            if (data != null && data.length > 0) {
+                for (int j = 0; j < data.length; j++) {
+                    // Adjust the x position to account for the start padding
+                    float x = paddingHorizontal + (j * scaleX);
+                    float y = graphHeight - ((data[j] - minValue) * scaleY);
 
-                if (j == 0) {
-                    path.moveTo(x, y); // Move to the first point
-                } else {
-                    path.lineTo(x, y); // Draw line to the next point
+                    if (j == 0) {
+                        path.moveTo(x, y); // Move to the first point
+                    } else {
+                        path.lineTo(x, y); // Draw line to the next point
+                    }
+
+                    // Store the last point for drawing the circle
+                    if (j == data.length - 1) {
+                        lastX = x;
+                        lastY = y;
+                    }
                 }
 
-                // Store the last point for drawing the circle
-                if (j == data.length - 1) {
-                    lastX = x;
-                    lastY = y;
-                }
+                // Draw the line on the canvas
+                canvas.drawPath(path, linePaint);
+
+                // Draw a circle at the last point
+                circlePaint.setColor(color);
+                canvas.drawCircle(lastX, lastY, 6f, circlePaint); // 6f radius for the circle
             }
-
-            // Draw the line on the canvas
-            canvas.drawPath(path, linePaint);
-
-            // Draw a circle at the last point
-            circlePaint.setColor(color);
-            canvas.drawCircle(lastX, lastY, 6f, circlePaint); // 6f radius for the circle
         }
 
         // Draw X-axis labels (time in hours)
@@ -169,5 +186,12 @@ public class LineGrapghViewSteps extends View {
             Log.d("LineGrapghViewSteps", "Drawing label: " + timeLabels[i] + " at x: " + x + ", y: " + y);
             canvas.drawText(timeLabels[i], x, y, axisPaint);
         }
+    }
+
+    // Optional: Clear all datasets
+    public void clear() {
+        dataSets.clear();
+        lineColors.clear();
+        invalidate(); // Trigger a redraw
     }
 }

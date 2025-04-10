@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <!-- Line that will be drawn at different sizes based on the number -->
+    <View
+        android:id="@+id/ruler_line"
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+        android:layout_weight="1"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@color/black_no_meals" />
+
+    <View
+        android:id="@+id/ruler_line_small"
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginBottom="100dp"
+        android:layout_weight="1"
+        android:background="@color/on_track_color"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+         />
+
+    <!-- Number Text -->
+    <TextView
+        android:id="@+id/number_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="number "
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+</LinearLayout>
