@@ -76,11 +76,11 @@ class SplashScreenActivity : AppCompatActivity() {
                     }
                 }
                 if (loggedInUser?.isOnboardingComplete == true) {
-                    val intent = Intent(this, HomeActivity::class.java)
+                    val intent = Intent(this, MainAIActivity::class.java)
                     startActivity(intent)
                 } else {
                     if (sharedPreferenceManager.userName.isNullOrEmpty()) {
-                        val intent = Intent(this, HomeActivity::class.java)
+                        val intent = Intent(this, MainAIActivity::class.java)
                         startActivity(intent)
                     } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()) {
                         val intent = Intent(this, WellnessFocusActivity::class.java)
