@@ -37,11 +37,15 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.view.isVisible
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class DishFragment : BaseFragment<FragmentDishBinding>() {
 
@@ -196,15 +200,19 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         }
 
         addToTheMealLayout.setOnClickListener {
-            Toast.makeText(context, "Meal Added", Toast.LENGTH_SHORT).show()
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "mealLog")
-                addToBackStack("mealLog")
-                commit()
+
+            if (foodDetailsResponse?.data != null){
+                createMeal(foodDetailsResponse.data)
             }
+
+//            val fragment = HomeBottomTabFragment()
+//            val args = Bundle()
+//            fragment.arguments = args
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                replace(R.id.flFragment, fragment, "mealLog")
+//                addToBackStack("mealLog")
+//                commit()
+//            }
         }
         onFrequentlyLoggedItemRefresh()
     }
@@ -245,52 +253,85 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
 
     private fun onMicroNutrientsList(mealDetails : MealDetails) {
 
-        val b12_mcg = if (null != null){
+        val transFat = if (mealDetails.transFat != null){
+            mealDetails.transFat.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val cholesterol = if (mealDetails.cholesterol != null){
+            mealDetails.cholesterol.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val sodium = if (mealDetails.sodium != null){
+            mealDetails.sodium.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val calcium = if (mealDetails.calcium != null){
+            mealDetails.calcium.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val vitaminD = if (mealDetails.vitaminD != null){
             mealDetails.vitaminD.toInt().toString()
         }else{
-            "5"
+            "0"
         }
 
         val iron_mg = if (mealDetails.iron != null){
             mealDetails.iron.toInt().toString()
         }else{
-            "8"
+            "0"
         }
-        val magnesium_mg = if (null != null){
-            mealDetails.iron.toInt().toString()
+        val fiber_mg = if (mealDetails.fiber != null){
+            mealDetails.fiber.toInt().toString()
         }else{
-            "6"
+            "0"
         }
 
-        val phosphorus_mg = if (null != null){
-            mealDetails.potassium.toInt().toString()
+        val saturatedFat_mg = if (mealDetails.saturatedFat != null){
+            mealDetails.saturatedFat.toInt().toString()
         }else{
-            "10"
+            "0"
         }
 
         val potassium_mg = if (mealDetails.potassium != null){
             mealDetails.potassium.toInt().toString()
         }else{
-            "2"
+            "0"
         }
 
-        val zinc_mg = if (null != null){
-            mealDetails.potassium.toInt().toString()
+        val sugar_mg = if (mealDetails.sugar != null){
+            mealDetails.sugar.toInt().toString()
         }else{
-            "7"
+            "0"
         }
 
         val mealLogs = listOf(
-            MicroNutrientsModel(b12_mcg, "mg", "Vitamin B", R.drawable.ic_cal),
+            MicroNutrientsModel(vitaminD, "mg", "Vitamin D", R.drawable.ic_cal),
             MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_cabs),
-            MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_protein),
-            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
+            MicroNutrientsModel(transFat, "mg", "Trans Fat", R.drawable.ic_protein),
+            MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
             MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats)
+            MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
+            MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
+            MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
+            MicroNutrientsModel(saturatedFat_mg, "mg", "Saturated Fat", R.drawable.ic_fats),
+            MicroNutrientsModel(sugar_mg, "mg", "Sugar", R.drawable.ic_fats)
         )
 
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        //  valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        for (item in mealLogs){
+            if (item.nutrientsValue != "0"){
+                valueLists.add(item)
+            }
+        }
         val mealLogDateData: MicroNutrientsModel? = null
         microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
@@ -355,7 +396,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
         val startDate = "2025-03-24"
-        val call = ApiClient.apiServiceFastApi.getMeal(userId, startDate)
+        val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {
@@ -368,6 +409,57 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                Utils.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun createMeal(mealDetails : MealDetails) {
+        Utils.showLoader(requireActivity())
+        // val userId = appPreference.getUserId().toString()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "64763fe2fa0e40d9c0bc8264"
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val formattedDate = currentDateTime.format(formatter)
+
+        val mealLogRequest = MealLogRequest(
+            mealId = mealDetails._id,
+            userId = "64763fe2fa0e40d9c0bc8264",
+            meal = mealDetails.name,
+            date = formattedDate,
+            image = mealDetails.image,
+            mealType = mealDetails.mealType,
+            mealQuantity = mealDetails.mealQuantity,
+            unit = mealDetails.unit,
+            isRepeat = mealDetails.isRepeat,
+            isFavourite = mealDetails.isFavourite,
+            isLogged = true
+        )
+        val call = ApiClient.apiServiceFastApi.createLogMeal(mealLogRequest)
+        call.enqueue(object : Callback<MealLogResponse> {
+            override fun onResponse(call: Call<MealLogResponse>, response: Response<MealLogResponse>) {
+                if (response.isSuccessful) {
+                    Utils.dismissLoader(requireActivity())
+                    val mealData = response.body()?.message
+                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    val fragment = CreateMealFragment()
+                    val args = Bundle()
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "mealLog")
+                        addToBackStack("mealLog")
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Utils.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealLogResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 Utils.dismissLoader(requireActivity())

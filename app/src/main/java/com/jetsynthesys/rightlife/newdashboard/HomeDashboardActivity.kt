@@ -1,8 +1,11 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,10 +13,24 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.SpeedRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -43,6 +60,9 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -58,6 +78,19 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checkListCount = 0;
+    private lateinit var healthConnectClient: HealthConnectClient
+    private val allReadPermissions = setOf(
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(SpeedRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class)
+    )
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeDashboardBinding.inflate(layoutInflater)
@@ -285,7 +318,17 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
-            Toast.makeText(this, "Sync Health", Toast.LENGTH_SHORT).show()
+            val availabilityStatus = HealthConnectClient.getSdkStatus(this)
+            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                healthConnectClient = HealthConnectClient.getOrCreate(this)
+                lifecycleScope.launch {
+                    requestPermissionsAndReadAllData()
+
+                }
+            } else {
+                installHealthConnect(this)
+              //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+            }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
             //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
@@ -483,13 +526,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         promotionResponse2,
                         AiDashboardResponseMain::class.java
                     )
-                    Log.d(
-                        "dashboard",
-                        "Success: Scan Details" + aiDashboardResponseMain.data?.facialScan?.get(0)!!.avgParameter
-                    )
+//                    Log.d(
+//                        "dashboard",
+//                        "Success: Scan Details" + aiDashboardResponseMain.data?.facialScan?.get(0)!!.avgParameter
+//                    )
                     handleSelectedModule(aiDashboardResponseMain)
                     binding.recyclerView.adapter = HeartRateAdapter(
-                        aiDashboardResponseMain.data.facialScan,
+                        aiDashboardResponseMain.data?.facialScan,
                         this@HomeDashboardActivity
                     )
                 } else {
@@ -910,4 +953,57 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun requestPermissionsAndReadAllData() {
+        try {
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            if (allReadPermissions.all { it in granted }) {
+//                fetchAllHealthData()
+            } else {
+                requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions.values.all { it }) {
+                lifecycleScope.launch {
+                   // fetchAllHealthData()
+                }
+                Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
+              //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+//                val intent = Intent(Intent.ACTION_MAIN).apply {
+//                    setClassName(
+//                        "com.google.android.apps.healthdata",
+//                        "com.google.android.apps.healthdata.home.HomeActivity"
+//                    )
+//                }
+//                startActivity(intent)
+            }
+        }
+
+    private fun isHealthConnectAvailable(context: Context): Boolean {
+        val packageManager = context.packageManager
+        return try {
+            packageManager.getPackageInfo("com.google.android.apps.healthdata", 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    private fun installHealthConnect(context: Context) {
+        val uri =
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
 }

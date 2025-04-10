@@ -14,6 +14,8 @@ import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
+import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
@@ -75,12 +77,11 @@ interface ApiService {
         @Header("Authorization") authToken: String): Call<MealLogsResponseModel>
 
     @GET("eat/get-meals/")
-    fun getMeal(@Query("user_id") userId: String,
+    fun getMealList(@Query("user_id") userId: String,
                 @Query("date") startDate: String): Call<MealsResponse>
 
-    @GET("eat/log-meal/")
-    fun logMeal(@Query("user_id") userId: String,
-                @Query("date") startDate: String): Call<MealsResponse>
+    @POST("eat/log-meal/")
+    fun createLogMeal(@Body request: MealLogRequest): Call<MealLogResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(

@@ -341,7 +341,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
        // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
-        val startDate = "2025-03-24"
+        val startDate = "2025-03-25"
         val call = ApiClient.apiServiceFastApi.getMealSummary(userId, startDate)
         call.enqueue(object : Callback<LandingPageResponse> {
             override fun onResponse(call: Call<LandingPageResponse>, response: Response<LandingPageResponse>) {
