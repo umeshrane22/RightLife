@@ -8,7 +8,7 @@
     <!-- Back Arrow and Title -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:orientation="horizontal"
         android:gravity="center"
         android:paddingBottom="1dp">
@@ -28,6 +28,7 @@
             android:id="@+id/icon_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:src="@drawable/icon_back" />
 
 
@@ -42,6 +43,20 @@
         android:layout_marginEnd="@dimen/margin_card_16dp"
         android:layout_gravity="center"
         app:chipSpacingVertical="0dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/ll_other_section"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_suggested_assessment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp" />
+    </LinearLayout>
+
+
     <ScrollView
         android:layout_width="match_parent"
         android:id="@+id/scrollview_result"
@@ -62,6 +77,7 @@
         android:paddingStart="@dimen/margin_card_16dp"
         android:paddingEnd="@dimen/margin_card_16dp"
         android:background="#D9DBE9"
+        android:visibility="gone"
         android:layout_height="wrap_content">
 
         <TextView
@@ -86,6 +102,7 @@
             android:padding="1dp"
             android:layout_below="@+id/tv_checkprogress"
             android:layout_margin="5dp"
+            android:visibility="gone"
             android:background="@drawable/roundedcornerpinkborder"
             android:layout_height="wrap_content" />
     </RelativeLayout>

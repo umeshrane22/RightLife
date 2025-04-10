@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
@@ -29,6 +30,9 @@ class MindAuditResultActivity : AppCompatActivity() {
     private val allAssessments = java.util.ArrayList<String>()
     private var userEmotionsString: ArrayList<String> = ArrayList()
     private lateinit var binding: ActivityMindAuditResultBinding
+    private var suggestedAssessmentAdapter: OtherAssessmentsAdapter? = null
+    private var suggestedAssessmentString = java.util.ArrayList<String>()
+    private var selectedAssessment = "CAS"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,12 +44,40 @@ class MindAuditResultActivity : AppCompatActivity() {
         }
 
         binding.btnTakeAssessment.setOnClickListener {
-            startActivity(Intent(this, MindAuditFromActivity::class.java))
+            //startActivity(Intent(this, MindAuditFromActivity::class.java))
+            val intent = Intent(
+                this,
+                MASuggestedAssessmentActivity::class.java
+            )
+            intent.putExtra("SelectedAssessment", selectedAssessment)
+            startActivity(intent)
         }
-        getAssessmentResult("CAS")
+
         val userEmotions = UserEmotions(userEmotionsString)
         SharedPreferenceManager.getInstance(this).saveUserEmotions(userEmotions)
         getSuggestedAssessment(userEmotions)
+        val assessmentHeader = intent.getStringExtra("Assessment") ?: "CAS"
+        getAssessmentResult(assessmentHeader)
+        binding.tvAssessmentTaken.text = assessmentHeader+" "+"Score"
+        selectedAssessment = assessmentHeader
+        binding.rvSuggestedAssessment.setLayoutManager(
+            LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+        )
+
+
+        suggestedAssessmentAdapter = OtherAssessmentsAdapter(
+            this, suggestedAssessmentString
+        ) { header: String? -> this.showDisclaimerDialog(header) }
+        binding.rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter)
+        //binding.rvSuggestedAssessment.scrollToPosition(0)
+    }
+
+    private fun showDisclaimerDialog(header: String?) {
+
     }
 
 
@@ -181,8 +213,8 @@ class MindAuditResultActivity : AppCompatActivity() {
                         binding.mainScoreLevel.text = assessmentTaken.interpretations.happiness.level
                         binding.mainScoreLevel.visibility = View.VISIBLE
                         binding.tvMainScore.text = assessmentTaken.interpretations.happiness.score.toString()
-                        setHappinessRainbowView(assessmentTaken.interpretations.happiness.score.toInt())
-                        binding.cardviewMainscore.setCardBackgroundColor(getResources().getColor(getColorResForScore(assessmentTaken.interpretations.happiness.score.toInt())))
+                        setHappinessRainbowView(assessmentTaken.interpretations.happiness.score.toFloat())
+                        binding.cardviewMainscore.setCardBackgroundColor(getResources().getColor(getColorForHappinessScore(assessmentTaken.interpretations.happiness.score.toFloat())))
                         setExplanationTitle(assessmentTaken.interpretations.happiness.level,"Happiness")
                     }
                     cardviewMainscore3.visibility = View.GONE
@@ -265,9 +297,9 @@ class MindAuditResultActivity : AppCompatActivity() {
         binding.rainbowView.setStrokeWidth(60f)
         binding.rainbowView.setArcSpacing(8f)
     }
-    private fun setHappinessRainbowView(score: Int) {
+    private fun setHappinessRainbowView(score: Float) {
         binding.rainbowView.visibility = View.VISIBLE
-        binding.rainbowView.setRainbowColors(getColorArrayForHappinessScore(7))
+        binding.rainbowView.setRainbowColors(getColorArrayForHappinessScore(score))
         binding.rainbowView.setStrokeWidth(40f)
         binding.rainbowView.setArcSpacing(8f)
     }
@@ -333,11 +365,11 @@ class MindAuditResultActivity : AppCompatActivity() {
             allAssessments.add("DASS-21")
         }
 
-        if (assessment.sleepAudit != null) {
+     /*   if (assessment.sleepAudit != null) {
             allAssessments.add(assessment.sleepAudit)
         } else {
             allAssessments.add("Sleep Audit")
-        }
+        }*/
 
         if (assessment.gad7 != null) {
             allAssessments.add(assessment.gad7)
@@ -364,6 +396,12 @@ class MindAuditResultActivity : AppCompatActivity() {
          for (assessment in allAssessments){
              addChip(assessment,false)
          }
+
+        suggestedAssessmentString = allAssessments
+        suggestedAssessmentAdapter = OtherAssessmentsAdapter(
+            this, allAssessments
+        ) { header: String? -> this.showDisclaimerDialog(header) }
+        binding.rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter)
     }
 
     private fun addChip(
@@ -428,7 +466,14 @@ class MindAuditResultActivity : AppCompatActivity() {
             val position = binding.chipGroup1.indexOfChild(view)
             val selectedChip = binding.chipGroup1.getChildAt(position) as Chip
             Log.d("selected chip", " --"+selectedChip.text.toString())
-            getAssessmentResult(selectedChip.text.toString())
+            if (selectedChip.text.toString().equals("Sleep Audit")){
+
+            }else {
+                getAssessmentResult(selectedChip.text.toString())
+                binding.tvAssessmentTaken.text = selectedChip.text.toString()+" "+"Score"
+                selectedAssessment = selectedChip.text.toString()
+
+            }
         }
 
         // Text color for selected state
@@ -445,7 +490,17 @@ class MindAuditResultActivity : AppCompatActivity() {
             else -> R.color.red_ext_severe
         }
     }
-
+    fun getColorForHappinessScore(score: Float): Int {
+        return when (score) {
+            in 0f..2f -> R.color.pastel_lavender    // pastel lavender
+            in 2f..3f -> R.color.soft_lilac    // soft lilac
+            in 3f..4f -> R.color.light_sky_blue    // light sky blue
+            in 4f..5f -> R.color.mint_green    // mint green
+            in 5f..6f -> R.color.soft_peach    // soft peach
+            in 6f..7f -> R.color.light_pink_lavender    // light pink-lavender
+            else ->      R.color.soft_beige    // soft beige
+        }
+    }
 
     fun getColorArrayForScore(score: Int): IntArray {
         val colorLevels = listOf(
@@ -471,7 +526,7 @@ class MindAuditResultActivity : AppCompatActivity() {
         }
     }
 
-    fun getColorArrayForHappinessScore(score: Int): IntArray {
+    fun getColorArrayForHappinessScore(score: Float): IntArray {
         /*val colorLevels = listOf(
             0xFF06B27B.toInt(), // green_minimal
             0xFF54C8DB.toInt(), // cyan_mild
@@ -494,12 +549,12 @@ class MindAuditResultActivity : AppCompatActivity() {
         val fallbackColor = 0xFFEFF0F6.toInt() // light gray for unfilled slots
 
         val activeColorCount = when (score) {
-            in 0..2 -> 1
-            in 2..3 -> 2
-            in 3..4 -> 3
-            in 4..5 -> 4
-            in 5..6 -> 5
-            in 6..7 -> 6
+            in 0f..2f -> 1
+            in 2f..3f -> 2
+            in 3f..4f -> 3
+            in 4f..5f -> 4
+            in 5f..6f -> 5
+            in 6f..7f -> 6
             else -> 7
         }
 

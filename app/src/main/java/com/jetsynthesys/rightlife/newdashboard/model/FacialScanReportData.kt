@@ -11,7 +11,7 @@ class FacialScanReportData {
 
     @SerializedName("totalCount")
     @Expose
-    var totalCount: Int? = null
+    var totalCount: Double? = null
 
     @SerializedName("minValue")
     @Expose
@@ -25,8 +25,12 @@ class FacialScanReportData {
     @Expose
     var avgValue: Double? = null
 
+    @SerializedName("yAxisValue")
+    @Expose
+    var yAxisValue: List<Int>? = null
+
     @SerializedName("data")
     @Expose
-    var data: List<FacialScanReport>? = null
+    var data: ArrayList<FacialScanReport>? = null
 
 }

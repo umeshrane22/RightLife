@@ -19,9 +19,12 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
+import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
+import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.io.IOException;
@@ -53,6 +56,13 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             }
         });
         getMyRLHealthCamResult();
+
+        UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
+        if (userProfileResponse == null) return;
+        Userdata userdata = userProfileResponse.getUserdata();
+        if (userdata != null) {
+            binding.txtuserName.setText("Hi " + userdata.getFirstName());
+        }
     }
 
     private void getMyRLHealthCamResult() {
@@ -96,7 +106,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     private void HandleNewReportUI(FacialReportResponseNew facialReportResponseNew) {
         if (facialReportResponseNew.success) {
 
-            binding.txtWellnessScore.setText(String.valueOf(facialReportResponseNew.data.overallWellnessScore.value));
+            //binding.txtWellnessScore1.setText(String.valueOf(facialReportResponseNew.data.overallWellnessScore.value));
+            binding.txtWellnessScore1.setText(String.format("%.2f", facialReportResponseNew.data.overallWellnessScore.value));
+
             binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
 
 
