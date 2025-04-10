@@ -186,6 +186,8 @@
         <activity android:name=".ui.breathwork.BreathworkPracticeActivity" />
         <activity android:name=".ui.settings.SettingsNewActivity" />
         <activity android:name=".ui.settings.AppSettingsActivity" />
+        <activity android:name=".ui.settings.ExportHealthDataActivity" />
+        <activity android:name=".ui.settings.PreparingExportHealthDataActivity" />
         <activity android:name=".ui.settings.NotificationsNewActivity" />
         <activity android:name=".ui.settings.EmailNotificationsNewActivity" />
         <activity android:name=".ui.settings.SupportActivity" />

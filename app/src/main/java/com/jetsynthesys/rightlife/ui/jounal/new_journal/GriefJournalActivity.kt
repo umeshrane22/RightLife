@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityGriefBinding
+import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class GriefJournalActivity : AppCompatActivity() {
@@ -45,6 +46,7 @@ class GriefJournalActivity : AppCompatActivity() {
         binding.btnSave.isEnabled = binding.etJournalEntry.text.isNotEmpty()
 
         setupListeners()
+        showBalloonWithDim(binding.ivRefresh, "Tap to swap your prompt.","GriefJournalActivity", xOff = -200, yOff = 20)
     }
 
     private fun setupListeners() {

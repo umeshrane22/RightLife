@@ -155,7 +155,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     private ActivityResultLauncher<Intent> profileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK) {
-            getUserDetails("");
+            getUserDetails();
         }
     });
     private boolean isAdd = true;
@@ -566,31 +566,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void callAPIs() {
-        getUserDetails("");
+        getUserDetails();
 
-        getPromotionList2(""); // ModuleService pane
-        getRightlifeEdit("");
+        getPromotionList2(); // ModuleService pane
+        getRightlifeEdit();
 
-        getAffirmations("");
-        // getUpcomingEvents("");
-        // getLiveEvents("");
-        // getUpcomingLiveEvents("");
+        getAffirmations();
 
-        getWelnessPlaylist("");
-        getCuratedContent("");
-        getModuleContent("");
+        getWelnessPlaylist();
+        getCuratedContent();
+        getModuleContent();
 
 
         getSubModuleContent("THINK_RIGHT");
         getSubModuleContent("MOVE_RIGHT");
         getSubModuleContent("EAT_RIGHT");
         getSubModuleContent("SLEEP_RIGHT");
-
-        //getQuestionerList("");
-        //call below content api on details page remove form here
-        //getContentlist("");   // api to get module
-        //getContentlistdetails("");
-        // getContentlistdetailsfilter("");
     }
 
     private void setDrawerHeader(View view) {
@@ -691,7 +682,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void getPromotionList(String s) {
+    private void getPromotionList() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -798,9 +789,9 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         // Resume auto-slide when activity is visible
         sliderHandler.postDelayed(sliderRunnable, 3000);
-        getPromotionList("");
-        getRightlifeEdit("");
-        getWelnessPlaylist("");
+        getPromotionList();
+        getRightlifeEdit();
+        getWelnessPlaylist();
     }
 
     @Override
@@ -812,7 +803,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     //second API
-    private void getPromotionList2(String s) {
+    private void getPromotionList2() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -867,7 +858,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     startActivity(intentMind);
                     break;
                 case "Health Cam":
-                    getMyRLHealthCamResult();
+                    startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
                     break;
                 default:
                     Intent intentHealthAudit = new Intent(HomeActivity.this, HealthAuditActivity.class);
@@ -885,7 +876,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     // get Affirmation list
 
-    private void getAffirmations(String s) {
+    private void getAffirmations() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -949,7 +940,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 //Get RightLife Edit
 
-    private void getRightlifeEdit(String s) {
+    private void getRightlifeEdit() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -1091,7 +1082,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     //WElness PlayList
-    private void getWelnessPlaylist(String s) {
+    private void getWelnessPlaylist() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -1267,7 +1258,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //getCuratedContent
 
 
-    private void getCuratedContent(String s) {
+    private void getCuratedContent() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -1308,7 +1299,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     // get Module list
-    private void getModuleContent(String s) {
+    private void getModuleContent() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -1573,7 +1564,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }else if (viewId == R.id.ll_breathwork) {
             startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         }else if (viewId == R.id.ll_health_cam_ql) {
-            getMyRLHealthCamResult();
+            startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
         }else if (viewId == R.id.ll_mealplan) {
             Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
             //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
@@ -1689,7 +1680,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     // get user details
-    private void getUserDetails(String s) {
+    private void getUserDetails() {
         //-----------
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
@@ -1739,128 +1730,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
-    private void saveUserId(String userid) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.USER_ID, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SharedPreferenceConstants.USER_ID, userid);
-        editor.apply();
-    }
-
-
-    // get module content chip list
-    private void getContentlist(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        //Call<JsonElement> call = apiService.getContent(accessToken,"HEALTH_REPORT");
-        // Make the GET request
-        Call<JsonElement> call = apiService.getContent(
-                accessToken,
-                "CATEGORY",
-                "SLEEP_RIGHT",
-                false,
-                true
-        );
-        call.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    JsonElement promotionResponse5 = response.body();
-                    Log.d("API Response", "Content  list: " + promotionResponse5.toString());
-                    //Log.d("API Response", "Content  list - : " + affirmationsResponse.toString());
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-
-                    // LiveEventResponse ResponseObj = gson.fromJson(jsonResponse,LiveEventResponse.class);
-                    //Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
-
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                            Log.d("API Response 2", "Success: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.d("API Response 2", "Success: " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
-            }
-        });
-
-    }
-
-
-    private void getContentlistdetails(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
-                "THINK_RIGHT_POSITIVE_PSYCHOLOGY",
-                10,
-                0,
-                "THINK_RIGHT"
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
     @Override
     public void onNewIntent(@NonNull Intent intent, @NonNull ComponentCaller caller) {
         super.onNewIntent(intent, caller);
@@ -1869,58 +1738,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }else if (intent.getBooleanExtra("start_profile",false)){
             startActivity(new Intent(this, ProfileSettingsActivity.class));
         }
-    }
-
-    private void getContentlistdetailsfilter(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-
-        // Make the GET request with the required query parameters
-        Call<ResponseBody> call = apiService.getContentfilters(
-                accessToken,
-                "SUB_CATEGORY",
-                "THINK_RIGHT",
-                "THINK_RIGHT_POSITIVE_PSYCHOLOGY",
-                true,
-                false
-        );
-
-        // Handle the API response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        // Print the successful response
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful filter: " + successMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    // Print the error response
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
     }
 
     @Override
@@ -1947,48 +1764,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-
-    private void getMyRLHealthCamResult() {
-        Utils.showLoader(this);
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(HomeActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
-                    try {
-                        String jsonString = response.body().string();
-                        Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
-                        Gson gson = new Gson();
-                        FacialReportResponseNew facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
-
-                        startActivity(new Intent(HomeActivity.this, NewHealthCamReportActivity.class));
-
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
-                    startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
-                }
-                Utils.dismissLoader(HomeActivity.this);
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
-                Utils.dismissLoader(HomeActivity.this);
-            }
-        });
     }
 }
 

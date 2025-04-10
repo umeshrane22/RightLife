@@ -43,6 +43,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
+            android:visibility="gone"
             android:background="@drawable/rlpage_info_icon"
             android:backgroundTint="@color/color_blue"
              />
@@ -109,6 +110,27 @@
                         android:layout_marginRight="10dp"
                         android:gravity="center_vertical"
                         android:visibility="visible">
+                        <TextView
+                            android:id="@+id/txt_1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginStart="60dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="0"
+                            android:layout_alignParentBottom="true"
+                            android:textSize="@dimen/textsize_small" />
+
+                        <TextView
+                            android:id="@+id/txt_2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="60dp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:text="100"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentEnd="true"
+                            android:textSize="@dimen/textsize_small" />
 
                         <com.jetsynthesys.rightlife.quiestionscustomviews.WellnessCurveProgressBar
                             android:layout_width="match_parent"
@@ -134,8 +156,7 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_margin="10dp"
                             android:fontFamily="@font/dmsans_bold"
-
-                            android:text="72"
+                            android:text=""
                             android:layout_alignParentBottom="true"
                             android:layout_centerHorizontal="true"
                             android:textSize="48dp" />
@@ -151,7 +172,7 @@
                         android:layout_margin="10dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:gravity="center_horizontal"
-                        android:text="72"
+                        android:text="0"
                         android:visibility="gone"
                         android:textSize="48dp" />
 
@@ -303,6 +324,7 @@
                 android:background="@drawable/bg_gray_border"
                 android:backgroundTint="@color/menuselected"
                 android:gravity="center"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <ImageView

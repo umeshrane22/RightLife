@@ -19,5 +19,9 @@ class HtmlTextActivity : AppCompatActivity() {
         if (!string.isNullOrEmpty())
             binding.tvAnswer.text =
                 Html.fromHtml(string, Html.FROM_HTML_MODE_COMPACT)
+
+        binding.iconBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 }

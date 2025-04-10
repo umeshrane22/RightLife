@@ -10,7 +10,7 @@ public class UploadImage {
     private String fileName;
     @SerializedName("fileSize")
     @Expose
-    private Integer fileSize;
+    private Long fileSize;
     @SerializedName("fileType")
     @Expose
     private String fileType;
@@ -26,11 +26,11 @@ public class UploadImage {
         this.fileName = fileName;
     }
 
-    public Integer getFileSize() {
+    public Long getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(Integer fileSize) {
+    public void setFileSize(Long fileSize) {
         this.fileSize = fileSize;
     }
 
