@@ -263,7 +263,9 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
                         finish();
                         //getAssessmentResult(header);
                         //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
-                        startActivity(new Intent(MAAssessmentQuestionaireActivity.this,MindAuditResultActivity.class));
+                        Intent intent = new Intent(MAAssessmentQuestionaireActivity.this, MindAuditResultActivity.class);
+                        intent.putExtra("Assessment", header); // pass your string or data
+                        startActivity(intent);
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
