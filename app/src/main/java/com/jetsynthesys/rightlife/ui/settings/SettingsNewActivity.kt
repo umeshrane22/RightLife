@@ -166,7 +166,7 @@ class SettingsNewActivity : AppCompatActivity() {
                     HealthCam and Voice Scan: Get insights into your physical and emotional well-being through facial recognition and voice pattern analysis."
                     
                     Together, let's craft our own adventure towards wellbeing! 
-                    Download Now:  https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd
+                    Download Now:  Play Store:\n https://play.google.com/store/apps/details?id=${packageName}
                     """.trimIndent()
             )
         }

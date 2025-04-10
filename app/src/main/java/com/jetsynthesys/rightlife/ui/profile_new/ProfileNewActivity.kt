@@ -12,6 +12,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
@@ -80,7 +82,7 @@ class ProfileNewActivity : AppCompatActivity() {
     private lateinit var adapterHeight: RulerAdapterVertical
     private var selectedLabel: String = " feet"
     private lateinit var adapterWeight: RulerAdapter
-    private lateinit var dialogOtp: Dialog
+    private var dialogOtp: Dialog? = null
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
     private var preSignedUrlData: PreSignedUrlData? = null
@@ -128,19 +130,34 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.llAge.setOnClickListener {
             showAgeSelectionBottomSheet()
         }
+        binding.arrowAge.setOnClickListener {
+            showAgeSelectionBottomSheet()
+        }
 
         binding.tvGender.setOnClickListener {
+            showGenderSelectionBottomSheet()
+        }
+        binding.arrowGender.setOnClickListener {
             showGenderSelectionBottomSheet()
         }
 
         binding.tvHeight.setOnClickListener {
             showHeightSelectionBottomSheet()
         }
+        binding.arrowHeight.setOnClickListener {
+            showHeightSelectionBottomSheet()
+        }
 
         binding.tvWeight.setOnClickListener {
             showWeightSelectionBottomSheet()
         }
+        binding.arrowWeight.setOnClickListener {
+            showWeightSelectionBottomSheet()
+        }
 
+        binding.arrowDeleteAccount.setOnClickListener {
+            startActivity(Intent(this, DeleteAccountSelectionActivity::class.java))
+        }
         binding.llDeleteAccount.setOnClickListener {
             startActivity(Intent(this, DeleteAccountSelectionActivity::class.java))
         }
@@ -784,6 +801,9 @@ class ProfileNewActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
                     showToast("Otp sent to your mobile number")
+                    if (dialogOtp != null && dialogOtp?.isShowing == true) {
+                        dialogOtp?.dismiss()
+                    }
                     showOtpDialog(this@ProfileNewActivity, mobileNumber)
                 } else {
                     showToast(response.message())
@@ -799,9 +819,9 @@ class ProfileNewActivity : AppCompatActivity() {
     private fun showOtpDialog(activity: Activity, mobileNumber: String) {
         dialogOtp = Dialog(activity)
         val binding = DialogOtpVerificationBinding.inflate(LayoutInflater.from(activity))
-        dialogOtp.setContentView(binding.root)
-        dialogOtp.setCancelable(false)
-        dialogOtp.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogOtp?.setContentView(binding.root)
+        dialogOtp?.setCancelable(false)
+        dialogOtp?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         val otpFields = listOf(
             binding.etOtp1, binding.etOtp2, binding.etOtp3,
@@ -836,7 +856,7 @@ class ProfileNewActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                binding.tvCountdown.text = "Expired"
+                binding.tvCountdown.visibility = GONE
             }
         }
         timer.start()
@@ -844,8 +864,20 @@ class ProfileNewActivity : AppCompatActivity() {
         // Cancel Button
         binding.ivClose.setOnClickListener {
             timer.cancel()
-            dialogOtp.dismiss()
+            dialogOtp?.dismiss()
         }
+
+        binding.tvChange.setOnClickListener {
+            timer.cancel()
+            dialogOtp?.dismiss()
+        }
+
+        binding.tvResend.setOnClickListener {
+            timer.cancel()
+            generateOtp(mobileNumber)
+        }
+
+        binding.tvPhone.text = mobileNumber
 
         // Verify Button
         binding.btnVerify.setOnClickListener {
@@ -859,13 +891,13 @@ class ProfileNewActivity : AppCompatActivity() {
             }
         }
 
-        dialogOtp.show()
+        dialogOtp?.show()
     }
 
     private fun verifyOtp(
         mobileNumber: String,
         otp: String,
-        binding: DialogOtpVerificationBinding
+        bindingDialog: DialogOtpVerificationBinding
     ) {
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.verifyOtpForPhoneNumber(
@@ -879,19 +911,23 @@ class ProfileNewActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
                     showToast(response.message())
-                    binding.tvResult.text = "(Verification Success)"
-                    binding.tvResult.setTextColor(getColor(R.color.color_green))
+                    bindingDialog.tvResult.text = "(Verification Success)"
+                    bindingDialog.tvResult.setTextColor(getColor(R.color.color_green))
+                    binding.btnVerify.text = "Verified"
+                    binding.btnVerify.isEnabled = false
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        dialogOtp?.dismiss()
+                    }, 2000)
                 } else {
-                    showToast("Server Error: " + response.code())
-                    binding.tvResult.text = "(Verification Failed-Incorrect OTP)"
-                    binding.tvResult.setTextColor(getColor(R.color.menuselected))
+                    bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                    bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 showToast("Network Error: " + t.message)
-                binding.tvResult.text = "(Verification Failed-Incorrect OTP)"
-                binding.tvResult.setTextColor(getColor(R.color.menuselected))
+                bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
+                bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
             }
 
         })

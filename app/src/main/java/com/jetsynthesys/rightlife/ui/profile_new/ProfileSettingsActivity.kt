@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
+import com.jetsynthesys.rightlife.ui.drawermenu.PurchaseHistoryActivity
+import com.jetsynthesys.rightlife.ui.drawermenu.PurchaseHistoryTypesActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
 import com.jetsynthesys.rightlife.ui.new_design.YourInterestActivity
 import com.jetsynthesys.rightlife.ui.settings.AppSettingsActivity
@@ -63,7 +65,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         val userAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
                 "Purchase History" ->
-                    startActivity(Intent(this, AppSettingsActivity::class.java))
+                    startActivity(Intent(this, PurchaseHistoryTypesActivity::class.java))
 
                 "Payment Modes" ->
                     startActivity(Intent(this, SupportActivity::class.java))
@@ -119,7 +121,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                 .into(binding.ivProfileImage)
         }
 
-        //binding.tvUserAge.text = user.age
+        //binding.tvUserAge.text = user.
         binding.tvUserCity.text = user.country
     }
 }
