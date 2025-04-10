@@ -91,9 +91,11 @@ public class LineGrapghViewSteps extends View {
         float minValue = Float.MAX_VALUE;
         float maxValue = Float.MIN_VALUE;
         for (float[] data : dataSets) {
-            for (float value : data) {
-                if (value < minValue) minValue = value;
-                if (value > maxValue) maxValue = value;
+            if (data != null && data.length > 0) { // Check for null or empty array
+                for (float value : data) {
+                    if (value < minValue) minValue = value;
+                    if (value > maxValue) maxValue = value;
+                }
             }
         }
 
@@ -106,7 +108,7 @@ public class LineGrapghViewSteps extends View {
 
         // Scale the data points to fit within the graph's height and effective width
         float scaleY = graphHeight / (maxValue - minValue);
-        float scaleX = effectiveWidth / (dataSets.get(0).length - 1); // Scale based on effective width
+        float scaleX = effectiveWidth / (dataSets.get(0).length - 1); // Safe to access now
 
         // Draw each dataset as a separate line
         for (int i = 0; i < dataSets.size(); i++) {
@@ -127,30 +129,32 @@ public class LineGrapghViewSteps extends View {
             path.reset();
             float lastX = 0f;
             float lastY = 0f;
-            for (int j = 0; j < data.length; j++) {
-                // Adjust the x position to account for the start padding
-                float x = paddingHorizontal + (j * scaleX);
-                float y = graphHeight - ((data[j] - minValue) * scaleY);
+            if (data != null && data.length > 0) {
+                for (int j = 0; j < data.length; j++) {
+                    // Adjust the x position to account for the start padding
+                    float x = paddingHorizontal + (j * scaleX);
+                    float y = graphHeight - ((data[j] - minValue) * scaleY);
 
-                if (j == 0) {
-                    path.moveTo(x, y); // Move to the first point
-                } else {
-                    path.lineTo(x, y); // Draw line to the next point
+                    if (j == 0) {
+                        path.moveTo(x, y); // Move to the first point
+                    } else {
+                        path.lineTo(x, y); // Draw line to the next point
+                    }
+
+                    // Store the last point for drawing the circle
+                    if (j == data.length - 1) {
+                        lastX = x;
+                        lastY = y;
+                    }
                 }
 
-                // Store the last point for drawing the circle
-                if (j == data.length - 1) {
-                    lastX = x;
-                    lastY = y;
-                }
+                // Draw the line on the canvas
+                canvas.drawPath(path, linePaint);
+
+                // Draw a circle at the last point
+                circlePaint.setColor(color);
+                canvas.drawCircle(lastX, lastY, 6f, circlePaint); // 6f radius for the circle
             }
-
-            // Draw the line on the canvas
-            canvas.drawPath(path, linePaint);
-
-            // Draw a circle at the last point
-            circlePaint.setColor(color);
-            canvas.drawCircle(lastX, lastY, 6f, circlePaint); // 6f radius for the circle
         }
 
         // Draw X-axis labels (time in hours)

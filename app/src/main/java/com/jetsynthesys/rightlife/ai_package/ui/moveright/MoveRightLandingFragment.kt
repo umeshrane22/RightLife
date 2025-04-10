@@ -351,7 +351,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     goalStepsTv.text = totalGoalSteps.toInt().toString()
                 }
                 val averageSteps = FloatArray(7) { dailySteps.average().toFloat() }
-                val goalSteps = FloatArray(7) { 700f }
+                val goalSteps = FloatArray(7) { 3500f }
                 withContext(Dispatchers.Main) {
                     stepLineGraphView.clear()
                     stepLineGraphView.addDataSet(dailySteps, 0xFFFD6967.toInt())
@@ -494,10 +494,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiClient.apiServiceFastApi.getUserWorkouts(
+                val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = "64763fe2fa0e40d9c0bc8264",
-                    startDate = "2025-03-17",
-                    endDate = "2025-03-25",
+                    rangeType = "daily",
+                    date = "2025-03-24",
                     page = 1,
                     limit = 10
                 )
