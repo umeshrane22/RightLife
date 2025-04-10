@@ -1,7 +1,7 @@
 package com.jetsynthesys.rightlife.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityExportHealthDataBinding
 
@@ -19,8 +19,8 @@ class ExportHealthDataActivity : AppCompatActivity() {
         }
 
         binding.btnExport.setOnClickListener {
-
-            Toast.makeText(this, "Exporting data...", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, PreparingExportHealthDataActivity::class.java))
+            finish()
         }
     }
 }

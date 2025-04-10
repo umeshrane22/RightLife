@@ -46,6 +46,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
+import com.jetsynthesys.rightlife.newdashboard.model.HealthCard
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
@@ -68,6 +69,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
@@ -99,6 +101,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         //set report list dummy for demo
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Health No Data
+        setHealthNoDataCardAdapter()
 
         val heartRateList = mutableListOf<HeartRateData>()
         for (i in 1..7) {
@@ -194,8 +199,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.menuHome.setOnClickListener {
             //loadFragment(HomeFragment())
             updateMenuSelection(R.id.menu_home)
-
-
         }
 
         binding.menuExplore.setOnClickListener {
@@ -207,7 +210,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         // Set initial selection
         updateMenuSelection(R.id.menu_home)
 
-        // Handle FAB click
+        // Handling Subscribe to RightLife
+        binding.trialExpiredLayout.btnSubscription.setOnClickListener {
+            Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+        }
 
 
         // Handle FAB click
@@ -215,7 +221,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             this,
             android.R.color.white
         )
-        binding.fab.setImageTintList(ColorStateList.valueOf(resources.getColor(R.color.black)))
+        binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
         val bottom_sheet = binding.includedhomebottomsheet.bottomSheet
         binding.fab.setOnClickListener { v ->
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
@@ -224,7 +230,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 binding.labelHome.setTextColor(resources.getColor(R.color.menuselected))
                 val typeface =
                     ResourcesCompat.getFont(this, R.font.dmsans_bold)
-                binding.labelHome.setTypeface(typeface)
+                binding.labelHome.typeface = typeface
             } else {
                 bottom_sheet.visibility = View.VISIBLE
                 //binding.iconHome.setBackgroundColor(Color.TRANSPARENT)
@@ -246,11 +252,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                             this,
                             R.color.rightlife
                         )
-                        binding.fab.setImageTintList(
-                            ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.black
-                                )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.black
                             )
                         )
                     } else {
@@ -259,11 +263,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                             this,
                             R.color.white
                         )
-                        binding.fab.setImageTintList(
-                            ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.rightlife
-                                )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.rightlife
                             )
                         )
                     }
@@ -481,12 +483,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     binding.userName.text = ResponseObj.userdata.firstName
 
+                    val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
+                    if (countDown <= 7)
+                        binding.tvCountDown.text = "${(7 - countDown)}/7"
+                    else {
+                        binding.llCountDown.visibility = View.GONE
+                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                    }
 
-                    Log.d(
-                        "UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(
-                            applicationContext
-                        ).userId
-                    )
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -503,6 +507,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 t.printStackTrace() // Print the full stack trace for more details
             }
         })
+    }
+
+    private fun getCountDownDays(pastTimestamp: Long): Int {
+        val currentTimestamp = System.currentTimeMillis()
+
+        val diffInMillis = currentTimestamp - pastTimestamp
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+        return diffInDays.toInt()
     }
 
 
@@ -530,10 +542,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         promotionResponse2,
                         AiDashboardResponseMain::class.java
                     )
-//                    Log.d(
-//                        "dashboard",
-//                        "Success: Scan Details" + aiDashboardResponseMain.data?.facialScan?.get(0)!!.avgParameter
-//                    )
                     handleSelectedModule(aiDashboardResponseMain)
                     binding.recyclerView.adapter = HeartRateAdapter(
                         aiDashboardResponseMain.data?.facialScan,
@@ -952,6 +960,27 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         } catch (e: PackageManager.NameNotFoundException) {
             false
         }
+    }
+
+    private fun setHealthNoDataCardAdapter(){
+        val cardList = arrayListOf(
+            HealthCard(
+                "",
+                "Heart Rate",
+                "",
+                "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
+            ),
+            HealthCard(
+                "",
+                "Heart Rate",
+                "",
+                "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
+            )
+        )
+
+        val adapter = HealthCardAdapter(cardList)
+        binding.healthCardRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.healthCardRecyclerView.adapter = adapter
     }
 
     private fun installHealthConnect(context: Context) {

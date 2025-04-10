@@ -1153,6 +1153,11 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body Map<String, String> requestBody
     );
+
+    @POST("user/exportHealthData")
+    Call<CommonResponse> exportHealthData(
+            @Header("Authorization") String authToken
+    );
 }
 
 
