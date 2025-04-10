@@ -75,7 +75,7 @@ data class StepData(
     @SerializedName("unit")
     val unit: String,
     @SerializedName("value")
-    val value: String, // Stored as String in JSON, convert to Int if needed
+    val value: String,
     @SerializedName("_id")
     val id: String,
     @SerializedName("user_id")

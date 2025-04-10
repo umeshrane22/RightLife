@@ -56,6 +56,7 @@ import java.time.Instant
 import java.time.ZoneId
 import kotlin.math.abs
 import androidx.core.net.toUri
+import java.time.LocalDate
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
@@ -64,21 +65,29 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var dots: Array<ImageView?>
     private lateinit var totalCaloriesBurnedRecord: List<TotalCaloriesBurnedRecord>
     private lateinit var stepsRecord: List<StepsRecord>
+    private lateinit var heartRateRecord: List<HeartRateRecord>
+    private lateinit var sleepSessionRecord: List<SleepSessionRecord>
+    private lateinit var exerciseSessionRecord: List<ExerciseSessionRecord>
+    private lateinit var speedRecord: List<SpeedRecord>
+    private lateinit var weightRecord: List<WeightRecord>
+    private lateinit var distanceRecord: List<DistanceRecord>
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var tvBurnValue: TextView
     private lateinit var calorieBalanceIcon: ImageView
     private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var stepsTv: TextView
+    private lateinit var activeStepsTv: TextView
+    private lateinit var steps_no_data_text: TextView
+    private lateinit var stes_no_data_text_description: TextView
+    private lateinit var sync_with_apple_button: ConstraintLayout
+    private lateinit var goalStepsTv: TextView
     private lateinit var calorieCountText: TextView
     private lateinit var totalIntakeCalorieText: TextView
-    private lateinit var totalBurnedCalorieText: TextView
     private lateinit var calorieBalanceDescription: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var appPreference: AppPreference
-    // private lateinit var progressBar: HalfCurveProgressBar
-
-    // Define all required read permissions
+    private var totalIntakeCaloriesSum: Int = 0
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
@@ -102,16 +111,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
-        //Not
-        //SearchActivityMove
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
-        totalIntakeCalorieText= view.findViewById(R.id.textView1)
-        calorieCountText= view.findViewById(R.id.calorie_count)
-       // totalBurnedCalorieText= view.findViewById(R.id.textViewBurnValue)
+        totalIntakeCalorieText = view.findViewById(R.id.textView1)
+        calorieCountText = view.findViewById(R.id.calorie_count)
+        steps_no_data_text = view.findViewById(R.id.steps_no_data_text)
+        stes_no_data_text_description = view.findViewById(R.id.stes_no_data_text_description)
+        sync_with_apple_button = view.findViewById(R.id.sync_with_apple_button)
+       // totalBurnedCalorieText = view.findViewById(R.id.textViewBurnValue)
         calorieBalanceIcon = view.findViewById(R.id.calorie_balance_icon)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         moveRightImageBack = view.findViewById(R.id.moveright_image_back)
@@ -119,12 +129,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         tvBurnValue = view.findViewById(R.id.textViewBurnValue)
         stepLineGraphView = view.findViewById(R.id.line_graph_steps)
         stepsTv = view.findViewById(R.id.steps_text)
+        activeStepsTv = view.findViewById(R.id.active_text)
+        goalStepsTv = view.findViewById(R.id.goal_tex)
         moveRightImageBack.setOnClickListener {
             activity?.finish()
         }
-        // progressBar = view.findViewById(R.id.progressBarCalories)
         fetchUserWorkouts()
-        fetchHealthSummary()
+        //fetchHealthSummary()
         val workoutImageIcon = view.findViewById<ImageView>(R.id.workout_forward_icon)
         val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
         val logMealButton = view.findViewById<ConstraintLayout>(R.id.log_meal_button)
@@ -138,7 +149,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-           // navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            // navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 
         activityFactorImageIcon.setOnClickListener {
@@ -149,18 +160,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
 
-        // Set up Health Connect
-//        if (!isHealthConnectAvailable(requireContext())) {
-//            installHealthConnect(requireContext())
-//        }else{
-//            requestHealthConnectPermission(requireActivity())
-//        }
-
         val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
             healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
             lifecycleScope.launch {
-                requestPermissionsAndReadSteps()
+                requestPermissionsAndReadAllData()
             }
         } else {
             Toast.makeText(context, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
@@ -215,13 +219,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.adapter = adapter1
 
-        val todaySteps = floatArrayOf(100f, 200f, 100f, 300f, 50f, 400f, 100f)
+       /* val todaySteps = floatArrayOf(100f, 200f, 100f, 300f, 50f, 400f, 100f)
         val averageSteps = floatArrayOf(150f, 250f, 350f, 450f, 550f, 650f, 750f)
         val goalSteps = floatArrayOf(700f, 700f, 700f, 700f, 700f, 700f, 700f)
         stepLineGraphView.addDataSet(todaySteps, 0xFFFD6967.toInt())
         stepLineGraphView.addDataSet(averageSteps, 0xFF707070.toInt())
         stepLineGraphView.addDataSet(goalSteps, 0xFF03B27B.toInt())
-        stepLineGraphView.invalidate()
+        stepLineGraphView.invalidate()*/
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -275,127 +279,216 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun requestPermissionsAndReadSteps() {
-        lifecycleScope.launch {
+    private suspend fun requestPermissionsAndReadAllData() {
+        try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
-                retrieveStepsData()
-                fetchActiveCaloriesBurned()
-                fetchHeartRateData()
+                fetchAllHealthData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
-              //  requestHealthConnectPermission(requireActivity())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             if (permissions.values.all { it }) {
+                lifecycleScope.launch {
+                    fetchAllHealthData()
+                }
                 Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(context, "Permissions Denied", Toast.LENGTH_SHORT).show()
             }
         }
 
-    private suspend fun retrieveStepsData() {
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun fetchAllHealthData() {
+        val endTime = Instant.now()
+        val startTime = endTime.minusSeconds(7 * 24 * 60 * 60) // Last 7 days
+
         try {
-            val endTime = Instant.now()
-            val startTime = endTime.minusSeconds(24 * 60 * 60)
-            val response = healthConnectClient.readRecords(
+            // Fetch Steps Data
+            val stepsResponse = healthConnectClient.readRecords(
                 ReadRecordsRequest(
                     recordType = StepsRecord::class,
                     timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                 )
             )
-            stepsRecord = response.records
-            for (record in response.records) {
-                val startDateTime = record.startTime.atZone(ZoneId.systemDefault())
-                val endDateTime = record.endTime.atZone(ZoneId.systemDefault())
-                val steps = record.count
-                println("Steps: $steps, from $startDateTime to $endDateTime")
+            stepsRecord = stepsResponse.records
+            if(stepsRecord.isEmpty()){
+
+            }else{
+                val totalSteps = stepsRecord.sumOf { it.count }
+                withContext(Dispatchers.Main) {
+                    stepsTv.text = totalSteps.toString()
+                }
+                Log.d("HealthData", "Steps: $totalSteps")
+
+                // Aggregate steps by day for the last 7 days
+                val dailySteps = FloatArray(7) { index ->
+                    val dayStart = endTime.minusSeconds(((6 - index) * 24 * 60 * 60).toLong())
+                    val dayEnd = dayStart.plusSeconds(24 * 60 * 60)
+                    stepsRecord.filter { record ->
+                        record.startTime.isAfter(dayStart) && record.endTime.isBefore(dayEnd)
+                    }.sumOf { it.count }.toFloat()
+                }
+                val totalDailySteps = dailySteps.sum()
+
+                print(totalDailySteps)
+
+                val totalAverageSteps = dailySteps.average().toFloat()
+                print(totalAverageSteps)
+                val totalGoalSteps = 700f * 7
+                withContext(Dispatchers.Main) {
+                    activeStepsTv.text = totalAverageSteps.toInt().toString()
+                    goalStepsTv.text = totalGoalSteps.toInt().toString()
+                }
+                val averageSteps = FloatArray(7) { dailySteps.average().toFloat() }
+                val goalSteps = FloatArray(7) { 700f }
+                withContext(Dispatchers.Main) {
+                    stepLineGraphView.clear()
+                    stepLineGraphView.addDataSet(dailySteps, 0xFFFD6967.toInt())
+                    stepLineGraphView.addDataSet(averageSteps, 0xFF707070.toInt())
+                    stepLineGraphView.addDataSet(goalSteps, 0xFF03B27B.toInt())
+                    stepLineGraphView.invalidate()
+                }
             }
-            val stepCountArray = fillFloatArrayFromSteps(stepsRecord)
 
-            val todaySteps = stepCountArray
-            val averageSteps = stepCountArray
-            val goalSteps = stepCountArray
-            stepLineGraphView.addDataSet(todaySteps, 0xFFFD6967.toInt())
-            stepLineGraphView.addDataSet(averageSteps, 0xFF707070.toInt())
-            stepLineGraphView.addDataSet(goalSteps, 0xFF03B27B.toInt())
-            stepLineGraphView.invalidate()
-            println(stepCountArray)
 
-            println("Steps data retrieved successfully!")
+            // ... (Rest of the fetchAllHealthData function for other record types remains unchanged)
 
-            val stepsToday = fetchTodaySteps(healthConnectClient)
-            stepsTv.text = stepsToday.toString()
-            println("Total steps today: $stepsToday")
+            // Fetch Total Calories Burned
+            val caloriesResponse = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = TotalCaloriesBurnedRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            totalCaloriesBurnedRecord = caloriesResponse.records
+            val totalBurnedCalories = totalCaloriesBurnedRecord.sumOf { it.energy.inKilocalories.toInt() }
+            Log.d("HealthData", "Total Burned Calories: $totalBurnedCalories kcal")
+
+            // Save total intake calories (from fetchHealthSummary) and burned calories to variables
+            val totalIntakeCalories = if (totalIntakeCaloriesSum > 0) totalIntakeCaloriesSum else 0
+            // totalBurnedCalories is already defined above
+
+            // Optionally log the saved values for verification
+            Log.d("HealthData", "Saved Total Intake Calories: $totalIntakeCalories kcal")
+            Log.d("HealthData", "Saved Total Burned Calories: $totalBurnedCalories kcal")
+
+            withContext(Dispatchers.Main) {
+                tvBurnValue.text = totalBurnedCalories.toString()
+                totalIntakeCalorieText.text = totalIntakeCalories.toString()
+                val calorieBalance = totalIntakeCalories - totalBurnedCalories
+                val absoluteCalorieBalance = kotlin.math.abs(calorieBalance)
+                calorieCountText.text = if (calorieBalance >= 0) "+$absoluteCalorieBalance" else "$absoluteCalorieBalance"
+
+
+            }
+            //Log.d("HealthData", "Total Calories Burned: $totalCalories kcal")
+
+            // Fetch Heart Rate Data
+            val todayStart = LocalDate.now()
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+
+            val now = Instant.now()
+
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = HeartRateRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(todayStart, now)
+                )
+            )
+
+            heartRateRecord = response.records
+            if (heartRateRecord.isEmpty()) {
+                Log.d("HealthData", "No heart rate records found for today.")
+            } else {
+                heartRateRecord.forEach { record ->
+                    val bpm = record.samples.map { it.beatsPerMinute }.average().toInt()
+                    Log.d("HealthData", "Heart Rate: $bpm bpm, Start: ${record.startTime}, End: ${record.endTime}")
+                }
+            }
+
+            // Fetch Sleep Session Data
+            val sleepResponse = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = SleepSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            sleepSessionRecord = sleepResponse.records
+            sleepSessionRecord.forEach { record ->
+                Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+            }
+
+            // Fetch Exercise Session Data
+            val exerciseResponse = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = ExerciseSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            exerciseSessionRecord = exerciseResponse.records
+            exerciseSessionRecord.forEach { record ->
+                Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
+            }
+
+            // Fetch Speed Data
+            val speedResponse = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = SpeedRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            speedRecord = speedResponse.records
+            speedRecord.forEach { record ->
+                //Log.d("HealthData", "Speed: ${record.speed.inMetersPerSecond} m/s, Start: ${record.startTime}, End: ${record.endTime}")
+            }
+
+            // Fetch Weight Data
+            val weightResponse = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = WeightRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            weightRecord = weightResponse.records
+            weightRecord.forEach { record ->
+                Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
+            }
+
+            // Fetch Distance Data
+            val distanceResponse = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = DistanceRecord::class,
+                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                )
+            )
+            distanceRecord = distanceResponse.records
+            val totalDistance = distanceRecord.sumOf { it.distance.inMeters }
+            withContext(Dispatchers.Main) {
+               // calorieCountText.text = totalDistance.toString() // Example usage, adjust as needed
+            }
+            Log.d("HealthData", "Total Distance: $totalDistance meters")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "All Health Data Fetched Successfully", Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
-
-    private suspend fun fetchActiveCaloriesBurned() {
-        val timeRangeFilter = TimeRangeFilter.between(
-            Instant.now().minusSeconds(24 * 60 * 60),
-            Instant.now()
-        )
-        val response = healthConnectClient.readRecords(
-            ReadRecordsRequest(
-                recordType = TotalCaloriesBurnedRecord::class,
-                timeRangeFilter = timeRangeFilter
-            )
-        )
-        totalCaloriesBurnedRecord = response.records
-        println(totalCaloriesBurnedRecord)
-        response.records.forEach { record ->
-            println("Calories burned: ${record.energy.inKilocalories} kcal")
-            println("Start time: ${record.startTime}")
-            println("End time: ${record.endTime}")
-            tvBurnValue.text = record.energy.inKilocalories.toInt().toString()
-        }
-    }
-
-    private suspend fun fetchHeartRateData() {
-        val endTime = Instant.now()
-        val startTime = endTime.minusSeconds(7 * 24 * 60 * 60)
-        val response = healthConnectClient.readRecords(
-            ReadRecordsRequest(
-                recordType = HeartRateRecord::class,
-                timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-            )
-        )
-        for (record in response.records) {
-            Log.d(
-                "HeartRateRecord",
-                "Start: ${record.startTime}, End: ${record.endTime}, " +
-                        "BPM: ${record.samples.map { it.beatsPerMinute }}"
-            )
-        }
-    }
-
-    private fun fillFloatArrayFromSteps(stepsRecords: List<StepsRecord>): FloatArray {
-        return FloatArray(stepsRecords.size) { index ->
-            stepsRecords[index].count.toFloat()
-        }
-    }
-
-    private suspend fun fetchTodaySteps(healthConnectClient: HealthConnectClient): Long {
-        val endTime = Instant.now()
-        val startTime = endTime.minusSeconds(24 * 60 * 60)
-        val response = healthConnectClient.readRecords(
-            ReadRecordsRequest(
-                recordType = StepsRecord::class,
-                timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-            )
-        )
-        val totalSteps = response.records.sumOf { it.count }
-        return totalSteps
-    }
-
-    fun isSamsungDevice(): Boolean {
-        return Build.MANUFACTURER.equals("Samsung", ignoreCase = true)
     }
 
     private fun fetchUserWorkouts() {
@@ -448,7 +541,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 caloriesBurned = caloriesText,
                                 avgHeartRate = avgHeartRate,
                                 heartRateData = workout.heartRateData
-
                             )
                         }
                         withContext(Dispatchers.Main) {
@@ -457,7 +549,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             val adapter = CarouselAdapter(cardItems) { cardItem, position ->
                                 val fragment = WorkoutAnalyticsFragment().apply {
                                     arguments = Bundle().apply {
-                                        putSerializable("cardItem", cardItem) // Use putSerializable() instead of putParcelable()
+                                        putSerializable("cardItem", cardItem)
                                     }
                                 }
                                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -492,6 +584,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
     }
+
     private fun fetchHealthSummary() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -516,7 +609,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         val message = healthSummary.message
                         val measuredValue = totalIntakeCaloriesSum - totalBurnedSum
                         withContext(Dispatchers.Main) {
-                          //  tvBurnValue.text = measuredValue.toString()
+                            tvBurnValue.text = measuredValue.toString()
                             //totalBurnedCalorieText.text = totalBurnedSum.toString()
                             totalIntakeCalorieText.text = totalIntakeCaloriesSum.toString()
                             calorieBalanceDescription.text = message.toString()
@@ -543,43 +636,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
     }
-
-    /*private fun fetchHealthSummary() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = ApiClient.apiServiceFastApi.getMoveLanding(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    date = "2025-03-24" // Fixed variable name
-                )
-
-                if (response.isSuccessful) {
-                    val healthSummary = response.body()
-                    healthSummary?.let {
-
-
-                        // Store heart rate zones for use in fetchUserWorkouts
-                       // heartRateZones = it.heartRateZones
-
-                        // Update UI with health summary data
-                        withContext(Dispatchers.Main) {
-                            calorieBalanceDescription.text = it.message.toString()
-                            println("Health Summary Fetched Successfully")
-                            // TODO: Update UI here
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        println("Error: ${response.code()} - ${response.message()}")
-                    }
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    println("Exception: ${e.message}")
-                }
-            }
-        }
-    }*/
 
     fun openAppSettings(context: Context) {
         try {
