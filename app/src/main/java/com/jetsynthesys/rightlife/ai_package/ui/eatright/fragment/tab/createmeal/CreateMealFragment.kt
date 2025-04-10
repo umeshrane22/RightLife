@@ -1,6 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
-
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,13 +20,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.MealList
+import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.MealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.DishListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateMealBinding
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
@@ -34,7 +33,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
-
 
     private lateinit var addedDishItemRecyclerview : RecyclerView
     private lateinit var etAddName : EditText
@@ -50,13 +48,14 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private lateinit var addMealNameLayout : LinearLayoutCompat
     private lateinit var continueLayout : LinearLayoutCompat
     private lateinit var addedNameTv : TextView
-    var mealLogLists : ArrayList<MealLists> = ArrayList()
+  //  var mealLogLists : ArrayList<MealLists> = ArrayList()
+    private var dishLists : ArrayList<MealDetails> = ArrayList()
+    private lateinit var dishLocalListModel : DishLocalListModel
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
 
-
-    private val mealLogsAdapter by lazy { MealLogsAdapter(requireContext(), arrayListOf(), -1,
+    private val dishListAdapter by lazy { DishListAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMealLogClickItem, :: onMealLogDeleteItem, :: onMealLogEditItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -88,7 +87,19 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         continueLayout.setBackgroundResource(R.drawable.light_green_bg)
 
         addedDishItemRecyclerview.layoutManager = LinearLayoutManager(context)
-        addedDishItemRecyclerview.adapter = mealLogsAdapter
+        addedDishItemRecyclerview.adapter = dishListAdapter
+
+       val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("dishLocalListModel")
+        }
+
+        if (dishLocalListModels != null){
+            dishLocalListModel = dishLocalListModels
+            dishLists.addAll(dishLocalListModel.meals)
+            onMealLoggedList()
+        }
 
         etAddName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -113,7 +124,6 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             override fun handleOnBackPressed() {
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
-
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -123,7 +133,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             }
         })
 
-        getMealList()
+        //getMealList()
 
         saveMealLayout.setOnClickListener {
 
@@ -197,7 +207,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 //            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false)
 //        )
 
-        if (mealLogLists.size > 0){
+        if (dishLists.size > 0){
             addedDishItemRecyclerview.visibility = View.VISIBLE
             layoutNoDishes.visibility = View.GONE
             saveMealLayout.visibility = View.VISIBLE
@@ -207,31 +217,31 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             saveMealLayout.visibility = View.GONE
         }
 
-        val valueLists : ArrayList<MealLists> = ArrayList()
-        valueLists.addAll(mealLogLists as Collection<MealLists>)
-        val mealLog: MealLists? = null
-        mealLogsAdapter.addAll(valueLists, -1, mealLog, false)
+        val valueLists : ArrayList<MealDetails> = ArrayList()
+        valueLists.addAll(dishLists as Collection<MealDetails>)
+        val mealLog: MealDetails? = null
+        dishListAdapter.addAll(valueLists, -1, mealLog, false)
     }
 
-    private fun onMealLogClickItem(mealLog: MealLists, position: Int, isRefresh: Boolean) {
+    private fun onMealLogClickItem(mealLog: MealDetails, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<MealLists> = ArrayList()
-        valueLists.addAll(mealLogLists as Collection<MealLists>)
-        mealLogsAdapter.addAll(valueLists, position, mealLog, isRefresh)
+        val valueLists : ArrayList<MealDetails> = ArrayList()
+        valueLists.addAll(dishLists as Collection<MealDetails>)
+        dishListAdapter.addAll(valueLists, position, mealLog, isRefresh)
     }
 
-    private fun onMealLogDeleteItem(mealItem: MealLists, position: Int, isRefresh: Boolean) {
+    private fun onMealLogDeleteItem(mealItem: MealDetails, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<MealLists> = ArrayList()
-        valueLists.addAll(mealLogLists as Collection<MealLists>)
-        mealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+        val valueLists : ArrayList<MealDetails> = ArrayList()
+        valueLists.addAll(dishLists as Collection<MealDetails>)
+        dishListAdapter.addAll(valueLists, position, mealItem, isRefresh)
     }
 
-    private fun onMealLogEditItem(mealItem: MealLists, position: Int, isRefresh: Boolean) {
+    private fun onMealLogEditItem(mealItem: MealDetails, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<MealLists> = ArrayList()
-        valueLists.addAll(mealLogLists as Collection<MealLists>)
-        mealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+        val valueLists : ArrayList<MealDetails> = ArrayList()
+        valueLists.addAll(dishLists as Collection<MealDetails>)
+        dishListAdapter.addAll(valueLists, position, mealItem, isRefresh)
     }
 
 //    private fun deleteMealDialog(){
@@ -256,8 +266,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 if (response.isSuccessful) {
                     Utils.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.meals ?: emptyList()
-                    mealLogLists.addAll(mealPlanLists)
-                    onMealLoggedList()
+                  //  mealLogLists.addAll(mealPlanLists)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

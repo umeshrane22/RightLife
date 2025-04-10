@@ -37,9 +37,11 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.view.isVisible
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -71,6 +73,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvQuantity: TextView
     private var quantity = 1
     private lateinit var tvMeasure :TextView
+    private var dishLists : ArrayList<MealDetails> = ArrayList()
+    private lateinit var dishLocalListModel : DishLocalListModel
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -425,6 +429,9 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val formattedDate = currentDateTime.format(formatter)
 
+        dishLists.add(mealDetails)
+        dishLocalListModel.meals = dishLists
+
         val mealLogRequest = MealLogRequest(
             mealId = mealDetails._id,
             userId = "64763fe2fa0e40d9c0bc8264",
@@ -447,6 +454,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = CreateMealFragment()
                     val args = Bundle()
+                    args.putParcelable("dishLocalListModel", dishLocalListModel)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "mealLog")
