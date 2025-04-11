@@ -1,14 +1,25 @@
 package com.jetsynthesys.rightlife.ui
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
+import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.IOException
+
 
 object CommonAPICall {
     fun addToToolKit(
@@ -61,4 +72,102 @@ object CommonAPICall {
             }
         })
     }
+
+    fun uploadImageToPreSignedUrl(
+        context: Context,
+        file: File,
+        preSignedUrl: String,
+        onResult: (Boolean) -> Unit
+    ) {
+        val client = OkHttpClient()
+
+        val mediaType = "image/png".toMediaTypeOrNull() // or "image/jpeg"
+        val requestBody = file.asRequestBody(mediaType)
+
+        val request = Request.Builder()
+            .url(preSignedUrl)
+            .put(requestBody)
+            .addHeader("x-amz-acl", "public-read") // if required
+            .build()
+
+        client.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                e.printStackTrace()
+                Handler(Looper.getMainLooper()).post {
+                    onResult(false)
+                }
+            }
+
+            override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                response.use {
+                    Handler(Looper.getMainLooper()).post {
+                        onResult(response.isSuccessful)
+                    }
+                }
+            }
+
+        })
+    }
+
+    fun updateNotificationSettings(
+        context: Context,
+        requestBody: Map<String, Boolean>,
+        onResult: (Boolean, String) -> Unit
+    ) {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        apiService.updateNotificationSettings(authToken, requestBody)
+            .enqueue(object : Callback<CommonResponse> {
+                override fun onResponse(
+                    call: Call<CommonResponse>,
+                    response: Response<CommonResponse>
+                ) {
+                    Handler(Looper.getMainLooper()).post {
+                        onResult(response.isSuccessful, response.body()?.successMessage!!)
+                    }
+                }
+
+                override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                    Handler(Looper.getMainLooper()).post {
+                        onResult(false, t.message!!)
+                    }
+                }
+            })
+    }
+
+    fun getNotificationSettings(
+        context: Context,
+        onResult: (NotificationData) -> Unit
+    ) {
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        val authToken = sharedPreferenceManager.accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        apiService.getNotificationSettings(authToken)
+            .enqueue(object : Callback<NotificationsResponse> {
+                override fun onResponse(
+                    call: Call<NotificationsResponse>,
+                    response: Response<NotificationsResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null)
+                        Handler(Looper.getMainLooper()).post {
+                            response.body()?.data?.let { onResult(it) }
+                        } else
+                        Toast.makeText(
+                            context,
+                            response.message(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                }
+
+                override fun onFailure(call: Call<NotificationsResponse>, t: Throwable) {
+                    Toast.makeText(
+                        context,
+                        t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+    }
+
 }

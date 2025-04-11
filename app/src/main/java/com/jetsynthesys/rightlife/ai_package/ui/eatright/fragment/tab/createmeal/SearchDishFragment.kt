@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
 import android.app.ProgressDialog
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -27,6 +28,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.
 import com.jetsynthesys.rightlife.ai_package.model.RecipeList
 import com.jetsynthesys.rightlife.ai_package.model.RecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentSearchDishBinding
@@ -49,6 +51,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var appPreference: AppPreference
     private val dishesViewModel: DishesViewModel by activityViewModels()
     private var recipesList : ArrayList<RecipeList> = ArrayList()
+    private var dishLocalListModel : DishLocalListModel? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -79,6 +82,16 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         allDishesRecyclerview.adapter = searchDishAdapter
 
         searchType = arguments?.getString("searchType").toString()
+
+        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("dishLocalListModel")
+        }
+
+        if (dishLocalListModels != null){
+            dishLocalListModel = dishLocalListModels
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -193,6 +206,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                            val args = Bundle()
                            args.putString("searchType", searchType)
                            args.putParcelable("foodDetailsResponse", response.body())
+                            args.putParcelable("dishLocalListModel", dishLocalListModel)
                            snapMealFragment.arguments = args
                            replace(R.id.flFragment, snapMealFragment, "Steps")
                            addToBackStack(null)

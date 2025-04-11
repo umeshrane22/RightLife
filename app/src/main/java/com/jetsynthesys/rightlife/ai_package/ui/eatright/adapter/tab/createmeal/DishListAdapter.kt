@@ -9,16 +9,15 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.model.MealList
+import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
 
-class MealLogsAdapter(private val context: Context, private var dataLists: ArrayList<MealLists>,
-                      private var clickPos: Int, private var mealLogListData : MealLists?,
-                      private var isClickView : Boolean, val onMealLogClickItem: (MealLists, Int, Boolean) -> Unit,
-                      val onMealLogDeleteItem: (MealLists, Int, Boolean) -> Unit,
-                      val onMealLogEditItem: (MealLists, Int, Boolean) -> Unit) :
-    RecyclerView.Adapter<MealLogsAdapter.ViewHolder>() {
+class DishListAdapter(private val context: Context, private var dataLists: ArrayList<MealDetails>,
+                      private var clickPos: Int, private var mealLogListData : MealDetails?,
+                      private var isClickView : Boolean, val onMealLogClickItem: (MealDetails, Int, Boolean) -> Unit,
+                      val onMealLogDeleteItem: (MealDetails, Int, Boolean) -> Unit,
+                      val onMealLogEditItem: (MealDetails, Int, Boolean) -> Unit) :
+    RecyclerView.Adapter<DishListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -106,7 +105,7 @@ class MealLogsAdapter(private val context: Context, private var dataLists: Array
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<MealLists>?, pos: Int, mealLogItem : MealLists?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MealDetails>?, pos: Int, mealLogItem : MealDetails?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

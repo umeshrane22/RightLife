@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityEmailNotificationsBinding
-import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 
 class EmailNotificationsNewActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEmailNotificationsBinding
-    private lateinit var settingsAdapter: SettingsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,12 +19,25 @@ class EmailNotificationsNewActivity : AppCompatActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        CommonAPICall.getNotificationSettings(this) { data ->
+            binding.newsletterSwitch.isChecked = data.newsLetter == true
+            binding.promotionalOffersSwitch.isChecked = data.promotionalOffers == true
+        }
+
         binding.newsletterSwitch.setOnCheckedChangeListener { _, isChecked ->
-            showToast(if (isChecked) "Newsletter notification is ON" else "Newsletter notification is OFF")
+            val requestBody = mapOf("newsLetter" to isChecked)
+            CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+                showToast(message)
+                if (!result) binding.newsletterSwitch.isChecked = !isChecked
+            }
         }
 
         binding.promotionalOffersSwitch.setOnCheckedChangeListener { _, isChecked ->
-            showToast(if (isChecked) "Promotional Offers notification is ON" else "Promotional Offers notification is OFF")
+            val requestBody = mapOf("promotionalOffers" to isChecked)
+            CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+                showToast(message)
+                if (!result) binding.promotionalOffersSwitch.isChecked = !isChecked
+            }
         }
     }
 

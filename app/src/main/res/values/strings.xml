@@ -258,5 +258,7 @@ Please hold still"</string>
         <item>PM</item>
     </string-array>
 
+    <string name="underlined_change"><u>Change</u></string>
+
 
 </resources>

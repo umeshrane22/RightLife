@@ -46,7 +46,7 @@ class JournalNewActivity : AppCompatActivity() {
                     val journalList = response.body()?.data ?: emptyList()
 
                     adapter =
-                        JournalAdapter(journalList, object : JournalAdapter.OnItemClickListener {
+                        JournalAdapter(this@JournalNewActivity, journalList, object : JournalAdapter.OnItemClickListener {
                             override fun onClick(journalItem: JournalItem) {
                                 val intent = when (journalItem.title) {
                                     "Free Form" -> Intent(

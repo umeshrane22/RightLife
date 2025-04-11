@@ -69,7 +69,12 @@
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/pushNotificationsSwitch"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="30dp"
+                android:layout_marginVertical="10dp"
+                app:track="@drawable/custom_track_onboardingswitch"
+                android:thumb="@drawable/custom_thumb"
+                app:thumbTint="@color/switch_thumb_color"
+                app:trackTint="@color/switch_track_color" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -81,7 +86,7 @@
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/txt_color_mind"
-        android:paddingVertical="8dp"/>
+        android:paddingVertical="8dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvEmailNotifications"

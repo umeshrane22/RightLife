@@ -54,7 +54,7 @@
         android:layout_margin="16dp"
         android:fontFamily="@font/dmsans_medium"
         android:textSize="@dimen/textsize_medium"
-        android:text="Text telling the user why have the following assessment suggested etc."/>
+        android:text="Following assessment are suggested to you."/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_suggested_assessment"

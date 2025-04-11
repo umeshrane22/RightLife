@@ -7,5 +7,14 @@
 
     <include layout="@layout/loader_layout" />
 
+    <TextView
+        android:id="@+id/tvNotify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please wait!! Starting Camera"
+        android:textSize="18sp"
+        android:fontFamily="@font/dmsans_bold"
+        android:gravity="center" />
+
 
 </LinearLayout>

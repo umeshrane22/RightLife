@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.databinding.RowReasonsDeleteBinding
 
-class ReasonAdapter(private val reasons: List<String>) :
-    RecyclerView.Adapter<ReasonAdapter.ReasonViewHolder>() {
+class DeleteReasonAdapter(private val reasons: List<String>) :
+    RecyclerView.Adapter<DeleteReasonAdapter.ReasonViewHolder>() {
 
-    private val selectedItems = mutableSetOf<Int>()
+    private var selectedPosition = RecyclerView.NO_POSITION
 
     inner class ReasonViewHolder(val binding: RowReasonsDeleteBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -22,22 +22,20 @@ class ReasonAdapter(private val reasons: List<String>) :
     override fun onBindViewHolder(holder: ReasonViewHolder, position: Int) {
         val reason = reasons[position]
         holder.binding.reasonText.text = reason
-        holder.binding.radioButton.isChecked = selectedItems.contains(position)
+        holder.binding.radioButton.isChecked = (position == selectedPosition)
 
-        // OnClick Listener
         holder.binding.root.setOnClickListener {
-            if (selectedItems.contains(position)) {
-                selectedItems.remove(position)
-            } else {
-                selectedItems.add(position)
-            }
-            notifyItemChanged(position)
+            val previousSelectedPosition = selectedPosition
+            selectedPosition = position
+            notifyItemChanged(previousSelectedPosition)
+            notifyItemChanged(selectedPosition)
         }
     }
 
     override fun getItemCount(): Int = reasons.size
 
-    fun getSelectedReasons(): List<String> {
-        return selectedItems.map { reasons[it] }
+    fun getSelectedReason(): String? {
+        return if (selectedPosition != RecyclerView.NO_POSITION) reasons[selectedPosition] else null
     }
 }
+

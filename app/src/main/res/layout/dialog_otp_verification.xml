@@ -41,20 +41,21 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Please enter the four digit code sent to"
+        android:text="Please enter the six digit code sent to"
         android:layout_marginTop="4dp" />
 
     <!-- Phone Number and Change -->
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="6dp">
 
         <TextView
             android:id="@+id/tv_phone"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="+91 1234567890"
             android:textStyle="bold" />
 
@@ -62,9 +63,9 @@
             android:id="@+id/tv_change"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change"
+            android:text="@string/underlined_change"
             android:textColor="@color/black"
-            android:layout_marginStart="8dp" />
+            android:layout_marginEnd="16dp" />
     </LinearLayout>
 
     <!-- OTP Inputs -->

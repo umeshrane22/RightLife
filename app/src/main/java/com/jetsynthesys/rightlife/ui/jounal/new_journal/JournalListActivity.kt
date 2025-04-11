@@ -18,14 +18,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityJournalListBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -59,6 +60,16 @@ class JournalListActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener {
             finish()
+        }
+
+        binding.btnInfo.setOnClickListener {
+            val htmlText = """
+    <p>This page gives you a bird’s-eye view of your journaling habit.</p>
+    <p>Tap on a day to see your entries, moods, and themes.</p>
+    <p>It’s a space to notice patterns, celebrate consistency, and reconnect with what you’ve felt and written over time.</p>
+""".trimIndent()
+
+            DialogUtils.showJournalCommonDialog(this, "Your Entries", htmlText)
         }
 
         adapter = JournalListAdapter(journalList, object : JournalListAdapter.OnItemClickListener {

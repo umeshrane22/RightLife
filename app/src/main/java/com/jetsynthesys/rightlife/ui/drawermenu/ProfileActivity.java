@@ -340,27 +340,6 @@ public class ProfileActivity extends AppCompatActivity {
         return today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
     }
 
-    private void getPreSignedUrl(UploadImage uploadImage) {
-        Call<ResponseBody> call = apiService.getPreSignedUrl(token, uploadImage);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-                } else {
-                    Toast.makeText(ProfileActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(ProfileActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void saveData() {
         String firstName = edtFirstName.getText().toString();
         String lastName = edtLastName.getText().toString();
