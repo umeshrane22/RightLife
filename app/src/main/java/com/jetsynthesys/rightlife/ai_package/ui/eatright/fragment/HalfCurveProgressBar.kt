@@ -47,7 +47,7 @@ class HalfCurveProgressBar @JvmOverloads constructor(
     }
 
     private val rectF = RectF()
-    private var currentValue: Int = 1700
+    private var currentValue : Int = 1000
     private var maxValue: Int = 2000
     private var progress: Float = 0f
     private var animatedProgress: Float = 0f
@@ -57,8 +57,8 @@ class HalfCurveProgressBar @JvmOverloads constructor(
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.HalfCurveProgressBar, defStyleAttr, 0)
-        currentValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_currentValue, 1700)
-        maxValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_maxValue, 2000)
+        currentValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_currentValue, currentValue)
+        maxValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_maxValue, maxValue)
         backgroundPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_backgroundColor, Color.LTGRAY)
         progressPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_progressColor, resources.getColor(R.color.border_green))
         backgroundPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)

@@ -46,7 +46,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/green_circle" />
+                android:src="@drawable/delete_icon_green" />
 
             <ImageView
                 android:id="@+id/image_edit"
@@ -54,7 +54,7 @@
                 android:layout_height="20dp"
                 android:scaleType="fitXY"
                 android:layout_marginStart="10dp"
-                android:src="@drawable/green_circle" />
+                android:src="@drawable/edit_green_icon" />
 
             <ImageView
                 android:id="@+id/image_circle_plus"

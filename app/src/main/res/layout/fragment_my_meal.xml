@@ -132,7 +132,7 @@
                         android:text="Your Meal" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/layout_btnAdd"
+                        android:id="@+id/addLayout"
                         android:layout_width="80dp"
                         android:layout_height="30dp"
                         android:orientation="horizontal"

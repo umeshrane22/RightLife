@@ -1,9 +1,11 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -20,6 +22,14 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequently
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentMyMealBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
 
@@ -30,10 +40,11 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
     private lateinit var loggedBottomSheetFragment : LoggedBottomSheet
     private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var mealPlanTitleLayout : ConstraintLayout
+    private lateinit var addLayout : LinearLayoutCompat
+    private var mealData: List<MealPlan> = listOf()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyMealBinding
         get() = FragmentMyMealBinding::inflate
-    var snackbar: Snackbar? = null
 
     private val myMealListAdapter by lazy { MyMealListAdapter(requireContext(), arrayListOf(), -1, null,
         false, :: onMealDeleteItem, :: onMealLogItem) }
@@ -51,6 +62,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         layoutBottomCreateMeal = view.findViewById(R.id.layout_bottom_create_meal)
         layoutCreateMeal = view.findViewById(R.id.layout_create_meal)
         mealPlanTitleLayout = view.findViewById(R.id.layout_meal_plan_title)
+        addLayout = view.findViewById(R.id.addLayout)
 
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
@@ -68,7 +80,18 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
             }
         })
 
-        onMyMealItemRefresh()
+        getMealLog()
+
+        addLayout.setOnClickListener {
+            val fragment = CreateMealFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
 
         layoutCreateMeal.setOnClickListener {
             val fragment = CreateMealFragment()
@@ -91,16 +114,18 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
                 commit()
             }
         }
+
+        onMyMealItemRefresh(mealData)
     }
 
-    private fun onMyMealItemRefresh (){
+    private fun onMyMealItemRefresh(mealData: List<MealPlan>?) {
         val meal = listOf(
             MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
             MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
         )
-        if (meal.size < 0){
+        if (mealData?.size!! > 0){
             myMealRecyclerView.visibility = View.VISIBLE
-            layoutBottomCreateMeal.visibility = View.VISIBLE
+            layoutBottomCreateMeal.visibility = View.GONE
             mealPlanTitleLayout.visibility = View.VISIBLE
             layoutNoMeals.visibility = View.GONE
         }else{
@@ -109,20 +134,20 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
             layoutBottomCreateMeal.visibility = View.GONE
             mealPlanTitleLayout.visibility = View.GONE
         }
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(meal as Collection<MyMealModel>)
-        val mealLogDateData: MyMealModel? = null
+        val valueLists : ArrayList<MealPlan> = ArrayList()
+        valueLists.addAll(mealData as Collection<MealPlan>)
+        val mealLogDateData: MealPlan? = null
         myMealListAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealDeleteItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-        )
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    private fun onMealDeleteItem(mealLogDateModel: MealPlan, position: Int, isRefresh: Boolean) {
+//        val mealLogs = listOf(
+//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
+//        )
+//        val valueLists : ArrayList<MyMealModel> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
+//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
         deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
@@ -131,19 +156,48 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
     }
 
-    private fun onMealLogItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-        )
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    private fun onMealLogItem(mealLogDateModel: MealPlan, position: Int, isRefresh: Boolean) {
+//        val mealLogs = listOf(
+//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
+//        )
+//        val valueLists : ArrayList<MyMealModel> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
+//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
         loggedBottomSheetFragment = LoggedBottomSheet()
         loggedBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
         bundle.putBoolean("test",false)
         loggedBottomSheetFragment.arguments = bundle
         activity?.supportFragmentManager?.let { loggedBottomSheetFragment.show(it, "LoggedBottomSheet") }
+    }
+
+    private fun getMealLog() {
+        Utils.showLoader(requireActivity())
+         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+      //  val userId = "64763fe2fa0e40d9c0bc8264"
+        val call = ApiClient.apiServiceFastApi.getLogMealList(userId)
+        call.enqueue(object : Callback<MealLogPlanResponse> {
+            override fun onResponse(call: Call<MealLogPlanResponse>, response: Response<MealLogPlanResponse>) {
+                if (response.isSuccessful) {
+                    Utils.dismissLoader(requireActivity())
+                    if (response.body() != null){
+                        var mealData = response.body()?.meal_plans
+                        mealData = mealData
+                        onMyMealItemRefresh(mealData)
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Utils.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealLogPlanResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                Utils.dismissLoader(requireActivity())
+            }
+        })
     }
 }

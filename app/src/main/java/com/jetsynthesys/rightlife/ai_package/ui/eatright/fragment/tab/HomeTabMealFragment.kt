@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
@@ -20,6 +21,7 @@ import com.google.android.material.tabs.TabLayout
 class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
 
     private lateinit var tabLayout : TabLayout
+    private lateinit var backIc : ImageView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -32,6 +34,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
         tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
+        backIc = view.findViewById(R.id.backIc)
 
         val tabTitles = arrayOf("Frequently Logged", "My Meal", "Meal Plan", "My Recipe")
 
@@ -71,7 +74,6 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 override fun handleOnBackPressed() {
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
-
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -80,6 +82,17 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     }
                 }
             })
+
+        backIc.setOnClickListener {
+            val fragment = YourMealLogsFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
     }
 
     // Function to replace fragments

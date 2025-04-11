@@ -28,6 +28,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateMealBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -101,7 +102,6 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         if (dishLocalListModels != null){
             dishLocalListModel = dishLocalListModels
             dishLists.addAll(dishLocalListModel!!.meals)
-            onMealLoggedList()
         }
 
         etAddName.addTextChangedListener(object : TextWatcher {
@@ -203,6 +203,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 commit()
             }
         }
+
+        onMealLoggedList()
     }
 
     private fun onMealLoggedList (){
@@ -261,9 +263,9 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 
     private fun getMealList() {
         Utils.showLoader(requireActivity())
-        // val userId = appPreference.getUserId().toString()
+         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "64763fe2fa0e40d9c0bc8264"
+       // val userId = "64763fe2fa0e40d9c0bc8264"
         val startDate = "2025-04-10"
         val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
         call.enqueue(object : Callback<MealsResponse> {
@@ -288,16 +290,21 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 
     private fun createMeal(mealDetails: ArrayList<MealDetails>) {
         Utils.showLoader(requireActivity())
-        // val userId = appPreference.getUserId().toString()
+         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "64763fe2fa0e40d9c0bc8264"
+       // val userId = "64763fe2fa0e40d9c0bc8264"
         val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
+        val dishIds = mutableListOf<String>()
+
+        for (item in mealDetails){
+            dishIds.add(item._id)
+        }
 
         val mealLogRequest = MealPlanRequest(
             meal_plan_name = addedNameTv.text.toString(),
-            dish_ids = listOf("dish123", "dish456"),
+            dish_ids = dishIds,
             date = formattedDate
         )
 

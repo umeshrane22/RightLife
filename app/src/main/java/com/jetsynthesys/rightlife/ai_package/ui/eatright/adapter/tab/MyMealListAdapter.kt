@@ -8,12 +8,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 
-class MyMealListAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                        private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                        private var isClickView : Boolean, val onMealDeleteItem: (MyMealModel, Int, Boolean) -> Unit,
-                        val onMealLogItem: (MyMealModel, Int, Boolean) -> Unit) :
+class MyMealListAdapter(private val context: Context, private var dataLists: ArrayList<MealPlan>,
+                        private var clickPos: Int, private var mealLogListData : MealPlan?,
+                        private var isClickView : Boolean, val onMealDeleteItem: (MealPlan, Int, Boolean) -> Unit,
+                        val onMealLogItem: (MealPlan, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<MyMealListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -26,13 +27,13 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
+        holder.mealTitle.text = item.meal_plan_name
+        holder.mealName.text = item.dishes.name
+        holder.servesCount.text = item.dishes.numOfServings.toString()
+        holder.calValue.text = item.dishes.calcium.toInt().toString()
+        holder.subtractionValue.text = item.dishes.protein.toInt().toString()
+        holder.baguetteValue.text = item.dishes.carbs.toInt().toString()
+        holder.dewpointValue.text = item.dishes.fats.toInt().toString()
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -94,7 +95,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MealPlan>?, pos: Int, mealLogItem : MealPlan?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

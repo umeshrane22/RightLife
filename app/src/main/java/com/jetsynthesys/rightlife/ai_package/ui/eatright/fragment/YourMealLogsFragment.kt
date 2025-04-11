@@ -46,6 +46,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentYourMealLogsBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -500,7 +501,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
     private fun getMealPlanList() {
         Utils.showLoader(requireActivity())
-        val userId = appPreference.getUserId().toString()
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.getMealLogLists(token)
         call.enqueue(object : Callback<MealLogsResponseModel> {
@@ -526,9 +527,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
     private fun getMealList() {
         Utils.showLoader(requireActivity())
-       // val userId = appPreference.getUserId().toString()
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "64763fe2fa0e40d9c0bc8264"
+      //  val userId = "64763fe2fa0e40d9c0bc8264"
         val startDate = "2025-03-22"
         val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
         call.enqueue(object : Callback<MealsResponse> {

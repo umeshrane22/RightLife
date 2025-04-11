@@ -8,11 +8,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.Meal
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 
-class MealPlanEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<Meal>,
-                                private var clickPos: Int, private var mealLogListData : Meal?,
-                                private var isClickView : Boolean, val onMealLogDateItem: (Meal, Int, Boolean) -> Unit,) :
+class MealPlanEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<MealList>,
+                                private var clickPos: Int, private var mealLogListData : MealList?,
+                                private var isClickView : Boolean, val onMealLogDateItem: (MealList, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<MealPlanEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -27,7 +27,7 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
 
         holder.mealTitle.text = item.mealType
         holder.mealName.text = item.name
-        holder.servesCount.text = "1"
+        holder.servesCount.text = item.numOfServings.toString()
         holder.calValue.text = item.calories.toString()
         holder.subtractionValue.text = item.protein.toString()
         holder.baguetteValue.text = item.carbs.toString()
@@ -98,7 +98,7 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
         val mealTypeIc : ImageView = itemView.findViewById(R.id.image_meal_type)
     }
 
-    fun addAll(item : ArrayList<Meal>?, pos: Int, mealLogItem : Meal?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MealList>?, pos: Int, mealLogItem : MealList?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
