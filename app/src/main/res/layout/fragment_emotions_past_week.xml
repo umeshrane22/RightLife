@@ -25,8 +25,7 @@
         app:cardCornerRadius="20dp"
         android:background="@drawable/chaotic_bg_card"
         app:cardElevation="8dp"
-        android:layout_centerInParent="true"
-        >
+        android:layout_centerInParent="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,22 +51,116 @@
                 android:layout_height="200dp"
                 android:layout_marginTop="20dp"
                 app:cardCornerRadius="10dp"
-                android:background="@android:color/white" />
+                android:background="@android:color/transparent">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottieView"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    app:lottie_fileName="data.json"
+                    app:lottie_autoPlay="true"
+                    android:scaleType="centerCrop"
+
+                    app:lottie_loop="true" />
+            </androidx.cardview.widget.CardView>
 
             <!-- SeekBar -->
-            <SeekBar
-                android:id="@+id/seekBar"
+            <RelativeLayout
+                android:id="@+id/parentRelative"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="20dp"
-                android:max="4"
-                android:progress="0"
-                android:thumbTint="@android:color/white"
-                android:progressTint="@android:color/white"
+                android:layout_height="wrap_content"
                 android:background="@drawable/seekbar_bg_tr_q1"
                 android:backgroundTint="@color/red"
-                android:thumb="@drawable/custom_thumb"
-                android:splitTrack="false" />
+                android:layout_marginTop="30dp"
+                android:padding="5dp">
+
+                <LinearLayout
+                    android:id="@+id/outerLinear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerInParent="true"
+                    android:weightSum="4">
+
+                    <!-- Block 1 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="5dp"
+                            android:layout_height="5dp"
+                            android:gravity="end"
+                            android:background="@drawable/circle_shape"
+                            android:backgroundTint="@color/white" />
+                    </LinearLayout>
+
+                    <!-- Block 2 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="5dp"
+                            android:layout_height="5dp"
+                            android:background="@drawable/circle_shape"
+                            android:backgroundTint="@color/white" />
+                    </LinearLayout>
+
+                    <!-- Block 3 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="5dp"
+                            android:layout_height="5dp"
+                            android:background="@drawable/circle_shape"
+                            android:backgroundTint="@color/white" />
+                    </LinearLayout>
+
+                    <!-- Block 4 -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="5dp"
+                            android:layout_height="5dp"
+                            android:background="@drawable/circle_shape"
+                            android:layout_marginEnd="10dp"
+                            android:backgroundTint="@color/white" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <SeekBar
+                    android:id="@+id/seekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:max="4"
+                    android:progress="0"
+                    android:thumbTint="@android:color/white"
+                    android:thumb="@drawable/custom_thumb_small"
+                    android:progressTint="@android:color/transparent"
+                    android:progressBackgroundTint="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    app:splitTrack="false" />
+
+            </RelativeLayout>
+
 
             <!-- Instruction Text -->
             <TextView
@@ -77,7 +170,7 @@
                 android:textSize="14sp"
                 android:textColor="@android:color/white"
                 android:backgroundTint="@color/red"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

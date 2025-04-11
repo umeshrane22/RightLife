@@ -24,8 +24,10 @@ class BreathworkSessionActivity : AppCompatActivity() {
         // Retrieve the selected breathing practice from the intent
 
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
+
         setupUI()
         setupListeners()
+        calculateSessiontime()
     }
 
     private fun setupUI() {
@@ -42,12 +44,14 @@ class BreathworkSessionActivity : AppCompatActivity() {
             if (sessionCount > 1) {
                 sessionCount--
                 binding.tvSessionCount.text = sessionCount.toString()
+                calculateSessiontime()
             }
         }
 
         binding.btnPlus.setOnClickListener {
             sessionCount++
             binding.tvSessionCount.text = sessionCount.toString()
+            calculateSessiontime()
         }
 
         binding.btnContinue.setOnClickListener {
@@ -73,7 +77,31 @@ class BreathworkSessionActivity : AppCompatActivity() {
         }
 
         binding.ivPlus.setOnClickListener {
-            Toast.makeText(this, "Additional Options Clicked", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "Additional Options Clicked", Toast.LENGTH_SHORT).show()
+
         }
+    }
+
+    fun calculateSessiontime(){
+        var totalSets = sessionCount
+        var inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
+        var exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
+        var holdTime = breathingData?.breathHoldTime?.toLong()!! * 1000
+
+        // Calculate session duration based on the selected practice
+        val cycleDuration = inhaleTime +
+                holdTime +
+                exhaleTime +
+                (if (breathingData?.title == "Box Breathing") holdTime else 0L)
+        var sessionDurationSeconds = (totalSets * cycleDuration / 1000).toInt()
+
+        // Set initial values
+
+        updateSessionTimer(sessionDurationSeconds * 1000L)
+    }
+    private fun updateSessionTimer(millisUntilFinished: Long) {
+        val minutes = (millisUntilFinished / 1000) / 60
+        val seconds = (millisUntilFinished / 1000) % 60
+        binding.tvSettime.text = String.format("%02d:%02d", minutes, seconds)
     }
 }

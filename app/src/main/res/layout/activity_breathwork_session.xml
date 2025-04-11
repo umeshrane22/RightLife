@@ -8,13 +8,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/icon_back" />
 
         <ImageView
@@ -22,7 +23,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/breathing_plus_icon" />
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_breathing_toolkit" />
     </RelativeLayout>
 
     <LinearLayout
@@ -152,6 +154,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="15:09 mins"
+                        android:layout_marginEnd="20dp"
                         android:layout_gravity="center_vertical"
                         android:textColor="@color/text_color_breathwork" />
                 </LinearLayout>

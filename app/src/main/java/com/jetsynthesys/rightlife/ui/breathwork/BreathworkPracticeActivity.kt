@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetBreathworkCompleteBindi
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.databinding.BottomsheetEarlyFinishBinding
 
 class BreathworkPracticeActivity : AppCompatActivity() {
 
@@ -165,7 +166,7 @@ class BreathworkPracticeActivity : AppCompatActivity() {
         val bottomSheetDialog = BottomSheetDialog(this)
 
         // Inflate the BottomSheet layout
-        val dialogBinding = BottomsheetDeleteTagBinding.inflate(layoutInflater)
+        val dialogBinding = BottomsheetEarlyFinishBinding.inflate(layoutInflater)
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
@@ -216,10 +217,8 @@ class BreathworkPracticeActivity : AppCompatActivity() {
         bottomSheetDialog.setContentView(bottomSheetView)
 
 
-        bottomSheetDialog.setContentView(bottomSheetView)
-
         // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet2)
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
