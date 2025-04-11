@@ -48,7 +48,34 @@
         android:layout_width="match_parent"
         android:id="@+id/ll_other_section"
         android:visibility="gone"
+        android:orientation="vertical"
         android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:text="In the last 30 days, you’ve been feeling..."
+            android:gravity="center"
+            android:background="#F7E6B7"
+            android:fontFamily="@font/dmsans_semibold"
+            android:textSize="@dimen/textsize_large"
+            android:paddingStart="@dimen/margin_card_16dp"
+            android:layout_height="50dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_emotions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Other Assessments"
+            android:gravity="center_vertical"
+            android:background="#F7E6B7"
+            android:fontFamily="@font/dmsans_semibold"
+            android:textSize="@dimen/textsize_large"
+            android:paddingStart="@dimen/margin_card_16dp"
+            android:layout_height="50dp" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_suggested_assessment"
             android:layout_width="wrap_content"
@@ -113,6 +140,8 @@
         android:text="PHQ-9 Score"
         android:gravity="center_vertical"
         android:background="#F7E6B7"
+        android:fontFamily="@font/dmsans_semibold"
+        android:textSize="@dimen/textsize_large"
         android:paddingStart="@dimen/margin_card_16dp"
         android:layout_height="50dp" />
 

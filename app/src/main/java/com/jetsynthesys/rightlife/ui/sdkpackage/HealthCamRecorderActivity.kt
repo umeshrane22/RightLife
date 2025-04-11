@@ -17,16 +17,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.databinding.ActivityHealthcamRecorderBinding
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamFacialScanRequest
+import com.jetsynthesys.rightlife.ui.healthcam.HealthCamReportIdResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.gson.Gson
-import com.jetsynthesys.rightlife.databinding.ActivityHealthcamRecorderBinding
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -34,6 +35,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 import kotlin.system.exitProcess
 
 class HealthCamRecorderActivity : AppCompatActivity() {
@@ -286,12 +288,6 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     }
 
     private fun launchRLAnuraMeasurementActivity() {
-        Log.d(
-            TAG,
-            "Start RLAnuraMeasurementActivity with UserInfo: " +
-                    measurementQuestionnaire.toString() +
-                    "partnerID=$PARTNER_ID"
-        )
         val intent = Intent(this@HealthCamRecorderActivity, RlAnuraMeasurementActivity::class.java)
         startActivityForResult(intent, ANURA_REQUEST)
     }
@@ -303,11 +299,6 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         binding.tvNotify.text = "Please wait!! Generating Result"
         if (resultCode == Activity.RESULT_OK && requestCode == ANURA_REQUEST) {
-            Log.d(TAG, "results222=${data?.getStringExtra("result")}")
-
-            val result = data?.getStringExtra("result")
-            val jsonObject = JSONObject(result)
-
             val healthCamFacialScanRequest = HealthCamFacialScanRequest()
             healthCamFacialScanRequest.status = "SUCCESS"
             healthCamFacialScanRequest.reportId = REPORT_ID
@@ -315,11 +306,9 @@ class HealthCamRecorderActivity : AppCompatActivity() {
             val reportData1 = data?.getSerializableExtra("resultObject") as ReportData
             healthCamFacialScanRequest.reportData = reportData1
 
-            submitReport(healthCamFacialScanRequest)
+            submitFacialScan(healthCamFacialScanRequest)
 
-            Log.d("AAAA", result.toString())
         } else {
-            Log.d(TAG, "results= error")
             finish()
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -328,9 +317,6 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     private fun submitReport(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
         val accessToken = SharedPreferenceManager.getInstance(this).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
-
-        val gson = Gson()
-        val json = gson.toJson(healthCamFacialScanRequest)
 
         val call = apiService.submitHealthCamReport(accessToken, healthCamFacialScanRequest)
         call.enqueue(object : Callback<ResponseBody?> {
@@ -362,6 +348,53 @@ class HealthCamRecorderActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Toast.makeText(
+                    this@HealthCamRecorderActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
+    }
+
+    private fun submitFacialScan(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
+        Utils.showLoader(this)
+        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(
+            ApiService::class.java
+        )
+        val call = apiService.getHealthCamByReportId(accessToken, healthCamFacialScanRequest.reportId)
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                Utils.dismissLoader(this@HealthCamRecorderActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse: String? = null
+                    try {
+                        val reportIdResponse = gson.fromJson(
+                            response.body()!!.string(),
+                            HealthCamReportIdResponse::class.java
+                        )
+
+                        healthCamFacialScanRequest.reportId = reportIdResponse.data.id
+                        submitReport(healthCamFacialScanRequest)
+
+                    } catch (e: IOException) {
+                        throw RuntimeException(e)
+                    }
+                    Log.d("AAAA API Response", "ReportId submit - : $jsonResponse")
+                } else {
+                    Toast.makeText(
+                        this@HealthCamRecorderActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Utils.dismissLoader(this@HealthCamRecorderActivity)
                 Toast.makeText(
                     this@HealthCamRecorderActivity,
                     "Network Error: " + t.message,

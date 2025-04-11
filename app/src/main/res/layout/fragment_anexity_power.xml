@@ -117,7 +117,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/happy_icon"
+                    android:src="@drawable/ic_anxiety_extreme"
+                    android:padding="5dp"
                     android:gravity="top"
                     />
 
@@ -126,7 +127,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/happy_icon"
+                    android:src="@drawable/ic_anxiety_high"
+                    android:padding="5dp"
                     android:gravity="top"
                      />
 
@@ -135,7 +137,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/happy_icon"
+                    android:src="@drawable/ic_anxiety_moderate"
+                    android:padding="5dp"
                     android:gravity="top"
                     />
 
@@ -144,7 +147,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/happy_icon"
+                    android:src="@drawable/ic_anxiety_mild"
+                    android:padding="5dp"
                     android:gravity="top"
                     />
 
@@ -153,7 +157,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:src="@drawable/happy_icon"
+                    android:src="@drawable/ic_anxiety_minimal"
+                    android:padding="5dp"
                     android:gravity="top"
                     />
 

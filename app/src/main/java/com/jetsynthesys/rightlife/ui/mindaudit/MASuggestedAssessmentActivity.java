@@ -76,7 +76,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
         }
 
         if (assessments != null) {
-            SuggestedAssessments suggestedAssessments = assessments.getSuggestedAssessments();
+            SuggestedAssessments suggestedAssessments = assessments.suggestedAssessments;
 
             rvSuggestedAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
             rvAllAssessment.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -86,7 +86,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
             rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter);
             rvSuggestedAssessment.scrollToPosition(0);
 
-            AllAssessment assessment = assessments.getAllAssessment();
+            AllAssessment assessment = assessments.allAssessment;
 
             if (assessment.getDass21() != null) {
                 allAssessments.add(assessment.getDass21());

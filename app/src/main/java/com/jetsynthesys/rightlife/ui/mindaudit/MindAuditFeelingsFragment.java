@@ -109,7 +109,7 @@ public class MindAuditFeelingsFragment extends Fragment {
                             emotionsList.add(new Emotions(Utils.toTitleCase(s), false));
                         }
 
-                        emotionsAdapter = new EmotionsAdapter(requireContext(), emotionsList, emotion -> {
+                        emotionsAdapter = new EmotionsAdapter(requireContext(), emotionsList,"1", emotion -> {
                             if (emotion.isSelected()) {
                                 selectedEmotions.add(emotion.getEmotion().toUpperCase());
                             } else {

@@ -16,6 +16,7 @@ import com.jetsynthesys.rightlife.apimodel.emaillogin.EmailLoginRequest;
 import com.jetsynthesys.rightlife.apimodel.emaillogin.EmailOtpRequest;
 import com.jetsynthesys.rightlife.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.jetsynthesys.rightlife.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
+import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQuestionRequest;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
@@ -295,6 +296,10 @@ public interface ApiService {
     //?moduleId=THINK_RIGHT&type=CATEGORY&categoryId=ygjh----g
     Call<JsonElement> postAnswerRequest(
             @Header("Authorization") String authToken, @Path("type") String category, @Body UserAnswerRequest request);
+
+    @POST("questionaries/useranswer/{type}")
+    Call<JsonElement> postAnswerRequest(
+            @Header("Authorization") String authToken, @Path("type") String category, @Body FaceScanQuestionRequest request);
 
 
     // get module content

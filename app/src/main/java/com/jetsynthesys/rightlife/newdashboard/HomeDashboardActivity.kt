@@ -54,6 +54,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
+    private var checklistComplete = true
     private var checkListCount = 0;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -480,13 +481,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         promotionResponse2,
                         AiDashboardResponseMain::class.java
                     )
-                    Log.d(
+                    /*Log.d(
                         "dashboard",
                         "Success: Scan Details" + aiDashboardResponseMain.data?.facialScan?.get(0)!!.avgParameter
-                    )
+                    )*/
                     handleSelectedModule(aiDashboardResponseMain)
                     binding.recyclerView.adapter = HeartRateAdapter(
-                        aiDashboardResponseMain.data.facialScan,
+                        aiDashboardResponseMain.data?.facialScan,
                         this@HomeDashboardActivity
                     )
                 } else {
@@ -783,6 +784,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             binding.includeChecklist.rlChecklistEatright
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
+        /*if (checklistComplete){
+            binding.llDashboardMainData.visibility = View.VISIBLE
+            binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
+        }else{
+            binding.llDashboardMainData.visibility = View.GONE
+            binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
+        }*/
     }
 
     private fun setStatusOfChecklist(
@@ -793,10 +801,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         when (profile) {
             "INITIAL" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_tick_bg)
+                checklistComplete = false
             }
 
             "INPROGRESS" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_pending)
+                checklistComplete = false
             }
 
             "COMPLETED" -> {
