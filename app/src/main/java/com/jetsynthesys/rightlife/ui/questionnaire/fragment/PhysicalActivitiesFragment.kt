@@ -205,6 +205,17 @@ class PhysicalActivitiesFragment : Fragment() {
                 selectedActivities.add(activities[position].title)
 
             activities[position].isSelected = !activities[position].isSelected
+            val colorStateListSelected =
+                ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
+            val colorStateList1 =
+                ContextCompat.getColorStateList(requireContext(), R.color.rightlife)
+            if (selectedActivities.size != 3) {
+                binding.btnContinue.backgroundTintList = colorStateList1
+                binding.btnContinue.isEnabled = false
+            } else {
+                binding.btnContinue.backgroundTintList = colorStateListSelected
+                binding.btnContinue.isEnabled = true
+            }
         }
 
         // Text color for selected state
@@ -235,8 +246,11 @@ class PhysicalActivitiesFragment : Fragment() {
         dialogBinding.textTitle3.text = selectedActivities[2]
 
         dialogBinding.btnPlus1.setOnClickListener {
-            val count = dialogBinding.textCount1.text.toString().toInt() + 1
-            dialogBinding.textCount1.text = count.toString()
+            var count = dialogBinding.textCount1.text.toString().toInt() + 1
+            if (count <= QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!) {
+                count++
+                dialogBinding.textCount1.text = count.toString()
+            }
         }
 
         dialogBinding.btnMinus1.setOnClickListener {
@@ -248,8 +262,11 @@ class PhysicalActivitiesFragment : Fragment() {
         }
 
         dialogBinding.btnPlus2.setOnClickListener {
-            val count = dialogBinding.textCount2.text.toString().toInt() + 1
-            dialogBinding.textCount2.text = count.toString()
+            var count = dialogBinding.textCount2.text.toString().toInt() + 1
+            if (count <= QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!) {
+                count++
+                dialogBinding.textCount2.text = count.toString()
+            }
         }
 
         dialogBinding.btnMinus2.setOnClickListener {
@@ -261,8 +278,11 @@ class PhysicalActivitiesFragment : Fragment() {
         }
 
         dialogBinding.btnPlus3.setOnClickListener {
-            val count = dialogBinding.textCount3.text.toString().toInt() + 1
-            dialogBinding.textCount3.text = count.toString()
+            var count = dialogBinding.textCount3.text.toString().toInt() + 1
+            if (count <= QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!) {
+                count++
+                dialogBinding.textCount3.text = count.toString()
+            }
         }
 
         dialogBinding.btnMinus3.setOnClickListener {
