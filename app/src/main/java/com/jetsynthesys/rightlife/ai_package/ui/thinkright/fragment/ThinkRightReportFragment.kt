@@ -75,6 +75,7 @@ import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.jetsynthesys.rightlife.ai_package.model.MindfullData
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
@@ -123,6 +124,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private var toolsArray : ArrayList<ToolsData> = arrayListOf()
     private lateinit var toolGridResponse : ToolsGridResponse
     private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
+    private lateinit var mindfullResponse : MindfullResponse
+    private var mindfullData : ArrayList<MindfullData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
     private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
     var itemCount = 0
@@ -298,7 +301,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private fun fetchMindfulData() {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val startDate = getYesterdayDate()
+        val startDate = getCurrentDate()
         val endDate = getCurrentDate()
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
