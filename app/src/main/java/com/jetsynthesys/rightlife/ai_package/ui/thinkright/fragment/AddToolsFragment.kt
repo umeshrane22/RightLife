@@ -148,7 +148,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         backBtn.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "ThinkRightReportFragment")
+            navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
