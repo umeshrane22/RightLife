@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -18,10 +19,10 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewM
 import com.jetsynthesys.rightlife.databinding.FragmentSearchWorkoutBinding
 import com.google.android.material.tabs.TabLayout
 
-
 class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
     private val workoutViewModel: WorkoutViewModel by activityViewModels()
+    private lateinit var searchWorkoutBackButton: ImageView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchWorkoutBinding
         get() = FragmentSearchWorkoutBinding::inflate
@@ -32,7 +33,12 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
+        searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
+        searchWorkoutBackButton.setOnClickListener {
+            navigateToYourActivityFragment()
+        }
 
+        // Set up tabs
         val tabTitles = arrayOf("All Workouts", "My Routine", "Frequently Logged")
         for (title in tabTitles) {
             val tab = tabLayout.newTab()
@@ -42,16 +48,17 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             tabLayout.addTab(tab)
         }
 
+        // Initial fragment
         if (savedInstanceState == null) {
             replaceFragment(AllWorkoutFragment())
         }
+
+        // Handle back press
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(YourActivityFragment(), "LandingFragment")
-
+                navigateToYourActivityFragment()
             }
         })
-
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
@@ -64,6 +71,8 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+
+        // Search text listener
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -74,7 +83,9 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     }
 
     private fun replaceFragment(fragment: Fragment) {
-        childFragmentManager.beginTransaction().replace(R.id.fragmentContainer, fragment).commit()
+        childFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment)
+            .commit()
     }
 
     private fun updateTabColors() {
@@ -87,11 +98,14 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             )
         }
     }
-    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
-        requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, fragment, tag)
-            addToBackStack(null)
-            commit()
-        }
+
+    private fun navigateToYourActivityFragment() {
+        val fragment = YourActivityFragment()
+        val args = Bundle()
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.flFragment, fragment, "YourActivityFragment")
+            .addToBackStack("YourActivityFragment")
+            .commit()
     }
 }

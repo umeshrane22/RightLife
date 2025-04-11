@@ -56,6 +56,7 @@ import java.time.Instant
 import java.time.ZoneId
 import kotlin.math.abs
 import androidx.core.net.toUri
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.time.LocalDate
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
@@ -494,6 +495,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).accessToken
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = "64763fe2fa0e40d9c0bc8264",
                     rangeType = "daily",
