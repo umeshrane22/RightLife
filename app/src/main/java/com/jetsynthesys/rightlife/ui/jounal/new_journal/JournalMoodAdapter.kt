@@ -28,7 +28,7 @@ class JournalMoodAdapter(
             // Apply selected state
             iconWrapper.isSelected = isSelected
             moodLabel.setTypeface(null, if (isSelected) Typeface.BOLD else Typeface.NORMAL)
-            moodIcon.alpha = if (isSelected) 1.0f else 0.5f
+            moodIcon.alpha = if (isSelected) 1.0f else 1.0f
             // Remove scaleType on selection
             moodIcon.scaleType = if (isSelected) ImageView.ScaleType.FIT_CENTER else ImageView.ScaleType.CENTER_INSIDE
 

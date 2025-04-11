@@ -647,7 +647,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void setupAssesmentsUi(Assessments assessments) {
-        AllAssessment assessment = assessments.getAllAssessment();
+        AllAssessment assessment = assessments.allAssessment;
 
     }
 

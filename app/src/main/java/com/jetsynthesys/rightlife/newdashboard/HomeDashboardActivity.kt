@@ -76,6 +76,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
+    private var checklistComplete = true
     private var checkListCount = 0;
     private lateinit var healthConnectClient: HealthConnectClient
     private val allReadPermissions = setOf(
@@ -841,6 +842,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             binding.includeChecklist.rlChecklistEatright
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
+        /*if (checklistComplete){
+            binding.llDashboardMainData.visibility = View.VISIBLE
+            binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
+        }else{
+            binding.llDashboardMainData.visibility = View.GONE
+            binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
+        }*/
     }
 
     private fun setStatusOfChecklist(
@@ -851,10 +859,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         when (profile) {
             "INITIAL" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_tick_bg)
+                checklistComplete = false
             }
 
             "INPROGRESS" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_pending)
+                checklistComplete = false
             }
 
             "COMPLETED" -> {

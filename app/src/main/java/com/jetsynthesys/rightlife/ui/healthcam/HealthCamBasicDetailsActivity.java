@@ -1,11 +1,19 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToFtInch;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToInch;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToCentimeter;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToInch;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToCentimeter;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToFeet;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertKgToLbs;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertLbsToKgs;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,8 +30,8 @@ import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Answer;
-import com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.UserAnswerRequest;
+import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.AnswerFaceScan;
+import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQuestionRequest;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Question;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit;
@@ -33,23 +41,11 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToFtInch;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToInch;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToCentimeter;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToInch;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToCentimeter;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToFeet;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertKgToLbs;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertLbsToKgs;
 
 public class HealthCamBasicDetailsActivity extends AppCompatActivity {
 
@@ -60,12 +56,12 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     private LinearLayout llHeight, llWeight, llHeightFtInch;
     private Button btnStartScan;
     private QuestionListHealthAudit responseObj;
-    private ArrayList<Option> heightUnits = new ArrayList<>();
-    private ArrayList<Option> weightUnits = new ArrayList<>();
-    private ArrayList<Option> smokeOptions = new ArrayList<>();
-    private ArrayList<Option> diabeticsOptions = new ArrayList<>();
-    private ArrayList<Option> bpMedicationOptions = new ArrayList<>();
-    private ArrayList<Option> genderOptions = new ArrayList<>();
+    private final ArrayList<Option> heightUnits = new ArrayList<>();
+    private final ArrayList<Option> weightUnits = new ArrayList<>();
+    private final ArrayList<Option> smokeOptions = new ArrayList<>();
+    private final ArrayList<Option> diabeticsOptions = new ArrayList<>();
+    private final ArrayList<Option> bpMedicationOptions = new ArrayList<>();
+    private final ArrayList<Option> genderOptions = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,67 +109,94 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                 } else if (ageInt == 0) {
                     Toast.makeText(this, "Age can not be 0", Toast.LENGTH_SHORT).show();
                 } else {
-                    ArrayList<Answer> answers = new ArrayList<>();
+                    //ArrayList<Answer> answers = new ArrayList<>();
+                    ArrayList<AnswerFaceScan> answerFaceScans = new ArrayList<>();
 
                     for (Question question : responseObj.getQuestionData().getQuestionList()) {
+                        AnswerFaceScan answer = new AnswerFaceScan();
+                        answer.setQuestion(question.getQuestion());
                         switch (question.getQuestion()) {
                             case "first_name":
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(firstName))));
+                                answer.setAnswer(firstName);
                                 break;
                             case "last_name":
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(lastName))));
+                                answer.setAnswer(lastName);
                                 break;
                             case "height":
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(height))));
+                                answer.setAnswer(heightInt);
                                 break;
                             case "weight":
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(weight))));
+                                answer.setAnswer(weightInt);
                                 break;
                             case "age":
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(age))));
+                                answer.setAnswer(ageInt);
                                 break;
                             case "gender":
                                 String selectedGender = "";
                                 for (Option gen : genderOptions) {
                                     if (gen.getOptionText().equals(gender)) {
-                                        selectedGender = gen.getOptionPosition();
+                                        selectedGender = gen.getOptionText();
                                     }
                                 }
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(selectedGender))));
+                                answer.setAnswer(selectedGender);
                                 break;
                             case "smoking":
-                                String selectedSmoke = "";
+                                int selectedSmoke = 0;
                                 for (Option sm : smokeOptions) {
                                     if (sm.getOptionText().equals(smoke)) {
-                                        selectedSmoke = sm.getOptionPosition();
+                                        selectedSmoke = Integer.valueOf(sm.getOptionPosition());
                                     }
                                 }
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(selectedSmoke))));
+                                answer.setAnswer(selectedSmoke);
                                 break;
                             case "bloodpressuremedication":
-                                String selectedBP = "";
+                                int selectedBP = 0;
                                 for (Option bp : bpMedicationOptions) {
                                     if (bp.getOptionText().equals(bpMedication)) {
-                                        selectedBP = bp.getOptionPosition();
+                                        selectedBP = Integer.valueOf(bp.getOptionPosition());
                                     }
                                 }
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(selectedBP))));
+                                answer.setAnswer(selectedBP);
                                 break;
                             case "diabetes":
-                                String selectedDiabetic = "";
+                                int selectedDiabetic = 0;
                                 for (Option dia : diabeticsOptions) {
-                                    if (dia.getOptionText().equals(gender)) {
-                                        selectedDiabetic = dia.getOptionPosition();
+                                    if (dia.getOptionText().equals(diabetic)) {
+                                        selectedDiabetic = Integer.valueOf(dia.getOptionPosition());
                                     }
                                 }
-                                answers.add(new Answer(question.getQuestion(), List.of(new com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option(selectedDiabetic))));
+                                answer.setAnswer(selectedDiabetic);
+                                break;
+
+                            case "height_unit":
+                                int selectedHeightUnit = 0;
+                                for (Option heightUnit : heightUnits) {
+                                    if (heightUnit.getOptionText().equals(heightUnit)) {
+                                        selectedHeightUnit = Integer.valueOf(heightUnit.getOptionPosition());
+                                    }
+                                }
+                                answer.setAnswer(selectedHeightUnit);
+                                break;
+                            case "weight_unit":
+                                int selectedWeightUnit = 0;
+                                for (Option weightUnit : weightUnits) {
+                                    if (weightUnit.getOptionText().equals(weightUnit)) {
+                                        selectedWeightUnit = Integer.valueOf(weightUnit.getOptionPosition());
+                                    }
+                                }
+                                answer.setAnswer(selectedWeightUnit);
                                 break;
                         }
+                        answerFaceScans.add(answer);
                     }
+
+                    FaceScanQuestionRequest faceScanQuestionRequest = new FaceScanQuestionRequest();
+                    faceScanQuestionRequest.setQuestionId(responseObj.getQuestionData().getId());
+                    faceScanQuestionRequest.setAnswers(answerFaceScans);
 
                     btnStartScan.setEnabled(false);
                     new Handler().postDelayed(() -> btnStartScan.setEnabled(true), 5000);
-                    submitData(answers);
+                    submitData(faceScanQuestionRequest);
                 }
             }
         });
@@ -418,11 +441,9 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d("AAAA API Response", "SUB subModule list - : " + response);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
                     responseObj = gson.fromJson(jsonResponse, QuestionListHealthAudit.class);
-                    Log.d("AAAA API Response", "ReportId - : " + jsonResponse);
                     setData();
                 } else {
                     Toast.makeText(HealthCamBasicDetailsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -432,21 +453,16 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
                 Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
             }
         });
     }
 
-    private void submitData(ArrayList formData) {
+    private void submitData(FaceScanQuestionRequest requestAnswer) {
         Utils.showLoader(this);
-
-        List<Answer> answers = new ArrayList<>(formData);
-        UserAnswerRequest request = new UserAnswerRequest("", responseObj.getQuestionData().getId(), answers);
-        submitAnswerRequest(request);
+        submitAnswerRequest(requestAnswer);
     }
 
-    void submitAnswerRequest(UserAnswerRequest requestAnswer) {
+    void submitAnswerRequest(FaceScanQuestionRequest requestAnswer) {
         String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
@@ -467,7 +483,14 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                         intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN");
                         startActivity(intent);
                     } else {
-                        submitFacialScan(healthCamSubmitResponse.getData().getAnswerId());
+                        Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
+                        intent.putExtra("reportID", healthCamSubmitResponse.getData().getAnswerId());
+                        intent.putExtra("USER_PROFILE_HEIGHT", edtHeight.getText().toString());
+                        intent.putExtra("USER_PROFILE_WEIGHT", edtWeight.getText().toString());
+                        intent.putExtra("USER_PROFILE_AGE", edtAge.getText().toString());
+                        intent.putExtra("USER_PROFILE_GENDER", edtGender.getText().toString());
+                        startActivity(intent);
+                        finish();
                     }
 
                 } else {
@@ -482,50 +505,4 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             }
         });
     }
-
-    private void submitFacialScan(String reportId) {
-        Utils.showLoader(this);
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
-                if (response.isSuccessful() && response.body() != null) {
-                    Gson gson = new Gson();
-                    String jsonResponse = null;
-                    try {
-                        //jsonResponse = gson.toJson(response.body().string());
-                        HealthCamReportIdResponse reportIdResponse = gson.fromJson(response.body().string(), HealthCamReportIdResponse.class);
-
-                        Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
-                        intent.putExtra("reportID", reportIdResponse.getData().getId());
-                        intent.putExtra("USER_PROFILE_HEIGHT", edtHeight.getText().toString());
-                        intent.putExtra("USER_PROFILE_WEIGHT", edtWeight.getText().toString());
-                        intent.putExtra("USER_PROFILE_AGE", edtAge.getText().toString());
-                        intent.putExtra("USER_PROFILE_GENDER", edtGender.getText().toString());
-                        startActivity(intent);
-                        finish();
-
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    Log.d("AAAA API Response", "ReportId submit - : " + jsonResponse);
-                } else {
-                    Toast.makeText(HealthCamBasicDetailsActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
-                Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-
 }

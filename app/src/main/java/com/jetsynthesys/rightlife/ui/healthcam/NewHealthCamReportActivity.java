@@ -107,9 +107,11 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         if (facialReportResponseNew.success) {
 
             //binding.txtWellnessScore1.setText(String.valueOf(facialReportResponseNew.data.overallWellnessScore.value));
-            binding.txtWellnessScore1.setText(String.format("%.2f", facialReportResponseNew.data.overallWellnessScore.value));
+            if (facialReportResponseNew.data.overallWellnessScore!=null) {
+                binding.txtWellnessScore1.setText(String.format("%.2f", facialReportResponseNew.data.overallWellnessScore.value));
 
-            binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
+                binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
+            }
 
 
             binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);

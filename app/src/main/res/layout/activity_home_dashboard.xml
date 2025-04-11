@@ -170,6 +170,11 @@
                     android:visibility="visible"
                     android:layout_width="match_parent" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ll_dashboard_main_data"
+                android:orientation="vertical">
                 <!--main cards-->
 
                 <androidx.cardview.widget.CardView
@@ -1703,6 +1708,7 @@
 
                 </LinearLayout>
 
+            </LinearLayout>
             </LinearLayout>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>

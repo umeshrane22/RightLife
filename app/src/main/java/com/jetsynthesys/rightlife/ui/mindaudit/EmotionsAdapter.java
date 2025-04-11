@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jetsynthesys.rightlife.R;
@@ -18,14 +20,16 @@ import java.util.ArrayList;
 
 public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.EmotionsViewHolder> {
 
-    private Context context;
-    private ArrayList<Emotions> emotions;
-    private OnItemClickListener onItemClickListener;
+    private final Context context;
+    private final ArrayList<Emotions> emotions;
+    private final String type;
+    private final OnItemClickListener onItemClickListener;
 
-    public EmotionsAdapter(Context context, ArrayList<Emotions> emotions, OnItemClickListener onItemClickListener) {
+    public EmotionsAdapter(Context context, ArrayList<Emotions> emotions, String type, OnItemClickListener onItemClickListener) {
         this.context = context;
         this.emotions = emotions;
         this.onItemClickListener = onItemClickListener;
+        this.type = type;
     }
 
     @NonNull
@@ -61,15 +65,16 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
                 break;
         }
 
-        if (emotion.isSelected()) {
-            holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_pink));
-            holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape_medium_pink));
-            setMargin(7, holder.tvEmotions);
-        } else {
-            holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_light_pink));
-            holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape));
-            setMargin(0, holder.tvEmotions);
-        }
+        if (!type.equals("2"))
+            if (emotion.isSelected()) {
+                holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_pink));
+                holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape_medium_pink));
+                setMargin(7, holder.tvEmotions);
+            } else {
+                holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_light_pink));
+                holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape));
+                setMargin(0, holder.tvEmotions);
+            }
 
 
         holder.itemView.setOnClickListener(v -> {
@@ -77,6 +82,10 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
             notifyItemChanged(position);
             onItemClickListener.onItemClick(emotion);
         });
+        if (type.equals("2")) {
+            ColorStateList colorStateList = ContextCompat.getColorStateList(context, R.color.thinkright);
+            holder.linearLayout.setBackgroundTintList(colorStateList);
+        }
     }
 
     @Override
