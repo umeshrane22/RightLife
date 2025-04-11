@@ -87,7 +87,9 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
     private fun openAddWorkoutFragment(workout: WorkoutList) {
         val fragment = AddWorkoutSearchFragment()
-        val args = Bundle()
+        val args = Bundle().apply {
+            putParcelable("workout", workout)
+        }
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, "addWorkoutFragment")
