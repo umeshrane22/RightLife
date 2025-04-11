@@ -15,6 +15,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -25,7 +26,9 @@ import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CreateRoutineListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
@@ -43,6 +46,8 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var layoutBtnLog: LinearLayoutCompat
     private lateinit var addNameLayout: ConstraintLayout
     private lateinit var createListRoutineLayout: ConstraintLayout
+    private var workout: WorkoutList? = null
+
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
@@ -71,6 +76,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineBackButton = view.findViewById(R.id.back_button)
         addNameLayout = view.findViewById(R.id.add_name_layout)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
+        workout = arguments?.getParcelable("workout")
+        val workoutRecord =
+            arguments?.let { BundleCompat.getParcelable(it, "workoutRecord", WorkoutSessionRecord::class.java) }
 
         addNameLayout.visibility = View.VISIBLE
         createListRoutineLayout.visibility = View.GONE
@@ -84,7 +92,19 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = myRoutineListAdapter
 
         createRoutineBackButton.setOnClickListener {
-            navigateToFragment(YourworkOutsFragment(), "LandingFragment")
+           // navigateToFragment(YourworkOutsFragment(), "LandingFragment")
+            val fragment = YourworkOutsFragment()
+            val args = Bundle().apply {
+
+                putParcelable("workout", workout)
+                putParcelable("workoutRecord", workoutRecord)// Pass the full record
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                addToBackStack("YourworkOutsFragment")
+                commit()
+            }
         }
 
         editText.addTextChangedListener(object : TextWatcher {
@@ -105,7 +125,19 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(YourworkOutsFragment(), "LandingFragment")
+               // navigateToFragment(YourworkOutsFragment(), "LandingFragment")
+                val fragment = YourworkOutsFragment()
+                val args = Bundle().apply {
+
+                    putParcelable("workout", workout)
+                    putParcelable("workoutRecord", workoutRecord)// Pass the full record
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                    addToBackStack("YourworkOutsFragment")
+                    commit()
+                }
             }
         })
 
