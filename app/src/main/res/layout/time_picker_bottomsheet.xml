@@ -1,0 +1,77 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@drawable/bottomsheet_bg">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/btnClose"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/red_cross_btn" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Set Time"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Arrow and TimePicker Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <!-- Left Arrow -->
+        <ImageView
+            android:id="@+id/btnArrowLeft"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/caret_right_icon"
+            android:padding="8dp" />
+
+        <!-- Time Picker -->
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:timePickerMode="spinner" />
+
+        <!-- Right Arrow -->
+        <ImageView
+            android:id="@+id/btnArrowRight"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/caret_left_icon"
+            android:padding="8dp" />
+    </LinearLayout>
+
+
+    <!-- Confirm Button -->
+    <TextView
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:fontFamily="@font/dmsans_bold"
+        android:textAlignment="center"
+        android:text="Confirm"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#007BFF"
+        android:background="@drawable/blue_curved_bg" />
+</LinearLayout>

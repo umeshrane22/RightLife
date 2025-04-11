@@ -1,17 +1,20 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
+import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -32,6 +35,12 @@ import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>() {
 
@@ -44,6 +53,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var radioGroup: RadioGroup
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var progressDialog: ProgressDialog
+    private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,6 +66,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        progressDialog = ProgressDialog(activity)
+        progressDialog.setTitle("Loading")
+        progressDialog.setCancelable(false)
 
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
@@ -104,6 +118,33 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun fetchSleepData() {
+        progressDialog.show()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "user_test_1"
+        val period = "weekly"
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userId, source, period)
+        call.enqueue(object : Callback<SleepPerformanceResponse> {
+            override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    sleepPerformanceResponse = response.body()!!
+                    setSleepRightPerformanceData(sleepPerformanceResponse)
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<SleepPerformanceResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceResponse) {
 
     }
 

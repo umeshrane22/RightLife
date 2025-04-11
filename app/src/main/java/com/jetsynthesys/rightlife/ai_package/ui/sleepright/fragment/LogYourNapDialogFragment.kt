@@ -56,11 +56,23 @@ class LogYourNapDialogFragment : BottomSheetDialogFragment() {
         }
 
         view.findViewById<View>(R.id.startTimeContainer).setOnClickListener {
-            showTimePicker(isStart = true)
+            TimePickerDialogFragment(6, 30) { hour, minute ->
+                // Handle selected time
+                val formatted = LocalTime.of(hour, minute)
+                    .format(DateTimeFormatter.ofPattern("hh:mm a"))
+                tvStartTime.text = formatted
+            }.show(childFragmentManager, "TimePicker")
+           // showTimePicker(isStart = true)
         }
 
         view.findViewById<View>(R.id.endTimeContainer).setOnClickListener {
-            showTimePicker(isStart = false)
+            TimePickerDialogFragment(6, 30) { hour, minute ->
+                // Handle selected time
+                val formatted = LocalTime.of(hour, minute)
+                    .format(DateTimeFormatter.ofPattern("hh:mm a"))
+                tvEndTime.text = formatted
+            }.show(childFragmentManager, "TimePicker")
+           // showTimePicker(isStart = false)
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {

@@ -19,6 +19,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
+import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
@@ -158,6 +159,10 @@ interface ApiService {
 
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
+
+    @GET("app/api/mindFull")
+    fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
+                      @Query("endDate") endDate: String): Call<MindfullResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
