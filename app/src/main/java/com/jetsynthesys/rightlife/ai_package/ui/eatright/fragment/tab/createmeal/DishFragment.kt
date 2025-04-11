@@ -453,8 +453,6 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val formattedDate = currentDateTime.format(formatter)
 
-
-
         val mealLogRequest = MealLogRequest(
             mealId = mealDetails._id,
             userId = "64763fe2fa0e40d9c0bc8264",

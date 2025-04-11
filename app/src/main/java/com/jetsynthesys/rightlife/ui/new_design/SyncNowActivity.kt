@@ -101,6 +101,11 @@ class SyncNowActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private val requestPermissionsLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            var header = intent.getStringExtra("WellnessFocus")
+            val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+            if (header.isNullOrEmpty()){
+                header = sharedPreferenceManager.selectedWellnessFocus
+            }
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
                     // fetchAllHealthData()
@@ -108,6 +113,10 @@ class SyncNowActivity : AppCompatActivity() {
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+                sharedPreferenceManager.syncNow = true
+                intent.putExtra("WellnessFocus", header)
+                startActivity(intent)
                 //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
 //                val intent = Intent(Intent.ACTION_MAIN).apply {
 //                    setClassName(
