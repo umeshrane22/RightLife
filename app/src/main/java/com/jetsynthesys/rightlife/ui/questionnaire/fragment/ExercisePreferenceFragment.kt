@@ -51,7 +51,10 @@ class ExercisePreferenceFragment : Fragment() {
             val times = binding.inputTimes.text.toString()
             if (times.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter value", Toast.LENGTH_SHORT).show()
-            } else {
+            }else if (times.toInt() > 15){
+                Toast.makeText(requireContext(), "It should not be more than 15", Toast.LENGTH_SHORT).show()
+            }
+            else {
                 //QuestionnaireEatRightActivity.navigateToNextPage()
                 submit(times)
             }

@@ -28,7 +28,8 @@ class ServingAdapter(
             textCount.text = item.count.toString()
 
             btnPlus.setOnClickListener {
-                item.count++
+                if (item.count < 15)
+                    item.count++
                 textCount.text = item.count.toString()
                 onPlusMinusClick(item)
             }

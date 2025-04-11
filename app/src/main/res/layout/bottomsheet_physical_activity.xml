@@ -34,25 +34,28 @@
             android:src="@drawable/ic_walking" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/imageIcon1"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="12dp"
+            android:layout_toStartOf="@+id/llPlusMinus1">
 
             <TextView
                 android:id="@+id/textTitle1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fruits"
+                android:text="Fruits Fruits Fruits Fruits Fruits Fruits Fruits Fruits "
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_header"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/textDesc1"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Times per week"
                 android:fontFamily="@font/dmsans_regular"
@@ -63,6 +66,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/llPlusMinus1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -113,12 +117,13 @@
             android:src="@drawable/ic_running" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/imageIcon2"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="12dp"
+            android:layout_toStartOf="@+id/llPlusMinus2">
 
             <TextView
                 android:id="@+id/textTitle2"
@@ -127,7 +132,9 @@
                 android:text="Fruits"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_header"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/textDesc2"
@@ -142,6 +149,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/llPlusMinus2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -192,12 +200,13 @@
             android:src="@drawable/ic_yoga" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/imageIcon3"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="12dp"
+            android:layout_toStartOf="@id/llPlusMinus3">
 
             <TextView
                 android:id="@+id/textTitle3"
@@ -206,7 +215,9 @@
                 android:text="Fruits"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_header"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/textDesc3"
@@ -221,6 +232,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/llPlusMinus3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
