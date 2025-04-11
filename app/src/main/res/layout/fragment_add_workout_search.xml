@@ -190,15 +190,29 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="hr"
+                            android:textColor="@android:color/black"
+                            android:textSize="24sp"
+                            android:layout_gravity="center_vertical"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="16dp" />
+
                         <com.shawnlin.numberpicker.NumberPicker
                             android:id="@+id/minutePicker"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
-                        <com.shawnlin.numberpicker.NumberPicker
-                            android:id="@+id/amPmPicker"
+                        <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:text="min"
+                            android:textColor="@android:color/black"
+                            android:textSize="24sp"
+                            android:layout_gravity="center_vertical"
+                            android:paddingStart="8dp" />
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,8 +12,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.os.BundleCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -37,17 +36,17 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
     private val handler = Handler(Looper.getMainLooper())
     private lateinit var intensityProgressBar: CustomProgressBar
-    private var selectedTime: String = "1:00 AM"
+    private var selectedTime: String = "1 hr 0 min" // Default value without AM/PM
     private var selectedIntensity: String = "Low" // Default value
     private var workout: WorkoutList? = null
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Use BundleCompat for compatibility across API levels
         workout = arguments?.getParcelable("workout")
         val hourPicker = view.findViewById<NumberPicker>(R.id.hourPicker)
         val minutePicker = view.findViewById<NumberPicker>(R.id.minutePicker)
-        val amPmPicker = view.findViewById<NumberPicker>(R.id.amPmPicker)
         val addLog = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
         val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
         intensityProgressBar = view.findViewById(R.id.customSeekBar)
@@ -61,8 +60,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
             workout?.let { it1 ->
-                calculateUserCalories(durationMinutes,selectedIntensity,
-                    it1._id)
+                calculateUserCalories(durationMinutes, selectedIntensity, it1._id)
             }
         }
 
@@ -72,13 +70,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
         })
 
-        hourPicker.minValue = 1
-        hourPicker.maxValue = 12
+        // Configure NumberPickers
+        hourPicker.minValue = 0 // Allow 0 hours
+        hourPicker.maxValue = 23 // Up to 23 hours
         minutePicker.minValue = 0
         minutePicker.maxValue = 59
-        amPmPicker.minValue = 0
-        amPmPicker.maxValue = 1
-        amPmPicker.displayedValues = arrayOf("AM", "PM")
 
         fun updateNumberPickerText(picker: NumberPicker) {
             try {
@@ -97,21 +93,18 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             handler.post {
                 updateNumberPickerText(hourPicker)
                 updateNumberPickerText(minutePicker)
-                updateNumberPickerText(amPmPicker)
             }
         }
 
         val timeListener = NumberPicker.OnValueChangeListener { _, _, _ ->
             val hours = hourPicker.value
             val minutes = minutePicker.value.toString().padStart(2, '0')
-            val amPm = amPmPicker.displayedValues[amPmPicker.value]
-            selectedTime = "$hours:$minutes $amPm"
+            selectedTime = "$hours hr $minutes min" // Updated format without AM/PM
             refreshPickers()
         }
 
         hourPicker.setOnValueChangedListener(timeListener)
         minutePicker.setOnValueChangedListener(timeListener)
-        amPmPicker.setOnValueChangedListener(timeListener)
         refreshPickers()
 
         intensityProgressBar.progress = 0.0f
@@ -120,16 +113,15 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         }
     }
 
-    private fun calculateUserCalories(durationMinutes: Int,selectecIntensity:String,activityId:String) {
+    private fun calculateUserCalories(durationMinutes: Int, selectedIntensity: String, activityId: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = "64763fe2fa0e40d9c0bc8264"
-               // val activityId = "67f606a996783adab2e698ed"
                 val request = CalculateCaloriesRequest(
                     userId = userId,
                     activityId = activityId,
                     durationMin = durationMinutes,
-                    intensity = selectecIntensity.lowercase(), // Using the selected intensity from UI
+                    intensity = selectedIntensity.lowercase(),
                     sessions = 1
                 )
 
@@ -141,20 +133,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     val caloriesResponse = response.body()
                     if (caloriesResponse != null) {
                         withContext(Dispatchers.Main) {
-                            // Show success message
-                            /*Toast.makeText(
-                                requireContext(),
-                                "Calories burned: ${caloriesResponse.calories} cal",
-                                Toast.LENGTH_SHORT
-                            ).show()*/
-
-                            // Navigate to YourworkOutsFragment with data
                             val fragment = YourworkOutsFragment()
                             val args = Bundle().apply {
                                 putInt("duration", durationMinutes)
                                 putString("time", selectedTime)
                                 putString("intensity", selectedIntensity)
-                                //putDouble("calories", caloriesResponse.calories ?: 0.0)
                             }
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
