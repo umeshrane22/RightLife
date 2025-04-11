@@ -139,6 +139,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchToolList()
         fetchQuoteData()
         fetchAssessmentResult()
+        fetchMindfulData()
         tvQuote = view.findViewById(R.id.tv_quote_desc)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
@@ -290,6 +291,35 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
 
         fetchToolGridData()
+    }
+
+    private fun fetchMindfulData() {
+        progressDialog.show()
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val call = ApiClient.apiService.fetchMindFull(token)
+        call.enqueue(object : Callback<ToolsGridResponse> {
+            override fun onResponse(call: Call<ToolsGridResponse>, response: Response<ToolsGridResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    toolGridResponse = response.body()!!
+                    for (i in 0 until toolGridResponse.data.size) {
+                        toolGridResponse.data.getOrNull(i)?.let {
+                            toolsGridArray.add(it) }
+                    }
+                    toolsAdapter.notifyDataSetChanged()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
     }
 
     private fun fetchToolGridData() {

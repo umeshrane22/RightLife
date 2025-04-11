@@ -159,6 +159,10 @@ interface ApiService {
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
 
+    @GET("app/api/mindFull")
+    fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
+                      @Query("endDate") endDate: String): Call<ToolsGridResponse>
+
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
         @Query("user_id") userId: String,
