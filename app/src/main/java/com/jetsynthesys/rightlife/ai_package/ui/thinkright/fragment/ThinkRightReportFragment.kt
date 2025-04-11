@@ -88,6 +88,7 @@ import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
@@ -137,10 +138,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
         //RecordEmotionThink
         //Not
-        fetchToolList()
-        fetchQuoteData()
-        fetchAssessmentResult()
-        fetchMindfulData()
+
         tvQuote = view.findViewById(R.id.tv_quote_desc)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
@@ -155,7 +153,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
     //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
         dotsLayout = view.findViewById(R.id.customDotsContainer)
-
+        fetchToolList()
+        fetchQuoteData()
+        fetchAssessmentResult()
+        fetchMindfulData()
 
 
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
@@ -297,15 +298,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private fun fetchMindfulData() {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val startDate = ""
-        val endDate = ""
+        val startDate = getYesterdayDate()
+        val endDate = getCurrentDate()
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
         call.enqueue(object : Callback<MindfullResponse> {
             override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -318,6 +318,16 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 progressDialog.dismiss()
             }
         })
+    }
+
+    fun getCurrentDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().format(formatter)
+    }
+
+    fun getYesterdayDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().minusDays(1).format(formatter)
     }
 
     private fun fetchToolGridData() {
