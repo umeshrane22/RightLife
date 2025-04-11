@@ -39,31 +39,35 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.Phq9Assessment
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.SeverityLevel
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MindfullData
+import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleData
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.MindfulnessReviewDialog
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
+import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
+import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.MindfulnessReviewDialog
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResult
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.Phq9Assessment
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.SeverityLevel
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MoreToolsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolsAdapter
+import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
+import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
@@ -72,16 +76,7 @@ import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
-import com.jetsynthesys.rightlife.ai_package.model.MindfullData
-import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
-import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
-import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
-import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResult
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import kotlinx.coroutines.NonCancellable.parent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -102,14 +97,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var instruction_your_mindfullness_review: ImageView
     private lateinit var dots: Array<ImageView?>
     private lateinit var tvQuote: TextView
+    private lateinit var tvMindfullMinute: TextView
+    private lateinit var tvWellnessDays: TextView
     private lateinit var downloadView: ImageView
     private lateinit var moodTrackBtn: ImageView
+    private lateinit var mindfullArrowBtn: ImageView
     private lateinit var tvAuthor: TextView
     private lateinit var cardAddTools: CardView
     private lateinit var toolsRecyclerView: RecyclerView
     private lateinit var journalingRecyclerView: RecyclerView
     private lateinit var noDataMindFullnessMetric: ConstraintLayout
+    private lateinit var noDataMindAudit: ConstraintLayout
+    private lateinit var dataFilledMindAudit: LinearLayout
+    private lateinit var reassessYourMental: LinearLayout
 
+    private lateinit var data: UserProfileResponse
     private var noData: Boolean = false
     private lateinit var thinkQuoteResponse : ThinkQuoteResponse
     private lateinit var toolRecyclerView: RecyclerView
@@ -145,6 +147,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         tvQuote = view.findViewById(R.id.tv_quote_desc)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
+        mindfullArrowBtn = view.findViewById(R.id.img_mindfull_arrow)
+        noDataMindAudit = view.findViewById(R.id.no_data_mind_audit)
+        reassessYourMental = view.findViewById(R.id.lyt_reassess_your_mental)
+        dataFilledMindAudit = view.findViewById(R.id.data_filled_mind_audit)
+        tvWellnessDays = view.findViewById(R.id.tv_wellness_days)
+        tvMindfullMinute = view.findViewById(R.id.tv_mindfull_minute)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -160,7 +168,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchQuoteData()
         fetchAssessmentResult()
         fetchMindfulData()
-
+        data = SharedPreferenceManager.getInstance(requireContext()).userProfile
+        tvWellnessDays.setText(data.wellnessStreak.toString()+" days")
 
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
@@ -191,6 +200,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         }
         moodTrackBtn.setOnClickListener {
             navigateToFragment(MoodTrackerFragment(),"MoodTracker")
+        }
+        mindfullArrowBtn.setOnClickListener {
+            navigateToFragment(MindfulnessAnalysisFragment(),"MindfulnessAnalysis")
         }
         downloadView.setOnClickListener {
             saveViewAsPdf(requireContext(),mainView,"Journal")
@@ -308,7 +320,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         call.enqueue(object : Callback<MindfullResponse> {
             override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
                 if (response.isSuccessful) {
+                    mindfullResponse = response.body()!!
                     progressDialog.dismiss()
+                    mindfullResponse.data.getOrNull(0)?.duration?.toString().let {
+                        tvMindfullMinute.setText(it+" min")
+                    }
+
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -505,7 +522,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
     private fun fetchAssessmentResult() {
        // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+     //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAssessmentResult(token)
 
         call.enqueue(object : Callback<AssessmentResponse> {
@@ -514,6 +532,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     val assessmentResponse = response.body()
 
                     if (assessmentResponse != null) {
+                        if (assessmentResponse.result.isNotEmpty()){
+                            dataFilledMindAudit.visibility = View.VISIBLE
+                            noDataMindAudit.visibility = View.GONE
+                            reassessYourMental.visibility = View.VISIBLE
                         assessmentList = parseAssessmentData(assessmentResponse.result) // replace with real parsing
                         adapter = AssessmentPagerAdapter(assessmentList)
                         viewPager.adapter = adapter
@@ -562,6 +584,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 )
                             }
                             dotsLayout.addView(dot)
+                        }
+                        } else{
+                            dataFilledMindAudit.visibility = View.GONE
+                            noDataMindAudit.visibility = View.VISIBLE
+                            reassessYourMental.visibility = View.GONE
                         }
                     }
                 } else {
