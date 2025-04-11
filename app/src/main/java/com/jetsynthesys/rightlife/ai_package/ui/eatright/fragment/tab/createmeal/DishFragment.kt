@@ -40,6 +40,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -71,6 +72,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvQuantity: TextView
     private var quantity = 1
     private lateinit var tvMeasure :TextView
+    private var dishLists : ArrayList<MealDetails> = ArrayList()
+    private lateinit var dishLocalListModel : DishLocalListModel
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -111,6 +114,31 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             arguments?.getParcelable("foodDetailsResponse", FoodDetailsResponse::class.java)
         } else {
             arguments?.getParcelable("foodDetailsResponse")
+        }
+
+        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("dishLocalListModel")
+        }
+
+        if (dishLocalListModels != null){
+            dishLocalListModel = dishLocalListModels
+
+            if (foodDetailsResponse?.data != null){
+                val data = foodDetailsResponse?.data
+                if (dishLocalListModel.meals.size > 0){
+                    dishLists.addAll(dishLocalListModel.meals)
+                }
+                dishLists.add(data)
+                dishLocalListModel = DishLocalListModel(dishLists)
+            }
+        }else{
+            if (foodDetailsResponse?.data != null) {
+                val data = foodDetailsResponse?.data
+                dishLists.add(data)
+                dishLocalListModel = DishLocalListModel(dishLists)
+            }
         }
 
 //        view.findViewById<ImageView>(R.id.ivDatePicker).setOnClickListener {
@@ -416,7 +444,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         })
     }
 
-    private fun createMeal(mealDetails : MealDetails) {
+    private fun createMeal(mealDetails: MealDetails) {
         Utils.showLoader(requireActivity())
         // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -447,6 +475,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = CreateMealFragment()
                     val args = Bundle()
+                    args.putParcelable("dishLocalListModel", dishLocalListModel)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "mealLog")
