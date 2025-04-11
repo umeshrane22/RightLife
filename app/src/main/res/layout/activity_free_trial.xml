@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -57,10 +58,14 @@
                     android:paddingBottom="12dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_yoga"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_lock_freetrial"
+                        android:background="@drawable/ic_uncheck_circle"
+                        android:padding="10dp"
+                        android:backgroundTint="#1292E5"
+                        android:layout_marginEnd="16dp"
+                        app:tint="@color/white" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -93,9 +98,12 @@
                     android:paddingBottom="12dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_yoga"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_lock_freetrial"
+                        android:background="@drawable/ic_uncheck_circle"
+                        android:padding="10dp"
+
                         android:layout_marginEnd="16dp" />
 
                     <LinearLayout
@@ -128,9 +136,12 @@
                     android:paddingBottom="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_yoga"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/icon_lock_freetrial"
+                        android:background="@drawable/ic_uncheck_circle"
+                        android:padding="10dp"
+
                         android:layout_marginEnd="16dp" />
 
                     <LinearLayout

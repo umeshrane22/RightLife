@@ -4,14 +4,23 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Html
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityFreeTrialBinding
+import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.settings.GeneralInformationActivity
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
-class FreeTrailActivity : AppCompatActivity() {
+class FreeTrialServiceActivity : AppCompatActivity() {
     private lateinit var binding: ActivityFreeTrialBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +47,7 @@ class FreeTrailActivity : AppCompatActivity() {
         }
 
         binding.btnBeginFreeTrial.setOnClickListener {
-            startActivity(Intent(this, OnboardingFinalActivity::class.java))
+            beginFreeTrial()
         }
     }
 
@@ -54,11 +63,46 @@ class FreeTrailActivity : AppCompatActivity() {
             }
 
             if (resourceId != 0) {
-                return ContextCompat.getDrawable(this@FreeTrailActivity, resourceId)?.apply {
+                return ContextCompat.getDrawable(this@FreeTrialServiceActivity, resourceId)?.apply {
                     setBounds(0, 0, intrinsicWidth, intrinsicHeight)
                 }
             }
             return null
         }
+    }
+
+    private fun beginFreeTrial() {
+        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val body = mapOf("deviceId" to Utils.getDeviceId(this))
+
+        apiService.getFreeTrialService(authToken, body).enqueue(object : Callback<CommonResponse> {
+            override fun onResponse(
+                call: Call<CommonResponse>,
+                response: Response<CommonResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.successMessage?.let { showToast(it) }
+                } else {
+                    showToast(response.code().toString())
+                }
+                startActivity(
+                    Intent(
+                        this@FreeTrialServiceActivity,
+                        OnboardingFinalActivity::class.java
+                    )
+                )
+            }
+
+            override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                t.message?.let { showToast(it) }
+            }
+
+        })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

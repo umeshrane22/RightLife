@@ -23,14 +23,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
-    <uses-permission android:name="android.permission.health.READ_STEPS"/>
-    <uses-permission android:name="android.permission.health.READ_EXERCISE"/>
-    <uses-permission android:name="android.permission.health.READ_SLEEP"/>
-    <uses-permission android:name="android.permission.health.READ_SPEED"/>
-    <uses-permission android:name="android.permission.health.READ_DISTANCE"/>
-    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
-    <uses-permission android:name="android.permission.health.READ_WEIGHT"/>
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+    <uses-permission android:name="android.permission.health.READ_SPEED" />
+    <uses-permission android:name="android.permission.health.READ_DISTANCE" />
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.BODY_SENSORS" />
@@ -109,13 +109,7 @@
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
         <activity android:name=".ui.new_design.OnboardingFinalActivity" />
-        <activity android:name=".ui.new_design.FreeTrailActivity" />
-        <activity android:name=".ui.new_design.WelcomeActivity" />
-        <activity android:name=".ui.voicescan.VoiceScanActivity" />
-        <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />
-        <activity android:name=".ui.healthaudit.HealthAuditActivity" />
-        <activity android:name=".ui.mindaudit.MindAuditActivity" />
-        <activity android:name=".ui.mindaudit.MindAuditResultActivity"
+        <activity android:name=".ui.new_design.FreeTrialServiceActivity"
             android:exported="true">
         <!--<intent-filter>
             <action android:name="android.intent.action.MAIN" />
@@ -123,6 +117,12 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>-->
         </activity>
+        <activity android:name=".ui.new_design.WelcomeActivity" />
+        <activity android:name=".ui.voicescan.VoiceScanActivity" />
+        <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />
+        <activity android:name=".ui.healthaudit.HealthAuditActivity" />
+        <activity android:name=".ui.mindaudit.MindAuditActivity" />
+        <activity android:name=".ui.mindaudit.MindAuditResultActivity" />
         <activity android:name=".ui.healthcam.HealthCamActivity" />
         <activity android:name=".ui.voicescan.VoiceScanWaitingActivity" />
         <activity android:name=".ui.healthcam.HealthCamBasicDetailsActivity" />
@@ -211,8 +211,6 @@
         <activity android:name=".ui.NewSleepSounds.NewSleepSoundActivity" />
 
 
-
-
         <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity" />
         <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity" />
 
@@ -225,8 +223,8 @@
 
             <!-- Permission handling for Android 14 -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/>
-                <category android:name="android.intent.category.HEALTH_PERMISSIONS"/>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
             />
         </activity>

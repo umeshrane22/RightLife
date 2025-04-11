@@ -47,6 +47,8 @@ import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.HealthCard
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
@@ -57,6 +59,7 @@ import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
@@ -122,6 +125,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             )*/
 
         //handle bottom menu
+
+        binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
+            DialogUtils.showCheckListQuestionCommonDialog(this)
+        }
 
         with(binding) {
             binding.includedhomebottomsheet.llJournal.setOnClickListener {
@@ -696,32 +703,32 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         SleepSegmentModel(
                             0.151f,
                             0.300f,
-                            resources.getColor(R.color.purple_bar),
+                            resources.getColor(R.color.blue_bar),
                             110f
                         ),
                         SleepSegmentModel(
                             0.301f,
                             0.400f,
-                            resources.getColor(R.color.light_blue_bar),
+                            resources.getColor(R.color.blue_bar),
                             110f
                         ),
-                        SleepSegmentModel(0.401f, 0.450f, resources.getColor(R.color.black), 110f),
+                        SleepSegmentModel(0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f),
                         SleepSegmentModel(
                             0.451f,
                             0.550f,
-                            resources.getColor(R.color.red_orange_bar),
+                            resources.getColor(R.color.sky_blue_bar),
                             110f
                         ),
                         SleepSegmentModel(
                             0.551f,
                             0.660f,
-                            resources.getColor(R.color.light_cyan_bar),
+                            resources.getColor(R.color.sky_blue_bar),
                             110f
                         ),
                         SleepSegmentModel(
                             0.661f,
                             0.690f,
-                            resources.getColor(R.color.bright_blue_bar),
+                            resources.getColor(R.color.sky_blue_bar),
                             110f
                         ),
                         SleepSegmentModel(
@@ -733,13 +740,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         SleepSegmentModel(
                             0.751f,
                             0.860f,
-                            resources.getColor(R.color.sky_blue_bar),
+                            resources.getColor(R.color.deep_purple_bar),
                             110f
                         ),
                         SleepSegmentModel(
                             0.861f,
                             0.990f,
-                            resources.getColor(R.color.dark_purple_bar),
+                            resources.getColor(R.color.red_orange_bar),
                             110f
                         )
                     )
@@ -935,6 +942,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
 //                fetchAllHealthData()
+                CommonAPICall.updateChecklistStatus(this, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
             }

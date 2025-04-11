@@ -1164,6 +1164,19 @@ public interface ApiService {
     Call<CommonResponse> exportHealthData(
             @Header("Authorization") String authToken
     );
+
+    @POST("user/free-service")
+    Call<CommonResponse> getFreeTrialService(
+            @Header("Authorization") String authToken,
+            @Body Map<String, String> requestBody
+    );
+
+    @POST("user/dashboardChecklist")
+    Call<CommonResponse> updateCheckListStatus(
+            @Header("Authorization") String authToken,
+            @Body Map<String, String> requestBody
+    );
+
 }
 
 

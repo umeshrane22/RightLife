@@ -15,6 +15,10 @@ class DeleteAccountReasonActivity : AppCompatActivity() {
 
         val reasonsList = intent.getStringExtra("SelectedReasons")
 
+        binding.backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         binding.btnCancel.setOnClickListener {
             finish()
             startActivity(

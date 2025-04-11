@@ -54,6 +54,7 @@ import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -1022,7 +1023,12 @@ class ProfileNewActivity : AppCompatActivity() {
                 userData.profilePicture = preSignedUrlData?.file?.url
             }
             updateUserData(userData)
+            updateChecklistStatus();
         }
+    }
+
+    private fun updateChecklistStatus() {
+        CommonAPICall.updateChecklistStatus(this, "profile", AppConstants.CHECKLIST_COMPLETED)
     }
 
     private fun updateUserData(userdata: Userdata) {

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_food_item"
+    android:gravity="center">
+
+    <!-- Close Button (Top Right) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Free Form"
+            android:visibility="gone"
+            android:fontFamily="@font/dmsans_bold"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/txt_color_header" />
+    </RelativeLayout>
+
+    <!-- Body -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/txt_color_header"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:text="Free Form Journaling is all about flow. There are no rules, no structure—just your thoughts, as they come.\n\nYou can write a few lines or fill a page. It’s your space to vent, dream, reflect, or ramble.\n\nLet go of how it should sound and focus on what you feel." />
+
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/checklistDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Finish Checklist to Unlock"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Bordered container -->
+        <LinearLayout
+            android:id="@+id/boxContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:id="@+id/introText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Completing your checklist unlocks the full power of RightLife.\n\nSmart logging, Deep-dive insights.\nHere’s what’s waiting for you on the other side:"
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginBottom="@dimen/margin_card_16dp"/>
+
+            <!-- Eat Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Eat"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/eatright_headericon"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_marginTop="8dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Get meal insights, nutrient tracking, and food logging tailored to your goals."
+                android:textSize="@dimen/textsize_large"
+
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <!-- Move Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Move"
+                android:drawablePadding="10dp"
+                android:drawableStart="@drawable/moverightsvg"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_marginTop="12dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="See activity trends, heart rate zones, and movement suggestions and insights."
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <!-- Sleep Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sleep"
+                android:drawablePadding="10dp"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:drawableStart="@drawable/sleeprightsvg"
+                android:layout_marginTop="12dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Understand your sleep patterns, consistency, and get smarter wind-down tips."
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <!-- Think Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Think"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:layout_marginTop="12dp"
+                android:drawableStart="@drawable/thinkrightsvg"
+                android:drawablePadding="10dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Access affirmations, mood logging, and guided mental wellness tools."
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="The sooner you complete it, the sooner your health journey truly begins."
+                android:textSize="@dimen/textsize_large"
+                android:textColor="@color/text_color_app"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Button -->
+        <Button
+            android:id="@+id/btn_close"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Let’s Do This!"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_marginTop="8dp"
+            android:paddingVertical="12dp"
+            android:textSize="@dimen/textsize_large"
+            android:background="@drawable/button_background_filled"
+            app:backgroundTint="@color/menuselected"/>
+    </LinearLayout>
+
+</LinearLayout>

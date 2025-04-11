@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -14,7 +15,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -159,4 +159,28 @@ object CommonAPICall {
             })
     }
 
+
+    fun updateChecklistStatus(context: Context, type: String, status: String) {
+        val authToken = SharedPreferenceManager.getInstance(context).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val body = mapOf(type to status)
+
+        apiService.updateCheckListStatus(authToken, body)
+            .enqueue(object : Callback<CommonResponse> {
+                override fun onResponse(
+                    call: Call<CommonResponse>,
+                    response: Response<CommonResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("AAAA", "status = " + response.body())
+                    }
+                }
+
+                override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                    t.message?.let { Log.d("AAAA", "status = " + it) }
+                }
+
+            })
+    }
 }
