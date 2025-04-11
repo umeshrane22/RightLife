@@ -107,6 +107,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var toolsRecyclerView: RecyclerView
     private lateinit var journalingRecyclerView: RecyclerView
     private lateinit var noDataMindFullnessMetric: ConstraintLayout
+    private lateinit var noDataMindAudit: ConstraintLayout
+    private lateinit var dataFilledMindAudit: LinearLayout
+    private lateinit var reassessYourMental: LinearLayout
 
     private lateinit var data: UserProfileResponse
     private var noData: Boolean = false
@@ -145,6 +148,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
         mindfullArrowBtn = view.findViewById(R.id.img_mindfull_arrow)
+        noDataMindAudit = view.findViewById(R.id.no_data_mind_audit)
+        reassessYourMental = view.findViewById(R.id.lyt_reassess_your_mental)
+        dataFilledMindAudit = view.findViewById(R.id.data_filled_mind_audit)
         tvWellnessDays = view.findViewById(R.id.tv_wellness_days)
         tvMindfullMinute = view.findViewById(R.id.tv_mindfull_minute)
         progressDialog = ProgressDialog(activity)
@@ -516,7 +522,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
     private fun fetchAssessmentResult() {
        // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+     //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAssessmentResult(token)
 
         call.enqueue(object : Callback<AssessmentResponse> {
@@ -525,6 +532,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     val assessmentResponse = response.body()
 
                     if (assessmentResponse != null) {
+                        if (assessmentResponse.result.isNotEmpty()){
+                            dataFilledMindAudit.visibility = View.VISIBLE
+                            noDataMindAudit.visibility = View.GONE
+                            reassessYourMental.visibility = View.VISIBLE
                         assessmentList = parseAssessmentData(assessmentResponse.result) // replace with real parsing
                         adapter = AssessmentPagerAdapter(assessmentList)
                         viewPager.adapter = adapter
@@ -573,6 +584,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                                 )
                             }
                             dotsLayout.addView(dot)
+                        }
+                        } else{
+                            dataFilledMindAudit.visibility = View.GONE
+                            noDataMindAudit.visibility = View.VISIBLE
+                            reassessYourMental.visibility = View.GONE
                         }
                     }
                 } else {
