@@ -22,6 +22,8 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
+import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.DishListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
@@ -31,6 +33,8 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 
@@ -275,6 +279,58 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                Utils.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun createMeal(mealDetails: MealDetails) {
+        Utils.showLoader(requireActivity())
+        // val userId = appPreference.getUserId().toString()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "64763fe2fa0e40d9c0bc8264"
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val formattedDate = currentDateTime.format(formatter)
+
+        val mealLogRequest = MealLogRequest(
+            mealId = mealDetails._id,
+            userId = "64763fe2fa0e40d9c0bc8264",
+            meal = mealDetails.name,
+            date = formattedDate,
+            image = mealDetails.image,
+            mealType = mealDetails.mealType,
+            mealQuantity = mealDetails.mealQuantity,
+            unit = mealDetails.unit,
+            isRepeat = mealDetails.isRepeat,
+            isFavourite = mealDetails.isFavourite,
+            isLogged = true
+        )
+        val call = ApiClient.apiServiceFastApi.createLogMeal(mealLogRequest)
+        call.enqueue(object : Callback<MealLogResponse> {
+            override fun onResponse(call: Call<MealLogResponse>, response: Response<MealLogResponse>) {
+                if (response.isSuccessful) {
+                    Utils.dismissLoader(requireActivity())
+                    val mealData = response.body()?.message
+                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                    val fragment = CreateMealFragment()
+                    val args = Bundle()
+                    args.putParcelable("dishLocalListModel", dishLocalListModel)
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "mealLog")
+                        addToBackStack("mealLog")
+                        commit()
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Utils.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealLogResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 Utils.dismissLoader(requireActivity())
