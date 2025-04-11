@@ -1,18 +1,21 @@
 package com.jetsynthesys.rightlife.ui.settings
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.DialogFeedbackBottomsheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
 
 object WriteToUsUtils {
 
-     fun showAddEditBottomSheet(context: Context, layoutInflater: LayoutInflater) {
+    fun showAddEditBottomSheet(context: Context, layoutInflater: LayoutInflater) {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(context)
 
@@ -46,5 +49,20 @@ object WriteToUsUtils {
             }
         }
         bottomSheetDialog.show()
+    }
+
+    fun sendEmail(context: Context, packageManager: PackageManager) {
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:") // only email apps should handle this
+            putExtra(Intent.EXTRA_EMAIL, arrayOf("support@rightlife.com"))
+            putExtra(Intent.EXTRA_SUBJECT, "Subject of Email")
+           // putExtra(Intent.EXTRA_TEXT, "Body of the email")
+        }
+
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            context.startActivity(emailIntent)
+        } else {
+            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+        }
     }
 }

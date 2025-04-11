@@ -1,10 +1,15 @@
 package com.jetsynthesys.rightlife.ui.affirmation
 
 import android.app.Dialog
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.Button
@@ -13,6 +18,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
@@ -36,6 +42,9 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 
 class TodaysAffirmationActivity : AppCompatActivity() {
@@ -73,6 +82,14 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
         binding.infoAffirmation.setOnClickListener {
             showInfoDialog()
+        }
+
+        binding.shareAffirmation.setOnClickListener {
+            val bitmap = getBitmapFromView(affirmationCardPagerAdapter.getViewAt(binding.cardViewPager.currentItem)!!)
+            val imageUri = saveBitmapToCache(bitmap)
+            imageUri?.let {
+                shareImage(it)
+            }
         }
 
         binding.ivClose.setOnClickListener {
@@ -509,7 +526,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
                     binding.btnCreateAffirmation,
                     "Select at least 3 affirmations to build your personal affirmation playlist!",
                     "AffirmationCreateButton", xOff = -200, yOff = 20
-                ){
+                ) {
                     showBalloonWithDim(
                         binding.addAffirmation,
                         "Save to your Playlist",
@@ -549,5 +566,43 @@ class TodaysAffirmationActivity : AppCompatActivity() {
             finish()
         }, 1000)
     }
+
+    fun getBitmapFromView(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+
+    fun saveBitmapToCache(bitmap: Bitmap): Uri? {
+        val cachePath = File(cacheDir, "images")
+        cachePath.mkdirs()
+        val file = File(cachePath, "shared_image.png")
+
+        try {
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return FileProvider.getUriForFile(
+            this,
+            "${packageName}.fileprovider", // Must match the authority in your manifest
+            file
+        )
+    }
+
+    fun shareImage(imageUri: Uri) {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "image/png"
+            putExtra(Intent.EXTRA_STREAM, imageUri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
+
 
 }

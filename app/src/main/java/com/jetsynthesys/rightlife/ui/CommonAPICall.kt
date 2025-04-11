@@ -6,6 +6,7 @@ import android.os.Looper
 import android.widget.Toast
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -23,35 +24,23 @@ import java.io.IOException
 
 object CommonAPICall {
     fun addToToolKit(
-        context: Context,
-        moduleName: String?,
-        moduleId: String?,
-        subTitle: String? = "",
-        categoryId: String? = "",
-        moduleType: String? = ""
+        context: Context, moduleId: String?, isSelectedModule: Boolean
     ) {
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
         val authToken = sharedPreferenceManager.accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val toolKitRequest = ToolKitRequest()
-        toolKitRequest.userId = sharedPreferenceManager.userId
-        toolKitRequest.moduleName = moduleName
-        toolKitRequest.moduleId = moduleId
-        toolKitRequest.subtitle = subTitle
-        toolKitRequest.categoryId = categoryId
-        toolKitRequest.moduleType = moduleType
-
+        val toolKitRequest = AddToolRequest(moduleId, isSelectedModule)
         val call = apiService.addToToolKit(authToken, toolKitRequest)
-        call.enqueue(object : Callback<ResponseBody> {
+        call.enqueue(object : Callback<CommonResponse> {
             override fun onResponse(
-                call: Call<ResponseBody>,
-                response: Response<ResponseBody>
+                call: Call<CommonResponse>,
+                response: Response<CommonResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     Toast.makeText(
                         context,
-                        "Added to ToolKit",
+                        response.body()!!.successMessage,
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -63,7 +52,7 @@ object CommonAPICall {
                 }
             }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
                 Toast.makeText(
                     context,
                     "Network Error: " + t.message,

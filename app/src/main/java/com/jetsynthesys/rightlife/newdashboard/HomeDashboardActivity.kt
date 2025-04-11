@@ -59,9 +59,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -77,7 +75,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checklistComplete = true
-    private var checkListCount = 0;
+    private var checkListCount = 0
     private lateinit var healthConnectClient: HealthConnectClient
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -334,7 +332,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 }
             } else {
                 installHealthConnect(this)
-              //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+                //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
@@ -485,8 +483,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     binding.userName.text = ResponseObj.userdata.firstName
 
                     val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    if (countDown <= 7)
-                        binding.tvCountDown.text = "${(7 - countDown)}/7"
+                    if (countDown <= 7) {
+                        binding.tvCountDown.text = "${countDown + 1}/7"
+                        binding.llCountDown.visibility = View.VISIBLE
+                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                    }
                     else {
                         binding.llCountDown.visibility = View.GONE
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
@@ -842,13 +843,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             binding.includeChecklist.rlChecklistEatright
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
-        /*if (checklistComplete){
+        // Chceklist completion logic
+        if (checklistComplete){
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
         }else{
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
-        }*/
+        }
     }
 
     private fun setStatusOfChecklist(
@@ -926,6 +928,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private suspend fun requestPermissionsAndReadAllData() {
         try {
@@ -937,7 +940,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -946,12 +950,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
-                   // fetchAllHealthData()
+                    // fetchAllHealthData()
                 }
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
-              //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+                //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
 //                val intent = Intent(Intent.ACTION_MAIN).apply {
 //                    setClassName(
 //                        "com.google.android.apps.healthdata",
@@ -972,7 +976,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun setHealthNoDataCardAdapter(){
+    private fun setHealthNoDataCardAdapter() {
         val cardList = arrayListOf(
             HealthCard(
                 "",
@@ -989,7 +993,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         )
 
         val adapter = HealthCardAdapter(cardList)
-        binding.healthCardRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.healthCardRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.healthCardRecyclerView.adapter = adapter
     }
 

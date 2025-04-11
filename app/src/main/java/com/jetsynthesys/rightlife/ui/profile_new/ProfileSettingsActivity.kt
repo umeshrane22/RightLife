@@ -5,17 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
-import com.jetsynthesys.rightlife.ui.drawermenu.PurchaseHistoryActivity
-import com.jetsynthesys.rightlife.ui.drawermenu.PurchaseHistoryTypesActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
 import com.jetsynthesys.rightlife.ui.new_design.YourInterestActivity
-import com.jetsynthesys.rightlife.ui.settings.AppSettingsActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SupportActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
@@ -65,7 +63,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         val userAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
                 "Purchase History" ->
-                    startActivity(Intent(this, PurchaseHistoryTypesActivity::class.java))
+                    showToast("You haven't purchase subscription yet!!")
 
                 "Payment Modes" ->
                     startActivity(Intent(this, SupportActivity::class.java))
@@ -110,7 +108,10 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
     private fun setUserData() {
         val user = sharedPreferenceManager.userProfile.userdata
-        binding.userName.text = user.firstName.plus(" ${user.lastName}")
+        var name = user.firstName
+        if (!user.lastName.isNullOrEmpty())
+            name = name.plus(" ${user.lastName}")
+        binding.userName.text = name
         if (user.profilePicture.isNullOrEmpty()) {
             binding.tvProfileLetter.text = user.firstName.first().toString()
         } else {
@@ -123,5 +124,9 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
         //binding.tvUserAge.text = user.
         binding.tvUserCity.text = user.country
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

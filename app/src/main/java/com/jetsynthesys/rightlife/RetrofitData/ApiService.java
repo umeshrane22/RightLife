@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.RetrofitData;
 
 import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest;
 import com.jetsynthesys.rightlife.apimodel.CheckRegistrationResponse;
 import com.jetsynthesys.rightlife.apimodel.LoginRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginResponse;
@@ -1115,9 +1116,9 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json")
     @POST("tools")
-    Call<ResponseBody> addToToolKit(
+    Call<CommonResponse> addToToolKit(
             @Header("Authorization") String authToken,
-            @Body ToolKitRequest toolKitRequest
+            @Body AddToolRequest toolKitRequest
     );
 
     @Headers("Content-Type: application/json")
