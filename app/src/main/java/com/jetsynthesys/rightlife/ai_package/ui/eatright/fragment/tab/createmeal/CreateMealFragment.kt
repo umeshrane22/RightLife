@@ -50,7 +50,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private lateinit var addedNameTv : TextView
   //  var mealLogLists : ArrayList<MealLists> = ArrayList()
     private var dishLists : ArrayList<MealDetails> = ArrayList()
-    private lateinit var dishLocalListModel : DishLocalListModel
+    private  var dishLocalListModel : DishLocalListModel? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
@@ -97,7 +97,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 
         if (dishLocalListModels != null){
             dishLocalListModel = dishLocalListModels
-            dishLists.addAll(dishLocalListModel.meals)
+            dishLists.addAll(dishLocalListModel!!.meals)
             onMealLoggedList()
         }
 
@@ -191,6 +191,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             val fragment = SearchDishFragment()
             val args = Bundle()
             args.putString("searchType", "createMeal")
+            args.putParcelable("dishLocalListModel", dishLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")

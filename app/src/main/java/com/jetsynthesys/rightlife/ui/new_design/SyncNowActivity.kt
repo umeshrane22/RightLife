@@ -1,15 +1,46 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.SpeedRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.lifecycle.lifecycleScope
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import kotlinx.coroutines.launch
 
 class SyncNowActivity : AppCompatActivity() {
 
+    private lateinit var healthConnectClient: HealthConnectClient
+    private val allReadPermissions = setOf(
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(SpeedRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class)
+    )
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sync_now)
@@ -24,11 +55,16 @@ class SyncNowActivity : AppCompatActivity() {
         val btnSkipForNOw = findViewById<Button>(R.id.btn_skip_for_now)
 
         btnSyncNow.setOnClickListener {
-            val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
-            sharedPreferenceManager.syncNow = true
-            intent.putExtra("WellnessFocus", header)
-            startActivity(intent)
-            //finish()
+            val availabilityStatus = HealthConnectClient.getSdkStatus(this)
+            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                healthConnectClient = HealthConnectClient.getOrCreate(this)
+                lifecycleScope.launch {
+                    requestPermissionsAndReadAllData(sharedPreferenceManager, header)
+                }
+            } else {
+                installHealthConnect(this)
+                //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+            }
         }
         btnSkipForNOw.setOnClickListener {
             val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
@@ -37,5 +73,57 @@ class SyncNowActivity : AppCompatActivity() {
             startActivity(intent)
             // finish()
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun requestPermissionsAndReadAllData(
+        sharedPreferenceManager: SharedPreferenceManager,
+        header: String?
+    ) {
+        try {
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            if (allReadPermissions.all { it in granted }) {
+//                fetchAllHealthData()
+                val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+                sharedPreferenceManager.syncNow = true
+                intent.putExtra("WellnessFocus", header)
+                startActivity(intent)
+                //finish()
+            } else {
+                requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions.values.all { it }) {
+                lifecycleScope.launch {
+                    // fetchAllHealthData()
+                }
+                Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
+                //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+//                val intent = Intent(Intent.ACTION_MAIN).apply {
+//                    setClassName(
+//                        "com.google.android.apps.healthdata",
+//                        "com.google.android.apps.healthdata.home.HomeActivity"
+//                    )
+//                }
+//                startActivity(intent)
+            }
+        }
+
+    private fun installHealthConnect(context: Context) {
+        val uri =
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 }

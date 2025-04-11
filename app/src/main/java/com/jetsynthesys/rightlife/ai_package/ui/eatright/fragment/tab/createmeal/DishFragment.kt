@@ -37,7 +37,6 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.view.isVisible
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
@@ -115,6 +114,31 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             arguments?.getParcelable("foodDetailsResponse", FoodDetailsResponse::class.java)
         } else {
             arguments?.getParcelable("foodDetailsResponse")
+        }
+
+        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("dishLocalListModel")
+        }
+
+        if (dishLocalListModels != null){
+            dishLocalListModel = dishLocalListModels
+
+            if (foodDetailsResponse?.data != null){
+                val data = foodDetailsResponse?.data
+                if (dishLocalListModel.meals.size > 0){
+                    dishLists.addAll(dishLocalListModel.meals)
+                }
+                dishLists.add(data)
+                dishLocalListModel = DishLocalListModel(dishLists)
+            }
+        }else{
+            if (foodDetailsResponse?.data != null) {
+                val data = foodDetailsResponse?.data
+                dishLists.add(data)
+                dishLocalListModel = DishLocalListModel(dishLists)
+            }
         }
 
 //        view.findViewById<ImageView>(R.id.ivDatePicker).setOnClickListener {
@@ -420,7 +444,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         })
     }
 
-    private fun createMeal(mealDetails : MealDetails) {
+    private fun createMeal(mealDetails: MealDetails) {
         Utils.showLoader(requireActivity())
         // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -429,8 +453,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val formattedDate = currentDateTime.format(formatter)
 
-        dishLists.add(mealDetails)
-        dishLocalListModel.meals = dishLists
+
 
         val mealLogRequest = MealLogRequest(
             mealId = mealDetails._id,

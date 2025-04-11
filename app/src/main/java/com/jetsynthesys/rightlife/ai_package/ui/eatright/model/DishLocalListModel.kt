@@ -1,13 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.model
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DishLocalListModel(
-    val message: String,
-    var meals: List<MealDetails>
+    @SerializedName("meals")
+    var meals: ArrayList<MealDetails>
 ): Parcelable
 
 //@Parcelize
