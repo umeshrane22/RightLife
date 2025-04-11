@@ -45,5 +45,7 @@ class JournalItem : Serializable {
     @Expose
     var desc: String? = null
 
+    @SerializedName("isSelectedModule")
+    @Expose
     var isAddedToToolKit: Boolean = false
 }

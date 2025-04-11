@@ -33,7 +33,7 @@ class FAQDetailsActivity : AppCompatActivity() {
         }
 
         binding.writeToUsButton.setOnClickListener {
-            WriteToUsUtils.showAddEditBottomSheet(this, layoutInflater)
+            WriteToUsUtils.sendEmail(this, packageManager)
         }
     }
 }

@@ -49,9 +49,8 @@ class BreathworkActivity : AppCompatActivity() {
             override fun onAddToolTip(breathingData: BreathingData) {
                 CommonAPICall.addToToolKit(
                     this@BreathworkActivity,
-                    breathingData.title,
                     breathingData.id,
-                    breathingData.subTitle
+                    !breathingData.isAddedToToolKit
                 )
             }
 

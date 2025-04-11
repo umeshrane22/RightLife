@@ -25,7 +25,11 @@ class SubscriptionPlansActivity : AppCompatActivity() {
 
         planAdapter = PlanAdapter(plans) { selectedPlan ->
             // Handle selected plan
-            Toast.makeText(this, "Selected: ${selectedPlan.name}", Toast.LENGTH_SHORT).show()
+            showToast("Selected: ${selectedPlan.name}")
+        }
+
+        binding.iconBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
         }
 
         binding.plansRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -33,10 +37,15 @@ class SubscriptionPlansActivity : AppCompatActivity() {
 
         binding.upgradeButton.setOnClickListener {
             // Handle upgrade
+            showToast("Purchase successfully")
         }
 
         binding.cancelButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            showToast("Purchase Cancelled")
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

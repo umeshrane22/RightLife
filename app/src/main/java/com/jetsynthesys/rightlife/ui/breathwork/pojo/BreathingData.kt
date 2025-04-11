@@ -49,5 +49,7 @@ class BreathingData : Serializable {
     @Expose
     var totalTime: String? = null
 
+    @SerializedName("isSelectedModule")
+    @Expose
     var isAddedToToolKit: Boolean = false
 }

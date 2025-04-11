@@ -46,37 +46,40 @@ class JournalNewActivity : AppCompatActivity() {
                     val journalList = response.body()?.data ?: emptyList()
 
                     adapter =
-                        JournalAdapter(this@JournalNewActivity, journalList, object : JournalAdapter.OnItemClickListener {
-                            override fun onClick(journalItem: JournalItem) {
-                                val intent = when (journalItem.title) {
-                                    "Free Form" -> Intent(
-                                        this@JournalNewActivity,
-                                        FreeFormJournalActivity::class.java
-                                    )
+                        JournalAdapter(
+                            this@JournalNewActivity,
+                            journalList,
+                            object : JournalAdapter.OnItemClickListener {
+                                override fun onClick(journalItem: JournalItem) {
+                                    val intent = when (journalItem.title) {
+                                        "Free Form" -> Intent(
+                                            this@JournalNewActivity,
+                                            FreeFormJournalActivity::class.java
+                                        )
 
-                                    "Bullet" -> Intent(
-                                        this@JournalNewActivity,
-                                        BulletJournalActivity::class.java
-                                    )
+                                        "Bullet" -> Intent(
+                                            this@JournalNewActivity,
+                                            BulletJournalActivity::class.java
+                                        )
 
-                                    else -> Intent(
+                                        else -> Intent(
+                                            this@JournalNewActivity,
+                                            JournalPromptActivity::class.java
+                                        )
+                                    }
+                                    intent.putExtra("Section", journalItem)
+                                    startActivity(intent)
+                                }
+
+                                override fun onAddToolTip(journalItem: JournalItem) {
+                                    CommonAPICall.addToToolKit(
                                         this@JournalNewActivity,
-                                        JournalPromptActivity::class.java
+                                        journalItem.id,
+                                        !journalItem.isAddedToToolKit
                                     )
                                 }
-                                intent.putExtra("Section", journalItem)
-                                startActivity(intent)
-                            }
 
-                            override fun onAddToolTip(journalItem: JournalItem) {
-                                CommonAPICall.addToToolKit(
-                                    this@JournalNewActivity,
-                                    journalItem.title,
-                                    journalItem.id,
-                                )
-                            }
-
-                        })
+                            })
 
                     runOnUiThread {
                         binding.recyclerView.adapter = adapter

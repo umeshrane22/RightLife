@@ -35,11 +35,11 @@ class SupportActivity : AppCompatActivity() {
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
             when (item.title) {
                 "FAQ" -> {
-                    startActivity(Intent(this,FAQNewActivity::class.java))
+                    startActivity(Intent(this, FAQNewActivity::class.java))
                 }
 
                 "Write to us!" -> {
-                    WriteToUsUtils.showAddEditBottomSheet(this@SupportActivity, layoutInflater)
+                    WriteToUsUtils.sendEmail(this@SupportActivity, packageManager)
                 }
             }
         }
