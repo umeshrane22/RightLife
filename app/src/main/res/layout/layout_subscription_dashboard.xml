@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/trialExpiredLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_margin="2dp"
+    android:background="@drawable/roundedcornershape"
+    android:backgroundTint="#FFF1F0"
+    android:elevation="4dp"
+    android:visibility="visible">
+
+    <!-- Top Row: Icon and Title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_hourglass_bottom" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trial Expired"
+            android:textStyle="bold"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_header"
+            android:paddingStart="8dp"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="#FED3D2"/>
+
+    <!-- Message Text -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Don't Lose Your Progress, Go Premium Today."
+        android:textColor="@color/txt_color_header"
+        android:textSize="13sp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp" />
+
+    <!-- Subscribe Button -->
+    <Button
+        android:id="@+id/btnSubscription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subscribe To RightLife"
+        android:backgroundTint="@color/menuselected"
+        android:textColor="@color/white"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp" />
+</LinearLayout>

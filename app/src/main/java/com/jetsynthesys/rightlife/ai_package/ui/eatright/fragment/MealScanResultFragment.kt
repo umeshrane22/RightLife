@@ -17,12 +17,15 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +37,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.FrequentlyLoggedMealScanResultAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.SearchDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
@@ -57,6 +61,12 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var tvSelectedDate : TextView
     private lateinit var addToLogLayout : LinearLayoutCompat
     private lateinit var saveMealLayout : LinearLayoutCompat
+    private lateinit var layoutMicroTitle : ConstraintLayout
+    private lateinit var layoutMacroTitle : ConstraintLayout
+    private lateinit var icMacroUP : ImageView
+    private lateinit var microUP : ImageView
+    private lateinit var addLayout : LinearLayoutCompat
+
     private var quantity = 1
 
 
@@ -85,6 +95,11 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         addToLogLayout = view.findViewById(R.id.addToLogLayout)
         saveMealLayout = view.findViewById(R.id.saveMealLayout)
         val spinner: Spinner = view.findViewById(R.id.spinner)
+        layoutMicroTitle = view.findViewById(R.id.layoutMicroTitle)
+        layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
+        microUP = view.findViewById(R.id.microUP)
+        icMacroUP = view.findViewById(R.id.icMacroUP)
+        addLayout = view.findViewById(R.id.addLayout)
 
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = mealListAdapter
@@ -96,7 +111,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         microItemRecyclerView.adapter = microNutrientsAdapter
 
         // Data for Spinner
-        val items = arrayOf("Breakfast", "Lunch", "Dinner")
+        val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
 
         // Create Adapter
         val adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_dropdown_item, items)
@@ -171,6 +186,18 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             }
         }
 
+        addLayout.setOnClickListener {
+            val fragment = SearchDishFragment()
+            val args = Bundle()
+            args.putString("searchType", "mealScanResult")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
+
         saveMealLayout.setOnClickListener {
             Toast.makeText(context, "Save Meal", Toast.LENGTH_SHORT).show()
             val moduleName = arguments?.getString("ModuleName").toString()
@@ -208,55 +235,155 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 requireActivity().finish()
             }
         }
+
+        layoutMacroTitle.setOnClickListener {
+            if (macroItemRecyclerView.isVisible){
+                macroItemRecyclerView.visibility = View.GONE
+                icMacroUP.setImageResource(R.drawable.ic_down)
+                view.findViewById<View>(R.id.view_macro).visibility = View.GONE
+            }else{
+                macroItemRecyclerView.visibility = View.VISIBLE
+                icMacroUP.setImageResource(R.drawable.ic_up)
+                view.findViewById<View>(R.id.view_macro).visibility = View.VISIBLE
+            }
+        }
+
+        layoutMicroTitle.setOnClickListener {
+            if (microItemRecyclerView.isVisible){
+                microItemRecyclerView.visibility = View.GONE
+                microUP.setImageResource(R.drawable.ic_down)
+                view.findViewById<View>(R.id.view_micro).visibility = View.GONE
+            }else{
+                microItemRecyclerView.visibility = View.VISIBLE
+                microUP.setImageResource(R.drawable.ic_up)
+                view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
+            }
+        }
     }
+
     private fun onMicroNutrientsList (nutrition: NutritionDetails){
+
+        val vitaminD = if (nutrition.vitamin_d_iu != null){
+            nutrition.vitamin_d_iu.toInt().toString()
+        }else{
+            "0"
+        }
 
         val b12_mcg = if (nutrition.b12_mcg != null){
             nutrition.b12_mcg.toInt().toString()
         }else{
-            "5"
+            "0"
+        }
+
+        val folate = if (nutrition.folate_mcg != null){
+            nutrition.folate_mcg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val vitaminC = if (nutrition.vitamin_c_mg != null){
+            nutrition.vitamin_c_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val vitaminA = if (nutrition.vitamin_a_mcg != null){
+            nutrition.vitamin_a_mcg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val vitaminK = if (nutrition.vitamin_k_mcg != null){
+            nutrition.vitamin_k_mcg.toInt().toString()
+        }else{
+            "0"
         }
 
         val iron_mg = if (nutrition.iron_mg != null){
             nutrition.iron_mg.toInt().toString()
         }else{
-            "8"
+            "0"
         }
+
+        val calcium = if (nutrition.calcium_mg != null){
+            nutrition.calcium_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
         val magnesium_mg = if (nutrition.magnesium_mg != null){
             nutrition.magnesium_mg.toInt().toString()
         }else{
-            "6"
-        }
-
-        val phosphorus_mg = if (nutrition.phosphorus_mg != null){
-            nutrition.phosphorus_mg.toInt().toString()
-        }else{
-            "10"
-        }
-
-        val potassium_mg = if (nutrition.potassium_mg != null){
-            nutrition.potassium_mg.toInt().toString()
-        }else{
-            "2"
+            "0"
         }
 
         val zinc_mg = if (nutrition.zinc_mg != null){
             nutrition.zinc_mg.toInt().toString()
         }else{
-            "7"
+            "0"
+        }
+
+        val omega3 = if (nutrition.omega_3_fatty_acids_g != null){
+            nutrition.omega_3_fatty_acids_g.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val sodium = if (nutrition.sodium_mg != null){
+            nutrition.sodium_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val cholesterol = if (nutrition.cholesterol_mg != null){
+            nutrition.cholesterol_mg.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val sugar = if (nutrition.sugar_g != null){
+            nutrition.sugar_g.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val phosphorus_mg = if (nutrition.phosphorus_mg != null){
+            nutrition.phosphorus_mg.toInt().toString()
+        }else{
+            "0"
+        }
+        val potassium_mg = if (nutrition.potassium_mg != null){
+            nutrition.potassium_mg.toInt().toString()
+        }else{
+            "0"
         }
 
         val mealLogs = listOf(
-            MicroNutrientsModel(b12_mcg, "mg", "Vitamin B", R.drawable.ic_cal),
-            MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_cabs),
-            MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_protein),
-            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
-            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats)
-        )
+//            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
+//            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminD, "μg", "Vitamin D", R.drawable.ic_fats),
+            MicroNutrientsModel(b12_mcg, "μg", "Vitamin B12", R.drawable.ic_fats),
+            MicroNutrientsModel(folate, "μg", "Folate", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminC, "mg", "Vitamin C", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminA, "IU", "Vitamin A", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminK, "μg", "Vitamin K", R.drawable.ic_fats),
+            MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_fats),
+            MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
+            MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_fats),
+            MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats),
+            MicroNutrientsModel(omega3, "mg", "Omega-3", R.drawable.ic_fats),
+            MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
+            MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
+            MicroNutrientsModel(sugar, "mg", "Sugar", R.drawable.ic_fats)
 
+        )
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+       // valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        for (item in mealLogs){
+            if (item.nutrientsValue != "0"){
+                valueLists.add(item)
+            }
+        }
         val mealLogDateData: MicroNutrientsModel? = null
         microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }

@@ -1,8 +1,11 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,10 +13,24 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.SpeedRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -29,6 +46,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
+import com.jetsynthesys.rightlife.newdashboard.model.HealthCard
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
@@ -41,6 +59,9 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -48,6 +69,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
@@ -56,6 +78,19 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     private var isAdd = true
     private var checklistComplete = true
     private var checkListCount = 0;
+    private lateinit var healthConnectClient: HealthConnectClient
+    private val allReadPermissions = setOf(
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(SpeedRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class)
+    )
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeDashboardBinding.inflate(layoutInflater)
@@ -67,6 +102,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         //set report list dummy for demo
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Health No Data
+        setHealthNoDataCardAdapter()
 
         val heartRateList = mutableListOf<HeartRateData>()
         for (i in 1..7) {
@@ -129,16 +167,15 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 )
             }
             binding.includedhomebottomsheet.llMealplan.setOnClickListener {
-                Toast.makeText(
-                    this@HomeDashboardActivity,
-                    "Meal Plan Coming Soon...",
-                    Toast.LENGTH_LONG
-                ).show()
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "SelectMealTypeEat")
+                })
             }
             includedhomebottomsheet.llFoodLog.setOnClickListener {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("selectMealTypeEat", "selectMealTypeEat")
+                    putExtra("BottomSeatName", "SelectMealTypeEat")
                 })
             }
 
@@ -163,8 +200,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.menuHome.setOnClickListener {
             //loadFragment(HomeFragment())
             updateMenuSelection(R.id.menu_home)
-
-
         }
 
         binding.menuExplore.setOnClickListener {
@@ -176,7 +211,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         // Set initial selection
         updateMenuSelection(R.id.menu_home)
 
-        // Handle FAB click
+        // Handling Subscribe to RightLife
+        binding.trialExpiredLayout.btnSubscription.setOnClickListener {
+            Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+        }
 
 
         // Handle FAB click
@@ -184,7 +222,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             this,
             android.R.color.white
         )
-        binding.fab.setImageTintList(ColorStateList.valueOf(resources.getColor(R.color.black)))
+        binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
         val bottom_sheet = binding.includedhomebottomsheet.bottomSheet
         binding.fab.setOnClickListener { v ->
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
@@ -193,7 +231,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 binding.labelHome.setTextColor(resources.getColor(R.color.menuselected))
                 val typeface =
                     ResourcesCompat.getFont(this, R.font.dmsans_bold)
-                binding.labelHome.setTypeface(typeface)
+                binding.labelHome.typeface = typeface
             } else {
                 bottom_sheet.visibility = View.VISIBLE
                 //binding.iconHome.setBackgroundColor(Color.TRANSPARENT)
@@ -215,11 +253,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                             this,
                             R.color.rightlife
                         )
-                        binding.fab.setImageTintList(
-                            ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.black
-                                )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.black
                             )
                         )
                     } else {
@@ -228,11 +264,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                             this,
                             R.color.white
                         )
-                        binding.fab.setImageTintList(
-                            ColorStateList.valueOf(
-                                resources.getColor(
-                                    R.color.rightlife
-                                )
+                        binding.fab.imageTintList = ColorStateList.valueOf(
+                            resources.getColor(
+                                R.color.rightlife
                             )
                         )
                     }
@@ -291,7 +325,17 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
-            Toast.makeText(this, "Sync Health", Toast.LENGTH_SHORT).show()
+            val availabilityStatus = HealthConnectClient.getSdkStatus(this)
+            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                healthConnectClient = HealthConnectClient.getOrCreate(this)
+                lifecycleScope.launch {
+                    requestPermissionsAndReadAllData()
+
+                }
+            } else {
+                installHealthConnect(this)
+              //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+            }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
             //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
@@ -301,6 +345,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "SnapMealTypeEat")
             })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
@@ -317,12 +362,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.cardThinkrightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "ThinkRight")
+                putExtra("BottomSeatName", "Not")
             })
             //Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
         binding.cardEatrightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "Not")
             })
             //Toast.makeText(this, "MoveRight AI Dashboard", Toast.LENGTH_SHORT).show()
         }
@@ -330,28 +377,33 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.cardMoverightMain.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "MoveRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.cardEatright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.cardSleepright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "SleepRight")
+                putExtra("BottomSeatName", "Not")
             })
         }
         binding.cardThinkright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
                 .apply {
                     putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
                 })
         }
         binding.cardMoveright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java)
                 .apply {
                     putExtra("ModuleName", "MoveRight")
+                    putExtra("BottomSeatName", "Not")
                 })
         }
 
@@ -432,12 +484,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     binding.userName.text = ResponseObj.userdata.firstName
 
+                    val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
+                    if (countDown <= 7)
+                        binding.tvCountDown.text = "${(7 - countDown)}/7"
+                    else {
+                        binding.llCountDown.visibility = View.GONE
+                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                    }
 
-                    Log.d(
-                        "UserID", "USerID: User Details" + SharedPreferenceManager.getInstance(
-                            applicationContext
-                        ).userId
-                    )
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -454,6 +508,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 t.printStackTrace() // Print the full stack trace for more details
             }
         })
+    }
+
+    private fun getCountDownDays(pastTimestamp: Long): Int {
+        val currentTimestamp = System.currentTimeMillis()
+
+        val diffInMillis = currentTimestamp - pastTimestamp
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+        return diffInDays.toInt()
     }
 
 
@@ -481,10 +543,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         promotionResponse2,
                         AiDashboardResponseMain::class.java
                     )
-                    /*Log.d(
-                        "dashboard",
-                        "Success: Scan Details" + aiDashboardResponseMain.data?.facialScan?.get(0)!!.avgParameter
-                    )*/
                     handleSelectedModule(aiDashboardResponseMain)
                     binding.recyclerView.adapter = HeartRateAdapter(
                         aiDashboardResponseMain.data?.facialScan,
@@ -827,46 +885,119 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             R.id.ll_food_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("selectMealTypeEat", "selectMealTypeEat")
+                    putExtra("BottomSeatName", "MealLogTypeEat")
                 })
             }
 
             R.id.ll_activity_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
-                    putExtra("SearchActivityMove", "SearchActivityMove")
+                    putExtra("BottomSeatName", "SearchActivityLogMove")
                 })
             }
 
             R.id.ll_mood_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
-                    putExtra("recordEmotionThink", "recordEmotionThink")
+                    putExtra("BottomSeatName", "RecordEmotionMoodTracThink")
                 })
             }
 
             R.id.ll_sleep_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
-                    putExtra("logLastNightSleep", "logLastNightSleep")
+                    putExtra("BottomSeatName", "LogLastNightSleep")
                 })
             }
 
             R.id.ll_weight_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("logWeightEat", "logWeightEat")
+                    putExtra("BottomSeatName", "LogWeightEat")
                 })
             }
 
             R.id.ll_water_log -> {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
-                    putExtra("logWaterIntakeEat", "logWaterIntakeEat")
+                    putExtra("BottomSeatName", "LogWaterIntakeEat")
                 })
             }
 
         }
     }
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun requestPermissionsAndReadAllData() {
+        try {
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            if (allReadPermissions.all { it in granted }) {
+//                fetchAllHealthData()
+            } else {
+                requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            if (permissions.values.all { it }) {
+                lifecycleScope.launch {
+                   // fetchAllHealthData()
+                }
+                Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
+              //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
+//                val intent = Intent(Intent.ACTION_MAIN).apply {
+//                    setClassName(
+//                        "com.google.android.apps.healthdata",
+//                        "com.google.android.apps.healthdata.home.HomeActivity"
+//                    )
+//                }
+//                startActivity(intent)
+            }
+        }
+
+    private fun isHealthConnectAvailable(context: Context): Boolean {
+        val packageManager = context.packageManager
+        return try {
+            packageManager.getPackageInfo("com.google.android.apps.healthdata", 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    private fun setHealthNoDataCardAdapter(){
+        val cardList = arrayListOf(
+            HealthCard(
+                "",
+                "Heart Rate",
+                "",
+                "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
+            ),
+            HealthCard(
+                "",
+                "Heart Rate",
+                "",
+                "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
+            )
+        )
+
+        val adapter = HealthCardAdapter(cardList)
+        binding.healthCardRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.healthCardRecyclerView.adapter = adapter
+    }
+
+    private fun installHealthConnect(context: Context) {
+        val uri =
+            "https://play.google.com/store/apps/details?id=com.google.android.apps.healthdata".toUri()
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+    }
 }

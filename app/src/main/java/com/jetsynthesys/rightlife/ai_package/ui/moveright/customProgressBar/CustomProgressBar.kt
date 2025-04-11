@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 
 class CustomProgressBar(context: Context, attrs: AttributeSet?) : View(context, attrs) {
@@ -37,12 +38,22 @@ class CustomProgressBar(context: Context, attrs: AttributeSet?) : View(context, 
         set(value) {
             field = value.coerceIn(0f, 1f)
             invalidate()
+            onProgressChanged?.invoke(field)
         }
+
+    private var onProgressChanged: ((Float) -> Unit)? = null
+
+    private val intensityLabels = arrayOf("Low", "Moderate", "High", "Very High")
+    private val intensitySteps = intensityLabels.size - 1
+
+    init {
+        isClickable = true
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val padding = 40f // Reduced padding
+        val padding = 40f
         val barHeight = 30f
         val startX = padding
         val endX = width - padding
@@ -52,30 +63,53 @@ class CustomProgressBar(context: Context, attrs: AttributeSet?) : View(context, 
         val backgroundRect = RectF(startX, centerY - barHeight / 2, endX, centerY + barHeight / 2)
         canvas.drawRoundRect(backgroundRect, barHeight / 2, barHeight / 2, progressBarBackgroundPaint)
 
-        // Draw Progress Indicator (Big Red Circle at Start)
+        // Draw Progress Indicator (Big Red Circle)
         val progressX = startX + (endX - startX) * progress
         canvas.drawCircle(progressX, centerY, 25f, indicatorPaint)
 
         // Labels and Indicator Dots
-        val labels = arrayOf("Low", "Moderate", "High", "Very High")
-        val indicatorCount = labels.size
-        val textOffsetX = 10f  // Offset to keep text from being cut
+        val textOffsetX = 10f
 
-        for (i in labels.indices) {
-            val indicatorX = startX + i * (endX - startX) / (indicatorCount - 1)
-
-            // Ensure last text aligns properly
+        for (i in intensityLabels.indices) {
+            val indicatorX = startX + i * (endX - startX) / intensitySteps
             val textX = when (i) {
-                0 -> indicatorX + textOffsetX  // Align 'Low' slightly right
-                labels.lastIndex -> indicatorX - textOffsetX // Align 'Very High' left
+                0 -> indicatorX + textOffsetX
+                intensityLabels.lastIndex -> indicatorX - textOffsetX
                 else -> indicatorX
             }
 
-            // Draw small red dots
             canvas.drawCircle(indicatorX, centerY, 8f, indicatorPaint)
-
-            // Draw Text Labels above the bar
-            canvas.drawText(labels[i], textX, centerY - 40f, textPaint)
+            canvas.drawText(intensityLabels[i], textX, centerY - 40f, textPaint)
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                val startX = 40f
+                val endX = width - 40f
+                val touchX = event.x.coerceIn(startX, endX)
+                val newProgress = (touchX - startX) / (endX - startX)
+                progress = snapToIntensity(newProgress)
+                return true
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+
+    private fun snapToIntensity(newProgress: Float): Float {
+        val stepSize = 1.0f / intensitySteps
+        val snappedStep = (newProgress / stepSize).toInt().coerceIn(0, intensitySteps)
+        return snappedStep * stepSize
+    }
+
+    fun setOnProgressChangedListener(listener: (Float) -> Unit) {
+        onProgressChanged = listener
+    }
+
+    fun getCurrentIntensity(): String {
+        val stepSize = 1.0f / intensitySteps
+        val currentStep = (progress / stepSize).toInt().coerceIn(0, intensitySteps)
+        return intensityLabels[currentStep]
     }
 }
