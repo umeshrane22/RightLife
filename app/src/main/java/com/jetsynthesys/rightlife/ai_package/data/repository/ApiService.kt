@@ -12,14 +12,19 @@ import com.jetsynthesys.rightlife.ai_package.model.AnalysisRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesRequest
+import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
+import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
+import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
@@ -36,6 +41,9 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -84,7 +92,14 @@ interface ApiService {
                 @Query("date") startDate: String): Call<MealsResponse>
 
     @POST("eat/log-meal/")
-    fun createLogMeal(@Body request: MealLogRequest): Call<MealLogResponse>
+    fun createLogDish(@Body request: MealLogRequest): Call<MealLogResponse>
+
+    @POST("eat/meal-plans/")
+    fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
+
+
+    @GET("eat/meal-plans/")
+    fun getLogMealList(@Query("user_id") userId: String): Call<MealLogPlanResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(
@@ -118,6 +133,25 @@ interface ApiService {
         @Query("date") date: String
     ): Response<HeartRateVariabilityResponse>
 
+    @GET("move/fetch_resting_heart_rate/")
+    suspend fun getRestingHeartRate(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<RestingHeartRateResponse>
+
+    @GET("move/fetch_heart_rate/")
+    suspend fun getHeartRate(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<HeartRateResponse>
+
+    @POST("move/data/calculate_calories/")
+    suspend fun calculateCalories(
+        @Body request: CalculateCaloriesRequest
+    ): Response<CalculateCaloriesResponse>
+
     @GET("move/data/user_workouts/frequent/")
     suspend fun getUserFrequentlyWorkouts(
         @Query("user_id") userId: String,
@@ -130,8 +164,7 @@ interface ApiService {
 
     @GET("eat/landing-page/")
     fun getMealSummary(
-        @Query("user_id") userId: String,
-        @Query("date") startDate: String): Call<LandingPageResponse>
+        @Query("user_id") userId: String): Call<LandingPageResponse>
 
     @GET("sleep/fetch_sleep_stage/")
     fun fetchSleepStage(
@@ -158,6 +191,10 @@ interface ApiService {
 
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
+
+    @GET("app/api/mindFull")
+    fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
+                      @Query("endDate") endDate: String): Call<MindfullResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(

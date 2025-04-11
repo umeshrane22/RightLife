@@ -8,24 +8,25 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.lifecycle.lifecycleScope
+import androidx.core.os.BundleCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi
-import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.model.YourActivityLogMeal
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourWorkoutsListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentYourworkOutsBinding
-import kotlinx.coroutines.launch
 
 class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
     private lateinit var mealLogDateRecyclerView: RecyclerView
-    private lateinit var yourWOrkOutsBackButton: ImageView
+    private lateinit var yourWorkOutsBackButton: ImageView
+    private lateinit var layout_btn_log_meal: LinearLayoutCompat
     private lateinit var myMealRecyclerView: RecyclerView
     private lateinit var saveWorkoutRoutine: LinearLayoutCompat
+    private var workout: WorkoutList? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourworkOutsBinding
         get() = FragmentYourworkOutsBinding::inflate
@@ -58,10 +59,20 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
         myMealRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         saveWorkoutRoutine = view.findViewById(R.id.layout_btn_log)
-        yourWOrkOutsBackButton = view.findViewById(R.id.back_button)
+        yourWorkOutsBackButton = view.findViewById(R.id.back_button)
         mealLogDateRecyclerView = view.findViewById(R.id.recyclerview_calender)
-        yourWOrkOutsBackButton.setOnClickListener {
-            navigateToFragment(AddWorkoutSearchFragment(), "LandingFragment")
+        layout_btn_log_meal = view.findViewById(R.id.layout_btn_log_meal)
+        workout = arguments?.getParcelable("workout")
+
+        layout_btn_log_meal.setOnClickListener{
+            val fragment = SearchWorkoutFragment()
+
+           // fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                addToBackStack("YourworkOutsFragment")
+                commit()
+            }
         }
 
         mealLogDateRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -70,7 +81,37 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myWorkoutListAdapter
 
-        // Fetch workouts and update the adapter
+        // Fetch data from bundle
+        val workoutRecord =
+            arguments?.let { BundleCompat.getParcelable(it, "workoutRecord", WorkoutSessionRecord::class.java) }
+        workoutRecord?.let { record ->
+            Log.d("YourworkOuts", "Received WorkoutSessionRecord: ${record}")
+            // Convert WorkoutSessionRecord to WorkoutModel
+            val workoutModel = convertToWorkoutModel(record)
+            // Update RecyclerView with the new data
+            val workoutModels = arrayListOf(workoutModel)
+            onMyWorkoutItemRefresh(workoutModels)
+        } ?: run {
+            Log.e("YourworkOuts", "No WorkoutSessionRecord received")
+            onMyWorkoutItemRefresh(arrayListOf()) // Show empty state if no data
+        }
+        yourWorkOutsBackButton.setOnClickListener {
+            val fragment = AddWorkoutSearchFragment()
+            val args = Bundle().apply {
+
+                putParcelable("workout", workout)
+                putParcelable("workoutRecord", workoutRecord)// Pass the full record
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                addToBackStack("YourworkOutsFragment")
+                commit()
+            }
+            // navigateToFragment(AddWorkoutSearchFragment(), "LandingFragment")
+        }
+        // Comment out the API call
+        /*
         lifecycleScope.launch {
             val workouts = fetchWorkouts(
                 userId = "64763fe2fa0e40d9c0bc8264",
@@ -92,52 +133,70 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
                 onMyWorkoutItemRefresh(arrayListOf())
             }
         }
+        */
 
         // Set up other UI components
         onMealLogDateItemRefresh()
 
         saveWorkoutRoutine.setOnClickListener {
             val fragment = CreateRoutineFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.flFragment, fragment)
-                .addToBackStack(null)
-                .commit()
+            val args = Bundle().apply {
+                putParcelable("workout", workout)
+                putParcelable("workoutRecord", workoutRecord)
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                addToBackStack("YourworkOutsFragment")
+                commit()
+            }
+
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(AddWorkoutSearchFragment(), "LandingFragment")
+                val fragment = AddWorkoutSearchFragment()
+                val args = Bundle().apply {
+                    putParcelable("workout", workout)
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                    addToBackStack("YourworkOutsFragment")
+                    commit()
+                }
             }
         })
     }
 
-    private fun mapToWorkoutModels(response: WorkoutMoveResponseRoutine): ArrayList<WorkoutModel> {
-        val workoutModels = ArrayList<WorkoutModel>()
-        response.data?.forEach { workoutData ->
-            // Calculate duration in "X hr Y min" format
-            val hours = workoutData.duration / 60
-            val minutes = workoutData.duration % 60
-            val durationText = buildString {
-                if (hours > 0) append("$hours hr ")
-                append("$minutes min")
-            }
-
-            // Determine intensity based on activity factor (you can adjust this logic)
-            val intensity = when {
-                workoutData.activityFactor > 1.5 -> "High Intensity"
-                workoutData.activityFactor > 1.3 -> "Moderate Intensity"
-                else -> "Low Intensity"
-            }
-
-            val workoutModel = WorkoutModel(
-                workoutType = workoutData.workoutType ?: "Unknown",
-                duration = durationText,
-                caloriesBurned = "${workoutData.caloriesBurned.toInt()} cal",
-                intensity = intensity
-            )
-            workoutModels.add(workoutModel)
+    private fun convertToWorkoutModel(record: WorkoutSessionRecord): WorkoutModel {
+        // Calculate duration in "X hr Y min" format
+        val hours = record.durationMin / 60
+        val minutes = record.durationMin % 60
+        val durationText = buildString {
+            if (hours > 0) append("$hours hr ")
+            append("$minutes min")
         }
-        return workoutModels
+
+        // Use intensity from record
+        val intensity = when (record.intensity.lowercase()) {
+            "high" -> "High Intensity"
+            "moderate" -> "Moderate Intensity"
+            else -> "Low Intensity"
+        }
+
+        // Use workout type as "Custom Workout" (since activityId isn't mapped to a name here)
+        val workoutType = record.moduleName
+
+        // Calories burned or "N/A" if not calculated
+        val caloriesBurned = record.caloriesBurned?.let { "${it.toInt()} cal" } ?: "N/A"
+
+        return WorkoutModel(
+            workoutType = workoutType,
+            duration = durationText,
+            caloriesBurned = caloriesBurned,
+            intensity = intensity
+        )
     }
 
     private fun onMealLogDateItemRefresh() {
@@ -185,7 +244,6 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
     }
 
     private fun onWorkoutItemClick(workoutModel: WorkoutModel, position: Int, isRefresh: Boolean) {
-        // Handle workout item click if needed
         Log.d("WorkoutClick", "Clicked on ${workoutModel.workoutType} at position $position")
     }
 
@@ -197,6 +255,7 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
         }
     }
 
+    /*
     suspend fun fetchWorkouts(
         userId: String,
         startDate: String,
@@ -218,6 +277,7 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
             null
         }
     }
+    */
 }
 
 data class WorkoutModel(

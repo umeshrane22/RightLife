@@ -12,6 +12,12 @@ object RetrofitClient {
     private const val BASE_URL_FOOD_CAPTURE_API = "https://api.spoonacular.com/"
     private const val BASE_URL_FOOD_CAPTURE_NEW_API = "https://us-central1-snapcalorieb2bapi.cloudfunctions.net/"
 
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(40, TimeUnit.SECONDS) // Set connection timeout (default: 10s)
+        .readTimeout(40, TimeUnit.SECONDS)    // Set read timeout
+        .writeTimeout(40, TimeUnit.SECONDS)   // Set write timeout
+        .build()
+
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -26,6 +32,7 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FAST_API)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 
@@ -36,12 +43,6 @@ object RetrofitClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
-    private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(40, TimeUnit.SECONDS) // Set connection timeout (default: 10s)
-        .readTimeout(40, TimeUnit.SECONDS)    // Set read timeout
-        .writeTimeout(40, TimeUnit.SECONDS)   // Set write timeout
-        .build()
 
     val retrofitFoodCaptureImageApi: Retrofit by lazy {
         Retrofit.Builder()

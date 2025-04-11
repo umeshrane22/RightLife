@@ -1,10 +1,7 @@
-package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
+package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.ProgressDialog
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
@@ -16,9 +13,6 @@ import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.databinding.FragmentSleepPerformanceBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -30,23 +24,22 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
-import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
-import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
+import com.jetsynthesys.rightlife.databinding.FragmentMindfullGraphBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>() {
-
-    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSleepPerformanceBinding
-        get() = FragmentSleepPerformanceBinding::inflate
-    var snackbar: Snackbar? = null
+class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>() {
 
     private lateinit var barChart: BarChart
     private lateinit var lineChart: LineChart
@@ -54,12 +47,15 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var progressDialog: ProgressDialog
-    private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
+    private lateinit var mindfullResponse: MindfullResponse
+    var endDate = ""
+
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMindfullGraphBinding
+        get() = FragmentMindfullGraphBinding::inflate
+    var snackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        view.setBackgroundResource(R.drawable.sleep_stages_bg)
 
         barChart = view.findViewById(R.id.heartRateChart)
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
@@ -69,13 +65,14 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
-
+        radioGroup.check(R.id.rbWeek)
+        endDate = getYesterdayDate("week")
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
-        fetchSleepData()
+        fetchMindfullnessData()
 
         // Set default selection to Week
-        radioGroup.check(R.id.rbWeek)
+
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -83,17 +80,19 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 R.id.rbWeek ->{
                     barChart.visibility = View.VISIBLE
                     layoutLineChart.visibility = View.GONE
-                    // updateChart(getWeekData(), getWeekLabels())
+                    endDate = getYesterdayDate("week")
                     monthChart()
                 }
                 R.id.rbMonth ->{
                     barChart.visibility = View.VISIBLE
                     layoutLineChart.visibility = View.GONE
+                    endDate = getYesterdayDate("month")
                     updateChart(getMonthData(), getMonthLabels())
                 }
                 R.id.rbSixMonths ->{
                     barChart.visibility = View.GONE
                     layoutLineChart.visibility = View.VISIBLE
+                    endDate = getYesterdayDate("six")
                     lineChartForSixMonths()
                     // updateChart(getSixMonthData(), getSixMonthLabels())
                 }
@@ -102,7 +101,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(ThinkRightReportFragment(), "MindfulnessAnalysisFragment")
 
             }
         })
@@ -110,41 +109,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(ThinkRightReportFragment(), "MindfulnessAnalysisFragment")
         }
-
-
-
-    }
-
-    private fun fetchSleepData() {
-        progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "user_test_1"
-        val period = "weekly"
-        val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userId, source, period)
-        call.enqueue(object : Callback<SleepPerformanceResponse> {
-            override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
-                if (response.isSuccessful) {
-                    progressDialog.dismiss()
-                    sleepPerformanceResponse = response.body()!!
-                    setSleepRightPerformanceData(sleepPerformanceResponse)
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
-                }
-            }
-            override fun onFailure(call: Call<SleepPerformanceResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
-            }
-        })
-    }
-
-    private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceResponse) {
 
     }
 
@@ -159,9 +125,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         )
 
         val dataSet = LineDataSet(entries, "Performance").apply {
-            color = Color.BLUE
+            color = resources.getColor(R.color.eatright_text_color)
             valueTextSize = 12f
-            setCircleColor(Color.BLUE)
+            setCircleColor(resources.getColor(R.color.eatright_text_color))
             setDrawCircleHole(false)
             setDrawValues(false)
         }
@@ -232,7 +198,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         )
 
         val dataSet = BarDataSet(entries, "Performance").apply {
-            color = Color.BLUE
+            color = resources.getColor(R.color.eatright_text_color)
             valueTextSize = 12f
             setDrawValues(false) // Hide default values
         }
@@ -266,9 +232,58 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         barChart.invalidate()
     }
 
+    private fun fetchMindfullnessData() {
+        progressDialog.show()
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val startDate = getCurrentDate()
+        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
+        call.enqueue(object : Callback<MindfullResponse> {
+            override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
+                if (response.isSuccessful) {
+                    mindfullResponse = response.body()!!
+                    progressDialog.dismiss()
+                    mindfullResponse.data.getOrNull(0)?.duration?.toString().let {
+
+                    }
+
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    fun getCurrentDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().format(formatter)
+    }
+
+    fun getYesterdayDate(s: String): String {
+        var dates = ""
+        if(s=="week") {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            dates = LocalDate.now().minusDays(7).format(formatter)
+        }else if(s=="month"){
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            dates = LocalDate.now().minusDays(31).format(formatter)
+        }else if (s=="six"){
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            dates = LocalDate.now().minusDays(183).format(formatter)
+        }
+        return dates
+    }
+
     private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
         val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = resources.getColor(R.color.sleep_duration_blue)
+        dataSet.color = resources.getColor(R.color.eatright_text_color)
         dataSet.valueTextColor = Color.BLACK
         dataSet.valueTextSize = 12f
 
@@ -334,70 +349,11 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
     }
 
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 9000f), // Jan
-            BarEntry(1f, 8500f), // Feb
-            BarEntry(2f, 8700f), // Mar
-            BarEntry(3f, 9100f), // Apr
-            BarEntry(4f, 9400f), // May
-            BarEntry(5f, 8800f)  // Jun
-        )
-    }
-
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
             commit()
-        }
-    }
-
-    /** X-Axis Labels for 6 Months */
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
-    }
-}
-
-
-class RoundedBarChartRenderer(
-    chart: BarChart,
-    animator: com.github.mikephil.charting.animation.ChartAnimator,
-    viewPortHandler: ViewPortHandler
-) : BarChartRenderer(chart, animator, viewPortHandler) {
-
-    private val radius = 20f // Adjust the corner radius
-
-    override fun initBuffers() {
-        super.initBuffers() // Ensure buffers are initialized
-    }
-
-    override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
-        if (mBarBuffers.isEmpty() || index >= mBarBuffers.size) return // Prevent NullPointerException
-
-        val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
-        }
-
-        val buffer = mBarBuffers[index]
-
-        for (i in 0 until buffer.buffer.size step 4) {
-            val left = buffer.buffer[i]
-            val top = buffer.buffer[i + 1]
-            val right = buffer.buffer[i + 2]
-            val bottom = buffer.buffer[i + 3]
-
-            val rect = RectF(left, top, right, bottom)
-
-            // Set bar color
-            barPaint.color = dataSet.getColor(i / 4)
-
-            // Draw full bar (without rounded top)
-            c.drawRect(rect.left, rect.top + radius, rect.right, rect.bottom, barPaint)
-
-            // Draw rounded top separately
-            c.drawRoundRect(rect.left, rect.top, rect.right, rect.bottom, radius, radius, barPaint)
         }
     }
 }

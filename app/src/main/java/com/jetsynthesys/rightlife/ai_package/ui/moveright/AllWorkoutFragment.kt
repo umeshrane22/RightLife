@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.adapter.WorkoutAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentAllWorkoutBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -87,7 +88,9 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
     private fun openAddWorkoutFragment(workout: WorkoutList) {
         val fragment = AddWorkoutSearchFragment()
-        val args = Bundle()
+        val args = Bundle().apply {
+            putParcelable("workout", workout)
+        }
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, "addWorkoutFragment")
@@ -98,8 +101,9 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
     private fun getWorkoutList() {
         val userId = appPreference.getUserId().toString()
+        val accessToken = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjc4NTFmZTQ3MTZkOGQ0ZmQyZDhkNzEzIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVFAxQS4yMjA5MDUuMDAxIiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzM3MDE1Nzk5LCJleHAiOjE3NTI3NDA1OTl9.kNSe36d1dnlPrho7rxs7wKpAR6wwa9ToTguSJtifkmU"
-        val call = ApiClient.apiService.getWorkoutList(token)
+        val call = ApiClient.apiService.getWorkoutList(accessToken)
         call.enqueue(object : Callback<WorkoutResponseModel> {
             override fun onResponse(call: Call<WorkoutResponseModel>, response: Response<WorkoutResponseModel>) {
                 if (response.isSuccessful) {

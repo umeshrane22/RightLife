@@ -11,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.RecipeList
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 
-class OtherRecepieEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<RecipeList>,
-                                    private var clickPos: Int, private var mealLogListData : RecipeList?,
-                                    private var isClickView : Boolean, val onOtherReciepeDateItem: (RecipeList, Int, Boolean) -> Unit,) :
+class OtherRecepieEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<RecipeSuggestion>,
+                                    private var clickPos: Int, private var mealLogListData : RecipeSuggestion?,
+                                    private var isClickView : Boolean, val onOtherReciepeDateItem: (RecipeSuggestion, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<OtherRecepieEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -27,7 +28,7 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.name
+        holder.mealTitle.text = item.meal_name
         // holder.mealName.text = item.mealName
        // holder.iamgeFood.text = item.serve
         Glide.with(context)
@@ -35,10 +36,10 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.iamgeFood)
-//        holder.calValue.text = item.calories.toString()
-//        holder.subtractionValue.text = item.protein.toString()
-//        holder.baguetteValue.text = item.carbs.toString()
-//        holder.dewpointValue.text = item.fats.toString()
+        holder.calValue.text = item.calories.toInt().toString()
+        holder.subtractionValue.text = item.protein.toInt().toString()
+        holder.baguetteValue.text = item.carbs.toInt().toString()
+        holder.dewpointValue.text = item.fats.toInt().toString()
      //   if (item.isAddDish == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -102,7 +103,7 @@ class OtherRecepieEatLandingAdapter(private val context: Context, private var da
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<RecipeList>?, pos: Int, mealLogItem : RecipeList?, isClick : Boolean) {
+    fun addAll(item : ArrayList<RecipeSuggestion>?, pos: Int, mealLogItem : RecipeSuggestion?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

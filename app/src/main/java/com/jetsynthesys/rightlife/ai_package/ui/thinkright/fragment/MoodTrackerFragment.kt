@@ -21,6 +21,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import java.text.SimpleDateFormat
@@ -34,6 +35,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     private lateinit var textMonth: TextView
     private lateinit var btnPrev: ImageView
     private lateinit var btnNext: ImageView
+    private lateinit var imgBack:ImageView
     private lateinit var container :RelativeLayout
 
     private val calendar = Calendar.getInstance()
@@ -52,6 +54,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         textMonth = view.findViewById(R.id.textMonth)
         btnPrev = view.findViewById(R.id.btnPrev)
         btnNext = view.findViewById(R.id.btnNext)
+        imgBack = view.findViewById(R.id.img_back)
 
         val emotions = listOf(
             EmotionStat("Relaxed", 10, Color.parseColor("#D6F24B")),
@@ -68,6 +71,19 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         btnNext.setOnClickListener {
             calendar.add(Calendar.MONTH, 1)
             renderCalendar()
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToFragment(ThinkRightReportFragment(), "MoodTrackerFragment")
+
+            }
+        })
+
+        val backBtn = view.findViewById<ImageView>(R.id.img_back)
+
+        backBtn.setOnClickListener {
+            navigateToFragment(ThinkRightReportFragment(), "MoodTrackerFragment")
         }
 
         renderCalendar()
@@ -289,6 +305,14 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
 
     override fun onDataReceived(data: Int) {
 
+    }
+
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, tag)
+            addToBackStack(null)
+            commit()
+        }
     }
 }
 
