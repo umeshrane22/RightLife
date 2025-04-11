@@ -466,7 +466,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             isFavourite = mealDetails.isFavourite,
             isLogged = true
         )
-        val call = ApiClient.apiServiceFastApi.createLogMeal(mealLogRequest)
+        val call = ApiClient.apiServiceFastApi.createLogDish(mealLogRequest)
         call.enqueue(object : Callback<MealLogResponse> {
             override fun onResponse(call: Call<MealLogResponse>, response: Response<MealLogResponse>) {
                 if (response.isSuccessful) {

@@ -41,6 +41,8 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -89,7 +91,10 @@ interface ApiService {
                 @Query("date") startDate: String): Call<MealsResponse>
 
     @POST("eat/log-meal/")
-    fun createLogMeal(@Body request: MealLogRequest): Call<MealLogResponse>
+    fun createLogDish(@Body request: MealLogRequest): Call<MealLogResponse>
+
+    @POST("eat/meal-plans/")
+    fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(

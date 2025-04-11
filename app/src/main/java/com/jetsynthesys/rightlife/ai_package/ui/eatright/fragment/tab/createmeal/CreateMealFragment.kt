@@ -21,10 +21,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MealDetails
-import com.jetsynthesys.rightlife.ai_package.model.MealLists
-import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.DishListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
@@ -141,14 +140,15 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
 
         saveMealLayout.setOnClickListener {
 
-            val fragment = HomeTabMealFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "mealLog")
-                addToBackStack("mealLog")
-                commit()
-            }
+            createMeal(dishLists)
+//            val fragment = HomeTabMealFragment()
+//            val args = Bundle()
+//            fragment.arguments = args
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                replace(R.id.flFragment, fragment, "mealLog")
+//                addToBackStack("mealLog")
+//                commit()
+//            }
         }
 
         continueLayout.setOnClickListener {
@@ -286,7 +286,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         })
     }
 
-    private fun createMeal(mealDetails: MealDetails) {
+    private fun createMeal(mealDetails: ArrayList<MealDetails>) {
         Utils.showLoader(requireActivity())
         // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -295,22 +295,28 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val formattedDate = currentDateTime.format(formatter)
 
-        val mealLogRequest = MealLogRequest(
-            mealId = mealDetails._id,
-            userId = "64763fe2fa0e40d9c0bc8264",
-            meal = mealDetails.name,
-            date = formattedDate,
-            image = mealDetails.image,
-            mealType = mealDetails.mealType,
-            mealQuantity = mealDetails.mealQuantity,
-            unit = mealDetails.unit,
-            isRepeat = mealDetails.isRepeat,
-            isFavourite = mealDetails.isFavourite,
-            isLogged = true
+        val mealLogRequest = MealPlanRequest(
+            meal_plan_name = addedNameTv.text.toString(),
+            dish_ids = listOf("dish123", "dish456"),
+            date = formattedDate
         )
-        val call = ApiClient.apiServiceFastApi.createLogMeal(mealLogRequest)
-        call.enqueue(object : Callback<MealLogResponse> {
-            override fun onResponse(call: Call<MealLogResponse>, response: Response<MealLogResponse>) {
+
+//        val mealLogRequest = MealLogRequest(
+//            mealId = mealDetails._id,
+//            userId = "64763fe2fa0e40d9c0bc8264",
+//            meal = mealDetails.name,
+//            date = formattedDate,
+//            image = mealDetails.image,
+//            mealType = mealDetails.mealType,
+//            mealQuantity = mealDetails.mealQuantity,
+//            unit = mealDetails.unit,
+//            isRepeat = mealDetails.isRepeat,
+//            isFavourite = mealDetails.isFavourite,
+//            isLogged = true
+//        )
+        val call = ApiClient.apiServiceFastApi.createLogMeal(userId, mealLogRequest)
+        call.enqueue(object : Callback<MealPlanResponse> {
+            override fun onResponse(call: Call<MealPlanResponse>, response: Response<MealPlanResponse>) {
                 if (response.isSuccessful) {
                     Utils.dismissLoader(requireActivity())
                     val mealData = response.body()?.message
@@ -330,7 +336,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     Utils.dismissLoader(requireActivity())
                 }
             }
-            override fun onFailure(call: Call<MealLogResponse>, t: Throwable) {
+            override fun onFailure(call: Call<MealPlanResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 Utils.dismissLoader(requireActivity())
