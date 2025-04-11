@@ -9,11 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentBeforeGoingToBedBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.RelaxAndWindAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionSix
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.StressReason
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 
 class BeforeGoingToBedFragment : Fragment() {
 
@@ -94,6 +96,7 @@ class BeforeGoingToBedFragment : Fragment() {
         )
 
         Toast.makeText(requireContext(), "Saved!!  Have a Great Day!!", Toast.LENGTH_SHORT).show()
+        CommonAPICall.updateChecklistStatus(requireContext(), "unlock_sleep", AppConstants.CHECKLIST_COMPLETED)
     }
 
     override fun onDestroyView() {

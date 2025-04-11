@@ -31,6 +31,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.zhpan.bannerview.indicator.DrawableIndicator
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
@@ -347,7 +349,7 @@ class ImageSliderActivity : AppCompatActivity() {
                         finishAffinity()
 
                     }, 1000)
-
+                    CommonAPICall.updateChecklistStatus(this@ImageSliderActivity, "profile", AppConstants.CHECKLIST_INPROGRESS)
                 } else {
                     Toast.makeText(
                         this@ImageSliderActivity,

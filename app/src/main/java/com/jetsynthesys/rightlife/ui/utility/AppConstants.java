@@ -36,6 +36,12 @@ public class AppConstants {
     public static final String ssFirstPara = "Casting a spotlight on various dimensions of sleep health, our comprehensive sleep assessment comprises a well-crafted set of questions. These questions explore a spectrum of sleep-related concerns, from persistent tiredness and potential signs of sleep apnea to daytime sleepiness (EDS) and insomnia symptoms.";
     public static final String ssSecondPara = "This assessment equips individuals and healthcare professionals with valuable insights into sleep quality, aiding in the identification of potential sleep disorders and facilitating personalized strategies for better rest and overall well-being.";
     public static final String ssThirdPara = "The measure was developed by RightLife. Permission required to reproduce, translate, display or distribute. Please contact us for enquiries. All rights reserved.";
+
+
+    public static final String CHECKLIST_INITIAL = "INITIAL";
+    public static final String CHECKLIST_INPROGRESS = "INPROGRESS";
+    public static final String CHECKLIST_COMPLETED = "COMPLETED";
+
 }
 
 

@@ -9,10 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentFoodPreferenceBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionOne
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.FoodOption
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 
 class FoodPreferenceFragment : Fragment() {
 
@@ -77,6 +79,8 @@ class FoodPreferenceFragment : Fragment() {
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
+
+        CommonAPICall.updateChecklistStatus(requireContext(), "discover_eating", AppConstants.CHECKLIST_INPROGRESS)
     }
 
     override fun onDestroyView() {

@@ -8,9 +8,11 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentEmotionsPastWeekBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionOne
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 
 class EmotionsPastWeekFragment : Fragment() {
 
@@ -94,6 +96,8 @@ class EmotionsPastWeekFragment : Fragment() {
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
+
+        CommonAPICall.updateChecklistStatus(requireContext(), "unlock_sleep", AppConstants.CHECKLIST_INPROGRESS)
     }
 
     override fun onDestroyView() {

@@ -38,6 +38,7 @@
             android:textSize="@dimen/textsize_medium" />
 
         <ImageView
+            android:id="@+id/img_questionmark_checklist"
             android:layout_width="wrap_content"
             android:src="@drawable/ic_checklist_question"
             android:layout_centerVertical="true"

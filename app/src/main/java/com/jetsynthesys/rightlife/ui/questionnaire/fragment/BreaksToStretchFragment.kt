@@ -9,11 +9,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentBreaksToStretchBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionSeven
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 
 class BreaksToStretchFragment : Fragment() {
 
@@ -80,6 +82,7 @@ class BreaksToStretchFragment : Fragment() {
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
         Toast.makeText(requireContext(), "Saved!!  Have a Great Day!!", Toast.LENGTH_SHORT).show()
+        CommonAPICall.updateChecklistStatus(requireContext(), "discover_eating", AppConstants.CHECKLIST_COMPLETED)
     }
 
     override fun onDestroyView() {

@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 
 
@@ -25,8 +27,12 @@ class BreathworkSessionActivity : AppCompatActivity() {
 
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
 
+        binding.ivPlus.setImageResource(
+            if (breathingData?.isAddedToToolKit!!) R.drawable.greentick else R.drawable.ic_breathing_toolkit
+        )
+
         setupUI()
-        setupListeners()
+        setupListeners(breathingData!!)
         calculateSessiontime()
     }
 
@@ -37,7 +43,7 @@ class BreathworkSessionActivity : AppCompatActivity() {
         binding.tvDescription.text = breathingData?.subTitle
     }
 
-    private fun setupListeners() {
+    private fun setupListeners(breathWorData: BreathingData) {
         binding.ivBack.setOnClickListener { finish() }
 
         binding.btnMinus.setOnClickListener {
@@ -77,12 +83,19 @@ class BreathworkSessionActivity : AppCompatActivity() {
         }
 
         binding.ivPlus.setOnClickListener {
-            //Toast.makeText(this, "Additional Options Clicked", Toast.LENGTH_SHORT).show()
-
+            CommonAPICall.addToToolKit(
+                this@BreathworkSessionActivity,
+                breathingData?.id,
+                !breathingData?.isAddedToToolKit!!
+            )
+            breathingData?.isAddedToToolKit = !breathingData?.isAddedToToolKit!!
+            binding.ivPlus.setImageResource(
+                if (breathingData?.isAddedToToolKit!!) R.drawable.greentick else R.drawable.ic_breathing_toolkit
+            )
         }
     }
 
-    fun calculateSessiontime(){
+    fun calculateSessiontime() {
         var totalSets = sessionCount
         var inhaleTime = breathingData?.breathInhaleTime?.toLong()!! * 1000
         var exhaleTime = breathingData?.breathExhaleTime?.toLong()!! * 1000
@@ -99,6 +112,7 @@ class BreathworkSessionActivity : AppCompatActivity() {
 
         updateSessionTimer(sessionDurationSeconds * 1000L)
     }
+
     private fun updateSessionTimer(millisUntilFinished: Long) {
         val minutes = (millisUntilFinished / 1000) / 60
         val seconds = (millisUntilFinished / 1000) % 60

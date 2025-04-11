@@ -22,6 +22,8 @@ import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
+import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
@@ -39,7 +41,7 @@ import retrofit2.Response;
 public class NewHealthCamReportActivity extends AppCompatActivity {
     private static final String TAG = "NewHealthCamReportActivity";
     ActivityNewhealthcamreportBinding binding;
-
+    private FacialReportResponseNew facialReportResponseNew;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         binding.cardviewLastCheckin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (facialReportResponseNew.data.lastCheckin) {
+
+                }
                 startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
             }
         });
@@ -63,6 +68,11 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         if (userdata != null) {
             binding.txtuserName.setText("Hi " + userdata.getFirstName());
         }
+        updateChecklistStatus();
+    }
+
+    private void updateChecklistStatus(){
+        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan",AppConstants.CHECKLIST_COMPLETED);
     }
 
     private void getMyRLHealthCamResult() {
@@ -83,7 +93,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
                         String jsonString = response.body().string();
                         Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
                         Gson gson = new Gson();
-                        FacialReportResponseNew facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
+                         facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
                         HandleNewReportUI(facialReportResponseNew);
                         HandleContinueWatchUI(facialReportResponseNew);
                     } catch (IOException e) {
@@ -117,7 +127,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);
             binding.tvLastReportDate.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(facialReportResponseNew.data.createdAt));
             if (facialReportResponseNew.data.lastCheckin) {
-                binding.cardviewLastCheckin.setVisibility(View.GONE);
+                binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
             } else {
                 binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
             }

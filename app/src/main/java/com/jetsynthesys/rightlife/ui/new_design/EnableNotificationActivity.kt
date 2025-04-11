@@ -40,7 +40,7 @@ class EnableNotificationActivity : AppCompatActivity() {
             }
             sharedPreferenceManager.loggedUserList
             sharedPreferenceManager.clearOnboardingData()
-            startActivity(Intent(this, FreeTrailActivity::class.java))
+            startActivity(Intent(this, FreeTrialServiceActivity::class.java))
         }
     }
 }

@@ -43,6 +43,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsMod
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -259,6 +261,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
+        CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
     }
 
     private fun onMicroNutrientsList (nutrition: NutritionDetails){
