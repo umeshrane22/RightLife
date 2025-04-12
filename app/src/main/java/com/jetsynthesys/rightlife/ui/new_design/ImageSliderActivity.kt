@@ -14,6 +14,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.auth.GoogleAuthUtil
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -24,15 +31,6 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
-import com.google.android.gms.auth.GoogleAuthUtil
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
-import com.jetsynthesys.rightlife.ui.CommonAPICall
-import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.zhpan.bannerview.indicator.DrawableIndicator
 import com.zhpan.indicator.enums.IndicatorSlideMode
 import com.zhpan.indicator.enums.IndicatorStyle
@@ -319,7 +317,8 @@ class ImageSliderActivity : AppCompatActivity() {
                             }
                         }
                         if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
-                            val loggedInUser = LoggedInUser(email = mEmail, isOnboardingComplete = true)
+                            val loggedInUser =
+                                LoggedInUser(email = mEmail, isOnboardingComplete = true)
                             sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
                             startActivity(
                                 Intent(
@@ -349,7 +348,7 @@ class ImageSliderActivity : AppCompatActivity() {
                         finishAffinity()
 
                     }, 1000)
-                    CommonAPICall.updateChecklistStatus(this@ImageSliderActivity, "profile", AppConstants.CHECKLIST_INPROGRESS)
+
                 } else {
                     Toast.makeText(
                         this@ImageSliderActivity,

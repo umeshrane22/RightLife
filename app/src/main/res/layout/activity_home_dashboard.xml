@@ -1332,7 +1332,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
                         android:layout_weight="1"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:cardCornerRadius="@dimen/margin_card_16dp">
 
                         <RelativeLayout
@@ -1361,6 +1361,8 @@
                                 android:layout_marginTop="10dp"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:text="Active Burn"
+                                android:minLines="2"
+                                android:maxLines="2"
                                 android:textColor="@color/color_move_right"
                                 android:textSize="@dimen/textsize_small" />
 

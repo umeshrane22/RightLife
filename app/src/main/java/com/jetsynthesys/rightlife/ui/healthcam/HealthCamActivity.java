@@ -210,6 +210,7 @@ public class HealthCamActivity extends AppCompatActivity {
                     try {
                         String jsonString = response.body().string();
                         Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
+                        finish();
                         startActivity(new Intent(HealthCamActivity.this, NewHealthCamReportActivity.class));
 
                     } catch (IOException e) {

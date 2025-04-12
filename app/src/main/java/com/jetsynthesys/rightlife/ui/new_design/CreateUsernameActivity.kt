@@ -20,6 +20,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -145,6 +147,7 @@ class CreateUsernameActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+                CommonAPICall.updateChecklistStatus(this@CreateUsernameActivity, "profile", AppConstants.CHECKLIST_INPROGRESS)
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {

@@ -385,6 +385,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 putExtra("BottomSeatName", "Not")
             })
         }
+        binding.cardSleeprightMain.setOnClickListener {
+            startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                putExtra("ModuleName", "SleepRight")
+                putExtra("BottomSeatName", "Not")
+            })
+        }
         binding.cardEatright.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
