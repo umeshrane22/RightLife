@@ -155,7 +155,7 @@
                         android:padding="8dp">
 
                         <TextView
-                            android:id="@+id/tv_added_name"
+                            android:id="@+id/addedNameTv"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             app:layout_constraintTop_toTopOf="parent"

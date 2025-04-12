@@ -81,6 +81,7 @@
                     android:layout_height="wrap_content"
                     android:text="Your Meal Summary"
                     android:textStyle="bold"
+                    android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/meal_log_title"
                     android:textSize="18sp"
                     android:layout_marginTop="20dp"
@@ -141,12 +142,12 @@
                         app:layout_constraintStart_toEndOf="@+id/balance_icon"/>
 
                     <ImageView
+                        android:id="@+id/macroIc"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/forwardicon"
-                        android:id="@+id/img_macro_arrow"
                         android:layout_marginTop="14dp"
-                        android:visibility="invisible"
+                        android:visibility="visible"
                         android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
@@ -156,7 +157,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:visibility="gone"
-                        app:layout_constraintTop_toBottomOf="@+id/img_macro_arrow"
+                        app:layout_constraintTop_toBottomOf="@+id/macroIc"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
@@ -226,7 +227,7 @@
                                             />
 
                                         <TextView
-                                            android:id="@+id/tv_protein_unit"
+                                            android:id="@+id/proteinUnitTv"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:textSize="12sp"
@@ -318,30 +319,29 @@
                                     <!-- Vertical Layout for TextViews -->
                                     <androidx.constraintlayout.widget.ConstraintLayout
                                         android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        >
+                                        android:layout_height="wrap_content">
 
                                         <TextView
                                             android:id="@+id/tv_carbs_value"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:textSize="28sp"
-                                            android:fontFamily="@font/dmsans_regular"
-                                            android:textColor="#B50200"
+                                            android:fontFamily="@font/dmsans_bold"
                                             android:text="558"
+                                            android:textColor="#B50200"
+                                            android:textSize="28sp"
                                             tools:ignore="MissingConstraints" />
 
                                         <TextView
-                                            android:id="@+id/tv_carbs_unit"
+                                            android:id="@+id/carbsUnitTv"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:textSize="12sp"
                                             android:layout_marginBottom="3dp"
                                             android:fontFamily="@font/dmsans_regular"
-                                            android:textColor="@color/text_color_kcal"
                                             android:text="/ 500g"
+                                            android:textColor="@color/text_color_kcal"
+                                            android:textSize="12sp"
                                             app:layout_constraintBottom_toBottomOf="@+id/tv_carbs_value"
-                                            app:layout_constraintStart_toEndOf="@+id/tv_carbs_value"/>
+                                            app:layout_constraintStart_toEndOf="@+id/tv_carbs_value" />
                                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -434,7 +434,7 @@
                                             android:text="75" />
 
                                         <TextView
-                                            android:id="@+id/tv_fats_unit"
+                                            android:id="@+id/fatsUnitTv"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
                                             android:textSize="12sp"
@@ -617,7 +617,7 @@
                         android:id="@+id/today_macro_no_data_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:layout_constraintTop_toBottomOf="@+id/img_macro_arrow"
+                        app:layout_constraintTop_toBottomOf="@+id/macroIc"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
 
@@ -882,6 +882,7 @@
                     android:layout_height="37dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/white_meal_date_bg"
                     android:gravity="center"
                     app:layout_constraintTop_toTopOf="parent"
@@ -925,6 +926,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="37dp"
                     android:layout_marginEnd="20dp"
+                    android:visibility="gone"
                     android:layout_marginTop="20dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1045,6 +1047,7 @@
                             android:textColor="@color/meal_log_title"
                             />
                     </LinearLayout>
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/today_meal_log_no_data"
                         android:layout_width="match_parent"
@@ -1074,6 +1077,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/today_meal_log_no_data_heading"/>
 
                         <LinearLayout
+                            android:id="@+id/waterIntakeLayout"
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
                             android:layout_marginTop="20dp"
@@ -1089,20 +1093,18 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="25dp"
-                                android:layout_height="25dp"
-                                android:textSize="20sp"
-                                android:src="@drawable/spoon_fork"
-                                android:textStyle="bold"
-                                android:layout_gravity="center"
-                                android:textColor="@color/meal_log_title" />
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
+                                android:src="@drawable/ic_water_cup"
+                                />
 
                             <TextView
                                 android:layout_width="wrap_content"
-                                android:layout_height="50dp"
-                                android:layout_marginTop="10dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
                                 android:text="Log Your Water Intake"
-                                android:textSize="16sp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="14sp"
                                 android:textColor="@color/white" />
                         </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -1353,10 +1355,12 @@
                 app:layout_constraintTop_toBottomOf="@+id/heading_one"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
@@ -1366,6 +1370,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="15dp"
                         android:orientation="horizontal">
+
                         <ImageView
                             android:layout_width="35dp"
                             android:layout_height="35dp"
@@ -1375,18 +1380,19 @@
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title"
                             />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
                             android:layout_weight="9"
                             android:gravity="center_vertical"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_semibold"
                             android:text="Today’s Water Intake"
-                            android:textSize="18sp"
-                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textColor="@color/text_color_kcal"
                             />
-
                     </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -1397,11 +1403,13 @@
                         android:layout_marginStart="15dp"
                         android:layout_marginEnd="15dp"
                         android:orientation="horizontal">
+
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="172dp"
                             android:layout_height="85dp"
                             android:background="@drawable/border_green"
                             android:id="@+id/lyt_water_intake">
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -1416,6 +1424,7 @@
                                 android:textSize="18sp"
                                 android:textColor="@color/black"
                                 />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -1429,6 +1438,7 @@
                                 android:textSize="14sp"
                                 android:textColor="@color/black"
                                 />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -1462,6 +1472,7 @@
                         android:gravity="center"
                         android:background="@drawable/green_meal_bg"
                         android:orientation="horizontal">
+
                         <ImageView
                             android:layout_width="25dp"
                             android:layout_height="25dp"
@@ -1470,6 +1481,7 @@
                             android:textStyle="bold"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
@@ -1488,7 +1500,7 @@
                 android:layout_gravity="center"
                 android:weightSum="10"
                 android:visibility="gone"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
 
@@ -1497,13 +1509,15 @@
                     android:layout_height="50dp"
                     android:layout_weight="9"
                     android:textStyle="bold"
+                    android:fontFamily="@font/dmsans_bold"
                     android:text="Weight Tracker"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/meal_log_title"
                     />
                 <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:id="@+id/weightTrackerIc"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_weight="1"
                     android:textSize="20sp"
                     android:src="@drawable/recipes_right_icon"
@@ -1562,19 +1576,21 @@
                             android:layout_weight="6"
                             android:layout_marginTop="5dp"
                             android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_semibold"
                             android:text="Last Logged"
-                            android:textSize="18sp"
-                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textColor="@color/on_track_color"
                             />
                         <TextView
+                            android:id="@+id/weightLastLogDateTv"
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
                             android:textAlignment="center"
                             android:layout_weight="3"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_regular"
                             android:text="27 Jan, 2025"
-                            android:textSize="18sp"
-                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_color_kcal"
                             />
                     </LinearLayout>
 
@@ -1588,6 +1604,7 @@
                         android:layout_marginStart="15dp"
                         android:layout_marginEnd="15dp"
                         android:orientation="horizontal">
+
                         <TextView
                             android:id="@+id/last_logged_no_data"
                             android:layout_width="wrap_content"
@@ -1602,6 +1619,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             />
+
                         <TextView
                             android:id="@+id/text_heading_calories"
                             android:layout_width="wrap_content"
@@ -1610,11 +1628,12 @@
                             android:layout_marginTop="20dp"
                             android:layout_marginStart="20dp"
                             android:text="86.5"
-                            android:textSize="36dp"
-                            android:textColor="@color/black"
+                            android:textSize="36sp"
+                            android:textColor="@color/black_no_meals"
                             android:fontFamily="@font/dmsans_bold"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
+
                         <TextView
                             android:id="@+id/text_heading_calories_unit"
                             android:layout_width="wrap_content"
@@ -1626,6 +1645,7 @@
                             android:fontFamily="@font/dmsans_regular"
                             app:layout_constraintStart_toEndOf="@+id/text_heading_calories"
                             app:layout_constraintBottom_toBottomOf="@+id/text_heading_calories"/>
+
                         <LinearLayout
                             android:id="@+id/new_improvement_layout"
                             android:layout_width="wrap_content"
@@ -1639,6 +1659,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/text_heading_calories"
                             app:layout_constraintStart_toStartOf="@+id/text_heading_calories"
                             app:layout_constraintEnd_toEndOf="@+id/text_heading_calories">
+
                             <ImageView
                                 android:layout_width="12dp"
                                 android:layout_height="12dp"
@@ -1668,6 +1689,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent">
+
                             <ImageView
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
@@ -1696,7 +1718,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:textSize="18sp"
-                android:visibility="gone"
+                android:visibility="invisible"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="15dp"

@@ -31,6 +31,8 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
+import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
@@ -118,6 +120,11 @@ interface ApiService {
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): Response<WorkoutResponse>
+
+    @POST("move/store/")
+    suspend fun storeHealthData(
+        @Body request: StoreHealthDataRequest
+    ): Response<StoreHealthDataResponse>
 
     @GET("move/fetch_active_burned/")
     suspend fun getActiveCalories(

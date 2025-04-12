@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,7 @@ class MealPlanFragment : BaseFragment<FragmentMealPlanBinding>() {
     private lateinit var layoutNoMealPlan : LinearLayoutCompat
     private lateinit var layoutCreateMealPlan : LinearLayoutCompat
     private lateinit var rightArrow : ImageView
+    private lateinit var mealPlanTitleLayout : ConstraintLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealPlanBinding
         get() = FragmentMealPlanBinding::inflate
@@ -40,9 +42,10 @@ class MealPlanFragment : BaseFragment<FragmentMealPlanBinding>() {
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
         mealPlanRecyclerView = view.findViewById(R.id.recyclerview_meal_plan_item)
-          layoutNoMealPlan = view.findViewById(R.id.layout_no_meal_plan)
-         layoutCreateMealPlan = view.findViewById(R.id.layout_create_meal_plan)
+        layoutNoMealPlan = view.findViewById(R.id.layout_no_meal_plan)
+        layoutCreateMealPlan = view.findViewById(R.id.layout_create_meal_plan)
         rightArrow = view.findViewById(R.id.image_right_arrow)
+        mealPlanTitleLayout = view.findViewById(R.id.mealPlanTitleLayout)
 
         mealPlanRecyclerView.layoutManager = LinearLayoutManager(context)
         mealPlanRecyclerView.adapter = mealPlanAdapter
@@ -63,6 +66,8 @@ class MealPlanFragment : BaseFragment<FragmentMealPlanBinding>() {
 
         onMealPlanItemRefresh()
 
+        mealPlanTitleLayout.visibility = View.GONE
+        rightArrow.visibility = View.GONE
         rightArrow.setOnClickListener {
             val fragment = MealPlanListFragment()
             val args = Bundle()
@@ -83,7 +88,7 @@ class MealPlanFragment : BaseFragment<FragmentMealPlanBinding>() {
             MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
         )
 
-        if (meal.size > 0){
+        if (meal.size < 0){
             mealPlanRecyclerView.visibility = View.VISIBLE
             layoutNoMealPlan.visibility = View.GONE
         }else{

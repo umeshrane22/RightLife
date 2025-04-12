@@ -14,21 +14,21 @@ class HalfCurveProgressBar @JvmOverloads constructor(
 
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 20f
+        strokeWidth = 40f
         color = Color.LTGRAY
         strokeCap = Paint.Cap.ROUND
     }
 
     private val progressPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
-        strokeWidth = 20f
+        strokeWidth = 40f
         color = resources.getColor(R.color.border_green)
         strokeCap = Paint.Cap.ROUND
     }
 
     private val textPaintMain = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
-        textSize = 70f
+        textSize = 100f
         typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
     }
 
@@ -61,9 +61,9 @@ class HalfCurveProgressBar @JvmOverloads constructor(
         maxValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_maxValue, maxValue)
         backgroundPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_backgroundColor, Color.LTGRAY)
         progressPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_progressColor, resources.getColor(R.color.border_green))
-        backgroundPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
-        progressPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
-        textPaintMain.textSize = typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 70f)
+        backgroundPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 60f)
+        progressPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 60f)
+        textPaintMain.textSize = typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 100f)
         typedArray.recycle()
 
         updateProgress()
