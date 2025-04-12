@@ -42,7 +42,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private lateinit var etAddName : EditText
     private lateinit var tvContinue : TextView
     private lateinit var editRecipe : ImageView
-    private lateinit var dinnerDotMenu : ImageView
+    private lateinit var addedNameTv : TextView
     private lateinit var btnAddLayout : LinearLayoutCompat
     private lateinit var editDeleteBreakfast : CardView
     private lateinit var editDeleteLunch : CardView
@@ -86,7 +86,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         editRecipe = view.findViewById(R.id.ic_edit)
         addedRecipeListLayout = view.findViewById(R.id.layout_added_recipe_list)
         btnAddLayout = view.findViewById(R.id.layout_btnAdd)
-//        editDeleteLunch = view.findViewById(R.id.btn_edit_delete_lunch)
+        addedNameTv = view.findViewById(R.id.addedNameTv)
 //        editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
 //        layoutMain = view.findViewById(R.id.layout_main)
 //        layoutDelete = view.findViewById(R.id.layout_delete)
@@ -160,7 +160,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             continueLayout.visibility = View.GONE
             addedRecipeListLayout.visibility = View.VISIBLE
             saveRecipeLayout.visibility = View.VISIBLE
-
+            addedNameTv.text = etAddName.text
             if (layoutNoIngredients.visibility == View.GONE){
                 saveRecipeLayout.isEnabled = true
                 saveRecipeLayout.setBackgroundResource(R.drawable.green_meal_bg)
@@ -214,7 +214,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false)
         )
 
-        if (meal.size > 0){
+        if (meal.size < 0){
             addedIngredientsItemRecyclerview.visibility = View.VISIBLE
             layoutNoIngredients.visibility = View.GONE
             saveRecipeLayout.visibility = View.VISIBLE

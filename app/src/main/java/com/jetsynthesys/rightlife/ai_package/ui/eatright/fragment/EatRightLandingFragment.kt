@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
@@ -76,6 +79,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var logWeightRulerAdapter: LogWeightRulerAdapter
     private val numbers = mutableListOf<Float>()
     private lateinit var waterIntakeBottomSheet: WaterIntakeBottomSheet
+    private lateinit var macroIc : ImageView
+    private lateinit var proteinUnitTv : TextView
+    private lateinit var carbsUnitTv : TextView
+    private lateinit var fatsUnitTv : TextView
+    private lateinit var weightLastLogDateTv : TextView
+    private lateinit var weightTrackerIc : ImageView
+    private lateinit var waterIntakeLayout : LinearLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
@@ -121,6 +131,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         last_logged_no_data = view.findViewById(R.id.last_logged_no_data)
         text_heading_calories_unit = view.findViewById(R.id.text_heading_calories_unit)
         new_improvement_layout = view.findViewById(R.id.new_improvement_layout)
+        macroIc = view.findViewById(R.id.macroIc)
+        fatsUnitTv = view.findViewById(R.id.fatsUnitTv)
+        proteinUnitTv = view.findViewById(R.id.proteinUnitTv)
+        carbsUnitTv = view.findViewById(R.id.carbsUnitTv)
 
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
         otherReciepeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
@@ -143,14 +157,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
        // onFrequentlyLoggedItemRefresh()
       //  halfCurveProgressBar.setValues(2000,2000)
-        halfCurveProgressBar.setProgress(50f)
-        val animator = ValueAnimator.ofFloat(0f, 70f)
-        animator.duration = 2000
-        animator.addUpdateListener { animation ->
-            val value = animation.animatedValue as Float
-            halfCurveProgressBar.setProgress(value)
-        }
-        animator.start()
         val glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
         val waterIntake = 1000f
         val waterGoal = 3000f
@@ -183,36 +189,15 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             }
         }
 
-        if(newBoolean){
-            todayMacrosWithDataLayout.visibility = View.VISIBLE
-            todayMacroNoDataLayout.visibility = View.GONE
-            todayMicrosWithDataLayout.visibility = View.VISIBLE
-            todayMacroNoDataLayoutOne.visibility = View.GONE
-            todayMealLogNoDataHeading.visibility = View.GONE
-            mealPlanRecyclerView.visibility =View.VISIBLE
-            log_your_meal_balance_layout.visibility = View.VISIBLE
-            other_reciepie_might_like_with_data.visibility = View.VISIBLE
-            otherReciepeRecyclerView.visibility = View.VISIBLE
-            tv_water_quantity.text = "400"
-            last_logged_no_data.visibility = View.GONE
-            text_heading_calories.visibility = View.VISIBLE
-            text_heading_calories_unit.visibility = View.VISIBLE
-            new_improvement_layout.visibility = View.VISIBLE
-        }else{
-            todayMacroNoDataLayout.visibility = View.VISIBLE
-            todayMacrosWithDataLayout.visibility = View.GONE
-            todayMicrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
-            todayMealLogNoDataHeading.visibility = View.VISIBLE
-            mealPlanRecyclerView.visibility = View.GONE
-            log_your_meal_balance_layout.visibility = View.GONE
-            other_reciepie_might_like_with_data.visibility = View.GONE
-            otherReciepeRecyclerView.visibility = View.GONE
-            tv_water_quantity.text = "0"
-            last_logged_no_data.visibility = View.VISIBLE
-            text_heading_calories.visibility = View.GONE
-            text_heading_calories_unit.visibility = View.GONE
-            new_improvement_layout.visibility = View.GONE
+        macroIc.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = MacrosTabFragment()
+                val args = Bundle()
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 
@@ -352,15 +337,65 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         })
     }
 
-    private fun setMealSummaryData(
-        landingPageResponse: LandingPageResponse,
-        halfCurveProgressBar: HalfCurveProgressBar
-    ){
+    private fun setMealSummaryData(landingPageResponse: LandingPageResponse, halfCurveProgressBar: HalfCurveProgressBar){
+
+        if(landingPageResponse.meals.isNotEmpty()){
+            todayMacrosWithDataLayout.visibility = View.VISIBLE
+            todayMacroNoDataLayout.visibility = View.GONE
+            todayMicrosWithDataLayout.visibility = View.VISIBLE
+            todayMacroNoDataLayoutOne.visibility = View.GONE
+            todayMealLogNoDataHeading.visibility = View.GONE
+            mealPlanRecyclerView.visibility =View.VISIBLE
+            log_your_meal_balance_layout.visibility = View.VISIBLE
+            other_reciepie_might_like_with_data.visibility = View.VISIBLE
+            otherReciepeRecyclerView.visibility = View.VISIBLE
+            tv_water_quantity.text = "400"
+            last_logged_no_data.visibility = View.GONE
+            text_heading_calories.visibility = View.VISIBLE
+            text_heading_calories_unit.visibility = View.VISIBLE
+            new_improvement_layout.visibility = View.VISIBLE
+        }else{
+            todayMacroNoDataLayout.visibility = View.VISIBLE
+            todayMacrosWithDataLayout.visibility = View.GONE
+            todayMicrosWithDataLayout.visibility = View.GONE
+            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
+            todayMealLogNoDataHeading.visibility = View.VISIBLE
+            mealPlanRecyclerView.visibility = View.GONE
+            log_your_meal_balance_layout.visibility = View.GONE
+            other_reciepie_might_like_with_data.visibility = View.GONE
+            otherReciepeRecyclerView.visibility = View.GONE
+            tv_water_quantity.text = "0"
+            last_logged_no_data.visibility = View.VISIBLE
+            text_heading_calories.visibility = View.GONE
+            text_heading_calories_unit.visibility = View.GONE
+            new_improvement_layout.visibility = View.GONE
+        }
+
+        if (landingPageResponse.total_protein.toInt() >  landingPageResponse.max_protein.toInt()) {
+            tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+        }else{
+            tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+        }
+
+        if (landingPageResponse.total_carbs.toInt() >  landingPageResponse.max_carbs.toInt()) {
+            tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+        }else{
+            tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+        }
+
+        if (landingPageResponse.total_fat.toInt() >  landingPageResponse.max_fat.toInt()) {
+            tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+        }else{
+            tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+        }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
-        tvProteinValue.text = landingPageResponse.total_protein.toString()
-        tvCabsValue.text = landingPageResponse.total_carbs.toString()
-        tvFatsValue.text = landingPageResponse.total_fat.toString()
+        tvProteinValue.text = landingPageResponse.total_protein.toInt().toString()
+        tvCabsValue.text = landingPageResponse.total_carbs.toInt().toString()
+        tvFatsValue.text = landingPageResponse.total_fat.toInt().toString()
+        carbsUnitTv.text = " / " + landingPageResponse.max_carbs.toInt().toString() +" g"
+        proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
+        fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
 
         cabsProgressBar.max = landingPageResponse.max_carbs.toInt()
         cabsProgressBar.progress = landingPageResponse.total_carbs.toInt()
@@ -370,6 +405,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         fatsProgressBar.progress = landingPageResponse.total_fat.toInt()
 
         halfCurveProgressBar.setValues(landingPageResponse.total_calories.toInt(),landingPageResponse.max_calories.toInt())
+        halfCurveProgressBar.setProgress(100f)
+        val animator = ValueAnimator.ofFloat(0f, 100f)
+        animator.duration = 1000
+        animator.addUpdateListener { animation ->
+            val value = animation.animatedValue as Float
+            halfCurveProgressBar.setProgress(value)
+        }
+        animator.start()
         onOtherReciepeDateItemRefresh(landingPageResponse.other_recipes_you_might_like)
     }
 

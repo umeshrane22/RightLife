@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
     private lateinit var imageCalender : ImageView
     private lateinit var addRecipeLayout : LinearLayoutCompat
     private lateinit var layoutNoRecipe : LinearLayoutCompat
+    private lateinit var yourRecipesLayout : ConstraintLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRecipeBinding
         get() = FragmentMyRecipeBinding::inflate
@@ -47,6 +49,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
         recipeRecyclerView = view.findViewById(R.id.recyclerview_recipe_item)
         addRecipeLayout = view.findViewById(R.id.layout_add_recipe)
         layoutNoRecipe = view.findViewById(R.id.layout_no_recipe)
+        yourRecipesLayout = view.findViewById(R.id.yourRecipesLayout)
 
         recipeRecyclerView.layoutManager = LinearLayoutManager(context)
         recipeRecyclerView.adapter = recipeAdapter
@@ -55,7 +58,6 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
-
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -70,7 +72,6 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
         addRecipeLayout.setOnClickListener {
             val fragment = CreateRecipeFragment()
             val args = Bundle()
-
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -87,14 +88,16 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
             MyMealModel("Tare Poha", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
         )
 
-        if (meal.size > 0){
+        if (meal.size < 0){
             recipeRecyclerView.visibility = View.VISIBLE
           //  layoutBottomCreateMeal.visibility = View.VISIBLE
             layoutNoRecipe.visibility = View.GONE
+            yourRecipesLayout.visibility = View.VISIBLE
         }else{
             layoutNoRecipe.visibility = View.VISIBLE
             recipeRecyclerView.visibility = View.GONE
           //  layoutBottomCreateMeal.visibility = View.GONE
+            yourRecipesLayout.visibility = View.GONE
         }
 
         val valueLists : ArrayList<MyMealModel> = ArrayList()

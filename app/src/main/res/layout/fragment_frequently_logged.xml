@@ -64,7 +64,7 @@
                         android:text="Create a Meal with a set of foods / ingredients to log quickly" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/layout_btn_create_meal"
+                        android:id="@+id/layout_create_meal"
                         android:layout_width="320dp"
                         android:layout_height="50dp"
                         android:orientation="horizontal"
@@ -81,8 +81,8 @@
 
                         <ImageView
                             android:id="@+id/icon_pl"
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             android:layout_gravity="center"
                             android:scaleType="fitXY"
                             android:src="@drawable/icon_feather_plus"
@@ -96,7 +96,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            android:layout_marginStart="20dp"
+                            android:layout_marginStart="10dp"
                             android:layout_gravity="center"
                             android:textSize="20sp"
                             android:textColor="@color/white"

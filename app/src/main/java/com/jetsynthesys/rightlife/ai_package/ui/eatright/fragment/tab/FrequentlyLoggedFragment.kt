@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequently
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentFrequentlyLoggedBinding
 import com.google.android.flexbox.FlexboxLayout
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
 
 class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>() {
 
@@ -50,8 +51,8 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), color.meal_log_background))
 
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
-      //  layoutNoMeals = view.findViewById(R.id.layout_no_meals)
-       // layoutCreateMeal = view.findViewById(R.id.layout_create_meal)
+        layoutNoMeals = view.findViewById(R.id.layout_no_meals)
+        layoutCreateMeal = view.findViewById(R.id.layout_create_meal)
         flexboxLayout = view.findViewById(R.id.flexboxLayout)
         val btnAdd: LinearLayoutCompat = view.findViewById(R.id.layout_btnAdd)
         val btnLogMeal: LinearLayoutCompat = view.findViewById(R.id.layout_btnLogMeal)
@@ -80,17 +81,17 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
 
         onFrequentlyLoggedItemRefresh()
 
-  //      layoutCreateMeal.setOnClickListener {
-//            val fragment = MealLogCalenderFragment()
-//            val args = Bundle()
-//
-//            fragment.arguments = args
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flFragment, fragment, "mealLog")
-//                addToBackStack("mealLog")
-//                commit()
-//            }
-  //      }
+        layoutCreateMeal.setOnClickListener {
+            val fragment = CreateMealFragment()
+            val args = Bundle()
+
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
 
         updateIngredientChips()
 
@@ -132,11 +133,11 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
         )
 
-        if (meal.size > 0){
+        if (meal.size < 0){
             frequentlyLoggedRecyclerView.visibility = View.VISIBLE
-         //   layoutNoMeals.visibility = View.GONE
+            layoutNoMeals.visibility = View.GONE
         }else{
-        //    layoutNoMeals.visibility = View.VISIBLE
+            layoutNoMeals.visibility = View.VISIBLE
             frequentlyLoggedRecyclerView.visibility = View.GONE
         }
 
