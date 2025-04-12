@@ -42,6 +42,7 @@ import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.util.List;
 
@@ -135,7 +136,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
     private void getArticleDetails(String contentId) {
         //-----------
-
+        Utils.showLoader(this);
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
@@ -160,10 +161,11 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                     if (articleDetailsResponse != null && articleDetailsResponse.getData() != null) {
                         handleArticleResponseData(articleDetailsResponse);
                     }
-
+                    binding.scrollviewarticle.setVisibility(View.VISIBLE);
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
+                Utils.dismissLoader(ArticlesDetailActivity.this);
             }
 
             @Override
@@ -171,7 +173,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                 Toast.makeText(ArticlesDetailActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("API ERROR", "onFailure: " + t.getMessage());
                 t.printStackTrace();  // Print the full stack trace for more details
-
+                Utils.dismissLoader(ArticlesDetailActivity.this);
             }
         });
 

@@ -1379,7 +1379,7 @@
 
                                 <TextView
                                     android:id="@+id/tv_module_value_moveright"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="100dp"
                                     android:layout_height="wrap_content"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
@@ -1387,7 +1387,13 @@
                                     android:padding="5dp"
                                     android:text="3808"
                                     android:textColor="@color/color_move_right"
-                                    android:textSize="@dimen/textsize_medium" />
+                                    android:textSize="@dimen/textsize_medium"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:autoSizeTextType="uniform"
+                                    android:autoSizeMinTextSize="8sp"
+                                    android:autoSizeMaxTextSize="14sp"
+                                    android:autoSizeStepGranularity="1sp"/>
 
                                 <TextView
                                     android:id="@+id/tv_module_value_unit_moveright"
@@ -1397,6 +1403,7 @@
                                     android:layout_toRightOf="@+id/tv_module_value_moveright"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:text="kcal"
+                                    android:visibility="gone"
                                     android:textColor="@color/color_move_right"
                                     android:textSize="10sp" />
 

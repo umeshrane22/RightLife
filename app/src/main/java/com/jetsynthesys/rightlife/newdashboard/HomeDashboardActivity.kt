@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -47,6 +49,7 @@ import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.HealthCard
+import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.HomeActivity
@@ -614,6 +617,18 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         return ((current.toFloat() / total.toFloat()) * 100).toInt()
     }
 
+/*    private fun setModuleSummaryValues(module: UpdatedModule) {
+        binding.tvModuleValueEatright.text = module.calories?.toString() ?: "0"
+        binding.tvModuleValueSleepright.text = module.sleepDuration?.toString() ?: "0"
+        binding.tvModuleValueThinkright.text = module.mindfulTime?.toString() ?: "0"
+        binding.tvModuleValueMoveright.text = module.activeBurn?.toString() ?: "0"
+    }*/
+
+    private fun setIfNotNullOrBlank(textView: TextView, value: String?) {
+        if (!value.isNullOrBlank()) {
+            textView.text = value
+        }
+    }
 
     private fun handleSelectedModule(aiDashboardResponseMain: AiDashboardResponseMain?) {
         for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
@@ -633,9 +648,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     binding.tvCaloryIntake.text = module.intake.toString()
                     binding.tvCaloryBurn.text = module.burned.toString()
 
-                    binding.tvModuleValueEatright.text = module.calories.toString()
-                    binding.tvModuleValueSleepright.text = module.sleepDuration.toString()
-                    binding.tvModuleValueThinkright.text = module.mindfulTime.toString()
+                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueSleepright, module.sleepDuration?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueThinkright, module.mindfulTime?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueMoveright, module.activeBurn?.toString())
+                    //setModuleSummaryValues(module)
                 }
 
                 "THINK_RIGHT" -> {
@@ -645,12 +662,17 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     }
                     binding.tvMinutesTextValue.text = module.mindfulnessMinutes
                     binding.tvDaysTextValue.text = module.wellnessDays
+
+                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueSleepright, module.sleepDuration?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueThinkright, module.mindfulTime?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueMoveright, module.activeBurn?.toString())
                 }
 
                 "EAT_RIGHT" -> {
                     if (isSelected == true) {
                         binding.cardEatrightMain.visibility = View.VISIBLE
-                        binding.cardEatrightMain.visibility = View.GONE
+                        binding.cardEatright.visibility = View.GONE
                     }
 
                     val (proteinValue, proteinTotal) = extractNumericValues(module.protein.toString())
@@ -679,6 +701,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
                     val percentage = calculatePercentage(curent.toInt(), max.toInt())
                     binding.halfCurveProgressBar.setProgress(percentage.toFloat())
+
+                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueSleepright, module.sleepDuration?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueThinkright, module.mindfulTime?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueMoveright, module.activeBurn?.toString())
                 }
 
                 "SLEEP_RIGHT" -> {
@@ -759,6 +786,22 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
                     binding.sleepStagesView.setSleepData(sleepData)
 
+                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueSleepright, module.sleepDuration?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueThinkright, module.mindfulTime?.toString())
+                    setIfNotNullOrBlank(binding.tvModuleValueMoveright, module.activeBurn?.toString())
+
+                    aiDashboardResponseMain?.data?.updatedModules
+
+                    val sleepModule = aiDashboardResponseMain?.data?.updatedModules!!.find { it.moduleId == "SLEEP_RIGHT" }
+                    sleepModule?.let {
+                        setStageGraphFromSleepRightModule(
+                            rem = it.rem ?: "0min",
+                            core = it.core ?: "0min",
+                            deep = it.deep ?: "0min",
+                            awake = it.awake ?: "0min"
+                        )
+                    }
                 }
 
                 else -> {
@@ -770,6 +813,53 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         }
     }
+
+
+    private fun parseSleepDuration(durationStr: String): Float {
+        val hourRegex = Regex("(\\d+)h")
+        val minRegex = Regex("(\\d+)min")
+
+        val hours = hourRegex.find(durationStr)?.groupValues?.get(1)?.toFloatOrNull() ?: 0f
+        val minutes = minRegex.find(durationStr)?.groupValues?.get(1)?.toFloatOrNull() ?: 0f
+
+        return hours * 60 + minutes
+    }
+
+
+    private fun setStageGraphFromSleepRightModule(
+        rem: String,
+        core: String,
+        deep: String,
+        awake: String
+    ) {
+        val sleepData: ArrayList<SleepSegmentModel> = arrayListOf()
+        val durations = mapOf(
+            "REM" to parseSleepDuration(rem),
+            "Core" to parseSleepDuration(core),
+            "Deep" to parseSleepDuration(deep),
+            "Awake" to parseSleepDuration(awake)
+        )
+
+        val totalDuration = durations.values.sum()
+        var currentPosition = 0f
+
+        durations.forEach { (stage, duration) ->
+            val start = currentPosition / totalDuration
+            val end = (currentPosition + duration) / totalDuration
+            val color = when (stage) {
+                "REM" -> Color.parseColor("#63D4FE")
+                "Deep" -> Color.parseColor("#5E5CE6")
+                "Core" -> Color.parseColor("#0B84FF")
+                "Awake" -> Color.parseColor("#FF6650")
+                else -> Color.GRAY
+            }
+            sleepData.add(SleepSegmentModel(start, end, color, 110f))
+            currentPosition += duration
+        }
+
+        binding.sleepStagesView.setSleepData(sleepData)//sleepStagesView.setSleepData(sleepData)
+    }
+
 
     //getDashboardChecklist
     private fun getDashboardChecklist(s: String) {

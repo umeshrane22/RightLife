@@ -473,9 +473,10 @@ class TodaysAffirmationActivity : AppCompatActivity() {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 Utils.dismissLoader(this@TodaysAffirmationActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    sharedPreferenceManager.firstTimeUserForAffirmation = false
+
                     if (sharedPreferenceManager.firstTimeUserForAffirmation) {
                         showCreatedUpdatedDialog("Playlist Created")
+                        sharedPreferenceManager.firstTimeUserForAffirmation = false
                     } else {
                         showCreatedUpdatedDialog("Changes Saved")
                     }
