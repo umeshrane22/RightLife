@@ -12,7 +12,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 
 class MealSuggestionListAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
                                 private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                                private var isClickView : Boolean, val onFrequentlyLoggedItem: (MyMealModel, Int, Boolean) -> Unit,) :
+                                private var isClickView : Boolean, val onMealSuggestionItem: (MyMealModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<MealSuggestionListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -57,7 +57,7 @@ class MealSuggestionListAdapter(private val context: Context, private var dataLi
         }
 
         holder.circlePlus.setOnClickListener {
-            onFrequentlyLoggedItem(item, position, true)
+            onMealSuggestionItem(item, position, true)
         }
 
 //        holder.layoutMain.setOnClickListener {

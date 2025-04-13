@@ -24,12 +24,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.RecipeList
 import com.jetsynthesys.rightlife.ai_package.model.RecipeResponseModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealPlanEatLandingAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TodayMealLogEatLandingAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealSuggestionListAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.OtherRecepieEatLandingAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.OtherRecipeEatLandingAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealPlanModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
@@ -37,7 +35,6 @@ import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
@@ -90,12 +87,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
 
-    private val mealPlanAdapter by lazy { MealPlanEatLandingAdapter(requireContext(), arrayListOf(), -1,
-        null, false, ::onMealPlanDateItem) }
-    private val otherReciepeAdapter by lazy { OtherRecepieEatLandingAdapter(requireContext(), arrayListOf(), -1,
-        null, false, ::onOtherReciepeDateItem) }
-    private val frequentlyLoggedListAdapter by lazy { MealSuggestionListAdapter(requireContext(), arrayListOf(),
-        -1, null, false, ::onFrequentlyLoggedItem) }
+    private val todayMealLogAdapter by lazy { TodayMealLogEatLandingAdapter(requireContext(), arrayListOf(), -1,
+        null, false, ::onTodayMealLogItem) }
+    private val otherRecipeAdapter by lazy { OtherRecipeEatLandingAdapter(requireContext(), arrayListOf(), -1,
+        null, false, ::onOtherRecipeItem) }
+    private val mealSuggestionAdapter by lazy { MealSuggestionListAdapter(requireContext(), arrayListOf(),
+        -1, null, false, ::onMealSuggestionItem) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -139,7 +136,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
         otherReciepeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
         otherReciepeRecyclerView.layoutManager = LinearLayoutManager(context)
-        otherReciepeRecyclerView.adapter = otherReciepeAdapter
+        otherReciepeRecyclerView.adapter = otherRecipeAdapter
 
         if (bottomSeatName.contentEquals("LogWeightEat")){
             showLogWeightBottomSheet()
@@ -151,10 +148,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
        // onOtherReciepeDateItemRefresh()
         mealPlanRecyclerView.layoutManager = LinearLayoutManager(context)
-        mealPlanRecyclerView.adapter = mealPlanAdapter
+        mealPlanRecyclerView.adapter = todayMealLogAdapter
        // onMealPlanItemRefresh()
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
-        frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
+        frequentlyLoggedRecyclerView.adapter = mealSuggestionAdapter
        // onFrequentlyLoggedItemRefresh()
       //  halfCurveProgressBar.setValues(2000,2000)
         val glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
@@ -201,7 +198,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
     }
 
-    private fun onFrequentlyLoggedItemRefresh(landingPageResponse : LandingPageResponse) {
+    private fun onMealSuggestionList(landingPageResponse : LandingPageResponse) {
         val meal = listOf(
             MyMealModel("Breakfast", landingPageResponse.next_meal_suggestion.meal_name, "1",
                 landingPageResponse.next_meal_suggestion.calories.toString(),
@@ -218,10 +215,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val valueLists: ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(meal as Collection<MyMealModel>)
         val mealLogDateData: MyMealModel? = null
-        frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        mealSuggestionAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onFrequentlyLoggedItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
+    private fun onMealSuggestionItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
 //        val mealLogs = listOf(
 //            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
 //            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
@@ -241,7 +238,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 //        }
     }
 
-    private fun onMealPlanItemRefresh(landingPageResponse : LandingPageResponse) {
+    private fun onTodayMealLogList(landingPageResponse : LandingPageResponse) {
         val meal = listOf(
             MealPlanModel("Breakfast", "Poha", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
@@ -251,10 +248,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val valueLists: ArrayList<MealList> = ArrayList()
         valueLists.addAll(landingPageResponse.meals as Collection<MealList>)
         val mealPlanData: MealList? = null
-        mealPlanAdapter.addAll(valueLists, -1, mealPlanData, false)
+        todayMealLogAdapter.addAll(valueLists, -1, mealPlanData, false)
     }
 
-    private fun onMealPlanDateItem(mealLogDateModel: MealList, position: Int, isRefresh: Boolean) {
+    private fun onTodayMealLogItem(mealLogDateModel: MealList, position: Int, isRefresh: Boolean) {
         val mealLogs = listOf(
             MealPlanModel("Breakfast", "Poha", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
@@ -265,7 +262,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 //        valueLists.addAll(mealLogs as Collection<MealPlanModel>)
     }
 
-    private fun onOtherReciepeDateItemRefresh(recipeSuggestion: List<RecipeSuggestion>) {
+    private fun onOtherRecipeList(recipeSuggestion: List<RecipeSuggestion>) {
         val meal = listOf(
             MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
             MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
@@ -283,10 +280,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val valueLists: ArrayList<RecipeSuggestion> = ArrayList()
         valueLists.addAll(recipeSuggestion as Collection<RecipeSuggestion>)
         val mealLogDateData: RecipeSuggestion? = null
-        otherReciepeAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        otherRecipeAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onOtherReciepeDateItem(recipesModel: RecipeSuggestion, position: Int, isRefresh: Boolean) {
+    private fun onOtherRecipeItem(recipesModel: RecipeSuggestion, position: Int, isRefresh: Boolean) {
 
 //        val valueLists : ArrayList<RecipeList> = ArrayList()
 //        valueLists.addAll(recipesList as Collection<RecipeList>)
@@ -321,8 +318,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 //                    val mealPlanLists = response.body()?.data ?: emptyList()
 //                    recipesList.addAll(mealPlanLists)
                     setMealSummaryData(landingPageResponse, halfCurveProgressBar)
-                    onMealPlanItemRefresh(landingPageResponse)
-                    onFrequentlyLoggedItemRefresh(landingPageResponse)
+                    onTodayMealLogList(landingPageResponse)
+                    onMealSuggestionList(landingPageResponse)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -413,7 +410,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             halfCurveProgressBar.setProgress(value)
         }
         animator.start()
-        onOtherReciepeDateItemRefresh(landingPageResponse.other_recipes_you_might_like)
+        onOtherRecipeList(landingPageResponse.other_recipes_you_might_like)
     }
 
     private fun getMealRecipesLists() {

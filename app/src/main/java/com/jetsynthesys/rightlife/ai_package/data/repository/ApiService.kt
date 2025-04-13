@@ -43,6 +43,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
@@ -99,9 +100,11 @@ interface ApiService {
     @POST("eat/meal-plans/")
     fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
 
-
     @GET("eat/meal-plans/")
     fun getLogMealList(@Query("user_id") userId: String): Call<MealLogPlanResponse>
+
+    @POST("eat/meal-plans/log/")
+    fun createMealPlanLog(@Query("user_id") userId: String,@Query("meal_plan_id") mealPlanId: String,@Body request: MealPlanLogRequest): Call<MealPlanResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(

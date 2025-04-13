@@ -6,43 +6,43 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 
-class MealPlanEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<MealList>,
-                                private var clickPos: Int, private var mealLogListData : MealList?,
-                                private var isClickView : Boolean, val onMealLogDateItem: (MealList, Int, Boolean) -> Unit,) :
-    RecyclerView.Adapter<MealPlanEatLandingAdapter.ViewHolder>() {
+class OtherRecipeEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<RecipeSuggestion>,
+                                   private var clickPos: Int, private var mealLogListData : RecipeSuggestion?,
+                                   private var isClickView : Boolean, val onOtherRecipeItem: (RecipeSuggestion, Int, Boolean) -> Unit,) :
+    RecyclerView.Adapter<OtherRecipeEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_meal_plan_eat_landing_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_other_reciepie_eat_landing_ai, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.name
-        holder.servesCount.text = item.numOfServings.toString()
-        holder.calValue.text = item.calories.toString()
-        holder.subtractionValue.text = item.protein.toString()
-        holder.baguetteValue.text = item.carbs.toString()
-        holder.dewpointValue.text = item.fats.toString()
-        if (item.mealType.contentEquals("Breakfast")){
-            holder.mealTypeIc.setImageResource(R.drawable.ic_breakfast)
-        }else if (item.mealType.contentEquals("Lunch")){
-            holder.mealTypeIc.setImageResource(R.drawable.ic_lunch)
-        }else{
-            holder.mealTypeIc.setImageResource(R.drawable.ic_dinner)
-        }
-//        if (item.status == true) {
+        holder.mealTitle.text = item.meal_name
+        // holder.mealName.text = item.mealName
+       // holder.iamgeFood.text = item.serve
+        Glide.with(context)
+            .load(item.image)
+            .placeholder(R.drawable.ic_breakfast)
+            .error(R.drawable.ic_breakfast)
+            .into(holder.iamgeFood)
+        holder.calValue.text = item.calories.toInt().toString()
+        holder.subtractionValue.text = item.protein.toInt().toString()
+        holder.baguetteValue.text = item.carbs.toInt().toString()
+        holder.dewpointValue.text = item.fats.toInt().toString()
+     //   if (item.isAddDish == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_check)
+   //         holder.circlePlus.setImageResource(R.drawable.circle_check)
 //            if (mealLogListData != null){
 //                if (clickPos == position && mealLogListData == item && isClickView == true){
 //                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
@@ -50,10 +50,10 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
 //                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
 //                }
 //            }
-//        }else{
+  //      }else{
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_uncheck)
+   //         holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
 //            if (mealLogListData != null){
 //                if (clickPos == position && mealLogListData == item && isClickView == true){
 //                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
@@ -61,12 +61,15 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
 //                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
 //                }
 //            }
-        //     }
+   //     }
 
-//        holder.layoutMain.setOnClickListener {
-//           // holder.createNewVersionCard.visibility = View.GONE
-//            onMealLogDateItem(item, position, true)
+//        holder.circlePlus.setOnClickListener {
+//            onOtherReciepeDateItem(item, position, true)
 //        }
+
+        holder.layoutMain.setOnClickListener {
+            onOtherRecipeItem(item, position, true)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -75,6 +78,8 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+        val layoutMain : ConstraintLayout = itemView.findViewById(R.id.layout_main)
+        val iamgeFood : ImageView = itemView.findViewById(R.id.iamgeFood)
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
@@ -95,10 +100,9 @@ class MealPlanEatLandingAdapter(private val context: Context, private var dataLi
         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
-        val mealTypeIc : ImageView = itemView.findViewById(R.id.image_meal_type)
     }
 
-    fun addAll(item : ArrayList<MealList>?, pos: Int, mealLogItem : MealList?, isClick : Boolean) {
+    fun addAll(item : ArrayList<RecipeSuggestion>?, pos: Int, mealLogItem : RecipeSuggestion?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
