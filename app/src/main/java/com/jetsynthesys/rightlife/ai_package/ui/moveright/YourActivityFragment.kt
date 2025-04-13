@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,23 +17,29 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
+import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.RoutineResponse
+import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
+import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.YourActivityLogMeal
+import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentYourActivityBinding
-import com.google.android.material.snackbar.Snackbar
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
-import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
-import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
-import kotlinx.coroutines.CoroutineScope
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +53,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var confirmResetBtn: AppCompatButton
     private lateinit var progressBarConfirmation: ProgressBar
     private lateinit var mealLogDateListAdapter: RecyclerView
+    private lateinit var myActivityRecyclerView: RecyclerView
     private lateinit var imageCalender: ImageView
     private lateinit var btnLogMeal: LinearLayoutCompat
     private lateinit var healthConnectSyncButton: LinearLayoutCompat
@@ -64,17 +72,25 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             ::onMealLogDateItem
         )
     }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    private val myActivityAdapter by lazy {
+        YourActivitiesAdapter(
+            requireContext(),
+            arrayListOf(),
+            -1,
+            null,
+            false,
+            ::onWorkoutItemClick
+        )
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
 
         mealLogDateListAdapter = view.findViewById(R.id.recyclerview_calender)
+        myActivityRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
         btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
         activitySync = view.findViewById(R.id.activities_sync)
@@ -90,6 +106,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 commit()
             }
         }
+        myActivityRecyclerView.layoutManager = LinearLayoutManager(context)
+        myActivityRecyclerView.adapter = myActivityAdapter
 
         showTooltipsSequentially()
 
@@ -99,14 +117,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         healthConnectSyncButton.setOnClickListener {
-            /*val fragment = AddWorkoutSearchFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "AddWorkoutSearchFragment")
-                addToBackStack("AddWorkoutSearchFragment")
-                commit()
-            }*/
+            // AddWorkoutSearchFragment navigation (commented as per original)
         }
 
         mealLogDateListAdapter.layoutManager =
@@ -129,11 +140,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             })
 
         onMealLogDateItemRefresh()
+        fetchActivities()
 
         imageCalender.setOnClickListener {
             val fragment = ActivitySyncCalenderFragment()
             val args = Bundle()
-
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -150,6 +161,77 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 replace(R.id.flFragment, fragment, "searchWorkoutFragment")
                 addToBackStack("searchWorkoutFragment")
                 commit()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun fetchActivities() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "64763fe2fa0e40d9c0bc8264"
+               // val userid = "64763fe2fa0e40d9c0bc8264"
+                Log.d("FetchActivities", "Fetching routines for userId: $userId")
+
+                val response: Response<List<RoutineResponse>> = ApiClient.apiServiceFastApi.getRoutines(userId)
+
+                if (response.isSuccessful) {
+                    val routines: List<RoutineResponse>? = response.body()
+                    Log.d("FetchActivities", "Success: Received ${routines?.size ?: 0} routines")
+
+                    val valueLists: ArrayList<ActivityModel> = ArrayList()
+                    routines?.forEach { routine ->
+                        routine.workouts.forEach { workout ->
+                            valueLists.add(
+                                ActivityModel(
+                                    activityType = workout.activity_name,
+                                    duration = "${workout.duration_min.toInt()} min",
+                                    caloriesBurned = "0", // Placeholder
+                                    intensity = workout.intensity
+                                )
+                            )
+                        }
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        if (isAdded && view != null) {
+                            if (valueLists.isNotEmpty()) {
+                                myActivityRecyclerView.visibility = View.VISIBLE
+                                Log.d("FetchActivities", "Displaying ${valueLists.size} workouts")
+                            } else {
+                                myActivityRecyclerView.visibility = View.GONE
+                                Log.d("FetchActivities", "No workouts to display")
+                            }
+                            myActivityAdapter.addAll(valueLists, -1, null, false)
+                        }
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error details"
+                    withContext(Dispatchers.Main) {
+                        if (isAdded && view != null) {
+                            Log.e("FetchActivities", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
+                            myActivityRecyclerView.visibility = View.GONE
+                            Toast.makeText(
+                                context,
+                                "Failed to fetch activities: ${response.code()} - $errorBody",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (isAdded && view != null) {
+                        Log.e("FetchActivities", "Exception: ${e.message}", e)
+                        myActivityRecyclerView.visibility = View.GONE
+                        Toast.makeText(
+                            context,
+                            "Error fetching activities: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
             }
         }
     }
@@ -171,37 +253,27 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val tvTooltip = dialog.findViewById<TextView>(R.id.tvTooltipText)
         tvTooltip.text = tooltipText
 
-        // Set transparent background for rounded tooltip
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        // Get screen dimensions
         val displayMetrics = resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
-
-        // Get anchor view position
         val location = IntArray(2)
         anchorView.getLocationOnScreen(location)
-
-        // Tooltip width (adjust as needed)
         val tooltipWidth = 250
 
-        // Set dialog position
         val params = dialog.window?.attributes
-        // Align tooltip to the **right** of the button
         params?.x = (location[0] + anchorView.width) + tooltipWidth
-        // Position tooltip **above** the button
-        params?.y = location[1] - anchorView.height + 15  // Add some spacing
+        params?.y = location[1] - anchorView.height + 15
         dialog.window?.attributes = params
         dialog.window?.setGravity(Gravity.TOP)
 
-        // Show the dialog
         dialog.show()
 
-        // Auto dismiss after 3 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
         }, 3000)
     }
+
     private fun showTooltipDialogSync(anchorView: View, tooltipText: String) {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -209,40 +281,29 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val tvTooltip = dialog.findViewById<TextView>(R.id.tvTooltipText)
         tvTooltip.text = tooltipText
 
-        // Set transparent background for rounded tooltip
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        // Get screen dimensions
         val displayMetrics = resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
-
-        // Get anchor view position
         val location = IntArray(2)
         anchorView.getLocationOnScreen(location)
-
-        // Tooltip width (adjust as needed)
         val tooltipWidth = 250
 
-        // Set dialog position
         val params = dialog.window?.attributes
-        // Align tooltip to the **right** of the button
         params?.x = (location[0] + anchorView.width) + tooltipWidth
-        // Position tooltip **above** the button
-        params?.y = location[1] - anchorView.height + 15  // Add some spacing
+        params?.y = location[1] - anchorView.height + 15
         dialog.window?.attributes = params
         dialog.window?.setGravity(Gravity.TOP)
 
-        // Show the dialog
         dialog.show()
 
-        // Auto dismiss after 3 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
         }, 3000)
     }
 
     private fun updateCalorieRecord() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val calorieId: String = "67e0f84505b80d8823623e27"
                 val request = UpdateCalorieRequest(
@@ -271,9 +332,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         }
                     }
                 } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
-                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
-                        Log.e("UpdateCalorie", errorMessage)
+                        Log.e("UpdateCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
                     }
                 }
             } catch (e: Exception) {
@@ -285,7 +346,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun deleteCalorieRecord() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val calorieId: String = "67e1122a3051bc4fbd9c42aa"
                 val userId: String = "64763fe2fa0e40d9c0bc8264"
@@ -307,9 +368,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         }
                     }
                 } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
-                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
-                        Log.e("DeleteCalorie", errorMessage)
+                        Log.e("DeleteCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
                     }
                 }
             } catch (e: Exception) {
@@ -319,8 +380,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
     }
-
-
 
     private fun onMealLogDateItemRefresh() {
         val mealLogs = listOf(
@@ -353,5 +412,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val valueLists: ArrayList<YourActivityLogMeal> = ArrayList()
         valueLists.addAll(mealLogs as Collection<YourActivityLogMeal>)
         mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    }
+
+    private fun onWorkoutItemClick(workoutModel: ActivityModel, position: Int, isRefresh: Boolean) {
+        Log.d("WorkoutClick", "Clicked on ${workoutModel.activityType} at position $position")
     }
 }

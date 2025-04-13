@@ -14,6 +14,8 @@ import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
+import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.FitnessResponse
 import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
@@ -25,6 +27,7 @@ import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ai_package.model.RoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
@@ -43,6 +46,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
@@ -99,9 +103,11 @@ interface ApiService {
     @POST("eat/meal-plans/")
     fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
 
-
     @GET("eat/meal-plans/")
     fun getLogMealList(@Query("user_id") userId: String): Call<MealLogPlanResponse>
+
+    @POST("eat/meal-plans/log/")
+    fun createMealPlanLog(@Query("user_id") userId: String,@Query("meal_plan_id") mealPlanId: String,@Body request: MealPlanLogRequest): Call<MealPlanResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(
@@ -125,6 +131,11 @@ interface ApiService {
     suspend fun storeHealthData(
         @Body request: StoreHealthDataRequest
     ): Response<StoreHealthDataResponse>
+
+    @POST("move/routine/create/")
+    suspend fun createRoutine(
+        @Body request: CreateRoutineRequest
+    ): Response<CreateRoutineResponse>
 
     @GET("move/fetch_active_burned/")
     suspend fun getActiveCalories(
@@ -259,11 +270,16 @@ interface ApiService {
         @Body request: UpdateCalorieRequest
     ): Response<UpdateCalorieResponse>
 
-    @GET("move/fetch_routines/")
+    @GET("move/routine/")
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
-        @Query("provided_date") providedDate: String
+       // @Query("provided_date") providedDate: String
     ): Response<WorkoutResponseRoutine>
+
+    @GET("move/routine/")
+    suspend fun getRoutines(
+        @Query("user_id") userId: String
+    ): Response<List<RoutineResponse>>
 
     @POST("move/assign_routine/")
     suspend fun assignRoutine(
