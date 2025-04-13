@@ -19,6 +19,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.cardview.widget.CardView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -48,6 +49,7 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -80,6 +82,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
     private lateinit var logYourNap : LinearLayout
+    private lateinit var actualNoDataCardView : CardView
+    private lateinit var stageNoDataCardView : CardView
+    private lateinit var performNoDataCardView : CardView
+    private lateinit var restroNoDataCardView : CardView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,6 +104,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val sleepIdeal = view.findViewById<ImageView>(R.id.img_sleep_ideal_actual)
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
+         actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
+         restroNoDataCardView = view.findViewById(R.id.restro_nodata_layout)
+         performNoDataCardView = view.findViewById(R.id.perform_nodata_layout)
+         stageNoDataCardView = view.findViewById(R.id.lyt_sleep_stage_no_data)
         wakeTime = view.findViewById<TextView>(R.id.tv_wakeup_time)
 
         progressDialog = ProgressDialog(activity)
@@ -328,8 +338,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchSleepLandingData() {
         Utils.showLoader(requireActivity())
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "64763fe2fa0e40d9c0bc8264"
+      //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+      //  val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "67f6698fa213d14e22a47c2a"
         val date = "2025-03-18"
         val source = "apple"
         val preferences = "nature_sounds"
@@ -367,6 +378,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         // Set Sleep Stages Data
         val sleepStageData: ArrayList<SleepStageData> = arrayListOf()
         if (sleepLandingResponse.sleepLandingData?.sleepStagesData != null) {
+
             for (i in 0 until sleepLandingResponse.sleepLandingData!!.sleepStagesData.size) {
                 sleepLandingResponse.sleepLandingData!!.sleepStagesData.getOrNull(i)?.let {
                     sleepStageData.add(it)
@@ -413,29 +425,42 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                 if (response.isSuccessful) {
                     Utils.dismissLoader(requireActivity())
-                    idealActualResponse = response.body()!!
-                    // setSleepRightLandingData(idealActualResponse)
-                    val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
-                        val formattedDate = detail.sleepDuration.first().startDatetime?.let {
-                            formatDate(
-                                it
-                            )
-                        }
-                        return@map formattedDate?.let {
-                            detail.sleepTimeData?.idealSleepData?.toFloat()?.let { it1 ->
-                                detail.sleepTimeData!!.actualSleepData?.toFloat()?.let { it2 ->
-                                    SleepGraphData(
-                                        date = it,
-                                        idealSleep = it1,
-                                        actualSleep = it2
-                                    )
+                    if (response.body() != null) {
+                        idealActualResponse = response.body()!!
+                        // setSleepRightLandingData(idealActualResponse)
+                        if (idealActualResponse.data?.sleepTimeDetail?.size!! > 0) {
+                            actualNoDataCardView.visibility = View.GONE
+                            lineChart.visibility = View.VISIBLE
+                            val sleepDataList: List<SleepGraphData>? =
+                                idealActualResponse.data?.sleepTimeDetail?.map { detail ->
+                                    val formattedDate =
+                                        detail.sleepDuration.first().startDatetime?.let {
+                                            formatDate(
+                                                it
+                                            )
+                                        }
+                                    return@map formattedDate?.let {
+                                        detail.sleepTimeData?.idealSleepData?.toFloat()
+                                            ?.let { it1 ->
+                                                detail.sleepTimeData!!.actualSleepData?.toFloat()
+                                                    ?.let { it2 ->
+                                                        SleepGraphData(
+                                                            date = it,
+                                                            idealSleep = it1,
+                                                            actualSleep = it2
+                                                        )
+                                                    }
+                                            }
+                                    }!!
                                 }
-                            }
-                        }!!
-                    }
 
-                    if (sleepDataList != null) {
-                        setupIdealActualChart(lineChart, sleepDataList)
+                            if (sleepDataList != null) {
+                                setupIdealActualChart(lineChart, sleepDataList)
+                            }
+                        }else{
+                            actualNoDataCardView.visibility = View.VISIBLE
+                            lineChart.visibility = View.GONE
+                        }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
