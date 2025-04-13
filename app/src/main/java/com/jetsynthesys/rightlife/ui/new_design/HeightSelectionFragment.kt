@@ -85,6 +85,7 @@ class HeightSelectionFragment : Fragment() {
         }
 
         val switch = view.findViewById<SwitchCompat>(R.id.switch_height_metric)
+        switch.isChecked = false
         switch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 val h = selectedHeight.split(" ")
@@ -93,7 +94,7 @@ class HeightSelectionFragment : Fragment() {
                 selectedHeight = ConversionUtils.convertFeetToCentimeter(feet)
                 setCms()
                 selectedHeight = decimalFormat.format(selectedHeight.toDouble())
-                rulerView.layoutManager?.scrollToPosition(floor(selectedHeight.toDouble()).toInt())
+                rulerView.scrollToPosition(floor(selectedHeight.toDouble()).toInt())
                 selectedHeight += selectedLabel
             } else {
                 val w = selectedHeight.split(" ")
@@ -102,8 +103,8 @@ class HeightSelectionFragment : Fragment() {
                 setFtIn()
                 val h = selectedHeight.split(".")
                 val ft = h[0]
-                val inch = h[1]
-                rulerView.layoutManager?.scrollToPosition(floor(selectedHeight.toDouble()).toInt() * 12)
+                val inch = if (h.size ==2 )h[1] else "0"
+                rulerView.scrollToPosition((selectedHeight.toDouble() * 12).toInt())
                 selectedHeight = "$ft Ft $inch In"
             }
             selected_number_text!!.text = selectedHeight
@@ -153,13 +154,14 @@ class HeightSelectionFragment : Fragment() {
                                 "${decimalFormat.format(snappedNumber)} $selectedLabel"
                             if (selectedLabel == " feet") {
                                 val feet = decimalFormat.format(snappedNumber / 12)
+                                val remainingInches = snappedNumber.toInt() % 12
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
                                 var inch = "0"
                                 if (h.size > 1) {
                                     inch = h[1]
                                 }
-                                selected_number_text!!.text = "$ft Ft $inch In"
+                                selected_number_text!!.text = "$ft Ft $remainingInches In"
                             }
                             selectedHeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
@@ -175,19 +177,34 @@ class HeightSelectionFragment : Fragment() {
         rlRulerContainer.post {
             val parentHeight = rlRulerContainer.height
             val paddingVertical = parentHeight / 2
-            markerView.setPadding(
-                markerView.paddingLeft,
+            rulerView.setPadding(
+                rulerView.paddingLeft,
                 paddingVertical,
-                markerView.paddingRight,
+                rulerView.paddingRight,
                 paddingVertical
             )
         }
 
         // Scroll to the center position after layout is measured
         rulerView.post {
-            val h = selectedHeight.split(" ")
+            /*val h = selectedHeight.split(" ")
             val feet = "${h[0]}.${h[2]}"
-            layoutManager.scrollToPositionWithOffset(floor(feet.toDouble()).toInt() * 12, 0)
+            layoutManager.scrollToPositionWithOffset(floor(feet.toDouble()).toInt() * 12, 0)*/
+
+            // Calculate the center position
+            val itemCount = if (rulerView.adapter != null) rulerView.adapter!!.itemCount else 0
+            val centerPosition = itemCount / 2
+
+            // Scroll to the center position
+            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
+        }
+
+        rulerView.post {
+            if (gender == "Male") {
+                rulerView.scrollToPosition(68)
+            }else{
+                rulerView.scrollToPosition(64)
+            }
         }
 
         return view

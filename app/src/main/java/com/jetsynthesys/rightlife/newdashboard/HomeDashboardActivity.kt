@@ -54,6 +54,7 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
+import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
@@ -146,7 +147,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(
                     Intent(
                         this@HomeDashboardActivity,
-                        TodaysAffirmationActivity::class.java
+                        PractiseAffirmationPlaylistActivity::class.java
                     )
                 )
             }
@@ -697,10 +698,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
 
                     //binding.halfCurveProgressBar.setProgress(60f)
-                    val (curent, max) = extractNumericValues(module.calories.toString())
+                    // value is wrong for eatright progress let backend correct then uncomment below
+                    /*val (curent, max) = extractNumericValues(module.calories.toString())
                     binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
                     val percentage = calculatePercentage(curent.toInt(), max.toInt())
-                    binding.halfCurveProgressBar.setProgress(percentage.toFloat())
+                    binding.halfCurveProgressBar.setProgress(percentage.toFloat())*/
 
                     setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
                     setIfNotNullOrBlank(binding.tvModuleValueSleepright, module.sleepDuration?.toString())
