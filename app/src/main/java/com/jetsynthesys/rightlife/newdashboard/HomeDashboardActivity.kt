@@ -696,11 +696,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     binding.fatsProgressBar.progress = fatsValue.toInt()
 
 
-//                    //binding.halfCurveProgressBar.setProgress(60f)
-//                    val (curent, max) = extractNumericValues(module.calories.toString())
-//                    binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
-//                    val percentage = calculatePercentage(curent.toInt(), max.toInt())
-//                    binding.halfCurveProgressBar.setProgress(percentage.toFloat())
+                    //binding.halfCurveProgressBar.setProgress(60f)
+                    val (curent, max) = extractNumericValues(module.calories.toString())
+                    binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
+                    val percentage = calculatePercentage(curent.toInt(), max.toInt())
+                    binding.halfCurveProgressBar.setProgress(percentage.toFloat())
 
                     setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
                     setIfNotNullOrBlank(binding.tvModuleValueSleepright, module.sleepDuration?.toString())
