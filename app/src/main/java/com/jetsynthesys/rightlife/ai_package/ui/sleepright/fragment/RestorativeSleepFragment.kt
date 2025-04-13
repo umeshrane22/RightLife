@@ -1,12 +1,15 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
+import android.app.ProgressDialog
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -21,6 +24,12 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
 
@@ -30,6 +39,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
     private lateinit var barChart: BarChart
     private lateinit var radioGroup: RadioGroup
+    private lateinit var progressDialog: ProgressDialog
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +48,9 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
         barChart = view.findViewById(R.id.heartRateChart)
         radioGroup = view.findViewById(R.id.tabGroup)
-
+        progressDialog = ProgressDialog(activity)
+        progressDialog.setTitle("Loading")
+        progressDialog.setCancelable(false)
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
         fetchSleepData()
@@ -140,7 +152,31 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     }
 
     private fun fetchSleepData() {
-
+        progressDialog.show()
+        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val userId = "67f6698fa213d14e22a47c2a"
+        val date = "2025-03-18"
+        val source = "apple"
+        val period = "weekly"
+        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userId, source,period, date)
+        call.enqueue(object : Callback<RestorativeSleepResponse> {
+            override fun onResponse(call: Call<RestorativeSleepResponse>, response: Response<RestorativeSleepResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                 //   sleepStageResponse = response.body()!!
+              //      setSleepRightStageData(sleepStageResponse)
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<RestorativeSleepResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
