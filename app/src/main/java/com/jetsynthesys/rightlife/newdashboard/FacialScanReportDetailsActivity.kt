@@ -475,11 +475,11 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         calendar.time = capToToday(calendar.time)
 
       val startDate = dateFormat.format(calendar.time)
-      startDateAPI = startDate
+        endDateAPI = startDate
 
       calendar.add(Calendar.DAY_OF_YEAR, -7)
       val endDate = dateFormat.format(calendar.time)
-      endDateAPI = endDate
+        startDateAPI = endDate
 
       return "$endDate - $startDate"
   }
