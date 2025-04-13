@@ -61,7 +61,7 @@ class LogYourNapDialogFragment : BottomSheetDialogFragment() {
                 val formatted = LocalTime.of(hour, minute)
                     .format(DateTimeFormatter.ofPattern("hh:mm a"))
                 tvStartTime.text = formatted
-            }.show(childFragmentManager, "TimePicker")
+            }.show(childFragmentManager, "TimePickerDialog")
            // showTimePicker(isStart = true)
         }
 
@@ -71,12 +71,12 @@ class LogYourNapDialogFragment : BottomSheetDialogFragment() {
                 val formatted = LocalTime.of(hour, minute)
                     .format(DateTimeFormatter.ofPattern("hh:mm a"))
                 tvEndTime.text = formatted
-            }.show(childFragmentManager, "TimePicker")
+            }.show(childFragmentManager, "TimePickerDialog")
            // showTimePicker(isStart = false)
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
-            Toast.makeText(context, "Log Saved!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
             dismiss()
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
