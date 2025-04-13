@@ -255,29 +255,6 @@ class YourworkOutsFragment : BaseFragment<FragmentYourworkOutsBinding>() {
         }
     }
 
-    /*
-    suspend fun fetchWorkouts(
-        userId: String,
-        startDate: String,
-        endDate: String,
-        page: Int,
-        limit: Int,
-        includeStats: Boolean
-    ): WorkoutMoveResponseRoutine? {
-        return try {
-            val response = apiServiceFastApi.getFetchWorkouts(userId, startDate, endDate, page, limit, includeStats)
-            if (response.isSuccessful) {
-                response.body()
-            } else {
-                Log.e("API_ERROR", "Error: ${response.errorBody()?.string()}")
-                null
-            }
-        } catch (e: Exception) {
-            Log.e("API_ERROR", "Exception: ${e.message}")
-            null
-        }
-    }
-    */
 }
 
 data class WorkoutModel(

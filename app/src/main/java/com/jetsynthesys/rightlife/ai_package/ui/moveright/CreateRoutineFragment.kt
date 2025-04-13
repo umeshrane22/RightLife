@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,7 +12,9 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -23,20 +26,20 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
-import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
-import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
-import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CreateRoutineListAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
@@ -47,6 +50,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var addNameLayout: ConstraintLayout
     private lateinit var createListRoutineLayout: ConstraintLayout
     private var workout: WorkoutList? = null
+    private var workoutRecord: WorkoutSessionRecord? = null
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
@@ -65,6 +69,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
@@ -77,13 +82,14 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         addNameLayout = view.findViewById(R.id.add_name_layout)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
         workout = arguments?.getParcelable("workout")
-        val workoutRecord =
+         workoutRecord =
             arguments?.let { BundleCompat.getParcelable(it, "workoutRecord", WorkoutSessionRecord::class.java) }
 
         addNameLayout.visibility = View.VISIBLE
         createListRoutineLayout.visibility = View.GONE
         //deleteCalorieRecord()
        // updateCalorieRecord()
+
 
         val defaultBackground: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.add_cart_button_background)
         val filledBackground: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.button_background_filled)
@@ -145,8 +151,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             addNameLayout.visibility = View.GONE
             createListRoutineLayout.visibility = View.VISIBLE
             textViewRoutine.text = editText.text
+            createRoutine(editText.text.toString())
             // assignWorkoutRoutine() // Assign the routine first
-            fetchMoveRoutine()     // Then fetch the updated routine data
+            //fetchMoveRoutine()     // Then fetch the updated routine data
         }
     }
 
@@ -155,6 +162,59 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
             commit()
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun createRoutine(name:String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "64763fe2fa0e40d9c0bc8264"
+
+                // Map data to CreateRoutineRequest
+                val request = CreateRoutineRequest(
+                    user_id = userid,
+                    routine_name = name,
+                    workouts = listOf(
+
+                        workoutRecord?.let {
+                            CreateRoutineRequest.Workout(
+                                activityId = it.activityId ,
+                                duration = workoutRecord!!.durationMin.toInt(),
+                                intensity = workoutRecord!!.intensity
+                            )
+                        }
+                    )
+                )
+
+                val response = ApiClient.apiServiceFastApi.createRoutine(request)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        Toast.makeText(
+                            requireContext(),
+                            responseBody?.message ?: "Routine created successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        //fetchMoveRoutine()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Error creating routine: ${response.code()} - ${response.message()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
@@ -210,9 +270,12 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private fun fetchMoveRoutine() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "64763fe2fa0e40d9c0bc8264"
+                val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getMoveRoutine(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    providedDate = "2025-03-24"
+                    userId = userid,
+                   // providedDate = "2025-03-24"
                 )
 
                 if (response.isSuccessful) {
