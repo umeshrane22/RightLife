@@ -49,12 +49,13 @@ class FreeTrialServiceActivity : AppCompatActivity() {
         binding.btnBeginFreeTrial.setOnClickListener {
             beginFreeTrial()
         }
+
     }
 
     inner class CoilImageGetter : Html.ImageGetter {
         override fun getDrawable(source: String): Drawable? {
             val resourceId = when (source) {
-                "heart_icon" -> R.drawable.avg_heart_rate
+                "heart_icon" -> R.drawable.ic_heartbeat
                 "thinkright_icon" -> R.drawable.thinkrightsvg
                 "moveright_icon" -> R.drawable.moverightsvg
                 "eatright_icon" -> R.drawable.eatright_headericon

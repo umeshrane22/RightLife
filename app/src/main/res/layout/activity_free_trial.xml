@@ -53,10 +53,17 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingBottom="12dp">
-
+                    android:orientation="horizontal">
+                    <RelativeLayout
+                        android:layout_width="32dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:src="@drawable/lock_bg_1_trail"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitXY"
+                            android:layout_height="match_parent"/>
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
@@ -64,18 +71,20 @@
                         android:background="@drawable/ic_uncheck_circle"
                         android:padding="10dp"
                         android:backgroundTint="#1292E5"
-                        android:layout_marginEnd="16dp"
                         app:tint="@color/white" />
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Today:"
+                            android:visibility="gone"
                             android:fontFamily="@font/dmsans_bold"
                             android:textColor="@color/txt_color_header"
                             android:textSize="16sp" />
@@ -83,8 +92,9 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Unlock full access to all premium features."
-                            android:textSize="14sp"
+                            android:text="Enjoy 7-days of full RightLife access and unlock your best self"
+                            android:textSize="@dimen/textsize_large"
+                            android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/txt_color_header" />
                     </LinearLayout>
                 </LinearLayout>
@@ -95,16 +105,27 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingBottom="12dp">
+                    >
 
-                    <ImageView
+
+
+                    <RelativeLayout
                         android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/icon_lock_freetrial"
-                        android:background="@drawable/ic_uncheck_circle"
-                        android:padding="10dp"
-
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:src="@drawable/lock_bg_trail_2"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitXY"
+                            android:layout_height="match_parent"/>
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/icon_lock_freetrial"
+                            android:background="@drawable/ic_uncheck_circle"
+                            android:padding="10dp"/>
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -115,14 +136,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Day 5:"
+                            android:visibility="gone"
                             android:fontFamily="@font/dmsans_bold"
                             android:textSize="16sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Get a notification reminder about the end of the free trial."
-                            android:textSize="14sp"
+                            android:text="The sooner you finish the checklist, the faster your personalised dashboard is live."
+                            android:textSize="@dimen/textsize_large"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginBottom="10dp"
                             android:textColor="@color/txt_color_header" />
                     </LinearLayout>
                 </LinearLayout>
@@ -132,17 +156,25 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingBottom="16dp">
+                    android:gravity="center_vertical">
 
-                    <ImageView
+                    <RelativeLayout
                         android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/icon_lock_freetrial"
-                        android:background="@drawable/ic_uncheck_circle"
-                        android:padding="10dp"
-
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:src="@drawable/lock_bg_trail_2"
+                            android:layout_centerInParent="true"
+                            android:scaleType="fitXY"
+                            android:layout_height="match_parent"/>
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@drawable/icon_lock_freetrial"
+                            android:background="@drawable/ic_uncheck_circle"
+                            android:padding="10dp"/>
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -155,13 +187,16 @@
                             android:text="Day 7:"
                             android:fontFamily="@font/dmsans_bold"
                             android:textSize="16sp"
+                            android:visibility="gone"
                             android:textColor="@color/txt_color_header" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pick a plan and continue your access."
-                            android:textSize="14sp"
+                            android:text="Pick a plan on Day 7 to continue accessing your personalised data, progress tracking, and insights!"
+                            android:textSize="@dimen/textsize_large"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginBottom="10dp"
                             android:textColor="@color/txt_color_header" />
                     </LinearLayout>
                 </LinearLayout>
@@ -174,10 +209,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="We follow the strictest data privacy standards to make sure your health is always in your hands."
-                android:textSize="12sp"
+                android:textSize="@dimen/textsize_medium"
                 android:textColor="@color/txt_color_header"
-                android:paddingBottom="16dp"
-                android:layout_marginHorizontal="16dp"/>
+                android:padding="@dimen/margin_card_16dp"
+                android:fontFamily="@font/dmsans_regular"
+                 />
 
             <!-- Notification Toggle -->
             <LinearLayout
@@ -187,6 +223,7 @@
                 android:gravity="center_vertical"
                 android:layout_marginHorizontal="16dp"
                 android:background="@drawable/bg_gray_border_radius_small"
+                android:visibility="gone"
                 android:padding="8dp">
 
                 <TextView
@@ -202,51 +239,167 @@
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
-            <!-- Testimonial Card -->
-            <LinearLayout
+            <HorizontalScrollView
+                android:id="@+id/testimonialScrollView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_gray_border_radius_small"
-                android:elevation="4dp"
-                android:padding="16dp"
-                android:layout_margin="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="“I love how RightLife integrates everything I need—affirmations, meal plans, and workouts—all in one place. It’s like having a personal wellness coach in my pocket!”"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"
-                    android:paddingBottom="8dp" />
-
+                android:fillViewport="true"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                android:padding="16dp">
+                <!-- Testimonial Card -->
                 <LinearLayout
+                    android:id="@+id/cardContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/img_filled"
-                        android:scaleType="centerCrop"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/card_testimonial_1"
+                        android:layout_width="280dp"
                         android:layout_height="wrap_content"
-                        android:text="Priya Menon"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_gray_border_radius_small"
+                        android:elevation="4dp"
+                        android:padding="16dp"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="“The facial scan feature is a game-changer! It's so easy to track my health. and the insights have been a real eye-opener. RightLife has become an essential part of my daily routine.”"
+                            android:textSize="14sp"
+                            android:textColor="@color/txt_color_header"
+                            android:minLines="7"
+                            android:maxLines="7"
+                            android:gravity="center"
+                            android:fontFamily="@font/dmsans_medium"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_gravity="center"
+                            android:gravity="center">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/imageprofileniks"
+                                android:scaleType="centerCrop"
+                                android:layout_marginEnd="8dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ankit Rajan"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/card_testimonial_2"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_gray_border_radius_small"
+                        android:elevation="4dp"
+                        android:padding="16dp"
+                        android:visibility="visible"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="“I love how RightLife integrates everything I need—affirmations, meal plans, and workouts—all in one place. It’s like having a personal wellness coach in my pocket!”"
+                            android:textSize="14sp"
+                            android:textColor="@color/txt_color_header"
+                            android:minLines="7"
+                            android:maxLines="7"
+                            android:gravity="center"
+                            android:fontFamily="@font/dmsans_medium"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_gravity="center"
+                            android:gravity="center">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/imageprofileniks"
+                                android:scaleType="centerCrop"
+                                android:layout_marginEnd="8dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Priya Menon"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/card_testimonial_3"
+                        android:layout_width="250dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@drawable/bg_gray_border_radius_small"
+                        android:elevation="4dp"
+                        android:padding="16dp"
+                        android:visibility="visible"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="“The RightLife app has completely transformed how
+I approach my health. The personalized content,
+especially the yoga sessions, keeps me motivated
+every day. It feels like it's made just for me!”"
+                            android:textSize="14sp"
+                            android:textColor="@color/txt_color_header"
+                            android:minLines="7"
+                            android:maxLines="7"
+                            android:gravity="center"
+                            android:fontFamily="@font/dmsans_medium"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/imageprofileniks"
+                                android:scaleType="centerCrop"
+                                android:layout_marginEnd="8dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Priya Menon"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+            </HorizontalScrollView>
 
             <TextView
                 android:id="@+id/tvHtmlText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"/>
+
+                android:textSize="@dimen/textsize_large"
+                android:layout_marginHorizontal="16dp" />
 
         </LinearLayout>
 

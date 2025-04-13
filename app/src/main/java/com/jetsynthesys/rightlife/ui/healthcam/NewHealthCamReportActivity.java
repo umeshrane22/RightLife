@@ -129,7 +129,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             if (facialReportResponseNew.data.lastCheckin) {
                 binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
             } else {
-                binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
+                binding.cardviewLastCheckin.setVisibility(View.GONE);
             }
 
             // list

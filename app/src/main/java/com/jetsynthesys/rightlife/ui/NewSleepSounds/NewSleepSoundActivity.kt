@@ -173,7 +173,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 onAddToPlaylistClick = { service, position ->
                     // Handle add to playlist click here
                     addToPlaylist(service._id, position)
-                    Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
                 }
             )
 
@@ -243,7 +243,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 onAddToPlaylistClick = { service, position ->
                     // Handle add to playlist click here
                     addToPlaylist(service._id, position)
-                    Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                   // Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
                 }
             )
 
@@ -275,7 +275,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 onAddToPlaylistClick = { service, position ->
                     // Handle add to playlist click here
                     addToPlaylist(service._id, position)
-                    Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
                 }
             )
 

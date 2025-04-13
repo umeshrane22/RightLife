@@ -370,7 +370,7 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         val intent = Intent(this, ReminderReceiver::class.java).apply {
-            action = "EAT_ALARM_TRIGGERED"
+            action = "PRACTICE_ALARM_TRIGGERED"
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
