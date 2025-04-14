@@ -29,7 +29,12 @@ class PersonalisationActivity : AppCompatActivity() {
 
         val btnAllowPersonalisation = findViewById<Button>(R.id.btn_allow_personalisation)
         btnAllowPersonalisation.setOnClickListener {
-            val intent = Intent(this, SyncNowActivity::class.java)
+            /*val intent = Intent(this, SyncNowActivity::class.java)
+            intent.putExtra("WellnessFocus", header)
+            sharedPreferenceManager.allowPersonalization = true
+            startActivity(intent)*/
+
+            val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             sharedPreferenceManager.allowPersonalization = true
             startActivity(intent)

@@ -223,6 +223,7 @@
         </activity>
 
         <activity android:name="com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.new_design.HappyToHaveYouActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -147,7 +147,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 startActivity(
                     Intent(
                         this@HomeDashboardActivity,
-                        PractiseAffirmationPlaylistActivity::class.java
+                        TodaysAffirmationActivity::class.java
                     )
                 )
             }
@@ -697,7 +697,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     binding.fatsProgressBar.progress = fatsValue.toInt()
 
 
-                    //binding.halfCurveProgressBar.setProgress(60f)
+                    binding.halfCurveProgressBar.setProgress(60f)
                     // value is wrong for eatright progress let backend correct then uncomment below
                     /*val (curent, max) = extractNumericValues(module.calories.toString())
                     binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())

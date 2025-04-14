@@ -84,7 +84,10 @@ class BodyFatSelectionFragment : Fragment() {
         }
 
         iconPlus.setOnClickListener {
-            var fatValue = edtBodyFat.text.toString().toDouble() + 0.5
+            var fatValue = edtBodyFat.text.toString().toDouble()
+            if (fatValue < 60) {
+                fatValue = edtBodyFat.text.toString().toDouble() + 0.5
+            }
             edtBodyFat.setText(fatValue.toString())
             edtBodyFat.setSelection(edtBodyFat.text.length)
             edtBodyFat.requestFocus()

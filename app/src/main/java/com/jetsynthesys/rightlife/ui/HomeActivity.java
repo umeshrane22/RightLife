@@ -42,6 +42,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity;
 import com.jetsynthesys.rightlife.apimodel.PromotionResponse;
 import com.jetsynthesys.rightlife.apimodel.affirmations.AffirmationResponse;
 import com.jetsynthesys.rightlife.apimodel.liveevents.LiveEventResponse;
@@ -264,6 +265,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ll_affirmations.setOnClickListener(this);
         ll_sleepsounds = findViewById(R.id.ll_sleepsounds);
         ll_sleepsounds.setOnClickListener(this);
+
+        homeBinding.includedhomebottomsheet.llFoodLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llActivityLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llMoodLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llSleepLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llWeightLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llWaterLog.setOnClickListener(this);
 
 
         ll_health_cam_ql = findViewById(R.id.ll_health_cam_ql);
@@ -1571,6 +1579,43 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.btn_wellness_preference) {
             startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
         }
+       else if (view.getId() == R.id.ll_food_log) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "EatRight");
+            intent.putExtra("BottomSeatName", "MealLogTypeEat");
+            startActivity(intent);
+
+        } else if (view.getId() == R.id.ll_activity_log) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "MoveRight");
+            intent.putExtra("BottomSeatName", "SearchActivityLogMove");
+            startActivity(intent);
+
+        } else if (view.getId() == R.id.ll_mood_log) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "ThinkRight");
+            intent.putExtra("BottomSeatName", "RecordEmotionMoodTracThink");
+            startActivity(intent);
+
+        } else if (view.getId() == R.id.ll_sleep_log) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "SleepRight");
+            intent.putExtra("BottomSeatName", "LogLastNightSleep");
+            startActivity(intent);
+
+        } else if (view.getId() == R.id.ll_weight_log) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "EatRight");
+            intent.putExtra("BottomSeatName", "LogWeightEat");
+            startActivity(intent);
+
+        } else if (view.getId() == R.id.ll_water_log) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "EatRight");
+            intent.putExtra("BottomSeatName", "LogWaterIntakeEat");
+            startActivity(intent);
+        }
+
 
 
     }
