@@ -37,24 +37,18 @@ class SplashScreenActivity : AppCompatActivity() {
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
-        val appMode = sharedPreferenceManager.appMode
+        // Need this Dark Mode selection logic for next phase
+        /*val appMode = sharedPreferenceManager.appMode
         if (appMode.equals("System", ignoreCase = true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         } else if (appMode.equals("Dark", ignoreCase = true)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
+        }*/
 
 
         val authToken = sharedPreferenceManager.accessToken
-        Log.d("SplashActivity Auth Token = ", authToken)
-        // Set the video URI from the raw folder
-        val videoUri = Uri.parse("android.resource://${packageName}/${R.raw.rewards_screen}")
-        //videoView.setVideoURI(videoUri)
-
-        // Set a listener for video completion
-        //videoView.setOnCompletionListener {
         // Delay the transition to the next activity to allow the video to end properly
         Handler(Looper.getMainLooper()).postDelayed({
             if (authToken.isEmpty()) {
@@ -81,32 +75,28 @@ class SplashScreenActivity : AppCompatActivity() {
                     if (sharedPreferenceManager.userName.isNullOrEmpty()) {
                         val intent = Intent(this, HomeDashboardActivity::class.java)
                         startActivity(intent)
-                    } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()) {
+                    } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()
+                        || sharedPreferenceManager.wellnessFocusTopics.isNullOrEmpty()
+                        || !sharedPreferenceManager.unLockPower
+                        ||!sharedPreferenceManager.thirdFiller
+                        || !sharedPreferenceManager.interest) {
                         val intent = Intent(this, WellnessFocusActivity::class.java)
                         startActivity(intent)
-                    } else if (sharedPreferenceManager.wellnessFocusTopics.isNullOrEmpty()) {
-                        val intent = Intent(this, WellnessFocusListActivity::class.java)
-                        startActivity(intent)
-                    } else if (!sharedPreferenceManager.unLockPower) {
-                        val intent = Intent(this, UnlockPowerOfYourMindActivity::class.java)
-                        startActivity(intent)
-                    } else if (!sharedPreferenceManager.thirdFiller) {
-                        val intent = Intent(this, ThirdFillerScreenActivity::class.java)
-                        startActivity(intent)
-                    } else if (!sharedPreferenceManager.interest) {
-                        val intent = Intent(this, YourInterestActivity::class.java)
-                        startActivity(intent)
-                    } else if (!sharedPreferenceManager.allowPersonalization) {
+                    }else if (!sharedPreferenceManager.allowPersonalization) {
                         val intent = Intent(this, PersonalisationActivity::class.java)
-                        startActivity(intent)
-                    } else if (!sharedPreferenceManager.syncNow) {
-                        val intent = Intent(this, SyncNowActivity::class.java)
                         startActivity(intent)
                     } else if (!sharedPreferenceManager.onBoardingQuestion) {
                         val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
                         startActivity(intent)
-                    } else {
+                    }
+                    else if (!sharedPreferenceManager.enableNotification){
                         val intent = Intent(this, EnableNotificationActivity::class.java)
+                        startActivity(intent)
+                    } else if (!sharedPreferenceManager.syncNow) {
+                        val intent = Intent(this, SyncNowActivity::class.java)
+                        startActivity(intent)
+                    }else{
+                        val intent = Intent(this, FreeTrialServiceActivity::class.java)
                         startActivity(intent)
                     }
                 }
@@ -114,39 +104,11 @@ class SplashScreenActivity : AppCompatActivity() {
 
             }
         }, SPLASH_DELAY)
-        //}
 
-        // Start the video
-        // videoView.start()
-
-
-        val view1: View = findViewById(R.id.rlview1)
-        val view2: View = findViewById(R.id.imgview2)
         animateViews()
-        /* val toggleButton: View = findViewById(R.id.btn_toggle)
-
-         toggleButton.setOnClickListener {
-             // Fade out view1 and fade in view2
-             view1.animate()
-                 .alpha(0f) // Fade out
-                 .setDuration(700) // Animation duration in ms
-                 .setListener(object : AnimatorListenerAdapter() {
-                     override fun onAnimationEnd(animation: Animator) {
-                         view1.visibility = View.GONE // Hide view1 after animation
-                         view2.visibility = View.VISIBLE // Show view2 before animation
-                         view2.alpha = 0f // Set initial alpha for fade in
-
-                         view2.animate()
-                             .alpha(1f) // Fade in
-                             .setDuration(700) // Animation duration in ms
-                             .setListener(null)
-                     }
-                 })
-         }*/
-
     }
 
-    fun animateViews() {
+    private fun animateViews() {
         val view1: View = findViewById(R.id.rlview1)
         val view2: View = findViewById(R.id.imgview2)
         // Fade out view1 and fade in view2

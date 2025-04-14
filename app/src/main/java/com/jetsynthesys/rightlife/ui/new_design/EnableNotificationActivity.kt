@@ -1,10 +1,17 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
@@ -16,31 +23,71 @@ class EnableNotificationActivity : AppCompatActivity() {
 
         val btnEnableNotification = findViewById<Button>(R.id.btn_enable_notification)
 
-        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-
-
-
         btnEnableNotification.setOnClickListener {
-            var loggedInUsers = sharedPreferenceManager.loggedUserList
+            checkPermission()
+        }
+    }
 
-            var loggedInUser: LoggedInUser? = null
-            val iterator = loggedInUsers.iterator()
-            while (iterator.hasNext()) {
-                val user = iterator.next()
-                if (sharedPreferenceManager.email == user.email) {
-                    iterator.remove() // Safe removal
-                    user.isOnboardingComplete = true
-                    loggedInUser = user
-                }
-            }
 
-            if (loggedInUser != null){
-                loggedInUsers.add(loggedInUser)
-                sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
+    private fun checkPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    100
+                )
+                return false
+            } else {
+                finishAffinity()
+                startActivity(Intent(this, SyncNowActivity::class.java))
+                return true
             }
-            sharedPreferenceManager.loggedUserList
-            sharedPreferenceManager.clearOnboardingData()
+        } else {
+            finishAffinity()
+            startActivity(Intent(this, SyncNowActivity::class.java))
+            // Permission not required before Android 13
+            return true
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                enableNotificationAPICall()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Notification permission denied",
+                    Toast.LENGTH_SHORT
+                ).show()
+                finish()
+                startActivity(Intent(this, SyncNowActivity::class.java))
+            }
+        }
+    }
+
+    private fun enableNotificationAPICall(){
+        val requestBody = mapOf("pushNotification" to true)
+        CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
+            showToast(message)
+            finishAffinity()
             startActivity(Intent(this, SyncNowActivity::class.java))
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

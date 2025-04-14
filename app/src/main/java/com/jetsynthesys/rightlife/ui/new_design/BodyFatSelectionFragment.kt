@@ -146,7 +146,7 @@ class BodyFatSelectionFragment : Fragment() {
             if (edtBodyFat.text.toString().toDouble() < 3 && edtBodyFat.text.toString().toDouble() > 60){
                 Toast.makeText(
                     requireContext(),
-                    "Please select weight between 30 kg and 300 kg",
+                    "Please select fat between 5% to 60%",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
