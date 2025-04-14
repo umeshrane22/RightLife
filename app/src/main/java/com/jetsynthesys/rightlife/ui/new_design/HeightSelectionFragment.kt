@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.text.DecimalFormat
@@ -88,24 +89,32 @@ class HeightSelectionFragment : Fragment() {
         switch.isChecked = false
         switch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                val h = selectedHeight.split(" ")
-                val feet = "${h[0]}.${h[2]}"
                 selectedLabel = " cms"
-                selectedHeight = ConversionUtils.convertFeetToCentimeter(feet)
+                //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
+                val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
+                println("Height: ${result.cmText}")
+                println("Scroll cm list to index: ${result.cmIndex}")
+                println("Scroll inch list to index: ${result.inchIndex}")
+
+                selectedHeight = result.cmText
                 setCms()
-                selectedHeight = decimalFormat.format(selectedHeight.toDouble())
-                rulerView.scrollToPosition(floor(selectedHeight.toDouble()).toInt())
-                selectedHeight += selectedLabel
+
+                rulerView.scrollToPosition(result.cmIndex)
+
             } else {
-                val w = selectedHeight.split(" ")
                 selectedLabel = " feet"
-                selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
+                //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
+
+                val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
+                println("Height: ${result.feetInchText}")
+                println("Scroll inch list to index: ${result.inchIndex}")
+                println("Scroll cm list to index: ${result.cmIndex}")
+
+                selectedHeight = result.feetInchText
                 setFtIn()
-                val h = selectedHeight.split(".")
-                val ft = h[0]
-                val inch = if (h.size ==2 )h[1] else "0"
-                rulerView.scrollToPosition((selectedHeight.toDouble() * 12).toInt())
-                selectedHeight = "$ft Ft $inch In"
+
+                rulerView.scrollToPosition((result.inchIndex))
+
             }
             selected_number_text!!.text = selectedHeight
         }
