@@ -26,6 +26,7 @@ public class SharedPreferenceConstants {
     public static final String CURRENT_QUESTION = "CURRENT_QUESTION";
     public static final String ONBOARDING_QUESTION = "ONBOARDING_QUESTION";
     public static final String FIRST_TIME_AFFIRMATION = "FIRST_TIME_AFFIRMATION";
+    public static final String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
 }
 
 

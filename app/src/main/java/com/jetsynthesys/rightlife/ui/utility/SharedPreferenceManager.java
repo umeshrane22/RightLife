@@ -315,6 +315,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getEnableNotification() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.ENABLE_NOTIFICATION, false);
+    }
+
+    public void setEnableNotification(boolean enableNotification) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.ENABLE_NOTIFICATION, enableNotification);
+        editor.apply();
+    }
+
     public Boolean getSyncNow() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.SYNC_NOW, false);
     }

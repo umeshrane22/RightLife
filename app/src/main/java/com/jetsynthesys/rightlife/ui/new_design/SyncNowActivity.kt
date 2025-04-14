@@ -23,11 +23,15 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
 
 class SyncNowActivity : AppCompatActivity() {
 
+    val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
     private lateinit var healthConnectClient: HealthConnectClient
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -67,11 +71,7 @@ class SyncNowActivity : AppCompatActivity() {
             }
         }
         btnSkipForNOw.setOnClickListener {
-            val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
-            intent.putExtra("WellnessFocus", header)
-            sharedPreferenceManager.syncNow = true
-            startActivity(intent)
-            // finish()
+            startNextActivity()
         }
     }
 
@@ -83,12 +83,7 @@ class SyncNowActivity : AppCompatActivity() {
         try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
-//                fetchAllHealthData()
-                val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
-                sharedPreferenceManager.syncNow = true
-                intent.putExtra("WellnessFocus", header)
-                startActivity(intent)
-                //finish()
+                startNextActivity()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
             }
@@ -109,23 +104,13 @@ class SyncNowActivity : AppCompatActivity() {
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
                     // fetchAllHealthData()
+                    CommonAPICall.updateChecklistStatus(this@SyncNowActivity, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
                 }
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
-                sharedPreferenceManager.syncNow = true
-                intent.putExtra("WellnessFocus", header)
-                startActivity(intent)
-                //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
-//                val intent = Intent(Intent.ACTION_MAIN).apply {
-//                    setClassName(
-//                        "com.google.android.apps.healthdata",
-//                        "com.google.android.apps.healthdata.home.HomeActivity"
-//                    )
-//                }
-//                startActivity(intent)
             }
+            startNextActivity()
         }
 
     private fun installHealthConnect(context: Context) {
@@ -134,5 +119,29 @@ class SyncNowActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+    private fun startNextActivity(){
+        val loggedInUsers = sharedPreferenceManager.loggedUserList
+
+        var loggedInUser: LoggedInUser? = null
+        val iterator = loggedInUsers.iterator()
+        while (iterator.hasNext()) {
+            val user = iterator.next()
+            if (sharedPreferenceManager.email == user.email) {
+                iterator.remove() // Safe removal
+                user.isOnboardingComplete = true
+                loggedInUser = user
+            }
+        }
+
+        if (loggedInUser != null){
+            loggedInUsers.add(loggedInUser)
+            sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
+        }
+        sharedPreferenceManager.loggedUserList
+        sharedPreferenceManager.clearOnboardingData()
+        startActivity(Intent(this, FreeTrialServiceActivity::class.java))
+        finish()
     }
 }

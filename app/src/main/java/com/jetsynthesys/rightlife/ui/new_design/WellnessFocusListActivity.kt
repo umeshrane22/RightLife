@@ -60,6 +60,9 @@ class WellnessFocusListActivity : AppCompatActivity() {
         tvHeader.setTextColor(Utils.getModuleDarkColor(this, header))
         getOnboardingDataModule(header)
 
+        findViewById<ImageView>(R.id.back_button).setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
         val colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)
@@ -169,11 +172,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
-                    Toast.makeText(
-                        this@WellnessFocusListActivity,
-                        "Updated data",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    //Nothing to do here
                 } else {
                     Toast.makeText(
                         this@WellnessFocusListActivity,

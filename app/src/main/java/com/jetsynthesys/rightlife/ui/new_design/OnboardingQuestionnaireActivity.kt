@@ -73,7 +73,6 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         fragmentList.add("HeightSelection")
         fragmentList.add("WeightSelection")
         fragmentList.add("BodyFatSelection")
-        fragmentList.add("TargetWeightSelection")
         fragmentList.add("StressManagementSelection")
         fragmentList.add("HealthGoalFragment")
         adapter.setData(fragmentList)
