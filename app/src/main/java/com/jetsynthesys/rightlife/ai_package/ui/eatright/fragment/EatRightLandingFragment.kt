@@ -257,7 +257,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
             MealPlanModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17")
         )
-
 //        val valueLists: ArrayList<MealPlanModel> = ArrayList()
 //        valueLists.addAll(mealLogs as Collection<MealPlanModel>)
     }
