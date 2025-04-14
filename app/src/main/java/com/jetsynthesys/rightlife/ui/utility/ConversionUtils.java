@@ -7,6 +7,7 @@ public class ConversionUtils {
     private static DecimalFormat decimalFormatFtInch = new DecimalFormat("##.##");
     private static DecimalFormat decimalFormatCm = new DecimalFormat("###.##");
     private static DecimalFormat decimalFormat = new DecimalFormat("###.##");
+    private static DecimalFormat decimalFormatWeight = new DecimalFormat("###.#");
 
     public static String convertCentimeterToFtInch(String centimeter) {
         try {
@@ -72,7 +73,7 @@ public class ConversionUtils {
         try {
             double kg = Double.parseDouble(kgs);
             double lbs = kg / 2.20462;
-            return decimalFormat.format(lbs);
+            return decimalFormatWeight.format(lbs);
         } catch (Exception e) {
             return "";
         }
@@ -82,7 +83,7 @@ public class ConversionUtils {
         try {
             double lb = Double.parseDouble(lbs);
             double kgs = lb * 2.20462;
-            return decimalFormat.format(kgs);
+            return decimalFormatWeight.format(kgs);
         } catch (Exception e) {
             return "";
         }
