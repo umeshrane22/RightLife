@@ -51,11 +51,32 @@ class ExercisePreferenceFragment : Fragment() {
             val times = binding.inputTimes.text.toString()
             if (times.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter value", Toast.LENGTH_SHORT).show()
-            }else if (times.toInt() > 15){
-                Toast.makeText(requireContext(), "It should not be more than 15", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                //QuestionnaireEatRightActivity.navigateToNextPage()
+            } else if (times.toInt() == 0) {
+                QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("ActiveDuringSessionsFragment")
+                QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("PhysicalActivitiesFragment")
+                QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("ExerciseLocationFragment")
+                submit(times)
+            } else if (times.toInt() >= 15) {
+                Toast.makeText(
+                    requireContext(),
+                    "It should not be more than 15",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                if (QuestionnaireEatRightActivity.questionnairePagerAdapter.itemCount == 11) {
+                    QuestionnaireEatRightActivity.questionnairePagerAdapter.addItem(
+                        9,
+                        "ActiveDuringSessionsFragment"
+                    )
+                    QuestionnaireEatRightActivity.questionnairePagerAdapter.addItem(
+                        10,
+                        "PhysicalActivitiesFragment"
+                    )
+                    QuestionnaireEatRightActivity.questionnairePagerAdapter.addItem(
+                        11,
+                        "ExerciseLocationFragment"
+                    )
+                }
                 submit(times)
             }
         }
@@ -65,7 +86,8 @@ class ExercisePreferenceFragment : Fragment() {
     private fun submit(answer: String) {
         val questionOne = MRQuestionOne()
         questionOne.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne = questionOne
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne =
+            questionOne
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )

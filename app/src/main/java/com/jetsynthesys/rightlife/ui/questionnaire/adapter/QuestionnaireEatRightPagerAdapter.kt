@@ -27,21 +27,21 @@ class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
 
     override fun createFragment(position: Int): Fragment {
         val question = Question("Q1", "How do you to feel?", "EatRight")
-        return when (position) {
-            0 -> FoodPreferenceFragment.newInstance(question)
-            1 -> MealPreferenceFragment.newInstance(question)
-            2 -> SchedulePreferenceFragment.newInstance(question)
-            3 -> FoodServingFragment.newInstance(question)
-            4 -> WaterCaffeineIntakeFragment.newInstance(question)
-            5 -> FastfoodPreferenceFragment.newInstance(question)
-            6 -> EatAffectMoodFragment.newInstance(question)
-            7 -> ExercisePreferenceFragment.newInstance(question)
-            8 -> ActiveDuringSessionsFragment.newInstance(question)
-            9 -> PhysicalActivitiesFragment.newInstance(question)
-            10 -> ExerciseLocationFragment.newInstance(question)
-            11 -> StepsTakenFragment.newInstance(question)
-            12 -> EnergyLevelFragment.newInstance(question)
-            13 -> BreaksToStretchFragment.newInstance(question)
+        return when (fragmentList[position]) {
+            "FoodPreferenceFragment" -> FoodPreferenceFragment.newInstance(question)
+            "MealPreferenceFragment" -> MealPreferenceFragment.newInstance(question)
+            "SchedulePreferenceFragment" -> SchedulePreferenceFragment.newInstance(question)
+            "FoodServingFragment" -> FoodServingFragment.newInstance(question)
+            "WaterCaffeineIntakeFragment" -> WaterCaffeineIntakeFragment.newInstance(question)
+            "FastfoodPreferenceFragment" -> FastfoodPreferenceFragment.newInstance(question)
+            "EatAffectMoodFragment" -> EatAffectMoodFragment.newInstance(question)
+            "ExercisePreferenceFragment" -> ExercisePreferenceFragment.newInstance(question)
+            "ActiveDuringSessionsFragment" -> ActiveDuringSessionsFragment.newInstance(question)
+            "PhysicalActivitiesFragment" -> PhysicalActivitiesFragment.newInstance(question)
+            "ExerciseLocationFragment" -> ExerciseLocationFragment.newInstance(question)
+            "StepsTakenFragment" -> StepsTakenFragment.newInstance(question)
+            "EnergyLevelFragment" -> EnergyLevelFragment.newInstance(question)
+            "BreaksToStretchFragment" -> BreaksToStretchFragment.newInstance(question)
             else -> throw IllegalStateException("Invalid position")
         }
     }
@@ -49,5 +49,7 @@ class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
     fun setQuestionnaireData(list: ArrayList<String>) = fragmentList.addAll(list)
 
     fun removeItem(name: String) = fragmentList.remove(name)
+
+    fun addItem(position: Int, name: String) = fragmentList.add(position, name)
 
 }

@@ -1086,7 +1086,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json")
     @POST("aiQuestionaries")
-    Call<ResponseBody> submitERQuestionnaire(
+    Call<CommonResponse> submitERQuestionnaire(
             @Header("Authorization") String authToken,
             @Body QuestionnaireAnswerRequest questionnaireAnswerRequest
     );

@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ui.questionnaire
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -9,10 +11,11 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityQuestionnaireBinding
+import com.jetsynthesys.rightlife.ui.CommonResponse
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -89,7 +92,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
     companion object {
 
         private lateinit var viewPager: ViewPager2
-        private lateinit var questionnairePagerAdapter: QuestionnaireEatRightPagerAdapter
+        lateinit var questionnairePagerAdapter: QuestionnaireEatRightPagerAdapter
         private var instance: QuestionnaireEatRightActivity? = null // Store Activity reference
         val questionnaireAnswerRequest: QuestionnaireAnswerRequest = QuestionnaireAnswerRequest()
         private lateinit var sharedPreferenceManager: SharedPreferenceManager
@@ -107,23 +110,34 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         }
 
         fun submitQuestionnaireAnswerRequest(questionnaireAnswerRequest: QuestionnaireAnswerRequest) {
+
+            if (viewPager.currentItem != questionnairePagerAdapter.itemCount - 1) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    navigateToNextPage()
+                }, 500)
+            }
+
             val apiService = ApiClient.getClient().create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
                 sharedPreferenceManager.accessToken,
                 questionnaireAnswerRequest
             )
 
-            call.enqueue(object : Callback<ResponseBody> {
+            call.enqueue(object : Callback<CommonResponse> {
                 override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
+                    call: Call<CommonResponse>,
+                    response: Response<CommonResponse>
                 ) {
                     if (response.isSuccessful && response.body() != null) {
-                        Toast.makeText(instance, response.message(), Toast.LENGTH_SHORT).show()
-                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
-                            instance?.finish() // Finish activity safely
-                        else
-                            navigateToNextPage()
+                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1) {
+                            instance?.let {
+                                DialogUtils.showSuccessDialog(
+                                    it,
+                                    "You’re All Set",
+                                    "Your fitness and food patterns are now part of your plan."
+                                )
+                            }
+                        }
                     } else {
                         Toast.makeText(
                             instance,
@@ -133,7 +147,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
                     Toast.makeText(
                         instance,
                         "Network Error: " + t.message,
@@ -142,10 +156,6 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 }
 
             })
-            /*if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
-                instance?.finish() // Finish activity safely
-            else
-                navigateToNextPage()*/
         }
     }
 
