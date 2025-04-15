@@ -61,7 +61,8 @@ class FeelAfterWakingFragment : Fragment() {
     private fun submit(answer: String) {
         val questionFive = SRQuestionFive()
         questionFive.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionFive = questionFive
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionFive =
+            questionFive
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
@@ -83,24 +84,45 @@ class FeelAfterWakingFragment : Fragment() {
 
         val adapter = JournalMoodAdapter(moodList, -1) { selectedMood ->
             when (selectedMood.name) {
-                "Refreshed" -> binding.ivSelectedImage.setImageResource(R.drawable.ic_happy)
-                "Rested" -> binding.ivSelectedImage.setImageResource(R.drawable.ic_relaxed)
-                "Neutral" -> binding.ivSelectedImage.setImageResource(R.drawable.ic_unsure)
-                "Exhausted" -> binding.ivSelectedImage.setImageResource(R.drawable.ic_stressed)
-                "Drained" -> binding.ivSelectedImage.setImageResource(R.drawable.ic_sad)
+                "Refreshed" -> {
+                    binding.ivSelectedImage.setImageResource(R.drawable.ic_happy)
+                    setMoodColor(Color.parseColor("#7CCE4E")) //refreshed color
+                }
+
+                "Rested" -> {
+                    binding.ivSelectedImage.setImageResource(R.drawable.ic_relaxed)
+                    setMoodColor(Color.parseColor("#D0E92A")) //rested color
+                }
+
+                "Neutral" -> {
+                    binding.ivSelectedImage.setImageResource(R.drawable.ic_unsure)
+                    setMoodColor(Color.parseColor("#F7F600")) //Neutral color
+                }
+
+                "Exhausted" -> {
+                    binding.ivSelectedImage.setImageResource(R.drawable.ic_stressed)
+                    setMoodColor(Color.parseColor("#FB9900")) //Exausted  color
+                }
+
+                "Drained" -> {
+                    binding.ivSelectedImage.setImageResource(R.drawable.ic_sad)
+                    setMoodColor(Color.parseColor("#FC2611")) //Drained  color
+                }
             }
             //val moodView = LayoutInflater.from(context).inflate(R.layout.item_mood_emoji, container, false)
-            setMoodColor(Color.parseColor("#FF5733"))
+
+
         }
 
         binding.moodRecyclerView.adapter = adapter
         binding.moodRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
+
     fun setMoodColor(baseColor: Int) {
         val darker1 = adjustAlpha(baseColor, 0.3f)
         val darker2 = adjustAlpha(baseColor, 0.5f)
-        val darker3 = adjustAlpha(baseColor, 0.7f)
+        val darker3 = adjustAlpha(baseColor, 0.8f)
 
         binding.layer1.background.setTint(darker3)
         binding.layer2.background.setTint(darker2)

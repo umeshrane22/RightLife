@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -67,23 +68,26 @@ class EnergyLevelFragment : Fragment() {
             "High"
         )
 
-        binding.morningSliderView.setMinSteps(0)
-        binding.morningSliderView.setMaxSteps(12000)
-        binding.morningSliderView.setstepInterval(4000)
-        binding.morningSliderView.setIntervalColors(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.steps_dark_color
+
+
+        val colorMap = hashMapOf(
+            0 to Color.parseColor("#FB9900"),
+            1000 to Color.parseColor("#FB9900"),
+            2000 to Color.parseColor("#66B12D"),
+            3000 to Color.parseColor("#1292E5")
             )
-        )
-        binding.morningSliderView.setOnStepCountChangeListener { stepCount ->
+
+        binding.morningSliderView.setStepColorMap(colorMap)
+
+
+        binding.morningSliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in energyCountTexts) {
                 textView.setTypeface(null, Typeface.NORMAL)
             }
             // Determine which TextView to bold based on stepCount
-            val index = stepCount / 4000 - 1
+            val index = stepCount / 1000 - 1
             if (index >= 0 && index < energyCountTexts.size) {
                 energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
                 morningEneryValue = energyValues.get(index)
@@ -91,46 +95,32 @@ class EnergyLevelFragment : Fragment() {
         }
 
 
-        binding.afternoonSliderView.setMinSteps(0)
-        binding.afternoonSliderView.setMaxSteps(12000)
-        binding.afternoonSliderView.setstepInterval(4000)
-        binding.afternoonSliderView.setIntervalColors(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.steps_dark_color
-            )
-        )
-        binding.afternoonSliderView.setOnStepCountChangeListener { stepCount ->
+        binding.afternoonSliderView.setStepColorMap(colorMap)
+
+        binding.afternoonSliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in energyCountTexts) {
                 textView.setTypeface(null, Typeface.NORMAL)
             }
             // Determine which TextView to bold based on stepCount
-            val index = stepCount / 4000 - 1
+            val index = stepCount / 1000 - 1
             if (index >= 0 && index < energyCountTexts.size) {
                 energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
                 afternoonEneryValue = energyValues.get(index)
             }
         }
 
-        binding.eveningSliderView.setMinSteps(0)
-        binding.eveningSliderView.setMaxSteps(12000)
-        binding.eveningSliderView.setstepInterval(4000)
-        binding.eveningSliderView.setIntervalColors(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.steps_dark_color
-            )
-        )
-        binding.eveningSliderView.setOnStepCountChangeListener { stepCount ->
+        binding.eveningSliderView.setStepColorMap(colorMap)
+
+        binding.eveningSliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in energyCountTexts) {
                 textView.setTypeface(null, Typeface.NORMAL)
             }
             // Determine which TextView to bold based on stepCount
-            val index = stepCount / 4000 - 1
+            val index = stepCount / 1000 - 1
             if (index >= 0 && index < energyCountTexts.size) {
                 energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
                 eveningEneryValue = energyValues.get(index)

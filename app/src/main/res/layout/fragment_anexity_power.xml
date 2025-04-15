@@ -38,7 +38,7 @@
 
 
 
-            <com.jetsynthesys.rightlife.quiestionscustomviews.AnxietyLevelSelectorView
+            <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryAnxietyLevelView
                 android:id="@+id/anxiety_slider_view"
                 android:layout_width="40dp"
                 android:layout_centerInParent="true"
