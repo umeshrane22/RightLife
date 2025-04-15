@@ -313,7 +313,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         getUserDetails("")
 
         getAiDashboard("")
-        getDashboardChecklist("")
 
         binding.progressBarOnboarding.post {
             val progressPercentage =
@@ -422,6 +421,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 })
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getDashboardChecklist("")
     }
 
     private fun loadFragment(fragment: Fragment) {

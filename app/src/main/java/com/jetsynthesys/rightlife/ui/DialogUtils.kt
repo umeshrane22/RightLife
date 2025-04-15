@@ -124,7 +124,7 @@ object DialogUtils {
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
             activity.finish()
-        }, 1000)
+        }, 2000)
     }
 
 

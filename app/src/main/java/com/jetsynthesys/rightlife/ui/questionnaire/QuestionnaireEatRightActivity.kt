@@ -115,6 +115,14 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     navigateToNextPage()
                 }, 500)
+            }else{
+                instance?.let {
+                    DialogUtils.showSuccessDialog(
+                        it,
+                        "You’re All Set",
+                        "Your fitness and food patterns are now part of your plan."
+                    )
+                }
             }
 
             val apiService = ApiClient.getClient().create(ApiService::class.java)
@@ -130,13 +138,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful && response.body() != null) {
                         if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1) {
-                            instance?.let {
-                                DialogUtils.showSuccessDialog(
-                                    it,
-                                    "You’re All Set",
-                                    "Your fitness and food patterns are now part of your plan."
-                                )
-                            }
+
                         }
                     } else {
                         Toast.makeText(

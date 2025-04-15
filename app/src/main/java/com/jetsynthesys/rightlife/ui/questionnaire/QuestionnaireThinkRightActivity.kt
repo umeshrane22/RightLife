@@ -113,6 +113,14 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     navigateToNextPage()
                 }, 500)
+            }else{
+                instance?.let {
+                    DialogUtils.showSuccessDialog(
+                        it,
+                        "You’re All Set",
+                        "Your sleep habits and mental patterns are now part of your wellness path."
+                    )
+                }
             }
             val apiService = ApiClient.getClient().create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
@@ -127,13 +135,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful && response.body() != null) {
                         if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
-                            instance?.let {
-                                DialogUtils.showSuccessDialog(
-                                    it,
-                                    "You’re All Set",
-                                    "Your sleep habits and mental patterns are now part of your wellness path."
-                                )
-                            }
+
                         else
                             navigateToNextPage()
                     } else {
