@@ -45,8 +45,10 @@ import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
+import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
+import com.jetsynthesys.rightlife.ui.questionnaire.fragment.StepsTakenFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -144,6 +146,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         goalStepsTv = view.findViewById(R.id.goal_tex)
         moveRightImageBack.setOnClickListener {
             activity?.finish()
+        }
+        activeStepsTv.setOnClickListener {
+            navigateToFragment(StepFragment(),"StepTakenFragment")
         }
         fetchUserWorkouts()
         //fetchHealthSummary()
