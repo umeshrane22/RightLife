@@ -956,17 +956,19 @@
                         android:textSize="14sp"
                         android:id="@+id/tv_under_desc" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
                 android:id="@+id/perform_nodata_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:elevation="4dp"
                 android:background="@color/white"
-                app:cardCornerRadius="10dp">
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -1022,7 +1024,6 @@
                         app:layout_constraintTop_toBottomOf="@+id/tv_your_sleep_mystery"
                         app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.cardview.widget.CardView>
             </androidx.cardview.widget.CardView>
             <LinearLayout
                 android:layout_width="match_parent"
