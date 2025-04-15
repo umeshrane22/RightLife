@@ -27,7 +27,7 @@ class QuestionnaireThinkRightPagerAdapter(fragment: FragmentActivity) :
     override fun createFragment(position: Int): Fragment {
         val question = Question("Q1", "How do you to feel?", "EatRight")
         return when (position) {
-            0 -> FeelAfterWakingFragment.newInstance(question)//EmotionsPastWeekFragment.newInstance(question)
+            0 -> EmotionsPastWeekFragment.newInstance(question)
             1 -> ShakeOffBadDayFragment.newInstance(question)
             2 -> WhatsInYourMindFragment.newInstance(question)
             3 -> AnexityPowerFragment.newInstance(question)
