@@ -22,8 +22,8 @@ class SleepTimeFragment : Fragment() {
     private val scheduleOptions = listOf(
         ScheduleOption(R.drawable.ic_st_1, "I always sleep at the same time", ""),
         ScheduleOption(R.drawable.ic_st_2, "I’m mostly consistent, with slight variations", ""),
-        ScheduleOption(R.drawable.ic_3_4_times, "I hardly follow a routine", ""),
-        ScheduleOption(R.drawable.ic_daily, "My bedtime is reliant on external factors", ""),
+        ScheduleOption(R.drawable.ic_no_3_q6, "I hardly follow a routine", ""),
+        ScheduleOption(R.drawable.ic_no_4_q6, "My bedtime is reliant on external factors", ""),
     )
 
     private var question: Question? = null

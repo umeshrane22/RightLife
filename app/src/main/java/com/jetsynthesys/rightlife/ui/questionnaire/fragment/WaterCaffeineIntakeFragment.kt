@@ -1,7 +1,9 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,22 +67,26 @@ class WaterCaffeineIntakeFragment : Fragment() {
             binding.waterCountText6
         )
         water.cups = waterCountTexts[0].text.toString()
-        water.quantity = (500).toString() + " ml"
+        water.quantity = (250).toString() + " ml"
 
         coffeeCountTexts = arrayOf(
             binding.coffeeCountText1,
             binding.coffeeCountText2,
             binding.coffeeCountText3,
-            binding.coffeeCountText4
+            binding.coffeeCountText4,
+            binding.coffeeCountText5,
+            binding.coffeeCountText6
         )
 
         coffee.cups = coffeeCountTexts[0].text.toString()
         coffee.quantity = (125 *1).toString() + " ml"
 
-        binding.waterView.setMinSteps(0)
-        binding.waterView.setMaxSteps(12000)
-        binding.waterView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.water_dark_color))
-        binding.waterView.setOnStepCountChangeListener { stepCount ->
+        //binding.waterView.setMinSteps(0)
+        //binding.waterView.setMaxSteps(12000)
+        //binding.waterView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.water_dark_color))
+        binding.waterView.setBackgroundColorInt(Color.parseColor("#E6F0FE"))
+        binding.waterView.setFillColorInt(Color.parseColor("#1292E5"))
+        binding.waterView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in waterCountTexts) {
@@ -90,17 +96,28 @@ class WaterCaffeineIntakeFragment : Fragment() {
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < waterCountTexts.size) {
                 waterCountTexts[index].setTypeface(null, Typeface.BOLD)
-                binding.tvWaterQuantity.text = (500*(index+1)).toString() + " ml"
+                //binding.tvWaterQuantity.text = (500*(index+1)).toString() + " ml"
                 water.cups = waterCountTexts[index].text.toString()
-                water.quantity = (500*(index+1)).toString() + " ml"
+                //water.quantity = (500*(index+1)).toString() + " ml"
+            }
+            if (stepCount ==0){
+                binding.tvWaterQuantity.text = "0 ml"
+            }else{
+                var value = stepCount / 1000
+                Log.d("Steps ", ": $stepCount - "+value)
+                water.quantity = (250*(value)).toString() + " ml"
+                binding.tvWaterQuantity.text = water.quantity
             }
         }
 
-        binding.coffeeView.setMinSteps(0)
-        binding.coffeeView.setMaxSteps(8000)
-        binding.coffeeView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.coffee_dark_color))
+        //binding.coffeeView.setMinSteps(0)
+        //binding.coffeeView.setMaxSteps(8000)
+        //binding.coffeeView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.coffee_dark_color))
         //binding.coffeeView.setStepIntervalCount(1000)
-        binding.coffeeView.setOnStepCountChangeListener { stepCount ->
+        binding.coffeeView.setBackgroundColorInt(Color.parseColor("#F0ECEC"))
+        binding.coffeeView.setFillColorInt(Color.parseColor("#6C4C3F"))
+        binding.coffeeView.setupDefaultStepColors("#6C4C3F")
+        binding.coffeeView.setOnValueChangeListener { stepCount ->
             //binding.coffeeView.setStepIntervalCount(2000)
 
             // Reset all TextViews to normal
@@ -111,7 +128,8 @@ class WaterCaffeineIntakeFragment : Fragment() {
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < coffeeCountTexts.size) {
                 coffeeCountTexts.get(index).setTypeface(null, Typeface.BOLD)
-                if (index==0) {
+                binding.tvCoffeeQuantity.text = (125*(index+1)).toString() + " ml"
+               /* if (index==0) {
                     binding.tvCoffeeQuantity.text = (125 *1).toString() + " ml"
                 }else if (index==1){
                     binding.tvCoffeeQuantity.text =  (125 *3).toString() + " ml"
@@ -119,10 +137,19 @@ class WaterCaffeineIntakeFragment : Fragment() {
                     binding.tvCoffeeQuantity.text =  (125 *5).toString() + " ml"
                 }else if (index==3){
                     binding.tvCoffeeQuantity.text =  (125 *7).toString() + " ml"
-                }
+                }*/
                 coffee.cups = coffeeCountTexts[index].text.toString()
                 coffee.quantity = binding.tvCoffeeQuantity.text.toString()
             }
+            if (stepCount ==0){
+                binding.tvCoffeeQuantity.text = "0 ml"
+            }else{
+            var value = stepCount / 1000
+                Log.d("Steps ", ": $stepCount - "+value)
+                coffee.quantity = (125*(value)).toString() + " ml"
+                binding.tvCoffeeQuantity.text = coffee.quantity
+                }
+
         }
 
         binding.btnContinue.setOnClickListener {
