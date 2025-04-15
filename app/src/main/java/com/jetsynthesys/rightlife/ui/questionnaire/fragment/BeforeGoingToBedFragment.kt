@@ -87,6 +87,11 @@ class BeforeGoingToBedFragment : Fragment() {
     }
 
     private fun submit(answer: String) {
+        CommonAPICall.updateChecklistStatus(
+            requireContext(),
+            "unlock_sleep",
+            AppConstants.CHECKLIST_COMPLETED
+        )
         val questionSix = SRQuestionSix()
         questionSix.answer = answer
         QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionSix =
@@ -94,9 +99,6 @@ class BeforeGoingToBedFragment : Fragment() {
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
-
-        Toast.makeText(requireContext(), "Saved!!  Have a Great Day!!", Toast.LENGTH_SHORT).show()
-        CommonAPICall.updateChecklistStatus(requireContext(), "unlock_sleep", AppConstants.CHECKLIST_COMPLETED)
     }
 
     override fun onDestroyView() {

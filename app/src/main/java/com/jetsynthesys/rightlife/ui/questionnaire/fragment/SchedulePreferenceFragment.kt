@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.BottomsheetFoodScheduleReminderBinding
 import com.jetsynthesys.rightlife.databinding.FragmentSchedulePreferenceBinding
@@ -30,7 +31,6 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -82,7 +82,11 @@ class SchedulePreferenceFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
-            showReminderBottomSheet(selectedOption.title)
+            if (selectedOption.title == "Rarely" || selectedOption.title == "Never")
+                showReminderBottomSheet(selectedOption.title)
+            else{
+                submit(selectedOption.title)
+            }
         }
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
@@ -96,7 +100,8 @@ class SchedulePreferenceFragment : Fragment() {
     private fun submit(answer: String) {
         val questionThree = ERQuestionThree()
         questionThree.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionThree = questionThree
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionThree =
+            questionThree
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
@@ -137,7 +142,7 @@ class SchedulePreferenceFragment : Fragment() {
         }
 
         dialogBinding.btnSetNow.setOnClickListener {
-            if ((selectedMorningTime.isNullOrEmpty() || selectedAfternoonTime.isNullOrEmpty() || selectedEveningTime.isNullOrEmpty())) {
+            if ((selectedMorningTime.isNullOrEmpty() && selectedAfternoonTime.isNullOrEmpty() && selectedEveningTime.isNullOrEmpty())) {
                 Toast.makeText(
                     requireContext(),
                     "Please select at least one reminder!!", Toast.LENGTH_SHORT
@@ -174,39 +179,39 @@ class SchedulePreferenceFragment : Fragment() {
                     val minuteFormatted = String.format("%02d", selectedMinute)
                     when (type) {
                         1 ->
-                            if (selectedHour <= 12) {
+                            if (selectedHour in 5..11) {
                                 textView.text = "$hourFormatted:$minuteFormatted $amPm"
                                 selectedMorningTime = textView.text.toString()
                             } else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Please select a morning time (AM only)",
+                                    "Please select a time between 5:00 AM to 11:00 AM",
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@TimePickerDialog
                             }
 
                         2 ->
-                            if (selectedHour in 12..18) {
+                            if (selectedHour in 11..15) {
                                 textView.text = "$hourFormatted:$minuteFormatted $amPm"
                                 selectedAfternoonTime = textView.text.toString()
                             } else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Please select a time in the afternoon.",
+                                    "Please select a time between 11:00 AM to 3:00 PM",
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@TimePickerDialog
                             }
 
                         3 ->
-                            if (selectedHour >= 18) {
+                            if (selectedHour in 17..22) {
                                 textView.text = "$hourFormatted:$minuteFormatted $amPm"
                                 selectedEveningTime = textView.text.toString()
                             } else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Please select a time in the evening (6:00 PM to 11:59 PM).",
+                                    "Please select a time between 5:00 PM to 10:00 PM",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }

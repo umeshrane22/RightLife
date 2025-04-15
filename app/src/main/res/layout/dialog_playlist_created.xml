@@ -29,6 +29,18 @@
             android:textSize="20sp"
             android:layout_marginTop="20dp"/>
 
+        <TextView
+            android:id="@+id/tvDialogDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your fitness and food patterns are now part of your plan."
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginVertical="20dp"
+            android:layout_marginHorizontal="30dp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

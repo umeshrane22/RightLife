@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.R
@@ -64,9 +63,6 @@ class BreaksToStretchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = ScheduleOptionAdapter(scheduleOptions, "MoveRight") { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)*/
             submit(selectedOption.title)
         }
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
@@ -74,6 +70,11 @@ class BreaksToStretchFragment : Fragment() {
     }
 
     private fun submit(answer: String) {
+        CommonAPICall.updateChecklistStatus(
+            requireContext(),
+            "discover_eating",
+            AppConstants.CHECKLIST_COMPLETED
+        )
         val questionSeven = MRQuestionSeven()
         questionSeven.answer = answer
         QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionSeven =
@@ -81,8 +82,6 @@ class BreaksToStretchFragment : Fragment() {
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
-        Toast.makeText(requireContext(), "Saved!!  Have a Great Day!!", Toast.LENGTH_SHORT).show()
-        CommonAPICall.updateChecklistStatus(requireContext(), "discover_eating", AppConstants.CHECKLIST_COMPLETED)
     }
 
     override fun onDestroyView() {
