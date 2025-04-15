@@ -109,7 +109,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         val progressPercentage =
             (((fragmentIndex + 1) / adapter.itemCount.toDouble()) * 100).toInt()
         progressBar.progress = progressPercentage
-        tv_fragment_count.text = "${fragmentIndex + 1}/8"
+        tv_fragment_count.text = "${fragmentIndex + 1}/7"
     }
 
     companion object {

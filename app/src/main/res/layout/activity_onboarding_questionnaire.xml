@@ -39,7 +39,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/icon_back"
             android:fontFamily="@font/dmsans_regular"
-            android:text="1/8"
+            android:text="1/7"
             android:textColor="@color/text_color_char_left"
             android:textSize="16sp" />
 

@@ -207,7 +207,9 @@ class WeightSelectionFragment : Fragment() {
             // Scroll to the center position
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
-
+        rulerView.post {
+            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
+        }
         return view
     }
 

@@ -16,11 +16,11 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class EnableNotificationActivity : AppCompatActivity() {
-
+private lateinit var sharedPreferenceManager: SharedPreferenceManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enable_notification)
-
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         val btnEnableNotification = findViewById<Button>(R.id.btn_enable_notification)
 
         btnEnableNotification.setOnClickListener {
@@ -44,11 +44,13 @@ class EnableNotificationActivity : AppCompatActivity() {
                 return false
             } else {
                 finishAffinity()
+                sharedPreferenceManager.enableNotification = true
                 startActivity(Intent(this, SyncNowActivity::class.java))
                 return true
             }
         } else {
             finishAffinity()
+            sharedPreferenceManager.enableNotification = true
             startActivity(Intent(this, SyncNowActivity::class.java))
             // Permission not required before Android 13
             return true
@@ -73,6 +75,7 @@ class EnableNotificationActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 finish()
+                sharedPreferenceManager.enableNotification = true
                 startActivity(Intent(this, SyncNowActivity::class.java))
             }
         }
@@ -83,6 +86,7 @@ class EnableNotificationActivity : AppCompatActivity() {
         CommonAPICall.updateNotificationSettings(this, requestBody) { result, message ->
             showToast(message)
             finishAffinity()
+            sharedPreferenceManager.enableNotification = true
             startActivity(Intent(this, SyncNowActivity::class.java))
         }
     }

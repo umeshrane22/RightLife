@@ -141,6 +141,7 @@ class SyncNowActivity : AppCompatActivity() {
         }
         sharedPreferenceManager.loggedUserList
         sharedPreferenceManager.clearOnboardingData()
+        sharedPreferenceManager.syncNow = true
         startActivity(Intent(this, FreeTrialServiceActivity::class.java))
         finish()
     }
