@@ -134,10 +134,10 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                     response: Response<CommonResponse>
                 ) {
                     if (response.isSuccessful && response.body() != null) {
-                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1)
+                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1){
 
-                        else
-                            navigateToNextPage()
+                        }
+
                     } else {
                         Toast.makeText(
                             instance,

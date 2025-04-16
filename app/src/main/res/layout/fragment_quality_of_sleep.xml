@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="How would you describe the usual quality of your sleep?"
-        android:textSize="18sp"
-        android:fontFamily="@font/dmsans_bold"
+        android:textSize="@dimen/textsize_large18sp"
+        android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
 

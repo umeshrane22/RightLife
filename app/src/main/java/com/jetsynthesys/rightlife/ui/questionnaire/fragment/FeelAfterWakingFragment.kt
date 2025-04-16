@@ -117,6 +117,8 @@ class FeelAfterWakingFragment : Fragment() {
         binding.moodRecyclerView.adapter = adapter
         binding.moodRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.ivSelectedImage.setImageResource(R.drawable.ic_happy)
+        setMoodColor(Color.parseColor("#7CCE4E")) //refreshed color
     }
 
     fun setMoodColor(baseColor: Int) {

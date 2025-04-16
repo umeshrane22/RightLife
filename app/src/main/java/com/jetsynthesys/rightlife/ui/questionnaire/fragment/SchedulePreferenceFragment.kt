@@ -31,6 +31,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -158,7 +159,13 @@ class SchedulePreferenceFragment : Fragment() {
                     selectedEveningTime?.let { it1 -> setReminder(it1) }
 
                 reminderBottomSheetDialog.dismiss()
-                QuestionnaireEatRightActivity.navigateToNextPage()
+                //QuestionnaireEatRightActivity.navigateToNextPage()
+                /*Toast.makeText(
+                    requireContext(),
+                    "Reminders Set  ", Toast.LENGTH_SHORT
+                ).show()*/
+                Utils.showCustomToast(requireContext(),"Reminders Set")
+                submit(answer)
             }
         }
 
