@@ -1,7 +1,9 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.app.ProgressDialog
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,14 +24,21 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepDetail
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepStages
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Duration
+import java.time.LocalTime
 
 class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
 
@@ -41,35 +50,45 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     private lateinit var radioGroup: RadioGroup
     private lateinit var progressDialog: ProgressDialog
 
+    private val stageColorMap = mapOf(
+        "Light" to Color.parseColor("#AEE2FF"),
+        "Deep" to Color.parseColor("#BDB2FF"),
+        "REM" to Color.parseColor("#8ECAE6"),
+        "Awake" to Color.parseColor("#6A4C93")
+    )
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         view.setBackgroundResource(R.drawable.sleep_stages_bg)
 
-        barChart = view.findViewById(R.id.heartRateChart)
+        barChart = view.findViewById(R.id.restorativeBarChart)
         radioGroup = view.findViewById(R.id.tabGroup)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
         // Show Week data by default
-        updateChart(getWeekData(), getWeekLabels())
+      //  updateChart(getWeekData(), getWeekLabels())
         fetchSleepData()
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        val weekData = getDummyWeekSleepData()
+        val monthData = getDummyMonthSleepData()
+        renderStackedChart(weekData)
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek ->{
-                    setupBarChart(barChart)
-                    // updateChart(getWeekData(), getWeekLabels())
+                  renderStackedChart(weekData)
                 }
                 R.id.rbMonth ->{
-                    updateChart(getMonthData(), getMonthLabels())
+                 renderMonthChart(barChart,monthData)
                 }
                 R.id.rbSixMonths ->{
-                    updateChart(getSixMonthData(), getSixMonthLabels())
+                    renderMonthChart(barChart,monthData)
                 }
             }
         }
@@ -87,68 +106,87 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 
+        /*barChart.renderer = RoundedBarChartRenderer(
+            barChart,
+            barChart.animator,
+            barChart.viewPortHandler
+        )*/
+
+
     }
 
-    private fun setupBarChart(barChart: BarChart) {
-        // Base bars (lighter color)
-        val baseEntries = listOf(
-            BarEntry(0f, 3f),
-            BarEntry(1f, 2.5f),
-            BarEntry(2f, 2f),
-            BarEntry(3f, 3f),
-            BarEntry(4f, 1f),
-            BarEntry(5f, 3.5f),
-            BarEntry(6f, 2f)
-        )
+    fun renderMonthChart(chart: BarChart, data: List<Pair<String, RestorativeSleepDetail>>) {
+        val entries = ArrayList<BarEntry>()
+        val xLabels = ArrayList<String>()
 
-        // Top bars (darker color, overlapping)
-        val topEntries = listOf(
-            BarEntry(0f, 1f),
-            BarEntry(1f, 1f),
-            BarEntry(2f, 2f),
-            BarEntry(3f, 1.5f),
-            BarEntry(4f, 0.5f),
-            BarEntry(5f, 1.5f),
-            BarEntry(6f, 1f)
-        )
+        data.forEachIndexed { index, (dateLabel, detail) ->
+            val stageDurations = mutableMapOf(
+                "Light" to 0f,
+                "Deep" to 0f,
+                "REM" to 0f,
+                "Awake" to 0f
+            )
 
-        // Create datasets
-        val baseDataSet = BarDataSet(baseEntries, "Base").apply {
-            color = Color.parseColor("#90CAF9") // Light blue
+            detail.sleepStages.forEach {
+                val start = LocalTime.parse(it.startDatetime)
+                val end = LocalTime.parse(it.endDatetime)
+                val duration = Duration.between(start, end).toMinutes().toFloat() / 60f
+                stageDurations[it.stage] = stageDurations.getOrDefault(it.stage, 0f) + duration
+            }
+
+            val stackedValues = arrayOf(
+                stageDurations["Light"] ?: 0f,
+                stageDurations["Deep"] ?: 0f,
+                stageDurations["REM"] ?: 0f,
+                stageDurations["Awake"] ?: 0f
+            )
+
+            entries.add(BarEntry(index.toFloat(), stackedValues.toFloatArray()))
+            xLabels.add(dateLabel) // Use "1", "2", ..., or full dates if needed
+        }
+
+        val dataSet = BarDataSet(entries, "Sleep Stages").apply {
             setDrawValues(false)
+            colors = listOf(
+                Color.parseColor("#B2E0FE"), // Light
+                Color.parseColor("#A3B4F8"), // Deep
+                Color.parseColor("#9287F9"), // REM
+                Color.parseColor("#4D3DF8")  // Awake
+            )
+            stackLabels = arrayOf("Light", "Deep", "REM", "Awake")
         }
 
-        val topDataSet = BarDataSet(topEntries, "Top").apply {
-            color = Color.parseColor("#3F51B5") // Dark blue
-            setDrawValues(false)
+        val barData = BarData(dataSet).apply {
+            barWidth = 0.4f // ✅ Thin
+            chart.setVisibleXRangeMaximum(31f)
         }
 
-        val barData = BarData(baseDataSet, topDataSet)
-        barData.barWidth = 0.4f // Adjust for overlap
+        chart.apply {
+            this.data = barData
+            description.isEnabled = false
+            legend.isEnabled = false
+            setScaleEnabled(false)
+            setPinchZoom(false)
+            setDrawGridBackground(false)
 
-        // Apply data
-        barChart.data = barData
-        barChart.description.isEnabled = false
-        barChart.setFitBars(true)
-        barChart.legend.isEnabled = false
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = IndexAxisValueFormatter(xLabels)
+                granularity = 1f
+                labelCount = 6
+                setDrawGridLines(false)
+            }
 
-        // Customize X-axis
-        val labels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-        barChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            granularity = 1f
-            setDrawGridLines(false)
-            valueFormatter = IndexAxisValueFormatter(labels)
+            axisLeft.apply {
+                axisMinimum = 0f
+                axisMaximum = 5f
+                granularity = 1f
+            }
+
+            axisRight.isEnabled = false
+
+            invalidate()
         }
-
-        // Disable right axis, format left axis
-        barChart.axisRight.isEnabled = false
-        barChart.axisLeft.setDrawGridLines(false)
-
-        // Apply custom rounded renderer
-        barChart.renderer = RoundedBarChartRenderer(barChart, ChartAnimator(), ViewPortHandler())
-
-        barChart.invalidate() // Refresh the chart
     }
 
     private fun fetchSleepData() {
@@ -179,90 +217,136 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         })
     }
 
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
-        val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = resources.getColor(R.color.sleep_duration_blue)
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.valueTextSize = 12f
+    private fun renderStackedChart(weekData: List<Pair<String, RestorativeSleepDetail>>) {
+        val entries = mutableListOf<BarEntry>()
+        val xLabels = mutableListOf<String>()
 
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.4f // Set bar width
+        weekData.forEachIndexed { index, (label, detail) ->
+            val stageDurations = mutableMapOf(
+                "Light" to 0f,
+                "Deep" to 0f,
+                "REM" to 0f,
+                "Awake" to 0f
+            )
 
-        barChart.data = barData
-        barChart.setFitBars(true)
+            detail.sleepStages.forEach {
+                val start = LocalTime.parse(it.startDatetime)
+                val end = LocalTime.parse(it.endDatetime)
+                val duration = Duration.between(start, end).toMinutes().toFloat() / 60f
+                stageDurations[it.stage] = stageDurations.getOrDefault(it.stage, 0f) + duration
+            }
 
-        // Customize X-Axis
-        val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
+            val stackedValues = arrayOf(
+                stageDurations["Light"] ?: 0f,
+                stageDurations["Deep"] ?: 0f,
+                stageDurations["REM"] ?: 0f,
+                stageDurations["Awake"] ?: 0f
+            )
 
-        // Customize Y-Axis
-        val leftYAxis: YAxis = barChart.axisLeft
-        leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
-        leftYAxis.setDrawGridLines(true)
+            entries.add(BarEntry(index.toFloat(), stackedValues.toFloatArray()))
+            xLabels.add(label)
+        }
 
-        // Disable right Y-axis
-        barChart.axisRight.isEnabled = false
-        barChart.description.isEnabled = false
-        barChart.animateY(1000) // Smooth animation
-        barChart.invalidate()
+        val dataSet = BarDataSet(entries, "Sleep Stages").apply {
+            setColors(
+                stageColorMap["Light"]!!,
+                stageColorMap["Deep"]!!,
+                stageColorMap["REM"]!!,
+                stageColorMap["Awake"]!!
+            )
+            stackLabels = arrayOf("Light", "Deep", "REM", "Awake")
+            valueTextColor = Color.BLACK
+            valueTextSize = 10f
+        }
+
+        barChart.apply {
+            data = BarData(dataSet)
+            description.isEnabled = false
+            axisLeft.axisMinimum = 0f
+            axisRight.isEnabled = false
+
+            xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(xLabels)
+                granularity = 1f
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                labelRotationAngle = -25f
+            }
+
+            legend.isEnabled = false
+            animateY(1000)
+            invalidate()
+        }
+
     }
 
-    private fun getWeekData(): List<BarEntry> {
+    private fun getDummyWeekSleepData(): List<Pair<String, RestorativeSleepDetail>> {
         return listOf(
-            BarEntry(0f, 200f),
-            BarEntry(1f, 350f),
-            BarEntry(2f, 270f),
-            BarEntry(3f, 400f),
-            BarEntry(4f, 320f),
-            BarEntry(5f, 500f),
-            BarEntry(6f, 450f)
+            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
+            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
+            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
+            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
+            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f)
+        )
+    }
+    private fun getDummyMonthSleepData(): List<Pair<String, RestorativeSleepDetail>> {
+        return listOf(
+            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
+            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
+            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
+            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
+            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
+            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
+            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
+            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
+            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
+            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
+            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
+            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
+            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
+            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
+            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
+            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
+            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
+            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
+            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
+            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
+            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
+            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
+            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
+            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
+            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
+            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
         )
     }
 
-    /** X-Axis Labels for Week */
-    private fun getWeekLabels(): List<String> {
-        return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    }
+    private fun mockDetail(light: Float, deep: Float, rem: Float, awake: Float): RestorativeSleepDetail {
+        fun genStage(stage: String, hours: Float, offset: Float): SleepStages {
+            val start = LocalTime.of(22, 0).plusMinutes((offset * 60).toLong())
+            val end = start.plusMinutes((hours * 60).toLong())
+            return SleepStages(stage, start.toString(), end.toString(),45)
+        }
 
-    /** Sample Data for Month (4 weeks) */
-    private fun getMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 1500f), // 1-7 Jan
-            BarEntry(1f, 1700f), // 8-14 Jan
-            BarEntry(2f, 1400f), // 15-21 Jan
-            BarEntry(3f, 1800f), // 22-28 Jan
-            BarEntry(4f, 1200f)  // 29-31 Jan
+        return RestorativeSleepDetail(
+            totalSleepDurationMinutes = ((light + deep + rem + awake) * 60).toDouble(),
+            sleepStartTime = "22:00",
+            sleepEndTime = "06:00",
+            sleepStages = arrayListOf(
+                genStage("Light", light, 0f),
+                genStage("Deep", deep, light),
+                genStage("REM", rem, light + deep),
+                genStage("Awake", awake, light + deep + rem)
+            ),
+            calculatedRestorativeSleep = null
         )
     }
 
-    /** X-Axis Labels for Month */
-    private fun getMonthLabels(): List<String> {
-        return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
-    }
-
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 9000f), // Jan
-            BarEntry(1f, 8500f), // Feb
-            BarEntry(2f, 8700f), // Mar
-            BarEntry(3f, 9100f), // Apr
-            BarEntry(4f, 9400f), // May
-            BarEntry(5f, 8800f)  // Jun
-        )
-    }
-
-    /** X-Axis Labels for 6 Months */
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
-    }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -271,4 +355,66 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             commit()
         }
     }
+
+    class RoundedBarChartRenderer(
+        chart: BarDataProvider,
+        animator: ChartAnimator,
+        viewPortHandler: ViewPortHandler
+    ) : BarChartRenderer(chart, animator, viewPortHandler) {
+
+        private val radius = 20f // corner radius in pixels
+
+        override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
+            val trans = mChart.getTransformer(dataSet.axisDependency)
+            mBarBorderPaint.color = dataSet.barBorderColor
+            val drawBorder = dataSet.barBorderWidth > 0f
+
+            mShadowPaint.color = dataSet.barShadowColor
+
+            val phaseX = mAnimator.phaseX
+            val phaseY = mAnimator.phaseY
+
+            val barData = mChart.barData
+            val barWidth = barData.barWidth
+
+            val buffer = mBarBuffers[index]
+            buffer.setPhases(phaseX, phaseY)
+            buffer.setDataSet(index)
+            buffer.setInverted(mChart.isInverted(dataSet.axisDependency))
+            buffer.setBarWidth(barData.barWidth)
+            buffer.feed(dataSet)
+
+            trans.pointValuesToPixel(buffer.buffer)
+
+            for (j in 0 until buffer.size() step 4) {
+                if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue
+                if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
+
+                val left = buffer.buffer[j]
+                val top = buffer.buffer[j + 1]
+                val right = buffer.buffer[j + 2]
+                val bottom = buffer.buffer[j + 3]
+
+                val entryIndex = j / 4
+                if (entryIndex >= dataSet.entryCount) continue
+
+                val isTopSegment = isTopBarSegment(dataSet, entryIndex)
+
+                if (isTopSegment) {
+                    val rectF = RectF(left, top, right, bottom)
+                    c.drawRoundRect(rectF, radius, radius, mRenderPaint)
+                } else {
+                    c.drawRect(left, top, right, bottom, mRenderPaint)
+                }
+            }
+        }
+
+        private fun isTopBarSegment(dataSet: IBarDataSet, index: Int): Boolean {
+            val entry = dataSet.getEntryForIndex(index) as? BarEntry ?: return false
+            val stackedValues = entry.yVals
+            return stackedValues == null // Only draw rounded if it's not part of a stack
+        }
+    }
 }
+
+
