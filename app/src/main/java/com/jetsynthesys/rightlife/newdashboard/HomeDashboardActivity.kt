@@ -10,8 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -36,6 +39,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.R
@@ -45,6 +49,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetEarlyFinishBinding
+import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
@@ -1125,5 +1131,45 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         val intent = Intent(Intent.ACTION_VIEW, uri)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+
+    private fun showTrailEndedBottomSheet() {
+        // Create and configure BottomSheetDialog
+        val bottomSheetDialog = BottomSheetDialog(this)
+
+        // Inflate the BottomSheet layout
+        val dialogBinding = BottomsheetTrialEndedBinding.inflate(layoutInflater)
+        val bottomSheetView = dialogBinding.root
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+
+        bottomSheetDialog.setContentView(bottomSheetView)
+
+        // Set up the animation
+        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        if (bottomSheetLayout != null) {
+            val slideUpAnimation: Animation =
+                AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+            bottomSheetLayout.animation = slideUpAnimation
+        }
+
+        dialogBinding.tvTitle.text = "Leaving early?"
+        dialogBinding.tvDescription.text =
+            "A few more minutes of breathing practise will make a world of difference."
+
+        //dialogBinding.btnCancel.text = "Continue Practise"
+        //dialogBinding.btnYes.text = "Leave"
+
+        dialogBinding.ivDialogClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        dialogBinding.btnExplorePlan.setOnClickListener {
+            bottomSheetDialog.dismiss()
+            finish()
+        }
+
+        bottomSheetDialog.show()
     }
 }
