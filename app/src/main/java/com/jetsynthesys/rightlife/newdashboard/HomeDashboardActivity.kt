@@ -133,6 +133,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)
         }
+        binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
+            DialogUtils.showCheckListQuestionCommonDialog(this)
+        }
 
         with(binding) {
             binding.includedhomebottomsheet.llJournal.setOnClickListener {
@@ -925,7 +928,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         setStatusOfChecklist(
             checklistResponse.data.meal_snap,
             binding.includeChecklist.imgCheckSnapmeal,
-            binding.includeChecklist.rlChecklistSnapmeal
+            binding.includeChecklist.rlChecklistSnapmeal,
+            false
         )
         //sync health
         setStatusOfChecklist(
@@ -937,7 +941,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         setStatusOfChecklist(
             checklistResponse.data.vital_facial_scan,
             binding.includeChecklist.imgCheckFacescan,
-            binding.includeChecklist.rlChecklistFacescan
+            binding.includeChecklist.rlChecklistFacescan,
+            false
         )
         // sleep right question
         setStatusOfChecklist(
@@ -965,7 +970,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     private fun setStatusOfChecklist(
         profile: String,
         imageView: ImageView,
-        relativeLayout: RelativeLayout
+        relativeLayout: RelativeLayout,
+        disableclick: Boolean = true,
     ) {
         when (profile) {
             "INITIAL" -> {
@@ -980,7 +986,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
             "COMPLETED" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_complete)
-                relativeLayout.setOnClickListener(null)
+                if (profile.equals("COMPLETED") !! && profile.equals("COMPLETED")) {
+
+                }
+                if (disableclick) {
+                    relativeLayout.setOnClickListener(null)
+                }
                 checkListCount++
             }
         }

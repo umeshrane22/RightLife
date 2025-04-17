@@ -29,23 +29,23 @@
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
             android:ellipsize="marquee"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:maxLines="1"
             android:scrollHorizontally="true"
-            android:text="Categories"
-            android:textSize="@dimen/textsize_large"
-            android:visibility="gone" />
+            android:text="Your Results"
+            android:textSize="@dimen/textsize_large18sp"
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/ic_close_dialog"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
-            android:visibility="gone"
-            android:background="@drawable/rlpage_info_icon"
-            android:backgroundTint="@color/color_blue"
+            android:visibility="visible"
+            android:background="@drawable/ic_info_resultpage"
+            android:backgroundTint="@color/black"
              />
     </RelativeLayout>
 
@@ -68,6 +68,7 @@
                 android:paddingStart="10dp"
                 android:layout_gravity="center_horizontal"
                 android:text="Hi, User"
+                android:visibility="gone"
                 android:textSize="18sp" />
 
             <androidx.cardview.widget.CardView
@@ -236,11 +237,11 @@
                         android:layout_marginRight="@dimen/margin_card_16dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textSize="@dimen/textsize_large"
-                        android:text="Time For A Check-In! It’s Been A While Since Your Last Face Scan" />
+                        android:text="You’ve Used Your Trial Scan. Go Premium To Unlock 4 Scans Every Month" />
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_marginTop="@dimen/margin_card_16dp"
+                            android:layout_marginTop="5dp"
                             android:layout_height="wrap_content">
 
                             <LinearLayout
@@ -252,19 +253,20 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="7 Jan, 2024"
-                                    android:layout_weight="1"
+
                                     android:id="@+id/tv_last_report_date"
                                     android:layout_height="wrap_content"/>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="|"
-                                    android:layout_weight="1"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
                                     android:visibility="gone"
                                     android:layout_height="wrap_content"/>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="10:00 PM"
-                                    android:layout_weight="1"
+
                                     android:visibility="gone"
                                     android:layout_height="wrap_content"/>
                             </LinearLayout>
@@ -276,6 +278,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginEnd="20dp"
                                 android:layout_centerVertical="true"
+                                android:visibility="gone"
                                 android:layout_height="wrap_content"/>
                         </RelativeLayout>
                     </LinearLayout>
@@ -324,7 +327,7 @@
                 android:background="@drawable/bg_gray_border"
                 android:backgroundTint="@color/menuselected"
                 android:gravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:orientation="horizontal">
 
                 <ImageView

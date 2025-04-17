@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.apimodel.exploremodules.sleepsounds.SleepAidsR
 import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQuestionRequest;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.CommonResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
@@ -1177,6 +1178,10 @@ public interface ApiService {
             @Body Map<String, String> requestBody
     );
 
+    // article bookmark request
+
+    @POST("content/bookmark")
+    Call<ResponseBody> ArticleBookmarkRequest(@Header("Authorization") String authToken, @Body ArticleBookmarkRequest request);
 }
 
 

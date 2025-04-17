@@ -65,9 +65,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
         if (userProfileResponse == null) return;
         Userdata userdata = userProfileResponse.getUserdata();
-        if (userdata != null) {
+        /*if (userdata != null) {
             binding.txtuserName.setText("Hi " + userdata.getFirstName());
-        }
+        }*/
         updateChecklistStatus();
     }
 
@@ -126,12 +126,14 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
 
             binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);
             binding.tvLastReportDate.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(facialReportResponseNew.data.createdAt));
-            if (facialReportResponseNew.data.lastCheckin) {
+            /*if (facialReportResponseNew.data.lastCheckin) {
                 binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
             } else {
                 binding.cardviewLastCheckin.setVisibility(View.GONE);
             }
-
+            */
+            //now show always and handle conditions depend on how many scan pending , will know from backend
+            binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
             // list
 
             List<HealthCamItem> healthCamGoodItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamGood;
