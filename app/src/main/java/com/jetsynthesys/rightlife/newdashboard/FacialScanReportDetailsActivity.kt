@@ -276,9 +276,9 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                     if (graphData?.data.isNullOrEmpty()) {
                         return
                     }
-                    binding.reportNameAverage.text = "Average :"//binding.tvWitale.text.toString()
+                    //binding.reportNameAverage.text = "Average :"//binding.tvWitale.text.toString()
                     graphData?.data?.get(0)?.unit
-                    binding.reportNameAverageValue.text = graphData?.avgValue.toString()+" "+graphData?.data?.get(0)?.unit
+                    //binding.reportNameAverageValue.text = graphData?.avgValue.toString()+" "+graphData?.data?.get(0)?.unit
 
                     binding.tvAverage.text = graphData?.avgValue.toString()
                     binding.tvMaximum.text = graphData?.maxValue.toString()

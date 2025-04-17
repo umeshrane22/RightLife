@@ -7,22 +7,24 @@
 
     android:layout_marginBottom="20dp"
     android:layout_height="match_parent">
+
     <RelativeLayout
         android:id="@+id/rl_title"
         android:layout_width="match_parent"
         android:visibility="visible"
         android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minLines="2"
-        android:fontFamily="@font/dmsans_bold"
-        android:gravity="center_vertical"
-        android:text="Your Setup Checklist"
-        android:textColor="@color/text_color_app"
 
-        android:textSize="@dimen/textsize_large" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="2"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center_vertical"
+            android:text="Your Setup Checklist"
+            android:textColor="@color/text_color_app"
+
+            android:textSize="@dimen/textsize_large" />
 
 
         <TextView
@@ -44,8 +46,9 @@
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="20dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/rl_checklist_profile"
         android:layout_width="match_parent"
@@ -109,6 +112,7 @@
                     android:textSize="@dimen/textsize_medium" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -180,6 +184,7 @@
                     android:textSize="@dimen/textsize_medium" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -253,6 +258,7 @@
                     android:textSize="@dimen/textsize_medium" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -325,6 +331,7 @@
                     android:textSize="@dimen/textsize_medium" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -397,6 +404,7 @@
                     android:textSize="@dimen/textsize_medium" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -469,6 +477,7 @@
                     android:textSize="@dimen/textsize_medium" />
             </LinearLayout>
         </LinearLayout>
+
         <ImageView
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -478,4 +487,38 @@
             android:src="@drawable/ic_checklist_smallarrow" />
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/rl_checklist_why_this_dialog"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="60dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:background="@drawable/rounded_corder_border_gray_radius_small"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center_vertical"
+                android:text="Why should i complete the checklist?"
+                android:paddingStart="15dp"
+                android:textColor="@color/text_color_app"
+                android:textSize="@dimen/textsize_medium" />
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/sleep_right_arrow_btn" />
+    </RelativeLayout>
 </LinearLayout>
