@@ -243,7 +243,7 @@ class HeightSelectionFragment : Fragment() {
                 returnValue = false
                 Toast.makeText(
                     requireActivity(),
-                    "Height should be in between 120 feet to 220 feet",
+                    "Height should be in between 120 Cms to 220 cms",
                     Toast.LENGTH_SHORT
                 ).show()
             }

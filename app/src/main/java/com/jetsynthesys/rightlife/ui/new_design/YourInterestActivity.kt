@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,7 +48,6 @@ class YourInterestActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.rv_your_interest)
         btnSaveInterest = findViewById(R.id.btn_save_interest)
 
-
         val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
         val colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)
 
@@ -80,6 +81,11 @@ class YourInterestActivity : AppCompatActivity() {
             selectedInterest.addAll(sharedPreferenceManager.savedInterest)
             uiChangesOnSaveInterest(header!!)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sharedPreferenceManager.setSavedInterest(ArrayList<InterestDataList>())
     }
 
     private fun getInterests() {

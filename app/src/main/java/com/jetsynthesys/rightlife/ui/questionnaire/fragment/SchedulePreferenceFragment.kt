@@ -85,7 +85,7 @@ class SchedulePreferenceFragment : Fragment() {
         val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
             if (selectedOption.title == "Rarely" || selectedOption.title == "Never")
                 showReminderBottomSheet(selectedOption.title)
-            else{
+            else {
                 submit(selectedOption.title)
             }
         }
@@ -133,13 +133,13 @@ class SchedulePreferenceFragment : Fragment() {
         }
 
         dialogBinding.llBreakFastTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeBreakfast, 1)
+            showTimePickerDialog(dialogBinding.tvTimeBreakfast, 1,9)
         }
         dialogBinding.llLunchTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeLunch, 2)
+            showTimePickerDialog(dialogBinding.tvTimeLunch, 2,13)
         }
         dialogBinding.llDinnerTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeDinner, 3)
+            showTimePickerDialog(dialogBinding.tvTimeDinner, 3,20)
         }
 
         dialogBinding.btnSetNow.setOnClickListener {
@@ -164,7 +164,7 @@ class SchedulePreferenceFragment : Fragment() {
                     requireContext(),
                     "Reminders Set  ", Toast.LENGTH_SHORT
                 ).show()*/
-                Utils.showCustomToast(requireContext(),"Reminders Set")
+                Utils.showCustomToast(requireContext(), "Reminders Set")
                 submit(answer)
             }
         }
@@ -172,10 +172,12 @@ class SchedulePreferenceFragment : Fragment() {
         reminderBottomSheetDialog.show()
     }
 
-    private fun showTimePickerDialog(textView: TextView, type: Int) {
-        val currentTime: Calendar = Calendar.getInstance()
-        val hour: Int = currentTime.get(Calendar.HOUR_OF_DAY)
-        val minute: Int = currentTime.get(Calendar.MINUTE)
+    private fun showTimePickerDialog(
+        textView: TextView,
+        type: Int,
+        hour: Int,
+        minute: Int = 0
+    ) {
         val mTimePicker = TimePickerDialog(
             requireContext(),
             { timePicker, selectedHour, selectedMinute ->
