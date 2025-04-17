@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,18 +13,26 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.GridLayout
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -37,6 +46,9 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     private lateinit var btnNext: ImageView
     private lateinit var imgBack:ImageView
     private lateinit var container :RelativeLayout
+    private lateinit var progressDialog: ProgressDialog
+    private lateinit var moodTrackerResponse: MoodTrackerWeeklyResponse
+    private lateinit var moodTrackerMonthlyResponse: MoodTrackerMonthlyResponse
 
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("d", Locale.getDefault())
@@ -55,6 +67,9 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         btnPrev = view.findViewById(R.id.btnPrev)
         btnNext = view.findViewById(R.id.btnNext)
         imgBack = view.findViewById(R.id.img_back)
+        progressDialog = ProgressDialog(activity)
+        progressDialog.setTitle("Loading")
+        progressDialog.setCancelable(false)
 
         val emotions = listOf(
             EmotionStat("Relaxed", 10, Color.parseColor("#D6F24B")),
@@ -88,6 +103,62 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
 
         renderCalendar()
         setupWeekNavigation(view)
+        fetchMoodPercentage()
+        fetchMoodMonthly()
+    }
+
+    private fun fetchMoodPercentage() {
+        progressDialog.show()
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val type = "weekly"
+        val startDate = "2025-03-06"
+        val endDate = "2025-03-14"
+        val call = ApiClient.apiServiceFastApi.fetchMoodTrackerPercentage(token,type, startDate,endDate)
+        call.enqueue(object : Callback<MoodTrackerWeeklyResponse> {
+            override fun onResponse(call: Call<MoodTrackerWeeklyResponse>, response: Response<MoodTrackerWeeklyResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                       moodTrackerResponse = response.body()!!
+                    //      setSleepRightStageData(sleepStageResponse)
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<MoodTrackerWeeklyResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun fetchMoodMonthly() {
+        progressDialog.show()
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val type = "monthly"
+        val startDate = "2025-03-01"
+        val endDate = "2025-03-31"
+        val call = ApiClient.apiServiceFastApi.fetchMoodTrackerMonthly(token,type, startDate,endDate)
+        call.enqueue(object : Callback<MoodTrackerMonthlyResponse> {
+            override fun onResponse(call: Call<MoodTrackerMonthlyResponse>, response: Response<MoodTrackerMonthlyResponse>) {
+                if (response.isSuccessful) {
+                    progressDialog.dismiss()
+                    moodTrackerMonthlyResponse = response.body()!!
+                    //      setSleepRightStageData(sleepStageResponse)
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<MoodTrackerMonthlyResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                progressDialog.dismiss()
+            }
+        })
     }
 
     private var currentWeekStart = LocalDate.of(2025, 2, 3)
@@ -133,8 +204,6 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     }
 
     private fun renderEmotionCircles(stats: List<EmotionStat>) {
-        container.removeAllViews()
-
         container.removeAllViews()
 
         val maxPercentage = stats.maxOf { it.percentage }.coerceAtLeast(1)

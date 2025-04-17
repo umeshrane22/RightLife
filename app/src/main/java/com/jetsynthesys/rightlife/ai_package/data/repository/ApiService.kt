@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ai_package.data.repository
 
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
-import com.jetsynthesys.rightlife.ai_package.model.HealthSummaryResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.NutritionResponse
@@ -26,6 +25,8 @@ import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.RoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
@@ -242,6 +243,18 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Call<RestorativeSleepResponse>
+
+    @GET("app/api/journalNew/recordEmotion")
+    fun fetchMoodTrackerPercentage(@Header("Authorization") authToken: String,
+        @Query("type") type: String,
+        @Query("startDate") startDate: String,
+        @Query("endDate") endDate: String
+    ): Call<MoodTrackerWeeklyResponse>
+
+    @GET("app/api/journalNew/recordEmotion")
+    fun fetchMoodTrackerMonthly(@Header("Authorization") authToken: String, @Query("type") type: String,
+                                   @Query("startDate") startDate: String, @Query("endDate") endDate: String
+    ): Call<MoodTrackerMonthlyResponse>
 
     @GET("sleep/landing_page/")
     fun fetchSleepLandingPage(
