@@ -182,7 +182,7 @@ class AgeSelectionFragment : Fragment() {
         numberPicker.minValue = 1
         numberPicker.maxValue = years.size
         numberPicker.displayedValues = years
-        numberPicker.value = 13
+        numberPicker.value = 15
         numberPicker.wheelItemCount = 7
 
         selectedAge = years[12]
