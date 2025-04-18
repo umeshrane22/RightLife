@@ -193,7 +193,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                             "last_six_months" -> processSixMonthsData(data)
                             else -> Pair(getWeekData(), getWeekLabels()) // Fallback
                         }
-                        val totalCalories = data.activeCalories.sumOf { it.value.toDoubleOrNull() ?: 0.0 }
+                        val totalCalories = data.activeCaloriesTotals.sumOf { it.caloriesBurned ?: 0.0 }
                         withContext(Dispatchers.Main) {
                             updateChart(entries, labels)
                             /* Toast.makeText(
@@ -240,11 +240,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
 
         // Aggregate calories by day
-        data.activeCalories.forEach { calorie ->
-            val startDate = dateFormat.parse(calorie.startDatetime)?.let { Date(it.time) }
+        data.activeCaloriesTotals.forEach { calorie ->
+            val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
             if (startDate != null) {
                 val dayKey = dateFormat.format(startDate)
-                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.value.toFloatOrNull() ?: 0f)
+                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
             }
         }
 
@@ -270,13 +270,13 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
 
         // Aggregate calories by week
-        data.activeCalories.forEach { calorie ->
-            val startDate = dateFormat.parse(calorie.startDatetime)?.let { Date(it.time) }
+        data.activeCaloriesTotals.forEach { calorie ->
+            val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
             if (startDate != null) {
                 calendar.time = startDate
                 val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
                 val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
-                calorieMap[weekIndex] = calorieMap[weekIndex]!! + (calorie.value.toFloatOrNull() ?: 0f)
+                calorieMap[weekIndex] = calorieMap[weekIndex]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
             }
         }
 
@@ -303,15 +303,15 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
 
         // Aggregate calories by month
-        data.activeCalories.forEach { calorie ->
-            val startDate = dateFormat.parse(calorie.startDatetime)?.let { Date(it.time) }
+        data.activeCaloriesTotals.forEach { calorie ->
+            val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
             if (startDate != null) {
                 calendar.time = startDate
                 val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(
                     Calendar.MONTH))
                 val monthIndex = 5 - monthDiff // Reverse to align with labels (0 = earliest month)
                 if (monthIndex in 0..5) {
-                    calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.value.toFloatOrNull() ?: 0f)
+                    calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
                 }
             }
         }

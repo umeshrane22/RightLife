@@ -337,7 +337,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                                     "last_six_months" -> processSixMonthsData(data)
                                     else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate()) // Fallback
                                 }
-                                val totalCalories = data.activeCaloriesTotals.sumOf { it.caloriesBurned.toDoubleOrNull() ?: 0.0 }
+                                val totalCalories = data.activeCaloriesTotals.sumOf { it.caloriesBurned ?: 0.0 }
                                 withContext(Dispatchers.Main) {
                                     updateChart(entries, labels, labelsDate)
                                 }
@@ -390,7 +390,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
             val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
             if (startDate != null) {
                 val dayKey = dateFormat.format(startDate)
-                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.caloriesBurned.toFloatOrNull() ?: 0f)
+                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
             }
         }
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
@@ -448,7 +448,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
             val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
             if (startDate != null) {
                 val dayKey = dateFormat.format(startDate)
-                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.caloriesBurned.toFloatOrNull() ?: 0f)
+                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
             }
         }
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
@@ -482,7 +482,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                 val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
                 val monthIndex = 5 - monthDiff // Reverse to align with labels (0 = earliest month)
                 if (monthIndex in 0..5) {
-                    calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.caloriesBurned.toFloatOrNull() ?: 0f)
+                    calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
                 }
             }
         }
