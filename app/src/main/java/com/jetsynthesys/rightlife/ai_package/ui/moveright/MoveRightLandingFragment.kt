@@ -1021,18 +1021,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     fun loadStepData() {
-        //D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\fit\alldata\derived_com.google.heart_rate.bpm_com.google.a(1).json
-        val json = context?.assets?.open("fit/alldata/derived_com.google.heart_rate.bpm_com.google.a(1).json")?.bufferedReader().use { it?.readText() }
-//        return Gson().fromJson(json, object : TypeToken<List<StepEntry>>() {}.type)
-     //   val json = context?.assets.open("derived_com.google.active_minutes_com.google.a.json").readText()
-
-        val gson = Gson()
-        val jsonString = json/* load JSON file as string */
-        val activeMinutesData = gson.fromJson(jsonString, HeartRateFitData::class.java)
-
-     //   D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\Fit\All data\derived_com.google.active_minutes_com.google.a(4).json
-        println(activeMinutesData)
-
+//        //D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\fit\alldata\derived_com.google.heart_rate.bpm_com.google.a(1).json
+//        val json = context?.assets?.open("fit/alldata/derived_com.google.heart_rate.bpm_com.google.a(1).json")?.bufferedReader().use { it?.readText() }
+////        return Gson().fromJson(json, object : TypeToken<List<StepEntry>>() {}.type)
+//     //   val json = context?.assets.open("derived_com.google.active_minutes_com.google.a.json").readText()
+//
+//        val gson = Gson()
+//        val jsonString = json/* load JSON file as string */
+//        val activeMinutesData = gson.fromJson(jsonString, HeartRateFitData::class.java)
+//
+//     //   D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\Fit\All data\derived_com.google.active_minutes_com.google.a(4).json
+//        println(activeMinutesData)
+//
     }
 
 }
