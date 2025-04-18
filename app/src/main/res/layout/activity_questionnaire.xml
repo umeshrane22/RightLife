@@ -26,8 +26,8 @@
             android:layout_height="10dp"
             android:layout_centerVertical="true"
             android:layout_margin="16dp"
-            android:layout_toStartOf="@id/tv_skip"
-            android:layout_toEndOf="@id/tv_fragment_count"
+            android:layout_toStartOf="@id/tv_fragment_count"
+            android:layout_toEndOf="@id/icon_back"
             android:backgroundTint="@color/buttoncolormind"
             android:max="100"
             android:progress="0"
@@ -38,9 +38,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/icon_back"
+            android:layout_alignParentEnd="true"
             android:fontFamily="@font/dmsans_regular"
             android:text="1/8"
+            android:layout_marginEnd="16dp"
             android:textColor="@color/text_color_char_left"
             android:textSize="16sp" />
 

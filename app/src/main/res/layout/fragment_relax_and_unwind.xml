@@ -33,7 +33,10 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:overScrollMode="never"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
+            android:scrollbarThumbVertical="@color/menuselected"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
             android:layout_alignParentTop="true"
             android:layout_above="@id/btn_continue" />
 
