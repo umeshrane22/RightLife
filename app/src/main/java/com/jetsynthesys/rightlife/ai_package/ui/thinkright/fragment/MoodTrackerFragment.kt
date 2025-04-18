@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerPercent
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -49,6 +50,8 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     private lateinit var progressDialog: ProgressDialog
     private lateinit var moodTrackerResponse: MoodTrackerWeeklyResponse
     private lateinit var moodTrackerMonthlyResponse: MoodTrackerMonthlyResponse
+    val weekStartDate = "2025-03-9"
+    val weekEndDate = "2025-03-16"
 
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("d", Locale.getDefault())
@@ -111,15 +114,13 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val type = "weekly"
-        val startDate = "2025-03-06"
-        val endDate = "2025-03-14"
-        val call = ApiClient.apiServiceFastApi.fetchMoodTrackerPercentage(token,type, startDate,endDate)
+        val call = ApiClient.apiService.fetchMoodTrackerPercentage(token,type, weekStartDate,weekEndDate)
         call.enqueue(object : Callback<MoodTrackerWeeklyResponse> {
             override fun onResponse(call: Call<MoodTrackerWeeklyResponse>, response: Response<MoodTrackerWeeklyResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                       moodTrackerResponse = response.body()!!
-                    //      setSleepRightStageData(sleepStageResponse)
+                      // moodTrackerResponse = response.body()!!
+                        //  setMoodPercentage(moodTrackerResponse.data)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -134,13 +135,17 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         })
     }
 
+    private fun setMoodPercentage(moodPercentData: ArrayList<MoodTrackerPercent>) {
+
+    }
+
     private fun fetchMoodMonthly() {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val type = "monthly"
         val startDate = "2025-03-01"
         val endDate = "2025-03-31"
-        val call = ApiClient.apiServiceFastApi.fetchMoodTrackerMonthly(token,type, startDate,endDate)
+        val call = ApiClient.apiService.fetchMoodTrackerMonthly(token,type, startDate,endDate)
         call.enqueue(object : Callback<MoodTrackerMonthlyResponse> {
             override fun onResponse(call: Call<MoodTrackerMonthlyResponse>, response: Response<MoodTrackerMonthlyResponse>) {
                 if (response.isSuccessful) {

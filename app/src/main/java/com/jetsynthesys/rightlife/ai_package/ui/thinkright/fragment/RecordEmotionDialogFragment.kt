@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -22,19 +24,30 @@ import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
+import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
 
     val activities = listOf("Driving", "Eating", "Fitness", "Resting", "Hobbies")
     val withWhom = listOf("By Myself", "Pets", "Co–workers", "Family", "Friends")
     val locations = listOf("Commuting", "Home", "Outside", "School")
+    private var tagsList: ArrayList<String> = arrayListOf()
 
     private lateinit var activityChips: FlexboxLayout
     private lateinit var withChips: FlexboxLayout
     private lateinit var locationChips: FlexboxLayout
     private lateinit var editEmotion: ImageView
     private lateinit var emotionLabel: TextView
+    private lateinit var baseResponse: BaseResponse
     var emojiSelected = 0
+    private lateinit var progressDialog: ProgressDialog
 
     interface BottomSheetListener {
         fun onDataReceived(data: Int)
@@ -56,6 +69,9 @@ class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
         bottomSheet.backgroundTintMode = PorterDuff.Mode.CLEAR
         bottomSheet.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
         bottomSheet.setBackgroundColor(Color.TRANSPARENT)
+        progressDialog = ProgressDialog(activity)
+        progressDialog.setTitle("Loading")
+        progressDialog.setCancelable(false)
         activityChips = view.findViewById(R.id.activityFlexbox)
         withChips = view.findViewById(R.id.withFlexbox)
         locationChips = view.findViewById(R.id.locationFlexbox)
@@ -101,9 +117,40 @@ class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
 
         view.findViewById<LinearLayout>(R.id.btn_save).setOnClickListener {
             listener?.onDataReceived(emojiSelected)
+            sendEmotionData()
             Toast.makeText(requireContext(), "Saved!", Toast.LENGTH_SHORT).show()
             dismiss()
         }
+    }
+
+    private fun sendEmotionData() {
+            progressDialog.show()
+            val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+            // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
+            val call = ApiClient.apiService.addThinkJournalEmoji(token,
+                AddEmojiRequest(title = "", questionId ="", answer = "", emotion = emotionLabel.text.toString(), tags = tagsList )
+            )
+            call.enqueue(object : Callback<BaseResponse> {
+                override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                    if (response.isSuccessful) {
+                        progressDialog.dismiss()
+                        if (response.body()!=null) {
+                            baseResponse = response.body()!!
+                            Toast.makeText(requireContext(), "${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
+                            Log.e("Success", "Response is successful: ${response.isSuccessful}")
+                        }
+                    } else {
+                        Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                        progressDialog.dismiss()
+                    }
+                }
+                override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                    Log.e("Error", "API call failed: ${t.message}")
+                    Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                    progressDialog.dismiss()
+                }
+            })
     }
 
     private fun showEmotionSelector(onEmotionSelected: (Int) -> Unit) {
@@ -203,6 +250,7 @@ class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
                 if (newChipText.isNotEmpty()) {
                     val chip = createChip(newChipText, flexbox,s)
                     // Insert before the "+" chip
+                    tagsList.add(newChipText)
                     flexbox.addView(chip, flexbox.childCount - 1)
                 }
             }

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.data.repository
 
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
@@ -255,6 +256,9 @@ interface ApiService {
     fun fetchMoodTrackerMonthly(@Header("Authorization") authToken: String, @Query("type") type: String,
                                    @Query("startDate") startDate: String, @Query("endDate") endDate: String
     ): Call<MoodTrackerMonthlyResponse>
+
+    @POST("app/api/journalNew")
+    fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest,): Call<BaseResponse>
 
     @GET("sleep/landing_page/")
     fun fetchSleepLandingPage(
