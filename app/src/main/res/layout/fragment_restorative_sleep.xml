@@ -213,10 +213,11 @@
                         app:layout_constraintStart_toEndOf="@+id/percentage_icon" />
 
                     <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/heartRateChart"
+                        android:id="@+id/restorativeBarChart"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
                         android:layout_marginTop="20dp"
+                        android:background="@color/white"
                         app:layout_constraintTop_toBottomOf="@+id/percentage_text"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
@@ -232,6 +233,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
@@ -245,6 +247,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
+                android:visibility="gone"
                 android:layout_marginTop="8dp"
                 android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"

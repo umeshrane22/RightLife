@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class SleepStages(
     @SerializedName("stage")
-    var stage           : String? ,
+    var stage           : String ,
     @SerializedName("start_datetime")
     var startDatetime   : String? ,
     @SerializedName("end_datetime")

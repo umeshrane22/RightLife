@@ -328,13 +328,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+     //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
             override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+  //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }
         })
@@ -367,13 +367,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     toolsAdapter.notifyDataSetChanged()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+    //                Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
             override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+      //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }
         })
@@ -404,7 +404,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                    /* Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()*/
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+       //             Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -412,7 +412,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                /* Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()*/
-                Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
+      //          Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -509,13 +509,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     tvAuthor.setText("-" + thinkQuoteResponse.data.getOrNull(0)?.authorName)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+         //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                    // progressDialog.dismiss()
                 }
             }
             override fun onFailure(call: Call<ThinkQuoteResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+      //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 //progressDialog.dismiss()
             }
         })
@@ -593,13 +593,19 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+            //        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    dataFilledMindAudit.visibility = View.GONE
+                    noDataMindAudit.visibility = View.VISIBLE
+                    reassessYourMental.visibility = View.GONE
                 }
             }
 
             override fun onFailure(call: Call<AssessmentResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+         //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                dataFilledMindAudit.visibility = View.GONE
+                noDataMindAudit.visibility = View.VISIBLE
+                reassessYourMental.visibility = View.GONE
             }
         })
     }

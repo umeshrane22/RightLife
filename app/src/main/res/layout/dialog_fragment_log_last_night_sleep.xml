@@ -187,7 +187,45 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:background="@drawable/grey_round_border"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
 
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/sleep_reminder_icon" />
+        <TextView
+            android:id="@+id/tvSleepReminder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set Sleep Reminder:"
+            android:paddingStart="8dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/dmsans_medium"
+            android:textColor="#0B1215" />
+        <TextView
+            android:id="@+id/tvRemindTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="09:00 PM"
+            android:paddingStart="8dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/dmsans_medium"
+            android:textColor="@color/blue_bar" />
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="5dp"
+            android:src="@drawable/time_selector_icon" />
+    </LinearLayout>
     <!-- Save Button -->
     <TextView
         android:id="@+id/btnSaveLog"
