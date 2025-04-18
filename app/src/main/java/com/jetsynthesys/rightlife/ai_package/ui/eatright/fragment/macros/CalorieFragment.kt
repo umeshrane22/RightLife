@@ -1,24 +1,39 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.utils.Transformer
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -26,14 +41,23 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.FrequentlyL
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.google.android.flexbox.FlexboxLayout
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DailyCalorieData
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.WeeklyCalorieData
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentCalorieBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -46,8 +70,13 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private lateinit var loggedBottomSheetFragment : LoggedBottomSheet
     private lateinit var flexboxLayout : FlexboxLayout
     private lateinit var addDishBottomSheet : LinearLayout
-    private lateinit var lineChart: LineChart
     private lateinit var radioGroup: RadioGroup
+    private lateinit var weeklyData: WeeklyCalorieData
+    private lateinit var barChart: BarChart
+    private lateinit var lineChart: LineChart
+    private lateinit var layoutLineChart: FrameLayout
+    private lateinit var stripsContainer: FrameLayout
+    var endDate = ""
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCalorieBinding
@@ -65,22 +94,39 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
 
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), color.meal_log_background))
 
-        lineChart = view.findViewById(R.id.heartRateChart)
+        barChart = view.findViewById(R.id.calorieChart)
+        lineChart = view.findViewById(R.id.calorieLineChart)
         radioGroup = view.findViewById(R.id.tabGroup)
-
-        // Show Week data by default
-        updateChart(getWeekData(), getWeekLabels())
-        //fetchRestingHeartRate("last_weekly")
+        layoutLineChart = view.findViewById(R.id.lyt_line_chart)
+        stripsContainer = view.findViewById(R.id.stripsContainer)
+        endDate = getYesterdayDate("week")
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        updateChart(getWeekData(), getWeekLabels())
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-//                R.id.rbWeek -> fetchRestingHeartRate("last_weekly")
-//                R.id.rbMonth -> fetchRestingHeartRate("last_monthly")
-//                R.id.rbSixMonths -> fetchRestingHeartRate("last_six_months")
+                R.id.rbWeek ->{
+                    barChart.visibility = View.VISIBLE
+                    layoutLineChart.visibility = View.GONE
+                    endDate = getYesterdayDate("week")
+                    updateChart(getWeekData(), getWeekLabels())
+                }
+                R.id.rbMonth ->{
+                    barChart.visibility = View.VISIBLE
+                    layoutLineChart.visibility = View.GONE
+                    endDate = getYesterdayDate("month")
+                    updateChart(getMonthData(), getMonthLabels())
+                }
+                R.id.rbSixMonths ->{
+                    barChart.visibility = View.GONE
+                    layoutLineChart.visibility = View.VISIBLE
+                    endDate = getYesterdayDate("six")
+                    lineChartForSixMonths()
+                    // updateChart(getSixMonthData(), getSixMonthLabels())
+                }
             }
         }
 
@@ -97,21 +143,146 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         }
     }
 
-    /** Update chart with new data and X-axis labels */
-    private fun updateChart(entries: List<Entry>, labels: List<String>) {
-        val dataSet = LineDataSet(entries, "Resting Heart Rate (bpm)")
-        dataSet.color = Color.RED
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.setCircleColor(Color.RED)
-        dataSet.circleRadius = 5f
-        dataSet.lineWidth = 2f
-        dataSet.setDrawValues(false) // Hide values on points
+    private fun lineChartForSixMonths(){
+        val entries = listOf(
+            Entry(0f, 72f), // Jan
+            Entry(1f, 58f), // Feb
+            Entry(2f, 68f), // Mar
+            Entry(3f, 86f), // Apr
+            Entry(4f, 72f), // May
+            Entry(5f, 0f)   // Jun (Dummy data for axis alignment)
+        )
+
+        val dataSet = LineDataSet(entries, "Performance").apply {
+            color = resources.getColor(R.color.eatright)
+            valueTextSize = 12f
+            setCircleColor(resources.getColor(R.color.eatright))
+            setDrawCircleHole(false)
+            setDrawValues(false)
+        }
 
         val lineData = LineData(dataSet)
         lineChart.data = lineData
 
+        // Define months from Jan to Jun
+        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
+
+        // Chart configurations
+        lineChart.apply {
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = IndexAxisValueFormatter(months)
+                textSize = 12f
+                granularity = 1f // Ensures each month is evenly spaced
+                setDrawGridLines(false)
+            }
+            axisRight.isEnabled = false
+            invalidate()
+        }
+
+        // Wait until the chart is drawn to get correct positions
+        lineChart.post {
+            val viewPortHandler: ViewPortHandler = lineChart.viewPortHandler
+            val transformer: Transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+
+            for (entry in entries) {
+                // Ignore dummy entry for June (y=0)
+                if (entry.x >= 5) continue
+                // Convert chart values (data points) into pixel coordinates
+                val pixelValues = transformer.getPixelForValues(entry.x, entry.y)
+                val xPosition = pixelValues.x // X coordinate on screen
+                val yPosition = pixelValues.y // Y coordinate on screen
+
+                // Create a rounded strip dynamically
+                val stripView = View(requireContext()).apply {
+                    layoutParams = FrameLayout.LayoutParams(100, 12) // Wider height for smooth curves
+                    // Create a rounded background for the strip
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.RECTANGLE
+                        cornerRadius = 6f // Round all corners
+                        setColor(if (entry.y >= 70) Color.GREEN else Color.RED)
+                    }
+                    x = (xPosition).toFloat()  // Adjust X to center the strip
+                    y = (yPosition - 6).toFloat()   // Adjust Y so it overlaps correctly
+                }
+                // Add the strip overlay dynamically
+                stripsContainer.addView(stripView)
+            }
+        }
+    }
+
+    private fun monthChart(){
+        val entries = listOf(
+            BarEntry(0f, 72f), // Jan
+            BarEntry(1f, 58f), // Feb
+            BarEntry(2f, 68f), // Mar
+            BarEntry(3f, 86f), // Apr
+            BarEntry(4f, 72f), // May
+            BarEntry(5f, 90f)  // Jun
+        )
+
+        val dataSet = BarDataSet(entries, "Performance").apply {
+            color = resources.getColor(R.color.eatright)
+            valueTextSize = 12f
+            setDrawValues(false) // Hide default values
+        }
+
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.4f // Adjust bar width
+        barChart.data = barData
+        // Define months from Jan to Jun
+        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
+        // Chart configurations
+        barChart.apply {
+            xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = IndexAxisValueFormatter(months)
+                textSize = 12f
+                granularity = 1f // Ensures each month is evenly spaced
+                setDrawGridLines(false)
+            }
+            axisRight.isEnabled = false
+            axisLeft.axisMinimum = 0f // Ensure bars start from zero
+            description.isEnabled = false
+            setFitBars(true)
+            invalidate()
+        }
+        // Apply custom renderer to round bar tops
+        barChart.notifyDataSetChanged()
+        barChart.invalidate()
+    }
+
+    fun getCurrentDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().format(formatter)
+    }
+
+    fun getYesterdayDate(s: String): String {
+        var dates = ""
+        if(s=="week") {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            dates = LocalDate.now().minusDays(7).format(formatter)
+        }else if(s=="month"){
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            dates = LocalDate.now().minusDays(31).format(formatter)
+        }else if (s=="six"){
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            dates = LocalDate.now().minusDays(183).format(formatter)
+        }
+        return dates
+    }
+
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
+        val dataSet = BarDataSet(entries, "Calories Burned")
+        dataSet.color = resources.getColor(R.color.eatright)
+        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextSize = 12f
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.4f // Set bar width
+        barChart.data = barData
+        barChart.setFitBars(true)
         // Customize X-Axis
-        val xAxis = lineChart.xAxis
+        val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.textSize = 12f
@@ -121,210 +292,48 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         xAxis.yOffset = 15f // Move labels down
 
         // Customize Y-Axis
-        val leftYAxis: YAxis = lineChart.axisLeft
+        val leftYAxis: YAxis = barChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = Color.BLACK
         leftYAxis.setDrawGridLines(true)
 
         // Disable right Y-axis
-        lineChart.axisRight.isEnabled = false
-        lineChart.description.isEnabled = false
-
-        // Refresh chart
-        lineChart.invalidate()
+        barChart.axisRight.isEnabled = false
+        barChart.description.isEnabled = false
+        barChart.animateY(1000) // Smooth animation
+        barChart.invalidate()
     }
 
-    /** Sample Data for Week */
-    private fun getWeekData(): List<Entry> {
+    private fun getWeekData(): List<BarEntry> {
         return listOf(
-            Entry(0f, 65f), Entry(1f, 75f), Entry(2f, 70f),
-            Entry(3f, 85f), Entry(4f, 80f), Entry(5f, 60f), Entry(6f, 90f)
+            BarEntry(0f, 200f),
+            BarEntry(1f, 350f),
+            BarEntry(2f, 270f),
+            BarEntry(3f, 400f),
+            BarEntry(4f, 320f),
+            BarEntry(5f, 500f),
+            BarEntry(6f, 450f)
         )
     }
 
+    /** X-Axis Labels for Week */
     private fun getWeekLabels(): List<String> {
         return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
     }
 
-    /** Sample Data for Month */
-    private fun getMonthData(): List<Entry> {
+    /** Sample Data for Month (4 weeks) */
+    private fun getMonthData(): List<BarEntry> {
         return listOf(
-            Entry(0f, 40f), Entry(1f, 55f), Entry(2f, 35f),
-            Entry(3f, 50f), Entry(4f, 30f)
+            BarEntry(0f, 1500f), // 1-7 Jan
+            BarEntry(1f, 1700f), // 8-14 Jan
+            BarEntry(2f, 1400f), // 15-21 Jan
+            BarEntry(3f, 1800f), // 22-28 Jan
+            BarEntry(4f, 1200f)  // 29-31 Jan
         )
     }
 
+    /** X-Axis Labels for Month */
     private fun getMonthLabels(): List<String> {
-        return listOf("1-7", "8-14", "15-21", "22-28", "29-31")
-    }
-
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<Entry> {
-        return listOf(
-            Entry(0f, 45f), Entry(1f, 55f), Entry(2f, 50f),
-            Entry(3f, 65f), Entry(4f, 70f), Entry(5f, 60f)
-        )
-    }
-
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
-    }
-
-    /** Fetch and update chart with API data */
-    private fun fetchRestingHeartRate(period: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = ApiClient.apiServiceFastApi.getRestingHeartRate(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    period = period,
-                    date = "2025-03-24"
-                )
-
-                if (response.isSuccessful) {
-                    val restingHeartRate = response.body()
-                    restingHeartRate?.let { data ->
-                        val (entries, labels) = when (period) {
-                            "last_weekly" -> processWeeklyData(data)
-                            "last_monthly" -> processMonthlyData(data)
-                            "last_six_months" -> processSixMonthsData(data)
-                            else -> Pair(getWeekData(), getWeekLabels()) // Fallback
-                        }
-                        val averageRhr = data.restingHeartRate
-                            .mapNotNull { it.value.toDoubleOrNull() }
-                            .average()
-                        withContext(Dispatchers.Main) {
-                            updateChart(entries, labels)
-
-                        }
-                    } ?: withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "No resting heart rate data received", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error: ${response.code()} - ${response.message()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    /** Process API data for last_weekly (7 days) */
-    private fun processWeeklyData(data: RestingHeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24) // Reference date
-        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week (March 18)
-
-        val rhrMap = mutableMapOf<String, MutableList<Float>>()
-        val labels = mutableListOf<String>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault()) // e.g., "Mon"
-
-        // Initialize 7 days
-        repeat(7) {
-            val dateStr = dateFormat.format(calendar.time)
-            rhrMap[dateStr] = mutableListOf()
-            labels.add(dayFormat.format(calendar.time))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        // Aggregate RHR by day
-        data.restingHeartRate.forEach { rhr ->
-            val startDate = dateFormat.parse(rhr.startDatetime)?.let { Date(it.time) }
-            if (startDate != null) {
-                val dayKey = dateFormat.format(startDate)
-                rhrMap[dayKey]?.add(rhr.value.toFloatOrNull() ?: 0f)
-            }
-        }
-
-        // Average RHR per day
-        val entries = rhrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
-        }
-        return Pair(entries, labels)
-    }
-
-    /** Process API data for last_monthly (5 weeks) */
-    private fun processMonthlyData(data: RestingHeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 1) // Start of March
-
-        val rhrMap = mutableMapOf<Int, MutableList<Float>>()
-        val labels = mutableListOf<String>()
-
-        // Initialize 5 weeks
-        repeat(5) { week ->
-            val startDay = week * 7 + 1
-            val endDay = if (week == 4) 31 else startDay + 6
-            rhrMap[week] = mutableListOf()
-            labels.add("$startDay-$endDay")
-        }
-
-        // Aggregate RHR by week
-        data.restingHeartRate.forEach { rhr ->
-            val startDate = dateFormat.parse(rhr.startDatetime)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-                val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
-                rhrMap[weekIndex]?.add(rhr.value.toFloatOrNull() ?: 0f)
-            }
-        }
-
-        // Average RHR per week
-        val entries = rhrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
-        }
-        return Pair(entries, labels)
-    }
-
-    /** Process API data for last_six_months (6 months) */
-    private fun processSixMonthsData(data: RestingHeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24)
-        calendar.add(Calendar.MONTH, -5) // Start 6 months back (Oct 2024)
-
-        val rhrMap = mutableMapOf<Int, MutableList<Float>>()
-        val labels = mutableListOf<String>()
-
-        // Initialize 6 months
-        repeat(6) { month ->
-            rhrMap[month] = mutableListOf()
-            labels.add(monthFormat.format(calendar.time))
-            calendar.add(Calendar.MONTH, 1)
-        }
-
-        // Aggregate RHR by month
-        data.restingHeartRate.forEach { rhr ->
-            val startDate = dateFormat.parse(rhr.startDatetime)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(
-                    Calendar.MONTH))
-                val monthIndex = 5 - monthDiff // Reverse to align with labels
-                if (monthIndex in 0..5) {
-                    rhrMap[monthIndex]?.add(rhr.value.toFloatOrNull() ?: 0f)
-                }
-            }
-        }
-
-        // Average RHR per month
-        val entries = rhrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
-        }
-        return Pair(entries, labels)
+        return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
     }
 }

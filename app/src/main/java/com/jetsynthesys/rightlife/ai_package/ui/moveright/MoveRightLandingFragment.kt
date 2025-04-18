@@ -37,9 +37,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.googlefitapiresponsemodel.HeartRateFitData
 import com.jetsynthesys.rightlife.ai_package.model.*
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
@@ -53,6 +56,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.io.File
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -237,6 +241,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     requireActivity().finish()
                 }
             })
+
+        loadStepData()
     }
 
     private fun addDotsIndicator(count: Int) {
@@ -553,7 +559,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
@@ -567,18 +573,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     val workouts = response.body()
                     workouts?.let {
                         // Check if there’s any heart rate data across all synced workouts
-                        val hasHeartRateData = it.syncedWorkouts?.any { workout ->
+                        val hasHeartRateData = it.synced_workouts?.any { workout ->
                             workout.heartRateData?.isNotEmpty() == true
                         } ?: false
 
                         if (hasHeartRateData) {
-                            val totalSyncedCalories = it.syncedWorkouts.sumOf { workout ->
+                            val totalSyncedCalories = it.synced_workouts.sumOf { workout ->
                                 workout.caloriesBurned.toIntOrNull() ?: 0
                             }
-                            val totalUnsyncedCalories = it.unsyncedWorkouts?.sumOf { it.caloriesBurned } ?: 0
+                            val totalUnsyncedCalories = it.unsynced_workouts?.sumOf { it.calories_burned } ?: 0
                             // val totalCalories = totalSyncedCalories + totalUnsyncedCalories
 
-                            val cardItems = it.syncedWorkouts.map { workout ->
+                            val cardItems = it.synced_workouts.map { workout ->
                                 val durationMinutes = workout.duration.toIntOrNull() ?: 0
                                 val hours = durationMinutes / 60
                                 val minutes = durationMinutes % 60
@@ -697,7 +703,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                     ?: "64763fe2fa0e40d9c0bc8264"
 
                 // Map Health Connect data to StoreHealthDataRequest
@@ -1008,4 +1014,20 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
         permissionLauncher.launch(permissions)
     }
+
+    fun loadStepData() {
+        //D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\fit\alldata\derived_com.google.heart_rate.bpm_com.google.a(1).json
+        val json = context?.assets?.open("fit/alldata/derived_com.google.heart_rate.bpm_com.google.a(1).json")?.bufferedReader().use { it?.readText() }
+//        return Gson().fromJson(json, object : TypeToken<List<StepEntry>>() {}.type)
+     //   val json = context?.assets.open("derived_com.google.active_minutes_com.google.a.json").readText()
+
+        val gson = Gson()
+        val jsonString = json/* load JSON file as string */
+        val activeMinutesData = gson.fromJson(jsonString, HeartRateFitData::class.java)
+
+     //   D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\Fit\All data\derived_com.google.active_minutes_com.google.a(4).json
+        println(activeMinutesData)
+
+    }
+
 }
