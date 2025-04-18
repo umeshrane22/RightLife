@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.databinding.ItemHealthCardBinding
-import com.jetsynthesys.rightlife.newdashboard.model.HealthCard
+import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
 
-class HealthCardAdapter(private val cardList: ArrayList<HealthCard>) :
+class HealthCardAdapter(private val cardList: List<DiscoverDataItem>?) :
     RecyclerView.Adapter<HealthCardAdapter.HealthCardViewHolder>() {
 
     inner class HealthCardViewHolder(val binding: ItemHealthCardBinding) :
@@ -19,10 +19,14 @@ class HealthCardAdapter(private val cardList: ArrayList<HealthCard>) :
     }
 
     override fun onBindViewHolder(holder: HealthCardViewHolder, position: Int) {
-        val item = cardList[position]
+        val item = cardList?.get(position)
         with(holder.binding) {
-            cardTitle.text = item.cardTitle
-            tvDescription.text = item.description
+            if (item != null) {
+                cardTitle.text = item.parameter
+            }
+            if (item != null) {
+                tvDescription.text = item.def
+            }
 
             /*Glide.with(root.context)
                 .load(item.imageCard)
@@ -38,5 +42,5 @@ class HealthCardAdapter(private val cardList: ArrayList<HealthCard>) :
         }
     }
 
-    override fun getItemCount(): Int = cardList.size
+    override fun getItemCount(): Int = cardList!!.size
 }
