@@ -19,6 +19,7 @@ import com.jetsynthesys.rightlife.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.jetsynthesys.rightlife.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQuestionRequest;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
@@ -1182,6 +1183,11 @@ public interface ApiService {
 
     @POST("content/bookmark")
     Call<ResponseBody> ArticleBookmarkRequest(@Header("Authorization") String authToken, @Body ArticleBookmarkRequest request);
+
+    @GET("user/dashboardChecklistStatus")
+    Call<DashboardChecklistResponse> getdashboardChecklistStatus(
+            @Header("Authorization") String authToken
+    );
 }
 
 

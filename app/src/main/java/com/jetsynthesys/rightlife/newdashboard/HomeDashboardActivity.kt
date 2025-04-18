@@ -49,18 +49,17 @@ import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetEarlyFinishBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
-import com.jetsynthesys.rightlife.newdashboard.model.HealthCard
-import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
+import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
-import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
@@ -69,6 +68,7 @@ import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
+import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -84,7 +84,6 @@ import java.util.concurrent.TimeUnit
 
 
 class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
-
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checklistComplete = true
@@ -101,6 +100,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         HealthPermission.getReadPermission(DistanceRecord::class)
     )
 
+    // new check list api respone to put check
+    private var checklistStatus: Boolean = false
+    private var facialScanStatus: Boolean = false
+    private var mindAuditStatus: Boolean = false
+    private var isChecklistDataFetched: Boolean = false
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +120,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Health No Data
-        setHealthNoDataCardAdapter()
+
 
         val heartRateList = mutableListOf<HeartRateData>()
         for (i in 1..7) {
@@ -141,6 +146,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)
+        }
+        binding.rlViewPastReports.setOnClickListener {
+            startActivity(Intent(this, PastReportActivity::class.java))
         }
 
         with(binding) {
@@ -435,6 +443,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         getDashboardChecklist("")
+        getDashboardChecklistStatus()
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -575,6 +584,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         AiDashboardResponseMain::class.java
                     )
                     handleSelectedModule(aiDashboardResponseMain)
+                    handleDescoverList(aiDashboardResponseMain)
                     binding.recyclerView.adapter = HeartRateAdapter(
                         aiDashboardResponseMain.data?.facialScan,
                         this@HomeDashboardActivity
@@ -642,6 +652,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         if (!value.isNullOrBlank()) {
             textView.text = value
         }
+    }
+
+    private fun handleDescoverList(aiDashboardResponseMain: AiDashboardResponseMain?){
+     if (aiDashboardResponseMain?.data?.discoverData !=null) {
+         setHealthNoDataCardAdapter(aiDashboardResponseMain?.data?.discoverData!!)
+     }
     }
 
     private fun handleSelectedModule(aiDashboardResponseMain: AiDashboardResponseMain?) {
@@ -964,7 +980,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
         // Chceklist completion logic
-        if (checklistComplete){
+        if (true){//if (checklistComplete){
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
         }else{
@@ -1103,8 +1119,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun setHealthNoDataCardAdapter() {
-        val cardList = arrayListOf(
+    private fun setHealthNoDataCardAdapter(discoverData: List<DiscoverDataItem>?) {
+      /*  val cardList = arrayListOf(
             HealthCard(
                 "",
                 "Heart Rate",
@@ -1117,9 +1133,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 "",
                 "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
             )
-        )
+        )*/
 
-        val adapter = HealthCardAdapter(cardList)
+        val adapter = HealthCardAdapter(discoverData)
         binding.healthCardRecyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.healthCardRecyclerView.adapter = adapter
@@ -1154,9 +1170,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        dialogBinding.tvTitle.text = "Leaving early?"
+        /*dialogBinding.tvTitle.text = "Leaving early?"
         dialogBinding.tvDescription.text =
-            "A few more minutes of breathing practise will make a world of difference."
+            "A few more minutes of breathing practise will make a world of difference."*/
 
         //dialogBinding.btnCancel.text = "Continue Practise"
         //dialogBinding.btnYes.text = "Leave"
@@ -1167,9 +1183,55 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         dialogBinding.btnExplorePlan.setOnClickListener {
             bottomSheetDialog.dismiss()
-            finish()
+            //finish()
         }
 
         bottomSheetDialog.show()
     }
+
+    // get dashbord checklist status complete or not
+    private fun getDashboardChecklistStatus() {
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        apiService.getdashboardChecklistStatus(SharedPreferenceManager.getInstance(this).accessToken)
+            .enqueue(object : Callback<DashboardChecklistResponse> {
+                override fun onResponse(
+                    call: Call<DashboardChecklistResponse>,
+                    response: Response<DashboardChecklistResponse>
+                ) {
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()?.data?.let {
+                            DashboardChecklistManager.updateFrom(it)
+
+                        }
+                        if (DashboardChecklistManager.isDataLoaded) {
+                            if (!DashboardChecklistManager.checklistStatus) {
+                                // proceed
+                                Toast.makeText(
+                                    this@HomeDashboardActivity,
+                                    "Checklist: " + DashboardChecklistManager.checklistStatus,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+
+                        } else {
+                            Toast.makeText(
+                                this@HomeDashboardActivity,
+                                "Server Error: " + response.code(),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<DashboardChecklistResponse>, t: Throwable) {
+                    Toast.makeText(
+                        this@HomeDashboardActivity,
+                        "Network Error: " + t.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            })
+    }
+
 }

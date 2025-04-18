@@ -14,6 +14,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,6 +41,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -56,6 +59,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.ContentWellness;
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityHomeBinding;
+import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity;
@@ -1810,5 +1814,42 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void showTrailEndedBottomSheet() {
+        // Create and configure BottomSheetDialog
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+
+        // Inflate the BottomSheet layout using ViewBinding
+        BottomsheetTrialEndedBinding dialogBinding = BottomsheetTrialEndedBinding.inflate(getLayoutInflater());
+        View bottomSheetView = dialogBinding.getRoot();
+
+        // Set content view
+        bottomSheetDialog.setContentView(bottomSheetView);
+
+        // Set up the animation
+        LinearLayout bottomSheetLayout = bottomSheetView.findViewById(R.id.design_bottom_sheet);
+        if (bottomSheetLayout != null) {
+            Animation slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up);
+            bottomSheetLayout.setAnimation(slideUpAnimation);
+        }
+
+        // Optional: Set texts if needed
+    /*
+    dialogBinding.tvTitle.setText("Leaving early?");
+    dialogBinding.tvDescription.setText("A few more minutes of breathing practise will make a world of difference.");
+    dialogBinding.btnCancel.setText("Continue Practise");
+    dialogBinding.btnYes.setText("Leave");
+    */
+
+        dialogBinding.ivDialogClose.setOnClickListener(v -> bottomSheetDialog.dismiss());
+
+        dialogBinding.btnExplorePlan.setOnClickListener(v -> {
+            bottomSheetDialog.dismiss();
+            // finish();
+        });
+
+        bottomSheetDialog.show();
+    }
+
 }
 
