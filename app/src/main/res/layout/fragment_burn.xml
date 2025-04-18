@@ -189,7 +189,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/dateSectionLayout"/>
 
                     <TextView
-                        android:id="@+id/average_text_heading"
+                        android:id="@+id/averageHeading"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -202,7 +202,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/view"/>
 
                     <TextView
-                        android:id="@+id/average_number"
+                        android:id="@+id/averageBurnCalorie"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="78.5"
@@ -211,7 +211,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:layout_marginStart="21dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/average_text_heading"/>
+                        app:layout_constraintTop_toBottomOf="@+id/averageHeading"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -220,20 +220,20 @@
                         android:textSize="12sp"
                         android:textColor="@color/black_no_meals"
                         android:fontFamily="@font/dmsans_regular"
-                        app:layout_constraintBottom_toBottomOf="@+id/average_number"
-                        app:layout_constraintStart_toEndOf="@+id/average_number"/>
+                        app:layout_constraintBottom_toBottomOf="@+id/averageBurnCalorie"
+                        app:layout_constraintStart_toEndOf="@+id/averageBurnCalorie"/>
 
                     <ImageView
-                        android:id="@+id/percentage_icon"
+                        android:id="@+id/percentageIc"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/ic_up"
                         android:layout_marginStart="21dp"
-                        app:layout_constraintTop_toBottomOf="@+id/average_number"
+                        app:layout_constraintTop_toBottomOf="@+id/averageBurnCalorie"
                         app:layout_constraintStart_toStartOf="parent"/>
 
                     <TextView
-                        android:id="@+id/percentage_text"
+                        android:id="@+id/percentageTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="50% past week"
@@ -241,8 +241,8 @@
                         android:fontFamily="@font/dmsans_regular"
                         android:layout_marginStart="4dp"
                         android:textColor="@color/green_text"
-                        app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
-                        app:layout_constraintStart_toEndOf="@+id/percentage_icon"/>
+                        app:layout_constraintBottom_toBottomOf="@+id/percentageIc"
+                        app:layout_constraintStart_toEndOf="@+id/percentageIc"/>
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/selectHeartRateLayout"
@@ -255,7 +255,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
                         android:layout_marginTop="10dp"
-                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                        app:layout_constraintTop_toBottomOf="@+id/percentageTv"
                         app:layout_constraintEnd_toEndOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -331,6 +331,29 @@
                         app:layout_constraintTop_toBottomOf="@+id/selectHeartRateLayout"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <FrameLayout
+                        android:id="@+id/lyt_line_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintTop_toBottomOf="@+id/selectHeartRateLayout"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:padding="16dp">
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/heartLineChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="350dp"
+                            android:background="@android:color/white" />
+
+                        <FrameLayout
+                            android:id="@+id/stripsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>

@@ -8,8 +8,8 @@ data class ActiveCaloriesResponse(
     @SerializedName("start_date") val startDate: String,
     @SerializedName("end_date") val endDate: String,
     @SerializedName("active_calorie_totals") val activeCaloriesTotals: List<ActiveCalorieTotals>,
-    @SerializedName("progress_percentage") val progressPercentage : Double,
     @SerializedName("current_avg_calories") val currentAvgCalories: Double,
+    @SerializedName("progress_percentage") val progressPercentage : Double,
     @SerializedName("progress_sign") val progressSign: String
 )
 data class ActiveCalorieTotals(
