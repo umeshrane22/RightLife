@@ -47,10 +47,12 @@ class StepsTakenFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStepsTakenBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+      //  binding.root.background = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_color_background_workout)
 
         stepsCountTexts = arrayOf(
             binding.stepCountText1,
@@ -60,6 +62,7 @@ class StepsTakenFragment : Fragment() {
             binding.stepCountText5,
             binding.stepCountText6
         )
+
         selectedSteps = binding.stepCountText1.text.toString()
 
         binding.stepsSliderView.setMinSteps(0)

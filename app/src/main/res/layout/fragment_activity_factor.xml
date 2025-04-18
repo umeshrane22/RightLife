@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ai_package.ui.moveright.CalorieBalance">
-
+    tools:context=".ai_package.ui.moveright.ActivityFactorFragment">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
@@ -16,7 +15,6 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:id="@+id/back_button"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/back"
@@ -27,8 +25,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Calorie Balance"
-            android:textSize="25sp"
+            android:text="Activity Factor"
+            android:textSize="25dp"
             android:textStyle="bold"
             android:textColor="@color/text_color"
             android:layout_marginBottom="3dp"
@@ -86,105 +84,11 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-
-                    <RadioGroup
-                        android:id="@+id/tabGroup"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:orientation="horizontal"
-                        android:background="@drawable/tab_background_heart_rate"
-                        android:padding="2dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <RadioButton
-                            android:id="@+id/rbWeek"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="Week"
-                            android:textSize="14sp"
-                            android:textColor="@color/white"
-                            android:background="@drawable/tab_background_heart_rate"
-                            android:gravity="center"
-                            android:button="@null"
-                            android:checked="true" />
-
-                        <RadioButton
-                            android:id="@+id/rbMonth"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="Month"
-                            android:textSize="14sp"
-                            android:textColor="@color/black"
-                            android:background="@drawable/tab_background_heart_rate"
-                            android:gravity="center"
-                            android:button="@null" />
-
-                        <RadioButton
-                            android:id="@+id/rbSixMonths"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="6 Months"
-                            android:textSize="14sp"
-                            android:textColor="@color/black"
-                            android:background="@drawable/tab_background_heart_rate"
-                            android:gravity="center"
-                            android:button="@null" />
-                    </RadioGroup>
-
-                    <ImageView
-                        android:id="@+id/backward_image_heart_rate"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="21dp"
-                        android:src="@drawable/backward_create_heart_rate"
-                        android:layout_marginTop="14dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
-
-                    <ImageView
-                        android:id="@+id/forward_image_heart_rate"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="21dp"
-                        android:src="@drawable/forward_image_create_heartrate"
-                        android:layout_marginTop="14dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
-
-                    <TextView
-                        android:id="@+id/date_range_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="3 Feb - 9 Feb, 2025"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="14sp"
-                        android:textColor="@color/black"
-                        app:layout_constraintBottom_toBottomOf="@+id/backward_image_heart_rate"
-                        app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate"
-                        app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:background="@color/border_line"
-                        android:layout_marginTop="18dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate" />
-
                     <TextView
                         android:id="@+id/average_text_heading"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="108dp"
+                       android:layout_marginTop="20dp"
                         android:layout_marginStart="21dp"
                         android:text="Average"
                         android:textSize="12sp"
@@ -199,7 +103,7 @@
                         android:layout_height="wrap_content"
                         android:text="78.5"
                         android:textColor="@color/black"
-                        android:textSize="20sp"
+                        android:textSize="20dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:layout_marginStart="21dp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -208,7 +112,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Steps"
+                        android:text="Ms"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_bold"
                         app:layout_constraintBottom_toBottomOf="@+id/average_number"
@@ -234,39 +138,111 @@
                         app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
                         app:layout_constraintStart_toEndOf="@+id/percentage_icon" />
 
-                    <com.github.mikephil.charting.charts.BarChart
-                        android:id="@+id/heartRateChart"
-                        android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        android:layout_marginTop="16dp"
-                        android:visibility="visible"
+                    <RadioGroup
+                        android:id="@+id/tabGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:orientation="horizontal"
+                        android:background="@drawable/tab_background_heart_rate"
+                        android:padding="2dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <RadioButton
+                            android:id="@+id/rbWeek"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="W"
+                            android:visibility="gone"
+                            android:textSize="14sp"
+                            android:textColor="@color/white"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
+                            android:button="@null"
+                            android:checked="true" />
+
+                        <RadioButton
+                            android:id="@+id/rbMonth"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="M"
+                            android:textSize="14sp"
+                            android:textColor="@color/black"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
+                            android:button="@null" />
+
+                        <RadioButton
+                            android:id="@+id/rbSixMonths"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="6M"
+                            android:textSize="14sp"
+                            android:textColor="@color/black"
+                            android:background="@drawable/tab_background_heart_rate"
+                            android:gravity="center"
+                            android:button="@null" />
+                    </RadioGroup>
+
+                    <ImageView
+                        android:id="@+id/backward_image_heart_rate"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="21dp"
+                        android:src="@drawable/backward_create_heart_rate"
+                        android:layout_marginTop="14dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/percentage_text" />
 
-                    <FrameLayout
-                        android:id="@+id/lyt_line_chart"
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/forward_image_heart_rate"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="21dp"
+                        android:src="@drawable/forward_image_create_heartrate"
+                        android:layout_marginTop="14dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/percentage_text" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:layout_marginTop="16dp"
-                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                        android:text="3 Feb -9 Feb, 2O25"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="14sp"
+                        android:textColor="@color/black"
+                        app:layout_constraintBottom_toBottomOf="@+id/backward_image_heart_rate"
+                        app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate"
+                        app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/border_line"
+                        android:layout_marginTop="18dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:padding="16dp">
+                        app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate" />
 
-                        <com.github.mikephil.charting.charts.LineChart
-                            android:id="@+id/heartLineChart"
-                            android:layout_width="match_parent"
-                            android:layout_height="350dp"
-                            android:background="@android:color/white" />
 
-                        <FrameLayout
-                            android:id="@+id/stripsContainer"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-                    </FrameLayout>
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/heartRateChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.cardview.widget.CardView>
 
             <TextView
@@ -276,7 +252,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Caloric Balance – The Math Behind Your Progress"
+                android:text="AHR - How Hard Is Your Heart Working Daily?"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
@@ -287,13 +263,17 @@
             <TextView
                 android:layout_width="339dp"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
-                android:text="Caloric Balance shows the relationship between how many calories you consume and how many you burn—giving you a real-time view of whether you're in a deficit, surplus, or maintenance zone. A calorie deficit supports fat loss, a surplus supports muscle gain, and balance helps with weight maintenance and steady energy. But it’s not just numbers—it’s about making smart, sustainable choices that align with your goals. At RightLife, we calculate Caloric Balance using your logged food intake, activity data, and changes in weight over time—so the feedback gets more precise the more consistent you are. Whether you’re trying to lose fat, build muscle, or just eat more mindfully, Caloric Balance gives you the daily clarity you need to make informed decisions."
+                android:text="Average Heart Rate (AHR) represents the mean number of heartbeats per minute over a specific period, whether during rest, daily activity, or exercise. Unlike Resting Heart Rate (RHR) or maximum heart rate, AHR provides a broader view of how your heart is working throughout the day.
+AHR can vary based on factors like activity level, fitness, hydration, and stress. A consistently lower AHR during daily activities often signals improved cardiovascular efficiency, while a higher AHR may indicate stress, dehydration, or insufficient recovery.
+At RightLife, AHR helps you interpret how your heart responds not just to workouts but to your entire lifestyle—including stress levels, sleep quality, and overall movement patterns. A sudden increase in AHR might suggest fatigue, illness, or higher stress, while a gradual decline over time can reflect improved fitness and heart efficiency. By tracking AHR trends, you can better understand how your daily habits impact your long-term heart health."
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
