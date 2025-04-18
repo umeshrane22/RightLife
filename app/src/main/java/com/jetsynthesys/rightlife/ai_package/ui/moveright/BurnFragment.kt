@@ -574,7 +574,6 @@ class CurvedBarChartRenderer(
         initBuffers()
     }
 
-
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val buffer = mBarBuffers[index]
         if (buffer.buffer == null) return  // Safety check
