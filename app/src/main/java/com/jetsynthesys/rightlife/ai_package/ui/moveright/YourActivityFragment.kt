@@ -169,9 +169,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun fetchActivities() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
-               // val userid = "64763fe2fa0e40d9c0bc8264"
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "64763fe2fa0e40d9c0bc8264"
+                //val userId = "64763fe2fa0e40d9c0bc8264"
                 Log.d("FetchActivities", "Fetching routines for userId: $userId")
 
                 val response: Response<List<RoutineResponse>> = ApiClient.apiServiceFastApi.getRoutines(userId)

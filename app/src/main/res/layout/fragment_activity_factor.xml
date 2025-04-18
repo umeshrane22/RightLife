@@ -157,7 +157,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:text="W"
-                            android:visibility="visible"
+                            android:visibility="gone"
                             android:textSize="14sp"
                             android:textColor="@color/white"
                             android:background="@drawable/tab_background_heart_rate"

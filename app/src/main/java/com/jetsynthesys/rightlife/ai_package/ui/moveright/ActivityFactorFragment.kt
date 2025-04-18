@@ -60,10 +60,10 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
 
         // Show Week data by default and fetch API data
         updateChart(getWeekData(), getWeekLabels())
-        fetchHeartRate("last_weekly")
+        fetchHeartRate("last_monthly")
 
         // Set default selection to Week
-        radioGroup.check(R.id.rbWeek)
+        radioGroup.check(R.id.rbMonth)
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->

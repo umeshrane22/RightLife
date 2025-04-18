@@ -8,15 +8,12 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sqrt
 
-class StepIntake: View {
+class StepIntake : View {
     private var thumbPaint: Paint? = null
     private var fillPaint: Paint? = null
     private var backgroundPaint: Paint? = null
@@ -37,8 +34,9 @@ class StepIntake: View {
     private val stepInterval = 2000
     private var listener: OnStepCountChangeListener? = null
 
-    private var thumbRadius = 0f
-    private var thumbY = 0f
+    private var lineThickness = 0f
+    private var lineGap = 0f
+    private var touchAreaHeight = 0f
 
     constructor(context: Context?) : super(context) {
         init()
@@ -57,20 +55,28 @@ class StepIntake: View {
     }
 
     private fun init() {
-        fillPaint = Paint()
-        fillPaint!!.style = Paint.Style.FILL
+        fillPaint = Paint().apply {
+            style = Paint.Style.FILL
+        }
 
-        backgroundPaint = Paint()
-        backgroundPaint!!.color = backgroundColor
-        backgroundPaint!!.style = Paint.Style.FILL
+        backgroundPaint = Paint().apply {
+            color = backgroundColor
+            style = Paint.Style.FILL
+        }
 
         capillaryRect = RectF()
 
-        thumbPaint = Paint()
-        thumbPaint!!.color = Color.WHITE // Always white thumb
-        thumbPaint!!.style = Paint.Style.FILL
-        thumbPaint!!.isAntiAlias = true // Smooth edges
-        thumbRadius = resources.displayMetrics.density * 15 // Adjust thumb size
+        thumbPaint = Paint().apply {
+            color = Color.WHITE // White lines
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+        }
+
+        // Define line properties
+        val density = resources.displayMetrics.density
+        lineThickness = 2 * density // 2dp thick
+        lineGap = 4 * density // 4dp gap between lines
+        touchAreaHeight = (lineThickness * 2 + lineGap) * 2 // Expanded touch area
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -78,16 +84,17 @@ class StepIntake: View {
         val padding = w / 10
         capillaryRect!![padding.toFloat(), padding.toFloat(), (w - padding).toFloat()] =
             (h - padding).toFloat()
-        thumbY = calculateYFromSteps(0) // Initial thumb position at 2k steps
         createGradientShader()
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Draw rounded slider
+        // Draw rounded slider background
         canvas.drawRoundRect(
-            capillaryRect!!, capillaryRect!!.width() / 4, capillaryRect!!.width() / 4,
+            capillaryRect!!,
+            capillaryRect!!.width() / 4,
+            capillaryRect!!.width() / 4,
             backgroundPaint!!
         )
 
@@ -100,12 +107,32 @@ class StepIntake: View {
             capillaryRect!!.bottom
         )
         canvas.drawRoundRect(
-            fillRect, capillaryRect!!.width() / 4, capillaryRect!!.width() / 4,
+            fillRect,
+            capillaryRect!!.width() / 4,
+            capillaryRect!!.width() / 4,
             fillPaint!!
         )
 
-        // Draw thumb
-        canvas.drawCircle(capillaryRect!!.centerX(), thumbY, thumbRadius, thumbPaint!!)
+        // Draw double line indicator at the top of the green fill
+        thumbPaint!!.strokeWidth = lineThickness
+        val lineY1 = fillRect.top - lineGap / 2 - lineThickness / 2
+        val lineY2 = fillRect.top + lineGap / 2 + lineThickness / 2
+        // Top line
+        canvas.drawLine(
+            capillaryRect!!.left,
+            lineY1,
+            capillaryRect!!.right,
+            lineY1,
+            thumbPaint!!
+        )
+        // Bottom line
+        canvas.drawLine(
+            capillaryRect!!.left,
+            lineY2,
+            capillaryRect!!.right,
+            lineY2,
+            thumbPaint!!
+        )
     }
 
     private fun createGradientShader() {
@@ -115,16 +142,17 @@ class StepIntake: View {
         }
         val extendedColors = IntArray(intervalColors.size + 1)
         System.arraycopy(intervalColors, 0, extendedColors, 0, intervalColors.size)
-        extendedColors[intervalColors.size] =
-            intervalColors[intervalColors.size - 1] // Repeat last color
+        extendedColors[intervalColors.size] = intervalColors[intervalColors.size - 1]
         val gradient = LinearGradient(
-            0f, capillaryRect!!.top,
-            0f, capillaryRect!!.bottom,
+            0f,
+            capillaryRect!!.top,
+            0f,
+            capillaryRect!!.bottom,
             extendedColors,
             positions,
             Shader.TileMode.CLAMP
         )
-        fillPaint!!.setShader(gradient)
+        fillPaint!!.shader = gradient
     }
 
     private fun calculateYFromSteps(steps: Int): Float {
@@ -135,89 +163,44 @@ class StepIntake: View {
     private fun calculateStepsFromY(y: Float): Int {
         val percentage = (capillaryRect!!.bottom - y) / capillaryRect!!.height()
         val steps = (minSteps + percentage * (maxSteps - minSteps)).toInt()
-        return Math.round(steps.toFloat() / stepInterval) * stepInterval
+        return (steps.toFloat() / stepInterval).toInt() * stepInterval
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
-            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> if (isThumbTouched(
-                    event.x,
-                    event.y
-                ) || event.action == MotionEvent.ACTION_MOVE
-            ) {
-                // Ensure the thumb stays within the vertical limits of the view
-                val newY = max(
-                    (capillaryRect!!.top + thumbRadius).toDouble(),
-                    min((capillaryRect!!.bottom - thumbRadius).toDouble(), event.y.toDouble())
-                ).toFloat()
-
-                val steps = calculateStepsFromY(newY)
-                val oldThumbY = thumbY // Store the old thumbY value
-                thumbY = newY // Assign constrained Y value
-                fillPercentage = (steps - minSteps).toFloat() / (maxSteps - minSteps)
-                invalidate()
-
-                // Log the new thumb position only if it has changed
-                if (oldThumbY != thumbY) {
-                    Log.d(
-                        "CapillaryView",
-                        "Thumb moved from Y: $oldThumbY to Y: $thumbY"
-                    )
+            MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                if (isThumbTouched(event.x, event.y) || event.action == MotionEvent.ACTION_MOVE) {
+                    val newY = max(
+                        (capillaryRect!!.top + touchAreaHeight / 2).toDouble(),
+                        min((capillaryRect!!.bottom - touchAreaHeight / 2).toDouble(), event.y.toDouble())
+                    ).toFloat()
+                    val steps = calculateStepsFromY(newY)
+                    fillPercentage = (steps - minSteps).toFloat() / (maxSteps - minSteps)
+                    invalidate()
                     updateStepCount(steps)
+                    return true
                 }
-
-                return true
             }
-
             MotionEvent.ACTION_UP -> return isThumbTouched(event.x, event.y)
         }
         return super.onTouchEvent(event)
     }
 
-    /*   @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_MOVE:
-                if (isThumbTouched(event.getX(), event.getY()) || event.getAction() == MotionEvent.ACTION_MOVE) {
-                    float newY = Math.max(capillaryRect.top, Math.min(capillaryRect.bottom, event.getY()));
-                    int steps = calculateStepsFromY(newY);
-                    float oldThumbY = thumbY; // Store the old thumbY value
-                    thumbY = calculateYFromSteps(steps);
-                    fillPercentage = (float) (steps - minSteps) / (maxSteps - minSteps);
-                    invalidate();
-                    // Log the new thumb position only if it has changed
-                    if (oldThumbY != thumbY) {
-                        Log.d("CapillaryView", "Thumb moved from Y: " + oldThumbY + " to Y: " + thumbY);
-                        updateStepCount(steps);
-                    }
-
-
-                    return true;
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                return isThumbTouched(event.getX(), event.getY());
-        }
-        return super.onTouchEvent(event);
-    }*/
     private fun isThumbTouched(x: Float, y: Float): Boolean {
-        return sqrt(
-            (x - capillaryRect!!.centerX()).toDouble().pow(2.0) + (y - thumbY).toDouble().pow(2.0)
-        ) <= thumbRadius
+        val fillHeight = fillPercentage * capillaryRect!!.height()
+        val fillTop = capillaryRect!!.bottom - fillHeight
+        val touchTop = fillTop - (lineThickness + lineGap / 2)
+        val touchBottom = fillTop + (lineThickness + lineGap / 2)
+        return x >= capillaryRect!!.left &&
+                x <= capillaryRect!!.right &&
+                y >= touchTop - touchAreaHeight / 2 &&
+                y <= touchBottom + touchAreaHeight / 2
     }
 
     fun setIntervalColors(color: Int) {
         intervalColors = intArrayOf(color, color, color, color, color, color)
         createGradientShader()
         invalidate()
-        /*if (colors.length == 6) {
-            intervalColors = colors;
-            createGradientShader();
-            invalidate();
-        } else {
-            throw new IllegalArgumentException("Exactly 6 colors are required.");
-        }*/
     }
 
     override fun setBackgroundColor(color: Int) {
@@ -228,17 +211,12 @@ class StepIntake: View {
 
     fun setFillPercentage(percentage: Float) {
         fillPercentage = max(0.0, min(1.0, percentage.toDouble())).toFloat()
-        val steps = (minSteps + (maxSteps - minSteps) * fillPercentage).toInt()
-        thumbY = calculateYFromSteps(steps)
         invalidate()
-        //updateStepCount(steps);
     }
 
     fun setMinSteps(minSteps: Int) {
         this.minSteps = minSteps
-        thumbY = calculateYFromSteps(minSteps)
         invalidate()
-        //updateStepCount(minSteps);
     }
 
     fun setMaxSteps(maxSteps: Int) {
@@ -252,9 +230,7 @@ class StepIntake: View {
     }
 
     private fun updateStepCount(stepCount: Int) {
-        if (listener != null) {
-            listener!!.onStepCountChanged(stepCount)
-        }
+        listener?.onStepCountChanged(stepCount)
     }
 
     interface OnStepCountChangeListener {

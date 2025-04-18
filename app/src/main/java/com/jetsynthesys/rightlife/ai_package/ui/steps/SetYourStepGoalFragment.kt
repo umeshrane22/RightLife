@@ -12,23 +12,19 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSetYourStepGoalBinding
-import com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
-import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.StepIntake
 
 class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSetYourStepGoalBinding
         get() = FragmentSetYourStepGoalBinding::inflate
-    var snackbar: Snackbar? = null
 
     private lateinit var stepsSliderView: StepIntake
     private lateinit var setTargetButton: TextView
-   // private lateinit tvCurrentGoal: TextView // Add this to display current goal dynamically
+    private lateinit var tvCurrentGoal: TextView
 
     private var currentGoal = 10500 // Initial goal
-    private val averageSteps = 10000 // Fixed average
-    private val recommendedSteps = 12000 // Recommended goal
+    private val maxSteps = 12000
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,13 +33,13 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
         // Initialize views
         stepsSliderView = view.findViewById(R.id.steps_slider_view)
         setTargetButton = view.findViewById(R.id.tv_set_target)
-       // tvCurrentGoal = view.findViewById<TextView>(R.id.step_count_text_5) // Reuse 10k text to show current goal
+        tvCurrentGoal = view.findViewById(R.id.step_count_text_5)
 
-        // Customize CoffeWaterIntakeView
+        // Configure StepIntake
         stepsSliderView.setMinSteps(0)
-        stepsSliderView.setMaxSteps(12000)
-        stepsSliderView.setFillPercentage((currentGoal.toFloat() / 12000).toFloat())
-        stepsSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.green_text)) // Set green fill
+        stepsSliderView.setMaxSteps(maxSteps)
+        stepsSliderView.setFillPercentage(currentGoal.toFloat() / maxSteps)
+        stepsSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.green_text))
         stepsSliderView.setOnStepCountChangeListener(object : StepIntake.OnStepCountChangeListener {
             override fun onStepCountChanged(stepCount: Int) {
                 currentGoal = stepCount
@@ -53,9 +49,12 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
 
         // Set Target Button Click Listener
         setTargetButton.setOnClickListener {
+            // Optional: Save currentGoal to SharedPreferences or backend
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val stepGoalFragment = SnapMealFragment()
-                val args = Bundle()
+                val args = Bundle().apply {
+                    putInt("stepGoal", currentGoal)
+                }
                 stepGoalFragment.arguments = args
                 replace(R.id.flFragment, stepGoalFragment, "Steps")
                 addToBackStack(null)
@@ -82,6 +81,6 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
     }
 
     private fun updateCurrentGoalText() {
-        //tvCurrentGoal.text = "${currentGoal / 1000}k steps\nYour Goal" // Display current goal
+        tvCurrentGoal.text = "${currentGoal / 1000}k steps\nYour Goal"
     }
 }

@@ -148,7 +148,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             activity?.finish()
         }
         activeStepsTv.setOnClickListener {
-            navigateToFragment(StepFragment(),"StepTakenFragment")
+            navigateToFragment(SetYourStepGoalFragment(),"StepTakenFragment")
         }
         fetchUserWorkouts()
         //fetchHealthSummary()
