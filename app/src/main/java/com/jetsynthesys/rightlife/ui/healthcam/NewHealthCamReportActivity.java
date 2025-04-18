@@ -42,6 +42,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     private static final String TAG = "NewHealthCamReportActivity";
     ActivityNewhealthcamreportBinding binding;
     private FacialReportResponseNew facialReportResponseNew;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,14 +52,11 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             finish();
         });
-        binding.cardviewLastCheckin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (facialReportResponseNew.data.lastCheckin) {
+        binding.cardviewLastCheckin.setOnClickListener(v -> {
+            if (facialReportResponseNew.data.lastCheckin) {
 
-                }
-                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
             }
+            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
         });
         getMyRLHealthCamResult();
 
@@ -71,8 +69,8 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         updateChecklistStatus();
     }
 
-    private void updateChecklistStatus(){
-        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan",AppConstants.CHECKLIST_COMPLETED);
+    private void updateChecklistStatus() {
+        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED);
     }
 
     private void getMyRLHealthCamResult() {
@@ -93,7 +91,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
                         String jsonString = response.body().string();
                         Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
                         Gson gson = new Gson();
-                         facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
+                        facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
                         HandleNewReportUI(facialReportResponseNew);
                         HandleContinueWatchUI(facialReportResponseNew);
                     } catch (IOException e) {
@@ -117,9 +115,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         if (facialReportResponseNew.success) {
 
             //binding.txtWellnessScore1.setText(String.valueOf(facialReportResponseNew.data.overallWellnessScore.value));
-            if (facialReportResponseNew.data.overallWellnessScore!=null) {
+            if (facialReportResponseNew.data.overallWellnessScore != null) {
                 binding.txtWellnessScore1.setText(String.format("%.2f", facialReportResponseNew.data.overallWellnessScore.value));
-
+                setTextAccordingToWellnessScore(facialReportResponseNew.data.overallWellnessScore.value);
                 binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
             }
 
@@ -149,6 +147,26 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
             binding.recyclerViewVitalCards.setAdapter(adapter);
         }
+    }
+
+    private void setTextAccordingToWellnessScore(Double wellnessScore) {
+        String message;
+
+        if (wellnessScore >= 0 && wellnessScore <= 19.99) {
+            message = "Your wellness needs urgent attention—let’s work on getting you back on track.";
+        } else if (wellnessScore <= 40.0) {
+            message = "Your wellness is under strain—time to make a few adjustments for improvement.";
+        } else if (wellnessScore <= 60.0) {
+            message = "You’re doing okay, but there’s room to optimize your health and resilience.";
+        } else if (wellnessScore <= 80.0) {
+            message = "Great job! Your vitals are strong, and you’re building a solid foundation.";
+        } else if (wellnessScore <= 100.0) {
+            message = "You're thriving! Your vitals are at their peak—keep up the fantastic work.";
+        } else {
+            message = "Invalid wellness score.";
+        }
+
+        binding.txtWellStreak.setText(message);
     }
 
     private void HandleContinueWatchUI(FacialReportResponseNew facialReportResponseNew) {

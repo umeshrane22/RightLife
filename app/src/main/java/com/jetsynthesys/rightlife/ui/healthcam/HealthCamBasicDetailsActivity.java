@@ -1,14 +1,5 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToFtInch;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToInch;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToCentimeter;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToInch;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToCentimeter;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToFeet;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertKgToLbs;
-import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertLbsToKgs;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +23,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.AnswerFaceScan;
 import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQuestionRequest;
+import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Question;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit;
@@ -47,8 +39,23 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToFtInch;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertCentimeterToInch;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToCentimeter;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertFeetToInch;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToCentimeter;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchToFeet;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertKgToLbs;
+import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertLbsToKgs;
+
 public class HealthCamBasicDetailsActivity extends AppCompatActivity {
 
+    private final ArrayList<Option> heightUnits = new ArrayList<>();
+    private final ArrayList<Option> weightUnits = new ArrayList<>();
+    private final ArrayList<Option> smokeOptions = new ArrayList<>();
+    private final ArrayList<Option> diabeticsOptions = new ArrayList<>();
+    private final ArrayList<Option> bpMedicationOptions = new ArrayList<>();
+    private final ArrayList<Option> genderOptions = new ArrayList<>();
     private EditText edtFirstName, edtLastName, edtHeight, edtWeight, edtAge, edtFt, edtInch;
     private TextView edtSpinnerHeight, edtSpinnerWeight, edtGender, edtSmoke, edtBPMedication,
             edtDiabetic, tvFirstName, tvLastName, tvHeight, tvWeight, tvAge, tvGender, tvSmoke,
@@ -56,12 +63,6 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     private LinearLayout llHeight, llWeight, llHeightFtInch;
     private Button btnStartScan;
     private QuestionListHealthAudit responseObj;
-    private final ArrayList<Option> heightUnits = new ArrayList<>();
-    private final ArrayList<Option> weightUnits = new ArrayList<>();
-    private final ArrayList<Option> smokeOptions = new ArrayList<>();
-    private final ArrayList<Option> diabeticsOptions = new ArrayList<>();
-    private final ArrayList<Option> bpMedicationOptions = new ArrayList<>();
-    private final ArrayList<Option> genderOptions = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -204,6 +205,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     }
 
     private void setData() {
+        Userdata userdata = SharedPreferenceManager.getInstance(this).getUserProfile().getUserdata();
         for (Question question : responseObj.getQuestionData().getQuestionList()) {
             switch (question.getQuestion()) {
                 case "first_name":
@@ -211,6 +213,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     tvFirstName.setText("Name");
                     tvFirstName.setVisibility(View.VISIBLE);
                     edtFirstName.setVisibility(View.VISIBLE);
+                    if (userdata.getFirstName() != null)
+                        edtFirstName.setText(userdata.getFirstName());
                     break;
                 case "last_name":
 //                    tvLastName.setText(question.getQuestionTxt());
@@ -221,6 +225,30 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     tvHeight.setText(question.getQuestionTxt());
                     tvHeight.setVisibility(View.VISIBLE);
                     llHeight.setVisibility(View.VISIBLE);
+                    if (userdata.getHeight() != null) {
+                        switch (userdata.getHeightUnit()) {
+                            case "CM":
+                            case "INCH":
+                                llHeightFtInch.setVisibility(View.GONE);
+                                edtHeight.setVisibility(View.VISIBLE);
+                                edtHeight.setText(userdata.getHeight().toString());
+                                break;
+                            case "FT_AND_INCHES":
+                                edtHeight.setVisibility(View.GONE);
+                                llHeightFtInch.setVisibility(View.VISIBLE);
+                                String inches = userdata.getHeight().toString();
+                                String[] strings = inches.split("\\.");
+                                edtFt.setText(strings[0]);
+                                if (strings.length > 1) {
+                                    edtInch.setText(strings[1]);
+                                }
+                                break;
+                        }
+                        if (userdata.getHeightUnit().equalsIgnoreCase("cm"))
+                            edtSpinnerHeight.setText("cm");
+                        else
+                            edtSpinnerHeight.setText("ft_and_inches");
+                    }
                     break;
                 case "height_unit":
                     heightUnits.addAll(question.getOptions());
@@ -229,6 +257,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     tvWeight.setText(question.getQuestionTxt());
                     tvWeight.setVisibility(View.VISIBLE);
                     llWeight.setVisibility(View.VISIBLE);
+                    edtWeight.setText(userdata.getWeight().toString());
+                    edtSpinnerWeight.setText(userdata.getWeightUnit());
                     break;
                 case "weight_unit":
                     weightUnits.addAll(question.getOptions());
@@ -243,6 +273,9 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     tvGender.setVisibility(View.VISIBLE);
                     edtGender.setVisibility(View.VISIBLE);
                     genderOptions.addAll(question.getOptions());
+                    if (userdata.getGender().equals("M") || userdata.getGender().equalsIgnoreCase("Male"))
+                        edtGender.setText("Male");
+                    else edtGender.setText("Female");
                     break;
                 case "smoking":
                     tvSmoke.setText(question.getQuestionTxt());
