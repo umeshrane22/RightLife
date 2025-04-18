@@ -70,8 +70,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (facialReportResponseNew.data.lastCheckin) {
 
+                }
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
             }
-            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
         });
         getMyRLHealthCamResult();
 
