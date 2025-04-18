@@ -2,7 +2,8 @@ package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +11,6 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -34,6 +34,7 @@ class PhysicalActivitiesFragment : Fragment() {
     private val binding get() = _binding!!
     private val selectedActivities: ArrayList<String> = ArrayList()
     private var activities: ArrayList<PhysicalActivity> = ArrayList()
+    private var adapter: PhysicalActivityDialogAdapter? = null
 
     private var question: Question? = null
 
@@ -52,6 +53,15 @@ class PhysicalActivitiesFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             question = it.getSerializable("question") as? Question
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.chipGroup.clearCheck()
+        selectedActivities.clear()
+        activities.forEach { physicalActivity ->
+            physicalActivity.isSelected = false
         }
     }
 
@@ -128,8 +138,13 @@ class PhysicalActivitiesFragment : Fragment() {
         }
 
         binding.btnContinue.setOnClickListener {
-            if (selectedActivities.size > 0)
+            if (selectedActivities.size > 0) {
+                binding.btnContinue.isEnabled = false
                 showPhysicalActivitiesBottomSheet()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.btnContinue.isEnabled = true
+                },2000)
+            }
             else
                 Toast.makeText(
                     requireContext(),
@@ -259,7 +274,7 @@ class PhysicalActivitiesFragment : Fragment() {
         var calculation =
             selectedActivities.size
 
-        val adapter = PhysicalActivityDialogAdapter(
+        adapter = PhysicalActivityDialogAdapter(
             selectedList,
             QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!
         ) { servingItem, count ->

@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.newdashboard
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -13,6 +14,8 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -42,7 +45,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     private var monthOffset = 0
     private var sixMonthOffset = 0
     private var weekOffsetDays = 0
-
+    private lateinit var graphData: FacialScanReportData
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +70,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                     endDateAPI
 
                 )
-            }else{
+            } else {
                 Toast.makeText(this, "Only week can be selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -82,7 +85,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                     endDateAPI
 
                 )
-            }else{
+            } else {
                 Toast.makeText(this, "Only week can be selected", Toast.LENGTH_SHORT).show()
             }
         }
@@ -153,96 +156,32 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
             openPopup()
         }
 
+        binding.heartRateChart.setOnChartValueSelectedListener(object :
+            OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                e?.let {
+                    val date = graphData.data?.get(0)?.createdAt?.let { it1 ->
+                        formatIsoDateToReadable(
+                            it1
+                        )
+                    }
+                    Log.d("AAAA","Date : = "+date)
+                    val value = it.y
 
-    }
+                    binding.reportDate.text = date.toString()
+                    binding.reportNameAverageValue.text = value.toString()
 
+                    showToast("date = $date  and value = $value")
 
-    private fun updateChart(entries: List<Entry>, labels: List<String>) {
-        val dataSet = LineDataSet(entries, "Heart Rate")
-        dataSet.color = Color.RED
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.setCircleColor(Color.RED)
-        dataSet.circleRadius = 5f
-        dataSet.lineWidth = 2f
-        dataSet.setDrawValues(false) // Hide values on points
+                }
+            }
 
-        val lineData = LineData(dataSet)
-        binding.heartRateChart.data = lineData
+            override fun onNothingSelected() {
 
-        // Customize X-Axis
-        val xAxis = binding.heartRateChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 10f
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
+            }
 
-        // Customize Y-Axis
-        val leftYAxis: YAxis = binding.heartRateChart.axisLeft
-        leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
-        leftYAxis.setDrawGridLines(true)
+        })
 
-        // Disable right Y-axis
-        binding.heartRateChart.axisRight.isEnabled = false
-        binding.heartRateChart.description.isEnabled = false
-
-        // Refresh chart
-        binding.heartRateChart.invalidate()
-    }
-
-
-    /** Sample Data for Week */
-    private fun getWeekData(): List<Entry> {
-        return listOf(
-            Entry(1f, 65f),
-            Entry(2f, 75f),
-            Entry(3f, 70f),
-            Entry(4f, 85f),
-            Entry(5f, 80f),
-            Entry(6f, 60f),
-            Entry(7f, 90f)
-        )
-    }
-
-    /** X-Axis Labels for Week */
-    private fun getWeekLabels(): List<String> {
-        return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    }
-
-    /** Sample Data for Month (4 weeks) */
-    private fun getMonthData(): List<Entry> {
-        return listOf(
-            Entry(0f, 40f), // 1-7 Jan
-            Entry(1f, 55f), // 8-14 Jan
-            Entry(2f, 35f), // 15-21 Jan
-            Entry(3f, 50f), // 22-28 Jan
-            Entry(4f, 30f)  // 29-31 Jan
-        )
-    }
-
-    /** X-Axis Labels for Month */
-    private fun getMonthLabels(): List<String> {
-        return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
-    }
-
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<Entry> {
-        return listOf(
-            Entry(0f, 45f), // Jan
-            Entry(1f, 55f), // Feb
-            Entry(2f, 50f), // Mar
-            Entry(3f, 65f), // Apr
-            Entry(4f, 70f), // May
-            Entry(5f, 60f)  // Jun
-        )
-    }
-
-    /** X-Axis Labels for 6 Months */
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
     }
 
     private fun fetchPastFacialScanReport(key: String, startDate: String, endDate: String) {
@@ -271,18 +210,18 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                 response: Response<FacialScanReportResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    val graphData = response.body()?.data
+                    graphData = response.body()?.data!!
 
-                    if (graphData?.data.isNullOrEmpty()) {
+                    if (graphData.data.isNullOrEmpty()) {
                         return
                     }
                     //binding.reportNameAverage.text = "Average :"//binding.tvWitale.text.toString()
-                    graphData?.data?.get(0)?.unit
+                    graphData.data?.get(0)?.unit
                     //binding.reportNameAverageValue.text = graphData?.avgValue.toString()+" "+graphData?.data?.get(0)?.unit
 
-                    binding.tvAverage.text = graphData?.avgValue.toString()
-                    binding.tvMaximum.text = graphData?.maxValue.toString()
-                    binding.tvMinimum.text = graphData?.minValue.toString()
+                    binding.tvAverage.text = graphData.avgValue.toString()
+                    binding.tvMaximum.text = graphData.maxValue.toString()
+                    binding.tvMinimum.text = graphData.minValue.toString()
 
 
                     // val entries: ArrayList<Entry> = ArrayList()
@@ -298,23 +237,31 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
 
                     val entries = mutableListOf<Entry>()
                     //val yAxisEntries = mutableListOf<Entry>()
-                    graphData?.yAxisValue?.forEach { y ->
+                    graphData.yAxisValue?.forEach { y ->
                         // Add a dummy X value like -1f to show as reference or skip plotting if not needed
                         entries.add(Entry(-1f, y.toFloat()))
                     }
 
                     //updateChart(entries, getWeekLabels())
-                    if (graphData != null) {
-                        selectedRange?.let { plotGraph2(graphData,binding, it) }
-                    };
+                    selectedRange?.let { plotGraph2(graphData, binding, it) }
 
-                // set bottom card data
-                    binding.indicator.text = graphData?.data?.get(0)?.indicator
-                    binding.tvIndicatorExplain.text = graphData?.data?.get(0)?.implication
-                    binding.tvIndicatorValue.text = graphData?.data?.get(0)?.value.toString()+" "+graphData?.data?.get(0)?.unit
-                    binding.tvIndicatorValueBg.text = graphData?.data?.get(0)?.lowerRange.toString()+"-"+graphData?.data?.get(0)?.upperRange.toString()+" "+graphData?.data?.get(0)?.unit
+                    // set bottom card data
+                    binding.indicator.text = graphData.data?.get(0)?.indicator
+                    binding.tvIndicatorExplain.text = graphData.data?.get(0)?.implication
+                    binding.tvIndicatorValue.text =
+                        graphData.data?.get(0)?.value.toString() + " " + graphData?.data?.get(0)?.unit
+                    binding.tvIndicatorValueBg.text =
+                        graphData.data?.get(0)?.lowerRange.toString() + "-" + graphData?.data?.get(
+                            0
+                        )?.upperRange.toString() + " " + graphData?.data?.get(0)?.unit
                     //binding.tvIndicatorValueBg.setBackgroundColor(ColorStateList.valueOf(Utils.getColorFromColorCode(graphData?.data?.get(0)?.colour)))
-                    binding.tvIndicatorValueBg.setBackgroundColor(Color.parseColor("#"+graphData?.data?.get(0)?.colour));
+                    binding.tvIndicatorValueBg.setBackgroundColor(
+                        Color.parseColor(
+                            "#" + graphData?.data?.get(
+                                0
+                            )?.colour
+                        )
+                    )
                 } else {
                     showToast("Server Error: " + response.code())
                 }
@@ -330,7 +277,8 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     private fun generateMockFacialScanReportData(): FacialScanReportData {
         val simulatedReports = ArrayList<FacialScanReport>()
 
-        val baseImplication = "Supports efficient cardiovascular function, ensuring optimal oxygen and nutrient delivery."
+        val baseImplication =
+            "Supports efficient cardiovascular function, ensuring optimal oxygen and nutrient delivery."
         val dates = listOf(
             "2025-01-03T15:16:15.405Z",
             "2025-01-10T11:00:00.000Z",
@@ -345,9 +293,9 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         for (i in dates.indices) {
             val report = FacialScanReport().apply {
                 createdAt = dates[i]
-                if (i%2==0) {
+                if (i % 2 == 0) {
                     value = 2 + (i * 2.12)
-                }else{
+                } else {
                     value = 0.55 + (i * 0.12)
                 }
 
@@ -444,19 +392,6 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         }
     }
 
-  /*  private fun getWeekRange(): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-        val calendar = Calendar.getInstance()
-        val startDate = dateFormat.format(calendar.time) // Current date
-        startDateAPI = startDate;
-
-        calendar.add(Calendar.DAY_OF_YEAR, -7)
-        val endDate = dateFormat.format(calendar.time) // 7 days earlier
-            endDateAPI = endDate
-        return "$endDate - $startDate"
-    }*/
-
     private fun capToToday(inputDate: Date): Date {
         val today = Calendar.getInstance()
         today.set(Calendar.HOUR_OF_DAY, 0)
@@ -467,22 +402,22 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     }
 
     private fun getWeekRange(): String {
-      val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-      val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
 
-      // Apply offset in days
-      calendar.add(Calendar.DAY_OF_YEAR, weekOffsetDays)
+        // Apply offset in days
+        calendar.add(Calendar.DAY_OF_YEAR, weekOffsetDays)
         calendar.time = capToToday(calendar.time)
 
-      val startDate = dateFormat.format(calendar.time)
+        val startDate = dateFormat.format(calendar.time)
         endDateAPI = startDate
 
-      calendar.add(Calendar.DAY_OF_YEAR, -7)
-      val endDate = dateFormat.format(calendar.time)
+        calendar.add(Calendar.DAY_OF_YEAR, -7)
+        val endDate = dateFormat.format(calendar.time)
         startDateAPI = endDate
 
-      return "$endDate - $startDate"
-  }
+        return "$endDate - $startDate"
+    }
 
     private fun getMonthRange(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -518,553 +453,6 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         return "$startDate - $endDate"
     }
 
-    private fun formatDateRange(startDateStr: String?, endDateStr: String?): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-d", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("d MMM - d MMM, yyyy", Locale.getDefault())
-
-        try {
-            val startDate: Date = inputFormat.parse(startDateStr)
-            val endDate: Date = inputFormat.parse(endDateStr)
-
-            return outputFormat.format(startDate) + " - " + outputFormat.format(endDate)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-            return ""
-        }
-    }
-
-
-
-/*    fun plotGraph(
-        graphData: FacialScanReportData,
-        binding: ActivityFacialScanReportDetailsBinding,
-        rangeType: String // "week", "month", or "6months"
-    ) {
-        val lineChart = binding.heartRateChart
-        val entries = mutableListOf<Entry>()
-        val xAxisLabels = mutableListOf<String>()
-
-        val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        sdfInput.timeZone = TimeZone.getTimeZone("UTC")
-
-        val calendar = Calendar.getInstance()
-        val sdfWeekday = SimpleDateFormat("EEE", Locale.getDefault()) // Mon, Tue...
-        val sdfMonth = SimpleDateFormat("MMM", Locale.getDefault())   // Jan, Feb...
-
-        // Use LinkedHashMap to preserve order
-        val weekMap = linkedMapOf<String, MutableList<Float>>()   // For month
-        val monthMap = linkedMapOf<String, MutableList<Float>>()  // For 6 months
-
-        // Sort by date first
-       *//* val sortedData = graphData.data?.sortedBy {
-            it.createdAt?.let { dateStr -> sdfInput.parse(dateStr) }
-        }*//*
-
-        val mockData = generateMockFacialScanReportData()
-
-        val sortedData = mockData.data?.sortedBy {
-            it.createdAt?.let { dateStr -> sdfInput.parse(dateStr) }
-        }
-
-        sortedData?.forEachIndexed { index, item ->
-            val value = item.value
-            val createdAt = item.createdAt
-            if (value != null && createdAt != null) {
-                val date = sdfInput.parse(createdAt)
-                if (date != null) {
-                    calendar.time = date
-
-                    when (rangeType) {
-                        "week" -> {
-                            val dayOfWeek = sdfWeekday.format(date)
-                            xAxisLabels.add(dayOfWeek)
-                            entries.add(Entry(index.toFloat(), value.toFloat()))
-                        }
-
-                        "month" -> {
-                            val weekOfMonth = calendar.get(Calendar.WEEK_OF_MONTH)
-                            val label = "Week $weekOfMonth"
-                            weekMap.getOrPut(label) { mutableListOf() }.add(value.toFloat())
-                        }
-
-                        "6months" -> {
-                            val label = sdfMonth.format(date)
-                            monthMap.getOrPut(label) { mutableListOf() }.add(value.toFloat())
-                        }
-                    }
-                }
-            }
-        }
-
-        // Average and add entries for month/week/6months
-        when (rangeType) {
-            "month" -> {
-                weekMap.entries.forEachIndexed { index, entry ->
-                    val avg = entry.value.average().toFloat()
-                    entries.add(Entry(index.toFloat(), avg))
-                    xAxisLabels.add(entry.key)
-                }
-            }
-
-            "6months" -> {
-                monthMap.entries.forEachIndexed { index, entry ->
-                    val avg = entry.value.average().toFloat()
-                    entries.add(Entry(index.toFloat(), avg))
-                    xAxisLabels.add(entry.key)
-                }
-            }
-        }
-
-        // Create dataset
-        val dataSet = LineDataSet(entries, "Heart Rate (bpm)").apply {
-            color = Color.parseColor("#05AB26")
-            setCircleColor(Color.parseColor("#05AB26"))
-            lineWidth = 2f
-            circleRadius = 4f
-            valueTextSize = 10f
-            mode = LineDataSet.Mode.LINEAR
-        }
-
-        lineChart.data = LineData(dataSet)
-
-        // Setup X Axis
-        lineChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            granularity = 1f
-            valueFormatter = IndexAxisValueFormatter(xAxisLabels)
-            setDrawGridLines(false)
-            textColor = Color.BLACK
-            labelRotationAngle = 0f
-        }
-
-        // Setup Y Axis
-        graphData.yAxisValue?.let { yValues ->
-            lineChart.axisLeft.apply {
-                axisMinimum = yValues.minOrNull()?.toFloat() ?: 0f
-                axisMaximum = yValues.maxOrNull()?.toFloat() ?: 100f
-                setLabelCount(yValues.size, true)
-                textColor = Color.BLACK
-            }
-        }
-
-        lineChart.axisRight.isEnabled = false
-
-        // Beautify chart
-        lineChart.apply {
-            description.isEnabled = false
-            setTouchEnabled(true)
-            setPinchZoom(true)
-            animateX(1000)
-            legend.textColor = Color.BLACK
-            invalidate()
-        }
-    }*/
-
-
-
-    /*    fun plotGraph(
-            graphData: FacialScanReportData,
-            binding: ActivityFacialScanReportDetailsBinding,
-            rangeType: String // "week", "month", or "6months"
-        ) {
-            val lineChart = binding.heartRateChart
-            val entries = mutableListOf<Entry>()
-            val xAxisLabels = mutableListOf<String>()
-
-            val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-            sdfInput.timeZone = TimeZone.getTimeZone("UTC")
-
-            val calendar = Calendar.getInstance()
-
-            // Used for month/week formatting
-            val sdfWeekday = SimpleDateFormat("EEE", Locale.getDefault()) // Mon, Tue...
-            val sdfMonth = SimpleDateFormat("MMM", Locale.getDefault())   // Jan, Feb...
-            val sdfDay = SimpleDateFormat("dd", Locale.getDefault())      // 01, 02...
-
-            val weekMap = mutableMapOf<String, MutableList<Float>>() // For month range
-            val monthMap = mutableMapOf<String, MutableList<Float>>() // For 6 months
-
-            graphData.data?.forEachIndexed { index, item ->
-                val value = item.value
-                val createdAt = item.createdAt
-                if (value != null && createdAt != null) {
-                    val date = sdfInput.parse(createdAt)
-                    if (date != null) {
-                        calendar.time = date
-
-                        when (rangeType) {
-                            "week" -> {
-                                val dayOfWeek = sdfWeekday.format(date)
-                                xAxisLabels.add(dayOfWeek)
-                                entries.add(Entry(index.toFloat(), value.toFloat()))
-                            }
-
-                            "month" -> {
-                                val weekOfMonth = calendar.get(Calendar.WEEK_OF_MONTH)
-                                val label = "Week $weekOfMonth"
-                                if (!weekMap.containsKey(label)) {
-                                    weekMap[label] = mutableListOf()
-                                }
-                                weekMap[label]?.add(value.toFloat())
-                            }
-
-                            "6months" -> {
-                                val monthName = sdfMonth.format(date)
-                                if (!monthMap.containsKey(monthName)) {
-                                    monthMap[monthName] = mutableListOf()
-                                }
-                                monthMap[monthName]?.add(value.toFloat())
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Process for 'month' and '6months' range types
-            if (rangeType == "month") {
-                weekMap.entries.forEachIndexed { index, entry ->
-                    val avg = entry.value.average().toFloat()
-                    entries.add(Entry(index.toFloat(), avg))
-                    xAxisLabels.add(entry.key)
-                }
-            }
-
-            if (rangeType == "6months") {
-                monthMap.entries.forEachIndexed { index, entry ->
-                    val avg = entry.value.average().toFloat()
-                    entries.add(Entry(index.toFloat(), avg))
-                    xAxisLabels.add(entry.key)
-                }
-            }
-
-            // Create dataset
-            val dataSet = LineDataSet(entries, "Heart Rate (bpm)").apply {
-                color = Color.parseColor("#05AB26")
-                setCircleColor(Color.parseColor("#05AB26"))
-                lineWidth = 2f
-                circleRadius = 4f
-                valueTextSize = 10f
-                mode = LineDataSet.Mode.LINEAR
-            }
-
-            lineChart.data = LineData(dataSet)
-
-            // Setup X Axis
-            lineChart.xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                granularity = 1f
-                valueFormatter = IndexAxisValueFormatter(xAxisLabels)
-                setDrawGridLines(false)
-                textColor = Color.BLACK
-                labelRotationAngle = 0f
-            }
-
-            // Setup Y Axis using yAxisValue from response
-            graphData.yAxisValue?.let { yValues ->
-                lineChart.axisLeft.apply {
-                    axisMinimum = yValues.minOrNull()?.toFloat() ?: 0f
-                    axisMaximum = yValues.maxOrNull()?.toFloat() ?: 100f
-                    setLabelCount(yValues.size, true)
-                    textColor = Color.BLACK
-                }
-            }
-
-            lineChart.axisRight.isEnabled = false
-
-            // Beautify chart
-            lineChart.apply {
-                description.isEnabled = false
-                setTouchEnabled(true)
-                setPinchZoom(true)
-                animateX(1000)
-                legend.textColor = Color.BLACK
-                invalidate()
-            }
-        }*/
-
-
-        fun plotGraph(
-            graphData: FacialScanReportData,
-            binding: ActivityFacialScanReportDetailsBinding,
-            duration: String
-        ) {
-            val lineChart = binding.heartRateChart
-            val entries = mutableListOf<Entry>()
-            val xAxisLabels = mutableListOf<String>()
-
-            val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-            sdfInput.timeZone = TimeZone.getTimeZone("UTC")
-
-            // Grouping data by date for quick lookup
-            val valueMap = mutableMapOf<String, Float>()
-            val dateList = mutableListOf<Date>()
-
-            graphData.data?.forEach {
-                val date = it.createdAt?.let { sdfInput.parse(it) }
-                if (date != null && it.value != null) {
-                    dateList.add(date)
-                    valueMap[sdfInput.format(date)] = it.value!!.toFloat()
-                }
-            }
-
-            when (duration.lowercase(Locale.ROOT)) {
-
-                // --- Week: Show all 7 days ---
-                "week" -> {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = dateList.minOrNull() ?: Date()
-                    calendar.set(Calendar.DAY_OF_WEEK, calendar.firstDayOfWeek)
-
-                    val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
-                    repeat(7) { i ->
-                        val dateKey = sdfInput.format(calendar.time)
-                        val value = valueMap[dateKey] ?: 0f
-                        entries.add(Entry(i.toFloat(), value))
-                        xAxisLabels.add(dayFormat.format(calendar.time))
-                        calendar.add(Calendar.DAY_OF_MONTH, 1)
-                    }
-                }
-
-                // --- Month: Weekly ranges like 1-7 Apr, etc. ---
-                "month" -> {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = dateList.minOrNull() ?: Date()
-                    val month = calendar.get(Calendar.MONTH)
-
-                    calendar.set(Calendar.DAY_OF_MONTH, 1)
-                    val monthFormat = SimpleDateFormat("d MMM", Locale.getDefault())
-
-                    var weekIndex = 0
-                    while (calendar.get(Calendar.MONTH) == month) {
-                        val start = calendar.get(Calendar.DAY_OF_MONTH)
-                        val startDateKey = sdfInput.format(calendar.time)
-                        val value = valueMap[startDateKey] ?: 0f
-                        entries.add(Entry(weekIndex.toFloat(), value))
-
-                        val end = (start + 6).coerceAtMost(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-                        xAxisLabels.add("$start-$end ${monthFormat.format(calendar.time).split(" ")[1]}")
-                        calendar.add(Calendar.DAY_OF_MONTH, 7)
-                        weekIndex++
-                    }
-                }
-
-                // --- 6 Months: Show each unique month name ---
-                "6months" -> {
-                    val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-                    val months = sortedSetOf<String>()
-                    val monthToValue = mutableMapOf<String, Float>()
-
-                    dateList.forEach { date ->
-                        val month = monthFormat.format(date)
-                        if (!monthToValue.containsKey(month)) {
-                            monthToValue[month] = valueMap[sdfInput.format(date)] ?: 0f
-                        }
-                        months.add(month)
-                    }
-
-                    months.forEachIndexed { index, month ->
-                        entries.add(Entry(index.toFloat(), monthToValue[month] ?: 0f))
-                        xAxisLabels.add(month)
-                    }
-                }
-            }
-
-            // Chart setup
-            val dataSet = LineDataSet(entries, "").apply {
-                color = Color.parseColor("#05AB26")
-                setCircleColor(Color.parseColor("#05AB26"))
-                lineWidth = 2f
-                circleRadius = 4f
-                valueTextSize = 10f
-                mode = LineDataSet.Mode.LINEAR
-                setDrawValues(false)
-            }
-
-            val lineData = LineData(dataSet)
-            lineChart.data = lineData
-
-            // X-Axis config
-            lineChart.xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                granularity = 1f
-                valueFormatter = IndexAxisValueFormatter(xAxisLabels)
-                setDrawGridLines(false)
-                textColor = Color.BLACK
-                labelRotationAngle = 0f
-            }
-
-            // Y-Axis config
-            graphData.yAxisValue?.let { yValues ->
-                lineChart.axisLeft.apply {
-                    axisMinimum = yValues.minOrNull()?.toFloat() ?: 0f
-                    axisMaximum = yValues.maxOrNull()?.toFloat() ?: 100f
-                    setLabelCount(5, true)
-                    textColor = Color.BLACK
-                }
-            }
-
-            lineChart.axisRight.isEnabled = false
-
-            // Chart styling
-            lineChart.apply {
-                description.isEnabled = false
-                setTouchEnabled(true)
-                setPinchZoom(true)
-                animateX(1000)
-                legend.textColor = Color.BLACK
-                invalidate()
-            }
-        }
-
-
-
-
-    /*
-        fun plotGraph(
-            graphData: FacialScanReportData,
-            binding: ActivityFacialScanReportDetailsBinding,
-            duration: String // Add this parameter to switch x-axis format
-        ) {
-            val lineChart = binding.heartRateChart
-            val entries = mutableListOf<Entry>()
-            val xAxisLabels = mutableListOf<String>()
-
-            val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-            sdfInput.timeZone = TimeZone.getTimeZone("UTC")
-
-            // Select date format based on duration
-            val sdfOutput = when (duration.lowercase(Locale.ROOT)) {
-                "week" -> SimpleDateFormat("EEE", Locale.getDefault())      // Mon, Tue...
-                "month" -> SimpleDateFormat("d MMM", Locale.getDefault())   // 5 Apr
-                "6months" -> SimpleDateFormat("MMM", Locale.getDefault())   // Apr
-                else -> SimpleDateFormat("d MMM", Locale.getDefault())      // Default fallback
-            }
-
-            // Prepare entries and X-axis labels
-            graphData.data?.forEachIndexed { index, item ->
-                item.value?.let { value ->
-                    entries.add(Entry(index.toFloat(), value.toFloat()))
-
-                    val date = item.createdAt?.let { sdfInput.parse(it) }
-                    val label = date?.let { sdfOutput.format(it) } ?: "N/A"
-                    xAxisLabels.add(label)
-                }
-            }
-
-            // Create dataset
-            val dataSet = LineDataSet(entries, "Heart Rate (bpm)").apply {
-                color = Color.parseColor("#05AB26")
-                setCircleColor(Color.parseColor("#05AB26"))
-                lineWidth = 2f
-                circleRadius = 4f
-                valueTextSize = 10f
-                mode = LineDataSet.Mode.LINEAR
-                setDrawValues(false)
-            }
-
-            val lineData = LineData(dataSet)
-            lineChart.data = lineData
-
-            // Setup X-Axis
-            lineChart.xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                granularity = 1f
-                valueFormatter = IndexAxisValueFormatter(xAxisLabels)
-                setDrawGridLines(false)
-                textColor = Color.BLACK
-                labelRotationAngle = if (duration == "month" || duration == "6months") 0f else 0f
-            }
-
-            // Setup Y-Axis
-            graphData.yAxisValue?.let { yValues ->
-                lineChart.axisLeft.apply {
-                    axisMinimum = yValues.minOrNull()?.toFloat() ?: 0f
-                    axisMaximum = yValues.maxOrNull()?.toFloat() ?: 100f
-                    setLabelCount(5, true)
-                    textColor = Color.BLACK
-                }
-            }
-
-            lineChart.axisRight.isEnabled = false
-
-            // Beautify chart
-            lineChart.apply {
-                description.isEnabled = false
-                setTouchEnabled(true)
-                setPinchZoom(true)
-                animateX(1000)
-                legend.textColor = Color.BLACK
-                invalidate()
-            }
-        }*/
-
-
-    /// new graph plot
-    /*fun plotGraph(graphData: FacialScanReportData, binding: ActivityFacialScanReportDetailsBinding) {
-        var lineChart = binding.heartRateChart
-        val entries = mutableListOf<Entry>()
-        val xAxisLabels = mutableListOf<String>()
-
-        val sdfInput = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-        sdfInput.timeZone = TimeZone.getTimeZone("UTC")
-        val sdfOutput = SimpleDateFormat("EEE", Locale.getDefault()) // Weekday format
-
-        // Prepare entries and X-axis labels
-        graphData.data?.forEachIndexed { index, item ->
-            item.value?.let { value ->
-                entries.add(Entry(index.toFloat(), value.toFloat()))
-
-                val date = sdfInput.parse(item.createdAt)
-                val dayOfWeek = date?.let { sdfOutput.format(it) } ?: "Day"
-                xAxisLabels.add(dayOfWeek)
-            }
-        }
-
-        // Create dataset
-        val dataSet = LineDataSet(entries, "Heart Rate (bpm)").apply {
-            color = Color.parseColor("#05AB26") // Custom color from your response
-            setCircleColor(Color.parseColor("#05AB26"))
-            lineWidth = 2f
-            circleRadius = 4f
-            valueTextSize = 10f
-            mode = LineDataSet.Mode.LINEAR
-        }
-
-        val lineData = LineData(dataSet)
-        lineChart.data = lineData
-
-        // Setup X-Axis
-        lineChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            granularity = 1f
-            valueFormatter = IndexAxisValueFormatter(xAxisLabels)
-            setDrawGridLines(false)
-            textColor = Color.BLACK
-        }
-
-        // Setup Y-Axis
-        graphData.yAxisValue?.let { yValues ->
-            lineChart.axisLeft.apply {
-                axisMinimum = yValues.minOrNull()?.toFloat() ?: 0f
-                axisMaximum = yValues.maxOrNull()?.toFloat() ?: 100f
-                setLabelCount(yValues.size, true)
-                textColor = Color.BLACK
-            }
-        }
-
-        lineChart.axisRight.isEnabled = false
-
-        // Beautify chart
-        lineChart.apply {
-            description.isEnabled = false
-            setTouchEnabled(true)
-            setPinchZoom(true)
-            animateX(1000)
-            legend.textColor = Color.BLACK
-            invalidate()
-        }
-    }*/
-
 
     fun plotGraph2(
         graphData: FacialScanReportData,
@@ -1098,7 +486,9 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                 val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
                 repeat(7) { i ->
                     val day = calendar.time
-                    val value = parsedData.find { sdfInput.format(it.first) == sdfInput.format(day) }?.second ?: 0f
+                    val value =
+                        parsedData.find { sdfInput.format(it.first) == sdfInput.format(day) }?.second
+                            ?: 0f
                     entries.add(Entry(i.toFloat(), value))
                     xAxisLabels.add(dayFormat.format(day))
                     calendar.add(Calendar.DAY_OF_MONTH, 1)
@@ -1126,11 +516,13 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                         it.first >= weekStart && it.first <= weekEnd
                     }.map { it.second }
 
-                    val weekValue = if (weeklyValues.isNotEmpty()) weeklyValues.average().toFloat() else 0f
+                    val weekValue =
+                        if (weeklyValues.isNotEmpty()) weeklyValues.average().toFloat() else 0f
                     entries.add(Entry(weekIndex.toFloat(), weekValue))
 
                     val startDay = calendar.get(Calendar.DAY_OF_MONTH)
-                    val endDay = (startDay + 6).coerceAtMost(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    val endDay =
+                        (startDay + 6).coerceAtMost(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
                     val monthLabel = monthFormat.format(calendar.time).split(" ")[1]
                     xAxisLabels.add("$startDay-$endDay $monthLabel")
 
@@ -1205,6 +597,15 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
             legend.textColor = Color.BLACK
             invalidate()
         }
+    }
+
+    fun formatIsoDateToReadable(input: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
+        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+        val outputFormat = SimpleDateFormat("dd MMM, yyyy", Locale.ENGLISH)
+        val date = inputFormat.parse(input)
+        return outputFormat.format(date!!)
     }
 
 }
