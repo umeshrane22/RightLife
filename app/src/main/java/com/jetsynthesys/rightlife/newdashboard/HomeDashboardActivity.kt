@@ -63,6 +63,7 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
+import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
@@ -251,53 +252,55 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
         val bottom_sheet = binding.includedhomebottomsheet.bottomSheet
         binding.fab.setOnClickListener { v ->
-            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
-                bottom_sheet.visibility = View.GONE
-                binding.iconHome.setBackgroundResource(R.drawable.homeselected)
-                binding.labelHome.setTextColor(resources.getColor(R.color.menuselected))
-                val typeface =
-                    ResourcesCompat.getFont(this, R.font.dmsans_bold)
-                binding.labelHome.typeface = typeface
-            } else {
-                bottom_sheet.visibility = View.VISIBLE
-                //binding.iconHome.setBackgroundColor(Color.TRANSPARENT)
-                //binding.labelHome.setTextColor(resources.getColor(R.color.txt_color_header))
-                val typeface =
-                    ResourcesCompat.getFont(this, R.font.dmsans_regular)
-                //binding.labelHome.setTypeface(typeface)
-            }
-            v.isSelected = !v.isSelected
+            if (checkTrailEndedAndShowDialog()){
+                if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                    bottom_sheet.visibility = View.GONE
+                    binding.iconHome.setBackgroundResource(R.drawable.homeselected)
+                    binding.labelHome.setTextColor(resources.getColor(R.color.menuselected))
+                    val typeface =
+                        ResourcesCompat.getFont(this, R.font.dmsans_bold)
+                    binding.labelHome.typeface = typeface
+                } else {
+                    bottom_sheet.visibility = View.VISIBLE
+                    //binding.iconHome.setBackgroundColor(Color.TRANSPARENT)
+                    //binding.labelHome.setTextColor(resources.getColor(R.color.txt_color_header))
+                    val typeface =
+                        ResourcesCompat.getFont(this, R.font.dmsans_regular)
+                    //binding.labelHome.setTypeface(typeface)
+                }
+                v.isSelected = !v.isSelected
 
-            /*BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+                /*BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
             bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());*/
-            binding.fab.animate().rotationBy(180f).setDuration(60)
-                .setInterpolator(DecelerateInterpolator()).withEndAction {
-                    // Change icon after rotation
-                    if (isAdd) {
-                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
-                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                            this,
-                            R.color.rightlife
-                        )
-                        binding.fab.imageTintList = ColorStateList.valueOf(
-                            resources.getColor(
-                                R.color.black
-                            )
-                        )
-                    } else {
-                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
-                        binding.fab.backgroundTintList = ContextCompat.getColorStateList(
-                            this,
-                            R.color.white
-                        )
-                        binding.fab.imageTintList = ColorStateList.valueOf(
-                            resources.getColor(
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this,
                                 R.color.rightlife
                             )
-                        )
-                    }
-                    isAdd = !isAdd // Toggle the state
-                }.start()
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
+                                )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this,
+                                R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
+                                )
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
+            }
         }
 
 
@@ -375,7 +378,11 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
             //Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this@HomeDashboardActivity, HealthCamActivity::class.java))
+            if (DashboardChecklistManager.facialScanStatus){
+                startActivity(Intent(this@HomeDashboardActivity, NewHealthCamReportActivity::class.java))
+            }else {
+                startActivity(Intent(this@HomeDashboardActivity, HealthCamActivity::class.java))
+            }
         }
         binding.profileImage.setOnClickListener {
 
@@ -980,7 +987,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
         // Chceklist completion logic
-        if (true){//if (checklistComplete){
+        if (checklistComplete){
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
         }else{
@@ -1233,5 +1240,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
             })
     }
-
+    fun checkTrailEndedAndShowDialog(): Boolean {
+        return if (!DashboardChecklistManager.facialScanStatus) {
+            showTrailEndedBottomSheet()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            true // Return true if condition is false
+        }
+    }
 }
