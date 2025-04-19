@@ -1,8 +1,8 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
-import android.content.res.ColorStateList;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,15 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
 import com.jetsynthesys.rightlife.databinding.HealthCamVitalsItemBinding;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity;
+import com.jetsynthesys.rightlife.ui.NumberUtils;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.util.List;
 
 public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitalsAdapter.HealthCamVitalsViewHolder> {
 
-    private List<HealthCamItem> healthCamItems;
-    private Context context;
+    private final List<HealthCamItem> healthCamItems;
+    private final Context context;
 
     public HealthCamVitalsAdapter(Context context, List<HealthCamItem> healthCamItems) {
         this.healthCamItems = healthCamItems;
@@ -39,7 +40,9 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
     public void onBindViewHolder(@NonNull HealthCamVitalsViewHolder holder, int position) {
         HealthCamItem item = healthCamItems.get(position);
 
-        holder.binding.valueTextView.setText(String.valueOf(item.value));
+        double val = NumberUtils.INSTANCE.smartRound(item.value, 2);
+
+        holder.binding.valueTextView.setText(String.valueOf(val));
         holder.binding.unitTextView.setText(item.unit);
         holder.binding.indicatorTextView.setText(item.indicator);
         holder.binding.parameterTextView.setText(item.parameter);
@@ -49,23 +52,8 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
             context.startActivity(new Intent(context, FacialScanReportDetailsActivity.class));
         });
 
-        // Set Indicator Image and Color based on item.indicator
-   /*     if (item.indicator.equals("Normal")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_normal); // Replace with your normal indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#008000")); // Green color
-        } else if (item.indicator.equals("High")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_high); // Replace with your high indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#FF0000")); // Red color
-        } else if (item.indicator.equals("Low")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_low); // Replace with your low indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#FFA500")); // Orange color
-        } else if (item.indicator.equals("Optimal")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_optimal); // Replace with your optimal indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#F5EE08")); // Yellow color
-        }*/
-        // ... set other indicator conditions and colors as needed
-
     }
+
     private int getReportIconByType(String type) {
         switch (type) {
             case "BMI_CALC":

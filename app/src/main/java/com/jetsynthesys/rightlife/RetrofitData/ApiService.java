@@ -66,6 +66,8 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultRespo
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse;
+import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestData;
+import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse;
 import com.jetsynthesys.rightlife.ui.payment.PaymentCardResponse;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse;
@@ -746,6 +748,13 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("userIntrest")
     Call<GetInterestResponse> getUserInterest(
+            @Header("Authorization") String authToken
+    );
+
+
+    @Headers("Content-Type: application/json")
+    @GET("userIntrestDetailSave")
+    Call<SavedInterestResponse> getSavedUserInterest(
             @Header("Authorization") String authToken
     );
 
