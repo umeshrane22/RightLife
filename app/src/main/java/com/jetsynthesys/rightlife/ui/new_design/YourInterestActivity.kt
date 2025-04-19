@@ -1,13 +1,12 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
-import android.os.Build
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.Toast
-import android.window.OnBackInvokedDispatcher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +18,7 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.GetInterestResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestDataList
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
+import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -30,9 +30,12 @@ class YourInterestActivity : AppCompatActivity() {
     private lateinit var adapter: YourInterestAdapter
     private val interestList = ArrayList<InterestDataList>()
     private val selectedInterest = ArrayList<InterestDataList>()
+    private val savedInterest = ArrayList<InterestDataList>()
     private lateinit var btnSaveInterest: Button
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var isFrom: String
+    private lateinit var colorStateListSelected: ColorStateList
+    private lateinit var colorStateList: ColorStateList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +51,10 @@ class YourInterestActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.rv_your_interest)
         btnSaveInterest = findViewById(R.id.btn_save_interest)
 
-        val colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)
-        val colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)
+        colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
+        colorStateList = ContextCompat.getColorStateList(this, R.color.rightlife)!!
 
-        getInterests()
+        getSavedInterest()
         adapter = YourInterestAdapter(this, interestList) { interest ->
             if (interest.isSelected)
                 selectedInterest.remove(interest)
@@ -104,6 +107,17 @@ class YourInterestActivity : AppCompatActivity() {
 
                     val data = apiResponse?.data
                     data?.InterestDatata?.let { interestList.addAll(it) }
+                    savedInterest.forEach { selectedInterestListData ->
+                        interestList.forEach { interestDataList ->
+                            if (interestDataList.id == selectedInterestListData.id) {
+                                interestDataList.isSelected = true
+                                selectedInterest.add(interestDataList)
+                            }
+                        }
+                    }
+                    btnSaveInterest.isEnabled = selectedInterest.size > 0
+                    btnSaveInterest.backgroundTintList =
+                        if (selectedInterest.size > 0) colorStateListSelected else colorStateList
                     adapter.notifyDataSetChanged()
 
                 } else {
@@ -201,6 +215,39 @@ class YourInterestActivity : AppCompatActivity() {
                 //finish()
             }
         }, 1000)
+
+    }
+
+    private fun getSavedInterest() {
+        val authToken = SharedPreferenceManager.getInstance(this).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val call = apiService.getSavedUserInterest(authToken)
+
+        call.enqueue(object : Callback<SavedInterestResponse> {
+            override fun onResponse(
+                call: Call<SavedInterestResponse>,
+                response: Response<SavedInterestResponse>
+            ) {
+                getInterests()
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()
+
+                    val data = apiResponse?.data
+                    data?.matchingUserIntrest?.let { savedInterest.addAll(it) }
+
+                }
+            }
+
+            override fun onFailure(call: Call<SavedInterestResponse>, t: Throwable) {
+                getInterests()
+                Toast.makeText(
+                    this@YourInterestActivity,
+                    "Network Error: " + t.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        })
 
     }
 

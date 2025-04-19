@@ -209,9 +209,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
                     })
                 },
                 onAddToPlaylistClick = { service, position ->
-                    // Handle add to playlist click here
-                    //addToPlaylist(service._id, position)
-                    //Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                    addToPlaylist(service._id, position)
                 }
             )
 
@@ -308,6 +306,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 call: Call<AddPlaylistResponse>,
                 response: Response<AddPlaylistResponse>
             ) {
+                getUserCreatedPlaylist()
                 Utils.dismissLoader(this@NewSleepSoundActivity)
                 if (response.isSuccessful && response.body() != null) {
                     showToast(response.body()?.successMessage ?: "Added to Playlist!")
@@ -336,9 +335,9 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 response: Response<SleepSoundPlaylistResponse>
             ) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
+                useplaylistdata.clear()
                 if (response.isSuccessful && response.body() != null) {
                     sleepSoundPlaylistResponse = response.body()
-
                     useplaylistdata = sleepSoundPlaylistResponse?.data as ArrayList<Service>
                     if (sleepSoundPlaylistResponse?.data?.isNotEmpty() == true) {
                         setupYourPlayListRecyclerView(useplaylistdata)
