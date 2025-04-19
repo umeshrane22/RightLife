@@ -31,6 +31,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthCamActivity;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
+import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
@@ -132,7 +133,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
 
             //binding.txtWellnessScore1.setText(String.valueOf(facialReportResponseNew.data.overallWellnessScore.value));
             if (facialReportResponseNew.data.overallWellnessScore != null) {
-                binding.txtWellnessScore1.setText(String.format("%.2f", facialReportResponseNew.data.overallWellnessScore.value));
+                String formatted = ConversionUtils.decimalFormat0Decimal.format(facialReportResponseNew.data.overallWellnessScore.value);
+                Log.d("FormattedValue", formatted);
+                binding.txtWellnessScore1.setText(formatted);
                 setTextAccordingToWellnessScore(facialReportResponseNew.data.overallWellnessScore.value);
                 binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
             }

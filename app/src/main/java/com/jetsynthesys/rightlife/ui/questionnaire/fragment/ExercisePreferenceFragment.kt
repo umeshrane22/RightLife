@@ -56,7 +56,7 @@ class ExercisePreferenceFragment : Fragment() {
                 QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("PhysicalActivitiesFragment")
                 QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("ExerciseLocationFragment")
                 submit(times)
-            } else if (times.toInt() >= 15) {
+            } else if (times.toInt() > 15) {
                 Toast.makeText(
                     requireContext(),
                     "It should not be more than 15",

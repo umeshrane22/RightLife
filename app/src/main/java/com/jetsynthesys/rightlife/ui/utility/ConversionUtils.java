@@ -8,6 +8,9 @@ public class ConversionUtils {
     private static DecimalFormat decimalFormatCm = new DecimalFormat("###.##");
     private static DecimalFormat decimalFormat = new DecimalFormat("###.##");
     private static DecimalFormat decimalFormatWeight = new DecimalFormat("###.#");
+    public static DecimalFormat decimalFormat0Decimal = new DecimalFormat("###");
+    public static DecimalFormat decimalFormat1Decimal = new DecimalFormat("###.#");
+    public static DecimalFormat decimalFormat2Decimal = new DecimalFormat("###.##");
 
     public static String convertCentimeterToFtInch(String centimeter) {
         try {
