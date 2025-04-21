@@ -13,9 +13,11 @@ public class DashboardChecklistResponse {
          boolean checklistStatus;
          boolean facialScanStatus;
          boolean mindAuditStatus;
+         boolean paymentStatus;
 
         public boolean isChecklistStatus() { return checklistStatus; }
         public boolean isFacialScanStatus() { return facialScanStatus; }
         public boolean isMindAuditStatus() { return mindAuditStatus; }
+        public boolean isPaymentStatus() { return paymentStatus; }
     }
 }

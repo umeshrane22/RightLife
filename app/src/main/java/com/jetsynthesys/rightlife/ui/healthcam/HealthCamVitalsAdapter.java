@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
 import com.jetsynthesys.rightlife.databinding.HealthCamVitalsItemBinding;
@@ -17,6 +18,7 @@ import com.jetsynthesys.rightlife.ui.NumberUtils;
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitalsAdapter.HealthCamVitalsViewHolder> {
@@ -46,7 +48,7 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         holder.binding.valueTextView.setText(String.valueOf(val));
 
         String formatedValue = getFormatedValue(item.fieldName,String.valueOf(item.value));
-        holder.binding.valueTextView.setText(String.valueOf(item.value));
+        holder.binding.valueTextView.setText(formatedValue);//String.valueOf(item.value));
 
         holder.binding.unitTextView.setText(item.unit);
         holder.binding.indicatorTextView.setText(item.indicator);
@@ -54,9 +56,14 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         holder.binding.rlMainBg.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.colour)));
 
         holder.itemView.setOnClickListener(view -> {
-            context.startActivity(new Intent(context, FacialScanReportDetailsActivity.class));
+            Intent intent = new Intent(context, FacialScanReportDetailsActivity.class);
+            intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
+            context.startActivity(intent);
         });
-
+        Glide.with(context)
+                            .load(getReportIconByType(item.fieldName))
+                .placeholder(R.drawable.ic_db_report_heart_rate).error(R.drawable.ic_db_report_heart_rate)
+                .into(holder.binding.imgUnit);
     }
 
     private int getReportIconByType(String type) {
@@ -111,12 +118,12 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
 
                 case "systolic":
                 case "BP_RPP":
-                case "BP_SYSTOLIC":
                     return ConversionUtils.decimalFormat2Decimal.format(val);
 
                 case "IHB_COUNT":
                 case "MENTAL_SCORE":
                 case "BP_DIASTOLIC":
+                case "BP_SYSTOLIC":
                     return ConversionUtils.decimalFormat0Decimal.format(val);
 
                 default:

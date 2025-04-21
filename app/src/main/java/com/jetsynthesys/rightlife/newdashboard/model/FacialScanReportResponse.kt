@@ -14,5 +14,5 @@ class FacialScanReportResponse {
 
     @SerializedName("data")
     @Expose
-    var data: FacialScanReportData? = null
+    var data: FacialScanReportDataWrapper? = null
 }

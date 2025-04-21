@@ -25,9 +25,14 @@ class FacialScanReportData {
     @Expose
     var avgValue: Double? = null
 
+    @SerializedName("deffination")
+    @Expose
+    var deffination: String? = null
+
+
     @SerializedName("yAxisValue")
     @Expose
-    var yAxisValue: List<Int>? = null
+    var yAxisValue: ArrayList<Int>? = null
 
     @SerializedName("data")
     @Expose

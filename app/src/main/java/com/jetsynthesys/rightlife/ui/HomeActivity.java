@@ -106,6 +106,7 @@ import retrofit2.Response;
 
 import static com.jetsynthesys.rightlife.ui.utility.DateConverter.convertToDate;
 import static com.jetsynthesys.rightlife.ui.utility.DateConverter.convertToTime;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     public WellnessApiResponse wellnessApiResponse;
@@ -1568,56 +1569,78 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
-            startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
+            }
         } else if (viewId == R.id.ll_affirmations) {
-            startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
+            }
         } else if (viewId == R.id.ll_sleepsounds) {
-            startActivity(new Intent(HomeActivity.this, NewSleepSoundActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, NewSleepSoundActivity.class));
+            }
         }else if (viewId == R.id.ll_breathwork) {
-            startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
+            }
         }else if (viewId == R.id.ll_health_cam_ql) {
             startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
         }else if (viewId == R.id.ll_mealplan) {
-            Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
+            if (checkTrailEndedAndShowDialog()) {
+                Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
+            }
             //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         } else if (viewId == R.id.btn_wellness_preference) {
             startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
         }
        else if (view.getId() == R.id.ll_food_log) {
+            if (checkTrailEndedAndShowDialog()) {
             Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
             intent.putExtra("ModuleName", "EatRight");
             intent.putExtra("BottomSeatName", "MealLogTypeEat");
             startActivity(intent);
+            }
 
         } else if (view.getId() == R.id.ll_activity_log) {
-            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
-            intent.putExtra("ModuleName", "MoveRight");
-            intent.putExtra("BottomSeatName", "SearchActivityLogMove");
-            startActivity(intent);
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "MoveRight");
+                intent.putExtra("BottomSeatName", "SearchActivityLogMove");
+                startActivity(intent);
+            }
 
         } else if (view.getId() == R.id.ll_mood_log) {
-            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
-            intent.putExtra("ModuleName", "ThinkRight");
-            intent.putExtra("BottomSeatName", "RecordEmotionMoodTracThink");
-            startActivity(intent);
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "ThinkRight");
+                intent.putExtra("BottomSeatName", "RecordEmotionMoodTracThink");
+                startActivity(intent);
+            }
 
         } else if (view.getId() == R.id.ll_sleep_log) {
-            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
-            intent.putExtra("ModuleName", "SleepRight");
-            intent.putExtra("BottomSeatName", "LogLastNightSleep");
-            startActivity(intent);
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "SleepRight");
+                intent.putExtra("BottomSeatName", "LogLastNightSleep");
+                startActivity(intent);
+            }
 
         } else if (view.getId() == R.id.ll_weight_log) {
-            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
-            intent.putExtra("ModuleName", "EatRight");
-            intent.putExtra("BottomSeatName", "LogWeightEat");
-            startActivity(intent);
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "EatRight");
+                intent.putExtra("BottomSeatName", "LogWeightEat");
+                startActivity(intent);
+            }
 
         } else if (view.getId() == R.id.ll_water_log) {
+            if (checkTrailEndedAndShowDialog()) {
             Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
             intent.putExtra("ModuleName", "EatRight");
             intent.putExtra("BottomSeatName", "LogWaterIntakeEat");
             startActivity(intent);
+            }
         }
 
 
@@ -1815,15 +1838,23 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+
+    public boolean checkTrailEndedAndShowDialog() {
+        if (!DashboardChecklistManager.INSTANCE.getPaymentStatus()) {
+            showTrailEndedBottomSheet();
+            return false; // Return false if condition is true and dialog is shown
+        }
+        return true; // Return true if condition is false
+    }
+
     private void showTrailEndedBottomSheet() {
         // Create and configure BottomSheetDialog
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
 
-        // Inflate the BottomSheet layout using ViewBinding
+        // Inflate the BottomSheet layout
         BottomsheetTrialEndedBinding dialogBinding = BottomsheetTrialEndedBinding.inflate(getLayoutInflater());
         View bottomSheetView = dialogBinding.getRoot();
 
-        // Set content view
         bottomSheetDialog.setContentView(bottomSheetView);
 
         // Set up the animation
@@ -1833,19 +1864,26 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             bottomSheetLayout.setAnimation(slideUpAnimation);
         }
 
-        // Optional: Set texts if needed
-    /*
-    dialogBinding.tvTitle.setText("Leaving early?");
-    dialogBinding.tvDescription.setText("A few more minutes of breathing practise will make a world of difference.");
-    dialogBinding.btnCancel.setText("Continue Practise");
-    dialogBinding.btnYes.setText("Leave");
-    */
+    /*dialogBinding.tvTitle.setText("Leaving early?");
+    dialogBinding.tvDescription.setText(
+        "A few more minutes of breathing practise will make a world of difference.");*/
 
-        dialogBinding.ivDialogClose.setOnClickListener(v -> bottomSheetDialog.dismiss());
+        //dialogBinding.btnCancel.setText("Continue Practise");
+        //dialogBinding.btnYes.setText("Leave");
 
-        dialogBinding.btnExplorePlan.setOnClickListener(v -> {
-            bottomSheetDialog.dismiss();
-            // finish();
+        dialogBinding.ivDialogClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        dialogBinding.btnExplorePlan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetDialog.dismiss();
+                //finish();
+            }
         });
 
         bottomSheetDialog.show();
