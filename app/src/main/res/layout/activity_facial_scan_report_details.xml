@@ -40,6 +40,7 @@
                     android:layout_centerInParent="true">
 
                     <ImageView
+                        android:id="@+id/img_popup_menu"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/active_heartrate_icon"
@@ -65,6 +66,7 @@
         </LinearLayout>
 
         <androidx.cardview.widget.CardView
+            android:visibility="visible"
             android:id="@+id/calorie_balance_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -175,7 +177,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/roundedcornerborderred"
-
+                    android:id="@+id/ll_selected_graph_item"
                     android:layout_marginTop="18dp"
                     android:layout_marginStart="21dp"
                     android:layout_marginEnd="21dp"
@@ -183,12 +185,13 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:orientation="vertical"
                     android:padding="10dp"
+                    android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate">
 
                     <TextView
                         android:id="@+id/report_date"
                         android:layout_width="wrap_content"
-                        android:text=" 16 Apr 2025"
+                        android:text=""
                         android:fontFamily="@font/dmsans_semibold"
                         android:layout_gravity="center_horizontal"
                         android:layout_height="wrap_content"/>
@@ -290,6 +293,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="2dp"
                     app:layout_constraintTop_toBottomOf="@+id/percentage_text"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
@@ -448,7 +452,7 @@
             android:layout_marginTop="@dimen/margin_card_16dp"
             android:fontFamily="@font/dmsans_regular"
             android:layout_marginHorizontal="16dp"
-            android:visibility="gone"
+            android:visibility="visible"
             android:text="Pulse rate is the number of times your heart beats in a minute, giving insight into your heart’s rhythm and pace. It’s best measured when you’re calm, like first thing in the morning or after sitting quietly for a few minutes." />
 
 
@@ -511,7 +515,6 @@
                 android:textColor="@color/text_color_app"
                 android:fontFamily="@font/dmsans_bold"
                 android:background="@drawable/bg_rounded_green"
-
                 android:layout_marginTop="8dp" />
 
             <TextView
@@ -538,21 +541,205 @@
                 android:visibility="gone"
                 android:layout_marginTop="16dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View More About The Ranges ▼"
-                android:textSize="16sp"
-                android:textColor="#007AFF"
-                android:layout_marginTop="24dp"
-                android:paddingHorizontal="10dp"
-                android:gravity="center"
-                android:padding="8dp"
+
+
+            <RelativeLayout
+                android:id="@+id/rl_ranges_button"
+                android:layout_width="match_parent"
                 android:background="@drawable/roundedcornerbutton"
                 android:backgroundTint="@color/light_blue"
-                android:visibility="gone"
-                android:layout_gravity="center_horizontal" />
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content">
 
+                <TextView
+                    android:id="@+id/txt_inthisarticle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/merriweather_regular"
+                    android:layout_centerVertical="true"
+                    android:paddingStart="32dp"
+                    android:paddingEnd="30dp"
+                    android:text="View More About The Ranges"
+                    android:textColor="#1292E5"
+                    android:textSize="@dimen/textsize_medium" />
+
+                <ImageView
+                    android:id="@+id/icon_arrow_ranges"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="30dp"
+                    android:padding="15dp"
+                    android:src="@drawable/icon_arrow_article"
+                    app:tint="#1292E5" />
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/ll_range_expand"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/ll_range_2"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/indicator_range2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Normal"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_weight="1" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="end">
+
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1 Jan, 2025"
+                            android:visibility="invisible"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_indicator_value_bg_range2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="60-100 bpm"
+                    android:textSize="12sp"
+                    android:padding="8dp"
+                    android:textColor="@color/text_color_app"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:background="@drawable/bg_rounded_green"
+                    android:layout_marginTop="8dp" />
+
+                <TextView
+                    android:id="@+id/tv_indicator_explain_range2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your vital are in the normal range in between 60-100 Bpm."
+                    android:textSize="16sp"
+                    android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Optimal RHR (around 60-70 BPM): Your heart's in the sweet spot! It's working smoothly with minimal stress."
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Higher normal RHR (&gt;80 BPM): A little heads-up—if this persists, it could mean future heart concerns. Keep an eye on it!"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    android:layout_marginTop="16dp" />
+
+            </LinearLayout>
+
+                 <!--Range data 3-->
+                <LinearLayout
+                    android:id="@+id/ll_range_3"
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/indicator_range3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Normal"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_weight="1" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="end">
+
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="1 Jan, 2025"
+                                android:visibility="invisible"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_indicator_value_bg_range3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="60-100 bpm"
+                        android:textSize="12sp"
+                        android:padding="8dp"
+                        android:textColor="@color/text_color_app"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:background="@drawable/bg_rounded_green"
+                        android:layout_marginTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/tv_indicator_explain_range3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your vital are in the normal range in between 60-100 Bpm."
+                        android:textSize="16sp"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Optimal RHR (around 60-70 BPM): Your heart's in the sweet spot! It's working smoothly with minimal stress."
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Higher normal RHR (&gt;80 BPM): A little heads-up—if this persists, it could mean future heart concerns. Keep an eye on it!"
+                        android:textSize="16sp"
+                        android:visibility="gone"
+                        android:layout_marginTop="16dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
         </LinearLayout>
     </RelativeLayout>
 </ScrollView>

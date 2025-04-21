@@ -9,6 +9,72 @@
     android:padding="16dp">
 
 
+
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_facescan_bonus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="1"
+        android:visibility="visible"
+        app:cardCornerRadius="@dimen/margin_card_16dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_toStartOf="@+id/btn_buy_facescan"
+                android:orientation="horizontal"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/txt_remaning_count"
+                    android:layout_width="70dp"
+                    android:textColor="@color/dark_blue"
+                    android:text="01"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textSize="32dp"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="7dp"
+                    android:background="@drawable/roundedcornerbutton"
+                    android:backgroundTint="@color/light_blue"
+                    android:layout_height="60dp"/>
+
+                <TextView
+                    android:id="@+id/txt_remaning_msg"
+                    android:layout_width="120dp"
+                    android:textColor="@color/text_color_app"
+                    android:text="Your scans remaining."
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textSize="@dimen/textsize_medium"
+                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_buy_facescan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_card_16dp"
+                android:text="Buy"
+                android:layout_alignParentEnd="true"
+                android:textSize="16sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/menuselected"/>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card_moveright_main"
         android:layout_width="match_parent"
@@ -262,7 +328,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_weight="1"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cardCornerRadius="@dimen/margin_card_16dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
