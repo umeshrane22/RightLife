@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEmotionDialogFragment.BottomSheetListener{
 
@@ -50,6 +51,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     private lateinit var progressDialog: ProgressDialog
     private lateinit var moodTrackerResponse: MoodTrackerWeeklyResponse
     private lateinit var moodTrackerMonthlyResponse: MoodTrackerMonthlyResponse
+    private var moodsList: ArrayList<EmotionStat> = arrayListOf()
     val weekStartDate = "2025-03-9"
     val weekEndDate = "2025-03-16"
 
@@ -74,12 +76,12 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
-        val emotions = listOf(
+        /*val emotions = listOf(
             EmotionStat("Relaxed", 10, Color.parseColor("#D6F24B")),
             EmotionStat("Happy", 20, Color.parseColor("#04E17C"))
-        )
+        )*/
 
-        renderEmotionCircles(emotions)
+       // renderEmotionCircles(emotions)
 
         btnPrev.setOnClickListener {
             calendar.add(Calendar.MONTH, -1)
@@ -119,7 +121,8 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
             override fun onResponse(call: Call<MoodTrackerWeeklyResponse>, response: Response<MoodTrackerWeeklyResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                      // moodTrackerResponse = response.body()!!
+                       moodTrackerResponse = response.body()!!
+                    renderEmotionCircles(getEmotionsForWeek(moodTrackerResponse.data.getOrNull(0)))
                         //  setMoodPercentage(moodTrackerResponse.data)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -185,7 +188,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
             weekRangeText.text = "$startText–$endText $monthYear"
 
             // Update data for that week here
-            renderEmotionCircles(getEmotionsForWeek(currentWeekStart))
+           // renderEmotionCircles(getEmotionsForWeek(currentWeekStart))
         }
 
         prevBtn.setOnClickListener {
@@ -201,23 +204,28 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         updateWeekLabel()
     }
 
-    private fun getEmotionsForWeek(startDate: LocalDate): List<EmotionStat> {
-        return listOf(
-            EmotionStat("Relaxed", (5..20).random(), Color.parseColor("#D6F24B")),
-            EmotionStat("Happy", (10..30).random(), Color.parseColor("#04E17C"))
-        )
+    private fun getEmotionsForWeek(moodList: MoodTrackerPercent?): List<EmotionStat> {
+        val result = mutableListOf<EmotionStat>()
+
+        moodList?.happy?.let { if (it > 0.0) result.add(EmotionStat("Happy",moodList.happy!!, Color.parseColor("#D6F24B"))) }
+        moodList?.relaxed?.let { if (it > 0.0) result.add(EmotionStat("Relaxed",moodList.relaxed!!, Color.parseColor("#04E17C"))) }
+        moodList?.unsure?.let { if (it > 0.0) result.add(EmotionStat("Unsure",moodList.unsure!!, Color.parseColor("#04E17C"))) }
+        moodList?.stressed?.let { if (it > 0.0) result.add(EmotionStat("Stressed",moodList.stressed!!, Color.parseColor("#D6F24B"))) }
+        moodList?.sad?.let { if (it > 0.0) result.add(EmotionStat("Sad",moodList.sad!!, Color.parseColor("#04E17C"))) }
+
+        return result
     }
 
     private fun renderEmotionCircles(stats: List<EmotionStat>) {
         container.removeAllViews()
 
-        val maxPercentage = stats.maxOf { it.percentage }.coerceAtLeast(1)
+        val maxPercentage = stats.maxOf { it.percentage }.coerceAtLeast(1.0)
         val baseSize = 200 // max circle size in dp
 
         stats.forEachIndexed { index, stat ->
-            val sizeDp = (baseSize * (stat.percentage / maxPercentage.toFloat())).coerceAtLeast(60f)
+            val sizeDp = (baseSize * (stat.percentage / maxPercentage.toFloat())).coerceAtLeast(60.0)
             val sizePx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, sizeDp, resources.displayMetrics).toInt()
+                TypedValue.COMPLEX_UNIT_DIP, sizeDp.toFloat(), resources.displayMetrics).toInt()
 
             // Vertical container inside the circle
             val verticalLayout = LinearLayout(requireContext(),).apply {
@@ -390,4 +398,4 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     }
 }
 
-data class EmotionStat(val emotion: String, val percentage: Int, val color: Int)
+data class EmotionStat(val emotion: String, val percentage: Double, val color: Int)
