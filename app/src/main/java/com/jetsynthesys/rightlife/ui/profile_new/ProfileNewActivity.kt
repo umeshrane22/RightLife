@@ -206,7 +206,8 @@ class ProfileNewActivity : AppCompatActivity() {
         else
             binding.tvGender.text = "Female"
 
-        binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
+        if (userData.weight != null)
+            binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
 
         if (userData.profilePicture.isNullOrEmpty())
             binding.tvProfileLetter.text = userData.firstName.first().toString()
@@ -218,12 +219,13 @@ class ProfileNewActivity : AppCompatActivity() {
                 .into(binding.ivProfileImage)
         }
 
-        if (userData.heightUnit == "FT_AND_INCHES") {
-            val height = userData.height.toString().split(".")
-            binding.tvHeight.text = "${height[0]} Ft ${height[1]} In"
-        } else {
-            binding.tvHeight.text = "${userData.height} cms"
-        }
+        if (userData.height != null)
+            if (userData.heightUnit == "FT_AND_INCHES") {
+                val height = userData.height.toString().split(".")
+                binding.tvHeight.text = "${height[0]} Ft ${height[1]} In"
+            } else {
+                binding.tvHeight.text = "${userData.height} cms"
+            }
     }
 
     private fun openCamera() {
@@ -592,24 +594,25 @@ class ProfileNewActivity : AppCompatActivity() {
 
         dialogBinding.switchHeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                val h = selectedHeight.split(" ")
-                val feet = "${h[0]}.${h[2]}"
                 selectedLabel = " cms"
-                selectedHeight = ConversionUtils.convertFeetToCentimeter(feet)
+                //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
+                val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
+
+                selectedHeight = result.cmText
                 setCms()
-                selectedHeight = decimalFormat.format(selectedHeight.toDouble())
-                dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedHeight.toDouble()).toInt())
-                selectedHeight += selectedLabel
+
+                dialogBinding.rulerView.scrollToPosition(result.cmIndex)
+
             } else {
-                val w = selectedHeight.split(" ")
                 selectedLabel = " feet"
-                selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
+                //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
+                val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
+
+                selectedHeight = result.feetInchText
                 setFtIn()
-                val h = selectedHeight.split(".")
-                val ft = h[0]
-                val inch = h[1]
-                dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedHeight.toDouble()).toInt() * 12)
-                selectedHeight = "$ft Ft $inch In"
+
+                dialogBinding.rulerView.scrollToPosition((result.inchIndex))
+
             }
             dialogBinding.selectedNumberText.text = selectedHeight
         }
@@ -1002,28 +1005,32 @@ class ProfileNewActivity : AppCompatActivity() {
             } else {
                 userData.gender = "F"
             }
-            val w = weight.split(" ")
-            userData.weight = w[0].toDouble()
-            if ("kgs".equals(w[1], ignoreCase = true)) {
-                userData.weightUnit = "KG"
-            } else {
-                userData.weightUnit = "LBS"
+            if (weight.isNotEmpty()) {
+                val w = weight.split(" ")
+                userData.weight = w[0].toDouble()
+                if ("kgs".equals(w[1], ignoreCase = true) || "kg".equals(w[1], ignoreCase = true)) {
+                    userData.weightUnit = "KG"
+                } else {
+                    userData.weightUnit = "LBS"
+                }
             }
 
-            val h = height.split(" ")
-            if (h.size == 2) {
-                userData.height = h[0].toDouble()
-                userData.heightUnit = "CM"
-            } else {
-                userData.height = "${h[0]}.${h[2]}".toDouble()
-                userData.heightUnit = "FT_AND_INCHES"
+            if (height.isNotEmpty()) {
+                val h = height.split(" ")
+                if (h.size == 2) {
+                    userData.height = h[0].toDouble()
+                    userData.heightUnit = "CM"
+                } else {
+                    userData.height = "${h[0]}.${h[2]}".toDouble()
+                    userData.heightUnit = "FT_AND_INCHES"
+                }
             }
 
             if (preSignedUrlData != null) {
                 userData.profilePicture = preSignedUrlData?.file?.url
             }
             updateUserData(userData)
-            updateChecklistStatus();
+            updateChecklistStatus()
         }
     }
 

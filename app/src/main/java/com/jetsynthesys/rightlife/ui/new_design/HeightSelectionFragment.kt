@@ -92,9 +92,6 @@ class HeightSelectionFragment : Fragment() {
                 selectedLabel = " cms"
                 //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
                 val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
-                println("Height: ${result.cmText}")
-                println("Scroll cm list to index: ${result.cmIndex}")
-                println("Scroll inch list to index: ${result.inchIndex}")
 
                 selectedHeight = result.cmText
                 setCms()
@@ -104,11 +101,7 @@ class HeightSelectionFragment : Fragment() {
             } else {
                 selectedLabel = " feet"
                 //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
-
                 val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
-                println("Height: ${result.feetInchText}")
-                println("Scroll inch list to index: ${result.inchIndex}")
-                println("Scroll cm list to index: ${result.cmIndex}")
 
                 selectedHeight = result.feetInchText
                 setFtIn()
