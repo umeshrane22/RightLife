@@ -27,7 +27,12 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + item.unit
+        if (item.mealQuantity?.toInt() != 0){
+            holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + item.unit
+        }else{
+            holder.mealQuantityTv.text = "1"
+        }
+
         val capitalized = item.recipe_name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
 //        Glide.with(context)
