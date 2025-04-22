@@ -78,7 +78,6 @@
             android:src="@drawable/edit_black_icon" />
     </LinearLayout>
 
-        <!-- Add Journal Entry -->
         <LinearLayout
             android:id="@+id/journalEntryLayout"
             android:layout_width="match_parent"
@@ -95,21 +94,16 @@
                 android:gravity="center"
                 android:padding="16dp"
                 android:background="@drawable/dashed_border_bg" />
-
-            <EditText
-                android:id="@+id/journalEditText"
+            <TextView
+                android:id="@+id/addJournalEntry1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Write your thoughts..."
                 android:visibility="gone"
-                android:minLines="3"
-                android:maxLines="5"
-                android:background="@drawable/white_meal_date_bg"
-                android:padding="12dp"
-                android:layout_marginTop="8dp"
-                android:gravity="top|start"
+                android:text=""
                 android:textColor="#000000"
-                android:textSize="14sp" />
+                android:gravity="center"
+                android:padding="16dp"
+                android:background="@drawable/white_meal_date_bg" />
         </LinearLayout>
 
         <!-- Sections -->

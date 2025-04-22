@@ -41,7 +41,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEmotionDialogFragment.BottomSheetListener{
+class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String) : BaseFragment<FragmentMoodTrackingBinding>(),RecordEmotionDialogFragment.BottomSheetListener{
 
     private lateinit var calendarGrid: GridLayout
     private lateinit var textMonth: TextView
@@ -56,6 +56,9 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     private val emojiImageViews = mutableMapOf<Int, ImageView>()
     val weekStartDate = "2025-03-9"
     val weekEndDate = "2025-03-16"
+    val fromFragments = fromFragment
+    val journalAnswers = journalAnswer
+    var emojiSelected = emojis
 
     val moodEmojiMap = mapOf(
         "Happy" to R.drawable.happy_icon,
@@ -113,7 +116,12 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(ThinkRightReportFragment(), "MoodTrackerFragment")
+            navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
+        }
+
+        if (fromFragments == "JournalFragment"){
+            val bottomSheet = RecordEmotionDialogFragment(emojiSelected,journalAnswers)
+            bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
         }
 
         //renderCalendar(moodsMonthlyList)
@@ -440,7 +448,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
                 }
                 setOnClickListener {
                     onEmotionSelected(emojiRes)
-                    val bottomSheet = RecordEmotionDialogFragment()
+                    val bottomSheet = RecordEmotionDialogFragment(emojiRes,"")
                     bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
                     dialog.dismiss()
                 }

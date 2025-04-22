@@ -33,18 +33,21 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
+class RecordEmotionDialogFragment(emojiSelected:Int,journalText:String) : BottomSheetDialogFragment() {
 
     val activities = listOf("Driving", "Eating", "Fitness", "Resting", "Hobbies")
     val withWhom = listOf("By Myself", "Pets", "Co–workers", "Family", "Friends")
     val locations = listOf("Commuting", "Home", "Outside", "School")
     private var tagsList: ArrayList<String> = arrayListOf()
+    val emoji = emojiSelected
+    var journalTexts = journalText
 
     private lateinit var activityChips: FlexboxLayout
     private lateinit var withChips: FlexboxLayout
     private lateinit var locationChips: FlexboxLayout
     private lateinit var editEmotion: ImageView
     private lateinit var emotionLabel: TextView
+    private lateinit var journalText: TextView
     private lateinit var baseResponse: BaseResponse
     var emojiSelected = 0
     private lateinit var progressDialog: ProgressDialog
@@ -76,18 +79,32 @@ class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
         withChips = view.findViewById(R.id.withFlexbox)
         locationChips = view.findViewById(R.id.locationFlexbox)
         editEmotion = view.findViewById(R.id.emotionIcon)
+        journalText = view.findViewById(R.id.addJournalEntry1)
         emotionLabel = view.findViewById(R.id.emotionLabel)
         val addJournalEntry: TextView = view.findViewById(R.id.addJournalEntry)
-        val journalEditText: EditText = view.findViewById(R.id.journalEditText)
-
+        editEmotion.setImageResource(emoji)
+        if (emoji == R.drawable.happy_icon){
+            emotionLabel.setText("Happy")
+        }else if (emoji == R.drawable.relaxed_icon){
+            emotionLabel.setText("Relaxed")
+        }else if (emoji == R.drawable.unsure_icon){
+            emotionLabel.setText("Unsure")
+        }else if (emoji == R.drawable.stressed_icon){
+            emotionLabel.setText("Stressed")
+        }else if (emoji == R.drawable.sad_icon){
+            emotionLabel.setText("Sad")
+        }
         addJournalEntry.setOnClickListener {
+            dismiss()
+            navigateToFragment(JournalFragment(emoji), "JournalFragment")
+        }
+        if (journalTexts != "") {
             addJournalEntry.visibility = View.GONE
-            if (journalEditText.visibility == View.GONE) {
-                journalEditText.visibility = View.VISIBLE
-                journalEditText.requestFocus()
+            if (journalText.visibility == View.GONE) {
+                journalText.visibility = View.VISIBLE
+                journalText.setText(journalTexts)
             } else {
                 addJournalEntry.visibility = View.GONE
-               // journalEditText.visibility = View.GONE
             }
         }
         editEmotion.setOnClickListener {
@@ -128,8 +145,7 @@ class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
             val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
             // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
             val call = ApiClient.apiService.addThinkJournalEmoji(token,
-                AddEmojiRequest(title = "", questionId ="", answer = "", emotion = emotionLabel.text.toString(), tags = tagsList )
-            )
+                AddEmojiRequest(title = "", questionId ="", answer = "", emotion = emotionLabel.text.toString(), tags = tagsList ))
             call.enqueue(object : Callback<BaseResponse> {
                 override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                     if (response.isSuccessful) {
@@ -256,5 +272,12 @@ class RecordEmotionDialogFragment : BottomSheetDialogFragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, tag)
+            addToBackStack(null)
+            commit()
+        }
     }
 }
