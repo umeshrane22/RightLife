@@ -65,6 +65,7 @@ import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
+import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
@@ -371,7 +372,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
                 //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, ProfileNewActivity::class.java))
+                //startActivity(Intent(this, ProfileNewActivity::class.java))
+                val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
+                intent.putExtra("forProfileChecklist", true)
+                startActivity(intent)
             }
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {

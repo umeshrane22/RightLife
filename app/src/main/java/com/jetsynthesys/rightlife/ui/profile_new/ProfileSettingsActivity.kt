@@ -56,13 +56,13 @@ class ProfileSettingsActivity : AppCompatActivity() {
 
     private fun setupUserRecyclerView() {
         val items = listOf(
-            SettingItem("Purchase History"),
-            SettingItem("Payment Modes")
+            SettingItem("Subscription History"),
+            //SettingItem("Payment Modes")
         )
 
         val userAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
-                "Purchase History" ->
+                "Subscription History" ->
                     showToast("You haven't purchase subscription yet!!")
 
                 "Payment Modes" ->
@@ -80,7 +80,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         val items = listOf(
             SettingItem("Goals"),
             SettingItem("Interests"),
-            SettingItem("Meal Customisations")
+            //SettingItem("Meal Customisations")
         )
 
         val personalizationAdapter = SettingsAdapter(items) { item ->

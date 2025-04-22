@@ -72,7 +72,7 @@ class SettingsNewActivity : AppCompatActivity() {
             SettingItem("App Settings"),
             SettingItem("Support"),
             SettingItem("General Information"),
-            SettingItem("Manage Membership")
+            //SettingItem("Manage Membership")
         )
 
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
