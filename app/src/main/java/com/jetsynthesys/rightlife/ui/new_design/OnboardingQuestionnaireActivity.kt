@@ -14,6 +14,7 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
@@ -165,7 +166,13 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                                     AwesomeScreenActivity::class.java
                                 )
                             )
-                        }
+                        }else
+                            startActivity(
+                                Intent(
+                                    this@OnboardingQuestionnaireActivity,
+                                    HomeDashboardActivity::class.java
+                                )
+                            )
                         finishAffinity()
                         SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
                             .clearOnboardingQuestionRequest()
