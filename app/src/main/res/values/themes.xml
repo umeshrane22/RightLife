@@ -114,6 +114,15 @@
     <style name="TimePickerStyle" parent="Theme.MaterialComponents.Light">
         <item name="android:textSize">24sp</item>
     </style>
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlActivated">#FF9EA5</item> <!-- pink -->
+        <item name="colorControlNormal">#D3D3D3</item>    <!-- light gray -->
+        <item name="colorControlHighlight">#FF9EA5</item>
+    </style>
+    <style name="CustomRatingBar" parent="@android:style/Widget.RatingBar">
+        <item name="colorControlActivated">#FF9EA5</item> <!-- Orange -->
+        <item name="colorControlNormal">#D3D3D3</item> <!-- Light gray -->
+    </style>
 
     <style name="TabItemStyle">
         <item name="android:layout_width">0dp</item>
