@@ -95,6 +95,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var imageFood : ImageView
     private lateinit var videoView : VideoView
     private var imagePath : String = ""
+    private lateinit var imagePathsecond : Uri
     private var isProceedResult : Boolean = false
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var backButton : ImageView
@@ -156,29 +157,31 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                 override fun onImageSelected(imageUri: Uri) {
                     val path = getRealPathFromURI(requireContext(), imageUri)
+                    imagePathsecond = imageUri
                     if (path != null) {
-                        val bitmap = BitmapFactory.decodeFile(path)
-                        val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
-                        imagePath = path
-                        videoView.visibility = View.GONE
-                        imageFood.visibility = View.VISIBLE
-                        imageFood.setImageBitmap(rotatedBitmap)
-                        // Save image details
-                      //  imagePath = currentPhotoPath
-                        takePhotoInfoLayout.visibility = View.GONE
-                        enterMealDescriptionLayout.visibility = View.VISIBLE
-                        skipTV.visibility = View.VISIBLE
-                        proceedLayout.isEnabled = false
-                        proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
-                        isProceedResult = false
-                        mealDescriptionET.text.clear()
-                        //println("Image path: $imagePath")
-                        // You can use File(imagePath), upload, or store it now
+                        val scaledBitmap = decodeAndScaleBitmap(path, 1080, 1080) // Limit to screen size
+                        if (scaledBitmap != null) {
+                            val rotatedBitmap = rotateImageIfRequired(requireContext(), scaledBitmap, imageUri)
+                            imagePath = path
+                            videoView.visibility = View.GONE
+                            imageFood.visibility = View.VISIBLE
+                            imageFood.setImageBitmap(rotatedBitmap)
+
+                            takePhotoInfoLayout.visibility = View.GONE
+                            enterMealDescriptionLayout.visibility = View.VISIBLE
+                            skipTV.visibility = View.VISIBLE
+                            proceedLayout.isEnabled = false
+                            proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
+                            isProceedResult = false
+                            mealDescriptionET.text.clear()
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to decode image", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         Toast.makeText(requireContext(), "Unable to get image path", Toast.LENGTH_SHORT).show()
-                    }                    //println(imageUri.toString())
-                  //  imageView.setImageURI(imageUri) // Example usage
+                    }
                 }
+
             }
             cameraDialog.show(parentFragmentManager, "CameraDialog")
             // Request all permissions at once
@@ -211,9 +214,9 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         proceedLayout.setOnClickListener {
             // Request all permissions at once
-            if (!hasAllPermissions()) {
+           /* if (!hasAllPermissions()) {
                 requestAllPermissions()
-            }else{
+            }else{*/
                 if (isProceedResult){
                     if (imagePath != ""){
                         uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
@@ -223,7 +226,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 }else{
                     openCameraForImage()
                 }
-            }
+           // }
 //            requireActivity().supportFragmentManager.beginTransaction().apply {
 //                val snapMealFragment = MealScanResultFragment()
 //                val args = Bundle()
@@ -438,7 +441,18 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             else -> bitmap
         }
     }
+    private fun decodeAndScaleBitmap(filePath: String, reqWidth: Int, reqHeight: Int): Bitmap? {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
 
+        BitmapFactory.decodeFile(filePath, options)
+
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+
+        options.inJustDecodeBounds = false
+        return BitmapFactory.decodeFile(filePath, options)
+    }
     private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(angle)
@@ -470,6 +484,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                                 args.putString("ImagePath", imagePath)
                                 args.putString("description", mealDescriptionET.text.toString())
+                                args.putString("ImagePathsecound", imagePathsecond.toString())
                                 args.putParcelable("foodDataResponses", response.body())
                                 snapMealFragment.arguments = args
                                 replace(R.id.flFragment, snapMealFragment, "Steps")
@@ -567,14 +582,16 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 
     private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        val height = options.outHeight
-        val width = options.outWidth
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
         var inSampleSize = 1
 
         if (height > reqHeight || width > reqWidth) {
-            val heightRatio = Math.round(height.toFloat() / reqHeight.toFloat())
-            val widthRatio = Math.round(width.toFloat() / reqWidth.toFloat())
-            inSampleSize = if (heightRatio < widthRatio) heightRatio else widthRatio
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2
+            }
         }
         return inSampleSize
     }
