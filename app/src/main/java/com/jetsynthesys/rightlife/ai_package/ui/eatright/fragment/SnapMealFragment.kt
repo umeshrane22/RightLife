@@ -105,26 +105,26 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         backButton = view.findViewById(R.id.backButton)
 
         skipTV.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val snapMealFragment = MealScanResultFragment()
-                val args = Bundle()
-                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
-                args.putString("ImagePath", imagePath)
-                args.putParcelable("foodDataResponses", null)
-                snapMealFragment.arguments = args
-                replace(R.id.flFragment, snapMealFragment, "Steps")
-                addToBackStack(null)
-                commit()
-            }
-//            if (isProceedResult){
-//                if (imagePath != ""){
-//                    uploadFoodImagePath(imagePath)
-//                }else{
-//                    Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
-//                }
-//            }else{
-//                openCameraForImage()
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                val snapMealFragment = MealScanResultFragment()
+//                val args = Bundle()
+//                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
+//                args.putString("ImagePath", imagePath)
+//                args.putParcelable("foodDataResponses", null)
+//                snapMealFragment.arguments = args
+//                replace(R.id.flFragment, snapMealFragment, "Steps")
+//                addToBackStack(null)
+//                commit()
 //            }
+            if (isProceedResult){
+                if (imagePath != ""){
+                    uploadFoodImagePath(imagePath)
+                }else{
+                    Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+                }
+            }else{
+                openCameraForImage()
+            }
 //            takePhotoInfoLayout.visibility = View.VISIBLE
 //            enterMealDescriptionLayout.visibility = View.GONE
 //            skipTV.visibility = View.GONE

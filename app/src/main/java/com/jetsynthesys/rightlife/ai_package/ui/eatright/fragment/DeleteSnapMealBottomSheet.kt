@@ -13,12 +13,12 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 
 class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,17 +38,44 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         val layoutCancel = view.findViewById<LinearLayoutCompat>(R.id.layoutCancel)
         val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.layoutDelete)
 
+        val snapRecipeName = arguments?.getString("snapRecipeName").toString()
+
+        val snapDishLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("snapDishLocalListModel")
+        }
+
+        layoutDelete.setOnClickListener {
+            if (snapDishLocalListModel != null) {
+                if (snapDishLocalListModel.data.size > 0) {
+                    for (item in snapDishLocalListModel.data) {
+                        if (item.recipe_name.contentEquals(snapRecipeName)) {
+                            snapDishLocalListModel.data.remove(item)
+                            dismiss()
+                            Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
+                            val fragment = MealScanResultFragment()
+                            val args = Bundle()
+                            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "mealLog")
+                                addToBackStack("mealLog")
+                                commit()
+                            }
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
         closeIcon.setOnClickListener {
             dismiss()
         }
 
         layoutCancel.setOnClickListener {
             dismiss()
-        }
-
-        layoutDelete.setOnClickListener {
-            dismiss()
-            Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
         }
     }
 

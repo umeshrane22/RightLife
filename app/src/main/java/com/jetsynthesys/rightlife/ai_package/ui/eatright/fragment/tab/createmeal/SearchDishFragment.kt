@@ -115,7 +115,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             arguments?.getParcelable("snapDishLocalListModel")
         }
 
-        if (snapDishLocalListModel != null){
+        if (snapDishLocalListModels != null){
             snapDishLocalListModel = snapDishLocalListModels
         }
 
