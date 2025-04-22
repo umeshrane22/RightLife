@@ -145,7 +145,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             activity?.finish()
         }
         step_forward_icon.setOnClickListener {
-            navigateToFragment(CameraFragment(),"StepTakenFragment")
+            navigateToFragment(StepFragment(),"StepTakenFragment")
         }
         activeStepsTv.setOnClickListener {
             navigateToFragment(SetYourStepGoalFragment(),"StepTakenFragment")

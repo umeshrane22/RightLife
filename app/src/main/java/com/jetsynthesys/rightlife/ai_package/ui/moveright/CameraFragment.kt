@@ -32,7 +32,7 @@ class CameraFragment : Fragment() {
     private lateinit var flashToggle: ImageView
     private lateinit var galleryButton: ImageView
     private lateinit var closeButton: ImageView
-    private lateinit var capturedImageView: ImageView
+    //private lateinit var capturedImageView: ImageView
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private var camera: Camera? = null
@@ -42,8 +42,8 @@ class CameraFragment : Fragment() {
     // Activity Result Launcher for selecting an image from gallery
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            capturedImageView.setImageURI(it)
-            capturedImageView.visibility = View.VISIBLE
+           // capturedImageView.setImageURI(it)
+           /// capturedImageView.visibility = View.VISIBLE
             Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
         } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
     }
@@ -58,7 +58,7 @@ class CameraFragment : Fragment() {
         flashToggle = view.findViewById(R.id.flashToggle)
         galleryButton = view.findViewById(R.id.galleryButton)
         closeButton = view.findViewById(R.id.closeButton)
-        capturedImageView = view.findViewById(R.id.capturedImageView)
+        //capturedImageView = view.findViewById(R.id.capturedImageView)
 
         if (allPermissionsGranted()) {
             startCamera()
@@ -140,8 +140,8 @@ class CameraFragment : Fragment() {
                     Log.d(TAG, "Photo saved: $savedUri")
                     requireActivity().runOnUiThread {
                         savedUri?.let { uri ->
-                            capturedImageView.setImageURI(uri)
-                            capturedImageView.visibility = View.VISIBLE
+                            //capturedImageView.setImageURI(uri)
+                           // capturedImageView.visibility = View.VISIBLE
                         }
                         Toast.makeText(requireContext(), "Photo saved successfully!", Toast.LENGTH_SHORT).show()
                     }

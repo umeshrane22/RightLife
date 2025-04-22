@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,6 +17,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
@@ -44,10 +47,20 @@ import android.widget.TextView
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -57,6 +70,8 @@ import java.io.FileInputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
@@ -140,6 +155,25 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             takePhotoInfoLayout.visibility = View.GONE
          //   enterMealDescriptionLayout.visibility = View.VISIBLE
             videoView.visibility = View.GONE
+            val cameraDialog = CameraDialogFragment("")
+            cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
+                override fun onImageSelected(imageUri: Uri) {
+                    val path = getRealPathFromURI(requireContext(), imageUri)
+                    if (path != null) {
+                        val bitmap = BitmapFactory.decodeFile(path)
+                        val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
+                        imageFood.setImageBitmap(rotatedBitmap)
+                        imageFood.visibility = View.VISIBLE
+                        imagePath = path
+                        //println("Image path: $imagePath")
+                        // You can use File(imagePath), upload, or store it now
+                    } else {
+                        Toast.makeText(requireContext(), "Unable to get image path", Toast.LENGTH_SHORT).show()
+                    }                    //println(imageUri.toString())
+                  //  imageView.setImageURI(imageUri) // Example usage
+                }
+            }
+            cameraDialog.show(parentFragmentManager, "CameraDialog")
             // Request all permissions at once
             if (!hasAllPermissions()) {
                 requestAllPermissions()
@@ -152,10 +186,9 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     }
                 }else{
                   //  CameraDialogFragment().show(requireActivity().supportFragmentManager, "CameraDialog")
-//                    val cameraDialog = CameraDialogFragment()
-//                    cameraDialog.show(requireActivity().supportFragmentManager, "CameraDialog")
 
-                    openCameraForImage()
+
+                  //  openCameraForImage()
                 }
             }
 
@@ -264,6 +297,25 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         ).apply {
             currentPhotoPath = absolutePath  // Save the path for later use
         }
+    }
+    fun getRealPathFromURI(context: Context, uri: Uri): String? {
+        var filePath: String? = null
+
+        // Try getting path from content resolver
+        if (uri.scheme == "content") {
+            val projection = arrayOf(MediaStore.Images.Media.DATA)
+            val cursor = context.contentResolver.query(uri, projection, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                    filePath = it.getString(columnIndex)
+                }
+            }
+        } else if (uri.scheme == "file") {
+            filePath = uri.path
+        }
+
+        return filePath
     }
 
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -520,37 +572,197 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 }
 
-class CameraDialogFragment : DialogFragment() {
+class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
+
+    private lateinit var viewFinder: PreviewView
+    private var imageCapture: ImageCapture? = null
+    private lateinit var cameraExecutor: ExecutorService
+    private var camera: Camera? = null
+    private var isTorchOn = false
+
+    var imageSelectedListener: OnImageSelectedListener? = null
+
+    // Activity Result Launcher for selecting an image from gallery
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            imageSelectedListener?.onImageSelected(it)
+            dismiss()
+            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this dialog
-        return inflater.inflate(R.layout.dialog_camera_snap_meal, container, false)
+        return inflater.inflate(R.layout.fragment_camera, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<ImageView>(R.id.closeBtn)?.setOnClickListener {
+        viewFinder = view.findViewById(R.id.viewFinder)
+
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
+        }
+
+        view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {
             dismiss()
             startActivity(Intent(context, HomeDashboardActivity::class.java))
             requireActivity().finish()
         }
 
-        view.findViewById<ImageView>(R.id.captureBtn)?.setOnClickListener {
-           // Toast.makeText(requireContext(), "Capture Clicked", Toast.LENGTH_SHORT).show()
-           // dismiss()
-            (parentFragment as? SnapMealFragment)?.openCameraForImage()
+        view.findViewById<ImageView>(R.id.captureButton)?.setOnClickListener {
+            takePhoto()
         }
 
-        view.findViewById<ImageView>(R.id.galleryBtn)?.setOnClickListener {
-          //  Toast.makeText(requireContext(), "Gallery Clicked", Toast.LENGTH_SHORT).show()
-            dismiss()
-            (parentFragment as? SnapMealFragment)?.openGalleryForImage()
+        view.findViewById<ImageView>(R.id.flashToggle)?.setOnClickListener {
+            toggleFlash()
         }
+
+        view.findViewById<ImageView>(R.id.galleryButton)?.setOnClickListener {
+            openGallery()
+        }
+
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewFinder.surfaceProvider)
+            }
+
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                .setFlashMode(ImageCapture.FLASH_MODE_OFF)
+                .build()
+
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                cameraProvider.unbindAll()
+                camera = cameraProvider.bindToLifecycle(
+                    viewLifecycleOwner, cameraSelector, preview, imageCapture
+                )
+            } catch (exc: Exception) {
+                Log.e(TAG, "Use case binding failed", exc)
+            }
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    private fun takePhoto() {
+        val imageCapture = imageCapture ?: return
+
+        val name = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
+            .format(System.currentTimeMillis())
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, "IMG_$name")
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/RightLife")
+            }
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            requireContext().contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ).build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            cameraExecutor,
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = output.savedUri
+                    Log.d(TAG, "Photo saved: $savedUri")
+                    requireActivity().runOnUiThread {
+                        savedUri?.let { uri ->
+                            imageSelectedListener?.onImageSelected(uri)
+                            dismiss()
+                        }
+                        Toast.makeText(requireContext(), "Photo saved successfully!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
+                    requireActivity().runOnUiThread {
+                        Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        )
+    }
+
+    private fun toggleFlash() {
+        camera?.let {
+            val hasFlash = it.cameraInfo.hasFlashUnit()
+            if (!hasFlash) {
+                Toast.makeText(requireContext(), "Flash not supported", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            isTorchOn = !isTorchOn
+            it.cameraControl.enableTorch(isTorchOn)
+
+            Toast.makeText(
+                requireContext(),
+                "Flash ${if (isTorchOn) "ON" else "OFF"}",
+                Toast.LENGTH_SHORT
+            ).show()
+        } ?: run {
+            Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun openGallery() {
+        Handler(Looper.getMainLooper()).post {
+            pickImageLauncher.launch("image/*")
+        }
+    }
+
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                Toast.makeText(requireContext(), "Permissions not granted", Toast.LENGTH_SHORT).show()
+                navigateToFragment(MoveRightLandingFragment(), "landingFragment")
+            }
+        }
+    }
+
+    private fun navigateToFragment(fragment: Fragment, tag: String) {
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, tag)
+            addToBackStack(null)
+            commit()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        cameraExecutor.shutdown()
     }
 
     override fun onStart() {
@@ -561,5 +773,14 @@ class CameraDialogFragment : DialogFragment() {
         )
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
     }
+
+    companion object {
+        private const val TAG = "CameraFragment"
+        private const val REQUEST_CODE_PERMISSIONS = 10
+        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    }
+}
+interface OnImageSelectedListener {
+    fun onImageSelected(imageUri: Uri)
 }
 
