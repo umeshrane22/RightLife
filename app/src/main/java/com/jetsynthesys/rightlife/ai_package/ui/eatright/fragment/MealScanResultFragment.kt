@@ -12,6 +12,7 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -62,6 +63,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var microItemRecyclerView : RecyclerView
     private lateinit var frequentlyLoggedRecyclerView : RecyclerView
     private lateinit var currentPhotoPath : String
+    private lateinit var currentPhotoPathsecound : Uri
     private lateinit var tvFoodName : EditText
     private lateinit var imageFood : ImageView
     private lateinit var tvQuantity: TextView
@@ -184,7 +186,10 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             arguments?.getParcelable("foodDataResponses")
         }
 
-        currentPhotoPath = arguments?.getString("ImagePath") .toString()
+        currentPhotoPath = arguments?.get("ImagePath").toString()
+        val imagePathString = arguments?.getString("ImagePathsecound")
+         currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+        //currentPhotoPathsecound = arguments?.get("ImagePathsecound") as Uri
 
         view.findViewById<LinearLayoutCompat>(R.id.datePickerLayout).setOnClickListener {
             // Open Date Picker
@@ -591,23 +596,57 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     }
 
     private fun setFoodData(nutritionResponse: ScanMealNutritionResponse) {
-        if (nutritionResponse.data != null){
-            val file = File(currentPhotoPath)
-            if (file.exists()) {
-                val bitmap = BitmapFactory.decodeFile(currentPhotoPath)
-                // Rotate the image if required
-                val imageUri = FileProvider.getUriForFile(requireContext(),
-                    "${requireContext().packageName}.fileprovider", file)
-                val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
-                // Set the image in the UI
-                imageFood.setImageBitmap(rotatedBitmap)
-            } else {
-                Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
+        if (nutritionResponse.data != null) {
+            try {
+                val path = getRealPathFromURI(requireContext(), currentPhotoPathsecound)
+                if (path != null) {
+                    val scaledBitmap = decodeAndScaleBitmap(path, 1080, 1080)
+                    if (scaledBitmap != null) {
+                        val rotatedBitmap = rotateImageIfRequired(requireContext(), scaledBitmap, currentPhotoPathsecound)
+                        imageFood.visibility = View.VISIBLE
+                        imageFood.setImageBitmap(rotatedBitmap)
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to decode image", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
+                }
+            } catch (e: Exception) {
+                Log.e("ImageLoad", "Error loading image from file path: $currentPhotoPath", e)
             }
-            if (nutritionResponse.data.size > 0){
-                tvFoodName.setText(nutritionResponse.data.get(0).name)
+
+            // Set food name
+            if (nutritionResponse.data.isNotEmpty()) {
+                tvFoodName.setText(nutritionResponse.data[0].name)
             }
         }
+    }
+
+    private fun decodeAndScaleBitmap(filePath: String, reqWidth: Int, reqHeight: Int): Bitmap? {
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeFile(filePath, options)
+
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+        options.inJustDecodeBounds = false
+
+        return BitmapFactory.decodeFile(filePath, options)
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val halfHeight = height / 2
+            val halfWidth = width / 2
+
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
     }
 
     private fun rotateImageIfRequired(context: Context, bitmap: Bitmap, imageUri: Uri): Bitmap {
@@ -622,6 +661,25 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
             else -> bitmap
         }
+    }
+    fun getRealPathFromURI(context: Context, uri: Uri): String? {
+        var filePath: String? = null
+
+        // Try getting path from content resolver
+        if (uri.scheme == "content") {
+            val projection = arrayOf(MediaStore.Images.Media.DATA)
+            val cursor = context.contentResolver.query(uri, projection, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                    filePath = it.getString(columnIndex)
+                }
+            }
+        } else if (uri.scheme == "file") {
+            filePath = uri.path
+        }
+
+        return filePath
     }
 
     private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
