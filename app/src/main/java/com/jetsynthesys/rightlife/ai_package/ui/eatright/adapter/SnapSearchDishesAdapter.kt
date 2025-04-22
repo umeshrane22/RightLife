@@ -29,8 +29,9 @@ class SnapSearchDishesAdapter(private val context: Context, private var dataList
         val item = dataLists[position]
 
         holder.dishName.text = item.name
+        val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
-            .load(item.photo_url)
+            .load(imageUrl)
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.dishImage)
@@ -65,5 +66,16 @@ class SnapSearchDishesAdapter(private val context: Context, private var dataList
     fun updateList(newList: List<SnapRecipeList>) {
         dataLists = newList as ArrayList<SnapRecipeList>
         notifyDataSetChanged()
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }

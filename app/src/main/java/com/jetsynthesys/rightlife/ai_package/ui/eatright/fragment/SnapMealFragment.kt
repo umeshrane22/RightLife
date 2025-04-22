@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.Manifest
 import android.app.Activity
-import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -40,8 +39,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.util.Base64
-import android.view.Window
-import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.MediaController
@@ -133,7 +130,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 //            }
             if (isProceedResult){
                 if (imagePath != ""){
-                    uploadFoodImagePath(imagePath)
+                    uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
                 }else{
                     Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                 }
@@ -190,7 +187,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             }else{
                 if (isProceedResult){
                     if (imagePath != ""){
-                        uploadFoodImagePath(imagePath)
+                        uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
                     }else{
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
@@ -219,7 +216,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             }else{
                 if (isProceedResult){
                     if (imagePath != ""){
-                        uploadFoodImagePath(imagePath)
+                        uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
                     }else{
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
@@ -453,11 +450,11 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         private const val REQUEST_IMAGE_CAPTURE = 101
     }
 
-    private fun uploadFoodImagePath(imagePath: String) {
+    private fun uploadFoodImagePath(imagePath: String, description: String) {
         Utils.showLoader(requireActivity())
         val base64Image = encodeImageToBase64(imagePath)
         val apiKey = "d6JBKPaLTVeyAJtIrKOK"
-        val request = AnalysisRequest(apiKey, base64Image)
+        val request = AnalysisRequest(apiKey, base64Image, description)
         val call = ApiClient.apiServiceFoodCaptureImageApi.analyzeFoodImage(
             "analysis", request)
         call.enqueue(object : Callback<ScanMealNutritionResponse> {
@@ -472,6 +469,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                 val args = Bundle()
                                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                                 args.putString("ImagePath", imagePath)
+                                args.putString("description", mealDescriptionET.text.toString())
                                 args.putParcelable("foodDataResponses", response.body())
                                 snapMealFragment.arguments = args
                                 replace(R.id.flFragment, snapMealFragment, "Steps")

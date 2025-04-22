@@ -74,7 +74,7 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/tvFoodName"
+                    android:id="@+id/foodNameEdit"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
@@ -85,18 +85,18 @@
                     android:layout_marginStart="10dp"
                     android:textColor="@color/black_no_meals"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/editName"
+                    app:layout_constraintEnd_toStartOf="@+id/editNameIC"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintHorizontal_weight="1.9"
                     />
 
                 <ImageView
-                    android:id="@+id/editName"
+                    android:id="@+id/editNameIC"
                     android:layout_width="0dp"
                     android:layout_height="20dp"
                     android:visibility="visible"
                     android:src="@drawable/material_edit"
-                    app:layout_constraintStart_toEndOf="@+id/tvFoodName"
+                    app:layout_constraintStart_toEndOf="@+id/foodNameEdit"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintHorizontal_weight=".1"/>

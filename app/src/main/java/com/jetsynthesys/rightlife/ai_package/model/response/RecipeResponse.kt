@@ -15,21 +15,21 @@ data class RecipeResponse(
 @Parcelize
 data class SnapRecipeData(
     @SerializedName("id")
-    val id: String,
+    val id: String?,
     @SerializedName("recipe_name")
-    val recipe_name: String,
+    val recipe_name: String?,
     @SerializedName("ingredients")
     val ingredients: List<String>?,
     @SerializedName("instructions")
     val instructions: List<String>?,
     @SerializedName("author")
-    val author: String,
+    val author: String?,
     @SerializedName("total_time")
-    val total_time: String,
+    val total_time: String?,
     @SerializedName("servings")
-    val servings: Int,
+    val servings: Int?,
     @SerializedName("course")
-    val course: String,
+    val course: String?,
     @SerializedName("tags")
     val tags: String?,
     @SerializedName("cuisine")
@@ -39,17 +39,17 @@ data class SnapRecipeData(
     @SerializedName("serving_weight")
     val serving_weight: Double,
     @SerializedName("calories")
-    val calories: Double,
+    val calories: Double?,
     @SerializedName("carbs")
-    val carbs: Double,
+    val carbs: Double?,
     @SerializedName("sugar")
     val sugar: Double?,
     @SerializedName("fiber")
     val fiber: Double?,
     @SerializedName("protein")
-    val protein: Double,
+    val protein: Double?,
     @SerializedName("fat")
-    val fat: Double,
+    val fat: Double?,
     @SerializedName("saturated_fat")
     val saturated_fat: Double?,
     @SerializedName("trans_fat")
@@ -61,13 +61,13 @@ data class SnapRecipeData(
     @SerializedName("potassium")
     val potassium: Double?,
     @SerializedName("recipe_id")
-    val recipe_id: String,
+    val recipe_id: String?,
     @SerializedName("mealType")
-    val mealType: String,
+    val mealType: String?,
     @SerializedName("mealQuantity")
-    val mealQuantity: Double,
+    val mealQuantity: Double?,
     @SerializedName("cookingTime")
-    val cookingTime: String,
+    val cookingTime: String?,
     @SerializedName("calcium")
     val calcium: Double?,
     @SerializedName("iron")
@@ -75,19 +75,19 @@ data class SnapRecipeData(
     @SerializedName("vitaminD")
     val vitaminD: Double?,
     @SerializedName("unit")
-    val unit: String,
+    val unit: String?,
     @SerializedName("isConsumed")
-    val isConsumed: Boolean,
+    val isConsumed: Boolean?,
     @SerializedName("isAteSomethingElse")
-    val isAteSomethingElse: Boolean,
+    val isAteSomethingElse: Boolean?,
     @SerializedName("isSkipped")
-    val isSkipped: Boolean,
+    val isSkipped: Boolean?,
     @SerializedName("isSwapped")
-    val isSwapped: Boolean,
+    val isSwapped: Boolean?,
     @SerializedName("isRepeat")
-    val isRepeat: Boolean,
+    val isRepeat: Boolean?,
     @SerializedName("isFavourite")
-    val isFavourite: Boolean,
+    val isFavourite: Boolean?,
     @SerializedName("notes")
     val notes: List<String>?,
     @SerializedName("b12")

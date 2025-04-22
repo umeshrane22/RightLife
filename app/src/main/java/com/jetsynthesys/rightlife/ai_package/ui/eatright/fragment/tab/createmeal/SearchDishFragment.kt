@@ -370,7 +370,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             val snapMealFragment = SnapDishFragment()
                             val args = Bundle()
-                            args.putString("searchType", "SearchDish")
+                            args.putString("searchType", "searchScanResult")
                             args.putParcelable("recipeResponse", response.body())
                             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                             snapMealFragment.arguments = args

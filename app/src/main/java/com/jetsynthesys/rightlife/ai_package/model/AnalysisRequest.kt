@@ -2,7 +2,8 @@ package com.jetsynthesys.rightlife.ai_package.model
 
 data class AnalysisRequest(
     val key: String,
-    val image: String // Base64-encoded image
+    val image: String,
+    val description : String// Base64-encoded image
 )
 
 data class AnalysisResponse(

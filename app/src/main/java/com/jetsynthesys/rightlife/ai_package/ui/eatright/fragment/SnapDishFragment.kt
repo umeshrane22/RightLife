@@ -22,8 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
-import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
@@ -38,21 +36,16 @@ import java.util.Date
 import java.util.Locale
 import androidx.core.view.isVisible
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.SearchDishFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 
@@ -74,7 +67,8 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var recipeImage : String
     private lateinit var tvCheckOutRecipe: TextView
     private lateinit var tvChange: TextView
-    private lateinit var tvQuantity: EditText
+    private lateinit var quantityEdit: EditText
+    private lateinit var ivEdit : ImageView
     private var quantity = 1
     private lateinit var tvMeasure :TextView
     private var dishLists : ArrayList<SnapRecipeData> = ArrayList()
@@ -104,7 +98,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealLayout = view.findViewById(R.id.layout_addToTheMeal)
         tvCheckOutRecipe = view.findViewById(R.id.tv_CheckOutRecipe)
         tvChange = view.findViewById(R.id.tv_change)
-        tvQuantity = view.findViewById(R.id.tvQuantity)
+        quantityEdit = view.findViewById(R.id.quantityEdit)
         tvMeasure = view.findViewById(R.id.tvMeasure)
         addToTheMealTV = view.findViewById(R.id.tv_addToTheMeal)
         tvMealName = view.findViewById(R.id.tvMealName)
@@ -113,6 +107,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
         microUP = view.findViewById(R.id.microUP)
         icMacroUP = view.findViewById(R.id.icMacroUP)
+        ivEdit = view.findViewById(R.id.ivEdit)
 
         searchType = arguments?.getString("searchType").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
@@ -128,18 +123,18 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
             arguments?.getParcelable("snapDishLocalListModel")
         }
 
-        if (snapDishLocalListModels != null){
-            snapDishLocalListModel = snapDishLocalListModels
-            if (foodDetailsResponse?.data != null){
-                if (snapDishLocalListModel.data.size > 0){
-                    dishLists.addAll(snapDishLocalListModel.data)
-                }
-            }
+        if (foodDetailsResponse != null){
+            val datas = foodDetailsResponse?.data
+            dishLists.add(datas!!)
+            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
         }else{
-            if (foodDetailsResponse?.data != null) {
-                val datas = foodDetailsResponse?.data
-                dishLists.add(datas)
-                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            if (snapDishLocalListModels != null) {
+                snapDishLocalListModel = snapDishLocalListModels
+                if (snapDishLocalListModel?.data != null){
+                    if (snapDishLocalListModel.data.size > 0){
+                        dishLists.addAll(snapDishLocalListModel.data)
+                    }
+                }
             }
         }
 
@@ -205,10 +200,22 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         addToBackStack("landing")
                         commit()
                     }
-                }else{
+                }else if (searchType.contentEquals("searchScanResult")){
                     val fragment = SearchDishFragment()
                     val args = Bundle()
                     fragment.arguments = args
+                    args.putString("searchType", searchType)
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }else{
+                    val fragment = MealScanResultFragment()
+                    val args = Bundle()
+                    fragment.arguments = args
+                    args.putString("searchType", searchType)
+                    args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
                         addToBackStack("landing")
@@ -218,11 +225,43 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
             }
         })
 
+        ivEdit.setOnClickListener {
+          val value =  quantityEdit.text.toString().toInt()
+            if (foodDetailsResponse?.data != null){
+                setDishData(foodDetailsResponse.data)
+                onMacroNutrientsList(foodDetailsResponse.data, value)
+                onMicroNutrientsList(foodDetailsResponse.data, value)
+                // onFrequentlyLoggedItemRefresh(foodDetailsResponse.data)
+            }else{
+                if (snapDishLocalListModel != null){
+                    for (item in snapDishLocalListModel.data) {
+                        if (item.recipe_name.contentEquals(snapRecipeName)) {
+                            setDishData(item)
+                            onMacroNutrientsList(item, value)
+                            onMicroNutrientsList(item, value)
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
         if (foodDetailsResponse?.data != null){
-            setDishData(foodDetailsResponse)
-            onMacroNutrientsList(foodDetailsResponse.data)
-            onMicroNutrientsList(foodDetailsResponse.data)
+            setDishData(foodDetailsResponse.data)
+            onMacroNutrientsList(foodDetailsResponse.data, 1)
+            onMicroNutrientsList(foodDetailsResponse.data, 1)
             // onFrequentlyLoggedItemRefresh(foodDetailsResponse.data)
+        }else{
+            if (snapDishLocalListModel != null){
+                for (item in snapDishLocalListModel.data) {
+                    if (item.recipe_name.contentEquals(snapRecipeName)) {
+                        setDishData(item)
+                        onMacroNutrientsList(item, 1)
+                        onMicroNutrientsList(item, 1)
+                        break
+                    }
+                }
+            }
         }
 
         addToTheMealLayout.setOnClickListener {
@@ -256,7 +295,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         potassium = foodData.potassium,
                         recipe_id = foodData.recipe_id,
                         mealType = foodData.mealType,
-                        mealQuantity = tvQuantity.text.toString().toDouble(),
+                        mealQuantity = quantityEdit.text.toString().toDouble(),
                         cookingTime = foodData.cookingTime,
                         calcium = foodData.calcium,
                         iron = foodData.iron,
@@ -300,6 +339,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                //     snapDishLocalListModel.data.remove(item)
                                     val snapRecipesListScan : ArrayList<SnapRecipeData> = ArrayList()
                                     val foodData = item
+                                    val index = snapDishLocalListModel.data.indexOfFirst { it.recipe_name == snapRecipeName }
                                     val snapRecipeData = SnapRecipeData(
                                         id = foodData.id,
                                         recipe_name = foodData.recipe_name,
@@ -326,7 +366,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         potassium = foodData.potassium,
                                         recipe_id = foodData.recipe_id,
                                         mealType = foodData.mealType,
-                                        mealQuantity = tvQuantity.text.toString().toDouble(),
+                                        mealQuantity = quantityEdit.text.toString().toDouble(),
                                         cookingTime = foodData.cookingTime,
                                         calcium = foodData.calcium,
                                         iron = foodData.iron,
@@ -349,7 +389,10 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         omega3 = foodData.omega3,
                                         phosphorus = foodData.phosphorus
                                     )
-                                    dishLists.add(snapRecipeData)
+                                    if (index != -1) {
+                                        dishLists[index] = snapRecipeData
+                                    }
+                                    dishLists.get(index)
                                     snapDishLocalListModel = SnapDishLocalListModel(dishLists)
                                     Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
                                     val fragment = MealScanResultFragment()
@@ -383,26 +426,34 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         onFrequentlyLoggedItemRefresh()
     }
 
-    private fun setDishData(foodDetailsResponse: RecipeResponse) {
+    private fun setDishData(snapRecipeData: SnapRecipeData) {
         if (searchType.contentEquals("SearchDish")){
             addToTheMealTV.text = "Add To The Meal"
         }else{
             addToTheMealTV.text = "Save Changes"
-            tvMealName.text = foodDetailsResponse.data.recipe_name
+            val capitalized = snapRecipeData.recipe_name.toString().replaceFirstChar { it.uppercase() }
+            tvMealName.text = capitalized
+            if (snapRecipeData.unit!!.isNotEmpty()){
+                tvMeasure.text = snapRecipeData.unit
+            }
+            if (snapRecipeData.mealQuantity != null ){
+                quantityEdit.setText(snapRecipeData.mealQuantity?.toInt().toString())
+            }
+            val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
             Glide.with(this)
-                .load(foodDetailsResponse.data.photo_url)
+                .load(imageUrl)
                 .placeholder(R.drawable.ic_breakfast)
                 .error(R.drawable.ic_breakfast)
                 .into(imgFood)
         }
     }
 
-    private fun onMacroNutrientsList(mealDetails : SnapRecipeData) {
+    private fun onMacroNutrientsList(mealDetails: SnapRecipeData, value: Int) {
 
-        val calories_kcal : String = mealDetails.calories.toInt().toString()?: "NA"
-        val protein_g : String = mealDetails.protein.toInt().toString()?: "NA"
-        val carb_g : String = mealDetails.carbs.toInt().toString()?: "NA"
-        val fat_g : String = mealDetails.fat.toInt().toString()?: "NA"
+        val calories_kcal : String = mealDetails.calories?.times(value)?.toInt().toString()?: "NA"
+        val protein_g : String = mealDetails.protein?.times(value)?.toInt().toString()?: "NA"
+        val carb_g : String = mealDetails.carbs?.times(value)?.toInt().toString()?: "NA"
+        val fat_g : String = mealDetails.fat?.times(value)?.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
@@ -417,22 +468,22 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         macroNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMicroNutrientsList(mealDetails : SnapRecipeData) {
+    private fun onMicroNutrientsList(mealDetails: SnapRecipeData, value: Int) {
 
         val transFat = if (mealDetails.trans_fat != null){
-            mealDetails.trans_fat.toInt().toString()
+            mealDetails.trans_fat.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
         val cholesterol = if (mealDetails.cholesterol != null){
-            mealDetails.cholesterol.toInt().toString()
+            mealDetails.cholesterol.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
         val sodium = if (mealDetails.sodium != null){
-            mealDetails.sodium.toInt().toString()
+            mealDetails.sodium.times(value)?.toInt().toString()
         }else{
             "0"
         }
@@ -455,25 +506,25 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 //            "0"
 //        }
         val fiber_mg = if (mealDetails.fiber != null){
-            mealDetails.fiber.toInt().toString()
+            mealDetails.fiber.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
         val saturatedFat_mg = if (mealDetails.saturated_fat != null){
-            mealDetails.saturated_fat.toInt().toString()
+            mealDetails.saturated_fat.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
         val potassium_mg = if (mealDetails.potassium != null){
-            mealDetails.potassium.toInt().toString()
+            mealDetails.potassium.times(value)?.toInt().toString()
         }else{
             "0"
         }
 
         val sugar_mg = if (mealDetails.sugar != null){
-            mealDetails.sugar.toInt().toString()
+            mealDetails.sugar.times(value)?.toInt().toString()
         }else{
             "0"
         }
@@ -545,6 +596,17 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 
     private fun getMonthName(month: Int): String {
         return SimpleDateFormat("MMMM", Locale.getDefault()).format(Date(0, month, 0))
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 
     private fun showMealSelection() {

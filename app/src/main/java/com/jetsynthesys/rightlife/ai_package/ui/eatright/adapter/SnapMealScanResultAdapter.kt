@@ -6,19 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.model.NutritionData
-import com.jetsynthesys.rightlife.ai_package.model.NutritionDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 
-class FrequentlyLoggedMealScanResultAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeData>,
-                                            private var clickPos: Int, private var mealLogListData : SnapRecipeData?,
-                                            private var isClickView : Boolean, val onMenuEditItem: (SnapRecipeData, Int, Boolean) -> Unit,
-                                            val onMenuDeleteItem: (SnapRecipeData, Int, Boolean) -> Unit) :
-    RecyclerView.Adapter<FrequentlyLoggedMealScanResultAdapter.ViewHolder>() {
+class SnapMealScanResultAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeData>,
+                                private var clickPos: Int, private var mealLogListData : SnapRecipeData?,
+                                private var isClickView : Boolean, val onMenuEditItem: (SnapRecipeData, Int, Boolean) -> Unit,
+                                val onMenuDeleteItem: (SnapRecipeData, Int, Boolean) -> Unit) :
+    RecyclerView.Adapter<SnapMealScanResultAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -30,8 +27,9 @@ class FrequentlyLoggedMealScanResultAdapter(private val context: Context, privat
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-       // holder.mealQuantityTv.text = item.name
-        holder.mealName.text = item.recipe_name
+        holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + item.unit
+        val capitalized = item.recipe_name.toString().replaceFirstChar { it.uppercase() }
+        holder.mealName.text = capitalized
 //        Glide.with(context)
 //            .load(item.url)
 //            .placeholder(R.drawable.ic_breakfast)
@@ -40,10 +38,10 @@ class FrequentlyLoggedMealScanResultAdapter(private val context: Context, privat
         // holder.mealName.text = item.mealName
         if (item != null){
          //   holder.servesCount.text = "1"
-            holder.calValue.text = item.calories.toInt().toString()
-            holder.proteinValue.text = item.protein.toInt().toString()
-            holder.cabsValue.text = item.carbs.toInt().toString()
-            holder.fatsValue.text = item.fat.toInt().toString()
+            holder.calValue.text = item.calories?.toInt().toString()
+            holder.proteinValue.text = item.protein?.toInt().toString()
+            holder.cabsValue.text = item.carbs?.toInt().toString()
+            holder.fatsValue.text = item.fat?.toInt().toString()
         }else{
           //  holder.servesCount.text = "NA"
             holder.calValue.text = "NA"

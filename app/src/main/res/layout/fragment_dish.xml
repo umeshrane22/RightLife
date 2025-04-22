@@ -211,7 +211,7 @@
                             android:gravity="center_vertical">
 
                             <EditText
-                                android:id="@+id/tvQuantity"
+                                android:id="@+id/quantityEdit"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:textSize="18sp"
@@ -229,8 +229,8 @@
                                 />
 
                             <ImageView
-                                android:id="@+id/ivIncrease"
-                                android:layout_width="0dp"
+                                android:id="@+id/ivEdit"
+                                android:layout_width="15dp"
                                 android:layout_height="15dp"
                                 android:scaleType="fitXY"
                                 android:visibility="visible"
@@ -332,7 +332,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/ic_up"
+                            android:src="@drawable/ic_down"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             />
@@ -343,6 +343,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="5dp"
+                        android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:background="@color/view_border"
@@ -356,7 +357,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:scrollbars="none"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@+id/view_macro"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
@@ -410,7 +411,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/ic_up"
+                            android:src="@drawable/ic_down"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             />
@@ -421,6 +422,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginTop="5dp"
+                        android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:background="@color/view_border"
@@ -434,7 +436,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:scrollbars="none"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@+id/view_micro"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">

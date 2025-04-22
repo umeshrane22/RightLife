@@ -38,11 +38,10 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.FrequentlyLoggedMealScanResultAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapMealScanResultAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.SearchDishFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
@@ -62,7 +61,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var microItemRecyclerView : RecyclerView
     private lateinit var frequentlyLoggedRecyclerView : RecyclerView
     private lateinit var currentPhotoPath : String
-    private lateinit var tvFoodName : EditText
+    private lateinit var descriptionName : String
+    private lateinit var foodNameEdit : EditText
     private lateinit var imageFood : ImageView
     private lateinit var tvQuantity: TextView
     private lateinit var tvSelectedDate : TextView
@@ -87,7 +87,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
     private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItem) }
-    private val mealListAdapter by lazy { FrequentlyLoggedMealScanResultAdapter(requireContext(), arrayListOf(), -1,
+    private val mealListAdapter by lazy { SnapMealScanResultAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMenuEditItem, :: onMenuDeleteItem) }
 
     private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
@@ -101,7 +101,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         microItemRecyclerView = view.findViewById(R.id.recyclerview_micro_item)
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
         var btnChange = view.findViewById<TextView>(R.id.change_btn)
-        tvFoodName = view.findViewById(R.id.tvFoodName)
+        foodNameEdit = view.findViewById(R.id.foodNameEdit)
         imageFood = view.findViewById(R.id.imageFood)
         tvQuantity = view.findViewById(R.id.tvQuantity)
         tvSelectedDate = view.findViewById(R.id.tvSelectedDate)
@@ -140,8 +140,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             snapDishLocalListModel = dishLocalListModels
             snapRecipesList.addAll(snapDishLocalListModel!!.data)
             onFrequentlyLoggedItemRefresh(snapRecipesList)
-            onMicroNutrientsList(snapRecipesList.get(0))
-            onMacroNutrientsList(snapRecipesList.get(0))
+            onMicroNutrientsList(snapRecipesList)
+            onMacroNutrientsList(snapRecipesList)
         }
 
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -186,6 +186,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
         currentPhotoPath = arguments?.getString("ImagePath") .toString()
 
+        descriptionName = arguments?.getString("description") .toString()
+
         view.findViewById<LinearLayoutCompat>(R.id.datePickerLayout).setOnClickListener {
             // Open Date Picker
             showDatePicker()
@@ -224,24 +226,24 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                         cuisine = "",
                         photo_url = "",
                         serving_weight = 0.0,
-                        calories = foodData.nutrition_per_100g.calories_kcal,
-                        carbs = foodData.nutrition_per_100g.carb_g,
-                        sugar = foodData.nutrition_per_100g.sugar_g,
-                        fiber = foodData.nutrition_per_100g.fiber_g,
-                        protein = foodData.nutrition_per_100g.protein_g,
-                        fat = foodData.nutrition_per_100g.fat_g,
-                        saturated_fat = foodData.nutrition_per_100g.saturated_fats_g,
-                        trans_fat = foodData.nutrition_per_100g.trans_fats_g,
-                        cholesterol = foodData.nutrition_per_100g.cholesterol_mg,
-                        sodium = foodData.nutrition_per_100g.sodium_mg,
-                        potassium = foodData.nutrition_per_100g.potassium_mg,
+                        calories = foodData.selected_portion_nutrition.calories_kcal,
+                        carbs = foodData.selected_portion_nutrition.carb_g,
+                        sugar = foodData.selected_portion_nutrition.sugar_g,
+                        fiber = foodData.selected_portion_nutrition.fiber_g,
+                        protein = foodData.selected_portion_nutrition.protein_g,
+                        fat = foodData.selected_portion_nutrition.fat_g,
+                        saturated_fat = foodData.selected_portion_nutrition.saturated_fats_g,
+                        trans_fat = foodData.selected_portion_nutrition.trans_fats_g,
+                        cholesterol = foodData.selected_portion_nutrition.cholesterol_mg,
+                        sodium = foodData.selected_portion_nutrition.sodium_mg,
+                        potassium = foodData.selected_portion_nutrition.potassium_mg,
                         recipe_id = "",
                         mealType = "",
                         mealQuantity = 0.0,
                         cookingTime = "",
-                        calcium = foodData.nutrition_per_100g.calcium_mg,
-                        iron = foodData.nutrition_per_100g.iron_mg,
-                        vitaminD = foodData.nutrition_per_100g.vitamin_d_iu,
+                        calcium = foodData.selected_portion_nutrition.calcium_mg,
+                        iron = foodData.selected_portion_nutrition.iron_mg,
+                        vitaminD = foodData.selected_portion_nutrition.vitamin_d_iu,
                         unit = "",
                         isConsumed = false,
                         isAteSomethingElse = false,
@@ -250,22 +252,22 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                         isRepeat = false,
                         isFavourite = false,
                         notes = null,
-                        b12 = foodData.nutrition_per_100g.b12_mcg,
-                        folate = foodData.nutrition_per_100g.folate_mcg,
-                        vitaminC = foodData.nutrition_per_100g.vitamin_c_mg,
-                        vitaminA = foodData.nutrition_per_100g.vitamin_a_mcg,
-                        vitaminK = foodData.nutrition_per_100g.vitamin_k_mcg,
-                        magnesium = foodData.nutrition_per_100g.magnesium_mg,
-                        zinc = foodData.nutrition_per_100g.zinc_mg,
-                        omega3 = foodData.nutrition_per_100g.omega_3_fatty_acids_g,
-                        phosphorus = foodData.nutrition_per_100g.phosphorus_mg
+                        b12 = foodData.selected_portion_nutrition.b12_mcg,
+                        folate = foodData.selected_portion_nutrition.folate_mcg,
+                        vitaminC = foodData.selected_portion_nutrition.vitamin_c_mg,
+                        vitaminA = foodData.selected_portion_nutrition.vitamin_a_mcg,
+                        vitaminK = foodData.selected_portion_nutrition.vitamin_k_mcg,
+                        magnesium = foodData.selected_portion_nutrition.magnesium_mg,
+                        zinc = foodData.selected_portion_nutrition.zinc_mg,
+                        omega3 = foodData.selected_portion_nutrition.omega_3_fatty_acids_g,
+                        phosphorus = foodData.selected_portion_nutrition.phosphorus_mg
                     )
                     snapRecipesListScan.add(snapRecipeData)
                 }
                 snapRecipesList = snapRecipesListScan
                 onFrequentlyLoggedItemRefresh(snapRecipesList)
-                onMicroNutrientsList(snapRecipesList.get(0))
-                onMacroNutrientsList(snapRecipesList.get(0))
+                onMicroNutrientsList(snapRecipesList)
+                onMacroNutrientsList(snapRecipesList)
                 snapDishLocalListModel = SnapDishLocalListModel(snapRecipesList)
             }
         }
@@ -371,99 +373,136 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     //    CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
     }
 
-    private fun onMicroNutrientsList (nutrition: SnapRecipeData){
+    private fun onMicroNutrientsList (nutrition: ArrayList<SnapRecipeData>){
 
-        val vitaminD = if (nutrition.vitaminD != null){
-            nutrition.vitaminD.toInt().toString()
+        var totalVitaminD = 0
+        var totalB12 = 0
+        var totalFolate = 0
+        var totalVitaminC = 0
+        var totalVitaminA = 0
+        var totalVitaminK = 0
+        var totalIron = 0
+        var totalCalcium = 0
+        var totalMagnesium = 0
+        var totalZinc = 0
+        var totalOmega3 = 0
+        var totalSodium = 0
+        var totalCholesterol = 0
+        var totalSugar = 0
+        var totalPhosphorus = 0
+        var totalPotassium = 0
+
+        nutrition.forEach { item ->
+            totalVitaminD += (item.vitaminD ?: 0.0).toInt()
+            totalB12 += (item.b12 ?: 0.0).toInt()
+            totalFolate += (item.folate ?: 0.0).toInt()
+            totalVitaminC += (item.vitaminC ?: 0.0).toInt()
+            totalVitaminA += (item.vitaminA ?: 0.0).toInt()
+            totalVitaminK += (item.vitaminK ?: 0.0).toInt()
+            totalIron += (item.iron ?: 0.0).toInt()
+            totalCalcium += (item.calcium ?: 0.0).toInt()
+            totalMagnesium += (item.magnesium ?: 0.0).toInt()
+            totalZinc += (item.zinc ?: 0.0).toInt()
+            totalOmega3 += (item.omega3 ?: 0.0).toInt()
+            totalSodium += (item.sodium ?: 0.0).toInt()
+            totalCholesterol += (item.cholesterol ?: 0.0).toInt()
+            totalSugar += (item.sugar ?: 0.0).toInt()
+            totalPhosphorus += (item.phosphorus ?: 0.0).toInt()
+            totalPotassium += (item.potassium ?: 0.0).toInt()
+        }
+
+
+        val vitaminD = if (totalVitaminD != null){
+            totalVitaminD.toInt().toString()
         }else{
             "0"
         }
 
-        val b12_mcg = if (nutrition.b12 != null){
-            nutrition.b12.toInt().toString()
+        val b12_mcg = if (totalB12 != null){
+            totalB12.toInt().toString()
         }else{
             "0"
         }
 
-        val folate = if (nutrition.folate != null){
-            nutrition.folate.toInt().toString()
+        val folate = if (totalFolate != null){
+            totalFolate.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminC = if (nutrition.vitaminC != null){
-            nutrition.vitaminC.toInt().toString()
+        val vitaminC = if (totalVitaminC != null){
+            totalVitaminC.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminA = if (nutrition.vitaminA != null){
-            nutrition.vitaminA.toInt().toString()
+        val vitaminA = if (totalVitaminA != null){
+            totalVitaminA.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminK = if (nutrition.vitaminK != null){
-            nutrition.vitaminK.toInt().toString()
+        val vitaminK = if (totalVitaminK != null){
+            totalVitaminK.toInt().toString()
         }else{
             "0"
         }
 
-        val iron_mg = if (nutrition.iron != null){
-            nutrition.iron.toInt().toString()
+        val iron_mg = if (totalIron != null){
+            totalIron.toInt().toString()
         }else{
             "0"
         }
 
-        val calcium = if (nutrition.calcium != null){
-            nutrition.calcium.toInt().toString()
+        val calcium = if (totalCalcium != null){
+            totalCalcium.toInt().toString()
         }else{
             "0"
         }
 
-        val magnesium_mg = if (nutrition.magnesium != null){
-            nutrition.magnesium.toInt().toString()
+        val magnesium_mg = if (totalMagnesium != null){
+            totalMagnesium.toInt().toString()
         }else{
             "0"
         }
 
-        val zinc_mg = if (nutrition.zinc != null){
-            nutrition.zinc.toInt().toString()
+        val zinc_mg = if (totalZinc != null){
+            totalZinc.toInt().toString()
         }else{
             "0"
         }
 
-        val omega3 = if (nutrition.omega3 != null){
-            nutrition.omega3.toInt().toString()
+        val omega3 = if (totalOmega3 != null){
+            totalOmega3.toInt().toString()
         }else{
             "0"
         }
 
-        val sodium = if (nutrition.sodium != null){
-            nutrition.sodium.toInt().toString()
+        val sodium = if (totalSodium != null){
+            totalSodium.toInt().toString()
         }else{
             "0"
         }
 
-        val cholesterol = if (nutrition.cholesterol != null){
-            nutrition.cholesterol.toInt().toString()
+        val cholesterol = if (totalCholesterol != null){
+            totalCholesterol.toInt().toString()
         }else{
             "0"
         }
 
-        val sugar = if (nutrition.sugar != null){
-            nutrition.sugar.toInt().toString()
+        val sugar = if (totalSugar != null){
+            totalSugar.toInt().toString()
         }else{
             "0"
         }
 
-        val phosphorus_mg = if (nutrition.phosphorus != null){
-            nutrition.phosphorus.toInt().toString()
+        val phosphorus_mg = if (totalPhosphorus != null){
+            totalPhosphorus.toInt().toString()
         }else{
             "0"
         }
-        val potassium_mg = if (nutrition.potassium != null){
-            nutrition.potassium.toInt().toString()
+        val potassium_mg = if (totalPotassium != null){
+            totalPotassium.toInt().toString()
         }else{
             "0"
         }
@@ -522,12 +561,18 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 //        macroNutientsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
-    private fun onMacroNutrientsList(nutrition: SnapRecipeData) {
+    private fun onMacroNutrientsList(nutritionList: ArrayList<SnapRecipeData>) {
 
-        val calories_kcal : String = nutrition.calories.toInt().toString()?: "NA"
-        val protein_g : String = nutrition.protein.toInt().toString()?: "NA"
-        val carb_g : String = nutrition.carbs.toInt().toString()?: "NA"
-        val fat_g : String = nutrition.fat.toInt().toString()?: "NA"
+        val totalCalories = nutritionList.sumOf { it.calories ?: 0.0 }
+        val totalProtein = nutritionList.sumOf { it.protein ?: 0.0 }
+        val totalCarbs = nutritionList.sumOf { it.carbs ?: 0.0 }
+        val totalFat = nutritionList.sumOf { it.fat ?: 0.0 }
+
+
+        val calories_kcal : String = totalCalories.toInt().toString()?: "NA"
+        val protein_g : String = totalProtein.toInt().toString()?: "NA"
+        val carb_g : String = totalCarbs.toInt().toString()?: "NA"
+        val fat_g : String = totalFat.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
@@ -605,7 +650,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
             }
             if (nutritionResponse.data.size > 0){
-                tvFoodName.setText(nutritionResponse.data.get(0).name)
+                val capitalized = nutritionResponse.data.get(0).name.replaceFirstChar { it.uppercase() }
+                foodNameEdit.setText(capitalized)
             }
         }
     }
