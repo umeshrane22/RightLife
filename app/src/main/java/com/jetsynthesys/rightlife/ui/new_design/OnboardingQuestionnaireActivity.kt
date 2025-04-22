@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -13,8 +14,10 @@ import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,7 +29,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
     lateinit var tvSkip: TextView
     lateinit var tv_fragment_count: TextView
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
-
+    var forProfileChecklist: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +41,9 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         if (header.isNullOrEmpty()){
             header = sharedPreferenceManager.selectedWellnessFocus
         }
+
+         forProfileChecklist = intent.getBooleanExtra("forProfileChecklist",false)
+
 
         progressBar = findViewById(R.id.progress_bar_onboarding)
         viewPager = findViewById(R.id.viewPagerOnboarding)
@@ -62,7 +68,9 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             sharedPreferenceManager.currentQuestion = viewPager.currentItem
             navigateToNextPage()
         }
-
+        if (forProfileChecklist){
+            tvSkip.visibility = View.GONE
+        }
         adapter = OnBoardingPagerAdapter(this)
 
 
@@ -110,6 +118,9 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             (((fragmentIndex + 1) / adapter.itemCount.toDouble()) * 100).toInt()
         progressBar.progress = progressPercentage
         tv_fragment_count.text = "${fragmentIndex + 1}/7"
+        if (forProfileChecklist){
+            tvSkip.visibility = View.GONE
+        }
     }
 
     companion object {
@@ -147,15 +158,18 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                     // Submit Questions answer here
                     if (viewPager.currentItem == adapter.itemCount - 1) {
                         sharedPreferenceManager.onBoardingQuestion = true
-                        startActivity(
-                            Intent(
-                                this@OnboardingQuestionnaireActivity,
-                                AwesomeScreenActivity::class.java
+                        if (!forProfileChecklist) {
+                            startActivity(
+                                Intent(
+                                    this@OnboardingQuestionnaireActivity,
+                                    AwesomeScreenActivity::class.java
+                                )
                             )
-                        )
+                        }
                         finishAffinity()
                         SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
                             .clearOnboardingQuestionRequest()
+                        updateChecklistStatus();
                     } else {
                         navigateToNextPage()
                         sharedPreferenceManager.currentQuestion = viewPager.currentItem
@@ -185,5 +199,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
         })
     }
 
-
+    private fun updateChecklistStatus() {
+        CommonAPICall.updateChecklistStatus(this, "profile", AppConstants.CHECKLIST_COMPLETED)
+    }
 }

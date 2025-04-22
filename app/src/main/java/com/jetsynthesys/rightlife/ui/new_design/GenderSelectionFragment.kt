@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -154,4 +155,6 @@ class GenderSelectionFragment : Fragment() {
         llFemale.visibility = VISIBLE
         llSelectedGender.visibility = GONE
     }
+
+
 }

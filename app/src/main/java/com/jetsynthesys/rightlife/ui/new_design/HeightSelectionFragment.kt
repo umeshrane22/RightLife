@@ -59,8 +59,9 @@ class HeightSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         selected_number_text = view.findViewById(R.id.selected_number_text)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)

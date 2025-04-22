@@ -31,7 +31,8 @@ class AppSettingsActivity : AppCompatActivity() {
         val settingsItems = listOf(
             SettingItem("Notifications"),
             SettingItem("Export All Health Data"),
-            SettingItem("Integrations")
+            SettingItem("Integrations"),
+            SettingItem("Account Privacy")
         )
 
         settingsAdapter = SettingsAdapter(settingsItems) { item ->
@@ -45,7 +46,10 @@ class AppSettingsActivity : AppCompatActivity() {
                 }
 
                 "Integrations" -> {
-                    showToast("Integrations clicked")
+                    startActivity(Intent(this, IntegrationsNewActivity::class.java))
+                }
+                "Account Privacy" -> {
+                    startActivity(Intent(this, AccountPrivacyNewActivity::class.java))
                 }
             }
         }

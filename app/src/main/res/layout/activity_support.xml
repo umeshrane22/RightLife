@@ -37,4 +37,44 @@
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_margin="@dimen/margin_card_16dp"
+        android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Whether you have a question, some feedback, or even a bit of constructive criticism, we're all ears."
+        android:textColor="#707070"
+        android:fontFamily="@font/dmsans_regular"
+        android:gravity="center"
+        android:textSize="@dimen/textsize_large"
+        android:layout_marginVertical="@dimen/margin_card_16dp"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Reach out to us anytime at"
+        android:textColor="#707070"
+        android:textSize="@dimen/textsize_large"
+        android:fontFamily="@font/dmsans_regular"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="support@rightlife.com"
+        android:textColor="#707070"
+        android:textSize="@dimen/textsize_large"
+        android:fontFamily="@font/dmsans_bold"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="We are committed to being your partner in this journey, every step of the way."
+        android:textColor="#707070"
+        android:gravity="center"
+        android:textSize="@dimen/textsize_large"
+        android:layout_marginVertical="@dimen/margin_card_16dp"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
+
 </LinearLayout>

@@ -44,6 +44,7 @@
         android:layout_height="wrap_content"
         android:text="Appearance"
         android:textSize="16sp"
+        android:visibility="gone"
         android:fontFamily="@font/dmsans_bold"
         android:textColor="@color/txt_color_mind"
         android:paddingVertical="16dp" />
@@ -53,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:cardElevation="4dp"
+        android:visibility="gone"
         app:cardCornerRadius="12dp"
         android:layout_margin="2dp">
 

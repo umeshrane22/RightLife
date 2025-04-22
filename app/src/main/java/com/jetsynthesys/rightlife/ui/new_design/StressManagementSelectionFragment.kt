@@ -58,8 +58,9 @@ class StressManagementSelectionFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.rv_stress_management)
         tvStressManagementHeader = view.findViewById(R.id.tv_header_stress_management)
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
