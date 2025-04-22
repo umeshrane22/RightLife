@@ -381,5 +381,15 @@ public class SharedPreferenceManager {
     public Boolean isTooltipShowed(String prefKey) {
         return sharedPreferences.getBoolean(prefKey, false);
     }
+
+    public Boolean getFirstTimeUserForSnapMealVideo() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_VIDEO, false);
+    }
+
+    public void setFirstTimeUserForSnapMealVideo(boolean isVideoUi) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_VIDEO, isVideoUi);
+        editor.apply();
+    }
 }
 

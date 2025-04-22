@@ -52,6 +52,8 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -79,6 +81,14 @@ interface ApiService {
     @GET("app/api/meal-plan/meal-recipes-lists")
     fun getMealRecipesList(
         @Header("Authorization") authToken: String): Call<RecipeResponseModel>
+
+    @GET("eat/recipes/names")
+    fun getSnapMealRecipesList(
+       ): Call<SnapMealRecipeResponseModel>
+
+    @GET("eat/recipes/{foodId}")
+    fun getSnapMealRecipesDetails(
+        @Path("foodId") foodId: String): Call<RecipeResponse>
 
     @GET("app/api/meal-plan/meal-recipes-lists/{foodId}")
     fun getMealRecipesDetails(

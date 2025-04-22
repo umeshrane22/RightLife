@@ -83,6 +83,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var weightLastLogDateTv : TextView
     private lateinit var weightTrackerIc : ImageView
     private lateinit var waterIntakeLayout : LinearLayout
+    private lateinit var logMealNoDataButton : ConstraintLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
@@ -132,6 +133,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         fatsUnitTv = view.findViewById(R.id.fatsUnitTv)
         proteinUnitTv = view.findViewById(R.id.proteinUnitTv)
         carbsUnitTv = view.findViewById(R.id.carbsUnitTv)
+        logMealNoDataButton = view.findViewById(R.id.logMealNoDataButton)
 
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
         otherReciepeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
@@ -176,6 +178,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
 
         mealLogLayout.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = YourMealLogsFragment()
+                val args = Bundle()
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }
+
+        logMealNoDataButton.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = YourMealLogsFragment()
                 val args = Bundle()

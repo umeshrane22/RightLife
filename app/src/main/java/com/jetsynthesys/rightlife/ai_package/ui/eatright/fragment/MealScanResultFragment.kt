@@ -1,8 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -16,14 +18,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
@@ -31,20 +35,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.model.NutritionData
-import com.jetsynthesys.rightlife.ai_package.model.NutritionDetails
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.FrequentlyLoggedMealScanResultAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.SearchDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
-import com.jetsynthesys.rightlife.ui.CommonAPICall
-import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -57,7 +59,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var microItemRecyclerView : RecyclerView
     private lateinit var frequentlyLoggedRecyclerView : RecyclerView
     private lateinit var currentPhotoPath : String
-    private lateinit var tvFoodName : TextView
+    private lateinit var tvFoodName : EditText
     private lateinit var imageFood : ImageView
     private lateinit var tvQuantity: TextView
     private lateinit var tvSelectedDate : TextView
@@ -68,6 +70,10 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var icMacroUP : ImageView
     private lateinit var microUP : ImageView
     private lateinit var addLayout : LinearLayoutCompat
+    private lateinit var checkBox: CheckBox
+    private lateinit var deleteSnapMealBottomSheet: DeleteSnapMealBottomSheet
+    private var snapDishLocalListModel : SnapDishLocalListModel? = null
+    private var snapRecipesList : ArrayList<SnapRecipeData> = ArrayList()
 
     private var quantity = 1
 
@@ -78,7 +84,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItem) }
     private val mealListAdapter by lazy { FrequentlyLoggedMealScanResultAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onFrequentlyLoggedItem) }
+        null, false, :: onMenuEditItem, :: onMenuDeleteItem) }
 
     private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMealLogDateItem) }
@@ -102,6 +108,27 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         microUP = view.findViewById(R.id.microUP)
         icMacroUP = view.findViewById(R.id.icMacroUP)
         addLayout = view.findViewById(R.id.addLayout)
+        checkBox = view.findViewById(R.id.saveMealCheckBox)
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_checked))
+        val colors = intArrayOf(
+            ContextCompat.getColor(requireContext(), R.color.dark_green),   // when checked
+            ContextCompat.getColor(requireContext(), R.color.dark_gray)  // when not checked
+        )
+        val colorStateList = ColorStateList(states, colors)
+        checkBox.buttonTintList = colorStateList
+
+        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("snapDishLocalListModel")
+        }
+
+        if (dishLocalListModels != null){
+            snapDishLocalListModel = dishLocalListModels
+            snapRecipesList.addAll(snapDishLocalListModel!!.data)
+        }
 
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = mealListAdapter
@@ -145,7 +172,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
         currentPhotoPath = arguments?.getString("ImagePath") .toString()
 
-        view.findViewById<ImageView>(R.id.ivDatePicker).setOnClickListener {
+        view.findViewById<LinearLayoutCompat>(R.id.datePickerLayout).setOnClickListener {
             // Open Date Picker
             showDatePicker()
         }
@@ -164,10 +191,64 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
         if (foodDataResponses?.data != null){
             setFoodData(foodDataResponses)
-            onFrequentlyLoggedItemRefresh(foodDataResponses.data)
+
             if (foodDataResponses.data.size > 0){
-                onMicroNutrientsList(foodDataResponses.data.get(0).nutrition_per_100g)
-                onMacroNutrientsList(foodDataResponses.data.get(0).nutrition_per_100g)
+
+                val items = foodDataResponses.data
+                items?.forEach { foodData ->
+                    val snapRecipeData = SnapRecipeData(
+                        id = "",
+                        recipe_name = foodData.name,
+                        ingredients = null,
+                        instructions = null,
+                        author = "",
+                        total_time = "",
+                        servings = 0,
+                        course = "",
+                        tags = null,
+                        cuisine = "",
+                        photo_url = "",
+                        serving_weight = 0.0,
+                        calories = foodData.nutrition_per_100g.calories_kcal,
+                        carbs = foodData.nutrition_per_100g.carb_g,
+                        sugar = foodData.nutrition_per_100g.sugar_g,
+                        fiber = foodData.nutrition_per_100g.fiber_g,
+                        protein = foodData.nutrition_per_100g.protein_g,
+                        fat = foodData.nutrition_per_100g.fat_g,
+                        saturated_fat = foodData.nutrition_per_100g.saturated_fats_g,
+                        trans_fat = foodData.nutrition_per_100g.trans_fats_g,
+                        cholesterol = foodData.nutrition_per_100g.cholesterol_mg,
+                        sodium = foodData.nutrition_per_100g.sodium_mg,
+                        potassium = foodData.nutrition_per_100g.potassium_mg,
+                        recipe_id = "",
+                        mealType = "",
+                        mealQuantity = 0.0,
+                        cookingTime = "",
+                        calcium = foodData.nutrition_per_100g.calcium_mg,
+                        iron = foodData.nutrition_per_100g.iron_mg,
+                        vitaminD = foodData.nutrition_per_100g.vitamin_d_iu,
+                        unit = "",
+                        isConsumed = false,
+                        isAteSomethingElse = false,
+                        isSkipped = false,
+                        isSwapped = false,
+                        isRepeat = false,
+                        isFavourite = false,
+                        notes = null,
+                        b12 = foodData.nutrition_per_100g.b12_mcg,
+                        folate = foodData.nutrition_per_100g.folate_mcg,
+                        vitaminC = foodData.nutrition_per_100g.vitamin_c_mg,
+                        vitaminA = foodData.nutrition_per_100g.vitamin_a_mcg,
+                        vitaminK = foodData.nutrition_per_100g.vitamin_k_mcg,
+                        magnesium = foodData.nutrition_per_100g.magnesium_mg,
+                        zinc = foodData.nutrition_per_100g.zinc_mg,
+                        omega3 = foodData.nutrition_per_100g.omega_3_fatty_acids_g,
+                        phosphorus = foodData.nutrition_per_100g.phosphorus_mg
+                    )
+                }
+                onFrequentlyLoggedItemRefresh(snapRecipesList)
+                onMicroNutrientsList(snapRecipesList.get(0))
+                onMacroNutrientsList(snapRecipesList.get(0))
             }
         }
 
@@ -261,102 +342,102 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
-        CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
+    //    CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
     }
 
-    private fun onMicroNutrientsList (nutrition: NutritionDetails){
+    private fun onMicroNutrientsList (nutrition: SnapRecipeData){
 
-        val vitaminD = if (nutrition.vitamin_d_iu != null){
-            nutrition.vitamin_d_iu.toInt().toString()
+        val vitaminD = if (nutrition.vitaminD != null){
+            nutrition.vitaminD.toInt().toString()
         }else{
             "0"
         }
 
-        val b12_mcg = if (nutrition.b12_mcg != null){
-            nutrition.b12_mcg.toInt().toString()
+        val b12_mcg = if (nutrition.b12 != null){
+            nutrition.b12.toInt().toString()
         }else{
             "0"
         }
 
-        val folate = if (nutrition.folate_mcg != null){
-            nutrition.folate_mcg.toInt().toString()
+        val folate = if (nutrition.folate != null){
+            nutrition.folate.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminC = if (nutrition.vitamin_c_mg != null){
-            nutrition.vitamin_c_mg.toInt().toString()
+        val vitaminC = if (nutrition.vitaminC != null){
+            nutrition.vitaminC.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminA = if (nutrition.vitamin_a_mcg != null){
-            nutrition.vitamin_a_mcg.toInt().toString()
+        val vitaminA = if (nutrition.vitaminA != null){
+            nutrition.vitaminA.toInt().toString()
         }else{
             "0"
         }
 
-        val vitaminK = if (nutrition.vitamin_k_mcg != null){
-            nutrition.vitamin_k_mcg.toInt().toString()
+        val vitaminK = if (nutrition.vitaminK != null){
+            nutrition.vitaminK.toInt().toString()
         }else{
             "0"
         }
 
-        val iron_mg = if (nutrition.iron_mg != null){
-            nutrition.iron_mg.toInt().toString()
+        val iron_mg = if (nutrition.iron != null){
+            nutrition.iron.toInt().toString()
         }else{
             "0"
         }
 
-        val calcium = if (nutrition.calcium_mg != null){
-            nutrition.calcium_mg.toInt().toString()
+        val calcium = if (nutrition.calcium != null){
+            nutrition.calcium.toInt().toString()
         }else{
             "0"
         }
 
-        val magnesium_mg = if (nutrition.magnesium_mg != null){
-            nutrition.magnesium_mg.toInt().toString()
+        val magnesium_mg = if (nutrition.magnesium != null){
+            nutrition.magnesium.toInt().toString()
         }else{
             "0"
         }
 
-        val zinc_mg = if (nutrition.zinc_mg != null){
-            nutrition.zinc_mg.toInt().toString()
+        val zinc_mg = if (nutrition.zinc != null){
+            nutrition.zinc.toInt().toString()
         }else{
             "0"
         }
 
-        val omega3 = if (nutrition.omega_3_fatty_acids_g != null){
-            nutrition.omega_3_fatty_acids_g.toInt().toString()
+        val omega3 = if (nutrition.omega3 != null){
+            nutrition.omega3.toInt().toString()
         }else{
             "0"
         }
 
-        val sodium = if (nutrition.sodium_mg != null){
-            nutrition.sodium_mg.toInt().toString()
+        val sodium = if (nutrition.sodium != null){
+            nutrition.sodium.toInt().toString()
         }else{
             "0"
         }
 
-        val cholesterol = if (nutrition.cholesterol_mg != null){
-            nutrition.cholesterol_mg.toInt().toString()
+        val cholesterol = if (nutrition.cholesterol != null){
+            nutrition.cholesterol.toInt().toString()
         }else{
             "0"
         }
 
-        val sugar = if (nutrition.sugar_g != null){
-            nutrition.sugar_g.toInt().toString()
+        val sugar = if (nutrition.sugar != null){
+            nutrition.sugar.toInt().toString()
         }else{
             "0"
         }
 
-        val phosphorus_mg = if (nutrition.phosphorus_mg != null){
-            nutrition.phosphorus_mg.toInt().toString()
+        val phosphorus_mg = if (nutrition.phosphorus != null){
+            nutrition.phosphorus.toInt().toString()
         }else{
             "0"
         }
-        val potassium_mg = if (nutrition.potassium_mg != null){
-            nutrition.potassium_mg.toInt().toString()
+        val potassium_mg = if (nutrition.potassium != null){
+            nutrition.potassium.toInt().toString()
         }else{
             "0"
         }
@@ -415,12 +496,13 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 //        valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
 //        macroNutientsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
-    private fun onMacroNutrientsList(nutrition: NutritionDetails) {
 
-        val calories_kcal : String = nutrition.calories_kcal.toInt().toString()?: "NA"
-        val protein_g : String = nutrition.protein_g.toInt().toString()?: "NA"
-        val carb_g : String = nutrition.carb_g.toInt().toString()?: "NA"
-        val fat_g : String = nutrition.fat_g.toInt().toString()?: "NA"
+    private fun onMacroNutrientsList(nutrition: SnapRecipeData) {
+
+        val calories_kcal : String = nutrition.calories.toInt().toString()?: "NA"
+        val protein_g : String = nutrition.protein.toInt().toString()?: "NA"
+        val carb_g : String = nutrition.carbs.toInt().toString()?: "NA"
+        val fat_g : String = nutrition.fat.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
@@ -443,7 +525,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         }
     }
 
-    private fun onFrequentlyLoggedItemRefresh(recipes: List<NutritionData>) {
+    private fun onFrequentlyLoggedItemRefresh(recipes: List<SnapRecipeData>) {
 
         if (recipes.size > 0){
             frequentlyLoggedRecyclerView.visibility = View.VISIBLE
@@ -453,13 +535,13 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             frequentlyLoggedRecyclerView.visibility = View.GONE
         }
 
-        val valueLists : ArrayList<NutritionData> = ArrayList()
-        valueLists.addAll(recipes as Collection<NutritionData>)
-        val mealLogDateData: NutritionData? = null
+        val valueLists : ArrayList<SnapRecipeData> = ArrayList()
+        valueLists.addAll(recipes as Collection<SnapRecipeData>)
+        val mealLogDateData: SnapRecipeData? = null
         mealListAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onFrequentlyLoggedItem(mealLogDateModel: NutritionDetails, position: Int, isRefresh: Boolean) {
+    private fun onMenuEditItem(mealLogDateModel: SnapRecipeData, position: Int, isRefresh: Boolean) {
 
 //        val mealLogs = listOf(
 //            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
@@ -471,6 +553,29 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 //        val valueLists : ArrayList<RecipeLists> = ArrayList()
 //        valueLists.addAll(mealLogs as Collection<RecipeLists>)
 //        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+
+        //showCustomDialog()
+    }
+
+    private fun onMenuDeleteItem(mealLogDateModel: SnapRecipeData, position: Int, isRefresh: Boolean) {
+
+//        val mealLogs = listOf(
+//            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
+//            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
+//            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
+//        )
+
+//        val valueLists : ArrayList<RecipeLists> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<RecipeLists>)
+//        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+
+        deleteSnapMealBottomSheet = DeleteSnapMealBottomSheet()
+        deleteSnapMealBottomSheet.isCancelable = true
+        val bundle = Bundle()
+        bundle.putBoolean("test",false)
+        deleteSnapMealBottomSheet.arguments = bundle
+        activity?.supportFragmentManager?.let { deleteSnapMealBottomSheet.show(it, "DeleteMealBottomSheet") }
     }
 
     private fun setFoodData(nutritionResponse: ScanMealNutritionResponse) {
@@ -489,7 +594,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
             }
             if (nutritionResponse.data.size > 0){
-                tvFoodName.text = nutritionResponse.data.get(0).name
+                tvFoodName.setText(nutritionResponse.data.get(0).name)
             }
         }
     }
@@ -531,4 +636,21 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private fun getMonthName(month: Int): String {
         return SimpleDateFormat("MMMM", Locale.getDefault()).format(Date(0, month, 0))
     }
+
+    private fun showCustomDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_item_snap_meal, null)
+
+        val dialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .create()
+
+//        dialogView.findViewById<TextView>(R.id.dialogTitle).text = item.title
+//        dialogView.findViewById<TextView>(R.id.dialogDescription).text = item.description
+//        dialogView.findViewById<Button>(R.id.dialogOkBtn).setOnClickListener {
+//            dialog.dismiss()
+//        }
+
+        dialog.show()
+    }
+
 }

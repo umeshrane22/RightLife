@@ -25,16 +25,16 @@
             android:layout_height="35dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="visible"
+            android:visibility="gone"
             android:scaleType="fitXY"
             android:src="@drawable/ic_breakfast" />
 
         <TextView
-            android:id="@+id/tv_meal_title"
-            android:layout_width="250dp"
+            android:id="@+id/tv_meal_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
             android:ellipsize="end"
             android:singleLine="true"
@@ -42,7 +42,7 @@
             app:layout_constraintStart_toEndOf="@+id/image_meal"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="14sp"
-            android:fontFamily="@font/dmsans_regular"
+            android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/black_no_meals"
             android:text="Poha" />
 
@@ -74,30 +74,30 @@
                 android:src="@drawable/delete_icon_green" />
 
             <ImageView
+                android:id="@+id/editDeleteMenu"
                 android:layout_marginStart="5dp"
-                android:id="@+id/image_circle_plus"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:scaleType="fitXY"
-                android:src="@drawable/edit_green_icon" />
+                android:src="@drawable/three_dots" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <TextView
-            android:id="@+id/tv_meal_name"
+            android:id="@+id/mealQuantityTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="10dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_meal_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_meal_name"
             android:textSize="10sp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/black_no_meals"
-            android:text="Poha" />
+            android:text="150 Grams" />
 
         <View
             android:id="@+id/view"
@@ -107,7 +107,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/view_border"
-            app:layout_constraintTop_toBottomOf="@+id/tv_meal_name"></View>
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/mealQuantityTv">
+        </View>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -115,60 +117,19 @@
             android:orientation="horizontal"
             android:layout_margin="10dp"
             android:gravity="left"
+            android:weightSum="4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:orientation="vertical"
                 android:gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/white_meal_date_bg"
                 android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_serve"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_serves" />
-
-                <TextView
-                    android:id="@+id/tv_serves"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:textSize="10sp"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="Serves" />
-
-                <TextView
-                    android:id="@+id/tv_serves_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
-                    android:textColor="@color/workout_textcolor"
-                    android:text="1" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_cal"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_cal" />
 
                 <TextView
                     android:id="@+id/tv_cal_value"
@@ -190,22 +151,42 @@
                     android:textColor="@color/workout_textcolor"
                     android:text="kCal" />
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imageCal"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_cal" />
+
+                    <TextView
+                        android:id="@+id/tvCal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:gravity="center"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="Calorie" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:orientation="vertical"
                 android:gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/white_meal_date_bg"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_subtraction"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_protein" />
 
                 <TextView
                     android:id="@+id/tv_protein_value"
@@ -227,22 +208,42 @@
                     android:textColor="@color/workout_textcolor"
                     android:text="g" />
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imageProtein"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_protein" />
+
+                    <TextView
+                        android:id="@+id/tvProtein"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:gravity="center"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="Protein" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:orientation="vertical"
                 android:gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/white_meal_date_bg"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
-
-                <ImageView
-                    android:id="@+id/image_baguette"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_cabs" />
 
                 <TextView
                     android:id="@+id/tv_cabs_value"
@@ -264,21 +265,41 @@
                     android:textColor="@color/workout_textcolor"
                     android:text="g" />
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imageCabs"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_cabs" />
+
+                    <TextView
+                        android:id="@+id/tvCabs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:gravity="center"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="Cabs" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:orientation="vertical"
                 android:gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/white_meal_date_bg"
                 android:layout_marginStart="10dp">
-
-                <ImageView
-                    android:id="@+id/image_dewpoint"
-                    android:layout_width="11dp"
-                    android:layout_height="11dp"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_fats" />
 
                 <TextView
                     android:id="@+id/tv_fats_value"
@@ -300,7 +321,32 @@
                     android:textColor="@color/workout_textcolor"
                     android:text="g" />
 
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/imageFats"
+                        android:layout_width="11dp"
+                        android:layout_height="11dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_fats" />
+
+                    <TextView
+                        android:id="@+id/tv_energy_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:gravity="center"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textColor="@color/workout_textcolor"
+                        android:text="Fats" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

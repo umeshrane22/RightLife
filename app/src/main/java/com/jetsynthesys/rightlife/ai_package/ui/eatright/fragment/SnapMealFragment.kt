@@ -2,12 +2,15 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Matrix
+import android.graphics.drawable.ColorDrawable
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
@@ -34,13 +37,20 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.util.Base64
+import android.view.Window
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.MediaController
 import android.widget.VideoView
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import java.io.File
 import java.io.FileInputStream
@@ -52,10 +62,13 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
     private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.CAMERA
         )
     } else {
         arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
         )
     }
@@ -71,6 +84,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var videoView : VideoView
     private var imagePath : String = ""
     private var isProceedResult : Boolean = false
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private lateinit var backButton : ImageView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSnapMealBinding
         get() = FragmentSnapMealBinding::inflate
@@ -79,6 +94,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
         proceedLayout = view.findViewById(R.id.layout_proceed)
         imageFood = view.findViewById(R.id.imageFood)
         videoView = view.findViewById(R.id.videoView)
@@ -86,18 +102,70 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         enterMealDescriptionLayout = view.findViewById(R.id.enterMealDescriptionLayout)
         skipTV = view.findViewById(R.id.skipTV)
         mealDescriptionET = view.findViewById(R.id.mealDescriptionET)
+        backButton = view.findViewById(R.id.backButton)
 
         skipTV.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val snapMealFragment = MealScanResultFragment()
+                val args = Bundle()
+                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
+                args.putString("ImagePath", imagePath)
+                args.putParcelable("foodDataResponses", null)
+                snapMealFragment.arguments = args
+                replace(R.id.flFragment, snapMealFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+//            if (isProceedResult){
+//                if (imagePath != ""){
+//                    uploadFoodImagePath(imagePath)
+//                }else{
+//                    Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+//                }
+//            }else{
+//                openCameraForImage()
+//            }
+//            takePhotoInfoLayout.visibility = View.VISIBLE
+//            enterMealDescriptionLayout.visibility = View.GONE
+//            skipTV.visibility = View.GONE
+//            videoView.visibility = View.VISIBLE
+//            imageFood.visibility = View.GONE
+//            isProceedResult = false
+//            proceedLayout.isEnabled = true
+//            proceedLayout.setBackgroundResource(R.drawable.green_meal_bg)
+//            videoPlay()
+        }
+
+        if (sharedPreferenceManager.getFirstTimeUserForSnapMealVideo()) {
+            takePhotoInfoLayout.visibility = View.GONE
+         //   enterMealDescriptionLayout.visibility = View.VISIBLE
+            videoView.visibility = View.GONE
+            // Request all permissions at once
+            if (!hasAllPermissions()) {
+                requestAllPermissions()
+            }else{
+                if (isProceedResult){
+                    if (imagePath != ""){
+                        uploadFoodImagePath(imagePath)
+                    }else{
+                        Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
+                    }
+                }else{
+                  //  CameraDialogFragment().show(requireActivity().supportFragmentManager, "CameraDialog")
+//                    val cameraDialog = CameraDialogFragment()
+//                    cameraDialog.show(requireActivity().supportFragmentManager, "CameraDialog")
+
+                    openCameraForImage()
+                }
+            }
+
+        } else {
             takePhotoInfoLayout.visibility = View.VISIBLE
             enterMealDescriptionLayout.visibility = View.GONE
-            skipTV.visibility = View.GONE
             videoView.visibility = View.VISIBLE
-            imageFood.visibility = View.GONE
-            isProceedResult = false
-            proceedLayout.isEnabled = true
-            proceedLayout.setBackgroundResource(R.drawable.green_meal_bg)
-            videoPlay()
+            sharedPreferenceManager.setFirstTimeUserForSnapMealVideo(true)
         }
+
 
         videoPlay()
 
@@ -129,6 +197,18 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 //            }
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }
+        })
+
+        backButton.setOnClickListener {
+            startActivity(Intent(context, HomeDashboardActivity::class.java))
+            requireActivity().finish()
+        }
+
         mealDescriptionET.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (s!!.length > 0){
@@ -151,7 +231,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         })
     }
 
-    private fun openCameraForImage() {
+     fun openGalleryForImage() {
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(galleryIntent, REQUEST_IMAGE_PICK)
+    }
+
+    fun openCameraForImage() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (cameraIntent.resolveActivity(requireActivity().packageManager) != null) {
             val photoFile: File = createImageFile()
@@ -181,38 +266,105 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         }
     }
 
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == Activity.RESULT_OK) {
+//            when (requestCode) {
+//                REQUEST_IMAGE_CAPTURE -> {
+//                    val file = File(currentPhotoPath)
+//                    if (file.exists()) {
+//                        val bitmap = BitmapFactory.decodeFile(currentPhotoPath)
+//                        // Rotate the image if required
+//                        val imageUri = FileProvider.getUriForFile(requireContext(),
+//                            "${requireContext().packageName}.fileprovider", file)
+//                        val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
+//                        // Set the image in the UI
+//                        videoView.visibility = View.GONE
+//                        imageFood.visibility = View.VISIBLE
+//                        imageFood.setImageBitmap(rotatedBitmap)
+//                        // Save image details
+//                        imagePath = currentPhotoPath
+//                        takePhotoInfoLayout.visibility = View.GONE
+//                        enterMealDescriptionLayout.visibility = View.VISIBLE
+//                        skipTV.visibility = View.VISIBLE
+//                        proceedLayout.isEnabled = false
+//                        proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
+//                        isProceedResult = false
+//                        mealDescriptionET.text.clear()
+//                    } else {
+//                        Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
+//                    }
+//                }
+//
+//            }
+//            if (resultCode == Activity.RESULT_CANCELED) {
+//                // User pressed back or closed camera
+//                Toast.makeText(context, "Camera canceled", Toast.LENGTH_SHORT).show()
+//            }
+//            Toast.makeText(context, "Camera canceled", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                REQUEST_IMAGE_CAPTURE -> {
-                    val file = File(currentPhotoPath)
-                    if (file.exists()) {
-                        val bitmap = BitmapFactory.decodeFile(currentPhotoPath)
-                        // Rotate the image if required
-                        val imageUri = FileProvider.getUriForFile(requireContext(),
-                            "${requireContext().packageName}.fileprovider", file)
-                        val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
-                        // Set the image in the UI
-                        videoView.visibility = View.GONE
-                        imageFood.visibility = View.VISIBLE
-                        imageFood.setImageBitmap(rotatedBitmap)
-                        // Save image details
-                        imagePath = currentPhotoPath
-                        takePhotoInfoLayout.visibility = View.GONE
-                        enterMealDescriptionLayout.visibility = View.VISIBLE
-                        skipTV.visibility = View.VISIBLE
-                        proceedLayout.isEnabled = false
-                        proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
-                        isProceedResult = false
-                        mealDescriptionET.text.clear()
-                    } else {
-                        Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
+
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                when (requestCode) {
+                    REQUEST_IMAGE_CAPTURE -> {
+                        val file = File(currentPhotoPath)
+                        if (file.exists()) {
+                            val bitmap = BitmapFactory.decodeFile(currentPhotoPath)
+                            val imageUri = FileProvider.getUriForFile(
+                                requireContext(),
+                                "${requireContext().packageName}.fileprovider",
+                                file
+                            )
+
+                            val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
+                            imageFood.setImageBitmap(rotatedBitmap)
+                            imageFood.visibility = View.VISIBLE
+                            videoView.visibility = View.GONE
+
+                            // Update UI
+                            imagePath = currentPhotoPath
+                            takePhotoInfoLayout.visibility = View.GONE
+                            enterMealDescriptionLayout.visibility = View.VISIBLE
+                            skipTV.visibility = View.VISIBLE
+                            proceedLayout.isEnabled = false
+                            proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
+                            isProceedResult = false
+                            mealDescriptionET.text.clear()
+                        } else {
+                            Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
+                        }
+                    }
+
+                    REQUEST_IMAGE_PICK -> {
+                        val selectedImage = data?.data
+                        selectedImage?.let {
+                            val path = FileUtils.getFileFromUri(requireContext(), selectedImage) ?: return
+                            imagePath = path.path
+                            val downsampledBitmap = getDownsampledBitmap(selectedImage, 1000, 1000)
+                            // Rotate the image if required
+                            val rotatedBitmap = downsampledBitmap?.let { it1 ->
+                                rotateImageIfRequired(requireContext(), it1, selectedImage)
+                            }
+                            imageFood.setImageBitmap(rotatedBitmap)
+                            // Set the image in the UI
+                        }
                     }
                 }
             }
+
+            Activity.RESULT_CANCELED -> {
+                // ✅ Only here when user presses back or closes camera
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }
         }
     }
+
 
     private fun rotateImageIfRequired(context: Context, bitmap: Bitmap, imageUri: Uri): Bitmap {
         val inputStream = context.contentResolver.openInputStream(imageUri)
@@ -235,6 +387,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 
     companion object {
+        private const val REQUEST_IMAGE_PICK = 100
         private const val REQUEST_IMAGE_CAPTURE = 101
     }
 
@@ -338,4 +491,75 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             videoView.start()
         }
     }
+
+    private fun getDownsampledBitmap(imageUri: Uri, reqWidth: Int, reqHeight: Int): Bitmap? {
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        val inputStream = requireContext().contentResolver.openInputStream(imageUri)
+        BitmapFactory.decodeStream(inputStream, null, options)
+        inputStream?.close()
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+        options.inJustDecodeBounds = false
+        val inputStream2 = requireContext().contentResolver.openInputStream(imageUri)
+        val downsampledBitmap = BitmapFactory.decodeStream(inputStream2, null, options)
+        inputStream2?.close()
+        return downsampledBitmap
+    }
+
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        val height = options.outHeight
+        val width = options.outWidth
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+            val heightRatio = Math.round(height.toFloat() / reqHeight.toFloat())
+            val widthRatio = Math.round(width.toFloat() / reqWidth.toFloat())
+            inSampleSize = if (heightRatio < widthRatio) heightRatio else widthRatio
+        }
+        return inSampleSize
+    }
 }
+
+class CameraDialogFragment : DialogFragment() {
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this dialog
+        return inflater.inflate(R.layout.dialog_camera_snap_meal, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<ImageView>(R.id.closeBtn)?.setOnClickListener {
+            dismiss()
+            startActivity(Intent(context, HomeDashboardActivity::class.java))
+            requireActivity().finish()
+        }
+
+        view.findViewById<ImageView>(R.id.captureBtn)?.setOnClickListener {
+           // Toast.makeText(requireContext(), "Capture Clicked", Toast.LENGTH_SHORT).show()
+           // dismiss()
+            (parentFragment as? SnapMealFragment)?.openCameraForImage()
+        }
+
+        view.findViewById<ImageView>(R.id.galleryBtn)?.setOnClickListener {
+          //  Toast.makeText(requireContext(), "Gallery Clicked", Toast.LENGTH_SHORT).show()
+            dismiss()
+            (parentFragment as? SnapMealFragment)?.openGalleryForImage()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
+    }
+}
+

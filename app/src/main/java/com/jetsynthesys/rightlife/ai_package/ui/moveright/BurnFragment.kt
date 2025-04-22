@@ -1,11 +1,16 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -14,22 +19,9 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.databinding.FragmentBurnBinding
-import android.graphics.Canvas
-import android.graphics.Path
-import android.graphics.drawable.GradientDrawable
-import android.view.Gravity
-import android.widget.FrameLayout
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
-import com.github.mikephil.charting.utils.ViewPortHandler
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.animation.ChartAnimator
-import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -42,8 +34,16 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.utils.ViewPortHandler
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.databinding.FragmentBurnBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -103,11 +103,11 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-        fetchActiveCalories("last_weekly")
+
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
-
+        fetchActiveCalories("last_weekly")
         setupLineChart()
 
         // Handle Radio Button Selection
@@ -534,20 +534,23 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     }
 
     private fun setSelectedDate(selectedWeekDate: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedWeekDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        calendar.set(year, month, day)
-        calendar.add(Calendar.DAY_OF_YEAR, -6)
-        val dateStr = dateFormat.format(calendar.time)
-        val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedWeekDate)+","+ year.toString()
-        selectedDate.text = dateView
-        selectedDate.gravity = Gravity.CENTER
+        requireActivity().runOnUiThread(Runnable {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedWeekDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
+            val dateStr = dateFormat.format(calendar.time)
+            val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedWeekDate)+","+ year.toString()
+            selectedDate.text = dateView
+            selectedDate.gravity = Gravity.CENTER
+        })
+
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
