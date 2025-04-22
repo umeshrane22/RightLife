@@ -391,5 +391,15 @@ public class SharedPreferenceManager {
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_VIDEO, isVideoUi);
         editor.apply();
     }
+
+    public Boolean getFirstTimeUserForSnapMealRating() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_RATING, false);
+    }
+
+    public void setFirstTimeUserForSnapMealRating(boolean isVideoUi) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_RATING, isVideoUi);
+        editor.apply();
+    }
 }
 

@@ -28,6 +28,7 @@ public class SharedPreferenceConstants {
     public static final String FIRST_TIME_AFFIRMATION = "FIRST_TIME_AFFIRMATION";
 
     public static final String FIRST_TIME_SNAP_MEAL_VIDEO = "FIRST_TIME_SNAP_MEAL_VIDEO";
+    public static final String FIRST_TIME_SNAP_MEAL_RATING = "FIRST_TIME_SNAP_MEAL_RATING";
 }
 
 

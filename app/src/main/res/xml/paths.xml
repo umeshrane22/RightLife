@@ -3,6 +3,9 @@
     <external-files-path
         name="my_images"
         path="Pictures" />
+    <external-path
+        name="rightlife_pictures"
+        path="Pictures/RightLife/" />
     <cache-path
         name="shared_images"
         path="images/" />

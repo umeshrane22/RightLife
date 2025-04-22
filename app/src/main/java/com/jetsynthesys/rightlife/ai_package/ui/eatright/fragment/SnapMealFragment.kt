@@ -162,9 +162,19 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     if (path != null) {
                         val bitmap = BitmapFactory.decodeFile(path)
                         val rotatedBitmap = rotateImageIfRequired(requireContext(), bitmap, imageUri)
-                        imageFood.setImageBitmap(rotatedBitmap)
-                        imageFood.visibility = View.VISIBLE
                         imagePath = path
+                        videoView.visibility = View.GONE
+                        imageFood.visibility = View.VISIBLE
+                        imageFood.setImageBitmap(rotatedBitmap)
+                        // Save image details
+                      //  imagePath = currentPhotoPath
+                        takePhotoInfoLayout.visibility = View.GONE
+                        enterMealDescriptionLayout.visibility = View.VISIBLE
+                        skipTV.visibility = View.VISIBLE
+                        proceedLayout.isEnabled = false
+                        proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
+                        isProceedResult = false
+                        mealDescriptionET.text.clear()
                         //println("Image path: $imagePath")
                         // You can use File(imagePath), upload, or store it now
                     } else {
