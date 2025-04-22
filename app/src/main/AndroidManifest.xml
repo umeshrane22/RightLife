@@ -7,15 +7,16 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
-    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.WRITE_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.WRITE_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -48,6 +49,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name=".ui.NewSleepSounds.SleepSoundPlayerActivity"
             android:exported="false" />
@@ -77,11 +79,9 @@
         <activity
             android:name=".SplashActivity"
             android:exported="true">
-
             <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             -->
@@ -91,7 +91,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -203,7 +202,6 @@
         <activity android:name=".ui.profile_new.DeleteAccountEmailDataActivity" />
         <activity android:name=".ui.NewSleepSounds.NewSleepSoundActivity" />
 
-
         <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity" />
         <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity" />
 
@@ -213,13 +211,10 @@
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
-
-            <!-- Permission handling for Android 14 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
-            />
         </activity>
 
         <activity android:name="com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity" />
@@ -242,11 +237,6 @@
 
     <queries>
         <package android:name="com.google.android.apps.healthdata" />
-        <!--
-             This is required such that the app can query and resolve packages that have written
-             Health Connect data, and obtain their friendly App Name and Icon to show for data
-             attribution in the app
-        -->
         <intent>
             <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
         </intent>
