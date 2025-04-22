@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -21,7 +20,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -37,12 +35,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.googlefitapiresponsemodel.HeartRateFitData
 import com.jetsynthesys.rightlife.ai_package.model.*
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
@@ -51,20 +46,16 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewS
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
-import com.jetsynthesys.rightlife.ui.questionnaire.fragment.StepsTakenFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
-import java.io.File
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 import kotlin.math.abs
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
@@ -87,6 +78,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var tvBurnValue: TextView
     private lateinit var calorieBalanceIcon: ImageView
+    private lateinit var step_forward_icon: ImageView
     private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var stepsTv: TextView
@@ -134,6 +126,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
         nodataWorkout = view.findViewById(R.id.no_data_workout_landing)
         dataFilledworkout = view.findViewById(R.id.data_filled_workout)
+        step_forward_icon = view.findViewById(R.id.step_forward_icon)
         totalIntakeCalorieText = view.findViewById(R.id.textView1)
         calorieCountText = view.findViewById(R.id.calorie_count)
         steps_no_data_text = view.findViewById(R.id.steps_no_data_text)
@@ -150,6 +143,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         goalStepsTv = view.findViewById(R.id.goal_tex)
         moveRightImageBack.setOnClickListener {
             activity?.finish()
+        }
+        step_forward_icon.setOnClickListener {
+            navigateToFragment(CameraFragment(),"StepTakenFragment")
         }
         activeStepsTv.setOnClickListener {
             navigateToFragment(SetYourStepGoalFragment(),"StepTakenFragment")

@@ -3,16 +3,23 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -22,24 +29,26 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.utils.Transformer
-import com.github.mikephil.charting.utils.ViewPortHandler
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
-import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.databinding.FragmentBurnBinding
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.databinding.FragmentStepBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
 
 class StepFragment : BaseFragment<FragmentStepBinding>() {
 
@@ -49,10 +58,18 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var barChart: BarChart
     private lateinit var radioGroup: RadioGroup
     private lateinit var lineChart: LineChart
+    private lateinit var stepBck: ImageView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
-
-
+    private lateinit var selectStepRateLayout: CardView
+    private lateinit var selectedItemDate: TextView
+    private lateinit var selectedCalorieTv: TextView
+    private lateinit var backwardImage: ImageView
+    private lateinit var forwardImage: ImageView
+    private lateinit var selectedDate: TextView
+    private var selectedWeekDate: String = ""
+    private var selectedMonthDate: String = ""
+    private var selectedHalfYearlyDate: String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -63,22 +80,31 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        stepBck = view.findViewById(R.id.step_back)
+        selectedItemDate = view.findViewById(R.id.selectedItemDate)
+        selectStepRateLayout = view.findViewById(R.id.selectStepRateLayout)
+        selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        backwardImage = view.findViewById(R.id.backward_image_heart_rate)
+        forwardImage = view.findViewById(R.id.forward_image_heart_rate)
+        selectedDate = view.findViewById(R.id.selectedDate)
+
+        stepBck.setOnClickListener {
+            navigateToFragment(MoveRightLandingFragment(), "landingFragment")
+        }
 
         // Initial chart setup with sample data
-        updateChart(getWeekData(), getWeekLabels())
-        fetchActiveCalories("last_weekly")
+        fetchActiveCalories("weekly")
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
 
         // Handle Radio Button Selection
-        fetchActiveCalories("last_weekly")
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek -> {
                     barChart.visibility = View.VISIBLE
                     layoutLineChart.visibility = View.GONE
-                    fetchActiveCalories("last_weekly")
+                    fetchActiveCalories("weekly")
                 }
                 R.id.rbMonth -> {
                     barChart.visibility = View.VISIBLE
@@ -88,15 +114,112 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 R.id.rbSixMonths -> {
                     barChart.visibility = View.GONE
                     layoutLineChart.visibility = View.VISIBLE
-                    lineChartForSixMonths()
                     fetchActiveCalories("six_months")
                 }
             }
+        }
 
+        backwardImage.setOnClickListener {
+            val selectedId = radioGroup.checkedRadioButtonId
+            var selectedTab: String = "Week"
+            if (selectedId != -1) {
+                val selectedRadioButton = view.findViewById<RadioButton>(selectedId)
+                selectedTab = selectedRadioButton.text.toString()
+            }
+
+            if (selectedTab == "Week") {
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val calendar = Calendar.getInstance()
+                val dateString = selectedWeekDate
+                val date = dateFormat.parse(dateString)
+                calendar.time = date ?: Calendar.getInstance().time
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+                calendar.set(year, month, day)
+                calendar.add(Calendar.DAY_OF_YEAR, -7)
+                val dateStr = dateFormat.format(calendar.time)
+                selectedWeekDate = dateStr
+                fetchActiveCalories("weekly")
+            } else if (selectedTab == "Month") {
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val calendar = Calendar.getInstance()
+                val dateString = selectedMonthDate
+                val date = dateFormat.parse(dateString)
+                calendar.time = date ?: Calendar.getInstance().time
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+                calendar.set(year, month - 1, day)
+                val dateStr = dateFormat.format(calendar.time)
+                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                selectedMonthDate = firstDateOfMonth
+                fetchActiveCalories("monthly")
+            } else {
+                selectedHalfYearlyDate = ""
+                fetchActiveCalories("six_months")
+            }
+        }
+
+        forwardImage.setOnClickListener {
+            val selectedId = radioGroup.checkedRadioButtonId
+            var selectedTab: String = "Week"
+            if (selectedId != -1) {
+                val selectedRadioButton = view.findViewById<RadioButton>(selectedId)
+                selectedTab = selectedRadioButton.text.toString()
+            }
+            val currentDateTime = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val currentDate: String = currentDateTime.format(formatter)
+
+            if (selectedTab == "Week") {
+                if (selectedWeekDate != currentDate) {
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val calendar = Calendar.getInstance()
+                    val dateString = selectedWeekDate
+                    val date = dateFormat.parse(dateString)
+                    calendar.time = date ?: Calendar.getInstance().time
+                    val year = calendar.get(Calendar.YEAR)
+                    val month = calendar.get(Calendar.MONTH)
+                    val day = calendar.get(Calendar.DAY_OF_MONTH)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, 7)
+                    val dateStr = dateFormat.format(calendar.time)
+                    selectedWeekDate = dateStr
+                    fetchActiveCalories("weekly")
+                } else {
+                    Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
+                }
+            } else if (selectedTab == "Month") {
+                if (selectedMonthDate != currentDate) {
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val calendar = Calendar.getInstance()
+                    val dateString = selectedMonthDate
+                    val date = dateFormat.parse(dateString)
+                    calendar.time = date ?: Calendar.getInstance().time
+                    val year = calendar.get(Calendar.YEAR)
+                    val month = calendar.get(Calendar.MONTH)
+                    val day = calendar.get(Calendar.DAY_OF_MONTH)
+                    calendar.set(year, month + 1, day)
+                    val dateStr = dateFormat.format(calendar.time)
+                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = firstDateOfMonth
+                    fetchActiveCalories("monthly")
+                } else {
+                    Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                if (selectedHalfYearlyDate != currentDate) {
+                    selectedHalfYearlyDate = ""
+                    fetchActiveCalories("six_months")
+                } else {
+                    Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            navigateToFragment(MoveRightLandingFragment(), "landingFragment")
         }
     }
 
@@ -109,98 +232,147 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     }
 
     /** Update BarChart with new data */
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
-        val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = Color.RED
-        dataSet.valueTextColor = Color.BLACK
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>, goal: Float) {
+        val dataSet = BarDataSet(entries, "Steps Count")
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
-
+        if (entries.size > 7) {
+            dataSet.setDrawValues(false)
+        } else {
+            dataSet.setDrawValues(true)
+        }
+        dataSet.barShadowColor = Color.TRANSPARENT
+        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
-
         barChart.data = barData
         barChart.setFitBars(true)
+
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
+        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
+        xAxis.textSize = 10f
         xAxis.granularity = 1f
+        xAxis.labelCount = labels.size
+        xAxis.setDrawLabels(true)
+        xAxis.labelRotationAngle = 0f
         xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
+        xAxis.yOffset = 15f
+
         val leftYAxis: YAxis = barChart.axisLeft
         leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
+        leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
+
+        // Add goal line based on steps_goal
+        val goalLine = LimitLine(goal, "Goal: $goal steps")
+        goalLine.lineWidth = 2f
+        goalLine.lineColor = Color.BLACK
+        goalLine.enableDashedLine(10f, 10f, 0f)
+        goalLine.textColor = Color.BLACK
+        goalLine.textSize = 12f
+        leftYAxis.removeAllLimitLines()
+        leftYAxis.addLimitLine(goalLine)
+
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.animateY(1000) // Smooth animation
+        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+
+        barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                selectStepRateLayout.visibility = View.VISIBLE
+                if (e != null) {
+                    val x = e.x.toInt()
+                    val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
+                    selectedCalorieTv.text = y.toInt().toString() + " steps"
+                }
+            }
+
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                selectStepRateLayout.visibility = View.INVISIBLE
+            }
+        })
+
+        barChart.animateY(1000)
         barChart.invalidate()
-    }
-
-    /** Sample Data for Week */
-    private fun getWeekData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 200f), BarEntry(1f, 350f), BarEntry(2f, 270f),
-            BarEntry(3f, 400f), BarEntry(4f, 320f), BarEntry(5f, 500f), BarEntry(6f, 450f)
-        )
-    }
-
-    private fun getWeekLabels(): List<String> {
-        return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    }
-
-    /** Sample Data for Month */
-    private fun getMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 1500f), BarEntry(1f, 1700f), BarEntry(2f, 1400f),
-            BarEntry(3f, 1800f), BarEntry(4f, 1200f)
-        )
-    }
-
-    private fun getMonthLabels(): List<String> {
-        return listOf("1-7", "8-14", "15-21", "22-28", "29-31")
-    }
-
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 9000f), BarEntry(1f, 8500f), BarEntry(2f, 8700f),
-            BarEntry(3f, 9100f), BarEntry(4f, 9400f), BarEntry(5f, 8800f)
-        )
-    }
-
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
     }
 
     /** Fetch and update chart with API data */
     private fun fetchActiveCalories(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = ApiClient.apiServiceFastApi.getActiveCalories(
-                    userId = "64763fe2fa0e40d9c0bc8264",
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val currentDateTime = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                var selectedDate: String
+
+                if (period == "weekly") {
+                    if (selectedWeekDate.isEmpty()) {
+                        selectedDate = currentDateTime.format(formatter)
+                        selectedWeekDate = selectedDate
+                    } else {
+                        selectedDate = selectedWeekDate
+                    }
+                    setSelectedDate(selectedWeekDate)
+                } else if (period == "monthly") {
+                    if (selectedMonthDate.isEmpty()) {
+                        selectedDate = currentDateTime.format(formatter)
+                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+                        selectedDate = firstDateOfMonth
+                        selectedMonthDate = firstDateOfMonth
+                    } else {
+                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = firstDateOfMonth
+                    }
+                    setSelectedDateMonth(selectedMonthDate, "Month")
+                } else {
+                    if (selectedHalfYearlyDate.isEmpty()) {
+                        selectedDate = currentDateTime.format(formatter)
+                        selectedHalfYearlyDate = selectedDate
+                    } else {
+                        selectedDate = selectedHalfYearlyDate
+                    }
+                    setSelectedDateMonth(selectedHalfYearlyDate, "Year")
+                }
+
+                val response = ApiClient.apiServiceFastApi.getStepsDetail(
+                    userId = "67f6698fa213d14e22a47c2a",
+                    source = "apple",
                     period = period,
-                    date = "2025-03-24"
+                    date = "2025-04-07"
                 )
 
                 if (response.isSuccessful) {
-                    val activeCaloriesResponse = response.body()
-                    activeCaloriesResponse?.let { data ->
-                        val (entries, labels) = when (period) {
-                            "last_weekly" -> processWeeklyData(data)
-                            "last_monthly" -> processMonthlyData(data)
-                            "last_six_months" -> processSixMonthsData(data)
-                            else -> Pair(getWeekData(), getWeekLabels()) // Fallback
+                    val heartRateFitDataResponse = response.body()
+                    heartRateFitDataResponse?.let { data ->
+                        val (entries, labels, labelsDate) = when (period) {
+                            "weekly" -> processWeeklyData(data)
+                            "monthly" -> processMonthlyData(data)
+                            "six_months" -> processSixMonthsData(data)
+                            else -> processWeeklyData(data)
                         }
-                        val totalCalories = data.activeCaloriesTotals.sumOf { it.caloriesBurned ?: 0.0 }
+                        val goal = data.data.firstOrNull()?.stepsGoal?.toFloat() ?: 1000f
+                        val totalSteps = data.data.firstOrNull()?.totalStepsCount?.toInt() ?: 0
                         withContext(Dispatchers.Main) {
-                            updateChart(entries, labels)
-                            /* Toast.makeText(
-                                 requireContext(),
-                                 "Total Active Calories: $totalCalories kcal",
-                                 Toast.LENGTH_LONG
-                             ).show()*/
+                            if (period == "six_months") {
+                                layoutLineChart.visibility = View.VISIBLE
+                                barChart.visibility = View.GONE
+                                lineChartForSixMonths(data)
+                            } else {
+                                barChart.visibility = View.VISIBLE
+                                layoutLineChart.visibility = View.GONE
+                                updateChart(entries, labels, labelsDate, goal)
+                            }
+                            Toast.makeText(
+                                requireContext(),
+                                "Total Steps: $totalSteps",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
                     }
                 } else {
@@ -220,119 +392,229 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
     }
 
-    /** Process API data for last_weekly (7 days) */
-    private fun processWeeklyData(data: ActiveCaloriesResponse): Pair<List<BarEntry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    /** Process API data for weekly (7 days) */
+    private fun processWeeklyData(data: HeartRateFitDataResponse): Triple<List<BarEntry>, List<String>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24) // Reference date
-        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week (7 days back)
+        val dateString = selectedWeekDate.ifEmpty { "2025-04-07" }
+        val date = dateFormat.parse(dateString) ?: Date()
+        calendar.time = date
+        calendar.add(Calendar.DAY_OF_YEAR, -6)
 
-        val calorieMap = mutableMapOf<String, Float>()
+        val stepMap = mutableMapOf<String, Double>()
         val labels = mutableListOf<String>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault()) // e.g., "Mon"
+        val labelsDate = mutableListOf<String>()
+        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
 
-        // Initialize 7 days with 0 calories
+        // Initialize 7 days with 0 steps
         repeat(7) {
             val dateStr = dateFormat.format(calendar.time)
-            calorieMap[dateStr] = 0f
+            stepMap[dateStr] = 0.0
             labels.add(dayFormat.format(calendar.time))
+            labelsDate.add(convertDate(dateStr) + "," + calendar.get(Calendar.YEAR))
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
-        // Aggregate calories by day
-        data.activeCaloriesTotals.forEach { calorie ->
-            val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-            if (startDate != null) {
-                val dayKey = dateFormat.format(startDate)
-                calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
+        // Aggregate steps from record_details
+        data.data.firstOrNull()?.recordDetails?.forEach { record ->
+            val date = dateFormat.parse(record.date)
+            if (date != null) {
+                val dayKey = dateFormat.format(date)
+                stepMap[dayKey] = (record.totalStepsCountPerDay ?: 0.0).toDouble()
             }
         }
 
-        val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
-        return Pair(entries, labels)
+        val entries = stepMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value.toFloat()) }
+        return Triple(entries, labels, labelsDate)
     }
 
-    /** Process API data for last_monthly (5 weeks) */
-    private fun processMonthlyData(data: ActiveCaloriesResponse): Pair<List<BarEntry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    /** Process API data for monthly (4-5 weeks) */
+    private fun processMonthlyData(data: HeartRateFitDataResponse): Triple<List<BarEntry>, List<String>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 1) // Start of March
+        val dateString = selectedMonthDate.ifEmpty { "2025-04-01" }
+        val date = dateFormat.parse(dateString) ?: Date()
+        calendar.time = date
 
-        val calorieMap = mutableMapOf<Int, Float>()
+        val stepMap = mutableMapOf<Int, Double>()
         val labels = mutableListOf<String>()
+        val labelsDate = mutableListOf<String>()
 
-        // Initialize 5 weeks
+        val days = getDaysInMonth(calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.YEAR))
         repeat(5) { week ->
             val startDay = week * 7 + 1
-            val endDay = if (week == 4) 31 else startDay + 6
-            calorieMap[week] = 0f
+            val endDay = if (week == 4) days else startDay + 6
+            stepMap[week] = 0.0
             labels.add("$startDay-$endDay")
+            if (week == 0) labelsDate.add("1-7 ${convertMonth(dateString)},${calendar.get(Calendar.YEAR)}")
+            else if (week == 1) labelsDate.add("8-14 ${convertMonth(dateString)},${calendar.get(Calendar.YEAR)}")
+            else if (week == 2) labelsDate.add("15-21 ${convertMonth(dateString)},${calendar.get(Calendar.YEAR)}")
+            else if (week == 3) labelsDate.add("22-28 ${convertMonth(dateString)},${calendar.get(Calendar.YEAR)}")
+            else labelsDate.add("29-${days} ${convertMonth(dateString)},${calendar.get(Calendar.YEAR)}")
         }
 
-        // Aggregate calories by week
-        data.activeCaloriesTotals.forEach { calorie ->
-            val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
+        // Aggregate steps by week
+        data.data.firstOrNull()?.recordDetails?.forEach { record ->
+            val date = dateFormat.parse(record.date)
+            if (date != null) {
+                calendar.time = date
                 val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-                val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
-                calorieMap[weekIndex] = calorieMap[weekIndex]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
-            }
-        }
-
-        val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
-        return Pair(entries, labels)
-    }
-
-    /** Process API data for last_six_months (6 months) */
-    private fun processSixMonthsData(data: ActiveCaloriesResponse): Pair<List<BarEntry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24)
-        calendar.add(Calendar.MONTH, -5) // Start 6 months back
-
-        val calorieMap = mutableMapOf<Int, Float>()
-        val labels = mutableListOf<String>()
-
-        // Initialize 6 months
-        repeat(6) { month ->
-            calorieMap[month] = 0f
-            labels.add(monthFormat.format(calendar.time))
-            calendar.add(Calendar.MONTH, 1)
-        }
-
-        // Aggregate calories by month
-        data.activeCaloriesTotals.forEach { calorie ->
-            val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(
-                    Calendar.MONTH))
-                val monthIndex = 5 - monthDiff // Reverse to align with labels (0 = earliest month)
-                if (monthIndex in 0..5) {
-                    calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.caloriesBurned.toFloat() ?: 0f)
+                val weekIndex = (dayOfMonth - 1) / 7
+                if (weekIndex in 0..4) {
+                    stepMap[weekIndex] = stepMap[weekIndex]!! + (record.totalStepsCountPerDay ?: 0.0).toFloat()
                 }
             }
         }
 
-        val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
-        return Pair(entries, labels)
+        val entries = stepMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value.toFloat()) }
+        return Triple(entries, labels, labelsDate)
     }
-    private fun lineChartForSixMonths(){
-        val entries = listOf(
-            Entry(0f, 72f), // Jan
-            Entry(1f, 58f), // Feb
-            Entry(2f, 68f), // Mar
-            Entry(3f, 86f), // Apr
-            Entry(4f, 72f), // May
-            Entry(5f, 0f)   // Jun (Dummy data for axis alignment)
-        )
 
-        val dataSet = LineDataSet(entries, "Performance").apply {
+    /** Process API data for six_months (6 months) */
+    private fun processSixMonthsData(data: HeartRateFitDataResponse): Triple<List<BarEntry>, List<String>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val dateString = selectedHalfYearlyDate.ifEmpty { "2025-04-07" }
+        val date = dateFormat.parse(dateString) ?: Date()
+        calendar.time = date
+        calendar.add(Calendar.MONTH, -5)
+
+        val stepMap = mutableMapOf<Int, Double>()
+        val labels = mutableListOf<String>()
+        val labelsDate = mutableListOf<String>()
+
+        repeat(6) { month ->
+            stepMap[month] = 0.0
+            val monthLabel = monthFormat.format(calendar.time)
+            labels.add(monthLabel)
+            labelsDate.add("${monthLabel},${calendar.get(Calendar.YEAR)}")
+            calendar.add(Calendar.MONTH, 1)
+        }
+
+        // Aggregate steps by month
+        data.data.firstOrNull()?.recordDetails?.forEach { record ->
+            val date = dateFormat.parse(record.date)
+            if (date != null) {
+                calendar.time = date
+                val monthDiff = ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH)) - ((2025 - 1900) * 12 + Calendar.APRIL)
+                val monthIndex = monthDiff // Align with current month order
+                if (monthIndex in 0..5) {
+                    stepMap[monthIndex] = stepMap[monthIndex]!! + (record.totalStepsCountPerDay ?: 0.0).toFloat()
+                }
+            }
+        }
+
+        val entries = stepMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value.toFloat()) }
+        return Triple(entries, labels, labelsDate)
+    }
+
+    private fun setSelectedDate(selectedWeekDate: String) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val dateString = selectedWeekDate
+        val date = dateFormat.parse(dateString)
+        calendar.time = date ?: Calendar.getInstance().time
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        calendar.set(year, month, day)
+        calendar.add(Calendar.DAY_OF_YEAR, -6)
+        val dateStr = dateFormat.format(calendar.time)
+        val dateView: String = "${convertDate(dateStr)}-${convertDate(selectedWeekDate)},$year"
+        selectedDate.text = dateView
+        selectedDate.gravity = Gravity.CENTER
+    }
+
+    private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val dateString = selectedMonthDate
+        val date = dateFormat.parse(dateString)
+        calendar.time = date ?: Calendar.getInstance().time
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        if (dateViewType == "Month") {
+            val lastDayOfMonth = getDaysInMonth(month + 1, year)
+            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+            val dateView: String = "${convertDate(selectedMonthDate)}-${convertDate(lastDateOfMonth)},$year"
+            selectedDate.text = dateView
+            selectedDate.gravity = Gravity.CENTER
+        } else {
+            selectedDate.text = year.toString()
+            selectedDate.gravity = Gravity.CENTER
+        }
+    }
+
+    private fun convertDate(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+        return try {
+            val date = inputFormat.parse(inputDate)
+            outputFormat.format(date!!)
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
+    }
+
+    private fun convertMonth(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        return try {
+            val date = inputFormat.parse(inputDate)
+            outputFormat.format(date!!)
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
+    }
+
+    private fun getDaysInMonth(month: Int, year: Int): Int {
+        val yearMonth = YearMonth.of(year, month)
+        return yearMonth.lengthOfMonth()
+    }
+
+    private fun getFirstDateOfMonth(inputDate: String, value: Int): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val parsedDate = LocalDate.parse(inputDate, formatter)
+        val firstDayOfMonth = parsedDate.withDayOfMonth(value)
+        return firstDayOfMonth.format(formatter)
+    }
+
+    private fun lineChartForSixMonths(data: HeartRateFitDataResponse) {
+        val recordDetails = data.data.firstOrNull()?.recordDetails ?: emptyList()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val dateString = selectedHalfYearlyDate.ifEmpty { "2025-04-07" }
+        val date = dateFormat.parse(dateString) ?: Date()
+        calendar.time = date
+        calendar.add(Calendar.MONTH, -5)
+
+        val stepMap = mutableMapOf<String, Double>()
+        val months = mutableListOf<String>()
+
+        repeat(6) {
+            val monthKey = monthFormat.format(calendar.time)
+            stepMap[monthKey] = 0.0
+            months.add(monthKey)
+            calendar.add(Calendar.MONTH, 1)
+        }
+
+        recordDetails.forEach { record ->
+            val date = dateFormat.parse(record.date)
+            if (date != null) {
+                calendar.time = date
+                val monthKey = monthFormat.format(date)
+                stepMap[monthKey] = stepMap[monthKey]!! + (record.totalStepsCountPerDay ?: 0.0).toFloat()
+            }
+        }
+
+        val entries = stepMap.map { Entry(months.indexOf(it.key).toFloat(), it.value.toFloat()) }
+
+        val dataSet = LineDataSet(entries, "Steps Count").apply {
             color = Color.BLUE
             valueTextSize = 12f
-            setCircleColor(Color.BLUE)
+            circleColors = listOf(Color.BLUE)
             setDrawCircleHole(false)
             setDrawValues(false)
         }
@@ -340,53 +622,33 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         val lineData = LineData(dataSet)
         lineChart.data = lineData
 
-        // Define months from Jan to Jun
-        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
-
-        // Chart configurations
         lineChart.apply {
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 valueFormatter = IndexAxisValueFormatter(months)
                 textSize = 12f
-                granularity = 1f // Ensures each month is evenly spaced
+                granularity = 1f
                 setDrawGridLines(false)
             }
             axisRight.isEnabled = false
             invalidate()
         }
 
-        // Wait until the chart is drawn to get correct positions
         lineChart.post {
-            val viewPortHandler: ViewPortHandler = lineChart.viewPortHandler
-            val transformer: Transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
-
+            val transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
             for (entry in entries) {
-                // Ignore dummy entry for June (y=0)
-                if (entry.x >= 5) continue
-
-                // Convert chart values (data points) into pixel coordinates
+                if (entry.y == 0f) continue
                 val pixelValues = transformer.getPixelForValues(entry.x, entry.y)
-
-                val xPosition = pixelValues.x // X coordinate on screen
-                val yPosition = pixelValues.y // Y coordinate on screen
-
-                // Create a rounded strip dynamically
                 val stripView = View(requireContext()).apply {
-                    layoutParams = FrameLayout.LayoutParams(100, 12) // Wider height for smooth curves
-
-                    // Create a rounded background for the strip
+                    layoutParams = FrameLayout.LayoutParams(100, 12)
                     background = GradientDrawable().apply {
                         shape = GradientDrawable.RECTANGLE
-                        cornerRadius = 6f // Round all corners
-                        setColor(if (entry.y >= 70) Color.GREEN else Color.RED)
+                        cornerRadius = 6f
+                        setColor(if (entry.y >= 7000) Color.GREEN else Color.RED)
                     }
-
-                    x = (xPosition).toFloat()  // Adjust X to center the strip
-                    y = (yPosition - 6).toFloat()   // Adjust Y so it overlaps correctly
+                    x = (pixelValues.x).toFloat()
+                    y = (pixelValues.y - 6).toFloat()
                 }
-
-                // Add the strip overlay dynamically
                 stripsContainer.addView(stripView)
             }
         }

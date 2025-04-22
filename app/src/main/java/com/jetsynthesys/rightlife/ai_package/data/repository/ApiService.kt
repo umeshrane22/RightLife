@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
@@ -155,6 +156,14 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("move/steps_detail_view/")
+    suspend fun getStepsDetail(
+        @Query("user_id") userId: String,
+        @Query("source") source: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<HeartRateFitDataResponse>
 
     @GET("move/fetch_heart_rate_variabililty/")
     suspend fun getHeartRateVariability(
