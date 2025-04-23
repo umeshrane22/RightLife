@@ -1,26 +1,30 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
-import android.content.res.ColorStateList;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
 import com.jetsynthesys.rightlife.databinding.HealthCamVitalsItemBinding;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity;
+import com.jetsynthesys.rightlife.ui.NumberUtils;
+import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitalsAdapter.HealthCamVitalsViewHolder> {
 
-    private List<HealthCamItem> healthCamItems;
-    private Context context;
+    private final List<HealthCamItem> healthCamItems;
+    private final Context context;
 
     public HealthCamVitalsAdapter(Context context, List<HealthCamItem> healthCamItems) {
         this.healthCamItems = healthCamItems;
@@ -39,33 +43,29 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
     public void onBindViewHolder(@NonNull HealthCamVitalsViewHolder holder, int position) {
         HealthCamItem item = healthCamItems.get(position);
 
-        holder.binding.valueTextView.setText(String.valueOf(item.value));
+
+        double val = NumberUtils.INSTANCE.smartRound(item.value, 2);
+        holder.binding.valueTextView.setText(String.valueOf(val));
+
+        String formatedValue = getFormatedValue(item.fieldName,String.valueOf(item.value));
+        holder.binding.valueTextView.setText(formatedValue);//String.valueOf(item.value));
+
         holder.binding.unitTextView.setText(item.unit);
         holder.binding.indicatorTextView.setText(item.indicator);
         holder.binding.parameterTextView.setText(item.parameter);
         holder.binding.rlMainBg.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.colour)));
 
         holder.itemView.setOnClickListener(view -> {
-            context.startActivity(new Intent(context, FacialScanReportDetailsActivity.class));
+            Intent intent = new Intent(context, FacialScanReportDetailsActivity.class);
+            intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
+            context.startActivity(intent);
         });
-
-        // Set Indicator Image and Color based on item.indicator
-   /*     if (item.indicator.equals("Normal")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_normal); // Replace with your normal indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#008000")); // Green color
-        } else if (item.indicator.equals("High")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_high); // Replace with your high indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#FF0000")); // Red color
-        } else if (item.indicator.equals("Low")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_low); // Replace with your low indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#FFA500")); // Orange color
-        } else if (item.indicator.equals("Optimal")) {
-            holder.binding.indicatorImageView.setImageResource(R.drawable.ic_indicator_optimal); // Replace with your optimal indicator image
-            holder.binding.indicatorTextView.setTextColor(Color.parseColor("#F5EE08")); // Yellow color
-        }*/
-        // ... set other indicator conditions and colors as needed
-
+        Glide.with(context)
+                            .load(getReportIconByType(item.fieldName))
+                .placeholder(R.drawable.ic_db_report_heart_rate).error(R.drawable.ic_db_report_heart_rate)
+                .into(holder.binding.imgUnit);
     }
+
     private int getReportIconByType(String type) {
         switch (type) {
             case "BMI_CALC":
@@ -100,79 +100,39 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
             this.binding = binding;
         }
     }
-}
 
 
+    private String getFormatedValue(String key, String value) {
+        try {
+            double val = Double.parseDouble(value);
 
-/*
-package com.example.rlapp.ui.healthcam;
+            switch (key) {
+                case "HRV_SDNN":
+                case "PHYSIO_SCORE":
+                case "BMI_CALC":
+                case "BP_CVD":
+                    return ConversionUtils.decimalFormat1Decimal.format(val);
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+                case "heartRateVariability":
+                case "waistToHeight":
 
-import com.example.rlapp.R;
-import com.example.rlapp.apimodel.newreportfacescan.HealthCamItem;
+                case "systolic":
+                case "BP_RPP":
+                    return ConversionUtils.decimalFormat2Decimal.format(val);
 
-import java.util.List;
+                case "IHB_COUNT":
+                case "MENTAL_SCORE":
+                case "BP_DIASTOLIC":
+                case "BP_SYSTOLIC":
+                    return ConversionUtils.decimalFormat0Decimal.format(val);
 
-public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitalsAdapter.HealthCamVitalsViewHolder> {
-
-    private List<HealthCamItem> healthCamItems;
-
-    public HealthCamVitalsAdapter(List<HealthCamItem> healthCamItems) {
-        this.healthCamItems = healthCamItems;
-    }
-
-    @NonNull
-    @Override
-    public HealthCamVitalsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.health_cam_vitals_item, parent, false);
-        return new HealthCamVitalsViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull HealthCamVitalsViewHolder holder, int position) {
-        HealthCamItem item = healthCamItems.get(position);
-
-        holder.fieldName.setText(item.fieldName);
-        holder.parameter.setText(item.parameter);
-        holder.value.setText(String.valueOf(item.value));
-        holder.unit.setText(item.unit);
-        holder.indicator.setText(item.indicator);
-        holder.definition.setText(item.deffination); // Definition
-        holder.implication.setText(item.implication); // Implication
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return healthCamItems.size();
-    }
-
-    public static class HealthCamVitalsViewHolder extends RecyclerView.ViewHolder {
-        TextView fieldName;
-        TextView parameter;
-        TextView value;
-        TextView unit;
-        TextView indicator;
-        TextView definition; // Definition
-        TextView implication; // Implication
-
-
-        public HealthCamVitalsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            fieldName = itemView.findViewById(R.id.fieldName);
-            parameter = itemView.findViewById(R.id.parameter);
-            value = itemView.findViewById(R.id.value);
-            unit = itemView.findViewById(R.id.unit);
-            indicator = itemView.findViewById(R.id.indicator);
-            definition = itemView.findViewById(R.id.definition); // Initialize
-            implication = itemView.findViewById(R.id.implication); // Initialize
-
+                default:
+                    return ConversionUtils.decimalFormat1Decimal.format(val);
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return value;
         }
     }
-}*/
+
+}

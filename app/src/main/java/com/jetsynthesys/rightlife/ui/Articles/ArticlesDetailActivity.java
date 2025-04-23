@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
 import com.jetsynthesys.rightlife.ui.Articles.models.Article;
 import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse;
 import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
@@ -106,17 +107,30 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         ic_save_article.setOnClickListener(view -> {
             ic_save_article.setImageResource(R.drawable.ic_save_article_active);
             // Call Save article api
+
+            if (articleDetailsResponse.getData().getBookmarked()) {
+                binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
+                articleDetailsResponse.getData().setBookmarked(false);
+                postArticleBookMark(articleDetailsResponse.getData().getId(),false);
+            } else {
+                binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
+                articleDetailsResponse.getData().setBookmarked(true);
+                postArticleBookMark(articleDetailsResponse.getData().getId(),true);
+            }
+
+
         });
 
         binding.imageLikeArticle.setOnClickListener(v -> {
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
-            postArticleLike(articleDetailsResponse.getData().getId());
             if (articleDetailsResponse.getData().getIsLike()) {
                 binding.imageLikeArticle.setImageResource(R.drawable.like);
                 articleDetailsResponse.getData().setIsLike(false);
+                postArticleLike(articleDetailsResponse.getData().getId(), false);
             } else {
                 binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe);
                 articleDetailsResponse.getData().setIsLike(true);
+                postArticleLike(articleDetailsResponse.getData().getId(), true);
             }
         });
         binding.imageShareArticle.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +156,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         // contentId = "679b1e6d4199ddf6752fdb20";
-        contentId = "67a9aeed7864652954596ecb";
+        //contentId = "67a9aeed7864652954596ecb";
 
         // Make the API call
         Call<JsonElement> call = apiService.getArticleDetails(accessToken, contentId);
@@ -203,7 +217,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
             handleInThisArticle(articleDetailsResponse.getData().getTableOfContents());
         }
         // handle save icon
-        if (articleDetailsResponse.getData().getIsFavourited()) {
+        if (articleDetailsResponse.getData().getBookmarked()) {
             binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
         } else {
             binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
@@ -337,7 +351,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     }
 
 
-    private void postArticleLike(String contentId) {
+    private void postArticleLike(String contentId, boolean isLike) {
         //-----------
 
         SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
@@ -346,7 +360,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
 
-        ArticleLikeRequest request = new ArticleLikeRequest(contentId, true);
+        ArticleLikeRequest request = new ArticleLikeRequest(contentId, isLike);
         // Make the API call
         Call<ResponseBody> call = apiService.ArticleLikeRequest(accessToken, request);
         call.enqueue(new Callback<ResponseBody>() {
@@ -355,6 +369,44 @@ public class ArticlesDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     ResponseBody articleLikeResponse = response.body();
                     Log.d("API Response", "Article response: " + articleLikeResponse.toString());
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+
+
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(ArticlesDetailActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("API ERROR", "onFailure: " + t.getMessage());
+                t.printStackTrace();  // Print the full stack trace for more details
+
+            }
+        });
+
+    }
+
+    private void postArticleBookMark(String contentId, boolean isBookmark) {
+        //-----------
+
+        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
+
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+
+        ArticleBookmarkRequest request = new ArticleBookmarkRequest(contentId, isBookmark);
+        // Make the API call
+        Call<ResponseBody> call = apiService.ArticleBookmarkRequest(accessToken, request);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ResponseBody articleLikeResponse = response.body();
+                    Log.d("API Response", "Article Bookmark response: " + articleLikeResponse.toString());
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 

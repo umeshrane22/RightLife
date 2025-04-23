@@ -15,9 +15,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class StressManagementSelectionFragment : Fragment() {
     private lateinit var llSelectedStressManagement: LinearLayout
@@ -58,13 +64,91 @@ class StressManagementSelectionFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.rv_stress_management)
         tvStressManagementHeader = view.findViewById(R.id.tv_header_stress_management)
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
         header = arguments?.getString("HEADER").toString()
 
+        recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
+
+        adapter =
+            StressManagementAdapter(requireContext(), stressManagementList) { stressManagement ->
+                selectedStressManagement = stressManagement
+                btnContinue.isEnabled = true
+                val colorStateList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
+                btnContinue.backgroundTintList = colorStateList
+            }
+
+        if (header.isNullOrEmpty())
+            getModuleList()
+        else
+            setList()
+
+        recyclerView.adapter = adapter
+
+
+        btnContinue.setOnClickListener {
+            llSelectedStressManagement.visibility = VISIBLE
+            rlStressManagement.visibility = GONE
+            tvSelectedStressManagementHeader.text = selectedStressManagement.header
+            tvSelectedStressManagementDesc.text = selectedStressManagement.description
+
+            val onboardingQuestionRequest =
+                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+            onboardingQuestionRequest.experienceStressMindfulManagement =
+                selectedStressManagement.header
+            SharedPreferenceManager.getInstance(requireContext())
+                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+        }
+
+        return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        llSelectedStressManagement.visibility = GONE
+        rlStressManagement.visibility = VISIBLE
+    }
+
+    private fun getModuleList() {
+        val authToken = SharedPreferenceManager.getInstance(requireContext()).accessToken
+        val apiService = ApiClient.getClient().create(ApiService::class.java)
+
+        val call = apiService.getOnboardingModule(authToken)
+
+        call.enqueue(object : Callback<OnBoardingModuleResponse> {
+            override fun onResponse(
+                call: Call<OnBoardingModuleResponse>,
+                response: Response<OnBoardingModuleResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()
+                    // Access the 'data' and 'services' fields
+                    val data = apiResponse?.data
+                    data?.services?.forEach { item ->
+                        if (item.isSelected) {
+                            header = item.moduleName.toString()
+                            setList()
+                            return
+                        }
+                    }
+
+                }
+            }
+
+            override fun onFailure(call: Call<OnBoardingModuleResponse>, t: Throwable) {
+
+            }
+
+        })
+    }
+
+    private fun setList() {
         when (header) {
             AppConstants.EAT_RIGHT, "EAT_RIGHT" -> {
                 tvStressManagementHeader.text = "How would you describe your current eating?"
@@ -102,7 +186,8 @@ class StressManagementSelectionFragment : Fragment() {
             }
 
             AppConstants.THINK_RIGHT, "THINK_RIGHT" -> {
-                tvStressManagementHeader.text = "What is your experience with mindfulness or stress management?"
+                tvStressManagementHeader.text =
+                    "What is your experience with mindfulness or stress management?"
                 stressManagementList.add(
                     StressManagement(
                         "Beginner",
@@ -211,42 +296,6 @@ class StressManagementSelectionFragment : Fragment() {
 
             }
         }
-
-        recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
-
-        adapter =
-            StressManagementAdapter(requireContext(), stressManagementList) { stressManagement ->
-                selectedStressManagement = stressManagement
-                btnContinue.isEnabled = true
-                val colorStateList =
-                    ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
-                btnContinue.backgroundTintList = colorStateList
-            }
-
-        recyclerView.adapter = adapter
-
-
-        btnContinue.setOnClickListener {
-            llSelectedStressManagement.visibility = VISIBLE
-            rlStressManagement.visibility = View.GONE
-            tvSelectedStressManagementHeader.text = selectedStressManagement.header
-            tvSelectedStressManagementDesc.text = selectedStressManagement.description
-
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-            onboardingQuestionRequest.experienceStressMindfulManagement =
-                selectedStressManagement.header
-            SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
-        }
-
-        return view
-    }
-
-    override fun onPause() {
-        super.onPause()
-        llSelectedStressManagement.visibility = GONE
-        rlStressManagement.visibility = VISIBLE
+        adapter.notifyDataSetChanged()
     }
 }

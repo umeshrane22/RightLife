@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -61,17 +62,24 @@ class AnexityPowerFragment : Fragment() {
         )
 
         selectedAnxiety = binding.anxietyLevelText1.text.toString()
-        binding.anxietySliderView.setMinSteps(0)
-        binding.anxietySliderView.setMaxSteps(10000)
-        binding.anxietySliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.steps_dark_color))
-        binding.anxietySliderView.setOnStepCountChangeListener { stepCount ->
+        val colorMap = hashMapOf(
+            0 to Color.parseColor("#78DD49"),
+            1000 to Color.parseColor("#78DD49"),
+            2000 to Color.parseColor("#ED8D5D"),
+            3000 to Color.parseColor("#FFC143"),
+            4000 to Color.parseColor("#6E61B8"),
+            5000 to Color.parseColor("#FF4243")
+        )
+
+        binding.anxietySliderView.setStepColorMap(colorMap)
+        binding.anxietySliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in anxietyLevelTexts) {
                 textView.setTypeface(null, Typeface.NORMAL)
             }
             // Determine which TextView to bold based on stepCount
-            val index = stepCount / 2000 - 1
+            val index = stepCount / 1000 - 1
             if (index >= 0 && index < anxietyLevelTexts.size) {
                 anxietyLevelTexts[index].setTypeface(null, Typeface.BOLD)
                 selectedAnxiety = anxietyLevelTexts[index].text.toString()

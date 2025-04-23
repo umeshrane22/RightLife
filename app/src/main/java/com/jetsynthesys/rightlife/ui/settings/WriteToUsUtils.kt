@@ -59,10 +59,29 @@ object WriteToUsUtils {
            // putExtra(Intent.EXTRA_TEXT, "Body of the email")
         }
 
-        if (emailIntent.resolveActivity(packageManager) != null) {
+    /*    if (emailIntent.resolveActivity(packageManager) != null) {
             context.startActivity(emailIntent)
         } else {
             Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+        }*/
+
+        val packageManager = context.packageManager
+        if (emailIntent.resolveActivity(packageManager) != null) {
+            context.startActivity(emailIntent)
+        } else {
+            // Try fallback with chooser (covers more cases)
+            val fallbackIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "message/rfc822" // MIME type for email
+                putExtra(Intent.EXTRA_EMAIL, arrayOf("support@rightlife.com"))
+                putExtra(Intent.EXTRA_SUBJECT, "Subject of Email")
+            }
+
+            val chooser = Intent.createChooser(fallbackIntent, "Choose an Email client")
+            if (fallbackIntent.resolveActivity(packageManager) != null) {
+                context.startActivity(chooser)
+            } else {
+                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

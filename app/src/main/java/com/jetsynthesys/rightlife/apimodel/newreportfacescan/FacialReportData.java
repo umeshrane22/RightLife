@@ -24,4 +24,10 @@ public class FacialReportData {
     public boolean lastCheckin;
     public OverallWellnessScore overallWellnessScore;
     public String summary;
+    public int usedCount;
+    public int boosterUsed;
+    public int limit;
+    public int boosterLimit;
+    public String pdf;
+
 }

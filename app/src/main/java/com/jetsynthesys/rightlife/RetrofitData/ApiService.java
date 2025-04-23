@@ -19,7 +19,9 @@ import com.jetsynthesys.rightlife.apimodel.emaillogin.SubmitEmailOtpRequest;
 import com.jetsynthesys.rightlife.apimodel.exploremodules.sleepsounds.SleepAidsRequest;
 import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQuestionRequest;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.CommonResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
@@ -64,6 +66,8 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultRespo
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse;
+import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestData;
+import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse;
 import com.jetsynthesys.rightlife.ui.payment.PaymentCardResponse;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse;
@@ -747,6 +751,13 @@ public interface ApiService {
             @Header("Authorization") String authToken
     );
 
+
+    @Headers("Content-Type: application/json")
+    @GET("userIntrestDetailSave")
+    Call<SavedInterestResponse> getSavedUserInterest(
+            @Header("Authorization") String authToken
+    );
+
     @Headers("Content-Type: application/json")
     @PUT("onboardingModuleResult")
     Call<OnboardingModuleResultResponse> getOnboardingModuleResult(
@@ -1086,7 +1097,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json")
     @POST("aiQuestionaries")
-    Call<ResponseBody> submitERQuestionnaire(
+    Call<CommonResponse> submitERQuestionnaire(
             @Header("Authorization") String authToken,
             @Body QuestionnaireAnswerRequest questionnaireAnswerRequest
     );
@@ -1177,6 +1188,15 @@ public interface ApiService {
             @Body Map<String, String> requestBody
     );
 
+    // article bookmark request
+
+    @POST("content/bookmark")
+    Call<ResponseBody> ArticleBookmarkRequest(@Header("Authorization") String authToken, @Body ArticleBookmarkRequest request);
+
+    @GET("user/dashboardChecklistStatus")
+    Call<DashboardChecklistResponse> getdashboardChecklistStatus(
+            @Header("Authorization") String authToken
+    );
 }
 
 

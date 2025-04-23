@@ -20,6 +20,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
+import kotlin.math.roundToInt
 
 
 object CommonAPICall {
@@ -183,4 +184,66 @@ object CommonAPICall {
 
             })
     }
+
+
+    data class CmConversionResult(
+        val cmText: String,
+        val cmIndex: Int,
+        val inchIndex: Int
+    )
+
+    fun convertFeetInchToCmWithIndex(height: String): CmConversionResult {
+        val regex = Regex("(\\d+)\\s*Ft\\s*(\\d+)\\s*In", RegexOption.IGNORE_CASE)
+        val match = regex.find(height.trim())
+
+        if (match != null && match.groupValues.size >= 3) {
+            val feet = match.groupValues[1].toInt()
+            val inch = match.groupValues[2].toInt()
+
+            val totalInches = (feet * 12) + inch
+            val cm = totalInches * 2.54
+            val cmRounded = cm.roundToInt()
+
+            return CmConversionResult(
+                cmText = "$cmRounded cms",
+                cmIndex = cmRounded,
+                inchIndex = totalInches
+            )
+        } else {
+            throw IllegalArgumentException("Invalid height format. Expected format: '5 Ft 10 In'")
+        }
+    }
+
+
+
+    data class HeightConversionResult(
+        val feetInchText: String,
+        val inchIndex: Int,
+        val cmIndex: Int
+    )
+
+    fun convertCmToFeetInchWithIndex(height: String): HeightConversionResult {
+        val regex = Regex("(\\d+)")
+        val match = regex.find(height.trim())
+
+        if (match != null) {
+            val cm = match.groupValues[1].toDouble()
+            val totalInches = cm / 2.54
+            val feet = totalInches.toInt() / 12
+            val inch = (totalInches % 12).roundToInt()
+
+            val totalInchIndex = (feet * 12) + inch
+            val cmIndex = cm.roundToInt()
+
+            val formatted = "$feet Ft $inch In"
+            return HeightConversionResult(
+                feetInchText = formatted,
+                inchIndex = totalInchIndex,
+                cmIndex = cmIndex
+            )
+        } else {
+            throw IllegalArgumentException("Invalid height format. Expected format: '182 cms'")
+        }
+    }
+
 }

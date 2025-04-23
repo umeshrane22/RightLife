@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="How many steps do you usually take in a day?"
-        android:textSize="18sp"
+        android:textSize="@dimen/textsize_large18sp"
         android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
@@ -31,6 +31,12 @@
 
 
         <com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
+            android:id="@+id/steps_slider_view1"
+            android:layout_width="80dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:layout_height="350dp" />
+        <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryCoffeWaterView
             android:id="@+id/steps_slider_view"
             android:layout_width="80dp"
             android:layout_centerInParent="true"
@@ -124,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-
+                android:visibility="gone"
                 android:gravity="top"
                 android:text="8k -10k\n\nRecomended Steps" />
 

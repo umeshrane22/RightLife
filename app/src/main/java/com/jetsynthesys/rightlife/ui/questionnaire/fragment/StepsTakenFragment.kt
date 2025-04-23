@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -65,15 +66,32 @@ class StepsTakenFragment : Fragment() {
 
         selectedSteps = binding.stepCountText1.text.toString()
 
-        binding.stepsSliderView.setMinSteps(0)
-        binding.stepsSliderView.setMaxSteps(12000)
-        binding.stepsSliderView.setIntervalColors(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.steps_dark_color
-            )
+
+        binding.stepsSliderView.setBackgroundColorInt(Color.parseColor("#F0ECEC"))
+        binding.stepsSliderView.setFillColorInt(Color.parseColor("#6C4C3F"))
+        binding.stepsSliderView.setupDefaultStepColors("#6C4C3F")
+
+
+        val colorMap = hashMapOf(
+            0 to Color.parseColor("#FF4836"),
+            1000 to Color.parseColor("#FF4836"),
+            2000 to Color.parseColor("#FF4836"),
+            3000 to Color.parseColor("#F8F836"),
+            4000 to Color.parseColor("#F8F836"),
+            5000 to Color.parseColor("#84D348"),
+            6000 to Color.parseColor("#84D348"),
+            7000 to Color.parseColor("#49A2DB"),
+            8000 to Color.parseColor("#49A2DB"),
+            9000 to Color.parseColor("#49A2DB"),
+            10000 to Color.parseColor("#49A2DB"),
+            11000 to Color.parseColor("#49A2DB"),
+            12000 to Color.parseColor("#49A2DB"),
+
         )
-        binding.stepsSliderView.setOnStepCountChangeListener { stepCount ->
+
+        binding.stepsSliderView.setStepColorMap(colorMap)
+
+        binding.stepsSliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in stepsCountTexts) {

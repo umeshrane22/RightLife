@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivi
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionOne
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import okio.FileNotFoundException
 
 class EmotionsPastWeekFragment : Fragment() {
 
@@ -77,6 +78,13 @@ class EmotionsPastWeekFragment : Fragment() {
                 binding.tvTitle.text = EmotionsList[progress]
                 emotionSelected = EmotionsList[progress]
                 binding.cardView.setBackgroundResource(EmotionsBgCards[progress])
+                try {
+                    binding.lottieView.setAnimation("$emotionSelected.json")
+                    binding.lottieView.playAnimation()
+                }catch (e: FileNotFoundException){
+                    e.printStackTrace()
+                }
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}

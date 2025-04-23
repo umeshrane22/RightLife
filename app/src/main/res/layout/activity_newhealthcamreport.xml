@@ -29,23 +29,23 @@
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
             android:ellipsize="marquee"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:maxLines="1"
             android:scrollHorizontally="true"
-            android:text="Categories"
-            android:textSize="@dimen/textsize_large"
-            android:visibility="gone" />
+            android:text="Your Results"
+            android:textSize="@dimen/textsize_large18sp"
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/ic_close_dialog"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
-            android:visibility="gone"
-            android:background="@drawable/rlpage_info_icon"
-            android:backgroundTint="@color/color_blue"
+            android:visibility="visible"
+            android:background="@drawable/ic_info_resultpage"
+            android:backgroundTint="@color/black"
              />
     </RelativeLayout>
 
@@ -68,6 +68,7 @@
                 android:paddingStart="10dp"
                 android:layout_gravity="center_horizontal"
                 android:text="Hi, User"
+                android:visibility="gone"
                 android:textSize="18sp" />
 
             <androidx.cardview.widget.CardView
@@ -202,12 +203,83 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card_facescan_booster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_card_16dp"
+                android:layout_marginHorizontal="@dimen/margin_card_16dp"
+                android:layout_weight="1"
+                android:visibility="visible"
+                app:cardCornerRadius="@dimen/margin_card_16dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_toStartOf="@+id/btn_buy_facescan"
+                        android:orientation="horizontal"
+                        android:layout_centerVertical="true"
+                        android:layout_height="wrap_content">
 
+                        <TextView
+                            android:id="@+id/txt_booster_count"
+                            android:layout_width="70dp"
+                            android:textColor="@color/dark_blue"
+                            android:text="01"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="32dp"
+                            android:gravity="center"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginHorizontal="7dp"
+                            android:background="@drawable/roundedcornerbutton"
+                            android:backgroundTint="@color/light_blue"
+                            android:layout_height="60dp"/>
+
+                        <View
+                            android:layout_width="2dp"
+                            android:background="@color/color_switch_gray"
+                            android:layout_marginStart="5dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_height="50dp"/>
+
+                        <TextView
+                            android:id="@+id/txt_remaining_msg"
+                            android:layout_width="120dp"
+                            android:textColor="@color/text_color_app"
+                            android:text="Your scans remaining."
+                            android:fontFamily="@font/dmsans_regular"
+                            android:textSize="@dimen/textsize_medium"
+                            android:gravity="center"
+                            android:layout_gravity="center_vertical"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/btn_buy_facescan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/margin_card_16dp"
+                        android:text="Buy"
+                        android:layout_alignParentEnd="true"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/white"
+                        android:backgroundTint="@color/menuselected"/>
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <include
+                android:id="@+id/scanProgressLayout"
+                layout="@layout/layout_scan_progress" />
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardview_last_checkin"
                 android:layout_width="match_parent"
                 android:layout_margin="@dimen/margin_card_16dp"
                 app:cardCornerRadius="@dimen/textsize_small"
+                android:visibility="gone"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
@@ -236,11 +308,11 @@
                         android:layout_marginRight="@dimen/margin_card_16dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textSize="@dimen/textsize_large"
-                        android:text="Time For A Check-In! It’s Been A While Since Your Last Face Scan" />
+                        android:text="You’ve Used Your Trial Scan. Go Premium To Unlock 4 Scans Every Month" />
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_marginTop="@dimen/margin_card_16dp"
+                            android:layout_marginTop="5dp"
                             android:layout_height="wrap_content">
 
                             <LinearLayout
@@ -252,19 +324,20 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="7 Jan, 2024"
-                                    android:layout_weight="1"
+
                                     android:id="@+id/tv_last_report_date"
                                     android:layout_height="wrap_content"/>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="|"
-                                    android:layout_weight="1"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_marginEnd="10dp"
                                     android:visibility="gone"
                                     android:layout_height="wrap_content"/>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:text="10:00 PM"
-                                    android:layout_weight="1"
+
                                     android:visibility="gone"
                                     android:layout_height="wrap_content"/>
                             </LinearLayout>
@@ -276,6 +349,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginEnd="20dp"
                                 android:layout_centerVertical="true"
+                                android:visibility="gone"
                                 android:layout_height="wrap_content"/>
                         </RelativeLayout>
                     </LinearLayout>
@@ -324,7 +398,7 @@
                 android:background="@drawable/bg_gray_border"
                 android:backgroundTint="@color/menuselected"
                 android:gravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:orientation="horizontal">
 
                 <ImageView

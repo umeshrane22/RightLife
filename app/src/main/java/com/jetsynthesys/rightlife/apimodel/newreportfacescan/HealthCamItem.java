@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.apimodel.newreportfacescan;
 
-public class HealthCamItem {
+import java.io.Serializable;
+
+public class HealthCamItem implements Serializable {
     public String fieldName;
     public Double value;
     public String parameter;

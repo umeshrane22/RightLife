@@ -1669,7 +1669,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/dmsans_medium"
-                    android:text="Past 7 Days"
+                    android:text=""
                     android:textColor="#0B1215"
                     android:textSize="16sp" />
 
@@ -1681,12 +1681,47 @@
                     android:scrollbars="vertical"
                     android:visibility="visible" />
 
+                <RelativeLayout
+                    android:id="@+id/rl_view_past_reports"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_height="60dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/rounded_corder_border_gray_radius_small"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:gravity="center_vertical"
+                            android:text="View Your Past Reports"
+                            android:paddingStart="15dp"
+                            android:textColor="@color/text_color_app"
+                            android:textSize="@dimen/textsize_medium" />
+
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/sleep_right_arrow_btn" />
+                </RelativeLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginVertical="16dp"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <TextView
                         android:layout_width="wrap_content"

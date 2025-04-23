@@ -59,8 +59,9 @@ class WeightSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
         swithch = view.findViewById(R.id.switch_weight_metric)
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
@@ -207,7 +208,9 @@ class WeightSelectionFragment : Fragment() {
             // Scroll to the center position
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
-
+        rulerView.post {
+            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
+        }
         return view
     }
 

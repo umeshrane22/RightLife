@@ -14,6 +14,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -39,9 +41,11 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity;
 import com.jetsynthesys.rightlife.apimodel.PromotionResponse;
 import com.jetsynthesys.rightlife.apimodel.affirmations.AffirmationResponse;
 import com.jetsynthesys.rightlife.apimodel.liveevents.LiveEventResponse;
@@ -55,6 +59,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.ContentWellness;
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityHomeBinding;
+import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity;
@@ -101,6 +106,7 @@ import retrofit2.Response;
 
 import static com.jetsynthesys.rightlife.ui.utility.DateConverter.convertToDate;
 import static com.jetsynthesys.rightlife.ui.utility.DateConverter.convertToTime;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     public WellnessApiResponse wellnessApiResponse;
@@ -264,6 +270,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         ll_affirmations.setOnClickListener(this);
         ll_sleepsounds = findViewById(R.id.ll_sleepsounds);
         ll_sleepsounds.setOnClickListener(this);
+
+        homeBinding.includedhomebottomsheet.llFoodLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llActivityLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llMoodLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llSleepLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llWeightLog.setOnClickListener(this);
+        homeBinding.includedhomebottomsheet.llWaterLog.setOnClickListener(this);
 
 
         ll_health_cam_ql = findViewById(R.id.ll_health_cam_ql);
@@ -1556,21 +1569,80 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             view.setSelected(!view.isSelected());
         } else if (viewId == R.id.ll_journal) {
-            startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, JournalListActivity.class));
+            }
         } else if (viewId == R.id.ll_affirmations) {
-            startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, TodaysAffirmationActivity.class));
+            }
         } else if (viewId == R.id.ll_sleepsounds) {
-            startActivity(new Intent(HomeActivity.this, NewSleepSoundActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, NewSleepSoundActivity.class));
+            }
         }else if (viewId == R.id.ll_breathwork) {
-            startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
+            }
         }else if (viewId == R.id.ll_health_cam_ql) {
             startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
         }else if (viewId == R.id.ll_mealplan) {
-            Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
+            if (checkTrailEndedAndShowDialog()) {
+                Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
+            }
             //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         } else if (viewId == R.id.btn_wellness_preference) {
             startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
         }
+       else if (view.getId() == R.id.ll_food_log) {
+            if (checkTrailEndedAndShowDialog()) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "EatRight");
+            intent.putExtra("BottomSeatName", "MealLogTypeEat");
+            startActivity(intent);
+            }
+
+        } else if (view.getId() == R.id.ll_activity_log) {
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "MoveRight");
+                intent.putExtra("BottomSeatName", "SearchActivityLogMove");
+                startActivity(intent);
+            }
+
+        } else if (view.getId() == R.id.ll_mood_log) {
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "ThinkRight");
+                intent.putExtra("BottomSeatName", "RecordEmotionMoodTracThink");
+                startActivity(intent);
+            }
+
+        } else if (view.getId() == R.id.ll_sleep_log) {
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "SleepRight");
+                intent.putExtra("BottomSeatName", "LogLastNightSleep");
+                startActivity(intent);
+            }
+
+        } else if (view.getId() == R.id.ll_weight_log) {
+            if (checkTrailEndedAndShowDialog()) {
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "EatRight");
+                intent.putExtra("BottomSeatName", "LogWeightEat");
+                startActivity(intent);
+            }
+
+        } else if (view.getId() == R.id.ll_water_log) {
+            if (checkTrailEndedAndShowDialog()) {
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "EatRight");
+            intent.putExtra("BottomSeatName", "LogWaterIntakeEat");
+            startActivity(intent);
+            }
+        }
+
 
 
     }
@@ -1765,5 +1837,57 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    public boolean checkTrailEndedAndShowDialog() {
+        if (!DashboardChecklistManager.INSTANCE.getPaymentStatus()) {
+            showTrailEndedBottomSheet();
+            return false; // Return false if condition is true and dialog is shown
+        }
+        return true; // Return true if condition is false
+    }
+
+    private void showTrailEndedBottomSheet() {
+        // Create and configure BottomSheetDialog
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+
+        // Inflate the BottomSheet layout
+        BottomsheetTrialEndedBinding dialogBinding = BottomsheetTrialEndedBinding.inflate(getLayoutInflater());
+        View bottomSheetView = dialogBinding.getRoot();
+
+        bottomSheetDialog.setContentView(bottomSheetView);
+
+        // Set up the animation
+        LinearLayout bottomSheetLayout = bottomSheetView.findViewById(R.id.design_bottom_sheet);
+        if (bottomSheetLayout != null) {
+            Animation slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up);
+            bottomSheetLayout.setAnimation(slideUpAnimation);
+        }
+
+    /*dialogBinding.tvTitle.setText("Leaving early?");
+    dialogBinding.tvDescription.setText(
+        "A few more minutes of breathing practise will make a world of difference.");*/
+
+        //dialogBinding.btnCancel.setText("Continue Practise");
+        //dialogBinding.btnYes.setText("Leave");
+
+        dialogBinding.ivDialogClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        dialogBinding.btnExplorePlan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomSheetDialog.dismiss();
+                //finish();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
+
 }
 

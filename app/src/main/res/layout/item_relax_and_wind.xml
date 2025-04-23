@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:text="Vegan"
-        android:textSize="12sp"
+        android:textSize="@dimen/textsize_medium"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/dmsans_regular"
         android:gravity="center_vertical"

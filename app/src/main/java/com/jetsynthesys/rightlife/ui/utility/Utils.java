@@ -304,6 +304,22 @@ public class Utils {
         toast.show();
     }
 
+    public static void showCustomToast(Context context, String message) {
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View layout = inflater.inflate(R.layout.custom_toast_new, null);
+
+        // Set the message text
+        TextView toastText = layout.findViewById(R.id.tvMessage);
+        toastText.setText(message);
+
+        // Create the Toast
+        Toast toast = new Toast(context.getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
+    }
+
     private static FrameLayout loadingOverlay;
     public static void showLoader(Activity activity){
         loadingOverlay = activity.findViewById(R.id.loading_overlay);

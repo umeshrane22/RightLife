@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.text.DecimalFormat
@@ -58,8 +59,9 @@ class HeightSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
         selected_number_text = view.findViewById(R.id.selected_number_text)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)
@@ -88,24 +90,25 @@ class HeightSelectionFragment : Fragment() {
         switch.isChecked = false
         switch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                val h = selectedHeight.split(" ")
-                val feet = "${h[0]}.${h[2]}"
                 selectedLabel = " cms"
-                selectedHeight = ConversionUtils.convertFeetToCentimeter(feet)
+                //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
+                val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
+
+                selectedHeight = result.cmText
                 setCms()
-                selectedHeight = decimalFormat.format(selectedHeight.toDouble())
-                rulerView.scrollToPosition(floor(selectedHeight.toDouble()).toInt())
-                selectedHeight += selectedLabel
+
+                rulerView.scrollToPosition(result.cmIndex)
+
             } else {
-                val w = selectedHeight.split(" ")
                 selectedLabel = " feet"
-                selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
+                //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
+                val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
+
+                selectedHeight = result.feetInchText
                 setFtIn()
-                val h = selectedHeight.split(".")
-                val ft = h[0]
-                val inch = if (h.size ==2 )h[1] else "0"
-                rulerView.scrollToPosition((selectedHeight.toDouble() * 12).toInt())
-                selectedHeight = "$ft Ft $inch In"
+
+                rulerView.scrollToPosition((result.inchIndex))
+
             }
             selected_number_text!!.text = selectedHeight
         }
@@ -234,7 +237,7 @@ class HeightSelectionFragment : Fragment() {
                 returnValue = false
                 Toast.makeText(
                     requireActivity(),
-                    "Height should be in between 120 feet to 220 feet",
+                    "Height should be in between 120 Cms to 220 cms",
                     Toast.LENGTH_SHORT
                 ).show()
             }

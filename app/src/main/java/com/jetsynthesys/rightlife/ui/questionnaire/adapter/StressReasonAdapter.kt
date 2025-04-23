@@ -27,8 +27,14 @@ class StressReasonAdapter(
             binding.root.setBackgroundResource(background)
 
             binding.root.setOnClickListener {
+                if (reason.title == "None")
+                    reasons.forEach {
+                        it.isSelected = false
+                    }
+                else
+                    reasons[reasons.size-1].isSelected = false
                 reason.isSelected = !reason.isSelected
-                notifyItemChanged(adapterPosition)
+                notifyDataSetChanged()
                 onSelectionChanged(reason)
             }
         }

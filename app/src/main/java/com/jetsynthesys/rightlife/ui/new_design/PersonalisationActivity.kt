@@ -16,12 +16,14 @@ class PersonalisationActivity : AppCompatActivity() {
 
         var header = intent.getStringExtra("WellnessFocus")
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-        if (header.isNullOrEmpty()){
+        if (header.isNullOrEmpty()) {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
 
         val tvSkip = findViewById<TextView>(R.id.tv_skip)
         tvSkip.setOnClickListener {
+            sharedPreferenceManager.allowPersonalization = true
+            sharedPreferenceManager.onBoardingQuestion = true
             val intent = Intent(this, EnableNotificationActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             startActivity(intent)
@@ -29,7 +31,7 @@ class PersonalisationActivity : AppCompatActivity() {
 
         val btnAllowPersonalisation = findViewById<Button>(R.id.btn_allow_personalisation)
         btnAllowPersonalisation.setOnClickListener {
-            val intent = Intent(this, SyncNowActivity::class.java)
+            val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             sharedPreferenceManager.allowPersonalization = true
             startActivity(intent)

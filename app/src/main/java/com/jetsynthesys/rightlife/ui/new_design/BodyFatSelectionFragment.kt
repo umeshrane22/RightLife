@@ -58,8 +58,9 @@ class BodyFatSelectionFragment : Fragment() {
 
         gendar =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender.toString()
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         llSelectedBodyFat = view.findViewById(R.id.ll_selected_body_fat)
         tvSelectedBodyFat = view.findViewById(R.id.tv_selected_body_fat)
@@ -84,7 +85,10 @@ class BodyFatSelectionFragment : Fragment() {
         }
 
         iconPlus.setOnClickListener {
-            var fatValue = edtBodyFat.text.toString().toDouble() + 0.5
+            var fatValue = edtBodyFat.text.toString().toDouble()
+            if (fatValue < 60) {
+                fatValue = edtBodyFat.text.toString().toDouble() + 0.5
+            }
             edtBodyFat.setText(fatValue.toString())
             edtBodyFat.setSelection(edtBodyFat.text.length)
             edtBodyFat.requestFocus()
@@ -143,7 +147,7 @@ class BodyFatSelectionFragment : Fragment() {
             if (edtBodyFat.text.toString().toDouble() < 3 && edtBodyFat.text.toString().toDouble() > 60){
                 Toast.makeText(
                     requireContext(),
-                    "Please select weight between 30 kg and 300 kg",
+                    "Please select fat between 5% to 60%",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener

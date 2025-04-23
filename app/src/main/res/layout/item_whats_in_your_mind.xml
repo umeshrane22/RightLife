@@ -20,9 +20,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Vegan"
-        android:textSize="12sp"
+        android:textSize="@dimen/textsize_medium"
         android:layout_marginTop="8dp"
-        android:fontFamily="@font/dmsans_regular"
+        android:fontFamily="@font/dmsans_medium"
         android:gravity="center"
         android:textColor="@color/menu_icon_color_unselected" />
 

@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="What does your daily water &amp; caffeine intake look like?"
-        android:textSize="18sp"
-        android:fontFamily="@font/dmsans_bold"
+        android:textSize="@dimen/textsize_large18sp"
+        android:fontFamily="@font/merriweather_bold"
         android:layout_marginBottom="16dp"
         android:textColor="@color/menu_icon_color_unselected" />
 
@@ -71,23 +71,31 @@
                     android:layout_height="wrap_content"/>
 
                 <com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
+                    android:id="@+id/water_view1"
+                    android:layout_width="80dp"
+                    android:layout_below="@+id/ll_water_icon"
+                    android:layout_alignParentEnd="true"
+                    android:visibility="gone"
+                    android:layout_height="300dp" />
+                <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryCoffeWaterView
                     android:id="@+id/water_view"
                     android:layout_width="80dp"
                     android:layout_below="@+id/ll_water_icon"
                     android:layout_alignParentEnd="true"
                     android:layout_height="300dp" />
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_alignTop="@+id/water_view"
-                    android:layout_marginEnd="20dp"
+
                     android:layout_toLeftOf="@id/water_view"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/water_count_text_6"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
@@ -189,6 +197,13 @@
                     android:layout_height="wrap_content"/>
 
                 <com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
+                    android:id="@+id/coffee_view1"
+                    android:layout_width="80dp"
+                    android:layout_below="@+id/ll_cofee_icon"
+                    android:visibility="gone"
+                    android:layout_height="300dp" />
+
+                <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryCoffeWaterView
                     android:id="@+id/coffee_view"
                     android:layout_width="80dp"
                     android:layout_below="@+id/ll_cofee_icon"
@@ -208,8 +223,8 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
                         android:gravity="top"
-                        android:visibility="gone"
-                        android:text="12 cups" />
+                        android:visibility="visible"
+                        android:text=">12 cups" />
 
                     <TextView
                         android:id="@+id/coffee_count_text_5"
@@ -218,7 +233,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
                         android:gravity="top"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:text="10 cups" />
 
                     <TextView
@@ -228,7 +243,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
                         android:gravity="top"
-                        android:text="7 cups" />
+                        android:text="8 cups" />
 
                     <TextView
                         android:id="@+id/coffee_count_text_3"
@@ -237,7 +252,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
                         android:gravity="top"
-                        android:text="5 cups" />
+                        android:text="6 cups" />
 
                     <TextView
                         android:id="@+id/coffee_count_text_2"
@@ -246,7 +261,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
                         android:gravity="top"
-                        android:text="3 cups" />
+                        android:text="4 cups" />
 
                     <TextView
                         android:id="@+id/coffee_count_text_1"
@@ -254,8 +269,8 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:layout_marginLeft="16dp"
-                        android:gravity="center"
-                        android:text="1 cup" />
+                        android:gravity="top"
+                        android:text="2 cups" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

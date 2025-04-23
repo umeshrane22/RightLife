@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -13,15 +15,18 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.BottomsheetPhysicalActivityBinding
 import com.jetsynthesys.rightlife.databinding.FragmentPhysicalActivitiesBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
+import com.jetsynthesys.rightlife.ui.questionnaire.adapter.PhysicalActivityDialogAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionThree
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.PhysicalActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ServingItem
 
 class PhysicalActivitiesFragment : Fragment() {
 
@@ -29,6 +34,7 @@ class PhysicalActivitiesFragment : Fragment() {
     private val binding get() = _binding!!
     private val selectedActivities: ArrayList<String> = ArrayList()
     private var activities: ArrayList<PhysicalActivity> = ArrayList()
+    private var adapter: PhysicalActivityDialogAdapter? = null
 
     private var question: Question? = null
 
@@ -47,6 +53,15 @@ class PhysicalActivitiesFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             question = it.getSerializable("question") as? Question
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.chipGroup.clearCheck()
+        selectedActivities.clear()
+        activities.forEach { physicalActivity ->
+            physicalActivity.isSelected = false
         }
     }
 
@@ -123,10 +138,19 @@ class PhysicalActivitiesFragment : Fragment() {
         }
 
         binding.btnContinue.setOnClickListener {
-            if (selectedActivities.size == 3)
+            if (selectedActivities.size > 0) {
+                binding.btnContinue.isEnabled = false
                 showPhysicalActivitiesBottomSheet()
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.btnContinue.isEnabled = true
+                },2000)
+            }
             else
-                Toast.makeText(requireContext(), "Please select 3 activities", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    requireContext(),
+                    "Please select at least one activity",
+                    Toast.LENGTH_SHORT
+                )
                     .show()
         }
     }
@@ -195,7 +219,7 @@ class PhysicalActivitiesFragment : Fragment() {
 
         chip.setOnClickListener { view ->
             val position = binding.chipGroup.indexOfChild(view)
-            if (selectedActivities.size == 3 && !activities[position].isSelected) {
+            if (selectedActivities.size == QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!! && !activities[position].isSelected) {
                 chip.isChecked = false
                 return@setOnClickListener
             }
@@ -209,7 +233,7 @@ class PhysicalActivitiesFragment : Fragment() {
                 ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
             val colorStateList1 =
                 ContextCompat.getColorStateList(requireContext(), R.color.rightlife)
-            if (selectedActivities.size != 3) {
+            if (selectedActivities.size < 1) {
                 binding.btnContinue.backgroundTintList = colorStateList1
                 binding.btnContinue.isEnabled = false
             } else {
@@ -234,74 +258,34 @@ class PhysicalActivitiesFragment : Fragment() {
         bottomSheetDialog.setContentView(bottomSheetView)
 
         // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        val bottomSheetLayout =
+            bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(requireContext(), R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
 
-        dialogBinding.textTitle1.text = selectedActivities[0]
-        dialogBinding.textTitle2.text = selectedActivities[1]
-        dialogBinding.textTitle3.text = selectedActivities[2]
-
-        dialogBinding.btnPlus1.setOnClickListener {
-            var count = dialogBinding.textCount1.text.toString().toInt() + 1
-            if (count <= QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!) {
-                count++
-                dialogBinding.textCount1.text = count.toString()
-            }
+        val selectedList = ArrayList<ServingItem>()
+        selectedActivities.forEachIndexed { index, s ->
+            selectedList.add(ServingItem(title = s, count = 1))
         }
 
-        dialogBinding.btnMinus1.setOnClickListener {
-            var count = dialogBinding.textCount1.text.toString().toInt()
-            if (count > 0) {
-                count--
-                dialogBinding.textCount1.text = count.toString()
-            }
-        }
+        var calculation =
+            selectedActivities.size
 
-        dialogBinding.btnPlus2.setOnClickListener {
-            var count = dialogBinding.textCount2.text.toString().toInt() + 1
-            if (count <= QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!) {
-                count++
-                dialogBinding.textCount2.text = count.toString()
-            }
+        adapter = PhysicalActivityDialogAdapter(
+            selectedList,
+            QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!
+        ) { servingItem, count ->
+            calculation += count
         }
-
-        dialogBinding.btnMinus2.setOnClickListener {
-            var count = dialogBinding.textCount2.text.toString().toInt()
-            if (count > 0) {
-                count--
-                dialogBinding.textCount2.text = count.toString()
-            }
-        }
-
-        dialogBinding.btnPlus3.setOnClickListener {
-            var count = dialogBinding.textCount3.text.toString().toInt() + 1
-            if (count <= QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!!) {
-                count++
-                dialogBinding.textCount3.text = count.toString()
-            }
-        }
-
-        dialogBinding.btnMinus3.setOnClickListener {
-            var count = dialogBinding.textCount3.text.toString().toInt()
-            if (count > 0) {
-                count--
-                dialogBinding.textCount3.text = count.toString()
-            }
-        }
+        dialogBinding.rvPhysicalActivityDialog.adapter = adapter
+        dialogBinding.rvPhysicalActivityDialog.layoutManager = LinearLayoutManager(requireContext())
 
         dialogBinding.btnSetNow.setOnClickListener {
-            val calculation = dialogBinding.textCount1.text.toString().toInt().plus(
-                dialogBinding.textCount2.text.toString().toInt()
-            ).plus(
-                dialogBinding.textCount3.text.toString().toInt()
-            )
-            if (QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!! >= calculation) {
+            if (QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer?.toInt()!! == calculation) {
                 bottomSheetDialog.dismiss()
-                //QuestionnaireEatRightActivity.navigateToNextPage()
                 submit(selectedActivities)
             } else {
                 Toast.makeText(

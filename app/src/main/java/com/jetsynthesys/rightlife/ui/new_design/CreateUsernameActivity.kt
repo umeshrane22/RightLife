@@ -97,8 +97,10 @@ class CreateUsernameActivity : AppCompatActivity() {
 
         btnContinue.setOnClickListener {
             Utils.hideSoftKeyboard(this@CreateUsernameActivity)
-            showFullScreenDialog(edtUsername.text.toString(), email!!)
+            //showFullScreenDialog(edtUsername.text.toString(), email!!)
             sharedPreferenceManager.userName = edtUsername.text.toString()
+            val intent = Intent(this, HappyToHaveYouActivity::class.java)
+            startActivity(intent)
         }
     }
 

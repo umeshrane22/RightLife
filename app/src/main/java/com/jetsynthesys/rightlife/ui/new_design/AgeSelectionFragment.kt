@@ -158,8 +158,9 @@ class AgeSelectionFragment : Fragment() {
         tvSelectedAge = view.findViewById(R.id.tv_selected_age)
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
@@ -182,7 +183,7 @@ class AgeSelectionFragment : Fragment() {
         numberPicker.minValue = 1
         numberPicker.maxValue = years.size
         numberPicker.displayedValues = years
-        numberPicker.value = 13
+        numberPicker.value = 15
         numberPicker.wheelItemCount = 7
 
         selectedAge = years[12]

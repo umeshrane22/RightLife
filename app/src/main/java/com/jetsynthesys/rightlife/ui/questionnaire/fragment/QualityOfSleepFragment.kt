@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -59,22 +60,24 @@ class QualityOfSleepFragment : Fragment() {
         )
 
         selectedSleepQuality = binding.anxietyLevelText1.text.toString()
-        binding.sleepQualitySliderView.setMinSteps(0)
-        binding.sleepQualitySliderView.setMaxSteps(10000)
-        binding.sleepQualitySliderView.setIntervalColors(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.steps_dark_color
-            )
+        val colorMap = hashMapOf(
+            0 to Color.parseColor("#F25136"),
+            1000 to Color.parseColor("#F25136"),
+            2000 to Color.parseColor("#ED9120"),
+            3000 to Color.parseColor("#DDC727"),
+            4000 to Color.parseColor("#AFC61D"),
+            5000 to Color.parseColor("#1CC675")
         )
-        binding.sleepQualitySliderView.setOnStepCountChangeListener { stepCount ->
+
+        binding.sleepQualitySliderView.setStepColorMap(colorMap)
+        binding.sleepQualitySliderView.setOnValueChangeListener { stepCount ->
 
             // Reset all TextViews to normal
             for (textView in sleepQualityLevelTexts) {
                 textView.setTypeface(null, Typeface.NORMAL)
             }
             // Determine which TextView to bold based on stepCount
-            val index = stepCount / 2000 - 1
+            val index = stepCount / 1000 - 1
             if (index >= 0 && index < sleepQualityLevelTexts.size) {
                 sleepQualityLevelTexts[index].setTypeface(null, Typeface.BOLD)
                 selectedSleepQuality = sleepQualityLevelTexts[index].text.toString()

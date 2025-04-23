@@ -24,6 +24,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
@@ -234,6 +235,8 @@ class ImageSliderActivity : AppCompatActivity() {
                             if (account != null) {
                                 // User is signed in, display user information
                                 displayName = account.displayName!!
+                                val firstName = displayName?.split(" ")?.get(0) ?: ""
+                                displayName = firstName
                                 mEmail = account.email.toString()
                                 val authcode = account.serverAuthCode
                             }
@@ -317,13 +320,14 @@ class ImageSliderActivity : AppCompatActivity() {
                             }
                         }
                         if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
+
                             val loggedInUser =
                                 LoggedInUser(email = mEmail, isOnboardingComplete = true)
                             sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
                             startActivity(
                                 Intent(
                                     this@ImageSliderActivity,
-                                    HomeActivity::class.java
+                                    HomeDashboardActivity::class.java
                                 )
                             )
                         } else {
