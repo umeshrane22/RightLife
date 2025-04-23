@@ -37,9 +37,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_layout"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toTopOf="@+id/layout_save_add">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -63,33 +64,42 @@
                 android:layout_marginTop="15dp"
                 android:textColor="@color/text_color_kcal" />
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
-                android:weightSum="1"
+                android:padding="10dp"
                 android:background="@drawable/white_meal_date_bg"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvFoodName"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/foodNameEdit"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
+                    android:background="@null"
+                    android:text="Poha seb"
                     android:fontFamily="@font/dmsans_bold"
-                    android:layout_weight="0.8"
                     android:layout_gravity="center"
-                    android:layout_marginStart="15dp"
-                    android:textColor="@color/black_no_meals" />
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/black_no_meals"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/editNameIC"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintHorizontal_weight="1.9"
+                    />
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="0.1"
-                    android:visibility="gone"
-                    android:src="@drawable/material_edit" />
+                    android:id="@+id/editNameIC"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:visibility="visible"
+                    android:src="@drawable/material_edit"
+                    app:layout_constraintStart_toEndOf="@+id/foodNameEdit"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintHorizontal_weight=".1"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -99,10 +109,11 @@
                     android:textAlignment="center"
                     android:textSize="12sp"
                     android:visibility="gone"
-                    android:layout_weight="0.1"
                     android:layout_gravity="center"
-                    android:textColor="@color/meal_log_title" />
-            </androidx.appcompat.widget.LinearLayoutCompat>
+                    android:textColor="@color/meal_log_title"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -138,6 +149,7 @@
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/datePickerLayout"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="15dp"
@@ -218,6 +230,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
+                android:visibility="gone"
                 android:layout_weight="1"
                 android:background="@drawable/white_meal_date_bg"
                 android:orientation="horizontal">
@@ -481,6 +494,7 @@
                     android:layout_height="30dp"
                     android:layout_weight="0.2"
                     android:layout_marginStart="10dp"
+                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:visibility="visible"
@@ -976,10 +990,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_save_add"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="#F7F7F7"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -987,16 +1000,12 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/saveMealLayout"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@drawable/green_border_white_bg"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginStart="20dp"
             android:gravity="center">
 
             <ImageView
@@ -1004,10 +1013,8 @@
                 android:layout_height="15dp"
                 android:layout_gravity="center"
                 android:scaleType="fitXY"
-                android:visibility="visible"
-                android:src="@drawable/meal_plan_green_icon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:visibility="gone"
+                android:src="@drawable/meal_plan_green_icon" />
 
             <TextView
                 android:id="@+id/tv_save"
@@ -1016,7 +1023,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginStart="5dp"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:textSize="14sp"
@@ -1024,20 +1030,28 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Save Meal" />
 
+            <CheckBox
+                android:id="@+id/saveMealCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </CheckBox>
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/addToLogLayout"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saveMealLayout"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="20dp"
             android:background="@drawable/green_meal_bg"
-            android:layout_marginStart="20dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center">
 
             <ImageView
@@ -1046,16 +1060,12 @@
                 android:layout_gravity="center"
                 android:scaleType="fitXY"
                 android:src="@drawable/icon_feather_plus"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                />
 
             <TextView
                 android:id="@+id/tv_add_to_log"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginStart="5dp"
                 android:layout_gravity="center"
                 android:textSize="14sp"

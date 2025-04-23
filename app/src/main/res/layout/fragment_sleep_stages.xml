@@ -297,7 +297,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/peak_text_heading">
 
-                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.StripedProgressBar
+                    <com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.AwakeProgressBar
                         android:id="@+id/customProgressBar"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
@@ -374,7 +374,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cardio_text_heading">
 
-                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
+                    <com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.RemProgressBar
                         android:id="@+id/customProgressBarCardio"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
@@ -451,7 +451,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/fat_burn_text_heading">
 
-                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
+                    <com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.CoreProgressBar
                         android:id="@+id/customProgressBarFatBurn"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
@@ -528,7 +528,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/light_text_heading">
 
-                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
+                    <com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.DeepprogressBar
                         android:id="@+id/customProgressBarLight"
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
@@ -566,6 +566,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
+                android:visibility="gone"
                 android:textColor="@color/on_track_color"
                 android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
                 android:textSize="18sp" />
@@ -576,6 +577,7 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="10dp"
+                android:visibility="gone"
                 android:textColor="@color/black_no_meals"
                 android:fontFamily="@font/dmsans_regular"
                 android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."

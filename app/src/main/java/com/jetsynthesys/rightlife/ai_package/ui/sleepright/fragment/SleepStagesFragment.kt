@@ -21,12 +21,12 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.StripedProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentSleepStagesBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.AwakeProgressBar
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.CoreProgressBar
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.DeepprogressBar
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.RemProgressBar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,13 +36,13 @@ import java.time.format.DateTimeFormatter
 
 class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
 
-    private lateinit var customProgressBar: StripedProgressBar
+    private lateinit var customProgressBar: AwakeProgressBar
     private lateinit var transparentOverlay: View
-    private lateinit var customProgressBarCardio: CardioStrippedProgressBar
+    private lateinit var customProgressBarCardio: RemProgressBar
     private lateinit var transparentOverlayCardio: View
-    private lateinit var customProgressBarLight: LightStrippedprogressBar
+    private lateinit var customProgressBarLight: DeepprogressBar
     private lateinit var transparentOverlayLight: View
-    private lateinit var customProgressBarFatBurn: FatBurnStrippedProgressBar
+    private lateinit var customProgressBarFatBurn: CoreProgressBar
     private lateinit var transparentOverlayFatBurn: View
     private lateinit var progressDialog: ProgressDialog
     val remData : ArrayList<Float> = arrayListOf()

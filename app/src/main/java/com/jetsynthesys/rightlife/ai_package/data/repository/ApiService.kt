@@ -1,8 +1,8 @@
 package com.jetsynthesys.rightlife.ai_package.data.repository
 
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
-import com.jetsynthesys.rightlife.ai_package.model.HealthSummaryResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.NutritionResponse
@@ -22,10 +22,13 @@ import com.jetsynthesys.rightlife.ai_package.model.FoodDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.MealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.RoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
@@ -50,6 +53,8 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -77,6 +82,14 @@ interface ApiService {
     @GET("app/api/meal-plan/meal-recipes-lists")
     fun getMealRecipesList(
         @Header("Authorization") authToken: String): Call<RecipeResponseModel>
+
+    @GET("eat/recipes/names")
+    fun getSnapMealRecipesList(
+       ): Call<SnapMealRecipeResponseModel>
+
+    @GET("eat/recipes/{foodId}")
+    fun getSnapMealRecipesDetails(
+        @Path("foodId") foodId: String): Call<RecipeResponse>
 
     @GET("app/api/meal-plan/meal-recipes-lists/{foodId}")
     fun getMealRecipesDetails(
@@ -143,6 +156,14 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("move/steps_detail_view/")
+    suspend fun getStepsDetail(
+        @Query("user_id") userId: String,
+        @Query("source") source: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<HeartRateFitDataResponse>
 
     @GET("move/fetch_heart_rate_variabililty/")
     suspend fun getHeartRateVariability(
@@ -242,6 +263,21 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Call<RestorativeSleepResponse>
+
+    @GET("app/api/journalNew/recordEmotion")
+    fun fetchMoodTrackerPercentage(@Header("Authorization") authToken: String,
+        @Query("type") type: String,
+        @Query("startDate") startDate: String,
+        @Query("endDate") endDate: String
+    ): Call<MoodTrackerWeeklyResponse>
+
+    @GET("app/api/journalNew/recordEmotion")
+    fun fetchMoodTrackerMonthly(@Header("Authorization") authToken: String, @Query("type") type: String,
+                                   @Query("startDate") startDate: String, @Query("endDate") endDate: String
+    ): Call<MoodTrackerMonthlyResponse>
+
+    @POST("app/api/journalNew")
+    fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest,): Call<BaseResponse>
 
     @GET("sleep/landing_page/")
     fun fetchSleepLandingPage(

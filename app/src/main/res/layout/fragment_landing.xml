@@ -991,11 +991,12 @@
                         app:layout_constraintStart_toEndOf="@+id/step_icon" />
 
                     <ImageView
+                        android:id="@+id/step_forward_icon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/forwardicon"
                         android:layout_marginTop="14dp"
-                        android:visibility="invisible"
+                        android:visibility="visible"
                         android:layout_marginEnd="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

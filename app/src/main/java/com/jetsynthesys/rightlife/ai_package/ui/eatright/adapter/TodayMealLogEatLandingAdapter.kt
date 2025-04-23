@@ -32,9 +32,9 @@ class TodayMealLogEatLandingAdapter(private val context: Context, private var da
         holder.subtractionValue.text = item.protein.toString()
         holder.baguetteValue.text = item.carbs.toString()
         holder.dewpointValue.text = item.fats.toString()
-        if (item.mealType.contentEquals("Breakfast")){
+        if (item.mealType.equals("Breakfast", true)){
             holder.mealTypeIc.setImageResource(R.drawable.ic_breakfast)
-        }else if (item.mealType.contentEquals("Lunch")){
+        }else if (item.mealType.equals("Lunch", true)){
             holder.mealTypeIc.setImageResource(R.drawable.ic_lunch)
         }else{
             holder.mealTypeIc.setImageResource(R.drawable.ic_dinner)

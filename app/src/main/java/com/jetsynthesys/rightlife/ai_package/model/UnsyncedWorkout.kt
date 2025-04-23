@@ -4,22 +4,22 @@ import com.google.gson.annotations.SerializedName
 
 data class UnsyncedWorkout(
     @SerializedName("_id")
-    val id: String,
+    val _id: String,
 
     @SerializedName("user_id")
-    val userId: String,
+    val user_id: String,
 
     @SerializedName("record_type")
-    val recordType: String,
+    val record_type: String,
 
     @SerializedName("workout_type")
-    val workoutType: String,
+    val workout_type: String,
 
     @SerializedName("duration")
     val duration: Int,
 
     @SerializedName("weight_kg")
-    val weightKg: Int,
+    val weight_kg: Int,
 
     @SerializedName("age")
     val age: Int,
@@ -28,14 +28,19 @@ data class UnsyncedWorkout(
     val gender: String,
 
     @SerializedName("activity_factor")
-    val activityFactor: Float,
+    val activity_factor: Float,
+
+    @SerializedName("calculated_activity")
+    val calculated_activity: Double,
 
     @SerializedName("calories_burned")
-    val caloriesBurned: Double,
+    val calories_burned: Double,
 
     @SerializedName("timestamp")
     val timestamp: String,
 
     @SerializedName("created_at")
-    val createdAt: String
+    val created_at: String,
+    @SerializedName("source")
+    val source: String
 )

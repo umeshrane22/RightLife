@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.text.SimpleDateFormat
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -21,7 +20,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -45,6 +43,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
+import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -57,8 +56,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 import kotlin.math.abs
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
@@ -81,6 +78,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var tvBurnValue: TextView
     private lateinit var calorieBalanceIcon: ImageView
+    private lateinit var step_forward_icon: ImageView
     private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var stepsTv: TextView
@@ -128,6 +126,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
         nodataWorkout = view.findViewById(R.id.no_data_workout_landing)
         dataFilledworkout = view.findViewById(R.id.data_filled_workout)
+        step_forward_icon = view.findViewById(R.id.step_forward_icon)
         totalIntakeCalorieText = view.findViewById(R.id.textView1)
         calorieCountText = view.findViewById(R.id.calorie_count)
         steps_no_data_text = view.findViewById(R.id.steps_no_data_text)
@@ -144,6 +143,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         goalStepsTv = view.findViewById(R.id.goal_tex)
         moveRightImageBack.setOnClickListener {
             activity?.finish()
+        }
+        step_forward_icon.setOnClickListener {
+            navigateToFragment(StepFragment(),"StepTakenFragment")
+        }
+        activeStepsTv.setOnClickListener {
+            navigateToFragment(SetYourStepGoalFragment(),"StepTakenFragment")
         }
         fetchUserWorkouts()
         //fetchHealthSummary()
@@ -237,6 +242,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     requireActivity().finish()
                 }
             })
+
+        loadStepData()
     }
 
     private fun addDotsIndicator(count: Int) {
@@ -553,7 +560,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
@@ -567,18 +574,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     val workouts = response.body()
                     workouts?.let {
                         // Check if there’s any heart rate data across all synced workouts
-                        val hasHeartRateData = it.syncedWorkouts?.any { workout ->
+                        val hasHeartRateData = it.synced_workouts?.any { workout ->
                             workout.heartRateData?.isNotEmpty() == true
                         } ?: false
 
                         if (hasHeartRateData) {
-                            val totalSyncedCalories = it.syncedWorkouts.sumOf { workout ->
+                            val totalSyncedCalories = it.synced_workouts.sumOf { workout ->
                                 workout.caloriesBurned.toIntOrNull() ?: 0
                             }
-                            val totalUnsyncedCalories = it.unsyncedWorkouts?.sumOf { it.caloriesBurned } ?: 0
+                            val totalUnsyncedCalories = it.unsynced_workouts?.sumOf { it.calories_burned } ?: 0
                             // val totalCalories = totalSyncedCalories + totalUnsyncedCalories
 
-                            val cardItems = it.syncedWorkouts.map { workout ->
+                            val cardItems = it.synced_workouts.map { workout ->
                                 val durationMinutes = workout.duration.toIntOrNull() ?: 0
                                 val hours = durationMinutes / 60
                                 val minutes = durationMinutes % 60
@@ -697,7 +704,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                     ?: "64763fe2fa0e40d9c0bc8264"
 
                 // Map Health Connect data to StoreHealthDataRequest
@@ -1008,4 +1015,20 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
         permissionLauncher.launch(permissions)
     }
+
+    fun loadStepData() {
+//        //D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\fit\alldata\derived_com.google.heart_rate.bpm_com.google.a(1).json
+//        val json = context?.assets?.open("fit/alldata/derived_com.google.heart_rate.bpm_com.google.a(1).json")?.bufferedReader().use { it?.readText() }
+////        return Gson().fromJson(json, object : TypeToken<List<StepEntry>>() {}.type)
+//     //   val json = context?.assets.open("derived_com.google.active_minutes_com.google.a.json").readText()
+//
+//        val gson = Gson()
+//        val jsonString = json/* load JSON file as string */
+//        val activeMinutesData = gson.fromJson(jsonString, HeartRateFitData::class.java)
+//
+//     //   D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\Fit\All data\derived_com.google.active_minutes_com.google.a(4).json
+//        println(activeMinutesData)
+//
+    }
+
 }

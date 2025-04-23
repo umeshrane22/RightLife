@@ -16,6 +16,7 @@ kotlin = "2.1.0"
 coreKtx = "1.15.0"
 playServicesLocation = "21.3.0"
 playServicesFitness = "21.2.0"
+cameraView = "1.4.2"
 
 [libraries]
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
@@ -33,6 +34,7 @@ navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 play-services-fitness = { group = "com.google.android.gms", name = "play-services-fitness", version.ref = "playServicesFitness" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
