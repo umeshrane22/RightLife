@@ -314,6 +314,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 //        }
     }
 
+
     private fun getMealRecipesList(halfCurveProgressBar: HalfCurveProgressBar) {
         Utils.showLoader(requireActivity())
        // val userId = appPreference.getUserId().toString()
