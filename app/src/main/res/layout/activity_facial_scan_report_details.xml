@@ -326,6 +326,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:src="@drawable/ic_graph_average"
                                 android:layout_marginEnd="8dp" />
 
                             <TextView
@@ -369,6 +370,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:src="@drawable/ic_graph_minimum"
                                 android:layout_marginEnd="8dp" />
 
                             <TextView
@@ -411,6 +413,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:src="@drawable/ic_graph_maximum"
                                 android:layout_marginEnd="8dp" />
 
                             <TextView
