@@ -25,6 +25,7 @@ import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
+import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
@@ -230,6 +231,9 @@ interface ApiService {
 
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
+
+    @GET("app/api/journalNew/journalAnswer")
+    fun fetchJournalAnswer(@Header("Authorization") authToken: String,@Query("date") date: String): Call<JournalAnswerResponse>
 
     @GET("app/api/mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
