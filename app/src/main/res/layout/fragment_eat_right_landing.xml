@@ -923,10 +923,11 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/recipes_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="37dp"
                     android:layout_marginEnd="20dp"
-                    android:visibility="gone"
+                    android:layout_marginStart="20dp"
+                    android:visibility="visible"
                     android:layout_marginTop="20dp"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -939,7 +940,6 @@
                         android:orientation="horizontal"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <ImageView
@@ -956,13 +956,17 @@
                             android:textColor="@color/black"
                             android:textSize="16sp" />
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:src="@drawable/forward_green_color_meal"
-                            android:layout_marginEnd="8dp" />
+
                     </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:src="@drawable/forward_green_color_meal"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -977,7 +981,7 @@
                     android:id="@+id/img_more_meals"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     android:src="@drawable/forward_green_color_meal"
                     android:layout_marginEnd="15dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1283,7 +1287,7 @@
                     android:layout_height="25dp"
                     android:layout_weight="1"
                     android:textSize="20sp"
-                    android:visibility="invisible"
+                    android:visibility="visible"
                     android:src="@drawable/recipes_right_icon"
                     android:textStyle="bold"
                     android:layout_gravity="center"
@@ -1314,7 +1318,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center"
                 android:weightSum="10"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
@@ -1345,7 +1349,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -1499,7 +1503,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_gravity="center"
                 android:weightSum="10"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
@@ -1533,7 +1537,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"

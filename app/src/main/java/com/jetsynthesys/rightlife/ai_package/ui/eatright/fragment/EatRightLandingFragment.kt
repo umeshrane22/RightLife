@@ -356,7 +356,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             todayMacroNoDataLayoutOne.visibility = View.GONE
             todayMealLogNoDataHeading.visibility = View.GONE
             mealPlanRecyclerView.visibility =View.VISIBLE
-            log_your_meal_balance_layout.visibility = View.VISIBLE
+            log_your_meal_balance_layout.visibility = View.GONE
             other_reciepie_might_like_with_data.visibility = View.VISIBLE
             otherReciepeRecyclerView.visibility = View.VISIBLE
             tv_water_quantity.text = "400"
