@@ -58,10 +58,10 @@ class BedWakeupTimeFragment : Fragment() {
         binding.timePickerWakeTime.setIs24HourView(false)
 
         // Set default values
-        binding.timePickerBedtime.hour = 21 // 9 PM
-        binding.timePickerBedtime.minute = 10
+        binding.timePickerBedtime.hour = 22 // 9 PM
+        binding.timePickerBedtime.minute = 0
         binding.timePickerWakeTime.hour = 6 // 6 AM
-        binding.timePickerWakeTime.minute = 10
+        binding.timePickerWakeTime.minute = 0
 
 
         updateSleepDuration()

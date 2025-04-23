@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.affirmation
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,6 +10,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -45,6 +48,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.math.abs
 
 
 class TodaysAffirmationActivity : AppCompatActivity() {
@@ -56,11 +60,14 @@ class TodaysAffirmationActivity : AppCompatActivity() {
     private lateinit var discardBottomSheetDialog: BottomSheetDialog
     private val affirmationPlaylist: ArrayList<AffirmationSelectedCategoryData> = ArrayList()
     private val affirmationPlaylistRequest: ArrayList<String> = ArrayList()
+    private var selectedCategoryPosition = 0
+    private val categoryList: ArrayList<AffirmationCategoryData> = ArrayList()
 
     private val affirmationList: ArrayList<AffirmationSelectedCategoryData> = ArrayList()
     private lateinit var affirmationCardPagerAdapter: AffirmationCardPagerAdapter
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTodaysAffirmationBinding.inflate(layoutInflater)
@@ -85,7 +92,8 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         }
 
         binding.shareAffirmation.setOnClickListener {
-            val bitmap = getBitmapFromView(affirmationCardPagerAdapter.getViewAt(binding.cardViewPager.currentItem)!!)
+            val bitmap =
+                getBitmapFromView(affirmationCardPagerAdapter.getViewAt(binding.cardViewPager.currentItem)!!)
             val imageUri = saveBitmapToCache(bitmap)
             imageUri?.let {
                 shareImage(it)
@@ -112,7 +120,81 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
         setSelectedCategoryAdapter(affirmationList)
 
+        val gestureDetector =
+            GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onFling(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    velocityX: Float,
+                    velocityY: Float
+                ): Boolean {
+                    if (e1 == null || e2 == null) return false
+                    val deltaY = e2.y - e1.y
+
+                    if (abs(deltaY) > 150) {
+                        if (deltaY < 0) {
+                            onSwipeUp()
+                        } else {
+                            onSwipeDown()
+                        }
+                        return true
+                    }
+                    return false
+                }
+            })
+
+        binding.cardViewPager.setOnTouchListener { _, event ->
+            gestureDetector.onTouchEvent(event)
+            false
+        }
+
     }
+
+    private fun onSwipeUp() {
+        // Animate both
+        if (selectedCategoryPosition < categoryList.size - 1) {
+            binding.cardViewPager.animate()
+                .translationYBy(-(binding.cardViewPager.height.toFloat() + 100))
+                .setDuration(300)
+                .withEndAction {
+                    selectedCategoryPosition += 1
+                    getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                    binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+                    binding.cardViewPager.translationY =
+                        binding.cardViewPager.height.toFloat() + 100
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        binding.cardViewPager.animate()
+                            .translationY(0f)
+                            .setDuration(300)
+                            .start()
+                    }, 1000)
+                }
+                .start()
+        }
+    }
+
+    private fun onSwipeDown() {
+        if (selectedCategoryPosition > 0) {
+            binding.cardViewPager.animate()
+                .translationYBy(binding.cardViewPager.height.toFloat() + 100)
+                .setDuration(300)
+                .withEndAction {
+                    selectedCategoryPosition -= 1
+                    getSelectedCategoryData(categoryList[selectedCategoryPosition].id)
+                    binding.tvCategory.text = categoryList[selectedCategoryPosition].title
+                    binding.cardViewPager.translationY =
+                        -(binding.cardViewPager.height.toFloat() + 100)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        binding.cardViewPager.animate()
+                            .translationY(0f)
+                            .setDuration(300)
+                            .start()
+                    }, 1000)
+                }
+                .start()
+        }
+    }
+
 
     private fun addCardToPlaylist() {
         val yOff = -200
@@ -185,30 +267,6 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         }
     }
 
-    /* private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
-         affirmationCardPagerAdapter =
-             AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
-         binding.cardViewPager.setPageTransformer(true, AffirmationPageTransformer())
-         binding.cardViewPager.adapter = affirmationCardPagerAdapter
-         updateAddButtonImage(0)
-         binding.cardViewPager.addOnPageChangeListener(object : OnPageChangeListener {
-             override fun onPageScrolled(
-                 position: Int,
-                 positionOffset: Float,
-                 positionOffsetPixels: Int
-             ) {
-
-             }
-
-             override fun onPageSelected(position: Int) {
-                 updateAddButtonImage(position)
-             }
-
-             override fun onPageScrollStateChanged(state: Int) {
-
-             }
-         })
-     }*/
     private fun setSelectedCategoryAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
         affirmationCardPagerAdapter =
             AffirmationCardPagerAdapter(affirmationList, this, binding.cardViewPager)
@@ -335,10 +393,11 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
     }
 
-    private fun setupCategoryAdapter(categoryList: List<AffirmationCategoryData>) {
+    private fun setupCategoryAdapter() {
         val affirmationCategoryListAdapter = AffirmationCategoryListAdapter(
             this, categoryList
         ) { category ->
+            selectedCategoryPosition = categoryList.indexOf(category)
             getSelectedCategoryData(category.id)
             if (categoryBottomSheetDialog.isShowing)
                 categoryBottomSheetDialog.dismiss()
@@ -359,7 +418,8 @@ class TodaysAffirmationActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.data?.let {
-                        setupCategoryAdapter(it)
+                        categoryList.addAll(it)
+                        setupCategoryAdapter()
                         if (it.isNotEmpty())
                             getSelectedCategoryData(it[0].id)
                     }
@@ -568,14 +628,14 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         }, 1000)
     }
 
-    fun getBitmapFromView(view: View): Bitmap {
+    private fun getBitmapFromView(view: View): Bitmap {
         val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         view.draw(canvas)
         return bitmap
     }
 
-    fun saveBitmapToCache(bitmap: Bitmap): Uri? {
+    private fun saveBitmapToCache(bitmap: Bitmap): Uri? {
         val cachePath = File(cacheDir, "images")
         cachePath.mkdirs()
         val file = File(cachePath, "shared_image.png")
@@ -596,7 +656,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
         )
     }
 
-    fun shareImage(imageUri: Uri) {
+    private fun shareImage(imageUri: Uri) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "image/png"
             putExtra(Intent.EXTRA_STREAM, imageUri)
