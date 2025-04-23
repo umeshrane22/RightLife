@@ -56,8 +56,10 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         holder.binding.rlMainBg.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.colour)));
 
         holder.itemView.setOnClickListener(view -> {
+            ArrayList<ParameterModel>  unifiedList = getUnifiedParameterList();
             Intent intent = new Intent(context, FacialScanReportDetailsActivity.class);
             intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
+            intent.putExtra("UNIFIED_LIST", new ArrayList<>(unifiedList)); // Serializable list
             context.startActivity(intent);
         });
         Glide.with(context)
@@ -65,6 +67,26 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
                 .placeholder(R.drawable.ic_db_report_heart_rate).error(R.drawable.ic_db_report_heart_rate)
                 .into(holder.binding.imgUnit);
     }
+
+    public ArrayList<ParameterModel> getUnifiedParameterList() {
+        ArrayList<ParameterModel> resultList = new ArrayList<>();
+
+        if (healthCamItems != null) {
+            for (HealthCamItem item : healthCamItems) {
+                String key = item.fieldName;
+                String name = item.parameter;
+
+                if (key == null || name == null) {
+                    continue;
+                }
+
+                resultList.add(new ParameterModel(key, name));
+            }
+        }
+
+        return resultList;
+    }
+
 
     private int getReportIconByType(String type) {
         switch (type) {

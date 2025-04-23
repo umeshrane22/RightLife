@@ -2,8 +2,8 @@ package com.jetsynthesys.rightlife.newdashboard
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.text.Html
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -11,7 +11,6 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -27,6 +26,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityFacialScanReportDetailsBin
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanRange
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportData
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse
+import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -62,6 +62,14 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
 
         val healthCamItems: ArrayList<HealthCamItem>? =
             intent.getSerializableExtra("healthCamItemList") as ArrayList<HealthCamItem>?
+
+        // Receive the UNIFIED_LIST
+        val unifiedList = intent.getSerializableExtra("UNIFIED_LIST") as ArrayList<ParameterModel>?
+
+        if (unifiedList != null) {
+            // Use the list (e.g., log size or bind to RecyclerView)
+            Log.d("UNIFIED_LIST_SIZE", unifiedList.size.toString())
+        }
 
         if (healthCamItems != null) {
             // You can now use this list in the new activity
@@ -163,12 +171,12 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
             endDateAPI
 
         )*/
-        if (healthCamItems != null) {
-            selectDefaultVital(healthCamItems)
+        if (unifiedList != null) {
+            selectDefaultVital(unifiedList)
         }
         binding.rlWitelsSelection.setOnClickListener {
-            if (healthCamItems != null) {
-                openPopup(healthCamItems)
+            if (unifiedList != null) {
+                openPopup(unifiedList)
             }
         }
 
@@ -209,16 +217,18 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun selectDefaultVital(healthCamItems: List<HealthCamItem>) {
-        if (healthCamItems.isNotEmpty()) {
-            val firstItem = healthCamItems[0]
-            binding.tvWitale.text = firstItem.parameter
-            vitalKey = firstItem.fieldName
-            fetchPastFacialScanReport(
-                firstItem.fieldName,
-                startDateAPI,
-                endDateAPI
-            )
+    private fun selectDefaultVital(healthCamItems: ArrayList<ParameterModel>?) {
+        if (healthCamItems != null) {
+            if (healthCamItems.isNotEmpty()) {
+                val firstItem = healthCamItems[0]!!
+                binding.tvWitale.text = firstItem.name
+                vitalKey = firstItem.key
+                fetchPastFacialScanReport(
+                    firstItem.key,
+                    startDateAPI,
+                    endDateAPI
+                )
+            }
         }
         Glide.with(this@FacialScanReportDetailsActivity)
             .load(getReportIconByType(vitalKey))
@@ -278,7 +288,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                         // Set bottom card data
                         val firstReport = reportList[reportList.size-1]
                         binding.indicator.text = firstReport.indicator
-                        binding.tvIndicatorExplain.text = firstReport.implication
+                        binding.tvIndicatorExplain.text = Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_COMPACT)
                         binding.tvIndicatorValue.text = "${firstReport.value} ${firstReport.unit}"
                         binding.tvIndicatorValueBg.text =
                             "${firstReport.lowerRange}-${firstReport.upperRange} ${firstReport.unit}"
@@ -305,7 +315,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         if (rangeList!=null && rangeList.isNotEmpty()){
             val secondReport = rangeList?.get(0)
             binding.indicatorRange2.text = secondReport!!.indicator
-            binding.tvIndicatorExplainRange2.text = secondReport.implication
+            binding.tvIndicatorExplainRange2.text = Html.fromHtml(secondReport.implication, Html.FROM_HTML_MODE_COMPACT)
 
             binding.tvIndicatorValueBgRange2.text =
                 "${secondReport.lowerRange}-${secondReport.upperRange} ${secondReport.unit}"
@@ -317,7 +327,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
 
             val thirdReport = rangeList?.get(1)
             binding.indicatorRange3.text = thirdReport!!.indicator
-            binding.tvIndicatorExplainRange3.text = thirdReport.implication
+            binding.tvIndicatorExplainRange3.text = Html.fromHtml(thirdReport.implication, Html.FROM_HTML_MODE_COMPACT)
             binding.tvIndicatorValueBgRange3.text =
                 "${thirdReport.lowerRange}-${thirdReport.upperRange} ${thirdReport.unit}"
 
@@ -333,19 +343,21 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun openPopup(healthCamItems: List<HealthCamItem>) {
+    private fun openPopup(healthCamItems: ArrayList<ParameterModel>?) {
         val popupMenu = PopupMenu(this, binding.rlWitelsSelection)
 
         // Dynamically add menu items
-        healthCamItems.forEachIndexed { index, item ->
-            popupMenu.menu.add(0, index, 0, item.parameter)
+        if (healthCamItems != null) {
+            healthCamItems.forEachIndexed { index, item ->
+                popupMenu.menu.add(0, index, 0, item.name)
+            }
         }
 
         popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            val selectedItem = healthCamItems[menuItem.itemId]
-            binding.tvWitale.text = selectedItem.parameter
+            val selectedItem = healthCamItems!![menuItem.itemId]
+            binding.tvWitale.text = selectedItem.name
 
-             vitalKey = selectedItem.fieldName
+             vitalKey = selectedItem.key
             fetchPastFacialScanReport(
                 vitalKey,
                 startDateAPI,

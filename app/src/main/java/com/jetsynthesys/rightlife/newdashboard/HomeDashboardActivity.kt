@@ -64,6 +64,7 @@ import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
+import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
@@ -86,6 +87,7 @@ import java.util.concurrent.TimeUnit
 
 
 class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
+    val unifiedGraphParamsList = ArrayList<ParameterModel>()
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checklistComplete = true
@@ -370,7 +372,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
+            if (checkTrailEndedAndShowDialog())
+            {
                 //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
                 //startActivity(Intent(this, ProfileNewActivity::class.java))
                 val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
