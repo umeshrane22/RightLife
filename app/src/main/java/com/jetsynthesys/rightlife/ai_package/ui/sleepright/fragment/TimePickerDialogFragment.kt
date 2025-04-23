@@ -19,8 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 
-class TimePickerDialogFragment(private val initialHour: Int,
-                               private val initialMinute: Int,
+class TimePickerDialogFragment(private val initialHour: Int, private val initialMinute: Int,
                                private val onTimeSelected: (hour: Int, minute: Int) -> Unit)  : BottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

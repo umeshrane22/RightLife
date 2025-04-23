@@ -134,6 +134,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
     private lateinit var mindfullResponse : MindfullResponse
     private lateinit var journalResponse : JournalAnswerResponse
+    private lateinit var journalAnswerData : JournalAnswerData
     private var mindfullData : ArrayList<MindfullData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
     private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
@@ -144,6 +145,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var emotionTime: TextView
     private lateinit var emotionDescription: TextView
     private lateinit var emotionIcon: ImageView
+    private lateinit var editEmotionIcon: ImageView
     private lateinit var tagFlexbox: FlexboxLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
@@ -156,6 +158,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         //RecordEmotionThink
         //Not
 
+        editEmotionIcon = view.findViewById(R.id.editEmotionIcon)
         emotionCardData = view.findViewById(R.id.emotionCard)
         emotionCardNoData = view.findViewById(R.id.lyt_feel)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
@@ -304,6 +307,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             noDataMindFullnessMetric.visibility = View.GONE
         }
 
+        editEmotionIcon.setOnClickListener {
+            val bottomSheet = RecordEmotionDialogFragment(getEmojiFromString(journalAnswerData.emotion!!),journalAnswerData.answer!!,journalAnswerData)
+            bottomSheet.show(parentFragmentManager, "RecordEmotionDialog")
+        }
+
         // Sample data
         val assessment = Phq9Assessment(
             score = 7,
@@ -327,15 +335,30 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
 
         fetchToolGridData()
-        fetchJournalAnswerData()
+      //  fetchJournalAnswerData()
 
 
+    }
+
+    fun getEmojiFromString(emoji:String) : Int{
+        if (emoji == "Happy"){
+            return R.drawable.happy_icon
+        }else if (emoji == "Relaxed"){
+            return R.drawable.relaxed_icon
+        }else if (emoji == "Unsure"){
+            return R.drawable.unsure_icon
+        }else if (emoji == "Stressed"){
+            return R.drawable.stressed_icon
+        }else if (emoji == "Sad"){
+            return R.drawable.sad_icon
+        }
+        return 0
     }
 
     private fun fetchJournalAnswerData() {
        // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val startDate = "2025-03-9"
+        val startDate = "2025-04-23"
          val call = ApiClient.apiService.fetchJournalAnswer(token,startDate)
         call.enqueue(object : Callback<JournalAnswerResponse> {
             override fun onResponse(call: Call<JournalAnswerResponse>, response: Response<JournalAnswerResponse>) {
@@ -344,6 +367,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     if (journalResponse.data.isNotEmpty()) {
                         emotionCardData.visibility = View.VISIBLE
                         emotionCardNoData.visibility = View.GONE
+                        journalAnswerData = journalResponse.data.getOrNull(0)!!
                         setJournalData(journalResponse.data.getOrNull(0))
                     }else{
                         emotionCardData.visibility = View.GONE

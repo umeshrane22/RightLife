@@ -742,6 +742,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:elevation="6dp"
@@ -776,7 +777,7 @@
                             android:drawablePadding="8dp" />
 
                         <ImageView
-                            android:id="@+id/editIcon"
+                            android:id="@+id/editEmotionIcon"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:layout_alignParentEnd="true"

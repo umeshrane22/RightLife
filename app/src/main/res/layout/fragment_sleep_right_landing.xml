@@ -1256,6 +1256,7 @@
                             <ImageView
                                 android:layout_weight="1"
                                 android:layout_width="0dp"
+                                android:visibility="gone"
                                 android:id="@+id/img_sleep_ideal_actual_"
                                 android:layout_height="24dp"
                                 android:src="@drawable/sleep_right_arrow_btn" />
@@ -1527,6 +1528,7 @@
                                 android:layout_weight="1"
                                 android:layout_width="0dp"
                                 android:layout_height="24dp"
+                                android:visibility="gone"
                                 android:id="@+id/img_resto_sleep_nodata"
                                 android:src="@drawable/sleep_right_arrow_btn" />
                         </LinearLayout>

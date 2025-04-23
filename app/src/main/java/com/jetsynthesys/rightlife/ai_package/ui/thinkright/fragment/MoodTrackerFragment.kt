@@ -120,7 +120,7 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
         }
 
         if (fromFragments == "JournalFragment"){
-            val bottomSheet = RecordEmotionDialogFragment(emojiSelected,journalAnswers)
+            val bottomSheet = RecordEmotionDialogFragment(emojiSelected,journalAnswers,null)
             bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
         }
 
@@ -448,7 +448,7 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
                 }
                 setOnClickListener {
                     onEmotionSelected(emojiRes)
-                    val bottomSheet = RecordEmotionDialogFragment(emojiRes,"")
+                    val bottomSheet = RecordEmotionDialogFragment(emojiRes,"",null)
                     bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
                     dialog.dismiss()
                 }

@@ -176,51 +176,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             openBottomSheet()
         }
 
-        // Sample data for Ideal vs Actual Sleep Time chart
-        /*val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-        val idealEntries = listOf(
-            Entry(0f, 8.3f), Entry(1f, 8.5f), Entry(2f, 9f),
-            Entry(3f, 8.2f), Entry(4f, 8.7f), Entry(5f, 8.3f),
-            Entry(6f, 8.2f)
-        )
-        val actualEntries = listOf(
-            Entry(0f, 6f), Entry(1f, 6.5f), Entry(2f, 7f),
-            Entry(3f, 6.2f), Entry(4f, 6.8f), Entry(5f, 6.3f),
-            Entry(6f, 6.2f)
-        )
-
-        val idealDataSet = LineDataSet(idealEntries, "Ideal").apply {
-            color = Color.GREEN
-            valueTextSize = 12f
-            setCircleColor(Color.GREEN)
-            setDrawCircles(true)
-            setDrawValues(false)
-        }
-
-        val actualDataSet = LineDataSet(actualEntries, "Actual").apply {
-            color = Color.BLUE
-            valueTextSize = 12f
-            setCircleColor(Color.BLUE)
-            setDrawCircles(true)
-            setDrawValues(false)
-        }
-
-        val lineData = LineData(listOf<ILineDataSet>(idealDataSet, actualDataSet))
-        sleepChart.data = lineData
-
-        // Chart Customization
-        sleepChart.apply {
-            description.isEnabled = false
-            axisRight.isEnabled = false
-            axisLeft.axisMinimum = 0f
-            xAxis.position = XAxis.XAxisPosition.BOTTOM
-            xAxis.setDrawGridLines(false)
-            xAxis.valueFormatter = IndexAxisValueFormatter(weekdays)
-            xAxis.granularity = 1f
-            xAxis.labelCount = weekdays.size
-            invalidate()
-        }*/
-
         // Sleep Stages Bar Chart
         restoChart = view.findViewById<BarChart>(R.id.barChart)
         val barEntries = ArrayList<BarEntry>()
@@ -274,54 +229,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 putExtra("PlayList", "PlayList")
             })
         }
-    }
-
-    private fun setupBarChart(barChart: BarChart) {
-        val sleepEntries = ArrayList<BarEntry>()
-        sleepEntries.add(BarEntry(0f, floatArrayOf(2f, 6f)))
-        sleepEntries.add(BarEntry(1f, floatArrayOf(12f, 6f)))
-        sleepEntries.add(BarEntry(2f, floatArrayOf(10f, 6f)))
-        sleepEntries.add(BarEntry(3f, floatArrayOf(11f, 6f)))
-        sleepEntries.add(BarEntry(4f, floatArrayOf(3f, 4f)))
-        sleepEntries.add(BarEntry(5f, floatArrayOf(1f, 7f)))
-        sleepEntries.add(BarEntry(6f, floatArrayOf(3f, 5f)))
-
-        val barDataSet = BarDataSet(sleepEntries, "Sleep Duration")
-        barDataSet.colors = listOf(
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#007AFF")
-        )
-        barDataSet.setDrawValues(false)
-        barDataSet.stackLabels = arrayOf("Start Time", "Sleep Hours")
-
-        val barData = BarData(barDataSet)
-        barData.barWidth = 0.6f
-        barChart.data = barData
-        barChart.setFitBars(true)
-        barChart.invalidate()
-
-        val xAxis = barChart.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.valueFormatter = IndexAxisValueFormatter(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
-        xAxis.setDrawGridLines(false)
-        xAxis.textSize = 12f
-
-        val yAxisLeft = barChart.axisLeft
-        yAxisLeft.axisMinimum = 0f
-        yAxisLeft.axisMaximum = 14f
-        yAxisLeft.setDrawGridLines(true)
-        yAxisLeft.textSize = 12f
-
-        val yAxisRight = barChart.axisRight
-        yAxisRight.isEnabled = false
-        barChart.description.isEnabled = false
-        barChart.legend.isEnabled = false
-        barChart.setTouchEnabled(false)
     }
 
     private fun openBottomSheet() {
@@ -466,24 +373,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         if (idealActualResponse.data?.sleepTimeDetail?.size!! > 0) {
                             actualNoDataCardView.visibility = View.GONE
                             lineChart.visibility = View.VISIBLE
-                            val sleepDataList: List<SleepGraphData>? =
-                                idealActualResponse.data?.sleepTimeDetail?.map { detail ->
-                                    val formattedDate =
-                                        detail.sleepDuration.first().startDatetime?.let {
-                                            formatDate(
-                                                it
-                                            )
+                            val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
+                                    val formattedDate = detail.sleepDuration.first().startDatetime?.let {
+                                            formatDate(it)
                                         }
                                     return@map formattedDate?.let {
                                         detail.sleepTimeData?.idealSleepData?.toFloat()
                                             ?.let { it1 ->
                                                 detail.sleepTimeData!!.actualSleepData?.toFloat()
                                                     ?.let { it2 ->
-                                                        SleepGraphData(
-                                                            date = it,
-                                                            idealSleep = it1,
-                                                            actualSleep = it2
-                                                        )
+                                                        SleepGraphData(date = it, idealSleep = it1, actualSleep = it2)
                                                     }
                                             }
                                     }!!
