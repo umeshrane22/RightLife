@@ -56,6 +56,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -296,6 +298,24 @@ interface ApiService {
         @Query("user_id") userId: String,
         @Query("date") date: String
     ): Response<FitnessResponse>
+
+    @GET("eat/log_weight/")
+    suspend fun getLogWeight(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String,
+        @Query("skip") skip: Int = 0,
+        @Query("limit") limit: Int = 100
+    ): Response<WeightResponse>
+
+    @GET("eat/water_intake/")
+    suspend fun getWaterIntake(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String,
+        @Query("skip") skip: Int = 0,
+        @Query("limit") limit: Int = 100
+    ): Response<WaterIntakeResponse>
 
 
     @DELETE("move/data/delete_calories/")

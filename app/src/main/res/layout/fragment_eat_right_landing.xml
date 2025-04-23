@@ -1332,6 +1332,7 @@
                     android:textColor="@color/black"
                     />
                 <ImageView
+                    android:id="@+id/hydration_tracker_forward_image"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:layout_weight="1"
@@ -1467,6 +1468,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/log_your_water_intake_filled"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_marginTop="10dp"
@@ -1478,10 +1480,10 @@
                         android:orientation="horizontal">
 
                         <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
                             android:textSize="20sp"
-                            android:src="@drawable/spoon_fork"
+                            android:src="@drawable/ic_water_cup"
                             android:textStyle="bold"
                             android:layout_gravity="center"
                             android:textColor="@color/meal_log_title" />
@@ -1490,6 +1492,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
                             android:layout_marginTop="10dp"
+                            android:layout_marginStart="8dp"
                             android:text="Log Your Water Intake"
                             android:textSize="16sp"
                             android:textColor="@color/white" />
@@ -1681,12 +1684,13 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/loss_new_weight_filled"
                             android:layout_width="119dp"
                             android:layout_height="30dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginTop="15dp"
                             android:layout_marginStart="15dp"
                             android:layout_marginEnd="15dp"
-                            android:layout_marginBottom="10dp"
+                            android:layout_marginBottom="0dp"
                             android:gravity="center"
                             android:background="@drawable/green_meal_bg"
                             android:orientation="horizontal"

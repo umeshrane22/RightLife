@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,10 +22,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var waterAmount: TextView
+    var listener: OnWaterIntakeConfirmedListener? = null
+
     private var selectedCups = 2
     private lateinit var recyclerView: RecyclerView
     private lateinit var selectedValueText: TextView
     private lateinit var ivCupIcon : ImageView
+    private lateinit var btn_confirm : Button
     private lateinit var progressFill: View
     private lateinit var progressBarContainer: FrameLayout
     private var dY = 0f
@@ -67,6 +71,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         dialog.window?.setBackgroundDrawableResource(transparent)
         val closeIV = view.findViewById<ImageView>(R.id.closeIV)
         progressFill = view.findViewById(R.id.progressFill)
+        btn_confirm = view.findViewById(R.id.btn_confirm)
         progressBarContainer = view.findViewById(R.id.progressBarContainer)
         selectedValueText = view.findViewById(R.id.selectedValueText)
         ivCupIcon = view.findViewById(R.id.ivCupIcon)
@@ -75,6 +80,11 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             minY = progressBarContainer.top.toFloat()
             maxY = (progressBarContainer.bottom - ivCupIcon.height).toFloat()
         }
+        btn_confirm.setOnClickListener {
+            listener?.onWaterIntakeConfirmed(waterIntake)
+            dismiss()
+        }
+
 
         updateUI()
 
@@ -143,5 +153,8 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             }
         }
     }
+}
+interface OnWaterIntakeConfirmedListener {
+    fun onWaterIntakeConfirmed(amount: Int)
 }
 

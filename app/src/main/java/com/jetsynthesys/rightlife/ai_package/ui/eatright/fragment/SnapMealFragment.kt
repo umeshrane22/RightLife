@@ -660,6 +660,7 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
