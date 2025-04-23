@@ -37,14 +37,6 @@ class AffirmationCardPagerAdapter(
         val pageCount: TextView = view.findViewById(R.id.pageCount)
         val indicatorView : IndicatorView = view.findViewById(R.id.indicator_view)
 
-        /*GlideApp.with(context)
-            .load(ApiClient.CDN_URL_QA + item.image)
-            .placeholder(R.drawable.image_affirmation_card)
-            .into(imageAffirmationCard)*/
-
-        //imageAffirmationCard.imageTintList = Utils.getColorStateListFromColorCode(item.textColor)
-        //cardViewAffirmation.backgroundTintList = Utils.getColorStateListFromColorCode(item.bgColor)
-
         // set card bg
 
         when (item.categoryName?.lowercase()) {

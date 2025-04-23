@@ -43,30 +43,39 @@ class JournalAdapter(
             descText.text = item.desc
 
             //imageViewAdd.imageTintList = Utils.getColorStateListFromColorCode("FD6967")
-            imageViewAdd.setImageResource(
-                if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_journal
-            )
 
             val colorStateList: ColorStateList
             when (item.title) {
                 "Free Form" -> {
                     colorStateList = ColorStateList.valueOf(Color.parseColor("#F7E6B7"))
                     imageView.setImageResource(R.drawable.ic_freeform_journal)
+                    imageViewAdd.setImageResource(
+                        if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_free_form
+                    )
                 }
 
                 "Bullet" -> {
                     colorStateList = ColorStateList.valueOf(Color.parseColor("#FDD3D2"))
                     imageView.setImageResource(R.drawable.ic_bullet_journal)
+                    imageViewAdd.setImageResource(
+                        if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_bullet
+                    )
                 }
 
                 "Gratitude" -> {
                     colorStateList = ColorStateList.valueOf(Color.parseColor("#A6E0CE"))
                     imageView.setImageResource(R.drawable.ic_gratitude_journal)
+                    imageViewAdd.setImageResource(
+                        if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_gratitude
+                    )
                 }
 
                 else -> {
                     colorStateList = ColorStateList.valueOf(Color.parseColor("#E6F0FE"))
                     imageView.setImageResource(R.drawable.ic_grief_journal)
+                    imageViewAdd.setImageResource(
+                        if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_grief
+                    )
                 }
             }
 

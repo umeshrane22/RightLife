@@ -13,6 +13,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.View
@@ -29,6 +31,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -44,7 +48,6 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetWatchedAffirmationPlayl
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.WatchAffirmationPlaylistRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -102,8 +105,27 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
         binding.ivClose.setOnClickListener {
             stopTimer()
             updateWatchedAffirmationPlaylist()
-
         }
+
+        binding.cardViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                if (position == affirmationList.size - 1) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        stopTimer()
+                        updateWatchedAffirmationPlaylist()
+                    }, 2000)
+                }
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {}
+        })
     }
 
     private fun setCardPlaylistAdapter(affirmationList: ArrayList<AffirmationSelectedCategoryData>) {
@@ -301,15 +323,15 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
         }
 
         dialogBinding.llMorningTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeMorning, 1)
+            showTimePickerDialog(dialogBinding.tvTimeMorning, 1,9)
         }
 
         dialogBinding.llAfternoonTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeAfternoon, 2)
+            showTimePickerDialog(dialogBinding.tvTimeAfternoon, 2,13)
         }
 
         dialogBinding.llEveningTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeEvening, 3)
+            showTimePickerDialog(dialogBinding.tvTimeEvening, 3,20)
         }
 
         dialogBinding.btnSetReminder.setOnClickListener {
@@ -453,10 +475,10 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
 
     }
 
-    private fun showTimePickerDialog(textView: TextView, type: Int) {
-        val currentTime: Calendar = Calendar.getInstance()
-        val hour: Int = currentTime.get(Calendar.HOUR_OF_DAY)
-        val minute: Int = currentTime.get(Calendar.MINUTE)
+    private fun showTimePickerDialog(
+        textView: TextView, type: Int, hour: Int,
+        minute: Int = 0
+    ) {
         val mTimePicker = TimePickerDialog(
             this@PractiseAffirmationPlaylistActivity,
             { timePicker, selectedHour, selectedMinute ->
@@ -579,7 +601,7 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
                 Utils.dismissLoader(this@PractiseAffirmationPlaylistActivity)
                 if (response.isSuccessful && response.body() != null) {
                     watchedResponse = response.body()
-                    if (type == 1){
+                    if (type == 1) {
                         showPracticeCompleteDialog()
                     }
                 } else {
