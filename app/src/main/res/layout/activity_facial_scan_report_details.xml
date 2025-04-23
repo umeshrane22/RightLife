@@ -305,7 +305,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_below="@id/calorie_balance_layout"
-                    android:layout_margin="@dimen/margin_card_16dp">
+                    android:layout_margin="5dp"
+                    >
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -314,8 +315,9 @@
                         android:padding="12dp"
                         android:gravity="center"
                         android:layout_weight="1"
+                        android:layout_marginHorizontal="5dp"
                         android:background="@drawable/bg_edittext_gray"
-                        android:layout_marginEnd="16dp">
+                        >
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -357,9 +359,11 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:padding="12dp"
+                        android:gravity="center"
                         android:layout_weight="1"
+                        android:layout_marginHorizontal="5dp"
                         android:background="@drawable/bg_edittext_gray"
-                        android:layout_marginEnd="16dp">
+                        >
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -401,8 +405,11 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:padding="12dp"
+                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:layout_marginHorizontal="5dp"
                         android:background="@drawable/bg_edittext_gray"
-                        android:layout_marginEnd="16dp">
+                        >
 
                         <LinearLayout
                             android:layout_width="wrap_content"
