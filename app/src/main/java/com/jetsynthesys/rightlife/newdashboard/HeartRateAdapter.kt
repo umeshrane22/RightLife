@@ -17,6 +17,8 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
+import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
+import java.io.Serializable
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -95,14 +97,27 @@ class HeartRateAdapter(
 
         // open report detail: click listener
         binding.cardHeartRate.setOnClickListener {
+            val unifiedList = getUnifiedParameterList()
             val intent = Intent(context, FacialScanReportDetailsActivity::class.java).apply {
-                /*putExtra("HEART_RATE", item.heartRate)
-                putExtra("DATE", item.date)
-                putStringArrayListExtra("TREND_DATA", item.trendData)*/
+                putExtra("UNIFIED_LIST", unifiedList as Serializable)
             }
             context.startActivity(intent)
         }
     }
+
+    fun getUnifiedParameterList(): ArrayList<ParameterModel> {
+        val resultList = ArrayList<ParameterModel>()
+
+        heartRateList?.forEach { item ->
+            val key = item.key ?: item.key ?: return@forEach
+            val name = item.avgParameter ?: item.avgParameter ?: return@forEach
+
+            resultList.add(ParameterModel(key, name))
+        }
+
+        return resultList
+    }
+
     private fun getWarningIconByType(type: String): Int {
         return when (type) {
             "normal" -> R.drawable.breathing_green_tick
