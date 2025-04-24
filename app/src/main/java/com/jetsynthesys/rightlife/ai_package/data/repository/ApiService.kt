@@ -52,6 +52,10 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
@@ -159,6 +163,35 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("eat/calories/consumed/")
+      suspend fun getConsumedCalories(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCaloriesResponse>
+
+    @GET("eat/protein/consumed/")
+     suspend fun getConsumedProtiens(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedProteinResponse>
+
+
+    @GET("eat/carbs/consumed/")
+    fun getConsumedCarbs(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCarbsResponse>
+
+    @GET("eat/fat/consumed/")
+    fun getConsumedFats(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedFatResponse>
 
     @GET("move/steps_detail_view/")
     suspend fun getStepsDetail(

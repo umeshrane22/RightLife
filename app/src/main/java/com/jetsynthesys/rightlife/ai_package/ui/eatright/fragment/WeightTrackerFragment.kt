@@ -154,8 +154,10 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 selectedMonthDate = firstDateOfMonth
                 fetchWeightData("last_monthly")
             } else {
-                selectedHalfYearlyDate = ""
-                fetchWeightData("last_six_months")
+            Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
+            layoutLineChart.visibility =View.GONE
+                /*selectedHalfYearlyDate = ""
+                fetchWeightData("last_six_months")*/
             }
         }
 
@@ -207,12 +209,14 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     Toast.makeText(context, "Cannot select future date", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                if (!selectedHalfYearlyDate.contentEquals(currentDate)) {
+            Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
+            layoutLineChart.visibility =View.GONE
+                /*if (!selectedHalfYearlyDate.contentEquals(currentDate)) {
                     selectedHalfYearlyDate = ""
                     fetchWeightData("last_six_months")
                 } else {
                     Toast.makeText(context, "Cannot select future date", Toast.LENGTH_SHORT).show()
-                }
+                }*/
             }
         }
 

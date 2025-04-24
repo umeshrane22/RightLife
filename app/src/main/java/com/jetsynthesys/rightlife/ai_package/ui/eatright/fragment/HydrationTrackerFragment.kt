@@ -145,8 +145,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                 selectedMonthDate = firstDateOfMonth
                 fetchWaterIntakeData("last_monthly")
             } else {
-                selectedHalfYearlyDate = ""
-                fetchWaterIntakeData("last_six_months")
+                Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
+                layoutLineChart.visibility =View.GONE
             }
         }
 
@@ -198,12 +198,14 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                     Toast.makeText(context, "Cannot select future date", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                if (!selectedHalfYearlyDate.contentEquals(currentDate)) {
+                Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
+                layoutLineChart.visibility =View.GONE
+               /* if (!selectedHalfYearlyDate.contentEquals(currentDate)) {
                     selectedHalfYearlyDate = ""
                     fetchWaterIntakeData("last_six_months")
                 } else {
                     Toast.makeText(context, "Cannot select future date", Toast.LENGTH_SHORT).show()
-                }
+                }*/
             }
         }
 
