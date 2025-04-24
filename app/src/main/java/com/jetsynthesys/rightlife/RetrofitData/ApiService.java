@@ -38,8 +38,6 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResp
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetWatchedAffirmationPlaylistResponse;
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.WatchAffirmationPlaylistRequest;
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.GetBreathingResponse;
-import com.jetsynthesys.rightlife.ui.drawermenu.ChangePassword;
-import com.jetsynthesys.rightlife.ui.drawermenu.PreferenceAnswer;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamFacialScanRequest;
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalAddTagsRequest;
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalDeleteTagRequest;
@@ -66,7 +64,6 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultRespo
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse;
-import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestData;
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse;
 import com.jetsynthesys.rightlife.ui.payment.PaymentCardResponse;
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.OtpRequest;
@@ -511,12 +508,6 @@ public interface ApiService {
             @Header("Authorization") String authToken
     );
 
-    @Headers("Content-Type: application/json")
-    @PUT("prompts")
-    Call<ResponseBody> updatePreference(
-            @Header("Authorization") String authToken,
-            @Body PreferenceAnswer preferenceAnswer);
-
     @Headers("Content-Type: application/json") // Set content-type as application/json
     @POST("sleep-aids")
         // Assume the API endpoint is /login
@@ -620,13 +611,6 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("app/type/category")
     Call<ResponseBody> getSearchContent(@Header("Authorization") String authToken);
-
-
-    @Headers("Content-Type: application/json")
-    @PUT("common/changepassword")
-    Call<ResponseBody> changePassword(
-            @Header("Authorization") String authToken,
-            @Body ChangePassword changePassword);
 
     @Headers("Content-Type: application/json")
     @GET("user/referral-code")

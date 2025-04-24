@@ -201,6 +201,7 @@ class ProfileNewActivity : AppCompatActivity() {
         binding.etLastName.setText(userData.lastName)
         binding.etEmail.setText(userData.email)
         binding.etMobile.setText(userData.phoneNumber)
+        binding.tvAge.text = userData.age.toString()
         if (userData.gender == "M")
             binding.tvGender.text = "Male"
         else
@@ -1000,6 +1001,8 @@ class ProfileNewActivity : AppCompatActivity() {
             userData.lastName = lastName
             userData.email = email
             userData.phoneNumber = mobileNumber
+            val ageArray = age.split(" ")
+            userData.age = ageArray[0].toInt()
             if (gender.equals("Male", ignoreCase = true)) {
                 userData.gender = "M"
             } else {
