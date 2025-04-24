@@ -54,10 +54,14 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
@@ -200,6 +204,18 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ConsumedCarbsResponse>
+
+
+    @POST("eat/log_water/")
+    fun logWaterIntake(
+        @Body request: WaterIntakeRequest
+    ): Call<LogWaterResponse>
+
+    @POST("eat/log_weight/")
+    fun logWeightIntake(
+        @Body request: WeightIntakeRequest
+    ): Call<LogWeightResponse>
+
 
     @GET("eat/fat/consumed/")
     suspend fun getConsumedFats(

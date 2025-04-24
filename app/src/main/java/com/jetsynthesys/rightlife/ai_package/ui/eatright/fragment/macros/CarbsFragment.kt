@@ -142,7 +142,10 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
-                R.id.rbSixMonths -> fetchActiveCalories("last_six_months")
+                R.id.rbSixMonths -> {
+                    Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
+                    //fetchActiveCalories("last_six_months")
+                }
             }
         }
 
@@ -183,8 +186,9 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                 selectedMonthDate = firstDateOfMonth
                 fetchActiveCalories("last_monthly")
             }else{
-                selectedHalfYearlyDate = ""
-                fetchActiveCalories("last_six_months")
+                Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
+               /* selectedHalfYearlyDate = ""
+                fetchActiveCalories("last_six_months")*/
             }
         }
 
@@ -236,12 +240,13 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 }
             }else{
-                if (!selectedHalfYearlyDate.contentEquals(currentDate)){
+                Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
+               /* if (!selectedHalfYearlyDate.contentEquals(currentDate)){
                     selectedHalfYearlyDate = ""
                     fetchActiveCalories("last_six_months")
                 }else{
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
-                }
+                }*/
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -343,62 +348,72 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                var selectedDate : String
 
-                if (period.contentEquals("last_weekly")){
-                    if (selectedWeekDate.contentEquals("")){
-                        selectedDate = currentDateTime.format(formatter)
-                        selectedWeekDate = selectedDate
-                    }else{
-                        selectedDate = selectedWeekDate
+                var selectedDate = currentDateTime.format(formatter)
+
+                // Run date selection + UI-safe calls on the Main thread
+                withContext(Dispatchers.Main) {
+                    when (period) {
+                        "last_weekly" -> {
+                            if (selectedWeekDate.isEmpty()) {
+                                selectedWeekDate = selectedDate
+                            } else {
+                                selectedDate = selectedWeekDate
+                            }
+                            setSelectedDate(selectedWeekDate)
+                        }
+
+                        "last_monthly" -> {
+                            if (selectedMonthDate.isEmpty()) {
+                                val firstDate = getFirstDateOfMonth(selectedDate, 1)
+                                selectedMonthDate = firstDate
+                                selectedDate = firstDate
+                            } else {
+                                selectedDate = getFirstDateOfMonth(selectedMonthDate, 1)
+                            }
+                            setSelectedDateMonth(selectedMonthDate, "Month")
+                        }
+
+                        else -> { // last_six_months or default
+                            if (selectedHalfYearlyDate.isEmpty()) {
+                                val firstDate = getFirstDateOfMonth(selectedDate, 1)
+                                selectedHalfYearlyDate = firstDate
+                                selectedDate = firstDate
+                            } else {
+                                selectedDate = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
+                            }
+                            setSelectedDateMonth(selectedHalfYearlyDate, "Year")
+                        }
                     }
-                    setSelectedDate(selectedWeekDate)
-                }else if (period.contentEquals("last_monthly")){
-                    if (selectedMonthDate.contentEquals("")){
-                        selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedMonthDate = firstDateOfMonth
-                    }else{
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
-                    }
-                    setSelectedDateMonth(selectedMonthDate, "Month")
-                }else{
-                    if (selectedHalfYearlyDate.contentEquals("")){
-                        selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedHalfYearlyDate = firstDateOfMonth
-                    }else{
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
-                    }
-                    setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
 
+                // Proceed with API call
                 val response = ApiClient.apiServiceFastApi.getConsumedCarbs(
-                    userId = "6476d7b5fa0e40d9c0bc9cd1", period = period, date = selectedDate)
+                    userId = "6476d7b5fa0e40d9c0bc9cd1",
+                    period = period,
+                    date = selectedDate
+                )
+
                 if (response.isSuccessful) {
-                    val activeCarbsResponse = response.body()
-                    if (activeCarbsResponse?.statusCode == 200){
-                        activeCarbsResponse.let { data ->
-                            val (entries, labels, labelsDate) = when (period) {
-                                "last_weekly" -> processWeeklyData(data, selectedDate)
-                                "last_monthly" -> processMonthlyData(data, selectedDate)
-                                "last_six_months" -> processSixMonthsData(data, selectedDate )
-                                else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate()) // Fallback
-                            }
-                            val totalCalories = data.consumedCarbsTotals.sumOf { it.carbsConsumed ?: 0.0 }
-                            withContext(Dispatchers.Main) {
-                                if (data.consumedCarbsTotals.size > 31){
-                                    barChart.visibility = View.GONE
-                                    layoutLineChart.visibility = View.VISIBLE
-                                }else{
-                                    barChart.visibility = View.VISIBLE
-                                    layoutLineChart.visibility = View.GONE
-                                    updateChart(entries, labels, labelsDate)
-                                }
+                    val data = response.body()
+                    if (data?.statusCode == 200) {
+                        val (entries, labels, labelsDate) = when (period) {
+                            "last_weekly" -> processWeeklyData(data, selectedDate)
+                            "last_monthly" -> processMonthlyData(data, selectedDate)
+                            "last_six_months" -> processSixMonthsData(data, selectedDate)
+                            else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate())
+                        }
+
+                        // Ensure all UI updates are on the main thread
+                        withContext(Dispatchers.Main) {
+                            if (data.consumedCarbsTotals.size > 31) {
+                                barChart.visibility = View.GONE
+                                layoutLineChart.visibility = View.VISIBLE
+                            //    lineChartForSixMonths() // Must be thread-safe (UI updates on main thread)
+                            } else {
+                                barChart.visibility = View.VISIBLE
+                                layoutLineChart.visibility = View.GONE
+                                updateChart(entries, labels, labelsDate) // Must be thread-safe (UI updates on main thread)
                             }
                         }
                     }

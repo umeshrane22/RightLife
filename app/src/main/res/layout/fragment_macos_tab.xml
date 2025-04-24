@@ -62,7 +62,7 @@
             app:tabMode="scrollable"
             app:tabRippleColor="@android:color/transparent"
             app:tabTextColor="@color/tab_color_selector"
-            app:tabSelectedTextColor="@color/white"></com.google.android.material.tabs.TabLayout>
+            app:tabSelectedTextColor="@color/white" />
 
         <FrameLayout
             android:id="@+id/fragmentMacrosContainer"
