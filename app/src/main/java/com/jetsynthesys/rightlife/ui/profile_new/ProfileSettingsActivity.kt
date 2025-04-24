@@ -121,8 +121,9 @@ class ProfileSettingsActivity : AppCompatActivity() {
                 .load(ApiClient.CDN_URL_QA + user.profilePicture)
                 .into(binding.ivProfileImage)
         }
-
-        //binding.tvUserAge.text = user.
+        if (user.age!=null) {
+            binding.tvUserAge.text = user.age.toString() + " years"
+        }
         binding.tvUserCity.text = user.country
     }
 
