@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
@@ -259,7 +260,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
         macroIc.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = MacrosTabFragment()
+                val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
