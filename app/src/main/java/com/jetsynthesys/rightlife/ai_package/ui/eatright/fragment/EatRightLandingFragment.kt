@@ -42,6 +42,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosT
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -375,7 +376,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
 
     private fun getMealRecipesList(halfCurveProgressBar: HalfCurveProgressBar) {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
        // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val userId = "64763fe2fa0e40d9c0bc8264"
@@ -384,7 +385,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         call.enqueue(object : Callback<LandingPageResponse> {
             override fun onResponse(call: Call<LandingPageResponse>, response: Response<LandingPageResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     landingPageResponse = response.body()!!
                     println(landingPageResponse)
 //                    val mealPlanLists = response.body()?.data ?: emptyList()
@@ -395,13 +396,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<LandingPageResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }
@@ -486,27 +487,27 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun getMealRecipesLists() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.getMealRecipesList(token)
         call.enqueue(object : Callback<RecipeResponseModel> {
             override fun onResponse(call: Call<RecipeResponseModel>, response: Response<RecipeResponseModel>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.data ?: emptyList()
                         //  recipesList.addAll(mealPlanLists)
                     //onOtherReciepeDateItemRefresh(mealPlanLists)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<RecipeResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }

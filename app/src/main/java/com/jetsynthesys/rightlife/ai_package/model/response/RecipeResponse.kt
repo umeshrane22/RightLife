@@ -58,6 +58,7 @@ data class SnapRecipeData(
     val trans_fat: Double?,
     @SerializedName("cholesterol")
     val cholesterol: Double?,
+    @SerializedName("copper_mg")
     val copper_mg: Double?,
     @SerializedName("sodium")
     val sodium: Double?,
@@ -77,6 +78,7 @@ data class SnapRecipeData(
     val calcium: Double?,
     @SerializedName("iron")
     val iron: Double?,
+    @SerializedName("is_beverage")
     val is_beverage: Boolean?,
     @SerializedName("vitaminD")
     val vitaminD: Double?,

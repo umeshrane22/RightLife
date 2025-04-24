@@ -79,7 +79,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
-    private val viewModel: ActiveBurnViewModel by viewModels()
+   // private val viewModel: ActiveBurnViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -108,7 +108,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
-        setupLineChart()
+       // setupLineChart()
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -367,7 +367,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                                 if (data.activeCaloriesTotals.size > 31){
                                     barChart.visibility = View.GONE
                                     layoutLineChart.visibility = View.VISIBLE
-                                    lineChartForSixMonths()
+                                    //lineChartForSixMonths()
                                 }else{
                                     barChart.visibility = View.VISIBLE
                                     layoutLineChart.visibility = View.GONE
@@ -554,35 +554,38 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedMonthDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        if (dateViewType.contentEquals("Month")){
-            val lastDayOfMonth = getDaysInMonth(month+1 , year)
-            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-            val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
-            selectedDate.text = dateView
-            selectedDate.gravity = Gravity.CENTER
-        }else{
-            selectedDate.text = year.toString()
-            selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedMonthDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            if (dateViewType.contentEquals("Month")){
+                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                selectedDate.text = dateView
+                selectedDate.gravity = Gravity.CENTER
+            }else{
+                selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
+            }
         }
     }
 
     private fun setLastAverageValue(activeCaloriesResponse: ActiveCaloriesResponse, type: String) {
-        averageBurnCalorie.text = activeCaloriesResponse.currentAvgCalories.toInt().toString()
-        if (activeCaloriesResponse.progressSign.contentEquals("plus")){
-            percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
-            percentageIc.setImageResource(R.drawable.ic_up)
-        }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
-            percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
-            percentageIc.setImageResource(R.drawable.ic_down)
-        }else{
-
+        activity?.runOnUiThread {
+            averageBurnCalorie.text = activeCaloriesResponse.currentAvgCalories.toInt().toString()
+            if (activeCaloriesResponse.progressSign.contentEquals("plus")){
+                percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                percentageIc.setImageResource(R.drawable.ic_up)
+            }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
+                percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                percentageIc.setImageResource(R.drawable.ic_down)
+            }else{
+            }
         }
     }
 
@@ -620,192 +623,192 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         return firstDayOfMonth.format(formatter)
     }
 
-    private fun lineChartForSixMonths() {
-        val entries = if (viewModel.filteredData.isNotEmpty()) {
-            viewModel.filteredData.mapIndexed { index, item ->
-                Entry(index.toFloat(), item.steps.toFloat())
-            }
-        } else {
-            listOf(Entry(0f, 0f), Entry(1f, 0f))
-        }
-        Log.d("CalorieBalance", "lineChartForSixMonths: entries size = ${entries.size}")
-
-        val dataSet = LineDataSet(entries, "Steps").apply {
-            color = Color.rgb(255, 102, 128)
-            lineWidth = 1f
-            setDrawCircles(false)
-            setDrawValues(false)
-            mode = LineDataSet.Mode.LINEAR
-            fillAlpha = 20 // Slight fill for iOS-like effect
-            fillColor = Color.rgb(255, 102, 128)
-            setDrawFilled(true)
-        }
-
-        val lineData = LineData(dataSet)
-        lineChart.data = lineData
-
-        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(
-            viewModel.monthlyGroups.map { formatDate(it.startDate, "LLL\nyyyy") }.ifEmpty { listOf("No Data", "No Data") }
-        )
-        lineChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            textColor = Color.BLACK
-            textSize = 10f
-            setDrawGridLines(true)
-            setDrawLabels(true)
-            granularity = 1f
-            labelCount = viewModel.monthlyGroups.size.coerceAtLeast(2)
-            setAvoidFirstLastClipping(true)
-        }
-
-        lineChart.axisLeft.apply {
-            axisMaximum = viewModel.yMax.toFloat() * 1.2f
-            axisMinimum = 0f
-            setDrawGridLines(true)
-            textColor = Color.BLACK
-            textSize = 10f
-            setLabelCount(6, true)
-            valueFormatter = object : IndexAxisValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
-                }
-            }
-            setDrawAxisLine(true)
-        }
-        lineChart.axisRight.isEnabled = false
-
-        lineChart.animateX(1000)
-        lineChart.animateY(1000)
-        lineChart.invalidate()
-
-        lineChart.post {
-            val transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
-            val hMargin = 40f
-            val vMargin = 20f
-            if (viewModel.currentRange == RangeTypeCharts.SIX_MONTHS) {
-                val overallStart = viewModel.filteredData.firstOrNull()?.date ?: viewModel.startDate
-                val overallEnd = viewModel.filteredData.lastOrNull()?.date ?: viewModel.endDate
-                val totalInterval = if (overallEnd.time > overallStart.time) overallEnd.time - overallStart.time.toDouble() else 1.0
-
-                Log.d("CalorieBalance", "filteredData size: ${viewModel.filteredData.size}, overallStart: $overallStart, overallEnd: $overallEnd")
-
-                stripsContainer.removeAllViews()
-                viewModel.monthlyGroups.forEach { group ->
-                    val monthEntries = viewModel.filteredData.filter { it.date >= group.startDate && it.date <= group.endDate }
-                    if (monthEntries.isNotEmpty()) {
-                        val startIndex = viewModel.filteredData.indexOfFirst { it.date >= group.startDate }
-                        val endIndex = viewModel.filteredData.indexOfLast { it.date <= group.endDate }
-                        if (startIndex >= 0 && endIndex >= 0) {
-                            val xStartFraction = startIndex.toDouble() / viewModel.filteredData.size
-                            val xEndFraction = endIndex.toDouble() / viewModel.filteredData.size
-                            val yFraction = group.avgSteps.toDouble() / viewModel.yMax
-                            val pixelStart = transformer.getPixelForValues(
-                                (xStartFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
-                                ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
-                            )
-                            val pixelEnd = transformer.getPixelForValues(
-                                (xEndFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
-                                ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
-                            )
-
-                            // Draw red capsule
-                            val capsuleView = View(requireContext()).apply {
-                                val width = (pixelEnd.x - pixelStart.x).toInt().coerceAtLeast(20)
-                                layoutParams = FrameLayout.LayoutParams(width, 8)
-                                background = GradientDrawable().apply {
-                                    shape = GradientDrawable.RECTANGLE
-                                    cornerRadius = 4f
-                                    setColor(Color.RED)
-                                }
-                                x = pixelStart.x.toFloat()
-                                y = (pixelStart.y - 3).toFloat()
-                            }
-                            stripsContainer.addView(capsuleView)
-
-                            // Average label
-                            val avgText = TextView(requireContext()).apply {
-                                text = "${group.avgSteps / 1000}k"
-                                setTextColor(Color.BLACK)
-                                textSize = 12f
-                                setPadding(6, 4, 6, 4)
-                                layoutParams = FrameLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT
-                                )
-                                x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
-                                y = (pixelStart.y - 20).toFloat()
-                            }
-                            stripsContainer.addView(avgText)
-
-                            // Difference label
-                            val diffText = TextView(requireContext()).apply {
-                                text = group.monthDiffString
-                                setTextColor(if (group.isPositiveChange) Color.GREEN else Color.RED)
-                                textSize = 12f
-                                setPadding(6, 4, 6, 4)
-                                layoutParams = FrameLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT
-                                )
-                                x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
-                                y = (pixelStart.y + 20).toFloat()
-                            }
-                            stripsContainer.addView(diffText)
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    private fun lineChartForSixMonths() {
+//        val entries = if (viewModel.filteredData.isNotEmpty()) {
+//            viewModel.filteredData.mapIndexed { index, item ->
+//                Entry(index.toFloat(), item.steps.toFloat())
+//            }
+//        } else {
+//            listOf(Entry(0f, 0f), Entry(1f, 0f))
+//        }
+//        Log.d("CalorieBalance", "lineChartForSixMonths: entries size = ${entries.size}")
+//
+//        val dataSet = LineDataSet(entries, "Steps").apply {
+//            color = Color.rgb(255, 102, 128)
+//            lineWidth = 1f
+//            setDrawCircles(false)
+//            setDrawValues(false)
+//            mode = LineDataSet.Mode.LINEAR
+//            fillAlpha = 20 // Slight fill for iOS-like effect
+//            fillColor = Color.rgb(255, 102, 128)
+//            setDrawFilled(true)
+//        }
+//
+//        val lineData = LineData(dataSet)
+//        lineChart.data = lineData
+//
+//        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(
+//            viewModel.monthlyGroups.map { formatDate(it.startDate, "LLL\nyyyy") }.ifEmpty { listOf("No Data", "No Data") }
+//        )
+//        lineChart.xAxis.apply {
+//            position = XAxis.XAxisPosition.BOTTOM
+//            textColor = Color.BLACK
+//            textSize = 10f
+//            setDrawGridLines(true)
+//            setDrawLabels(true)
+//            granularity = 1f
+//            labelCount = viewModel.monthlyGroups.size.coerceAtLeast(2)
+//            setAvoidFirstLastClipping(true)
+//        }
+//
+//        lineChart.axisLeft.apply {
+//            axisMaximum = viewModel.yMax.toFloat() * 1.2f
+//            axisMinimum = 0f
+//            setDrawGridLines(true)
+//            textColor = Color.BLACK
+//            textSize = 10f
+//            setLabelCount(6, true)
+//            valueFormatter = object : IndexAxisValueFormatter() {
+//                override fun getFormattedValue(value: Float): String {
+//                    return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
+//                }
+//            }
+//            setDrawAxisLine(true)
+//        }
+//        lineChart.axisRight.isEnabled = false
+//
+//        lineChart.animateX(1000)
+//        lineChart.animateY(1000)
+//        lineChart.invalidate()
+//
+//        lineChart.post {
+//            val transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+//            val hMargin = 40f
+//            val vMargin = 20f
+//            if (viewModel.currentRange == RangeTypeCharts.SIX_MONTHS) {
+//                val overallStart = viewModel.filteredData.firstOrNull()?.date ?: viewModel.startDate
+//                val overallEnd = viewModel.filteredData.lastOrNull()?.date ?: viewModel.endDate
+//                val totalInterval = if (overallEnd.time > overallStart.time) overallEnd.time - overallStart.time.toDouble() else 1.0
+//
+//                Log.d("CalorieBalance", "filteredData size: ${viewModel.filteredData.size}, overallStart: $overallStart, overallEnd: $overallEnd")
+//
+//                stripsContainer.removeAllViews()
+//                viewModel.monthlyGroups.forEach { group ->
+//                    val monthEntries = viewModel.filteredData.filter { it.date >= group.startDate && it.date <= group.endDate }
+//                    if (monthEntries.isNotEmpty()) {
+//                        val startIndex = viewModel.filteredData.indexOfFirst { it.date >= group.startDate }
+//                        val endIndex = viewModel.filteredData.indexOfLast { it.date <= group.endDate }
+//                        if (startIndex >= 0 && endIndex >= 0) {
+//                            val xStartFraction = startIndex.toDouble() / viewModel.filteredData.size
+//                            val xEndFraction = endIndex.toDouble() / viewModel.filteredData.size
+//                            val yFraction = group.avgSteps.toDouble() / viewModel.yMax
+//                            val pixelStart = transformer.getPixelForValues(
+//                                (xStartFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
+//                                ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
+//                            )
+//                            val pixelEnd = transformer.getPixelForValues(
+//                                (xEndFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
+//                                ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
+//                            )
+//
+//                            // Draw red capsule
+//                            val capsuleView = View(requireContext()).apply {
+//                                val width = (pixelEnd.x - pixelStart.x).toInt().coerceAtLeast(20)
+//                                layoutParams = FrameLayout.LayoutParams(width, 8)
+//                                background = GradientDrawable().apply {
+//                                    shape = GradientDrawable.RECTANGLE
+//                                    cornerRadius = 4f
+//                                    setColor(Color.RED)
+//                                }
+//                                x = pixelStart.x.toFloat()
+//                                y = (pixelStart.y - 3).toFloat()
+//                            }
+//                            stripsContainer.addView(capsuleView)
+//
+//                            // Average label
+//                            val avgText = TextView(requireContext()).apply {
+//                                text = "${group.avgSteps / 1000}k"
+//                                setTextColor(Color.BLACK)
+//                                textSize = 12f
+//                                setPadding(6, 4, 6, 4)
+//                                layoutParams = FrameLayout.LayoutParams(
+//                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+//                                    ViewGroup.LayoutParams.WRAP_CONTENT
+//                                )
+//                                x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
+//                                y = (pixelStart.y - 20).toFloat()
+//                            }
+//                            stripsContainer.addView(avgText)
+//
+//                            // Difference label
+//                            val diffText = TextView(requireContext()).apply {
+//                                text = group.monthDiffString
+//                                setTextColor(if (group.isPositiveChange) Color.GREEN else Color.RED)
+//                                textSize = 12f
+//                                setPadding(6, 4, 6, 4)
+//                                layoutParams = FrameLayout.LayoutParams(
+//                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+//                                    ViewGroup.LayoutParams.WRAP_CONTENT
+//                                )
+//                                x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
+//                                y = (pixelStart.y + 20).toFloat()
+//                            }
+//                            stripsContainer.addView(diffText)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     private fun formatDate(date: Date, format: String): String {
         val formatter = SimpleDateFormat(format, Locale.getDefault())
         return formatter.format(date)
     }
 
-    private fun setupLineChart() {
-        lineChart.apply {
-            axisLeft.apply {
-                axisMaximum = viewModel.yMax.toFloat() * 1.2f
-                axisMinimum = 0f
-                setDrawGridLines(true)
-                textColor = Color.BLACK
-                textSize = 10f
-                setLabelCount(6, true)
-                valueFormatter = object : IndexAxisValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
-                    }
-                }
-                setDrawAxisLine(true)
-            }
-            axisRight.isEnabled = false
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                textColor = Color.BLACK
-                textSize = 10f
-                setDrawGridLines(true)
-                setDrawLabels(true)
-                granularity = 1f
-                setAvoidFirstLastClipping(true)
-            }
-            description.isEnabled = false
-            setTouchEnabled(true)
-            setDrawGridBackground(false)
-            setDrawBorders(false)
-            setNoDataText("Loading data...")
-        }
-    }
+//    private fun setupLineChart() {
+//        lineChart.apply {
+//            axisLeft.apply {
+//                axisMaximum = viewModel.yMax.toFloat() * 1.2f
+//                axisMinimum = 0f
+//                setDrawGridLines(true)
+//                textColor = Color.BLACK
+//                textSize = 10f
+//                setLabelCount(6, true)
+//                valueFormatter = object : IndexAxisValueFormatter() {
+//                    override fun getFormattedValue(value: Float): String {
+//                        return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
+//                    }
+//                }
+//                setDrawAxisLine(true)
+//            }
+//            axisRight.isEnabled = false
+//            xAxis.apply {
+//                position = XAxis.XAxisPosition.BOTTOM
+//                textColor = Color.BLACK
+//                textSize = 10f
+//                setDrawGridLines(true)
+//                setDrawLabels(true)
+//                granularity = 1f
+//                setAvoidFirstLastClipping(true)
+//            }
+//            description.isEnabled = false
+//            setTouchEnabled(true)
+//            setDrawGridBackground(false)
+//            setDrawBorders(false)
+//            setNoDataText("Loading data...")
+//        }
+//    }
 
     private fun updateDateRangeLabel() {
         val sdf = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
      //   dateRangeLabel.text = "${sdf.format(viewModel.startDate)} - ${sdf.format(viewModel.endDate)}"
     }
 
-    private fun updateAverageStats() {
-        val avg = viewModel.filteredData.averageSteps().toInt().takeIf { it > 0 } ?: 0
-       // averageText.text = "$avg Steps"
-    }
+//    private fun updateAverageStats() {
+//        val avg = viewModel.filteredData.averageSteps().toInt().takeIf { it > 0 } ?: 0
+//       // averageText.text = "$avg Steps"
+//    }
 }
 
 class ActiveBurnViewModel : ViewModel() {
