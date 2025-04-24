@@ -515,6 +515,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                         Intent intent = new Intent(HealthCamBasicDetailsActivity.this, AccessPaymentActivity.class);
                         intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN");
                         startActivity(intent);
+                        finish();
                     } else {
                         Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
                         intent.putExtra("reportID", healthCamSubmitResponse.getData().getAnswerId());

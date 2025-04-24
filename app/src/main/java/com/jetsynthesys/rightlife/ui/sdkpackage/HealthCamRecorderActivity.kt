@@ -328,9 +328,10 @@ class HealthCamRecorderActivity : AppCompatActivity() {
                     val intent = Intent(
                         this@HealthCamRecorderActivity,
                         NewHealthCamReportActivity::class.java
-                    )
+                    ).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
                     startActivity(intent)
-                    Log.d("AAAA", jsonResponse)
                     Toast.makeText(
                         this@HealthCamRecorderActivity,
                         "Success: $jsonResponse",
