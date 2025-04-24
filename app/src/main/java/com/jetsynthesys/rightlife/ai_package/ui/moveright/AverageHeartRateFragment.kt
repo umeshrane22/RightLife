@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentAverageHeartRateBinding
 import com.github.mikephil.charting.charts.LineChart
@@ -20,8 +23,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -147,7 +148,7 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
 
     /** Fetch and update chart with API data */
     private fun fetchHeartRate(period: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val response = ApiClient.apiServiceFastApi.getHeartRate(
                     userId = "64763fe2fa0e40d9c0bc8264",
@@ -164,16 +165,30 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
                             "last_six_months" -> processSixMonthsData(data)
                             else -> Pair(getWeekData(), getWeekLabels()) // Fallback
                         }
-                        val averageHr = data.heartRate
-                            .mapNotNull { it.value.toDoubleOrNull() }
-                            .average()
+                        // Safely handle null heartRate by providing a fallback empty list
+                        val heartRates = data.activeHeartRateTotals ?: emptyList()
+                        val averageHr = if (heartRates.isNotEmpty()) {
+                            heartRates
+                                .mapNotNull { it.heartRate }
+                                .average()
+                        } else {
+                            0.0 // Default value if heartRate list is empty or null
+                        }
                         withContext(Dispatchers.Main) {
                             updateChart(entries, labels)
-                            Toast.makeText(
-                                requireContext(),
-                                "Average Heart Rate: ${String.format("%.2f", averageHr)} bpm",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            if (averageHr > 0) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Average Heart Rate: ${String.format("%.2f", averageHr)} bpm",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No valid heart rate data available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     } ?: withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "No heart rate data received", Toast.LENGTH_SHORT).show()
@@ -197,111 +212,113 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
 
     /** Process API data for last_weekly (7 days) */
     private fun processWeeklyData(data: HeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24) // Reference date
-        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week (March 18)
+        val startDateStr = data.startDate?.substring(0, 10) ?: "2025-03-24" // Extract yyyy-MM-dd
+        val startDate = dateFormat.parse(startDateStr) ?: return Pair(getWeekData(), getWeekLabels())
+        calendar.time = startDate
+        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week
 
-        val hrMap = mutableMapOf<String, MutableList<Float>>()
+        val hrMap = mutableMapOf<String, Float>()
         val labels = mutableListOf<String>()
         val dayFormat = SimpleDateFormat("EEE", Locale.getDefault()) // e.g., "Mon"
 
         // Initialize 7 days
         repeat(7) {
             val dateStr = dateFormat.format(calendar.time)
-            hrMap[dateStr] = mutableListOf()
+            hrMap[dateStr] = 0f
             labels.add(dayFormat.format(calendar.time))
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         // Aggregate HR by day
-        data.heartRate.forEach { hr ->
-            val startDate = dateFormat.parse(hr.startDatetime)?.let { Date(it.time) }
-            if (startDate != null) {
-                val dayKey = dateFormat.format(startDate)
-                hrMap[dayKey]?.add(hr.value.toFloatOrNull() ?: 0f)
+        data.activeHeartRateTotals?.forEach { hr ->
+            val dayKey = hr.date
+            if (hrMap.containsKey(dayKey)) {
+                hrMap[dayKey] = hr.heartRate?.toFloat() ?: 0f
             }
         }
 
-        // Average HR per day
-        val entries = hrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
+        // Create entries
+        val entries = hrMap.values.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
         }
         return Pair(entries, labels)
     }
 
     /** Process API data for last_monthly (5 weeks) */
     private fun processMonthlyData(data: HeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 1) // Start of March
+        val startDateStr = data.startDate?.substring(0, 10) ?: "2025-03-24"
+        val startDate = dateFormat.parse(startDateStr) ?: return Pair(getMonthData(), getMonthLabels())
+        calendar.time = startDate
+        calendar.set(Calendar.DAY_OF_MONTH, 1) // Start of the month
 
-        val hrMap = mutableMapOf<Int, MutableList<Float>>()
+        val hrMap = mutableMapOf<Int, Float>()
         val labels = mutableListOf<String>()
+        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
         // Initialize 5 weeks
         repeat(5) { week ->
             val startDay = week * 7 + 1
-            val endDay = if (week == 4) 31 else startDay + 6
-            hrMap[week] = mutableListOf()
+            val endDay = if (week == 4) daysInMonth else minOf(startDay + 6, daysInMonth)
+            hrMap[week] = 0f
             labels.add("$startDay-$endDay")
         }
 
         // Aggregate HR by week
-        data.heartRate.forEach { hr ->
-            val startDate = dateFormat.parse(hr.startDatetime)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-                val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
-                hrMap[weekIndex]?.add(hr.value.toFloatOrNull() ?: 0f)
+        data.activeHeartRateTotals?.forEach { hr ->
+            val hrDate = dateFormat.parse(hr.date) ?: return Pair(getMonthData(), getMonthLabels())
+            calendar.time = hrDate
+            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+            val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
+            if (weekIndex in 0..4) {
+                hrMap[weekIndex] = hr.heartRate?.toFloat() ?: 0f
             }
         }
 
-        // Average HR per week
-        val entries = hrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
+        // Create entries
+        val entries = hrMap.values.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
         }
         return Pair(entries, labels)
     }
 
     /** Process API data for last_six_months (6 months) */
     private fun processSixMonthsData(data: HeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24)
-        calendar.add(Calendar.MONTH, -5) // Start 6 months back (Oct 2024)
+        val startDateStr = data.startDate?.substring(0, 10) ?: "2025-03-24"
+        val startDate = dateFormat.parse(startDateStr) ?: return Pair(getSixMonthData(), getSixMonthLabels())
+        calendar.time = startDate
+        calendar.add(Calendar.MONTH, -5) // Start 6 months back
 
-        val hrMap = mutableMapOf<Int, MutableList<Float>>()
+        val hrMap = mutableMapOf<Int, Float>()
         val labels = mutableListOf<String>()
 
         // Initialize 6 months
         repeat(6) { month ->
-            hrMap[month] = mutableListOf()
+            hrMap[month] = 0f
             labels.add(monthFormat.format(calendar.time))
             calendar.add(Calendar.MONTH, 1)
         }
 
         // Aggregate HR by month
-        data.heartRate.forEach { hr ->
-            val startDate = dateFormat.parse(hr.startDatetime)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
-                val monthIndex = 5 - monthDiff // Reverse to align with labels
-                if (monthIndex in 0..5) {
-                    hrMap[monthIndex]?.add(hr.value.toFloatOrNull() ?: 0f)
-                }
+        data.activeHeartRateTotals?.forEach { hr ->
+            val hrDate = dateFormat.parse(hr.date)
+            calendar.time = hrDate
+            val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
+            val monthIndex = 5 - monthDiff // Reverse to align with labels
+            if (monthIndex in 0..5) {
+                hrMap[monthIndex] = hr.heartRate?.toFloat() ?: 0f
             }
         }
 
-        // Average HR per month
-        val entries = hrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
+        // Create entries
+        val entries = hrMap.values.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
         }
         return Pair(entries, labels)
     }

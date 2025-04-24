@@ -25,6 +25,10 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.RecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TodayMealLogEatLandingAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealSuggestionListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.OtherRecipeEatLandingAdapter
@@ -39,10 +43,14 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.floor
 
 class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
@@ -610,7 +618,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
 
         dialogBinding.btnConfirm.setOnClickListener {
-            bottomSheetDialog.dismiss()
+           // bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
             val fullWeight = selectedWeight.trim()
             val parts = fullWeight.split(Regex("\\s+"))
@@ -618,6 +626,45 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             val weightUnit = parts.getOrElse(1) { "kg" }
             text_heading_calories.text = weightValue
             text_heading_calories_unit.text = weightUnit
+            val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val request = WeightIntakeRequest(
+                userId = userId,
+                source = "apple",
+                waterMl = weightValue.toFloat(),
+                date = currentDate
+            )
+
+            val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWeightIntake(request)
+            call.enqueue(object : Callback<LogWeightResponse> {
+                override fun onResponse(
+                    call: Call<LogWeightResponse>,
+                    response: Response<LogWeightResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        bottomSheetDialog.dismiss()
+                        dialogBinding.rulerView.adapter = null
+                        val fullWeight = selectedWeight.trim()
+                        val parts = fullWeight.split(Regex("\\s+"))
+                        val weightValue = parts[0]   // "50.7"
+                        val weightUnit = parts.getOrElse(1) { "kg" }
+                        text_heading_calories.text = response.body()?.waterMl.toString()
+                        text_heading_calories_unit.text = weightUnit
+                        Log.d("LogWaterAPI", "Success: $responseBody")
+                        // You can do something with responseBody here
+                    } else {
+                        Log.e(
+                            "LogWaterAPI",
+                            "Error: ${response.code()} - ${response.errorBody()?.string()}"
+                        )
+                    }
+                }
+
+                override fun onFailure(call: Call<LogWeightResponse>, t: Throwable) {
+                    Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
+                }
+            })
          //   binding.tvWeight.text = selectedWeight
         }
 
@@ -628,7 +675,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
         }
         bottomSheetDialog.show()
+         fun logUserWaterIntake(
+            userId: String,
+            source: String,
+            waterMl: Int,
+            date: String
+        ) {
+
+        }
     }
+
+
 
     private fun setKgsValue() {
         numbers.clear()
@@ -649,7 +706,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private fun showWaterIntakeBottomSheet() {
         val waterIntakeBottomSheet = WaterIntakeBottomSheet()
         waterIntakeBottomSheet.isCancelable = false
-
         waterIntakeBottomSheet.listener = object : OnWaterIntakeConfirmedListener {
             override fun onWaterIntakeConfirmed(amount: Int) {
                 // 👇 Use the amount here
