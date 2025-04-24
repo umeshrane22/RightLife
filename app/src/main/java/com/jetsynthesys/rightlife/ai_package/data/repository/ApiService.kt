@@ -53,11 +53,17 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -162,6 +168,35 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("eat/calories/consumed/")
+      suspend fun getConsumedCalories(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCaloriesResponse>
+
+    @GET("eat/protein/consumed/")
+     suspend fun getConsumedProtiens(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedProteinResponse>
+
+
+    @GET("eat/carbs/consumed/")
+    fun getConsumedCarbs(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCarbsResponse>
+
+    @GET("eat/fat/consumed/")
+    fun getConsumedFats(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedFatResponse>
 
     @GET("move/steps_detail_view/")
     suspend fun getStepsDetail(
@@ -301,6 +336,24 @@ interface ApiService {
         @Query("user_id") userId: String,
         @Query("date") date: String
     ): Response<FitnessResponse>
+
+    @GET("eat/log_weight/")
+    suspend fun getLogWeight(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String,
+        @Query("skip") skip: Int = 0,
+        @Query("limit") limit: Int = 100
+    ): Response<WeightResponse>
+
+    @GET("eat/water_intake/")
+    suspend fun getWaterIntake(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String,
+        @Query("skip") skip: Int = 0,
+        @Query("limit") limit: Int = 100
+    ): Response<WaterIntakeResponse>
 
 
     @DELETE("move/data/delete_calories/")

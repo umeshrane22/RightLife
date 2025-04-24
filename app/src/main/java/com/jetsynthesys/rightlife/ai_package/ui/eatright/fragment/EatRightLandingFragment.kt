@@ -50,6 +50,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var mealPlanRecyclerView: RecyclerView
     private lateinit var frequentlyLoggedRecyclerView: RecyclerView
     private lateinit var otherReciepeRecyclerView: RecyclerView
+    private lateinit var glassWithWaterView: GlassWithWaterView
     private lateinit var todayMacrosWithDataLayout: ConstraintLayout
     private lateinit var todayMacroNoDataLayout: ConstraintLayout
     private lateinit var todayMicrosWithDataLayout: ConstraintLayout
@@ -68,11 +69,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var tvProteinValue : TextView
     private lateinit var tvFatsValue : TextView
     private lateinit var tvCabsValue : TextView
+    private lateinit var log_your_water_intake_filled : LinearLayout
+    private lateinit var loss_new_weight_filled : LinearLayout
     private lateinit var tvCaloriesValue : TextView
     private lateinit var fatsProgressBar : ProgressBar
     private lateinit var proteinProgressBar : ProgressBar
     private lateinit var cabsProgressBar : ProgressBar
     private lateinit var imageBack : ImageView
+    private lateinit var hydration_tracker_forward_image : ImageView
     private lateinit var logWeightRulerAdapter: LogWeightRulerAdapter
     private val numbers = mutableListOf<Float>()
     private lateinit var waterIntakeBottomSheet: WaterIntakeBottomSheet
@@ -112,8 +116,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         mealPlanRecyclerView = view.findViewById(R.id.recyclerview_meal_plan_item)
         todayMacrosWithDataLayout = view.findViewById(R.id.today_macros_with_data_layout)
         tvProteinValue = view.findViewById(R.id.tv_protien_value)
+        hydration_tracker_forward_image = view.findViewById(R.id.hydration_tracker_forward_image)
         tvFatsValue = view.findViewById(R.id.tv_fats_value)
         tvCabsValue = view.findViewById(R.id.tv_carbs_value)
+        log_your_water_intake_filled = view.findViewById(R.id.log_your_water_intake_filled)
+        weightTrackerIc = view.findViewById(R.id.weightTrackerIc)
         fatsProgressBar = view.findViewById(R.id.fats_progressBar)
         proteinProgressBar = view.findViewById(R.id.protein_progressBar)
         cabsProgressBar = view.findViewById(R.id.carbs_progressBar)
@@ -130,6 +137,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         last_logged_no_data = view.findViewById(R.id.last_logged_no_data)
         text_heading_calories_unit = view.findViewById(R.id.text_heading_calories_unit)
         new_improvement_layout = view.findViewById(R.id.new_improvement_layout)
+        loss_new_weight_filled = view.findViewById(R.id.loss_new_weight_filled)
         macroIc = view.findViewById(R.id.macroIc)
         fatsUnitTv = view.findViewById(R.id.fatsUnitTv)
         proteinUnitTv = view.findViewById(R.id.proteinUnitTv)
@@ -147,9 +155,37 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
             showWaterIntakeBottomSheet()
         }
+        loss_new_weight_filled.setOnClickListener {
+            showLogWeightBottomSheet()
+        }
+        log_your_water_intake_filled.setOnClickListener {
+            showWaterIntakeBottomSheet()
+        }
 
         getMealRecipesList(halfCurveProgressBar)
+        hydration_tracker_forward_image.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = HydrationTrackerFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }
 
+        weightTrackerIc.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = WeightTrackerFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }
        // onOtherReciepeDateItemRefresh()
         mealPlanRecyclerView.layoutManager = LinearLayoutManager(context)
         mealPlanRecyclerView.adapter = todayMealLogAdapter
@@ -158,7 +194,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         frequentlyLoggedRecyclerView.adapter = mealSuggestionAdapter
        // onFrequentlyLoggedItemRefresh()
       //  halfCurveProgressBar.setValues(2000,2000)
-        val glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
+         glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
         val waterIntake = 1000f
         val waterGoal = 3000f
         glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
@@ -576,12 +612,20 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
+            val fullWeight = selectedWeight.trim()
+            val parts = fullWeight.split(Regex("\\s+"))
+            val weightValue = parts[0]   // "50.7"
+            val weightUnit = parts.getOrElse(1) { "kg" }
+            text_heading_calories.text = weightValue
+            text_heading_calories_unit.text = weightUnit
          //   binding.tvWeight.text = selectedWeight
         }
 
         dialogBinding.closeIV.setOnClickListener {
+
             bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
+
         }
         bottomSheetDialog.show()
     }
@@ -602,12 +646,24 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         logWeightRulerAdapter.notifyDataSetChanged()
     }
 
-    private fun showWaterIntakeBottomSheet(){
-        waterIntakeBottomSheet = WaterIntakeBottomSheet()
+    private fun showWaterIntakeBottomSheet() {
+        val waterIntakeBottomSheet = WaterIntakeBottomSheet()
         waterIntakeBottomSheet.isCancelable = false
-        val bundle = Bundle()
-        bundle.putBoolean("test",false)
-        waterIntakeBottomSheet.arguments = bundle
-        activity?.supportFragmentManager?.let { waterIntakeBottomSheet.show(it, "DeleteMealBottomSheet") }
+
+        waterIntakeBottomSheet.listener = object : OnWaterIntakeConfirmedListener {
+            override fun onWaterIntakeConfirmed(amount: Int) {
+                // 👇 Use the amount here
+                //Toast.makeText(requireContext(), "Water Intake: $amount ml", Toast.LENGTH_SHORT).show()
+                tv_water_quantity.text = amount.toString()
+                val waterIntake = amount.toFloat()
+                val waterGoal = 3000f
+                glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
+                // You can now call API or update UI etc.
+            }
+        }
+
+        waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
     }
+
+
 }
