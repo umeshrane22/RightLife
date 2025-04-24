@@ -267,6 +267,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     tvAge.setText(question.getQuestionTxt());
                     tvAge.setVisibility(View.VISIBLE);
                     edtAge.setVisibility(View.VISIBLE);
+                    edtAge.setText(String.valueOf(userdata.getAge()));
                     break;
                 case "gender":
                     tvGender.setText(question.getQuestionTxt());

@@ -39,7 +39,6 @@ import com.jetsynthesys.rightlife.apimodel.rlpagemodels.uniquelyyours.UniquelyYo
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.ui.HomeActivity;
-import com.jetsynthesys.rightlife.ui.drawermenu.ProfileActivity;
 import com.jetsynthesys.rightlife.ui.exploremodule.ExploreSleepSoundsActivity;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthAuditActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
@@ -218,8 +217,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
         rllayout_button_completeprofile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RLPageActivity.this, ProfileActivity.class);
-                startActivity(intent);
+
             }
         });
 

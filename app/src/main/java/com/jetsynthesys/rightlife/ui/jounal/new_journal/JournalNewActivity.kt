@@ -18,11 +18,16 @@ class JournalNewActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityJournalNewBinding
     private lateinit var adapter: JournalAdapter
+    private var isFromTool = false
+    private var whereToGo = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalNewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
+        whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -51,24 +56,7 @@ class JournalNewActivity : AppCompatActivity() {
                             journalList,
                             object : JournalAdapter.OnItemClickListener {
                                 override fun onClick(journalItem: JournalItem) {
-                                    val intent = when (journalItem.title) {
-                                        "Free Form" -> Intent(
-                                            this@JournalNewActivity,
-                                            FreeFormJournalActivity::class.java
-                                        )
-
-                                        "Bullet" -> Intent(
-                                            this@JournalNewActivity,
-                                            BulletJournalActivity::class.java
-                                        )
-
-                                        else -> Intent(
-                                            this@JournalNewActivity,
-                                            JournalPromptActivity::class.java
-                                        )
-                                    }
-                                    intent.putExtra("Section", journalItem)
-                                    startActivity(intent)
+                                    startNextActivity(journalItem)
                                 }
 
                                 override fun onAddToolTip(journalItem: JournalItem) {
@@ -81,8 +69,26 @@ class JournalNewActivity : AppCompatActivity() {
 
                             })
 
-                    runOnUiThread {
-                        binding.recyclerView.adapter = adapter
+                    var journalItemSend: JournalItem? = null
+                    if (isFromTool) {
+                        journalList.forEach { journalItem ->
+                            if (journalItem.id.equals(whereToGo)) {
+                                journalItemSend = journalItem
+                                return@forEach
+                            }
+                        }
+                        if (journalItemSend != null) {
+                            startNextActivity(journalItemSend!!)
+                            finish()
+                        } else {
+                            runOnUiThread {
+                                binding.recyclerView.adapter = adapter
+                            }
+                        }
+                    } else {
+                        runOnUiThread {
+                            binding.recyclerView.adapter = adapter
+                        }
                     }
                 } else {
                     Toast.makeText(
@@ -101,5 +107,26 @@ class JournalNewActivity : AppCompatActivity() {
                 ).show()
             }
         })
+    }
+
+    private fun startNextActivity(journalItem: JournalItem) {
+        val intent = when (journalItem.title) {
+            "Free Form" -> Intent(
+                this@JournalNewActivity,
+                FreeFormJournalActivity::class.java
+            )
+
+            "Bullet" -> Intent(
+                this@JournalNewActivity,
+                BulletJournalActivity::class.java
+            )
+
+            else -> Intent(
+                this@JournalNewActivity,
+                JournalPromptActivity::class.java
+            )
+        }
+        intent.putExtra("Section", journalItem)
+        startActivity(intent)
     }
 }

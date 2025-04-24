@@ -323,15 +323,15 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
         }
 
         dialogBinding.llMorningTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeMorning, 1,9)
+            showTimePickerDialog(dialogBinding.tvTimeMorning, 1, 9)
         }
 
         dialogBinding.llAfternoonTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeAfternoon, 2,13)
+            showTimePickerDialog(dialogBinding.tvTimeAfternoon, 2, 13)
         }
 
         dialogBinding.llEveningTime.setOnClickListener {
-            showTimePickerDialog(dialogBinding.tvTimeEvening, 3,20)
+            showTimePickerDialog(dialogBinding.tvTimeEvening, 3, 20)
         }
 
         dialogBinding.btnSetReminder.setOnClickListener {
@@ -565,6 +565,14 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     affirmationList.clear()
                     response.body()?.data?.let { affirmationList.addAll(it) }
+                    if (affirmationList.size == 0) {
+                        startActivity(
+                            Intent(
+                                this@PractiseAffirmationPlaylistActivity,
+                                TodaysAffirmationActivity::class.java
+                            )
+                        )
+                    }
                     setCardPlaylistAdapter(affirmationList)
                     startTimer()
                 } else {
