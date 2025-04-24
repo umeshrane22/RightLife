@@ -52,6 +52,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
@@ -59,6 +60,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
@@ -125,6 +128,13 @@ interface ApiService {
     @POST("eat/meal-plans/")
     fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
 
+    @POST("eat/meals/create_meal/")
+    fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
+
+    @GET("eat/meals/get_log_meals/")
+    fun getMealsLogList(@Query("user_id") userId: String,
+                    @Query("date") startDate: String): Call<MealsLogResponse>
+
     @POST("eat/snap_meals_log/")
     fun createSnapMealLog(@Body request: SnapMealLogRequest): Call<SnapMealLogResponse>
 
@@ -185,14 +195,14 @@ interface ApiService {
 
 
     @GET("eat/carbs/consumed/")
-    fun getConsumedCarbs(
+    suspend fun getConsumedCarbs(
         @Query("user_id") userId: String,
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ConsumedCarbsResponse>
 
     @GET("eat/fat/consumed/")
-    fun getConsumedFats(
+    suspend fun getConsumedFats(
         @Query("user_id") userId: String,
         @Query("period") period: String,
         @Query("date") date: String

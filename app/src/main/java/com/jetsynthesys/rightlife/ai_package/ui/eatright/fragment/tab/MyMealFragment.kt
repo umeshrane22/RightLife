@@ -26,8 +26,8 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -171,7 +171,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
     }
 
     private fun getMealLog() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
          val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
       //  val userId = "64763fe2fa0e40d9c0bc8264"
@@ -179,7 +179,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         call.enqueue(object : Callback<MealLogPlanResponse> {
             override fun onResponse(call: Call<MealLogPlanResponse>, response: Response<MealLogPlanResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     if (response.body() != null){
                         var mealData = response.body()?.meal_plans
                         mealData = mealData
@@ -188,19 +188,19 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealLogPlanResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }
 
     private fun createMealPlanLog(mealPlan: MealPlan) {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         // val userId = "64763fe2fa0e40d9c0bc8264"
@@ -220,7 +220,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         call.enqueue(object : Callback<MealPlanResponse> {
             override fun onResponse(call: Call<MealPlanResponse>, response: Response<MealPlanResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     val mealData = response.body()?.message
                    // Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     loggedBottomSheetFragment = LoggedBottomSheet()
@@ -232,13 +232,13 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealPlanResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }

@@ -51,10 +51,10 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsMod
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -829,7 +829,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     }
 
     private fun createSnapMealLog(snapRecipeList: ArrayList<SnapRecipeData>, isSave : Boolean) {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val currentDateTime = LocalDateTime.now()
@@ -902,19 +902,19 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                     response: Response<SnapMealLogResponse>
                 ) {
                     if (response.isSuccessful) {
-                        Utils.dismissLoader(requireActivity())
+                        LoaderUtil.dismissLoader(requireActivity())
                         val mealData = response.body()?.message
                         Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                        Utils.dismissLoader(requireActivity())
+                        LoaderUtil.dismissLoader(requireActivity())
                     }
                 }
                 override fun onFailure(call: Call<SnapMealLogResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             })
         }

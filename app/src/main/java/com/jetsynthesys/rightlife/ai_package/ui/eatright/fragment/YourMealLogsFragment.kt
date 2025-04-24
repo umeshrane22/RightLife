@@ -35,6 +35,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogData
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogWeeklyDayAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
@@ -45,9 +46,9 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentYourMealLogsBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -535,7 +536,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     }
 
     private fun getMealPlanList() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         println(userId)
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -543,25 +544,25 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         call.enqueue(object : Callback<MealLogsResponseModel> {
             override fun onResponse(call: Call<MealLogsResponseModel>, response: Response<MealLogsResponseModel>) {
                 if (response.isSuccessful) {
-                  //  Utils.dismissLoader(requireActivity())
+                  //  LoaderUtil.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     mealPlanData.addAll(mealPlanLists)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                 //   Utils.dismissLoader(requireActivity())
+                 //   LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-              //  Utils.dismissLoader(requireActivity())
+              //  LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }
 
     private fun getMealList() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
       //  val userId = "64763fe2fa0e40d9c0bc8264"
@@ -570,20 +571,46 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.meals ?: emptyList()
                     mealList.addAll(mealPlanLists)
                   //  onMealLogDateItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun getMealsLogList() {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val startDate = "2025-03-22"
+        val call = ApiClient.apiServiceFastApi.getMealsLogList(userId, startDate)
+        call.enqueue(object : Callback<MealsLogResponse> {
+            override fun onResponse(call: Call<MealsLogResponse>, response: Response<MealsLogResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                  //  val mealPlanLists = response.body()?.meals ?: emptyList()
+                 //   mealList.addAll(mealPlanLists)
+                    //  onMealLogDateItemRefresh()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealsLogResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }
