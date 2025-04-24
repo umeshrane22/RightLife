@@ -1,13 +1,24 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.ProgressDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.pdf.PdfDocument
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +30,10 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresPermission
 import androidx.cardview.widget.CardView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -56,6 +70,9 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
@@ -89,6 +106,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var performNoDataCardView : CardView
     private lateinit var restroNoDataCardView : CardView
     private lateinit var consistencyNoDataCardView : CardView
+    private lateinit var mainView : LinearLayout
+    private lateinit var downloadView: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -100,6 +119,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
+        downloadView = view.findViewById(R.id.sleep_download_icon)
+        mainView = view.findViewById(R.id.lyt_main_view)
         logYourNap = view.findViewById(R.id.btn_log_nap)
         val sleepInfo = view.findViewById<ImageView>(R.id.img_sleep_right)
         val editWakeup = view.findViewById<ImageView>(R.id.img_edit_wakeup_time)
@@ -133,6 +154,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 addToBackStack(null)
                 commit()
             }
+        }
+
+        downloadView.setOnClickListener {
+            saveViewAsPdf(requireContext(),mainView,"SleepRight")
         }
 
         logYourNap.setOnClickListener {
@@ -690,6 +715,102 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
+    }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun saveViewAsPdf(context: Context, view: View, fileName: String) {
+        val bitmap = getBitmapFromView(view)
+        val document = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, 1).create()
+        val page = document.startPage(pageInfo)
+        val canvas: Canvas = page.canvas
+        canvas.drawBitmap(bitmap, 0f, 0f, null)
+        document.finishPage(page)
+
+        var fileUri: Uri? = null
+        var success = false
+        var outputStream: OutputStream? = null
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, "$fileName.pdf")
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                }
+                val resolver = context.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                if (uri != null) {
+                    fileUri = uri
+                    outputStream = resolver.openOutputStream(uri)
+                }
+            } else {
+                val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val file = File(directory, "$fileName.pdf")
+                fileUri = Uri.fromFile(file)
+                outputStream = file.outputStream()
+            }
+
+            outputStream?.use {
+                document.writeTo(it)
+                success = true
+            }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            document.close()
+            outputStream?.close()
+        }
+
+        if (success && fileUri != null) {
+            showDownloadNotification(context, fileName, fileUri)
+        }
+    }
+
+    fun getBitmapFromView(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
+        val channelId = "download_channel"
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Downloads",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Download Notifications"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Intent to open the PDF file
+        val openPdfIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, openPdfIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .setContentTitle("Download Complete")
+            .setContentText("$fileName.pdf saved to Downloads")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(pendingIntent) // Open PDF on click
+            .setAutoCancel(true) // Dismiss when tapped
+            .build()
+
+        NotificationManagerCompat.from(context).notify(1, notification)
     }
 }
 

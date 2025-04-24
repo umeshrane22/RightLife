@@ -149,43 +149,65 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate"/>
                     <TextView
-                        android:id="@+id/average_text_heading"
+                        android:id="@+id/average_sleep_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="108dp"
                         android:layout_marginStart="21dp"
-                        android:text="Average"
+                        android:text="Average Sleep"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/black"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"/>
                     <TextView
-                        android:id="@+id/average_number"
+                        android:id="@+id/average_hr_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="78.5"
-                        android:textColor="@color/black"
-                        android:textSize="20dp"
-                        android:fontFamily="@font/dmsans_bold"
                         android:layout_marginStart="21dp"
+                        android:text="8"
+                        android:textColor="@color/black"
+                        android:textSize="19sp"
+                        android:fontFamily="@font/dmsans_bold"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/average_text_heading"/>
+                        app:layout_constraintTop_toBottomOf="@+id/average_sleep_text"/>
+                    <TextView
+                        android:id="@+id/average_hr_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="hr"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="5dp"
+                        android:textSize="13dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintStart_toEndOf="@+id/average_hr_time"
+                        app:layout_constraintTop_toBottomOf="@+id/average_sleep_text"/>
+                    <TextView
+                        android:id="@+id/average_minute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="30"
+                        android:textColor="@color/black"
+                        android:textSize="19dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintStart_toEndOf="@id/average_hr_title"
+                        app:layout_constraintTop_toBottomOf="@+id/average_sleep_text"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ms"
-                        android:textSize="12sp"
+                        android:text="mins"
+                        android:textSize="13sp"
+                        android:layout_marginTop="5dp"
                         android:fontFamily="@font/dmsans_bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/average_number"
-                        app:layout_constraintStart_toEndOf="@+id/average_number"/>
+                        app:layout_constraintTop_toBottomOf="@+id/average_sleep_text"
+                        app:layout_constraintStart_toEndOf="@+id/average_minute"/>
                     <ImageView
                         android:id="@+id/percentage_icon"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
                         android:src="@drawable/green_up_icon"
                         android:layout_marginStart="21dp"
-                        app:layout_constraintTop_toBottomOf="@+id/average_number"
+                        app:layout_constraintTop_toBottomOf="@+id/average_minute"
                         app:layout_constraintStart_toStartOf="parent"/>
                     <TextView
                         android:id="@+id/percentage_text"
@@ -197,6 +219,76 @@
                         android:textColor="@color/green_text"
                         app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
                         app:layout_constraintStart_toEndOf="@+id/percentage_icon"/>
+                    <TextView
+                        android:id="@+id/average_needed_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="108dp"
+                        android:layout_marginStart="21dp"
+                        android:text="Average Needed"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/black"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                    <TextView
+                        android:id="@+id/average_hour_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="8"
+                        android:textColor="@color/black"
+                        android:textSize="19dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintStart_toStartOf="@+id/average_needed_text"
+                        app:layout_constraintTop_toBottomOf="@+id/average_needed_text"/>
+                    <TextView
+                        android:id="@+id/average_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="hr"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="5dp"
+                        android:textSize="13dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintStart_toEndOf="@+id/average_hour_time"
+                        app:layout_constraintTop_toBottomOf="@+id/average_needed_text"/>
+                    <TextView
+                        android:id="@+id/average_min_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="30"
+                        android:textColor="@color/black"
+                        android:textSize="19dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintStart_toEndOf="@id/average_time"
+                        app:layout_constraintTop_toBottomOf="@+id/average_needed_text"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="mins"
+                        android:textSize="13sp"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        app:layout_constraintTop_toBottomOf="@+id/average_needed_text"
+                        app:layout_constraintStart_toEndOf="@+id/average_min_time"/>
+                    <ImageView
+                        android:id="@+id/percentage_icon_average"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:src="@drawable/green_up_icon"
+                        app:layout_constraintTop_toBottomOf="@+id/average_min_time"
+                        app:layout_constraintStart_toStartOf="@+id/average_needed_text"/>
+                    <TextView
+                        android:id="@+id/percentage_text_average"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="50% past week"
+                        android:textSize="10sp"
+                        android:layout_marginStart="4dp"
+                        android:textColor="@color/green_text"
+                        app:layout_constraintStart_toEndOf="@+id/percentage_icon_average"
+                        app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"/>
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/idealActualChart"
                         android:layout_width="match_parent"

@@ -39,6 +39,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginEnd="12dp"
+            android:id="@+id/sleep_download_icon"
             android:src="@drawable/download_sleep_icon"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -54,6 +55,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/lyt_main_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:orientation="vertical">
@@ -1597,9 +1599,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Ideal Sleep Time Requirement"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textColor="#082654"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_bold"
                             android:layout_weight="1"
                             android:paddingStart="8dp" />
 
@@ -1615,7 +1617,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tonight’s Requirement"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/dmsans_regular"
                         android:textColor="#082654"
                         app:layout_constraintTop_toBottomOf="@id/header"
                         app:layout_constraintStart_toStartOf="parent"
@@ -1944,6 +1947,7 @@
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
                 android:background="@color/white"
+                android:visibility="gone"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
                 android:layout_marginBottom="150dp"
@@ -2075,13 +2079,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:id="@+id/btn_sleep_sound"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:weightSum="10"
                 android:gravity="center_vertical"
                 android:background="@drawable/dark_blue_bg"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginBottom="150dp"
                 android:orientation="horizontal">
 

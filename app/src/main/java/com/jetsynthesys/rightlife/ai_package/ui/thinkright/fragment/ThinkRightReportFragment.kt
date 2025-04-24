@@ -103,7 +103,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var tvQuote: TextView
     private lateinit var tvMindfullMinute: TextView
     private lateinit var tvWellnessDays: TextView
-    private lateinit var downloadView: ImageView
     private lateinit var moodTrackBtn: ImageView
     private lateinit var mindfullArrowBtn: ImageView
     private lateinit var tvAuthor: TextView
@@ -129,6 +128,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var progressDialog: ProgressDialog
     private lateinit var toolsResponse : ToolsResponse
     private lateinit var mainView : LinearLayout
+    private lateinit var downloadView: ImageView
     private var toolsArray : ArrayList<ToolsData> = arrayListOf()
     private lateinit var toolGridResponse : ToolsGridResponse
     private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
