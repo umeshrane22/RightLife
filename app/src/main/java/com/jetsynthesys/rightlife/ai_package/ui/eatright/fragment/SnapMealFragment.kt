@@ -135,8 +135,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 }else{
                     Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                 }
-            }else{
-                openCameraForImage()
             }
 //            takePhotoInfoLayout.visibility = View.VISIBLE
 //            enterMealDescriptionLayout.visibility = View.GONE
@@ -181,13 +179,12 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(requireContext(), "Unable to get image path", Toast.LENGTH_SHORT).show()
                     }
                 }
-
             }
             cameraDialog.show(parentFragmentManager, "CameraDialog")
             // Request all permissions at once
-            if (!hasAllPermissions()) {
-                requestAllPermissions()
-            }else{
+//            if (!hasAllPermissions()) {
+//                requestAllPermissions()
+          //  }else{
                 if (isProceedResult){
                     if (imagePath != ""){
                         uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
@@ -196,20 +193,15 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     }
                 }else{
                   //  CameraDialogFragment().show(requireActivity().supportFragmentManager, "CameraDialog")
-
-
                   //  openCameraForImage()
                 }
-            }
-
+      //      }
         } else {
             takePhotoInfoLayout.visibility = View.VISIBLE
             enterMealDescriptionLayout.visibility = View.GONE
             videoView.visibility = View.VISIBLE
             sharedPreferenceManager.setFirstTimeUserForSnapMealVideo(true)
         }
-
-
         videoPlay()
 
         proceedLayout.setOnClickListener {
@@ -224,7 +216,36 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                    openCameraForImage()
+                    val cameraDialog = CameraDialogFragment("")
+                    cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
+                        override fun onImageSelected(imageUri: Uri) {
+                            val path = getRealPathFromURI(requireContext(), imageUri)
+                            imagePathsecond = imageUri
+                            if (path != null) {
+                                val scaledBitmap = decodeAndScaleBitmap(path, 1080, 1080) // Limit to screen size
+                                if (scaledBitmap != null) {
+                                    val rotatedBitmap = rotateImageIfRequired(requireContext(), scaledBitmap, imageUri)
+                                    imagePath = path
+                                    videoView.visibility = View.GONE
+                                    imageFood.visibility = View.VISIBLE
+                                    imageFood.setImageBitmap(rotatedBitmap)
+
+                                    takePhotoInfoLayout.visibility = View.GONE
+                                    enterMealDescriptionLayout.visibility = View.VISIBLE
+                                    skipTV.visibility = View.VISIBLE
+                                    proceedLayout.isEnabled = false
+                                    proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
+                                    isProceedResult = false
+                                    mealDescriptionET.text.clear()
+                                } else {
+                                    Toast.makeText(requireContext(), "Failed to decode image", Toast.LENGTH_SHORT).show()
+                                }
+                            } else {
+                                Toast.makeText(requireContext(), "Unable to get image path", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                    cameraDialog.show(parentFragmentManager, "CameraDialog")
                 }
            // }
 //            requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -520,38 +541,38 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 
     // Check if all required permissions are granted
-    private fun hasAllPermissions(): Boolean {
-        return REQUIRED_PERMISSIONS.all {
-            ContextCompat.checkSelfPermission(requireActivity(), it) == PackageManager.PERMISSION_GRANTED
-        }
-    }
+//    private fun hasAllPermissions(): Boolean {
+//        return REQUIRED_PERMISSIONS.all {
+//            ContextCompat.checkSelfPermission(requireActivity(), it) == PackageManager.PERMISSION_GRANTED
+//        }
+//    }
+//
+//    // Request all permissions in one go
+//    private fun requestAllPermissions() {
+//        ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, PERMISSION_REQUEST_CODE)
+//    }
 
-    // Request all permissions in one go
-    private fun requestAllPermissions() {
-        ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, PERMISSION_REQUEST_CODE)
-    }
-
-    // Handle permissions result
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            val deniedPermissions = permissions.zip(grantResults.toTypedArray())
-                .filter { it.second != PackageManager.PERMISSION_GRANTED }
-                .map { it.first }
-
-            if (deniedPermissions.isEmpty()) {
-                openCameraForImage()
-                Toast.makeText(context, "All permissions granted!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Permissions denied: $deniedPermissions", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+//    // Handle permissions result
+//    override fun onRequestPermissionsResult(
+//        requestCode: Int,
+//        permissions: Array<out String>,
+//        grantResults: IntArray
+//    ) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//
+//        if (requestCode == PERMISSION_REQUEST_CODE) {
+//            val deniedPermissions = permissions.zip(grantResults.toTypedArray())
+//                .filter { it.second != PackageManager.PERMISSION_GRANTED }
+//                .map { it.first }
+//
+//            if (deniedPermissions.isEmpty()) {
+//                openCameraForImage()
+//                Toast.makeText(context, "All permissions granted!", Toast.LENGTH_SHORT).show()
+//            } else {
+//                Toast.makeText(context, "Permissions denied: $deniedPermissions", Toast.LENGTH_LONG).show()
+//            }
+//        }
+//    }
 
     private fun videoPlay(){
         val videoUri = Uri.parse("android.resource://${requireContext().packageName}/${R.raw.mealsnap_v31}")
@@ -626,7 +647,6 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         viewFinder = view.findViewById(R.id.viewFinder)
 
         if (allPermissionsGranted()) {
@@ -660,6 +680,19 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
+        }
+    }
+
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
         cameraProviderFuture.addListener({
@@ -689,10 +722,8 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
 
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
-
         val name = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
             .format(System.currentTimeMillis())
-
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, "IMG_$name")
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
@@ -740,7 +771,6 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
                 Toast.makeText(requireContext(), "Flash not supported", Toast.LENGTH_SHORT).show()
                 return
             }
-
             isTorchOn = !isTorchOn
             it.cameraControl.enableTorch(isTorchOn)
 

@@ -36,7 +36,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         backIc = view.findViewById(R.id.backIc)
 
-        val tabTitles = arrayOf("Frequently Logged", "My Meal", "Meal Plan", "My Recipe")
+        val tabTitles = arrayOf("Frequently Logged", "My Meal", "My Recipe")
 
         for (title in tabTitles) {
             val tab = tabLayout.newTab()
@@ -59,8 +59,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 when (tab?.position) {
                     0 -> replaceFragment(FrequentlyLoggedFragment())
                     1 -> replaceFragment(MyMealFragment())
-                    2 -> replaceFragment(MealPlanFragment())
-                    3 -> replaceFragment(MyRecipeFragment())
+                  //  2 -> replaceFragment(MealPlanFragment())
+                    2 -> replaceFragment(MyRecipeFragment())
                 }
                 updateTabColors()
             }

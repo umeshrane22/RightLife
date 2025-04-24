@@ -13,11 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.model.DailyRecipe
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogDateListAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogWeeklyDayAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.MealPlanAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealLogCalenderFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.MealPlanFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogDateModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealPlanModel
 import com.jetsynthesys.rightlife.databinding.FragmentMealPlanListBinding
 
@@ -33,9 +34,11 @@ class MealPlanListFragment : BaseFragment<FragmentMealPlanListBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealPlanListBinding
         get() = FragmentMealPlanListBinding::inflate
 
-    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
+    private val mealLogDateAdapter by lazy { MealLogWeeklyDayAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMealLogDateItem) }
 
-    private val mealPlanAdapter by lazy { MealPlanAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealPlanDateItem) }
+    private val mealPlanAdapter by lazy { MealPlanAdapter(requireContext(), arrayListOf(), -1, null,
+        false, :: onMealPlanDateItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -133,13 +136,13 @@ class MealPlanListFragment : BaseFragment<FragmentMealPlanListBinding>() {
             MealLogDateModel("07", "S", true)
         )
 
-        val valueLists : ArrayList<DailyRecipe> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DailyRecipe>)
-        val mealLogDateData: DailyRecipe? = null
-        mealLogDateAdapter.addAll(valueLists, -1, mealLogDateData, false)
+//        val valueLists : ArrayList<DailyRecipe> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<DailyRecipe>)
+//        val mealLogDateData: DailyRecipe? = null
+//        mealLogDateAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogDateItem(mealLogDateModel: DailyRecipe, position: Int, isRefresh: Boolean) {
+    private fun onMealLogDateItem(mealLogDateModel: MealLogWeeklyDayModel, position: Int, isRefresh: Boolean) {
 
         val mealLogs = listOf(
             MealLogDateModel("01", "M", true),
@@ -151,8 +154,8 @@ class MealPlanListFragment : BaseFragment<FragmentMealPlanListBinding>() {
             MealLogDateModel("07", "S", true)
         )
 
-        val valueLists : ArrayList<DailyRecipe> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DailyRecipe>)
-        mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+//        val valueLists : ArrayList<DailyRecipe> = ArrayList()
+//        valueLists.addAll(mealLogs as Collection<DailyRecipe>)
+//        mealLogDateAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 }

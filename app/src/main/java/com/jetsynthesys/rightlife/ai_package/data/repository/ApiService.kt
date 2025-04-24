@@ -52,9 +52,11 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
@@ -116,6 +118,9 @@ interface ApiService {
 
     @POST("eat/meal-plans/")
     fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
+
+    @POST("eat/snap_meals_log/")
+    fun createSnapMealLog(@Body request: SnapMealLogRequest): Call<SnapMealLogResponse>
 
     @GET("eat/meal-plans/")
     fun getLogMealList(@Query("user_id") userId: String): Call<MealLogPlanResponse>

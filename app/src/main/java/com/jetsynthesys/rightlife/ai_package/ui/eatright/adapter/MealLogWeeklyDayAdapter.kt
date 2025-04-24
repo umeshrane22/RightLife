@@ -11,11 +11,12 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.DailyRecipe
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 
-class MealLogDateListAdapter(private val context: Context, private var dataLists: ArrayList<DailyRecipe>,
-                             private var clickPos: Int, private var mealLogListData : DailyRecipe?,
-                             private var isClickView : Boolean, val onMealLogDateItem: (DailyRecipe, Int, Boolean) -> Unit,) :
-    RecyclerView.Adapter<MealLogDateListAdapter.ViewHolder>() {
+class MealLogWeeklyDayAdapter(private val context: Context, private var dataLists: ArrayList<MealLogWeeklyDayModel>,
+                              private var clickPos: Int, private var mealLogListData : MealLogWeeklyDayModel?,
+                              private var isClickView : Boolean, val onMealLogDateItem: (MealLogWeeklyDayModel, Int, Boolean) -> Unit,) :
+    RecyclerView.Adapter<MealLogWeeklyDayAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -27,9 +28,9 @@ class MealLogDateListAdapter(private val context: Context, private var dataLists
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        val day = item.currentDay.first()
+        val day = item.dayName
         holder.mealDay.text = day.toString()
-        val date = item.date.takeLast(2)
+        val date = item.dayNumber
         holder.mealDate.text = date
         if (item.status == true) {
             holder.circleStatus.setImageResource(R.drawable.circle_check)
@@ -72,13 +73,13 @@ class MealLogDateListAdapter(private val context: Context, private var dataLists
 
      inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-         val mealDay: TextView = itemView.findViewById(R.id.tv_day)
+         val mealDay: TextView = itemView.findViewById(R.id.dayTv)
          val mealDate: TextView = itemView.findViewById(R.id.tv_date)
          val circleStatus: ImageView = itemView.findViewById(R.id.image_circle)
          val layoutMain : LinearLayoutCompat = itemView.findViewById(R.id.layout_main)
      }
 
-    fun addAll(item : ArrayList<DailyRecipe>?, pos: Int, mealLogItem : DailyRecipe?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MealLogWeeklyDayModel>?, pos: Int, mealLogItem : MealLogWeeklyDayModel?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

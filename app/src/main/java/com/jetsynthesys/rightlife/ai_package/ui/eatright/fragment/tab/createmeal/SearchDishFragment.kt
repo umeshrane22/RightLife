@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 
 import android.app.ProgressDialog
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -63,6 +64,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var dishLocalListModel : DishLocalListModel? = null
     private var snapDishLocalListModel : SnapDishLocalListModel? = null
     private lateinit var backButton : ImageView
+    private lateinit var currentPhotoPathsecound : Uri
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -95,19 +97,22 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
 
         searchType = arguments?.getString("searchType").toString()
 
+        val imagePathString = arguments?.getString("ImagePathsecound")
+        currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+
         if (searchType.contentEquals("mealScanResult")){
             allDishesRecyclerview.layoutManager = LinearLayoutManager(context)
             allDishesRecyclerview.adapter = snapSearchDishAdapter
         }else{
             allDishesRecyclerview.layoutManager = LinearLayoutManager(context)
-            allDishesRecyclerview.adapter = searchDishAdapter
+            allDishesRecyclerview.adapter = snapSearchDishAdapter
         }
 
-        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
-            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
-        } else {
-            arguments?.getParcelable("dishLocalListModel")
-        }
+//        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+//            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
+//        } else {
+//            arguments?.getParcelable("dishLocalListModel")
+//        }
 
         val snapDishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -119,9 +124,9 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             snapDishLocalListModel = snapDishLocalListModels
         }
 
-        if (dishLocalListModels != null){
-            dishLocalListModel = dishLocalListModels
-        }
+//        if (dishLocalListModels != null){
+//            dishLocalListModel = dishLocalListModels
+//        }
 
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
@@ -130,6 +135,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     if (searchType.contentEquals("mealScanResult")){
                         val fragment = MealScanResultFragment()
                         val args = Bundle()
+                        args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "landing")
@@ -153,6 +159,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             if (searchType.contentEquals("mealScanResult")){
                 val fragment = MealScanResultFragment()
                 val args = Bundle()
+                args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -189,8 +196,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             getSnapMealRecipesList()
             onSnapSearchDishItemRefresh()
         }else{
-            getMealRecipesList()
-            onSearchDishItemRefresh()
+            getSnapMealRecipesList()
+            onSnapSearchDishItemRefresh()
         }
     }
 
@@ -224,7 +231,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         valueLists.addAll(recipesList as Collection<RecipeList>)
         searchDishAdapter.addAll(valueLists, position, recipesModel, isRefresh)
 
-        getMealRecipesDetails(recipesModel._id)
+        getSnapMealRecipesDetails(recipesModel._id)
     }
 
     private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {
@@ -253,9 +260,9 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 cancel.visibility = View.GONE
             }
         }else{
-             val filteredList = if (query.isEmpty()) recipesList
-            else recipesList.filter { it.name.contains(query, ignoreCase = true) }
-            searchDishAdapter.updateList(filteredList)
+            val filteredList = if (query.isEmpty()) snapRecipesList
+            else snapRecipesList.filter { it.name.contains(query, ignoreCase = true) }
+            snapSearchDishAdapter.updateList(filteredList)
             if (query.isNotEmpty()) {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.VISIBLE
@@ -266,6 +273,19 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 tvSearchResult.visibility = View.GONE
                 cancel.visibility = View.GONE
             }
+//             val filteredList = if (query.isEmpty()) recipesList
+//            else recipesList.filter { it.name.contains(query, ignoreCase = true) }
+//            searchDishAdapter.updateList(filteredList)
+//            if (query.isNotEmpty()) {
+//                searchResultLayout.visibility = View.VISIBLE
+//                tvSearchResult.visibility = View.VISIBLE
+//                cancel.visibility = View.VISIBLE
+//                tvSearchResult.text = "Search Result: ${filteredList.size}"
+//            } else {
+//                searchResultLayout.visibility = View.VISIBLE
+//                tvSearchResult.visibility = View.GONE
+//                cancel.visibility = View.GONE
+//            }
         }
     }
 
@@ -332,63 +352,78 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     }
 
     private fun getSnapMealRecipesList() {
-        Utils.showLoader(requireActivity())
+     //   Utils.showLoader(requireActivity())
         val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiServiceFastApi.getSnapMealRecipesList()
         call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                  //  Utils.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     snapRecipesList.addAll(mealPlanLists)
                     onSnapSearchDishItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                 //   Utils.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+             //   Utils.dismissLoader(requireActivity())
             }
         })
     }
 
     private fun getSnapMealRecipesDetails(foodId : String) {
-        Utils.showLoader(requireActivity())
+     //   Utils.showLoader(requireActivity())
         val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiServiceFastApi.getSnapMealRecipesDetails(foodId)
         call.enqueue(object : Callback<RecipeResponse> {
             override fun onResponse(call: Call<RecipeResponse>, response: Response<RecipeResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+          //          Utils.dismissLoader(requireActivity())
                     if (response.body()?.data != null){
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            val snapMealFragment = SnapDishFragment()
-                            val args = Bundle()
-                            args.putString("searchType", "searchScanResult")
-                            args.putParcelable("recipeResponse", response.body())
-                            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
-                            snapMealFragment.arguments = args
-                            replace(R.id.flFragment, snapMealFragment, "Steps")
-                            addToBackStack(null)
-                            commit()
+                        if (searchType.contentEquals("mealScanResult")){
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                val snapMealFragment = SnapDishFragment()
+                                val args = Bundle()
+                                args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                                args.putString("searchType", "searchScanResult")
+                                args.putParcelable("recipeResponse", response.body())
+                                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                                snapMealFragment.arguments = args
+                                replace(R.id.flFragment, snapMealFragment, "Steps")
+                                addToBackStack(null)
+                                commit()
+                            }
+                        }else{
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                val snapMealFragment = DishFragment()
+                                val args = Bundle()
+                                args.putString("searchType", searchType)
+                                args.putParcelable("recipeResponse", response.body())
+                                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                                snapMealFragment.arguments = args
+                                replace(R.id.flFragment, snapMealFragment, "Steps")
+                                addToBackStack(null)
+                                commit()
+                            }
                         }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+              //      Utils.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+          //      Utils.dismissLoader(requireActivity())
             }
         })
     }
