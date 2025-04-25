@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.R.color.transparent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalList
 
 class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
 
+    private lateinit var currentPhotoPathsecound : Uri
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -40,6 +42,9 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
 
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
 
+        val imagePathString = arguments?.getString("ImagePathsecound")
+        currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+
         val snapDishLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
         } else {
@@ -56,6 +61,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
                             val fragment = MealScanResultFragment()
                             val args = Bundle()
+                            args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {

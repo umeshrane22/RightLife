@@ -1,13 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui
 
 import android.os.Bundle
-import android.widget.Toast
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.JournalFragment
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MoodTrackerFragment
 import com.jetsynthesys.rightlife.databinding.ActivityMainAiBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +57,7 @@ class MainAIActivity : BaseActivity() {
             }
         }else if (bottomSeatName.contentEquals("RecordEmotionMoodTracThink")) {
             supportFragmentManager.beginTransaction().apply {
-                val homeBottomTabFragment = MoodTrackerFragment()
+                val homeBottomTabFragment = MoodTrackerFragment("", 0,"")
                 val args = Bundle()
                 args.putString("ModuleName", "HomeDashboard")
                 homeBottomTabFragment.arguments = args

@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.scan_history
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityPastReportBinding
+import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
+import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditResultActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,6 +31,10 @@ class PastReportActivity : AppCompatActivity() {
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
+        binding.backButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         fetchPastReports()
     }
 
@@ -45,11 +52,31 @@ class PastReportActivity : AppCompatActivity() {
                         val reports = response.body()?.data ?: emptyList()
                         val groupedList = processApiResponse(reports)
                         adapter = PastReportAdapter(groupedList) { reportItem ->
-                            Toast.makeText(
-                                this@PastReportActivity,
-                                "clicked " + reportItem.title,
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            when (reportItem.type) {
+                                "FACIAL_SCAN" ->
+                                    startActivity(
+                                        Intent(
+                                            this@PastReportActivity,
+                                            NewHealthCamReportActivity::class.java
+                                        ).apply {
+                                            putExtra("REPORT_ID", reportItem._id)
+                                        })
+
+                                "MIND_AUDIT" ->
+                                    startActivity(
+                                        Intent(
+                                            this@PastReportActivity,
+                                            MindAuditResultActivity::class.java
+                                        ).apply {
+                                            putExtra("REPORT_ID", reportItem._id)
+                                        })
+
+                                else -> {
+                                    //to do open Snap Meal Result
+                                }
+
+                            }
+
                         }
                         binding.recyclerView.adapter = adapter
                     } else {

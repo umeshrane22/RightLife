@@ -20,8 +20,11 @@ import com.jetsynthesys.rightlife.databinding.FragmentMicosTabBinding
 
 class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
 
-    private lateinit var tabLayout : TabLayout
-    private lateinit var backIc : ImageView
+    private lateinit var tabLayout: TabLayout
+    private lateinit var backIc: ImageView
+    private val fragmentMap = mutableMapOf<String, Fragment>() // Cache fragments by tag
+    private var currentFragmentTag: String? = null // Track current fragment
+    private val tabTitles = arrayOf("Cholesterol", "Sugar", "Iron", "Magnesium")
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMicosTabBinding
         get() = FragmentMicosTabBinding::inflate
@@ -33,76 +36,99 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
-        tabLayout = view.findViewById<TabLayout>(R.id.tabMicroLayout)
+        tabLayout = view.findViewById(R.id.tabMicroLayout)
         backIc = view.findViewById(R.id.backIc)
-
-        val tabTitles = arrayOf("Cholesterol", "Sugar", "Iron", "Magnesium")
 
         for (title in tabTitles) {
             val tab = tabLayout.newTab()
-            val customView =
-                LayoutInflater.from(context).inflate(R.layout.custom_tab, null) as TextView
+            val customView = LayoutInflater.from(context).inflate(R.layout.custom_tab, null) as TextView
             customView.text = title
             tab.customView = customView
             tabLayout.addTab(tab)
         }
 
-        // Set default fragment
-        if (savedInstanceState == null) {
-            replaceFragment(CholesterolFragment())
-            updateTabColors()
+        // Restore or set default fragment
+        if (savedInstanceState != null) {
+            currentFragmentTag = savedInstanceState.getString("currentFragmentTag")
+            for (title in tabTitles) {
+                childFragmentManager.findFragmentByTag(title)?.let {
+                    fragmentMap[title] = it
+                }
+            }
         }
 
-        // Handle tab clicks manually
+        if (currentFragmentTag == null) {
+            currentFragmentTag = "Cholesterol"
+            showFragment("Cholesterol")
+            tabLayout.getTabAt(0)?.select()
+        } else {
+            showFragment(currentFragmentTag!!)
+            tabLayout.getTabAt(tabTitles.indexOf(currentFragmentTag))?.select()
+        }
+
+        updateTabColors()
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                when (tab?.position) {
-                    0 -> replaceFragment(CholesterolFragment())
-                    1 -> replaceFragment(SugarFragment())
-                    2 -> replaceFragment(IronFragment())
-                    3 -> replaceFragment(MagnesiumFragment())
+                tab?.position?.let { position ->
+                    val tag = tabTitles[position]
+                    currentFragmentTag = tag
+                    showFragment(tag)
+                    updateTabColors()
                 }
-                updateTabColors()
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val fragment = HomeBottomTabFragment()
-                    val args = Bundle()
-                    fragment.arguments = args
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
-                        commit()
-                    }
-                }
-            })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                navigateToHome()
+            }
+        })
 
         backIc.setOnClickListener {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
-            }
+            navigateToHome()
         }
     }
 
-    // Function to replace fragments
-    private fun replaceFragment(fragment: Fragment) {
-        childFragmentManager.beginTransaction()
-            .replace(R.id.fragmentMicrosContainer, fragment)
-            .commit()
+    private fun navigateToHome() {
+        val fragment = HomeBottomTabFragment()
+        val args = Bundle()
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "landing")
+            addToBackStack("landing")
+            commit()
+        }
     }
 
-    // Function to update tab selection colors
+    private fun showFragment(tag: String) {
+        val transaction = childFragmentManager.beginTransaction()
+
+        for (fragment in fragmentMap.values) {
+            transaction.hide(fragment)
+        }
+
+        var fragment = fragmentMap[tag]
+        if (fragment == null) {
+            fragment = when (tag) {
+                "Cholesterol" -> CholesterolFragment()
+                "Sugar" -> SugarFragment()
+                "Iron" -> IronFragment()
+                "Magnesium" -> MagnesiumFragment()
+                else -> CholesterolFragment()
+            }
+            fragmentMap[tag] = fragment
+            transaction.add(R.id.fragmentMicrosContainer, fragment, tag)
+        } else {
+            transaction.show(fragment)
+        }
+
+        transaction.commit()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updateTabColors() {
         for (i in 0 until tabLayout.tabCount) {
@@ -120,5 +146,10 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("currentFragmentTag", currentFragmentTag)
     }
 }

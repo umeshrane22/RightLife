@@ -15,6 +15,7 @@ import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
 import com.jetsynthesys.rightlife.ui.new_design.YourInterestActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
+import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
 import com.jetsynthesys.rightlife.ui.settings.SupportActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
@@ -63,7 +64,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
         val userAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
                 "Subscription History" ->
-                    showToast("You haven't purchase subscription yet!!")
+                    startActivity(Intent(this, SubscriptionHistoryActivity::class.java))
 
                 "Payment Modes" ->
                     startActivity(Intent(this, SupportActivity::class.java))

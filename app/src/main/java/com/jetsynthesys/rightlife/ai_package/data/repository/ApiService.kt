@@ -25,6 +25,7 @@ import com.jetsynthesys.rightlife.ai_package.model.FrequentlyLoggedResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
+import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
@@ -51,10 +52,31 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCholesterolResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedIronResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
@@ -116,8 +138,26 @@ interface ApiService {
     @POST("eat/meal-plans/")
     fun createLogMeal(@Query("user_id") userId: String,@Body request: MealPlanRequest): Call<MealPlanResponse>
 
+    @POST("eat/meals/create_meal/")
+    fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
+
+    @POST("eat/meals/create_meal/")
+    fun createSaveMealsToLog(@Query("user_id") userId: String,
+                             @Query("date") startDate: String,@Body request: SaveMealLogRequest
+    ): Call<MealUpdateResponse>
+
+    @GET("eat/meals/get_log_meals/")
+    fun getMealsLogList(@Query("user_id") userId: String,
+                    @Query("date") startDate: String): Call<MealsLogResponse>
+
+    @POST("eat/snap_meals_log/")
+    fun createSnapMealLog(@Body request: SnapMealLogRequest): Call<SnapMealLogResponse>
+
     @GET("eat/meal-plans/")
     fun getLogMealList(@Query("user_id") userId: String): Call<MealLogPlanResponse>
+
+    @GET("eat/meals/get_mymeal_list/")
+    fun getMyMealList(@Query("user_id") userId: String): Call<MyMealsSaveResponse>
 
     @POST("eat/meal-plans/log/")
     fun createMealPlanLog(@Query("user_id") userId: String,@Query("meal_plan_id") mealPlanId: String,@Body request: MealPlanLogRequest): Call<MealPlanResponse>
@@ -156,6 +196,75 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("eat/calories/consumed/")
+      suspend fun getConsumedCalories(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCaloriesResponse>
+
+    @GET("eat/protein/consumed/")
+     suspend fun getConsumedProtiens(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedProteinResponse>
+
+
+    @GET("eat/carbs/consumed/")
+    suspend fun getConsumedCarbs(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCarbsResponse>
+
+
+    @POST("eat/log_water/")
+    fun logWaterIntake(
+        @Body request: WaterIntakeRequest
+    ): Call<LogWaterResponse>
+
+    @POST("eat/log_weight/")
+    fun logWeightIntake(
+        @Body request: WeightIntakeRequest
+    ): Call<LogWeightResponse>
+
+
+    @GET("eat/fat/consumed/")
+    suspend fun getConsumedFats(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedFatResponse>
+
+
+    @GET("eat/cholesterol/consumed/")
+    suspend fun getConsumedCholesterol(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCholesterolResponse>
+
+    @GET("eat/sugar/consumed/")
+    suspend fun getConsumedSugar(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedSugarResponse>
+
+    @GET("eat/iron/consumed/")
+    suspend fun getConsumedIron(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedIronResponse>
+    @GET("eat/magnesium/consumed/")
+    suspend fun getConsumedMagnesium(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedMagnesiumResponse>
 
     @GET("move/steps_detail_view/")
     suspend fun getStepsDetail(
@@ -231,6 +340,9 @@ interface ApiService {
     @GET("app/api/tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
 
+    @GET("app/api/journalNew/journalAnswer")
+    fun fetchJournalAnswer(@Header("Authorization") authToken: String,@Query("date") date: String): Call<JournalAnswerResponse>
+
     @GET("app/api/mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
@@ -292,6 +404,24 @@ interface ApiService {
         @Query("user_id") userId: String,
         @Query("date") date: String
     ): Response<FitnessResponse>
+
+    @GET("eat/log_weight/")
+    suspend fun getLogWeight(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String,
+        @Query("skip") skip: Int = 0,
+        @Query("limit") limit: Int = 100
+    ): Response<WeightResponse>
+
+    @GET("eat/water_intake/")
+    suspend fun getWaterIntake(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String,
+        @Query("skip") skip: Int = 0,
+        @Query("limit") limit: Int = 100
+    ): Response<WaterIntakeResponse>
 
 
     @DELETE("move/data/delete_calories/")

@@ -11,12 +11,13 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 
-class DishListAdapter(private val context: Context, private var dataLists: ArrayList<MealDetails>,
-                      private var clickPos: Int, private var mealLogListData : MealDetails?,
-                      private var isClickView : Boolean, val onMealLogClickItem: (MealDetails, Int, Boolean) -> Unit,
-                      val onMealLogDeleteItem: (MealDetails, Int, Boolean) -> Unit,
-                      val onMealLogEditItem: (MealDetails, Int, Boolean) -> Unit) :
+class DishListAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeData>,
+                      private var clickPos: Int, private var mealLogListData : SnapRecipeData?,
+                      private var isClickView : Boolean, val onMealLogClickItem: (SnapRecipeData, Int, Boolean) -> Unit,
+                      val onMealLogDeleteItem: (SnapRecipeData, Int, Boolean) -> Unit,
+                      val onMealLogEditItem: (SnapRecipeData, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<DishListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -30,16 +31,20 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
         val item = dataLists[position]
 
       //  holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.name
-        holder.servesCount.text = item.numOfServings.toString()
-        val mealTime = item.cookingTime.split(" ")[0]
-        holder.mealTime.text = mealTime
-        holder.calValue.text = item.calories.toInt().toString()
-        holder.subtractionValue.text = item.carbs.toInt().toString()
-        holder.baguetteValue.text = item.protein.toInt().toString()
-        holder.dewpointValue.text = item.fats.toInt().toString()
+        val capitalized = item.recipe_name.toString().replaceFirstChar { it.uppercase() }
+        holder.mealName.text = capitalized
+        holder.servesCount.text = item.servings.toString()
+        if (item.cookingTime != null){
+            val mealTime = item.cookingTime!!.split(" ")[0]
+            holder.mealTime.text = mealTime
+        }
+        holder.calValue.text = item.calories?.toInt().toString()
+        holder.subtractionValue.text = item.carbs?.toInt().toString()
+        holder.baguetteValue.text = item.protein?.toInt().toString()
+        holder.dewpointValue.text = item.fat?.toInt().toString()
+        val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
-            .load(item.image)
+            .load(imageUrl)
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.mealImage)
@@ -105,7 +110,7 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<MealDetails>?, pos: Int, mealLogItem : MealDetails?, isClick : Boolean) {
+    fun addAll(item : ArrayList<SnapRecipeData>?, pos: Int, mealLogItem : SnapRecipeData?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -114,5 +119,16 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
             isClickView = isClick
         }
         notifyDataSetChanged()
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }

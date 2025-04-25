@@ -4,10 +4,12 @@ import android.R.color.transparent
 import android.app.Dialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,14 +19,27 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
 
     private lateinit var waterAmount: TextView
+    var listener: OnWaterIntakeConfirmedListener? = null
+
     private var selectedCups = 2
     private lateinit var recyclerView: RecyclerView
     private lateinit var selectedValueText: TextView
     private lateinit var ivCupIcon : ImageView
+    private lateinit var btn_confirm : Button
     private lateinit var progressFill: View
     private lateinit var progressBarContainer: FrameLayout
     private var dY = 0f
@@ -67,6 +82,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         dialog.window?.setBackgroundDrawableResource(transparent)
         val closeIV = view.findViewById<ImageView>(R.id.closeIV)
         progressFill = view.findViewById(R.id.progressFill)
+        btn_confirm = view.findViewById(R.id.btn_confirm)
         progressBarContainer = view.findViewById(R.id.progressBarContainer)
         selectedValueText = view.findViewById(R.id.selectedValueText)
         ivCupIcon = view.findViewById(R.id.ivCupIcon)
@@ -75,6 +91,13 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             minY = progressBarContainer.top.toFloat()
             maxY = (progressBarContainer.bottom - ivCupIcon.height).toFloat()
         }
+        btn_confirm.setOnClickListener {
+            val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            logUserWaterIntake(userId = userId, source = "apple", waterMl = waterIntake.toInt(), date = currentDate)
+
+        }
+
 
         updateUI()
 
@@ -114,6 +137,45 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             progressFill.layoutParams = params
         }
     }
+     private fun logUserWaterIntake(
+        userId: String,
+        source: String,
+        waterMl: Int,
+        date: String
+    ) {
+        val request = WaterIntakeRequest(
+            userId = userId,
+            source = source,
+            waterMl = waterMl,
+            date = date
+        )
+
+        val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWaterIntake(request)
+        call.enqueue(object : Callback<LogWaterResponse> {
+            override fun onResponse(
+                call: Call<LogWaterResponse>,
+                response: Response<LogWaterResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    response.body()?.waterMl?.let { listener?.onWaterIntakeConfirmed(it.toInt()) }
+                    dismiss()
+                    Log.d("LogWaterAPI", "Success: $responseBody")
+                    // You can do something with responseBody here
+                } else {
+                    Log.e(
+                        "LogWaterAPI",
+                        "Error: ${response.code()} - ${response.errorBody()?.string()}"
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<LogWaterResponse>, t: Throwable) {
+                Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
+            }
+        })
+    }
+
 
     private fun updateValueBasedOnPosition(positionY: Float) {
         val containerHeight = progressBarContainer.height
@@ -143,5 +205,8 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             }
         }
     }
+}
+interface OnWaterIntakeConfirmedListener {
+    fun onWaterIntakeConfirmed(amount: Int)
 }
 

@@ -74,6 +74,7 @@ import com.jetsynthesys.rightlife.ui.scan_history.ScanHistoryResponse;
 import com.jetsynthesys.rightlife.ui.settings.pojo.FAQResponse;
 import com.jetsynthesys.rightlife.ui.settings.pojo.GeneralInformationResponse;
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse;
+import com.jetsynthesys.rightlife.ui.settings.pojo.PurchaseHistoryResponse;
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteRequest;
 import com.jetsynthesys.rightlife.ui.therledit.StatiticsRequest;
@@ -1180,6 +1181,12 @@ public interface ApiService {
     @GET("user/dashboardChecklistStatus")
     Call<DashboardChecklistResponse> getdashboardChecklistStatus(
             @Header("Authorization") String authToken
+    );
+
+    @GET("user/purchasehistory")
+    Call<PurchaseHistoryResponse> getSubscriptionHistory(
+            @Header("Authorization") String authToken,
+            @Query("type") String type
     );
 }
 

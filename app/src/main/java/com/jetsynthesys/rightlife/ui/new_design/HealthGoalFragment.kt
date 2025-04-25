@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -12,23 +11,14 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
-import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.ui.new_design.pojo.HealthGoal
-import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class HealthGoalFragment : Fragment() {
 
@@ -87,7 +77,6 @@ class HealthGoalFragment : Fragment() {
         recyclerView.adapter = adapter
 
         (activity as OnboardingQuestionnaireActivity).tvSkip.setOnClickListener {
-            updateUserData(SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest)
             startActivity(
                 Intent(
                     requireActivity(),
@@ -111,8 +100,6 @@ class HealthGoalFragment : Fragment() {
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
 
-            updateUserData(onboardingQuestionRequest)
-
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 
@@ -125,63 +112,5 @@ class HealthGoalFragment : Fragment() {
         llSelectedHealthGoal.visibility = GONE
         rlHealthGoal.visibility = VISIBLE
         tvDescription.visibility = VISIBLE
-    }
-
-    private fun updateUserData(onboardingQuestionRequest: OnboardingQuestionRequest) {
-
-        val userData = Userdata()
-        userData.gender = if (onboardingQuestionRequest.gender == "Male") "M" else "F"
-        if (onboardingQuestionRequest.height != null) {
-            val stringArray = (onboardingQuestionRequest.height)?.split(" ")
-
-            if (stringArray?.get(2) == "cms") {
-                userData.height = stringArray[0].toDouble()
-                userData.heightUnit = "CM"
-            } else {
-                val height = stringArray?.get(0)?.toDouble()
-                    ?.plus(("0." + stringArray[2]).toDouble())
-                userData.height = height
-                userData.heightUnit = "FT_AND_INCHES"
-            }
-
-        }
-        if (onboardingQuestionRequest.weight != null) {
-            val stringArray = (onboardingQuestionRequest.weight)?.split(" ")
-            userData.weight = stringArray?.get(0)?.toDouble()
-            if (stringArray?.get(1)?.uppercase() == "LBS") {
-                userData.weightUnit = "LBS"
-            } else {
-                userData.weightUnit = "KG"
-            }
-        }
-
-        if (onboardingQuestionRequest.age != null){
-            userData.age = onboardingQuestionRequest.age!!
-        }
-
-        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call: Call<ResponseBody> = apiService.updateUser(token, userData)
-        call.enqueue(object : Callback<ResponseBody?> {
-            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-                if (response.isSuccessful && response.body() != null) {
-                    Log.d("AAAA", "Response = " + response.body())
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Server Error: " + response.code(),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    requireContext(),
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
     }
 }

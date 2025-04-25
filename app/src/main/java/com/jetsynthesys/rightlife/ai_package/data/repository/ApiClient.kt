@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.data.repository
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

@@ -27,6 +27,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthData
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerPercent
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
@@ -38,8 +39,9 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.collections.ArrayList
 
-class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEmotionDialogFragment.BottomSheetListener{
+class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String) : BaseFragment<FragmentMoodTrackingBinding>(),RecordEmotionDialogFragment.BottomSheetListener{
 
     private lateinit var calendarGrid: GridLayout
     private lateinit var textMonth: TextView
@@ -50,8 +52,21 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     private lateinit var progressDialog: ProgressDialog
     private lateinit var moodTrackerResponse: MoodTrackerWeeklyResponse
     private lateinit var moodTrackerMonthlyResponse: MoodTrackerMonthlyResponse
+    private var moodsMonthlyList: ArrayList<MoodTrackerMonthData> = arrayListOf()
+    private val emojiImageViews = mutableMapOf<Int, ImageView>()
     val weekStartDate = "2025-03-9"
     val weekEndDate = "2025-03-16"
+    val fromFragments = fromFragment
+    val journalAnswers = journalAnswer
+    var emojiSelected = emojis
+
+    val moodEmojiMap = mapOf(
+        "Happy" to R.drawable.happy_icon,
+        "Relaxed" to R.drawable.relaxed_icon,
+        "Unsure" to R.drawable.unsure_icon,
+        "Stressed" to R.drawable.stressed_icon,
+        "Sad" to R.drawable.sad_icon
+    )
 
     private val calendar = Calendar.getInstance()
     private val dateFormat = SimpleDateFormat("d", Locale.getDefault())
@@ -74,21 +89,21 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
-        val emotions = listOf(
+        /*val emotions = listOf(
             EmotionStat("Relaxed", 10, Color.parseColor("#D6F24B")),
             EmotionStat("Happy", 20, Color.parseColor("#04E17C"))
-        )
+        )*/
 
-        renderEmotionCircles(emotions)
+       // renderEmotionCircles(emotions)
 
         btnPrev.setOnClickListener {
             calendar.add(Calendar.MONTH, -1)
-            renderCalendar()
+            renderCalendar(moodsMonthlyList)
         }
 
         btnNext.setOnClickListener {
             calendar.add(Calendar.MONTH, 1)
-            renderCalendar()
+            renderCalendar(moodsMonthlyList)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -101,10 +116,15 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(ThinkRightReportFragment(), "MoodTrackerFragment")
+            navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
         }
 
-        renderCalendar()
+        if (fromFragments == "JournalFragment"){
+            val bottomSheet = RecordEmotionDialogFragment(emojiSelected,journalAnswers)
+            bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
+        }
+
+        //renderCalendar(moodsMonthlyList)
         setupWeekNavigation(view)
         fetchMoodPercentage()
         fetchMoodMonthly()
@@ -119,7 +139,8 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
             override fun onResponse(call: Call<MoodTrackerWeeklyResponse>, response: Response<MoodTrackerWeeklyResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                      // moodTrackerResponse = response.body()!!
+                       moodTrackerResponse = response.body()!!
+                    renderEmotionCircles(getEmotionsForWeek(moodTrackerResponse.data.getOrNull(0)))
                         //  setMoodPercentage(moodTrackerResponse.data)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -150,7 +171,11 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
             override fun onResponse(call: Call<MoodTrackerMonthlyResponse>, response: Response<MoodTrackerMonthlyResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    moodTrackerMonthlyResponse = response.body()!!
+                    if (response.body()!=null) {
+                        moodTrackerMonthlyResponse = response.body()!!
+                        moodsMonthlyList =moodTrackerMonthlyResponse.data
+                        renderCalendar(moodTrackerMonthlyResponse.data)
+                    }
                     //      setSleepRightStageData(sleepStageResponse)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -164,6 +189,29 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
                 progressDialog.dismiss()
             }
         })
+    }
+
+    private fun applyEmojisToCalendar(moodDataList: List<MoodTrackerMonthData>) {
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+
+        for (moodData in moodDataList) {
+            val dateStr = moodData.createdAt ?: continue
+
+            try {
+                val date = formatter.parse(dateStr) ?: continue
+
+                val calendar = Calendar.getInstance()
+                calendar.time = date
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+                val iconRes = moodEmojiMap[moodData.emotion] ?: continue
+                emojiImageViews[day]?.setImageResource(iconRes)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     private var currentWeekStart = LocalDate.of(2025, 2, 3)
@@ -185,7 +233,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
             weekRangeText.text = "$startText–$endText $monthYear"
 
             // Update data for that week here
-            renderEmotionCircles(getEmotionsForWeek(currentWeekStart))
+           // renderEmotionCircles(getEmotionsForWeek(currentWeekStart))
         }
 
         prevBtn.setOnClickListener {
@@ -201,23 +249,28 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         updateWeekLabel()
     }
 
-    private fun getEmotionsForWeek(startDate: LocalDate): List<EmotionStat> {
-        return listOf(
-            EmotionStat("Relaxed", (5..20).random(), Color.parseColor("#D6F24B")),
-            EmotionStat("Happy", (10..30).random(), Color.parseColor("#04E17C"))
-        )
+    private fun getEmotionsForWeek(moodList: MoodTrackerPercent?): List<EmotionStat> {
+        val result = mutableListOf<EmotionStat>()
+
+        moodList?.happy?.let { if (it > 0.0) result.add(EmotionStat("Happy",moodList.happy!!, Color.parseColor("#D6F24B"))) }
+        moodList?.relaxed?.let { if (it > 0.0) result.add(EmotionStat("Relaxed",moodList.relaxed!!, Color.parseColor("#04E17C"))) }
+        moodList?.unsure?.let { if (it > 0.0) result.add(EmotionStat("Unsure",moodList.unsure!!, Color.parseColor("#04E17C"))) }
+        moodList?.stressed?.let { if (it > 0.0) result.add(EmotionStat("Stressed",moodList.stressed!!, Color.parseColor("#D6F24B"))) }
+        moodList?.sad?.let { if (it > 0.0) result.add(EmotionStat("Sad",moodList.sad!!, Color.parseColor("#04E17C"))) }
+
+        return result
     }
 
     private fun renderEmotionCircles(stats: List<EmotionStat>) {
         container.removeAllViews()
 
-        val maxPercentage = stats.maxOf { it.percentage }.coerceAtLeast(1)
+        val maxPercentage = stats.maxOf { it.percentage }.coerceAtLeast(1.0)
         val baseSize = 200 // max circle size in dp
 
         stats.forEachIndexed { index, stat ->
-            val sizeDp = (baseSize * (stat.percentage / maxPercentage.toFloat())).coerceAtLeast(60f)
+            val sizeDp = (baseSize * (stat.percentage / maxPercentage.toFloat())).coerceAtLeast(60.0)
             val sizePx = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP, sizeDp, resources.displayMetrics).toInt()
+                TypedValue.COMPLEX_UNIT_DIP, sizeDp.toFloat(), resources.displayMetrics).toInt()
 
             // Vertical container inside the circle
             val verticalLayout = LinearLayout(requireContext(),).apply {
@@ -266,7 +319,13 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         }
     }
 
-    private fun renderCalendar() {
+    private fun renderCalendar(moodDataList: List<MoodTrackerMonthData>) {
+        val targetMonth = getYearMonthFromData(moodDataList)
+        if (targetMonth != null) {
+            calendar.set(Calendar.YEAR, targetMonth.first)
+            calendar.set(Calendar.MONTH, targetMonth.second)
+        }
+
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
         val firstDayOfWeek = (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7 // Adjusted for Monday start
@@ -275,8 +334,8 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         val endDate = daysInMonth
 
         textMonth.text = "${startDate}–$endDate ${monthFormat.format(calendar.time)}"
-
         calendarGrid.removeAllViews()
+        emojiImageViews.clear()
 
         for (i in 0 until firstDayOfWeek) {
             calendarGrid.addView(createEmptyCell())
@@ -285,6 +344,26 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         for (day in 1..daysInMonth) {
             calendarGrid.addView(createDayCellWithCheckbox(day))
         }
+
+        applyEmojisToCalendar(moodDataList)
+    }
+    private fun getYearMonthFromData(dataList: List<MoodTrackerMonthData>): Pair<Int, Int>? {
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+
+        dataList.firstOrNull()?.createdAt?.let { createdAt ->
+            try {
+                val date = formatter.parse(createdAt)
+                val cal = Calendar.getInstance()
+                cal.time = date!!
+                val year = cal.get(Calendar.YEAR)
+                val month = cal.get(Calendar.MONTH) // 0-based (Jan = 0)
+                return Pair(year, month)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return null
     }
 
     private fun createEmptyCell(): LinearLayout {
@@ -298,7 +377,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     }
 
     private fun createDayCellWithCheckbox(day: Int): LinearLayout {
-        val container = LinearLayout(requireContext()).apply {
+        val emojiContainer = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             layoutParams = GridLayout.LayoutParams().apply {
@@ -319,17 +398,20 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
         val emojiView = ImageView(requireContext()).apply {
             val size = resources.getDimensionPixelSize(R.dimen.emoji_size)
             layoutParams = LinearLayout.LayoutParams(size, size)
-            setImageResource(R.drawable.date_checkbox_bg) // default state
+            setImageResource(R.drawable.date_checkbox_bg) // default image
             setOnClickListener {
-                showEmotionSelector { selectedEmoji ->
-                    setImageResource(selectedEmoji)
+                showEmotionSelector { selectedEmojiRes ->
+                    setImageResource(selectedEmojiRes)
                 }
             }
         }
 
-        container.addView(dayText)
-        container.addView(emojiView)
-        return container
+        emojiContainer.addView(dayText)
+        emojiContainer.addView(emojiView)
+
+        emojiImageViews[day] = emojiView // store reference
+
+        return emojiContainer
     }
 
     private fun showEmotionSelector(onEmotionSelected: (Int) -> Unit) {
@@ -366,7 +448,7 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
                 }
                 setOnClickListener {
                     onEmotionSelected(emojiRes)
-                    val bottomSheet = RecordEmotionDialogFragment()
+                    val bottomSheet = RecordEmotionDialogFragment(emojiRes,"")
                     bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
                     dialog.dismiss()
                 }
@@ -390,4 +472,4 @@ class MoodTrackerFragment : BaseFragment<FragmentMoodTrackingBinding>(),RecordEm
     }
 }
 
-data class EmotionStat(val emotion: String, val percentage: Int, val color: Int)
+data class EmotionStat(val emotion: String, val percentage: Double, val color: Int)

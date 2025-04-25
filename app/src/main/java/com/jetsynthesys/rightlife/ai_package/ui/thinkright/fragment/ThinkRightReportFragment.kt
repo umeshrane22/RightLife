@@ -45,10 +45,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerData
+import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullData
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleData
@@ -83,7 +86,9 @@ import java.io.File
 import java.io.IOException
 import java.io.OutputStream
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.abs
 
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
@@ -104,6 +109,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var mindfullArrowBtn: ImageView
     private lateinit var tvAuthor: TextView
     private lateinit var cardAddTools: CardView
+    private lateinit var emotionCardData: CardView
+    private lateinit var emotionCardNoData: CardView
     private lateinit var toolsRecyclerView: RecyclerView
     private lateinit var journalingRecyclerView: RecyclerView
     private lateinit var noDataMindFullnessMetric: ConstraintLayout
@@ -121,18 +128,25 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     //   private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
 
     private lateinit var progressDialog: ProgressDialog
-    private lateinit var toolsResponse: ToolsResponse
-    private lateinit var mainView: LinearLayout
-    private var toolsArray: ArrayList<ToolsData> = arrayListOf()
-    private lateinit var toolGridResponse: ToolsGridResponse
-    private var toolsGridArray: ArrayList<ToolGridData> = arrayListOf()
-    private lateinit var mindfullResponse: MindfullResponse
-    private var mindfullData: ArrayList<MindfullData> = arrayListOf()
+
+    private lateinit var toolsResponse : ToolsResponse
+    private lateinit var mainView : LinearLayout
+    private var toolsArray : ArrayList<ToolsData> = arrayListOf()
+    private lateinit var toolGridResponse : ToolsGridResponse
+    private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
+    private lateinit var mindfullResponse : MindfullResponse
+    private lateinit var journalResponse : JournalAnswerResponse
+    private var mindfullData : ArrayList<MindfullData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
     private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
     var itemCount = 0
     var dotSize = 16
     var dotMargin = 8
+    private lateinit var emotionLabel: TextView
+    private lateinit var emotionTime: TextView
+    private lateinit var emotionDescription: TextView
+    private lateinit var emotionIcon: ImageView
+    private lateinit var tagFlexbox: FlexboxLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -144,6 +158,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         //RecordEmotionThink
         //Not
 
+        emotionCardData = view.findViewById(R.id.emotionCard)
+        emotionCardNoData = view.findViewById(R.id.lyt_feel)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
@@ -153,6 +169,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         dataFilledMindAudit = view.findViewById(R.id.data_filled_mind_audit)
         tvWellnessDays = view.findViewById(R.id.tv_wellness_days)
         tvMindfullMinute = view.findViewById(R.id.tv_mindfull_minute)
+        emotionLabel = view.findViewById<TextView>(R.id.emotionLabel)
+        emotionTime = view.findViewById<TextView>(R.id.emotionTime)
+        emotionDescription = view.findViewById<TextView>(R.id.emotionDescription)
+        emotionIcon = view.findViewById<ImageView>(R.id.emotionIcon)
+        tagFlexbox = view.findViewById<FlexboxLayout>(R.id.emotionTags)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -201,7 +222,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             navigateToFragment(ViewQuoteFragment(), "ViewQuote")
         }
         moodTrackBtn.setOnClickListener {
-            navigateToFragment(MoodTrackerFragment(), "MoodTracker")
+            navigateToFragment(MoodTrackerFragment("", 0,"ThinkRightReportFragment"),"MoodTracker")
         }
         mindfullArrowBtn.setOnClickListener {
             navigateToFragment(MindfulnessAnalysisFragment(), "MindfulnessAnalysis")
@@ -312,6 +333,82 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             })
 
         fetchToolGridData()
+        fetchJournalAnswerData()
+
+
+    }
+
+    private fun fetchJournalAnswerData() {
+       // progressDialog.show()
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val startDate = "2025-03-9"
+         val call = ApiClient.apiService.fetchJournalAnswer(token,startDate)
+        call.enqueue(object : Callback<JournalAnswerResponse> {
+            override fun onResponse(call: Call<JournalAnswerResponse>, response: Response<JournalAnswerResponse>) {
+                if (response.isSuccessful) {
+                    journalResponse = response.body()!!
+                    if (journalResponse.data.isNotEmpty()) {
+                        emotionCardData.visibility = View.VISIBLE
+                        emotionCardNoData.visibility = View.GONE
+                        setJournalData(journalResponse.data.getOrNull(0))
+                    }else{
+                        emotionCardData.visibility = View.GONE
+                        emotionCardNoData.visibility = View.VISIBLE
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    emotionCardData.visibility = View.GONE
+                    emotionCardNoData.visibility = View.VISIBLE
+                 //   progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<JournalAnswerResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                emotionCardData.visibility = View.GONE
+                emotionCardNoData.visibility = View.VISIBLE
+            //    progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun setJournalData(list: JournalAnswerData?) {
+        emotionLabel.text = list?.emotion
+        emotionTime.text = "Emotion recorded at \n"+formatToTimeOnly(list?.createdAt!!)
+        emotionDescription.text = list?.answer
+        if (list?.emotion == "Happy"){
+            emotionIcon.setImageResource(R.drawable.happy_icon)
+        }else if (list?.emotion == "Relaxed"){
+            emotionIcon.setImageResource(R.drawable.relaxed_icon)
+        }else if (list?.emotion == "Unsure"){
+            emotionIcon.setImageResource(R.drawable.unsure_icon)
+        }else if (list?.emotion == "Stressed"){
+            emotionIcon.setImageResource(R.drawable.stressed_icon)
+        }else if (list?.emotion == "Sad"){
+            emotionIcon.setImageResource(R.drawable.sad_icon)
+        }
+         // Replace with your actual emoji image
+
+        tagFlexbox.removeAllViews()
+
+        for (tag in list?.tags!!) {
+            val chip = TextView(requireContext()).apply {
+                text = tag
+                setPadding(24, 12, 24, 12)
+                background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.tag_background)
+                setTextColor(Color.parseColor("#B85C00"))
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            }
+            tagFlexbox.addView(chip)
+        }
+    }
+
+    fun formatToTimeOnly(isoString: String): String {
+        val zonedDateTime = ZonedDateTime.parse(isoString)
+        val formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
+        return zonedDateTime.format(formatter).lowercase()
     }
 
     private fun fetchMindfulData() {

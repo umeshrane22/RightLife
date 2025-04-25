@@ -38,6 +38,7 @@ class MindAuditResultActivity : AppCompatActivity() {
     private var selectedAssessment = "CAS"
     private var emotionsAdapter: EmotionsAdapter? = null
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    private var reportId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,7 @@ class MindAuditResultActivity : AppCompatActivity() {
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
+        reportId = intent.getStringExtra("REPORT_ID")
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         binding.btnTakeAssessment.setOnClickListener {
