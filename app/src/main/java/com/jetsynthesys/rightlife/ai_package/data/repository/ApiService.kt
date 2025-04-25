@@ -58,8 +58,12 @@ import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCholesterolResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedIronResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
@@ -223,6 +227,34 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ConsumedFatResponse>
+
+
+    @GET("eat/cholesterol/consumed/")
+    suspend fun getConsumedCholesterol(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCholesterolResponse>
+
+    @GET("eat/sugar/consumed/")
+    suspend fun getConsumedSugar(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedSugarResponse>
+
+    @GET("eat/iron/consumed/")
+    suspend fun getConsumedIron(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedIronResponse>
+    @GET("eat/magnesium/consumed/")
+    suspend fun getConsumedMagnesium(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedMagnesiumResponse>
 
     @GET("move/steps_detail_view/")
     suspend fun getStepsDetail(

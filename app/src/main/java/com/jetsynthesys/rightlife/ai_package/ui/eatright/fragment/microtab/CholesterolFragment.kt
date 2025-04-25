@@ -44,8 +44,8 @@ import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCholesterolResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.ActiveBurnViewModelFats
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentCholesterolBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -370,7 +370,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
 
-                val response = ApiClient.apiServiceFastApi.getConsumedFats(
+                val response = ApiClient.apiServiceFastApi.getConsumedCholesterol(
                     userId = "6476d7b5fa0e40d9c0bc9cd1", period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     val activeCaloriesResponse = response.body()
@@ -382,9 +382,9 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
                                 "last_six_months" -> processSixMonthsData(data, selectedDate )
                                 else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate()) // Fallback
                             }
-                            val totalCalories = data.consumedFatTotals.sumOf { it.fatConsumed ?: 0.0 }
+                            val totalCalories = data.consumedCholesterolTotals.sumOf { it.cholesterolConsumed ?: 0.0 }
                             withContext(Dispatchers.Main) {
-                                if (data.consumedFatTotals.size > 31){
+                                if (data.consumedCholesterolTotals.size > 31){
                                     barChart.visibility = View.GONE
                                     layoutLineChart.visibility = View.VISIBLE
                                     lineChartForSixMonths()
@@ -411,7 +411,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
 
     /** Process API data for last_weekly (7 days) */
     private fun processWeeklyData(
-        activeCaloriesResponse: ConsumedFatResponse, currentDate: String
+        activeCaloriesResponse: ConsumedCholesterolResponse, currentDate: String
     ): Triple<List<BarEntry>, List<String> , List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
         val calendar = Calendar.getInstance()
@@ -440,12 +440,12 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         // Aggregate calories by day
-        if (activeCaloriesResponse.consumedFatTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedFatTotals.forEach { calorie ->
+        if (activeCaloriesResponse.consumedCholesterolTotals.isNotEmpty()){
+            activeCaloriesResponse.consumedCholesterolTotals.forEach { calorie ->
                 val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
                 if (startDate != null) {
                     val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.fatConsumed.toFloat() ?: 0f)
+                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.cholesterolConsumed.toFloat() ?: 0f)
                 }
             }
         }
@@ -455,7 +455,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
     }
 
     /** Process API data for last_monthly (5 weeks) */
-    private fun processMonthlyData(activeCaloriesResponse: ConsumedFatResponse, currentDate: String
+    private fun processMonthlyData(activeCaloriesResponse: ConsumedCholesterolResponse, currentDate: String
     ): Triple<List<BarEntry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
         val calendar = Calendar.getInstance()
@@ -501,12 +501,12 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedFatTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedFatTotals.forEach { calorie ->
+        if ( activeCaloriesResponse.consumedCholesterolTotals.isNotEmpty()){
+            activeCaloriesResponse.consumedCholesterolTotals.forEach { calorie ->
                 val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
                 if (startDate != null) {
                     val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.fatConsumed.toFloat() ?: 0f)
+                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.cholesterolConsumed.toFloat() ?: 0f)
                 }
             }
         }
@@ -516,7 +516,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
     }
 
     /** Process API data for last_six_months (6 months) */
-    private fun processSixMonthsData(activeCaloriesResponse: ConsumedFatResponse, currentDate: String):
+    private fun processSixMonthsData(activeCaloriesResponse: ConsumedCholesterolResponse, currentDate: String):
             Triple<List<BarEntry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
@@ -535,16 +535,16 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
             calendar.add(Calendar.MONTH, 1)
         }
 
-        if ( activeCaloriesResponse.consumedFatTotals.isNotEmpty()){
+        if ( activeCaloriesResponse.consumedCholesterolTotals.isNotEmpty()){
             // Aggregate calories by month
-            activeCaloriesResponse.consumedFatTotals.forEach { calorie ->
+            activeCaloriesResponse.consumedCholesterolTotals.forEach { calorie ->
                 val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
                 if (startDate != null) {
                     calendar.time = startDate
                     val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
                     val monthIndex = 5 - monthDiff // Reverse to align with labels (0 = earliest month)
                     if (monthIndex in 0..5) {
-                        calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.fatConsumed.toFloat() ?: 0f)
+                        calorieMap[monthIndex] = calorieMap[monthIndex]!! + (calorie.cholesterolConsumed.toFloat() ?: 0f)
                     }
                 }
             }
@@ -575,36 +575,42 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedMonthDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        if (dateViewType.contentEquals("Month")){
-            val lastDayOfMonth = getDaysInMonth(month+1 , year)
-            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-            val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
-            selectedDate.text = dateView
-            selectedDate.gravity = Gravity.CENTER
-        }else{
-            selectedDate.text = year.toString()
-            selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedMonthDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            if (dateViewType.contentEquals("Month")){
+                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                selectedDate.text = dateView
+                selectedDate.gravity = Gravity.CENTER
+            }else{
+                selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
+            }
         }
+
     }
 
-    private fun setLastAverageValue(activeCaloriesResponse: ConsumedFatResponse, type: String) {
-        averageBurnCalorie.text = activeCaloriesResponse.currentAvgFat.toInt().toString()
-        if (activeCaloriesResponse.progressSign.contentEquals("plus")){
-            percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
-            // percentageIc.setImageResource(R.drawable.ic_up)
-        }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
-            percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
-            // percentageIc.setImageResource(R.drawable.ic_down)
-        }else{
+    private fun setLastAverageValue(activeCaloriesResponse: ConsumedCholesterolResponse, type: String) {
+        activity?.runOnUiThread {
+            averageBurnCalorie.text = activeCaloriesResponse.currentAvgCholesterol.toInt().toString()
+            if (activeCaloriesResponse.progressSign.contentEquals("plus")){
+                percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                // percentageIc.setImageResource(R.drawable.ic_up)
+            }else if (activeCaloriesResponse.progressSign.contentEquals("minus")){
+                percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
+                // percentageIc.setImageResource(R.drawable.ic_down)
+            }else{
 
+            }
         }
+
     }
 
     private fun convertDate(inputDate: String): String {
