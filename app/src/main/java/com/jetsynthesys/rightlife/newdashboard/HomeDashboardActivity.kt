@@ -1237,7 +1237,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun checkTrailEndedAndShowDialog(): Boolean {
-        return if (!DashboardChecklistManager.paymentStatus) {
+      /*  return if (!DashboardChecklistManager.paymentStatus) {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
@@ -1247,17 +1247,18 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }else{
             true // Return true if condition is false
                 }
-        }
+        }*/
+        return true
     }
 
     fun ifFreeTrailOrPaymentAvailable(): Boolean {
-        return   return if (!DashboardChecklistManager.paymentStatus) {
+       /* return   return if (!DashboardChecklistManager.paymentStatus) {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
             true
-        }
-
+        }*/
+return true
     }
 
     private fun showTrailEndedBottomSheet() {
