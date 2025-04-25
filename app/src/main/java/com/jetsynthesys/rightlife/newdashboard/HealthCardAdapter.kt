@@ -1,12 +1,16 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ItemHealthCardBinding
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
+import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
+import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 
 class HealthCardAdapter(private val cardList: List<DiscoverDataItem>?) :
     RecyclerView.Adapter<HealthCardAdapter.HealthCardViewHolder>() {
@@ -42,11 +46,13 @@ class HealthCardAdapter(private val cardList: List<DiscoverDataItem>?) :
                 .into(imageGraph)*/
 
             btnDiscover.setOnClickListener {
-                if (DashboardChecklistManager.facialScanStatus){
-
-                }else{
-
+                val context = holder.itemView.context
+                val intent = if (DashboardChecklistManager.facialScanStatus) {
+                    Intent(context, NewHealthCamReportActivity::class.java)
+                } else {
+                    Intent(context, HealthCamActivity::class.java)
                 }
+                context.startActivity(intent)
             }
         }
     }
