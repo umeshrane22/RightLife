@@ -350,8 +350,8 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         }
 
         val mealLogRequest = SaveMealLogRequest(
-            meal_name = addedNameTv.text.toString(),
-            meal_type = addedNameTv.text.toString(),
+            meal_name = "",
+            meal_type = "",
             meal_log = mealLogList
         )
 
