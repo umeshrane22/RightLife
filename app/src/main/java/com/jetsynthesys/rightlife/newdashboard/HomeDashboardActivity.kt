@@ -67,7 +67,6 @@ import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
-import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
@@ -87,7 +86,6 @@ import java.util.concurrent.TimeUnit
 
 
 class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
-    val unifiedGraphParamsList = ArrayList<ParameterModel>()
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checklistComplete = true
@@ -103,12 +101,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         HealthPermission.getReadPermission(WeightRecord::class),
         HealthPermission.getReadPermission(DistanceRecord::class)
     )
-
-    // new check list api respone to put check
-    private var checklistStatus: Boolean = false
-    private var facialScanStatus: Boolean = false
-    private var mindAuditStatus: Boolean = false
-    private var isChecklistDataFetched: Boolean = false
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,13 +130,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             )
         }
 
-        /*    recyclerView.adapter = HeartRateAdapter(
-                heartRateList,
-                this
-            )*/
-
         //handle bottom menu
-
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)
         }
@@ -274,8 +260,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
             v.isSelected = !v.isSelected
 
-            /*BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
-        bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());*/
             binding.fab.animate().rotationBy(180f).setDuration(60)
                 .setInterpolator(DecelerateInterpolator()).withEndAction {
                     // Change icon after rotation
@@ -305,32 +289,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         }
 
-
-        /*     binding.fab.backgroundTintList =
-                 ContextCompat.getColorStateList(this, android.R.color.white)
-             binding.fab.imageTintList = ColorStateList.valueOf(resources.getColor(R.color.black))
-             binding.fab.setOnClickListener {
-                 *//*val bottomSheetFragment = BottomSheetFragment()
-            bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)*//*
-            binding.fab.animate().rotationBy(180f).setDuration(60)
-                .setInterpolator(DecelerateInterpolator()).withEndAction {
-                    // Change icon after rotation
-                    if (isAdd) {
-                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black)  // Change to close icon
-                        binding.fab.backgroundTintList =
-                            ContextCompat.getColorStateList(this, R.color.rightlife)
-                        binding.fab.imageTintList =
-                            ColorStateList.valueOf(resources.getColor(R.color.black))
-                    } else {
-                        binding.fab.setImageResource(R.drawable.icon_quicklink_plus)    // Change back to add icon
-                        binding.fab.backgroundTintList =
-                            ContextCompat.getColorStateList(this, R.color.white)
-                        binding.fab.imageTintList =
-                            ColorStateList.valueOf(resources.getColor(R.color.rightlife))
-                    }
-                    isAdd = !isAdd  // Toggle the state
-                }.start()
-        }*/
         // Api calls
         getUserDetails("")
 
@@ -347,14 +305,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()){
-                //Toast.makeText(this, "Eat Right", Toast.LENGTH_SHORT).show()
+            if (ifFreeTrailOrPaymentAvailable()) {
                 startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
             }
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()){
-                //Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
+            if (ifFreeTrailOrPaymentAvailable()) {
                 startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
             }
         }
@@ -368,14 +324,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 }
             } else {
                 installHealthConnect(this)
-                //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable())
-            {
-                //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
-                //startActivity(Intent(this, ProfileNewActivity::class.java))
+            if (ifFreeTrailOrPaymentAvailable()) {
                 val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
                 intent.putExtra("forProfileChecklist", true)
                 startActivity(intent)
@@ -401,9 +353,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         binding.profileImage.setOnClickListener {
-
-            /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
-                else drawer.closeDrawer(Gravity.RIGHT);*/
             startActivity(Intent(this@HomeDashboardActivity, ProfileSettingsActivity::class.java))
         }
 
@@ -459,17 +408,17 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         binding.cardThinkright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
-                        putExtra("ModuleName", "ThinkRight")
-                        putExtra("BottomSeatName", "Not")
-                    })
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
             }
         }
         binding.cardMoveright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
-                        putExtra("ModuleName", "MoveRight")
-                        putExtra("BottomSeatName", "Not")
-                    })
+                    putExtra("ModuleName", "MoveRight")
+                    putExtra("BottomSeatName", "Not")
+                })
             }
         }
 
@@ -524,22 +473,18 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
 
         // Make the API call
         val call = apiService.getUserDetais(accessToken)
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
                 if (response.isSuccessful && response.body() != null) {
-                    val promotionResponse2 = response.body()
-                    Log.d("API Response", "User Details: " + promotionResponse2.toString())
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body())
 
                     val ResponseObj = gson.fromJson(
                         jsonResponse, UserProfileResponse::class.java
                     )
-                    Log.d("API Response body", "Success: User Details" + ResponseObj.userdata.id)
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserId(ResponseObj.userdata.id)
                     SharedPreferenceManager.getInstance(applicationContext)
@@ -573,7 +518,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.makeText(
                     this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT
                 ).show()
-                Log.e("API ERROR", "onFailure: " + t.message)
                 t.printStackTrace() // Print the full stack trace for more details
             }
         })
@@ -604,9 +548,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 if (response.isSuccessful && response.body() != null) {
                     val promotionResponse2 = response.body()!!.string()
 
-
                     val gson = Gson()
-
 
                     val aiDashboardResponseMain = gson.fromJson(
                         promotionResponse2, AiDashboardResponseMain::class.java
@@ -631,22 +573,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         })
     }
 
-    /*    fun extractValues(input: String): Pair<String, String> {
-            val parts = input.split(" / ")
-            return if (parts.size == 2) {
-                Pair(parts[0].trim(), parts[1].trim())
-            } else {
-                Pair(input, "") // Handle cases where `/` is missing
-            }
-        }*//*fun extractNumericValues(input: String): Pair<String, String> {
-        val parts = input.split(" / ")
-        val firstValue = parts[0].trim()  // First value before '/'
-        val secondValue = parts.getOrNull(1)?.trim()?.replace(Regex("[^0-9]"), "") ?: "" // Remove non-numeric characters
-
-        return Pair(firstValue, secondValue)
-    }*/
-
-    fun extractNumericValues(input: String): Pair<String, String> {
+    private fun extractNumericValues(input: String): Pair<String, String> {
         val parts = input.split("/") // Splitting by '/'
 
         if (parts.size < 2) {
@@ -664,13 +591,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         return ((current.toFloat() / total.toFloat()) * 100).toInt()
     }
 
-    /*    private fun setModuleSummaryValues(module: UpdatedModule) {
-            binding.tvModuleValueEatright.text = module.calories?.toString() ?: "0"
-            binding.tvModuleValueSleepright.text = module.sleepDuration?.toString() ?: "0"
-            binding.tvModuleValueThinkright.text = module.mindfulTime?.toString() ?: "0"
-            binding.tvModuleValueMoveright.text = module.activeBurn?.toString() ?: "0"
-        }*/
-
     private fun setIfNotNullOrBlank(textView: TextView, value: String?) {
         if (!value.isNullOrBlank()) {
             textView.text = value
@@ -679,7 +599,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun handleDescoverList(aiDashboardResponseMain: AiDashboardResponseMain?) {
         if (aiDashboardResponseMain?.data?.discoverData != null) {
-            setHealthNoDataCardAdapter(aiDashboardResponseMain?.data?.discoverData!!)
+            setHealthNoDataCardAdapter(aiDashboardResponseMain.data.discoverData)
         }
     }
 
@@ -711,7 +631,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     setIfNotNullOrBlank(
                         binding.tvModuleValueMoveright, module.activeBurn?.toString()
                     )
-                    //setModuleSummaryValues(module)
                 }
 
                 "THINK_RIGHT" -> {
@@ -831,10 +750,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         binding.tvModuleValueMoveright, module.activeBurn?.toString()
                     )
 
-                    aiDashboardResponseMain?.data?.updatedModules
+                    aiDashboardResponseMain.data.updatedModules
 
                     val sleepModule =
-                        aiDashboardResponseMain?.data?.updatedModules!!.find { it.moduleId == "SLEEP_RIGHT" }
+                        aiDashboardResponseMain.data.updatedModules.find { it.moduleId == "SLEEP_RIGHT" }
                     sleepModule?.let {
                         setStageGraphFromSleepRightModule(
                             rem = it.rem ?: "0min",
@@ -914,18 +833,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
                     val promotionResponse2 = response.body()!!.string()
-                    Log.d("API Response", "User Details: " + promotionResponse2.toString())
                     val gson = Gson()
-                    val jsonResponse = gson.toJson(response.body())
-
                     val checklistResponse = gson.fromJson(
                         promotionResponse2, ChecklistResponse::class.java
                     )
-                    val data = checklistResponse.data
-                    Log.d("API", "User ID: ${data.userId}")
-                    Log.d("API", "Profile Status: ${data.profile}")
-                    Log.d("API", "Meal Snap: ${data.meal_snap}")
-                    Log.d("API", "Sync Health Data: ${data.sync_health_data}")
                     handleChecklistResponse(checklistResponse)
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -936,7 +847,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.makeText(
                     this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT
                 ).show()
-                Log.e("API ERROR", "onFailure: " + t.message)
                 t.printStackTrace() // Print the full stack trace for more details
             }
         })
@@ -1011,7 +921,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
             "COMPLETED" -> {
                 imageView.setImageResource(R.drawable.ic_checklist_complete)
-                if (profile.equals("COMPLETED")!! && profile.equals("COMPLETED")) {
+                if (profile.equals("COMPLETED") && profile.equals("COMPLETED")) {
 
                 }
                 if (disableclick) {
@@ -1019,6 +929,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 checkListCount++
             }
+
             else -> {
                 imageView.setImageResource(R.drawable.ic_checklist_tick_bg)
                 checklistComplete = false
@@ -1132,14 +1043,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
-                //  healthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS
-//                val intent = Intent(Intent.ACTION_MAIN).apply {
-//                    setClassName(
-//                        "com.google.android.apps.healthdata",
-//                        "com.google.android.apps.healthdata.home.HomeActivity"
-//                    )
-//                }
-//                startActivity(intent)
             }
         }
 
@@ -1153,20 +1056,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun setHealthNoDataCardAdapter(discoverData: List<DiscoverDataItem>?) {/*  val cardList = arrayListOf(
-              HealthCard(
-                  "",
-                  "Heart Rate",
-                  "",
-                  "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
-              ),
-              HealthCard(
-                  "",
-                  "Heart Rate",
-                  "",
-                  "Your heart’s talking—we just can’t hear it yet. Track this essential metric..."
-              )
-          )*/
+    private fun setHealthNoDataCardAdapter(discoverData: List<DiscoverDataItem>?) {
 
         val adapter = HealthCardAdapter(discoverData)
         binding.healthCardRecyclerView.layoutManager =
@@ -1198,15 +1088,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
                         }
                         if (DashboardChecklistManager.isDataLoaded) {
-                            if (!DashboardChecklistManager.checklistStatus) {
-                                // proceed
-                                Toast.makeText(
-                                    this@HomeDashboardActivity,
-                                    "Checklist: " + DashboardChecklistManager.checklistStatus,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-
                             // Chceklist completion logic
                             if (DashboardChecklistManager.checklistStatus) {
                                 binding.llDashboardMainData.visibility = View.VISIBLE
@@ -1236,29 +1117,29 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             })
     }
 
-    fun checkTrailEndedAndShowDialog(): Boolean {
-      /*  return if (!DashboardChecklistManager.paymentStatus) {
+    private fun checkTrailEndedAndShowDialog(): Boolean {
+        return if (!DashboardChecklistManager.paymentStatus) {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
-            if (!DashboardChecklistManager.checklistStatus){
+            if (!DashboardChecklistManager.checklistStatus) {
                 DialogUtils.showCheckListQuestionCommonDialog(this)
                 false
-            }else{
-            true // Return true if condition is false
-                }
-        }*/
+            } else {
+                true // Return true if condition is false
+            }
+        }
         return true
     }
 
-    fun ifFreeTrailOrPaymentAvailable(): Boolean {
-       /* return   return if (!DashboardChecklistManager.paymentStatus) {
+    private fun ifFreeTrailOrPaymentAvailable(): Boolean {
+        return return if (!DashboardChecklistManager.paymentStatus) {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
             true
-        }*/
-return true
+        }
+        return true
     }
 
     private fun showTrailEndedBottomSheet() {
@@ -1281,13 +1162,6 @@ return true
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
             bottomSheetLayout.animation = slideUpAnimation
         }
-
-        /*dialogBinding.tvTitle.text = "Leaving early?"
-        dialogBinding.tvDescription.text =
-            "A few more minutes of breathing practise will make a world of difference."*/
-
-        //dialogBinding.btnCancel.text = "Continue Practise"
-        //dialogBinding.btnYes.text = "Leave"
 
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
