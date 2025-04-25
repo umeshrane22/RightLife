@@ -1,6 +1,5 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
-import android.app.ComponentCaller;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -19,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -61,6 +59,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     LayoutScanProgressBinding scanBinding;
     List<HealthCamItem> allHealthCamItems = new ArrayList<>();
     private FacialReportResponseNew facialReportResponseNew;
+    private String reportId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,10 +68,9 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         binding = ActivityNewhealthcamreportBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         scanBinding = LayoutScanProgressBinding.bind(binding.scanProgressLayout.getRoot());
+        reportId = getIntent().getStringExtra("REPORT_ID");
 
-        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
-            finish();
-        });
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
         binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
         binding.cardviewLastCheckin.setOnClickListener(v -> {
             startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
@@ -124,7 +122,11 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         Utils.showLoader(this);
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
+        Call<ResponseBody> call;
+        if (reportId != null && !reportId.isEmpty())
+            call = apiService.getHealthCamByReportId(accessToken, reportId);
+        else
+            call = apiService.getMyRLHealthCamResult(accessToken);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

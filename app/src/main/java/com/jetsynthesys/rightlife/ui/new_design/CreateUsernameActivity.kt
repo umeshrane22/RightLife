@@ -97,8 +97,11 @@ class CreateUsernameActivity : AppCompatActivity() {
 
         btnContinue.setOnClickListener {
             Utils.hideSoftKeyboard(this@CreateUsernameActivity)
-            //showFullScreenDialog(edtUsername.text.toString(), email!!)
             sharedPreferenceManager.userName = edtUsername.text.toString()
+            val userdata = Userdata()
+            userdata.firstName = username
+            userdata.email = email
+            updateUserData(userdata)
             val intent = Intent(this, HappyToHaveYouActivity::class.java)
             startActivity(intent)
         }
@@ -112,26 +115,6 @@ class CreateUsernameActivity : AppCompatActivity() {
             !username.matches(regex) -> false
             else -> true
         }
-    }
-
-    private fun showFullScreenDialog(username: String, email: String) {
-
-        findViewById<LinearLayout>(R.id.dialog_welcome).visibility = VISIBLE
-        val userdata = Userdata()
-        userdata.firstName = username
-        userdata.email = email
-        updateUserData(userdata)
-
-        Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, WellnessFocusActivity::class.java)
-            startActivity(intent)
-            findViewById<LinearLayout>(R.id.dialog_welcome).visibility = GONE
-            //dialog.dismiss()
-        }, 2000)
-
-        val tvUsername = findViewById<TextView>(R.id.tv_username)
-        tvUsername.text = username
-
     }
 
     private fun updateUserData(userdata: Userdata) {
