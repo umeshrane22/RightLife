@@ -45,6 +45,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveMainResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
@@ -238,6 +239,11 @@ interface ApiService {
     @GET("app/api/mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
+
+    @GET("sleep/fetch_sleep_time")
+    fun fetchWakeupTime(@Header("Authorization") @Query("user_id") userId: String,
+                        @Query("source") source: String,
+                        @Query("date") date: String): Call<WakeupTimeResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(

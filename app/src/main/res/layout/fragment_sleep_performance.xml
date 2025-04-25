@@ -194,7 +194,7 @@
                     <androidx.cardview.widget.CardView
                         android:id="@+id/card_percent"
                         android:layout_width="100dp"
-                        android:layout_height="60dp"
+                        android:layout_height="wrap_content"
                         android:elevation="4dp"
                         android:background="@drawable/white_meal_date_bg"
                         app:cardCornerRadius="10dp"
@@ -204,6 +204,7 @@
                         app:layout_constraintEnd_toEndOf="parent">
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
+                            android:padding="5dp"
                             android:layout_height="match_parent">
                             <TextView
                                 android:id="@+id/tv_bar_date"

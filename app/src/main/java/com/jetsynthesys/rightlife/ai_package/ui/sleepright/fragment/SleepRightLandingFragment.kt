@@ -62,6 +62,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -108,6 +109,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var consistencyNoDataCardView : CardView
     private lateinit var mainView : LinearLayout
     private lateinit var downloadView: ImageView
+    private lateinit var sleepArrowView: ImageView
+    private lateinit var sleepPerformView: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -116,6 +119,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         //LogLastNightSleep
 
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
+        sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
+        sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
@@ -175,8 +180,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             navigateToFragment(HomeBottomTabFragment(), "Home")
         }
 
+        sleepArrowView.setOnClickListener {
+            navigateToFragment(SleepStagesFragment(), "SleepStagesFragment")
+        }
+
+        sleepPerformView.setOnClickListener {
+            navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
+        }
+
         sleepPerform.setOnClickListener {
-            navigateToFragment(SleepPerformanceFragment(), "Performance")
+            navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
         }
 
         sleepIdeal.setOnClickListener {
@@ -277,7 +290,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         Utils.showLoader(requireActivity())
       //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
       //  val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val userId = "67f6698fa213d14e22a47c2a"
+        val userId = "user_test_1"
         val date = "2025-03-18"
         val source = "apple"
         val preferences = "nature_sounds"
@@ -384,8 +397,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchIdealActualData() {
         Utils.showLoader(requireActivity())
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
-        val period = "weekly"
+        val userId = "user_test_1"
+        val period = "daily"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
         call.enqueue(object : Callback<SleepIdealActualResponse> {
@@ -658,7 +671,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchSleepConsistencyData() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
+        val userId = "user_test_1"
         val period = "weekly"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period)
@@ -668,10 +681,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     progressDialog.dismiss()
                     if (response.body() != null) {
                         sleepConsistencyResponse = response.body()!!
-                        if (sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.size!! > 0) {
+                        if (sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.size!! > 0) {
                             sleepConsistencyChart.visibility = View.VISIBLE
                             consistencyNoDataCardView.visibility = View.GONE
-                            sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.let {
+                            sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
                                 setData(it)
                             }
                         }else{
@@ -699,14 +712,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         })
     }
 
-    fun setData(parseSleepData: ArrayList<SleepDurationData>) = runBlocking {
+    fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
         val result = async {
             parseSleepData(parseSleepData)
         }.await()
         sleepConsistencyChart.setSleepData(result)
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDurationData>): List<SleepEntry> {
+    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.startDatetime ?: ""

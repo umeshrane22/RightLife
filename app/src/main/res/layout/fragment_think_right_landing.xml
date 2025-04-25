@@ -1166,6 +1166,7 @@
                     android:elevation="4dp"
                     android:visibility="gone"
                     android:background="@color/white"
+                    android:id="@+id/lyt_journaling_card"
                     app:cardCornerRadius="10dp"
                     android:paddingBottom="5dp"
                     android:layout_marginStart="20dp"
@@ -1175,14 +1176,15 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="#FFFFFF"
-                        android:padding="16dp">
+                        android:paddingBottom="15dp"
+                        android:background="#FFFFFF">
 
                         <!-- Header Section -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:padding="15dp"
                             android:id="@+id/lyt_journaling"
                             android:gravity="center_vertical"
                             app:layout_constraintTop_toTopOf="parent">
@@ -1208,63 +1210,112 @@
                                 android:layout_height="24dp"
                                 android:src="@drawable/forwardicon" />
                         </LinearLayout>
-
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:id="@+id/viewTitle"
+                            android:background="@color/gray"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/lyt_journaling"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
                         <!-- Subtitle -->
                         <TextView
                             android:id="@+id/tv_journaling_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sunday 30 Mar, 2025"
+                            android:text=""
+                            android:layout_marginStart="15dp"
                             android:fontFamily="@font/dmsans_regular"
-                            android:textSize="14sp"
+                            android:textSize="12sp"
                             android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/lyt_journaling"
+                            app:layout_constraintTop_toBottomOf="@id/viewTitle"
                             app:layout_constraintStart_toStartOf="parent"
                             android:layout_marginTop="15dp" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="15dp"
+                            android:id="@+id/divider"
+                            android:background="@color/black"
+                            android:layout_marginStart="10dp"
+                            app:layout_constraintTop_toTopOf="@id/tv_journaling_date"
+                            app:layout_constraintBottom_toBottomOf="@+id/tv_journaling_date"
+                            app:layout_constraintStart_toEndOf="@id/tv_journaling_date"/>
 
                         <TextView
                             android:id="@+id/tv_journaling_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:text="10 pm"
-                            android:textSize="14sp"
+                            android:text=""
+                            android:textSize="12sp"
                             android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/lyt_journaling"
-                            app:layout_constraintStart_toEndOf="@id/tv_journaling_date"
-                            android:layout_marginTop="15dp" />
-
+                            app:layout_constraintTop_toTopOf="@id/tv_journaling_date"
+                            app:layout_constraintBottom_toBottomOf="@+id/tv_journaling_date"
+                            app:layout_constraintStart_toEndOf="@id/divider"
+                             />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:id="@+id/viewDate"
+                            android:background="@color/gray"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_journaling_time"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
                         <TextView
                             android:id="@+id/tv_journaling_desc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="10 pm ojdfidouvh jcniudscniud niducndi nijcid jcjidi kjni"
+                            android:text=""
                             android:textSize="12sp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
                             android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/tv_journaling_time"
+                            app:layout_constraintTop_toBottomOf="@id/viewDate"
                             app:layout_constraintStart_toStartOf="parent"
                             android:layout_marginTop="15dp" />
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/rec_journaling_emotion"
+                            android:id="@+id/recyclerViewTags"
                             android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
                             android:padding="5dp"
+                            android:orientation="horizontal"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tv_journaling_desc"
-                            android:scrollbars="horizontal" />
+                            android:overScrollMode="never" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:id="@+id/viewDivider"
+                            android:background="@color/gray"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintTop_toBottomOf="@+id/recyclerViewTags"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="45dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginEnd="15dp"
                             android:id="@+id/lyt_add_new"
                             android:orientation="horizontal"
                             android:background="@drawable/think_brown_bg"
                             android:gravity="center"
-                            android:layout_marginTop="15dp"
-                            app:layout_constraintTop_toBottomOf="@id/rec_journaling_emotion">
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/viewDivider">
 
                             <ImageView
                                 android:layout_width="24dp"

@@ -67,6 +67,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResul
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.Phq9Assessment
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.SeverityLevel
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MoreToolsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.TagAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolsAdapter
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
@@ -103,12 +104,16 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var tvQuote: TextView
     private lateinit var tvMindfullMinute: TextView
     private lateinit var tvWellnessDays: TextView
+    private lateinit var tvJournalDesc: TextView
+    private lateinit var tvJournalDate: TextView
+    private lateinit var tvJournalTime: TextView
     private lateinit var moodTrackBtn: ImageView
     private lateinit var mindfullArrowBtn: ImageView
     private lateinit var tvAuthor: TextView
     private lateinit var cardAddTools: CardView
     private lateinit var emotionCardData: CardView
     private lateinit var emotionCardNoData: CardView
+    private lateinit var journalingCard: CardView
     private lateinit var toolsRecyclerView: RecyclerView
     private lateinit var journalingRecyclerView: RecyclerView
     private lateinit var noDataMindFullnessMetric: ConstraintLayout
@@ -147,6 +152,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var emotionIcon: ImageView
     private lateinit var editEmotionIcon: ImageView
     private lateinit var tagFlexbox: FlexboxLayout
+    private lateinit var recyclerViewTags : RecyclerView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -158,9 +164,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         //RecordEmotionThink
         //Not
 
+        recyclerViewTags = view.findViewById(R.id.recyclerViewTags)
+        recyclerViewTags.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         editEmotionIcon = view.findViewById(R.id.editEmotionIcon)
         emotionCardData = view.findViewById(R.id.emotionCard)
         emotionCardNoData = view.findViewById(R.id.lyt_feel)
+        tvJournalDate = view.findViewById(R.id.tv_journaling_date)
+        tvJournalDesc = view.findViewById(R.id.tv_journaling_desc)
+        tvJournalTime = view.findViewById(R.id.tv_journaling_time)
+        journalingCard = view.findViewById(R.id.lyt_journaling_card)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
@@ -335,7 +347,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
 
         fetchToolGridData()
-      //  fetchJournalAnswerData()
+        fetchJournalAnswerData()
 
 
     }
@@ -356,6 +368,59 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchJournalAnswerData() {
+        // progressDialog.show()
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val startDate = getCurrentDate()
+        val call = ApiClient.apiService.fetchJournalAnswer(token,startDate)
+        call.enqueue(object : Callback<JournalAnswerResponse> {
+            override fun onResponse(call: Call<JournalAnswerResponse>, response: Response<JournalAnswerResponse>) {
+                if (response.isSuccessful) {
+                    journalResponse = response.body()!!
+                    if (journalResponse.data.isNotEmpty()) {
+                        journalingCard.visibility = View.VISIBLE
+                        setJournalAnswerData(journalResponse.data.getOrNull(journalResponse.data.size - 1))
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    journalingCard.visibility = View.GONE
+                    //   progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<JournalAnswerResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                journalingCard.visibility = View.GONE
+                //    progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun setJournalAnswerData(journalData: JournalAnswerData?) {
+        tvJournalDate.setText(journalData?.createdAt?.let { formatDate(it) })
+        tvJournalTime.setText(journalData?.createdAt?.let { formatTime(it) })
+        tvJournalDesc.setText(journalData?.answer)
+        val tagAdapter = journalData?.tags?.let { TagAdapter(it) }
+        recyclerViewTags.adapter = tagAdapter
+    }
+
+    fun formatDate(isoDate: String): String {
+        val inputFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME
+        val outputFormatter = DateTimeFormatter.ofPattern("EEEE dd MMM, yyyy", Locale.ENGLISH)
+
+        val parsedDate = ZonedDateTime.parse(isoDate, inputFormatter)
+        return parsedDate.format(outputFormatter)
+    }
+
+    fun formatTime(isoDate: String): String {
+        val inputFormatter = DateTimeFormatter.ISO_ZONED_DATE_TIME
+        val outputFormatter = DateTimeFormatter.ofPattern("h a", Locale.ENGLISH)
+
+        val parsedDate = ZonedDateTime.parse(isoDate, inputFormatter)
+        return parsedDate.format(outputFormatter).lowercase(Locale.ENGLISH)
+    }
+
+    private fun fetchJournalSmileyData() {
        // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val startDate = "2025-04-23"

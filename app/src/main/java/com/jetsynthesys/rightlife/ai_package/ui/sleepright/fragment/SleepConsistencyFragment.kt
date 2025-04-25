@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
 import com.jetsynthesys.rightlife.databinding.FragmentSleepConsistencyBinding
 import kotlinx.coroutines.async
@@ -99,7 +100,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepConsistencyResponse = response.body()!!
-                    sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.let {
+                    sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
                         setData(it)
                     }
 
@@ -118,14 +119,14 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         })
     }
 
-    fun setData(parseSleepData: ArrayList<SleepDurationData>) = runBlocking {
+    fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
         val result = async {
             parseSleepData(parseSleepData)
         }.await()
         barChart.setSleepData(result)
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDurationData>): List<SleepEntry> {
+    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.startDatetime ?: ""
