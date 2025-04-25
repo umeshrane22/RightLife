@@ -17,6 +17,8 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
+import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
+import java.io.Serializable
 
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -71,7 +73,7 @@ class HeartRateAdapter(
             binding.ivWarning.visibility = android.view.View.VISIBLE
             //binding.tvWarning.visibility = android.view.View.GONE
         }*/
-        val iconRes = getWarningIconByType("normal")
+        val iconRes = getWarningIconByType(item?.avgIndicator.toString())
         binding.ivWarning.setImageResource(iconRes)
 
         val iconResReport = getReportIconByType(item?.key.toString())
@@ -95,21 +97,37 @@ class HeartRateAdapter(
 
         // open report detail: click listener
         binding.cardHeartRate.setOnClickListener {
+            val unifiedList = getUnifiedParameterList()
             val intent = Intent(context, FacialScanReportDetailsActivity::class.java).apply {
-                /*putExtra("HEART_RATE", item.heartRate)
-                putExtra("DATE", item.date)
-                putStringArrayListExtra("TREND_DATA", item.trendData)*/
+                putExtra("UNIFIED_LIST", unifiedList as Serializable)
             }
             context.startActivity(intent)
         }
     }
+
+    fun getUnifiedParameterList(): ArrayList<ParameterModel> {
+        val resultList = ArrayList<ParameterModel>()
+
+        heartRateList?.forEach { item ->
+            val key = item.key ?: item.key ?: return@forEach
+            val name = item.avgParameter ?: item.avgParameter ?: return@forEach
+
+            resultList.add(ParameterModel(key, name))
+        }
+
+        return resultList
+    }
+
     private fun getWarningIconByType(type: String): Int {
         return when (type) {
-            "normal" -> R.drawable.breathing_green_tick
-            "Borderline" -> R.drawable.ic_alert_report_page
+            "Normal","Improving","Stable","Good","Excellent","Relaxed","Extremely Relaxed" -> R.drawable.ic_db_report_normal
+            "High","Overloaded" -> R.drawable.ic_db_report_high
+            "Needs Attention","Obesity II","Obesity III","Obesity I" -> R.drawable.ic_db_report_high
+            "Pre-Obesity","Vigilant" -> R.drawable.ic_db_report_vigilant
+            "Underweight","Elevated","Low","Moderate","Borderline","Boderline","Productive","Optimal" -> R.drawable.ic_db_report_pre_obesity
             "Productive" -> R.drawable.ic_report_warning
             "Optimal" -> R.drawable.ic_report_warning
-            else -> R.drawable.breathing_green_tick
+            else -> R.drawable.ic_db_report_normal
         }
     }
     private fun getReportIconByType(type: String): Int {

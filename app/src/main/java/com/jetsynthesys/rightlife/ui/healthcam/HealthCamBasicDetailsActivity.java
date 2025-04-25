@@ -267,6 +267,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     tvAge.setText(question.getQuestionTxt());
                     tvAge.setVisibility(View.VISIBLE);
                     edtAge.setVisibility(View.VISIBLE);
+                    edtAge.setText(String.valueOf(userdata.getAge()));
                     break;
                 case "gender":
                     tvGender.setText(question.getQuestionTxt());
@@ -515,6 +516,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                         Intent intent = new Intent(HealthCamBasicDetailsActivity.this, AccessPaymentActivity.class);
                         intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN");
                         startActivity(intent);
+                        finish();
                     } else {
                         Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
                         intent.putExtra("reportID", healthCamSubmitResponse.getData().getAnswerId());

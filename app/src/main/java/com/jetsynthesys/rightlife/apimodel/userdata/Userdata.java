@@ -74,6 +74,10 @@ public class Userdata {
     @Expose
     private String profilePicture;
 
+    @SerializedName("age")
+    @Expose
+    private int age;
+
     public String getId() {
         return id;
     }
@@ -251,4 +255,11 @@ public class Userdata {
     }
 
 
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
 }

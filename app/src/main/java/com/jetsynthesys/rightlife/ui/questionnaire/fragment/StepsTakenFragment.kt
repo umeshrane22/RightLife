@@ -103,6 +103,7 @@ class StepsTakenFragment : Fragment() {
                 stepsCountTexts[index].setTypeface(null, Typeface.BOLD)
                 selectedSteps = stepsCountTexts[index].text.toString()
             }
+            binding.tvStepsQuantity.text = stepCount.toString()+ "Steps"
         }
 
         binding.btnContinue.setOnClickListener {

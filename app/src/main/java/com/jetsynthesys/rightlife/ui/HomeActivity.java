@@ -32,7 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,7 +48,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity;
 import com.jetsynthesys.rightlife.apimodel.PromotionResponse;
 import com.jetsynthesys.rightlife.apimodel.affirmations.AffirmationResponse;
 import com.jetsynthesys.rightlife.apimodel.liveevents.LiveEventResponse;
-import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.jetsynthesys.rightlife.apimodel.rledit.RightLifeEditResponse;
 import com.jetsynthesys.rightlife.apimodel.servicepane.ServicePaneResponse;
 import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse;
@@ -66,26 +64,18 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity;
 import com.jetsynthesys.rightlife.ui.Wellness.WellnessDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity;
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity;
-import com.jetsynthesys.rightlife.ui.drawermenu.FavouritesActivity;
-import com.jetsynthesys.rightlife.ui.drawermenu.PreferencesLayer1Activity;
-import com.jetsynthesys.rightlife.ui.drawermenu.PurchaseHistoryTypesActivity;
-import com.jetsynthesys.rightlife.ui.drawermenu.ReferAFriendActivity;
-import com.jetsynthesys.rightlife.ui.exploremodule.ExploreModuleListActivity;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthAuditActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
-import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity;
 import com.jetsynthesys.rightlife.ui.healthpagemain.HealthPageMainActivity;
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
 import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity;
 import com.jetsynthesys.rightlife.ui.search.SearchActivity;
-import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -1592,7 +1582,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
             //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         } else if (viewId == R.id.btn_wellness_preference) {
-            startActivity(new Intent(HomeActivity.this, PreferencesLayer1Activity.class));
         }
        else if (view.getId() == R.id.ll_food_log) {
             if (checkTrailEndedAndShowDialog()) {
@@ -1814,27 +1803,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_profile) {
-            Intent intent = new Intent(this, ProfileSettingsActivity.class);
-            profileActivityLauncher.launch(intent);
-        } else if (id == R.id.nav_refer_friend) {
-            Intent intent = new Intent(this, ReferAFriendActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_favourites) {
-            Intent intent = new Intent(this, FavouritesActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_purchase) {
-            Intent intent = new Intent(this, PurchaseHistoryTypesActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_settings) {
-            Intent intent = new Intent(this, SettingsNewActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_preferences) {
-            Intent intent = new Intent(this, PreferencesLayer1Activity.class);
-            startActivity(intent);
-        }
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -1844,8 +1812,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             showTrailEndedBottomSheet();
             return false; // Return false if condition is true and dialog is shown
         }
-        return true; // Return true if condition is false
+        else {
+            if (!DashboardChecklistManager.INSTANCE.getChecklistStatus()){
+                DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this);
+                return false;
+            }else{
+                return  true ;// Return true if condition is false
+            }
+        }
     }
+
 
     private void showTrailEndedBottomSheet() {
         // Create and configure BottomSheetDialog

@@ -21,6 +21,8 @@ class BreathworkActivity : AppCompatActivity() {
 
     private lateinit var adapter: BreathworkAdapter
     private val breathWorks = ArrayList<BreathingData>()
+    private var isFromTool = false
+    private var whereToGo = ""
 
     private lateinit var binding: ActivityBreathworkBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +30,9 @@ class BreathworkActivity : AppCompatActivity() {
         setContentView(R.layout.activity_breathwork)
         binding = ActivityBreathworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
+        whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
 
         getBreathingWork()
 
@@ -69,6 +74,26 @@ class BreathworkActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful && response.body() != null) {
                         response.body()?.data?.let { breathWorks.addAll(it) }
+                        var breathingDataSend: BreathingData? = null
+                        if (isFromTool) {
+                            breathWorks.forEach { breathingData ->
+                                if (breathingData.id.equals(whereToGo)) {
+                                    breathingDataSend = breathingData
+                                    return@forEach
+                                }
+                            }
+                            if (breathingDataSend != null) {
+                                startActivity(
+                                    Intent(
+                                        this@BreathworkActivity,
+                                        BreathworkSessionActivity::class.java
+                                    ).apply {
+                                        putExtra("BREATHWORK", breathingDataSend)
+                                    })
+                                finish()
+                            }else
+                                adapter.notifyDataSetChanged()
+                        }
                         adapter.notifyDataSetChanged()
                     } else {
                         Toast.makeText(

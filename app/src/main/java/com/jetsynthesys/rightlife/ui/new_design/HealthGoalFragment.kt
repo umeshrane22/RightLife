@@ -155,6 +155,10 @@ class HealthGoalFragment : Fragment() {
             }
         }
 
+        if (onboardingQuestionRequest.age != null){
+            userData.age = onboardingQuestionRequest.age!!
+        }
+
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call: Call<ResponseBody> = apiService.updateUser(token, userData)

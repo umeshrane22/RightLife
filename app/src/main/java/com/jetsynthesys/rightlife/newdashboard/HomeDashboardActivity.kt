@@ -64,6 +64,7 @@ import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
+import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
@@ -86,6 +87,7 @@ import java.util.concurrent.TimeUnit
 
 
 class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
+    val unifiedGraphParamsList = ArrayList<ParameterModel>()
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checklistComplete = true
@@ -345,13 +347,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
+            if (ifFreeTrailOrPaymentAvailable()){
                 //Toast.makeText(this, "Eat Right", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
             }
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
+            if (ifFreeTrailOrPaymentAvailable()){
                 //Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
             }
@@ -370,7 +372,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
+            if (ifFreeTrailOrPaymentAvailable())
+            {
                 //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
                 //startActivity(Intent(this, ProfileNewActivity::class.java))
                 val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
@@ -980,7 +983,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
         // Chceklist completion logic
-        if (checklistComplete) {
+        if (DashboardChecklistManager.checklistStatus) {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
         } else {
@@ -1015,6 +1018,10 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                     relativeLayout.setOnClickListener(null)
                 }
                 checkListCount++
+            }
+            else -> {
+                imageView.setImageResource(R.drawable.ic_checklist_tick_bg)
+                checklistComplete = false
             }
         }
     }
@@ -1200,6 +1207,14 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                                 ).show()
                             }
 
+                            // Chceklist completion logic
+                            if (DashboardChecklistManager.checklistStatus) {
+                                binding.llDashboardMainData.visibility = View.VISIBLE
+                                binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
+                            } else {
+                                binding.llDashboardMainData.visibility = View.GONE
+                                binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
+                            }
                         } else {
                             Toast.makeText(
                                 this@HomeDashboardActivity,
@@ -1222,12 +1237,28 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     fun checkTrailEndedAndShowDialog(): Boolean {
-        return if (!DashboardChecklistManager.paymentStatus) {
+      /*  return if (!DashboardChecklistManager.paymentStatus) {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
+            if (!DashboardChecklistManager.checklistStatus){
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            }else{
             true // Return true if condition is false
-        }
+                }
+        }*/
+        return true
+    }
+
+    fun ifFreeTrailOrPaymentAvailable(): Boolean {
+       /* return   return if (!DashboardChecklistManager.paymentStatus) {
+            showTrailEndedBottomSheet()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            true
+        }*/
+return true
     }
 
     private fun showTrailEndedBottomSheet() {

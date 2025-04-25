@@ -398,7 +398,7 @@
                 android:background="@drawable/bg_gray_border"
                 android:backgroundTint="@color/menuselected"
                 android:gravity="center"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <ImageView

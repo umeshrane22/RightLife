@@ -94,9 +94,10 @@ import kotlin.math.abs
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
 
     private lateinit var viewPager: ViewPager2
-   // private lateinit var tabLayout: TabLayout
+
+    // private lateinit var tabLayout: TabLayout
     private lateinit var dotsLayout: LinearLayout
-    private lateinit var adapter : AssessmentPagerAdapter
+    private lateinit var adapter: AssessmentPagerAdapter
     private lateinit var add_tools_think_right: ImageView
     private lateinit var instruction_your_mindfullness_review: ImageView
     private lateinit var dots: Array<ImageView?>
@@ -119,14 +120,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private lateinit var data: UserProfileResponse
     private var noData: Boolean = false
-    private lateinit var thinkQuoteResponse : ThinkQuoteResponse
+    private lateinit var thinkQuoteResponse: ThinkQuoteResponse
     private lateinit var toolRecyclerView: RecyclerView
     private lateinit var toolAdapter: ToolAdapter
     private val toolsList: ArrayList<ModuleData> = arrayListOf()
     private var assessmentList: MutableList<AssessmentResultData> = mutableListOf()
- //   private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
+    //   private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
 
     private lateinit var progressDialog: ProgressDialog
+
     private lateinit var toolsResponse : ToolsResponse
     private lateinit var mainView : LinearLayout
     private var toolsArray : ArrayList<ToolsData> = arrayListOf()
@@ -181,14 +183,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         instruction_your_mindfullness_review =
             view.findViewById(R.id.instruction_your_mindfullness_review)
         viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
-    //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
+        //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
         dotsLayout = view.findViewById(R.id.customDotsContainer)
         fetchToolList()
         fetchQuoteData()
         fetchAssessmentResult()
         fetchMindfulData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
-        tvWellnessDays.setText(data.wellnessStreak.toString()+" days")
+        tvWellnessDays.text = data.wellnessStreak.toString() + " days"
 
         // add_tools_think_right = view.findViewById(R.id.add_tools_think_right)
         instruction_your_mindfullness_review.setOnClickListener {
@@ -198,33 +200,35 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         }
         toolsRecyclerView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
-       // toolsRecyclerView.adapter = toolsAdapter
-        toolsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        // toolsRecyclerView.adapter = toolsAdapter
+        toolsRecyclerView.layoutManager =
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         toolsRecyclerView.adapter = toolsMoreAdapter
         downloadView = view.findViewById(R.id.view_download_icon)
         mainView = view.findViewById(R.id.lyt_main_page)
-        toolsAdapter = ToolsAdapter(requireContext(), toolsGridArray, :: onToolsItem)
+        toolsAdapter = ToolsAdapter(requireContext(), toolsGridArray, ::onToolsItem)
         journalingRecyclerView = view.findViewById(R.id.rec_add_tools)
         journalingRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         journalingRecyclerView.adapter = toolsAdapter
 
 
         toolRecyclerView = view.findViewById(R.id.tool_list_think_right)
-        toolAdapter = ToolAdapter(requireContext(),toolsList, :: onToolItem)
-        toolRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        toolAdapter = ToolAdapter(requireContext(), toolsList, ::onToolItem)
+        toolRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         toolRecyclerView.adapter = toolAdapter
 
         tvQuote.setOnClickListener {
-            navigateToFragment(ViewQuoteFragment(),"ViewQuote")
+            navigateToFragment(ViewQuoteFragment(), "ViewQuote")
         }
         moodTrackBtn.setOnClickListener {
             navigateToFragment(MoodTrackerFragment("", 0,"ThinkRightReportFragment"),"MoodTracker")
         }
         mindfullArrowBtn.setOnClickListener {
-            navigateToFragment(MindfulnessAnalysisFragment(),"MindfulnessAnalysis")
+            navigateToFragment(MindfulnessAnalysisFragment(), "MindfulnessAnalysis")
         }
         downloadView.setOnClickListener {
-            saveViewAsPdf(requireContext(),mainView,"Journal")
+            saveViewAsPdf(requireContext(), mainView, "Journal")
         }
 
         cardAddTools.setOnClickListener {
@@ -319,12 +323,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         // Set the score
         scoreTextView.text = "YOUR SCORE: ${assessment.score}"
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-               // navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
-                activity?.finish()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    // navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                    activity?.finish()
+                }
+            })
 
         fetchToolGridData()
         fetchJournalAnswerData()
@@ -411,25 +417,29 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         val startDate = getCurrentDate()
         val endDate = getCurrentDate()
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
+        val call = ApiClient.apiService.fetchMindFull(token, startDate, endDate)
         call.enqueue(object : Callback<MindfullResponse> {
-            override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
+            override fun onResponse(
+                call: Call<MindfullResponse>,
+                response: Response<MindfullResponse>
+            ) {
                 if (response.isSuccessful) {
                     mindfullResponse = response.body()!!
                     progressDialog.dismiss()
                     mindfullResponse.data.getOrNull(0)?.duration?.toString().let {
-                        tvMindfullMinute.setText(it+" min")
+                        tvMindfullMinute.text = it + " min"
                     }
 
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-     //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
+
             override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-  //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }
         })
@@ -448,27 +458,32 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private fun fetchToolGridData() {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-      //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.thinkTools(token)
         call.enqueue(object : Callback<ToolsGridResponse> {
-            override fun onResponse(call: Call<ToolsGridResponse>, response: Response<ToolsGridResponse>) {
+            override fun onResponse(
+                call: Call<ToolsGridResponse>,
+                response: Response<ToolsGridResponse>
+            ) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     toolGridResponse = response.body()!!
                     for (i in 0 until toolGridResponse.data.size) {
                         toolGridResponse.data.getOrNull(i)?.let {
-                            toolsGridArray.add(it) }
+                            toolsGridArray.add(it)
+                        }
                     }
                     toolsAdapter.notifyDataSetChanged()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-    //                Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    //                Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
+
             override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-      //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }
         })
@@ -478,39 +493,47 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-      //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-      //  val userId = "67a5fae9197992511e71b1c8"
+        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
+        //  val userId = "67a5fae9197992511e71b1c8"
 
         val call = ApiClient.apiService.getToolList(token, userId)
         call.enqueue(object : Callback<ModuleResponse> {
-            override fun onResponse(call: Call<ModuleResponse>, response: Response<ModuleResponse>) {
+            override fun onResponse(
+                call: Call<ModuleResponse>,
+                response: Response<ModuleResponse>
+            ) {
                 if (response.isSuccessful) {
-                   // progressDialog.dismiss()
+                    // progressDialog.dismiss()
                     val toolResponse = response.body()
                     toolResponse?.let {
                         if (it.success == true) {
                             val tools = it.data
                             setToolListData(tools)
                         } else {
-                            Toast.makeText(activity, "Request failed with status: ${it.statusCode}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                activity,
+                                "Request failed with status: ${it.statusCode}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 } else {
-                   /* Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()*/
-       //             Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    /* Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                     progressDialog.dismiss()*/
+                    //             Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<ModuleResponse>, t: Throwable) {
-               /* Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()*/
-      //          Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
+                /* Log.e("Error", "API call failed: ${t.message}")
+                 Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
+                 progressDialog.dismiss()*/
+                //          Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
+
     private fun setToolListData(tools: List<ModuleData>) {
         toolsList.clear()
         toolsList.addAll(tools)
@@ -535,12 +558,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
-                        gravity = android.view.Gravity.CENTER
+                        gravity = Gravity.CENTER
                     }
                     text = level.name
                     textSize = 12f
-                    setTextColor(android.graphics.Color.BLACK)
-                    setTypeface(null, android.graphics.Typeface.BOLD)
+                    setTextColor(Color.BLACK)
+                    setTypeface(null, Typeface.BOLD)
                 }
                 val container = LinearLayout(context).apply {
                     layoutParams = LinearLayout.LayoutParams(
@@ -548,7 +571,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         level.range.count().toFloat()
                     )
-                    gravity = android.view.Gravity.CENTER
+                    gravity = Gravity.CENTER
                     setBackgroundColor(resources.getColor(level.colorResId))
                     addView(label)
                 }
@@ -580,107 +603,145 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolItem(toolsData: ModuleData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.title != null){
-            if (toolsData.title.contentEquals("Breathing")){
-                startActivity(Intent(requireContext(), BreathworkActivity::class.java))
-            }else if (toolsData.title.contentEquals("Journalling")){
-                startActivity(Intent(requireContext(), JournalListActivity::class.java))
-            }else if (toolsData.title.contentEquals("Affirmation")){
-                startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
-            }
+        if (toolsData.title != null) {
+
+            if (toolsData.title?.contains("Breathing") == true) {
+                startActivity(
+                    Intent(
+                        requireContext(),
+                        BreathworkActivity::class.java
+                    ).apply {
+                        putExtra("IS_FROM_TOOLS", true)
+                        putExtra("TOOLS_VALUE", toolsData._id)
+                    }
+                )
+            } else if (toolsData.title.equals("Free Form")
+                || toolsData.title.equals("Bullet")
+                || toolsData.title.equals("Gratitude")
+                || toolsData.title.equals("Grief")
+            ) {
+                startActivity(
+                    Intent(
+                        requireContext(),
+                        JournalNewActivity::class.java
+                    ).apply {
+                        putExtra("IS_FROM_TOOLS", true)
+                        putExtra("TOOLS_VALUE", toolsData._id)
+                    }
+                )
+
+            } else
+                startActivity(
+                    Intent(
+                        requireContext(),
+                        PractiseAffirmationPlaylistActivity::class.java
+                    )
+                )
         }
     }
+
     private fun fetchQuoteData() {
-       // progressDialog.show()
+        // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-   //     val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        //     val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.quoteOfDay(token)
         call.enqueue(object : Callback<ThinkQuoteResponse> {
-            override fun onResponse(call: Call<ThinkQuoteResponse>, response: Response<ThinkQuoteResponse>) {
+            override fun onResponse(
+                call: Call<ThinkQuoteResponse>,
+                response: Response<ThinkQuoteResponse>
+            ) {
                 if (response.isSuccessful) {
-                   // progressDialog.dismiss()
+                    // progressDialog.dismiss()
                     thinkQuoteResponse = response.body()!!
-                    tvQuote.setText(thinkQuoteResponse.data.getOrNull(0)?.quote)
-                    tvAuthor.setText("-" + thinkQuoteResponse.data.getOrNull(0)?.authorName)
+                    tvQuote.text = thinkQuoteResponse.data.getOrNull(0)?.quote
+                    tvAuthor.text = "-" + thinkQuoteResponse.data.getOrNull(0)?.authorName
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-         //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                   // progressDialog.dismiss()
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()
                 }
             }
+
             override fun onFailure(call: Call<ThinkQuoteResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-      //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 //progressDialog.dismiss()
             }
         })
     }
+
     private fun fetchAssessmentResult() {
-       // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-     //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
+        //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
         val call = ApiClient.apiService.getAssessmentResult(token)
 
         call.enqueue(object : Callback<AssessmentResponse> {
-            override fun onResponse(call: Call<AssessmentResponse>, response: Response<AssessmentResponse>) {
+            override fun onResponse(
+                call: Call<AssessmentResponse>,
+                response: Response<AssessmentResponse>
+            ) {
                 if (response.isSuccessful) {
                     val assessmentResponse = response.body()
 
                     if (assessmentResponse != null) {
-                        if (assessmentResponse.result.isNotEmpty()){
+                        if (assessmentResponse.result.isNotEmpty()) {
                             dataFilledMindAudit.visibility = View.VISIBLE
                             noDataMindAudit.visibility = View.GONE
                             reassessYourMental.visibility = View.VISIBLE
-                        assessmentList = parseAssessmentData(assessmentResponse.result) // replace with real parsing
-                        adapter = AssessmentPagerAdapter(assessmentList)
-                        viewPager.adapter = adapter
-                        val transformer = CompositePageTransformer().apply {
-                            // Space between pages
-                            addTransformer(MarginPageTransformer(16))  // <- Adjust this to your desired gap
+                            assessmentList =
+                                parseAssessmentData(assessmentResponse.result) // replace with real parsing
+                            adapter = AssessmentPagerAdapter(assessmentList)
+                            viewPager.adapter = adapter
+                            val transformer = CompositePageTransformer().apply {
+                                // Space between pages
+                                addTransformer(MarginPageTransformer(16))  // <- Adjust this to your desired gap
 
-                            // Optional: slight shrink for visual depth
-                            addTransformer { page, position ->
-                                val scale = 0.95f + (1 - abs(position)) * 0.05f
-                                page.scaleY = scale
+                                // Optional: slight shrink for visual depth
+                                addTransformer { page, position ->
+                                    val scale = 0.95f + (1 - abs(position)) * 0.05f
+                                    page.scaleY = scale
+                                }
                             }
-                        }
 
-                        viewPager.setPageTransformer(transformer)
-                        viewPager.offscreenPageLimit = 3
-                        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                            override fun onPageSelected(position: Int) {
-                                for (i in 0 until itemCount) {
-                                    val dot = dotsLayout.getChildAt(i)
-                                    val isActive = i == position
-                                    val layoutParams = dot.layoutParams
-                                    layoutParams.width = if (isActive) 32.dpToPx() else dotSize.dpToPx()
-                                    dot.layoutParams = layoutParams
-                                    dot.background = ContextCompat.getDrawable(
+                            viewPager.setPageTransformer(transformer)
+                            viewPager.offscreenPageLimit = 3
+                            viewPager.registerOnPageChangeCallback(object :
+                                ViewPager2.OnPageChangeCallback() {
+                                override fun onPageSelected(position: Int) {
+                                    for (i in 0 until itemCount) {
+                                        val dot = dotsLayout.getChildAt(i)
+                                        val isActive = i == position
+                                        val layoutParams = dot.layoutParams
+                                        layoutParams.width =
+                                            if (isActive) 32.dpToPx() else dotSize.dpToPx()
+                                        dot.layoutParams = layoutParams
+                                        dot.background = ContextCompat.getDrawable(
+                                            requireContext(),
+                                            if (isActive) R.drawable.active_dots else R.drawable.inactive_dots
+                                        )
+                                    }
+                                }
+                            })
+                            itemCount = adapter.itemCount
+                            dotSize = 14
+                            dotMargin = 6
+                            for (i in 0 until itemCount) {
+                                val dot = View(requireContext()).apply {
+                                    layoutParams = LinearLayout.LayoutParams(
+                                        if (i == 0) 32 else dotSize.dpToPx(),  // Active is pill
+                                        dotSize.dpToPx()
+                                    ).apply {
+                                        setMargins(dotMargin.dpToPx(), 0, dotMargin.dpToPx(), 0)
+                                    }
+                                    background = ContextCompat.getDrawable(
                                         requireContext(),
-                                        if (isActive) R.drawable.active_dots else R.drawable.inactive_dots
+                                        if (i == 0) R.drawable.active_dots else R.drawable.inactive_dots
                                     )
                                 }
+                                dotsLayout.addView(dot)
                             }
-                        })
-                         itemCount = adapter.itemCount
-                         dotSize = 14
-                         dotMargin = 6
-                        for (i in 0 until itemCount) {
-                            val dot = View(requireContext()).apply {
-                                layoutParams = LinearLayout.LayoutParams(
-                                    if (i == 0) 32 else dotSize.dpToPx(),  // Active is pill
-                                    dotSize.dpToPx()
-                                ).apply {
-                                    setMargins(dotMargin.dpToPx(), 0, dotMargin.dpToPx(), 0)
-                                }
-                                background = ContextCompat.getDrawable(
-                                    requireContext(),
-                                    if (i == 0) R.drawable.active_dots else R.drawable.inactive_dots
-                                )
-                            }
-                            dotsLayout.addView(dot)
-                        }
-                        } else{
+                        } else {
                             dataFilledMindAudit.visibility = View.GONE
                             noDataMindAudit.visibility = View.VISIBLE
                             reassessYourMental.visibility = View.GONE
@@ -688,7 +749,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-            //        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    //        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     dataFilledMindAudit.visibility = View.GONE
                     noDataMindAudit.visibility = View.VISIBLE
                     reassessYourMental.visibility = View.GONE
@@ -697,7 +758,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
             override fun onFailure(call: Call<AssessmentResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-         //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 dataFilledMindAudit.visibility = View.GONE
                 noDataMindAudit.visibility = View.VISIBLE
                 reassessYourMental.visibility = View.GONE
@@ -731,11 +792,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolsItem(toolsData: ToolGridData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.moduleName.contentEquals("Breathing")){
+        if (toolsData.moduleName.contentEquals("Breathing")) {
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
-        }else if (toolsData.moduleName.contentEquals("Journalling")){
+        } else if (toolsData.moduleName.contentEquals("Journalling")) {
             startActivity(Intent(requireContext(), JournalListActivity::class.java))
-        }else if (toolsData.moduleName.contentEquals("Affirmation")){
+        } else if (toolsData.moduleName.contentEquals("Affirmation")) {
             startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
         }
     }
@@ -768,7 +829,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     outputStream = resolver.openOutputStream(uri)
                 }
             } else {
-                val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val directory =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val file = File(directory, "$fileName.pdf")
                 fileUri = Uri.fromFile(file)
                 outputStream = file.outputStream()
@@ -801,7 +863,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
         val channelId = "download_channel"
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -821,7 +884,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            context, 0, openPdfIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            0,
+            openPdfIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(context, channelId)
@@ -902,7 +968,16 @@ class AssessmentPagerAdapter(
                 shape = GradientDrawable.RECTANGLE
                 cornerRadii = when (i) {
                     0 -> floatArrayOf(radius, radius, 0f, 0f, 0f, 0f, radius, radius) // left round
-                    labels.lastIndex -> floatArrayOf(0f, 0f, radius, radius, radius, radius, 0f, 0f) // right round
+                    labels.lastIndex -> floatArrayOf(
+                        0f,
+                        0f,
+                        radius,
+                        radius,
+                        radius,
+                        radius,
+                        0f,
+                        0f
+                    ) // right round
                     else -> FloatArray(8) { 0f }
                 }
 
