@@ -64,6 +64,9 @@ import com.github.mikephil.charting.utils.MPPointF
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
+import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
+import com.jetsynthesys.rightlife.ai_package.model.WakeupData
+import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.async
@@ -76,6 +79,7 @@ import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -96,6 +100,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private val deepData: ArrayList<Float> = arrayListOf()
     private val formatters = DateTimeFormatter.ISO_DATE_TIME
     private lateinit var idealActualResponse: SleepIdealActualResponse
+    private lateinit var wakeupTimeResponse: WakeupTimeResponse
     private lateinit var sleepStagesView: SleepChartViewLanding
     private lateinit var sleepConsistencyChart: SleepGraphView
     private lateinit var progressDialog: ProgressDialog
@@ -209,6 +214,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchSleepLandingData()
         fetchIdealActualData()
         fetchSleepConsistencyData()
+        fetchWakeupData()
 
         editWakeup.setOnClickListener {
             openBottomSheet()
@@ -269,6 +275,37 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
+    private fun fetchWakeupData() {
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val date = getCurrentDate()
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source, date)
+        call.enqueue(object : Callback<WakeupTimeResponse> {
+            override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
+                if (response.isSuccessful) {
+                    wakeupTimeResponse = response.body()!!
+                    setWakeupData(wakeupTimeResponse.data.getOrNull(0))
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                   // Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+
+                }
+            }
+            override fun onFailure(call: Call<WakeupTimeResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+            }
+        })
+    }
+
+    fun setWakeupData(wakeupData: WakeupData?){
+
+    }
+
+    fun getCurrentDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().format(formatter)
+    }
+
     private fun openBottomSheet() {
         val bottomSheet = WakeUpTimeDialogFragment()
         bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
@@ -288,10 +325,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchSleepLandingData() {
         Utils.showLoader(requireActivity())
-      //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-      //  val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val userId = "user_test_1"
-        val date = "2025-03-18"
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+      //  val userId = "user_test_1"
+        val date = getCurrentDate()
         val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
@@ -396,8 +433,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchIdealActualData() {
         Utils.showLoader(requireActivity())
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "user_test_1"
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        //val userId = "user_test_1"
         val period = "daily"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
@@ -670,8 +708,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchSleepConsistencyData() {
         progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "user_test_1"
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+       // val userId = "user_test_1"
         val period = "weekly"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period)

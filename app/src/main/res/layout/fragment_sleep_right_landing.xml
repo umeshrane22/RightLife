@@ -636,6 +636,7 @@
                         android:layout_height="24dp"
                         android:src="@drawable/sleep_right_arrow_btn"
                         android:id="@+id/img_sleep_arrow"
+                        android:visibility="gone"
                         android:layout_marginTop="14dp"
                         android:layout_marginEnd="15dp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -1037,6 +1038,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:visibility="gone"
                         android:src="@drawable/sleep_right_arrow_btn"
                         android:id="@+id/img_sleep_perform_arrow"
                         android:layout_marginTop="14dp"

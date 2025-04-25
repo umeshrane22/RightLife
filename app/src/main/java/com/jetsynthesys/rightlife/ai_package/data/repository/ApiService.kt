@@ -26,6 +26,7 @@ import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerResponse
+import com.jetsynthesys.rightlife.ai_package.model.LogNapRequest
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
@@ -241,9 +242,13 @@ interface ApiService {
                       @Query("endDate") endDate: String): Call<MindfullResponse>
 
     @GET("sleep/fetch_sleep_time")
-    fun fetchWakeupTime(@Header("Authorization") @Query("user_id") userId: String,
+    fun fetchWakeupTime(@Query("user_id") userId: String,
                         @Query("source") source: String,
                         @Query("date") date: String): Call<WakeupTimeResponse>
+
+    @POST("sleep/set_nap_log")
+    fun logNap(@Query("user_id") userId: String,
+               @Query("source") source: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
@@ -287,7 +292,7 @@ interface ApiService {
     ): Call<MoodTrackerMonthlyResponse>
 
     @POST("app/api/journalNew")
-    fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest,): Call<BaseResponse>
+    fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest): Call<BaseResponse>
 
     @GET("sleep/landing_page/")
     fun fetchSleepLandingPage(

@@ -330,9 +330,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                     println(landingPageResponse)
 //                    val mealPlanLists = response.body()?.data ?: emptyList()
 //                    recipesList.addAll(mealPlanLists)
-                    setMealSummaryData(landingPageResponse, halfCurveProgressBar)
-                    onTodayMealLogList(landingPageResponse)
-                    onMealSuggestionList(landingPageResponse)
+                //    setMealSummaryData(landingPageResponse, halfCurveProgressBar)
+               //     onTodayMealLogList(landingPageResponse)
+               //     onMealSuggestionList(landingPageResponse)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
