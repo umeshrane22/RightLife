@@ -1,7 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -36,26 +35,31 @@ import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogData
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogDateListAdapter
+import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogWeeklyDayAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DinnerMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentYourMealLogsBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
     private lateinit var layoutToolbar :ConstraintLayout
-    private lateinit var mealLogDateRecyclerView : RecyclerView
+    private lateinit var mealLogWeeklyDayRecyclerView : RecyclerView
     private lateinit var breakfastMealRecyclerView : RecyclerView
     private lateinit var lunchMealRecyclerView : RecyclerView
     private lateinit var dinnerMealRecyclerView : RecyclerView
@@ -87,7 +91,12 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var layoutAdd : LinearLayoutCompat
     private lateinit var layoutLunchAdd : LinearLayoutCompat
     private lateinit var layoutDinnerAdd : LinearLayoutCompat
+    private lateinit var selectedWeeklyDayTv : TextView
+    private lateinit var nextWeekBtn : ImageView
+    private lateinit var prevWeekBtn : ImageView
+    private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
 
+    private var mealLogWeeklyDayList : List<MealLogWeeklyDayModel> = ArrayList()
     private var mealPlanData : ArrayList<MealLogData> = ArrayList()
     private var mealList : ArrayList<MealLists> = ArrayList()
     var breakfastLists : ArrayList<MealList> = ArrayList()
@@ -97,7 +106,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
 
-    private val mealLogDateAdapter by lazy { MealLogDateListAdapter(requireContext(), arrayListOf(), -1,
+    private val mealLogWeeklyDayAdapter by lazy { MealLogWeeklyDayAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMealLogDateItem) }
     private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
@@ -118,7 +127,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         appPreference = AppPreference(requireContext())
         val moduleName = arguments?.getString("ModuleName").toString()
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
-        mealLogDateRecyclerView = view.findViewById(R.id.recyclerview_calender)
+        mealLogWeeklyDayRecyclerView = view.findViewById(R.id.recyclerview_calender)
         breakfastMealRecyclerView = view.findViewById(R.id.recyclerview_breakfast_meals_item)
         lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
         dinnerMealRecyclerView = view.findViewById(R.id.recyclerview_dinner_meals_item)
@@ -148,6 +157,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         layoutDinnerAdd = view.findViewById(R.id.layout_dinnerAdd)
         layoutToolbar = view.findViewById(R.id.layoutToolbar)
         transparentOverlay = view.findViewById(R.id.transparentOverlay)
+        selectedWeeklyDayTv = view.findViewById(R.id.selectedWeeklyDayTv)
+        nextWeekBtn = view.findViewById(R.id.nextWeekBtn)
+        prevWeekBtn = view.findViewById(R.id.prevWeekBtn)
 
         if (moduleName.contentEquals("HomeDashboard")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
@@ -161,8 +173,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         getMealPlanList()
         //getMealList()
 
-        mealLogDateRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        mealLogDateRecyclerView.adapter = mealLogDateAdapter
+        mealLogWeeklyDayRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        mealLogWeeklyDayRecyclerView.adapter = mealLogWeeklyDayAdapter
 
         breakfastMealRecyclerView.layoutManager = LinearLayoutManager(context)
         breakfastMealRecyclerView.adapter = breakfastMealLogsAdapter
@@ -185,6 +197,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                 }
             }
         })
+
+        mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
+        onMealLogWeeklyDayList(mealLogWeeklyDayList)
+       prevWeekBtn.setOnClickListener {
+            currentWeekStart = currentWeekStart.minusWeeks(1)
+           mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
+           onMealLogWeeklyDayList(mealLogWeeklyDayList)
+        }
+       nextWeekBtn.setOnClickListener {
+            currentWeekStart = currentWeekStart.plusWeeks(1)
+           mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
+           onMealLogWeeklyDayList(mealLogWeeklyDayList)
+        }
 
         onBreakfastMealLogItemRefresh()
         onLunchMealLogItemRefresh()
@@ -293,15 +318,23 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         }
     }
 
-    private fun onMealLogDateItemRefresh (){
-
-        val recipesLists : ArrayList<DailyRecipe> = ArrayList()
-        if (mealPlanData.get(0).recipes != null){
-            recipesLists.addAll(mealPlanData.get(0).recipes as Collection<DailyRecipe>)
-            val mealLogDateData: DailyRecipe? = null
-            mealLogDateAdapter.addAll(recipesLists, -1, mealLogDateData, false)
-        }else{
-
+    private fun onMealLogWeeklyDayList(weekList : List<MealLogWeeklyDayModel>) {
+        val today = LocalDate.now()
+        val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
+        if (weekList.isNotEmpty()){
+            weekLists.addAll(weekList as Collection<MealLogWeeklyDayModel>)
+            var mealLogDateData: MealLogWeeklyDayModel? = null
+            var isClick = false
+            var index = -1
+            for (currentDay in weekLists){
+                if (currentDay.fullDate == today){
+                    mealLogDateData = currentDay
+                    isClick = true
+                     index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
+                    break
+                }
+            }
+            mealLogWeeklyDayAdapter.addAll(weekLists, index, mealLogDateData, isClick)
         }
     }
 
@@ -338,13 +371,16 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
        // dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
     }
 
-    private fun onMealLogDateItem(dailyRecipe: DailyRecipe, position: Int, isRefresh: Boolean) {
+    private fun onMealLogDateItem(mealLogWeeklyDayModel: MealLogWeeklyDayModel, position: Int, isRefresh: Boolean) {
 
-        val recipesLists : ArrayList<DailyRecipe> = ArrayList()
-        recipesLists.addAll(mealPlanData.get(0).recipes as Collection<DailyRecipe>)
-        mealLogDateAdapter.addAll(recipesLists, position, dailyRecipe, isRefresh)
+        val formatter = DateTimeFormatter.ofPattern("E, d MMM yyyy")
+        selectedWeeklyDayTv.text = mealLogWeeklyDayModel.fullDate.format(formatter)
 
-        setGraphValue(dailyRecipe)
+        val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
+        weekLists.addAll(mealLogWeeklyDayList as Collection<MealLogWeeklyDayModel>)
+        mealLogWeeklyDayAdapter.addAll(weekLists, position, mealLogWeeklyDayModel, isRefresh)
+
+      // setGraphValue(dailyRecipe)
     }
 
     private fun setGraphValue(dailyRecipe: DailyRecipe){
@@ -500,7 +536,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     }
 
     private fun getMealPlanList() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         println(userId)
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -508,26 +544,25 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         call.enqueue(object : Callback<MealLogsResponseModel> {
             override fun onResponse(call: Call<MealLogsResponseModel>, response: Response<MealLogsResponseModel>) {
                 if (response.isSuccessful) {
-                  //  Utils.dismissLoader(requireActivity())
+                  //  LoaderUtil.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     mealPlanData.addAll(mealPlanLists)
-                    onMealLogDateItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                 //   Utils.dismissLoader(requireActivity())
+                 //   LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-              //  Utils.dismissLoader(requireActivity())
+              //  LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }
 
     private fun getMealList() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
       //  val userId = "64763fe2fa0e40d9c0bc8264"
@@ -536,21 +571,59 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.meals ?: emptyList()
                     mealList.addAll(mealPlanLists)
                   //  onMealLogDateItemRefresh()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
+    }
+
+    private fun getMealsLogList() {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val startDate = "2025-03-22"
+        val call = ApiClient.apiServiceFastApi.getMealsLogList(userId, startDate)
+        call.enqueue(object : Callback<MealsLogResponse> {
+            override fun onResponse(call: Call<MealsLogResponse>, response: Response<MealsLogResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                  //  val mealPlanLists = response.body()?.meals ?: emptyList()
+                 //   mealList.addAll(mealPlanLists)
+                    //  onMealLogDateItemRefresh()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealsLogResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun getWeekFrom(startDate: LocalDate): List<MealLogWeeklyDayModel> {
+
+        return (0..6).map { i ->
+            val date = startDate.plusDays(i.toLong())
+            MealLogWeeklyDayModel(
+                dayName = date.dayOfWeek.name.take(1), // M, T, W...
+                dayNumber = date.dayOfMonth.toString(),
+                fullDate = date,
+            )
+        }
     }
 }

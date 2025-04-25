@@ -1,5 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -19,7 +21,9 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.IMarker
 import com.github.mikephil.charting.components.LimitLine
+import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -31,6 +35,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.utils.MPPointF
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -114,7 +119,8 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 R.id.rbSixMonths -> {
                     barChart.visibility = View.GONE
                     layoutLineChart.visibility = View.VISIBLE
-                    fetchActiveCalories("six_months")
+                    setupCustomChart(requireContext(), lineChart)
+                   // fetchActiveCalories("six_months")
                 }
             }
         }
@@ -301,6 +307,71 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         barChart.animateY(1000)
         barChart.invalidate()
     }
+    fun setupCustomChart(context: Context, chart: LineChart) {
+        val months = listOf("Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025")
+        val values = listOf(1.71f, 1.38f, 1.51f, 1.44f, 1.48f)
+        val percentChanges = listOf("", "-0.33%", "+0.13%", "-0.07%", "+0.4%")
+        val entries = values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+        val lineDataSet = LineDataSet(entries, "Monthly Avg").apply {
+            color = Color.BLACK
+            setCircleColor(Color.BLACK)
+            lineWidth = 2f
+            circleRadius = 4f
+            setDrawValues(false)
+            mode = LineDataSet.Mode.CUBIC_BEZIER
+        }
+        val overallAvg = values.average().toFloat()
+        val avgLine = LimitLine(overallAvg, "Avg ${"%.2f".format(overallAvg)}").apply {
+            lineColor = Color.RED
+            lineWidth = 1.5f
+            textColor = Color.RED
+            textSize = 12f
+            enableDashedLine(10f, 10f, 0f)
+        }
+        chart.axisLeft.apply {
+            removeAllLimitLines()
+            addLimitLine(avgLine)
+            axisMinimum = 0f
+            axisMaximum = 2.8f
+            textColor = Color.DKGRAY
+        }
+        chart.axisRight.isEnabled = false
+        chart.xAxis.apply {
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            valueFormatter = IndexAxisValueFormatter(months)
+            textColor = Color.DKGRAY
+        }
+        chart.apply {
+            description.isEnabled = false
+            legend.isEnabled = false
+            data = LineData(lineDataSet)
+            setTouchEnabled(false)
+            invalidate()
+        }
+        chart.marker = object : MarkerView(context, R.layout.marker_layout), IMarker {
+            private val tvMarker = findViewById<TextView>(R.id.tvMarker)
+            override fun refreshContent(e: Entry?, highlight: Highlight?) {
+                val index = e?.x?.toInt() ?: 0
+                tvMarker.text = "${"%.2f".format(values[index])} ${percentChanges[index]}"
+                tvMarker.setTextColor(if (percentChanges[index].contains("-")) Color.RED else Color.GREEN)
+                super.refreshContent(e, highlight)
+            }
+
+            override fun draw(canvas: Canvas?, posX: Float, posY: Float) {
+                TODO("Not yet implemented")
+            }
+
+            override fun getOffset(): MPPointF {
+                return MPPointF((-width / 2).toFloat(), -height.toFloat())
+            }
+
+            override fun getOffsetForDrawingAtPoint(posX: Float, posY: Float): MPPointF {
+                return MPPointF((-width / 2).toFloat(), -height.toFloat())
+            }
+        }
+    }
+
 
     /** Fetch and update chart with API data */
     private fun fetchActiveCalories(period: String) {

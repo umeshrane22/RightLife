@@ -179,9 +179,9 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
                             "last_six_months" -> processSixMonthsData(data)
                             else -> Pair(getWeekData(), getWeekLabels()) // Fallback
                         }
-                        val averageHr = data.heartRate
-                            .mapNotNull { it.value.toDoubleOrNull() }
-                            .average()
+                        val averageHr = data.activeHeartRateTotals
+                            ?.mapNotNull { it.heartRate }
+                            ?.average()
                         withContext(Dispatchers.Main) {
                             updateChart(entries, labels)
                             Toast.makeText(
@@ -230,11 +230,11 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
         }
 
         // Aggregate HR by day
-        data.heartRate.forEach { hr ->
-            val startDate = dateFormat.parse(hr.startDatetime)?.let { Date(it.time) }
+        data.activeHeartRateTotals?.forEach { hr ->
+            val startDate = dateFormat.parse(hr.date)?.let { Date(it.time) }
             if (startDate != null) {
                 val dayKey = dateFormat.format(startDate)
-                hrMap[dayKey]?.add(hr.value.toFloatOrNull() ?: 0f)
+                hrMap[dayKey]?.add(hr.date.toFloatOrNull() ?: 0f)
             }
         }
 
@@ -264,13 +264,13 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
         }
 
         // Aggregate HR by week
-        data.heartRate.forEach { hr ->
-            val startDate = dateFormat.parse(hr.startDatetime)?.let { Date(it.time) }
+        data.activeHeartRateTotals?.forEach { hr ->
+            val startDate = dateFormat.parse(hr.date)?.let { Date(it.time) }
             if (startDate != null) {
                 calendar.time = startDate
                 val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
                 val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
-                hrMap[weekIndex]?.add(hr.value.toFloatOrNull() ?: 0f)
+                hrMap[weekIndex]?.add(hr.date.toFloatOrNull() ?: 0f)
             }
         }
 
@@ -301,14 +301,14 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
         }
 
         // Aggregate HR by month
-        data.heartRate.forEach { hr ->
-            val startDate = dateFormat.parse(hr.startDatetime)?.let { Date(it.time) }
+        data.activeHeartRateTotals?.forEach { hr ->
+            val startDate = dateFormat.parse(hr.date)?.let { Date(it.time) }
             if (startDate != null) {
                 calendar.time = startDate
                 val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
                 val monthIndex = 5 - monthDiff // Reverse to align with labels
                 if (monthIndex in 0..5) {
-                    hrMap[monthIndex]?.add(hr.value.toFloatOrNull() ?: 0f)
+                    hrMap[monthIndex]?.add(hr.date.toFloatOrNull() ?: 0f)
                 }
             }
         }

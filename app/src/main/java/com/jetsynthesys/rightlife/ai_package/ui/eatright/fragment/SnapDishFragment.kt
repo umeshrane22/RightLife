@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -41,8 +42,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.SearchDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -73,6 +74,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvMeasure :TextView
     private var dishLists : ArrayList<SnapRecipeData> = ArrayList()
     private lateinit var snapDishLocalListModel : SnapDishLocalListModel
+    private lateinit var currentPhotoPathsecound : Uri
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -109,6 +111,8 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         ivEdit = view.findViewById(R.id.ivEdit)
 
+        val imagePathString = arguments?.getString("ImagePathsecound")
+        currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
         searchType = arguments?.getString("searchType").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
@@ -205,6 +209,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     val args = Bundle()
                     fragment.arguments = args
                     args.putString("searchType", searchType)
+                    args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
                         addToBackStack("landing")
@@ -215,6 +220,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     val args = Bundle()
                     fragment.arguments = args
                     args.putString("searchType", searchType)
+                    args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -289,9 +295,12 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         protein = foodData.protein,
                         fat = foodData.fat,
                         saturated_fat = foodData.saturated_fat,
+                        selenium_mcg = foodData.selenium_mcg,
                         trans_fat = foodData.trans_fat,
                         cholesterol = foodData.cholesterol,
+                        copper_mg = foodData.copper_mg,
                         sodium = foodData.sodium,
+                        source_urls = foodData.source_urls,
                         potassium = foodData.potassium,
                         recipe_id = foodData.recipe_id,
                         mealType = foodData.mealType,
@@ -299,7 +308,9 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         cookingTime = foodData.cookingTime,
                         calcium = foodData.calcium,
                         iron = foodData.iron,
+                        is_beverage = foodData.is_beverage,
                         vitaminD = foodData.vitaminD,
+                        vitamin_e_mg = foodData.vitamin_e_mg,
                         unit = foodData.unit,
                         isConsumed = foodData.isConsumed,
                         isAteSomethingElse = foodData.isAteSomethingElse,
@@ -309,14 +320,25 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         isFavourite = foodData.isFavourite,
                         notes = foodData.notes,
                         b12 = foodData.b12,
+                        b1_mg = foodData.b1_mg,
+                        b2_mg = foodData.b2_mg,
+                        b3_mg = foodData.b3_mg,
+                        b6_mg = foodData.b6_mg,
                         folate = foodData.folate,
                         vitaminC = foodData.vitaminC,
                         vitaminA = foodData.vitaminA,
                         vitaminK = foodData.vitaminK,
                         magnesium = foodData.magnesium,
+                        mass_g = foodData.mass_g,
+                        monounsaturated_g = foodData.monounsaturated_g,
                         zinc = foodData.zinc,
                         omega3 = foodData.omega3,
-                        phosphorus = foodData.phosphorus
+                        omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
+                        percent_fruit = foodData.percent_fruit,
+                        percent_legume_or_nuts = foodData.percent_legume_or_nuts,
+                        percent_vegetable = foodData.percent_vegetable,
+                        phosphorus = foodData.phosphorus,
+                        polyunsaturated_g = foodData.polyunsaturated_g
                     )
                     dishLists.add(snapRecipeData)
                     snapDishLocalListModel = SnapDishLocalListModel(dishLists)
@@ -325,6 +347,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = MealScanResultFragment()
                     val args = Bundle()
                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                    args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "mealLog")
@@ -360,9 +383,12 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         protein = foodData.protein,
                                         fat = foodData.fat,
                                         saturated_fat = foodData.saturated_fat,
+                                        selenium_mcg = foodData.selenium_mcg,
                                         trans_fat = foodData.trans_fat,
                                         cholesterol = foodData.cholesterol,
+                                        copper_mg = foodData.copper_mg,
                                         sodium = foodData.sodium,
+                                        source_urls = foodData.source_urls,
                                         potassium = foodData.potassium,
                                         recipe_id = foodData.recipe_id,
                                         mealType = foodData.mealType,
@@ -370,7 +396,9 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         cookingTime = foodData.cookingTime,
                                         calcium = foodData.calcium,
                                         iron = foodData.iron,
+                                        is_beverage = foodData.is_beverage,
                                         vitaminD = foodData.vitaminD,
+                                        vitamin_e_mg = foodData.vitamin_e_mg,
                                         unit = foodData.unit,
                                         isConsumed = foodData.isConsumed,
                                         isAteSomethingElse = foodData.isAteSomethingElse,
@@ -380,14 +408,25 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         isFavourite = foodData.isFavourite,
                                         notes = foodData.notes,
                                         b12 = foodData.b12,
+                                        b1_mg = foodData.b1_mg,
+                                        b2_mg = foodData.b2_mg,
+                                        b3_mg = foodData.b3_mg,
+                                        b6_mg = foodData.b6_mg,
                                         folate = foodData.folate,
                                         vitaminC = foodData.vitaminC,
                                         vitaminA = foodData.vitaminA,
                                         vitaminK = foodData.vitaminK,
                                         magnesium = foodData.magnesium,
+                                        mass_g = foodData.mass_g,
+                                        monounsaturated_g = foodData.monounsaturated_g,
                                         zinc = foodData.zinc,
                                         omega3 = foodData.omega3,
-                                        phosphorus = foodData.phosphorus
+                                        omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
+                                        percent_fruit = foodData.percent_fruit,
+                                        percent_legume_or_nuts = foodData.percent_legume_or_nuts,
+                                        percent_vegetable = foodData.percent_vegetable,
+                                        phosphorus = foodData.phosphorus,
+                                        polyunsaturated_g = foodData.polyunsaturated_g
                                     )
                                     if (index != -1) {
                                         dishLists[index] = snapRecipeData
@@ -397,6 +436,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                     Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
                                     val fragment = MealScanResultFragment()
                                     val args = Bundle()
+                                    args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                                     fragment.arguments = args
                                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -619,7 +659,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     }
 
     private fun getMealList() {
-        Utils.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
          val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
        // val userId = "64763fe2fa0e40d9c0bc8264"
@@ -628,24 +668,24 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                     val mealPlanLists = response.body()?.meals ?: emptyList()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireActivity())
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireActivity())
             }
         })
     }
 
 //    private fun createMeal(mealDetails: MealDetails) {
-//        Utils.showLoader(requireActivity())
+//        LoaderUtil.showLoader(requireActivity())
 //         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
 //        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
 //       // val userId = "64763fe2fa0e40d9c0bc8264"
@@ -670,7 +710,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 //        call.enqueue(object : Callback<MealLogResponse> {
 //            override fun onResponse(call: Call<MealLogResponse>, response: Response<MealLogResponse>) {
 //                if (response.isSuccessful) {
-//                    Utils.dismissLoader(requireActivity())
+//                    LoaderUtil.dismissLoader(requireActivity())
 //                    val mealData = response.body()?.message
 //                    Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
 //                    val fragment = CreateMealFragment()
@@ -685,13 +725,13 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 //                } else {
 //                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
 //                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-//                    Utils.dismissLoader(requireActivity())
+//                    LoaderUtil.dismissLoader(requireActivity())
 //                }
 //            }
 //            override fun onFailure(call: Call<MealLogResponse>, t: Throwable) {
 //                Log.e("Error", "API call failed: ${t.message}")
 //                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-//                Utils.dismissLoader(requireActivity())
+//                LoaderUtil.dismissLoader(requireActivity())
 //            }
 //        })
 //    }
