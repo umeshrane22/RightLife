@@ -66,11 +66,12 @@
         <!-- Bordered container -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_marginBottom="50dp"
-                android:layout_height="match_parent">
+                android:layout_marginBottom="10dp"
+                android:id="@+id/scrollview_dialog"
+                android:layout_height="wrap_content">
         <LinearLayout
             android:id="@+id/boxContainer"
             android:layout_width="match_parent"
@@ -184,16 +185,16 @@
         <!-- Button -->
         <Button
             android:id="@+id/btn_close"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:text="Let’s Do This!"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:fontFamily="@font/dmsans_bold"
             android:layout_marginTop="8dp"
-
+            android:layout_below="@+id/scrollview_dialog"
+            android:layout_centerHorizontal="true"
             android:textSize="@dimen/textsize_large"
-            android:layout_alignParentBottom="true"
             android:background="@drawable/button_background_filled"
             app:backgroundTint="@color/menuselected"/>
         </RelativeLayout>

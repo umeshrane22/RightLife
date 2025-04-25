@@ -256,7 +256,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:text="1500"
+                                android:text="0"
                                 android:textColor="@color/color_eat_right"
                                 android:textSize="32dp" />
 
@@ -290,7 +290,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:gravity="center"
-                                android:text="1500"
+                                android:text="0"
                                 android:textColor="#03B27B"
                                 android:textSize="25dp" />
 
@@ -313,7 +313,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:gravity="center"
-                                android:text="1500"
+                                android:text="0"
                                 android:textColor="#FD6967"
                                 android:textSize="25dp" />
                         </LinearLayout>
@@ -390,7 +390,7 @@
                             android:layout_margin="16dp"
                             android:backgroundTint="@color/buttoncolormind"
                             android:max="100"
-                            android:progress="40"
+                            android:progress="50"
                             android:progressDrawable="@drawable/roundedcornerprogessbarfordashboard" />
 
 
@@ -409,6 +409,7 @@
                                 android:layout_height="20dp"
                                 android:layout_centerVertical="true"
                                 android:src="@drawable/rounded_corder_border_gray_radius_small"
+                                android:visibility="invisible"
                                 android:layout_marginTop="5dp"/>
 
                             <TextView
@@ -524,7 +525,7 @@
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/dmsans_bold"
                                         android:gravity="center"
-                                        android:text="1hr 03min"
+                                        android:text="0 mins"
                                         android:textColor="@color/color_think_right"
                                         android:textSize="@dimen/textsize_large24sp" />
                                     <TextView
@@ -576,7 +577,7 @@
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/dmsans_bold"
                                         android:gravity="center"
-                                        android:text="03 days"
+                                        android:text="0 days"
                                         android:textColor="@color/color_think_right"
                                         android:textSize="@dimen/textsize_large24sp" />
                                     <TextView
