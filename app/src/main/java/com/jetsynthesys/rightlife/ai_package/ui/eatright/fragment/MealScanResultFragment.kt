@@ -54,6 +54,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -408,7 +410,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
-    //    CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
+        CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
     }
 
     private fun onMicroNutrientsList (nutrition: ArrayList<SnapRecipeData>){
