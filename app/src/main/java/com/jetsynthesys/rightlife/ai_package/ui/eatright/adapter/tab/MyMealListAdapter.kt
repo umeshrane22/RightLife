@@ -8,32 +8,62 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
+import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 
-class MyMealListAdapter(private val context: Context, private var dataLists: ArrayList<MealPlan>,
-                        private var clickPos: Int, private var mealLogListData : MealPlan?,
-                        private var isClickView : Boolean, val onMealDeleteItem: (MealPlan, Int, Boolean) -> Unit,
-                        val onMealLogItem: (MealPlan, Int, Boolean) -> Unit) :
-    RecyclerView.Adapter<MyMealListAdapter.ViewHolder>() {
+class MyMealListAdapter(private val context: Context, private var dataLists: ArrayList<MergedMealItem>,
+                        private var clickPos: Int, private var mealLogListData : MergedMealItem?,
+                        private var isClickView : Boolean, val onMealDeleteItem: (MealDetails, Int, Boolean) -> Unit,
+                        val onMealLogItem: (MealDetails, Int, Boolean) -> Unit,
+                        val onSnapMealDeleteItem: (SnapMealDetail, Int, Boolean) -> Unit,
+                        val onSnapMealLogItem: (SnapMealDetail, Int, Boolean) -> Unit) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedItem = -1
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_meal_ai, parent, false)
-        return ViewHolder(view)
+    companion object {
+        private const val TYPE_SNAP_MEAL = 0
+        private const val TYPE_SAVED_MEAL = 1
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = dataLists[position]
+    override fun getItemViewType(position: Int): Int {
+        return when (dataLists[position]) {
+            is MergedMealItem.SnapMeal -> TYPE_SNAP_MEAL
+            is MergedMealItem.SavedMeal -> TYPE_SAVED_MEAL
+        }
+    }
 
-        holder.mealTitle.text = item.meal_plan_name
-        holder.mealName.text = item.dishes.name
-        holder.servesCount.text = item.dishes.numOfServings.toString()
-        holder.calValue.text = item.dishes.calcium.toInt().toString()
-        holder.subtractionValue.text = item.dishes.protein.toInt().toString()
-        holder.baguetteValue.text = item.dishes.carbs.toInt().toString()
-        holder.dewpointValue.text = item.dishes.fats.toInt().toString()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            MyMealListAdapter.TYPE_SNAP_MEAL -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_meal_ai, parent, false)
+                SnapMealViewHolder(view)
+            }
+            MyMealListAdapter.TYPE_SAVED_MEAL -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_meal_ai, parent, false)
+                SavedMealViewHolder(view)
+            }
+            else -> throw IllegalArgumentException("Unknown view type")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+       // val item = dataLists[position]
+
+        when (val item = dataLists[position]) {
+            is MergedMealItem.SnapMeal -> (holder as SnapMealViewHolder).bind(item.data)
+            is MergedMealItem.SavedMeal -> (holder as SavedMealViewHolder).bind(item.data)
+        }
+
+//        holder.mealTitle.text = item
+//        holder.mealName.text = item.dishes.name
+//        holder.servesCount.text = item.dishes.numOfServings.toString()
+//        holder.calValue.text = item.dishes.calcium.toInt().toString()
+//        holder.subtractionValue.text = item.dishes.protein.toInt().toString()
+//        holder.baguetteValue.text = item.dishes.carbs.toInt().toString()
+//        holder.dewpointValue.text = item.dishes.fats.toInt().toString()
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -58,44 +88,103 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 //            }
    //     }
 
-        holder.delete.setOnClickListener {
-            onMealDeleteItem(item, position, true)
-        }
-
-        holder.circlePlus.setOnClickListener {
-            onMealLogItem(item, position, true)
-        }
+//        holder.delete.setOnClickListener {
+//            onMealDeleteItem(item, position, true)
+//        }
+//
+//        holder.circlePlus.setOnClickListener {
+//            onMealLogItem(item, position, true)
+//        }
     }
 
     override fun getItemCount(): Int {
         return dataLists.size
     }
 
-     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class SnapMealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(item: SnapMealDetail) {
+            // Bind your SnapMealDetail data here
+            itemView.findViewById<TextView>(R.id.tv_meal_name).text = item.meal_name
+            val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+            mealTitle.text = item.meal_type
+            val delete: ImageView = itemView.findViewById(R.id.image_delete)
+            val edit: ImageView = itemView.findViewById(R.id.image_edit)
+            val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+            val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
+            servesCount.text = item.total_servings.toString()
+            val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
+            calValue.text = item.total_calories.toInt().toString()
+            val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
+            subtractionValue.text = item.total_protein.toInt().toString()
+            val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
+            baguetteValue.text = item.total_carbs.toInt().toString()
+            val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
+            dewpointValue.text = item.total_fat.toInt().toString()
+            delete.setOnClickListener {
+                onSnapMealDeleteItem(item, bindingAdapterPosition, true)
+            }
 
-         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
-         val delete: ImageView = itemView.findViewById(R.id.image_delete)
-         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-         val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
-         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
-         val serve: ImageView = itemView.findViewById(R.id.image_serve)
-         val serves: TextView = itemView.findViewById(R.id.tv_serves)
-         val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
-         val cal: ImageView = itemView.findViewById(R.id.image_cal)
-         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
-         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
-         val subtraction: ImageView = itemView.findViewById(R.id.image_subtraction)
-         val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
-         val subtractionUnit: TextView = itemView.findViewById(R.id.tv_subtraction_unit)
-         val baguette: ImageView = itemView.findViewById(R.id.image_baguette)
-         val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
-         val baguetteUnit: TextView = itemView.findViewById(R.id.tv_baguette_unit)
-         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
-         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
-         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
-     }
+            circlePlus.setOnClickListener {
+                onSnapMealLogItem(item, bindingAdapterPosition, true)
+            }
+        }
+    }
 
-    fun addAll(item : ArrayList<MealPlan>?, pos: Int, mealLogItem : MealPlan?, isClick : Boolean) {
+    inner class SavedMealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(item: MealDetails) {
+            // Bind your MealDetail data here
+            itemView.findViewById<TextView>(R.id.tv_meal_name).text = item.meal_name
+            val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+            mealTitle.text = item.meal_type
+            val delete: ImageView = itemView.findViewById(R.id.image_delete)
+            val edit: ImageView = itemView.findViewById(R.id.image_edit)
+            val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+            val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
+            servesCount.text = item.total_servings.toString()
+            val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
+            calValue.text = item.total_calories.toInt().toString()
+            val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
+            subtractionValue.text = item.total_protein.toInt().toString()
+            val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
+            baguetteValue.text = item.total_carbs.toInt().toString()
+            val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
+            dewpointValue.text = item.total_fat.toInt().toString()
+            delete.setOnClickListener {
+            onMealDeleteItem(item, bindingAdapterPosition, true)
+        }
+
+       circlePlus.setOnClickListener {
+            onMealLogItem(item, bindingAdapterPosition, true)
+        }
+
+        }
+    }
+
+//     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+//
+//         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+//         val delete: ImageView = itemView.findViewById(R.id.image_delete)
+//         val edit: ImageView = itemView.findViewById(R.id.image_edit)
+//         val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+//         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
+//         val serve: ImageView = itemView.findViewById(R.id.image_serve)
+//         val serves: TextView = itemView.findViewById(R.id.tv_serves)
+//         val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
+//         val cal: ImageView = itemView.findViewById(R.id.image_cal)
+//         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
+//         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
+//         val subtraction: ImageView = itemView.findViewById(R.id.image_subtraction)
+//         val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
+//         val subtractionUnit: TextView = itemView.findViewById(R.id.tv_subtraction_unit)
+//         val baguette: ImageView = itemView.findViewById(R.id.image_baguette)
+//         val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
+//         val baguetteUnit: TextView = itemView.findViewById(R.id.tv_baguette_unit)
+//         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
+//         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
+//         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
+//     }
+
+    fun addAll(item : ArrayList<MergedMealItem>?, pos: Int, mealLogItem : MergedMealItem?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

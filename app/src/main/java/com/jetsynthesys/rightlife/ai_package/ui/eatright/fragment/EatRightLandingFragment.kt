@@ -39,6 +39,7 @@ import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
@@ -98,6 +99,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var waterIntakeLayout : LinearLayout
     private lateinit var logMealNoDataButton : ConstraintLayout
     private lateinit var snapMealNoData : ConstraintLayout
+    private lateinit var microIc : ImageView
+    private lateinit var microValueTv : TextView
+    private lateinit var unitMicroTv : TextView
+    private lateinit var energyTypeTv : TextView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
@@ -153,6 +158,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         carbsUnitTv = view.findViewById(R.id.carbsUnitTv)
         logMealNoDataButton = view.findViewById(R.id.logMealNoDataButton)
         snapMealNoData = view.findViewById(R.id.lyt_snap_meal_no_data)
+        microIc = view.findViewById(R.id.microIc)
+        energyTypeTv = view.findViewById(R.id.energyTypeTv)
+        microValueTv = view.findViewById(R.id.microValueTv)
+        unitMicroTv = view.findViewById(R.id.unitMicroTv)
 
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
         otherReciepeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
@@ -261,6 +270,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         macroIc.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MacrosTabFragment()
+                val args = Bundle()
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }
+
+        microIc.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")

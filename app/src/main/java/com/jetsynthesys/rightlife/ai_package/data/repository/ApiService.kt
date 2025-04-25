@@ -53,6 +53,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
@@ -66,6 +67,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
@@ -135,6 +137,11 @@ interface ApiService {
     @POST("eat/meals/create_meal/")
     fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
 
+    @POST("eat/meals/create_meal/")
+    fun createSaveMealsToLog(@Query("user_id") userId: String,
+                             @Query("date") startDate: String,@Body request: SaveMealLogRequest
+    ): Call<MealUpdateResponse>
+
     @GET("eat/meals/get_log_meals/")
     fun getMealsLogList(@Query("user_id") userId: String,
                     @Query("date") startDate: String): Call<MealsLogResponse>
@@ -144,6 +151,9 @@ interface ApiService {
 
     @GET("eat/meal-plans/")
     fun getLogMealList(@Query("user_id") userId: String): Call<MealLogPlanResponse>
+
+    @GET("eat/meals/get_mymeal_list/")
+    fun getMyMealList(@Query("user_id") userId: String): Call<MyMealsSaveResponse>
 
     @POST("eat/meal-plans/log/")
     fun createMealPlanLog(@Query("user_id") userId: String,@Query("meal_plan_id") mealPlanId: String,@Body request: MealPlanLogRequest): Call<MealPlanResponse>
