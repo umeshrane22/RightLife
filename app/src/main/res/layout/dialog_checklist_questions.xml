@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
+
     android:background="@drawable/bg_food_item"
     android:gravity="center">
 
@@ -32,8 +32,9 @@
         android:id="@+id/tvDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="@dimen/textsize_medium"
         android:fontFamily="@font/dmsans_regular"
+
         android:layout_marginTop="16dp"
         android:textColor="@color/txt_color_header"
         android:textAlignment="center"
@@ -42,11 +43,12 @@
 
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:id="@+id/checklistDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_margin="5dp"
         android:padding="5dp">
 
         <!-- Title -->
@@ -62,6 +64,13 @@
             android:layout_marginBottom="16dp"/>
 
         <!-- Bordered container -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_marginBottom="50dp"
+                android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/boxContainer"
             android:layout_width="match_parent"
@@ -171,21 +180,23 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
-
+            </ScrollView>
         <!-- Button -->
         <Button
             android:id="@+id/btn_close"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:text="Let’s Do This!"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:fontFamily="@font/dmsans_bold"
             android:layout_marginTop="8dp"
-            android:paddingVertical="12dp"
+
             android:textSize="@dimen/textsize_large"
+            android:layout_alignParentBottom="true"
             android:background="@drawable/button_background_filled"
             app:backgroundTint="@color/menuselected"/>
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

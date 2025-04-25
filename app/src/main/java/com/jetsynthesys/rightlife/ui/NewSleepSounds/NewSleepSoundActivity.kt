@@ -48,8 +48,12 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 binding.recyclerViewHorizontalList.visibility = View.VISIBLE
                 binding.recyclerViewVerticalList.visibility = View.GONE
                 fetchSleepSoundsByCategoryId(categoryList[1]._id, true)
-            } else
+                if (categoryAdapter!=null) {
+                    categoryAdapter.updateSelectedPosition(-1)
+                }
+            } else {
                 onBackPressedDispatcher.onBackPressed()
+            }
         }
         setupCategoryRecyclerView()
         fetchCategories()
@@ -137,10 +141,12 @@ class NewSleepSoundActivity : AppCompatActivity() {
                     Log.d("SleepSound", "Data: ${soundData?.data?.services}")
                     // Pass soundData.data.services to adapter
                     if (isForHome) {
+                        binding.llMusicHome.visibility = View.VISIBLE
                         binding.layouthorizontalMusicList.visibility = View.VISIBLE
                         binding.layoutVerticalCategoryList.visibility = View.GONE
                         setupHorizontalRecyclerView(soundData?.data?.services)
                     } else {
+                        binding.llMusicHome.visibility = View.GONE
                         binding.layouthorizontalMusicList.visibility = View.GONE
                         binding.layoutVerticalCategoryList.visibility = View.VISIBLE
                         setupVerticleRecyclerView(soundData?.data?.services)

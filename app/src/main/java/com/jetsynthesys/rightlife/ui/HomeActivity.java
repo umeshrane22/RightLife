@@ -1812,8 +1812,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             showTrailEndedBottomSheet();
             return false; // Return false if condition is true and dialog is shown
         }
-        return true; // Return true if condition is false
+        else {
+            if (!DashboardChecklistManager.INSTANCE.getChecklistStatus()){
+                DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this);
+                return false;
+            }else{
+                return  true ;// Return true if condition is false
+            }
+        }
     }
+
 
     private void showTrailEndedBottomSheet() {
         // Create and configure BottomSheetDialog

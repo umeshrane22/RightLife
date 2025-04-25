@@ -20,7 +20,7 @@
             android:id="@+id/imageCard"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/icon_heart" />
+            android:src="@drawable/ic_db_report_heart_rate" />
 
         <TextView
             android:id="@+id/cardTitle"
