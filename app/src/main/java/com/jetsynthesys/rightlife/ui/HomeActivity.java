@@ -1108,11 +1108,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
                     wellnessApiResponse = gson.fromJson(jsonResponse, WellnessApiResponse.class);
                     Log.d("API Response body", "Wellness:RLEdit " + wellnessApiResponse.getData().getContentList().get(0).getTitle());
-                    if (wellnessApiResponse.getData().isPreference()) {
+                    /*if (wellnessApiResponse.getData().isPreference()) {
                         setupWellnessContent(wellnessApiResponse.getData().getContentList());
                     } else {
                         rl_wellness_lock.setVisibility(View.VISIBLE);
-                    }
+                    }*/
+                    setupWellnessContent(wellnessApiResponse.getData().getContentList());
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
