@@ -48,5 +48,10 @@ class SleepCategoryAdapter(
         }
     }
 
+    fun updateSelectedPosition(newPosition: Int) {
+        val previousPosition = selectedPosition
+        selectedPosition = newPosition
+        notifyDataSetChanged()
+    }
     override fun getItemCount(): Int = categoryList.size
 }

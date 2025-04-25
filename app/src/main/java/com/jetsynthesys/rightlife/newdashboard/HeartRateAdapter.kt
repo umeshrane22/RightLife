@@ -73,7 +73,7 @@ class HeartRateAdapter(
             binding.ivWarning.visibility = android.view.View.VISIBLE
             //binding.tvWarning.visibility = android.view.View.GONE
         }*/
-        val iconRes = getWarningIconByType("normal")
+        val iconRes = getWarningIconByType(item?.avgIndicator.toString())
         binding.ivWarning.setImageResource(iconRes)
 
         val iconResReport = getReportIconByType(item?.key.toString())
@@ -120,11 +120,14 @@ class HeartRateAdapter(
 
     private fun getWarningIconByType(type: String): Int {
         return when (type) {
-            "normal" -> R.drawable.breathing_green_tick
-            "Borderline" -> R.drawable.ic_alert_report_page
+            "Normal","Improving","Stable","Good","Excellent","Relaxed","Extremely Relaxed" -> R.drawable.ic_db_report_normal
+            "High","Overloaded" -> R.drawable.ic_db_report_high
+            "Needs Attention","Obesity II","Obesity III","Obesity I" -> R.drawable.ic_db_report_high
+            "Pre-Obesity","Vigilant" -> R.drawable.ic_db_report_vigilant
+            "Underweight","Elevated","Low","Moderate","Borderline","Boderline","Productive","Optimal" -> R.drawable.ic_db_report_pre_obesity
             "Productive" -> R.drawable.ic_report_warning
             "Optimal" -> R.drawable.ic_report_warning
-            else -> R.drawable.breathing_green_tick
+            else -> R.drawable.ic_db_report_normal
         }
     }
     private fun getReportIconByType(type: String): Int {

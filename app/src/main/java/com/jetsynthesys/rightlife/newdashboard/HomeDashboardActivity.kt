@@ -347,13 +347,13 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
+            if (ifFreeTrailOrPaymentAvailable()){
                 //Toast.makeText(this, "Eat Right", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
             }
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            if (checkTrailEndedAndShowDialog()) {
+            if (ifFreeTrailOrPaymentAvailable()){
                 //Toast.makeText(this, "Think Right", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
             }
@@ -372,7 +372,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            if (checkTrailEndedAndShowDialog())
+            if (ifFreeTrailOrPaymentAvailable())
             {
                 //Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
                 //startActivity(Intent(this, ProfileNewActivity::class.java))
@@ -1229,8 +1229,23 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             showTrailEndedBottomSheet()
             false // Return false if condition is true and dialog is shown
         } else {
+            if (!DashboardChecklistManager.checklistStatus){
+                DialogUtils.showCheckListQuestionCommonDialog(this)
+                false
+            }else{
             true // Return true if condition is false
+                }
         }
+    }
+
+    fun ifFreeTrailOrPaymentAvailable(): Boolean {
+        return   return if (!DashboardChecklistManager.paymentStatus) {
+            showTrailEndedBottomSheet()
+            false // Return false if condition is true and dialog is shown
+        } else {
+            true
+        }
+
     }
 
     private fun showTrailEndedBottomSheet() {

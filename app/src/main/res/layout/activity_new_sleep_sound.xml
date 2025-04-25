@@ -50,6 +50,11 @@
                 android:overScrollMode="never"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="16dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:id="@+id/ll_music_home"
+                android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -144,7 +149,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp" />
             </LinearLayout>
-
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="vertical"
