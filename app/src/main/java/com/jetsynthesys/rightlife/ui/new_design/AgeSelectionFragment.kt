@@ -186,7 +186,7 @@ class AgeSelectionFragment : Fragment() {
         numberPicker.value = 15
         numberPicker.wheelItemCount = 7
 
-        selectedAge = years[15]
+        selectedAge = years[14]
 
         // OnScrollListener
         numberPicker.setOnScrollListener { view, scrollState ->
