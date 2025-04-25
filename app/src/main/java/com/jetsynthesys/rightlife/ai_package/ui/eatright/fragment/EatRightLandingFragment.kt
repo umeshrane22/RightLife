@@ -269,7 +269,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
         macroIc.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = MacrosTabFragment()
+                val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
