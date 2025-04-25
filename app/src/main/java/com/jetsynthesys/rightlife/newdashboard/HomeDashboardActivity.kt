@@ -389,6 +389,44 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 })
             }
         }
+
+        // for no data card
+        binding.cardThinkrightMainNodata.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+        binding.cardEatrightMainNodata.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+
+        binding.cardMoverightMainNodata.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "MoveRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+        binding.cardSleeprightMainNodata.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+
+
+
         binding.cardEatright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
@@ -604,173 +642,229 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun handleSelectedModule(aiDashboardResponseMain: AiDashboardResponseMain?) {
-        for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
-            val moduleId = module.moduleId
-            val isSelected = module.isSelectedModule
+        val modules = aiDashboardResponseMain?.data?.updatedModules
 
-
+        if (modules.isNullOrEmpty()) {
+            binding.llNodataMain.visibility = View.VISIBLE
+            var moduleId = SharedPreferenceManager.getInstance(this).selectedOnboardingModule
+            if (moduleId.isEmpty()){
+                moduleId = "EAT_RIGHT"
+            }
             when (moduleId) {
                 "MOVE_RIGHT" -> {
-
-                    if (isSelected == true) {
-                        binding.cardMoverightMain.visibility = View.VISIBLE
-                        binding.cardMoveright.visibility = View.GONE
-                    }
-                    //set data on card once resposne works
-                    binding.tvCaloryValue.text = module.calorieBalance.toString()
-                    binding.tvCaloryIntake.text = module.intake.toString()
-                    binding.tvCaloryBurn.text = module.burned.toString()
-
-                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueSleepright, module.sleepDuration?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                    )
+                    // MOVE_RIGHT logic here
+                    binding.cardMoverightMainNodata.visibility = View.VISIBLE
+                    binding.cardMoveright.visibility = View.GONE
                 }
 
                 "THINK_RIGHT" -> {
-                    if (isSelected == true) {
-                        binding.cardThinkrightMain.visibility = View.VISIBLE
-                        binding.cardThinkright.visibility = View.GONE
-                    }
-                    binding.tvMinutesTextValue.text = module.mindfulnessMinutes
-                    binding.tvDaysTextValue.text = module.wellnessDays
-
-                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueSleepright, module.sleepDuration?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                    )
+                    // THINK_RIGHT logic here
+                    binding.cardThinkrightMainNodata.visibility = View.VISIBLE
+                    binding.cardThinkright.visibility = View.GONE
                 }
 
                 "EAT_RIGHT" -> {
-                    if (isSelected == true) {
-                        binding.cardEatrightMain.visibility = View.VISIBLE
-                        binding.cardEatright.visibility = View.GONE
+                    // EAT_RIGHT logic here
+                    binding.cardEatrightMainNodata.visibility = View.VISIBLE
+                    binding.cardEatright.visibility = View.GONE
+                }
+
+                "SLEEP_RIGHT" -> {
+                    // SLEEP_RIGHT logic here
+                    binding.cardSleeprightMainNodata.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.GONE
+                }
+
+                else -> {
+                    // Default case logic here
+                }
+            }
+
+        } else {
+            binding.llNodataMain.visibility = View.GONE
+
+
+            //for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
+            aiDashboardResponseMain?.data?.updatedModules?.forEach { module ->
+                val moduleId = module.moduleId
+                val isSelected = module.isSelectedModule
+
+
+                when (moduleId) {
+                    "MOVE_RIGHT" -> {
+
+                        if (isSelected == true) {
+                            binding.cardMoverightMain.visibility = View.VISIBLE
+                            binding.cardMoveright.visibility = View.GONE
+                        }
+                        //set data on card once response works
+                        binding.tvCaloryValue.text = module.calorieBalance.toString()
+                        binding.tvCaloryIntake.text = module.intake.toString()
+                        binding.tvCaloryBurn.text = module.burned.toString()
+
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueEatright,
+                            module.calories?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
+                        )
                     }
 
-                    val (proteinValue, proteinTotal) = extractNumericValues(module.protein.toString())
-                    val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
-                    val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
+                    "THINK_RIGHT" -> {
+                        if (isSelected == true) {
+                            binding.cardThinkrightMain.visibility = View.VISIBLE
+                            binding.cardThinkright.visibility = View.GONE
+                        }
+                        binding.tvMinutesTextValue.text = module.mindfulnessMinutes
+                        binding.tvDaysTextValue.text = module.wellnessDays
 
-                    binding.tvSubtractionCalValue.text = proteinValue
-                    binding.tvSubtractionCalUnit.text = "/" + proteinTotal + " g"
-                    binding.carbsProgressBar.max = proteinTotal.toInt()
-                    binding.carbsProgressBar.progress = proteinValue.toInt()
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueEatright,
+                            module.calories?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
+                        )
+                    }
+
+                    "EAT_RIGHT" -> {
+                        if (isSelected == true) {
+                            binding.cardEatrightMain.visibility = View.VISIBLE
+                            binding.cardEatright.visibility = View.GONE
+                        }
+
+                        val (proteinValue, proteinTotal) = extractNumericValues(module.protein.toString())
+                        val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
+                        val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
+
+                        binding.tvSubtractionCalValue.text = proteinValue
+                        binding.tvSubtractionCalUnit.text = "/" + proteinTotal + " g"
+                        binding.carbsProgressBar.max = proteinTotal.toInt()
+                        binding.carbsProgressBar.progress = proteinValue.toInt()
 
 
-                    binding.tvSubtractionCarbsValue.text = carbsValue
-                    binding.tvSubtractionCarbsUnit.text = "/" + carbsTotal + " g"
-                    binding.protienProgressBar.max = carbsTotal.toInt()
-                    binding.protienProgressBar.progress = carbsValue.toInt()
+                        binding.tvSubtractionCarbsValue.text = carbsValue
+                        binding.tvSubtractionCarbsUnit.text = "/" + carbsTotal + " g"
+                        binding.protienProgressBar.max = carbsTotal.toInt()
+                        binding.protienProgressBar.progress = carbsValue.toInt()
 
-                    binding.tvSubtractionFatsValue.text = fatsValue
-                    binding.tvSubtractionFatsUnit.text = "/" + fatsTotal + " g"
-                    binding.fatsProgressBar.max = fatsTotal.toInt()
-                    binding.fatsProgressBar.progress = fatsValue.toInt()
+                        binding.tvSubtractionFatsValue.text = fatsValue
+                        binding.tvSubtractionFatsUnit.text = "/" + fatsTotal + " g"
+                        binding.fatsProgressBar.max = fatsTotal.toInt()
+                        binding.fatsProgressBar.progress = fatsValue.toInt()
 
 
-                    binding.halfCurveProgressBar.setProgress(60f)
-                    // value is wrong for eatright progress let backend correct then uncomment below
-                    /*val (curent, max) = extractNumericValues(module.calories.toString())
+                        binding.halfCurveProgressBar.setProgress(60f)
+                        // value is wrong for eatright progress let backend correct then uncomment below
+                        /*val (curent, max) = extractNumericValues(module.calories.toString())
                     binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
                     val percentage = calculatePercentage(curent.toInt(), max.toInt())
                     binding.halfCurveProgressBar.setProgress(percentage.toFloat())*/
 
-                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueSleepright, module.sleepDuration?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                    )
-                }
-
-                "SLEEP_RIGHT" -> {
-                    if (isSelected == true) {
-                        binding.cardSleeprightMain.visibility = View.VISIBLE
-                        binding.cardSleepright.visibility = View.GONE
-                    }
-                    binding.tvRem.text = module.rem.toString()
-                    binding.tvCore.text = module.core.toString()
-                    binding.tvDeep.text = module.deep.toString()
-                    binding.tvAwake.text = module.awake.toString()
-                    binding.tvSleepTime.text = module.sleepTime.toString()
-                    binding.tvWakeupTime.text = module.wakeUpTime.toString()
-
-                    val sleepData = listOf(
-                        SleepSegmentModel(
-                            0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
-                        ), SleepSegmentModel(
-                            0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
-                        ), SleepSegmentModel(
-                            0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
-                        ), SleepSegmentModel(
-                            0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueEatright,
+                            module.calories?.toString()
                         )
-                    )
-
-                    binding.sleepStagesView.setSleepData(sleepData)
-
-                    setIfNotNullOrBlank(binding.tvModuleValueEatright, module.calories?.toString())
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueSleepright, module.sleepDuration?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueThinkright, module.mindfulTime?.toString()
-                    )
-                    setIfNotNullOrBlank(
-                        binding.tvModuleValueMoveright, module.activeBurn?.toString()
-                    )
-
-                    aiDashboardResponseMain.data.updatedModules
-
-                    val sleepModule =
-                        aiDashboardResponseMain.data.updatedModules.find { it.moduleId == "SLEEP_RIGHT" }
-                    sleepModule?.let {
-                        setStageGraphFromSleepRightModule(
-                            rem = it.rem ?: "0min",
-                            core = it.core ?: "0min",
-                            deep = it.deep ?: "0min",
-                            awake = it.awake ?: "0min"
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
                     }
+
+                    "SLEEP_RIGHT" -> {
+                        if (isSelected == true) {
+                            binding.cardSleeprightMain.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.GONE
+                        }
+                        binding.tvRem.text = module.rem.toString()
+                        binding.tvCore.text = module.core.toString()
+                        binding.tvDeep.text = module.deep.toString()
+                        binding.tvAwake.text = module.awake.toString()
+                        binding.tvSleepTime.text = module.sleepTime.toString()
+                        binding.tvWakeupTime.text = module.wakeUpTime.toString()
+
+                        val sleepData = listOf(
+                            SleepSegmentModel(
+                                0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
+                            ), SleepSegmentModel(
+                                0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
+                            ), SleepSegmentModel(
+                                0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
+                            ), SleepSegmentModel(
+                                0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
+                            )
+                        )
+
+                        binding.sleepStagesView.setSleepData(sleepData)
+
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueEatright,
+                            module.calories?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueThinkright, module.mindfulTime?.toString()
+                        )
+                        setIfNotNullOrBlank(
+                            binding.tvModuleValueMoveright, module.activeBurn?.toString()
+                        )
+
+                        aiDashboardResponseMain.data.updatedModules
+
+                        val sleepModule =
+                            aiDashboardResponseMain.data.updatedModules.find { it.moduleId == "SLEEP_RIGHT" }
+                        sleepModule?.let {
+                            setStageGraphFromSleepRightModule(
+                                rem = it.rem ?: "0min",
+                                core = it.core ?: "0min",
+                                deep = it.deep ?: "0min",
+                                awake = it.awake ?: "0min"
+                            )
+                        }
+                    }
+
+                    else -> {
+                        binding.cardMoverightMain.visibility = View.VISIBLE
+                        binding.cardMoveright.visibility = View.GONE
+                    }
                 }
 
-                else -> {
-                    binding.cardMoverightMain.visibility = View.VISIBLE
-                    binding.cardMoveright.visibility = View.GONE
-                }
+
             }
-
-
         }
     }
 
