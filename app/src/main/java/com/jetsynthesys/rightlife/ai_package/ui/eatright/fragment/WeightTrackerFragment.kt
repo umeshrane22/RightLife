@@ -35,6 +35,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentWeightTrackerBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -315,7 +316,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private fun fetchWeightData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userId = "67f6698fa213d14e22a47c2a" // Replace with dynamic user ID if needed
+                val userId = SharedPreferenceManager.getInstance(requireContext()).userId // Replace with dynamic user ID if needed
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 var selectedDate: String

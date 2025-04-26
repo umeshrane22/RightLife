@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -149,8 +150,9 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
     private fun fetchRestingHeartRate(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val userId = SharedPreferenceManager.getInstance(requireContext()).userId
                 val response = ApiClient.apiServiceFastApi.getRestingHeartRate(
-                    userId = "64763fe2fa0e40d9c0bc8264",
+                    userId = userId,
                     period = period,
                     date = "2025-03-24"
                 )

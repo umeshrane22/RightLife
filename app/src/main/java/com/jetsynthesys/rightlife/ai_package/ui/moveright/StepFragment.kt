@@ -412,7 +412,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 }
 
                 val response = ApiClient.apiServiceFastApi.getStepsDetail(
-                    userId = "67f6698fa213d14e22a47c2a",
+                    userId = userId,
                     source = "apple",
                     period = period,
                     date = "2025-04-07"

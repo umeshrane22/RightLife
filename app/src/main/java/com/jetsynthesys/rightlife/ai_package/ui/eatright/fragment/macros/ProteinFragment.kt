@@ -118,6 +118,7 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        fetchActiveCalories("last_weekly")
        /* fetchActiveCalories("last_weekly")
         setupLineChart()*/
 

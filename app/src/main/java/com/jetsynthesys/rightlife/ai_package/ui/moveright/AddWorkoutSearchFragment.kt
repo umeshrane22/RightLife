@@ -78,6 +78,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 val minutes = minutePicker.value
                 val durationMinutes = hours * 60 + minutes
                 if (durationMinutes > 0) {
+
                     // Create a new WorkoutSessionRecord with current input values
                     val newWorkoutRecord = WorkoutSessionRecord(
                         userId = "64763fe2fa0e40d9c0bc8264",
@@ -198,8 +199,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private fun calculateUserCalories(durationMinutes: Int, selectedIntensity: String, activityId: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                //val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val userId = "64763fe2fa0e40d9c0bc8264"
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+               // val userId = "64763fe2fa0e40d9c0bc8264"
                 val request = CalculateCaloriesRequest(
                     userId = userId,
                     activityId = activityId,

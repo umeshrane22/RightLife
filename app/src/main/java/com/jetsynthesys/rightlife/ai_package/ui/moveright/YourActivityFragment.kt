@@ -169,51 +169,54 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun fetchActivities() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "64763fe2fa0e40d9c0bc8264"
-                //val userId = "64763fe2fa0e40d9c0bc8264"
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "64763fe2fa0e40d9c0bc8264"
                 Log.d("FetchActivities", "Fetching routines for userId: $userId")
 
-                val response: Response<List<RoutineResponse>> = ApiClient.apiServiceFastApi.getRoutines(userId)
+                val response = ApiClient.apiServiceFastApi.getRoutines(userId)
 
                 if (response.isSuccessful) {
-                    val routines: List<RoutineResponse>? = response.body()
-                    Log.d("FetchActivities", "Success: Received ${routines?.size ?: 0} routines")
+                    val routineResponse = response.body()
+                    Log.d("FetchActivities", "Received ${routineResponse?.routines?.size ?: 0} routines")
 
-                    val valueLists: ArrayList<ActivityModel> = ArrayList()
-                    routines?.forEach { routine ->
-                        routine.workouts.forEach { workout ->
-                            valueLists.add(
-                                ActivityModel(
-                                    activityType = workout.activity_name,
-                                    duration = "${workout.duration_min.toInt()} min",
-                                    caloriesBurned = "0", // Placeholder
-                                    intensity = workout.intensity
-                                )
+                    val activityList = ArrayList<ActivityModel>()
+
+                    routineResponse?.routines?.forEachIndexed { index, routine ->
+                        Log.d("FetchActivities", "Routine $index: ${routine.routine_name}")
+                        routine.workouts.forEachIndexed { wIndex, workout ->
+                            Log.d("FetchActivities", "Workout $wIndex - ${workout.activity_name}, Duration: ${workout.duration_min}, Intensity: ${workout.intensity}")
+
+                            val activity = ActivityModel(
+                                activityType = workout.activity_name,
+                                duration = "${workout.duration_min.toInt()} min",
+                                caloriesBurned = workout.calories_burned.toInt().toString(),
+                                intensity = workout.intensity
                             )
+                            activityList.add(activity)
                         }
                     }
 
                     withContext(Dispatchers.Main) {
                         if (isAdded && view != null) {
-                            if (valueLists.isNotEmpty()) {
+                            if (activityList.isNotEmpty()) {
                                 myActivityRecyclerView.visibility = View.VISIBLE
-                                Log.d("FetchActivities", "Displaying ${valueLists.size} workouts")
+                                Log.d("FetchActivities", "Displaying ${activityList.size} activities")
                             } else {
                                 myActivityRecyclerView.visibility = View.GONE
-                                Log.d("FetchActivities", "No workouts to display")
+                                Log.d("FetchActivities", "No activities to display")
                             }
-                            myActivityAdapter.addAll(valueLists, -1, null, false)
+                            myActivityAdapter.addAll(activityList, -1, null, false)
                         }
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
                         if (isAdded && view != null) {
-                            Log.e("FetchActivities", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
+                            Log.e("FetchActivities", "API Error ${response.code()}: $errorBody")
                             myActivityRecyclerView.visibility = View.GONE
                             Toast.makeText(
                                 context,
-                                "Failed to fetch activities: ${response.code()} - $errorBody",
+                                "Failed to fetch activities: ${response.code()}",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -234,6 +237,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
     }
+
+
+
 
     private fun showTooltipsSequentially() {
         Handler(Looper.getMainLooper()).postDelayed({
