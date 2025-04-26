@@ -65,8 +65,11 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedIronResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
@@ -141,7 +144,7 @@ interface ApiService {
     @POST("eat/meals/create_meal/")
     fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
 
-    @POST("eat/meals/create_meal/")
+    @POST("eat/meals/log_saved_meal/")
     fun createSaveMealsToLog(@Query("user_id") userId: String,
                              @Query("date") startDate: String,@Body request: SaveMealLogRequest
     ): Call<MealUpdateResponse>
@@ -149,6 +152,14 @@ interface ApiService {
     @GET("eat/meals/get_log_meals/")
     fun getMealsLogList(@Query("user_id") userId: String,
                     @Query("date") startDate: String): Call<MealsLogResponse>
+
+    @GET("eat/meals/get_log_meals_byDate/")
+    fun getMealsLogByDate(@Query("user_id") userId: String,
+                        @Query("date") startDate: String): Call<MealLogDataResponse>
+
+    @GET("eat/meals/get_log_meals_byDate/")
+    fun getMealsLogHistory(@Query("user_id") userId: String,
+                          @Query("date") startDate: String, @Query("date_range") dateRange: String): Call<MealLogDataResponse>
 
     @POST("eat/snap_meals_log/")
     fun createSnapMealLog(@Body request: SnapMealLogRequest): Call<SnapMealLogResponse>
@@ -311,8 +322,8 @@ interface ApiService {
     ): Response<FrequentlyLoggedResponse>
 
     @GET("eat/landing-page/")
-    fun getMealSummary(
-        @Query("user_id") userId: String): Call<LandingPageResponse>
+    fun getMealLandingSummary(
+        @Query("user_id") userId: String, @Query("date") date: String): Call<EatRightLandingPageDataResponse>
 
     @GET("sleep/fetch_sleep_stage/")
     fun fetchSleepStage(
@@ -445,7 +456,13 @@ interface ApiService {
     @GET("move/routine/")
     suspend fun getRoutines(
         @Query("user_id") userId: String
-    ): Response<List<RoutineResponse>>
+    ): Response<RoutineResponse>
+
+    @GET("move/landing_page/")
+    suspend fun getLandingPageData(
+        @Query("user_id") userId: String,
+        @Query("date") date: String
+    ): Response<FitnessData>
 
     @POST("move/assign_routine/")
     suspend fun assignRoutine(

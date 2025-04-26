@@ -15,7 +15,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
-
     private lateinit var layoutBreakfast : LinearLayoutCompat
     private lateinit var layoutMorningSnack : LinearLayoutCompat
     private lateinit var layoutLunch : LinearLayoutCompat
@@ -24,8 +23,9 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,7 +36,6 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         val dialog = BottomSheetDialog(requireContext(), R.style.LoggedBottomSheetDialogTheme)
         dialog.setContentView(R.layout.fragment_frequently_logged)
         dialog.window?.setBackgroundDrawableResource(transparent)
@@ -46,35 +45,38 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
         layoutEveningSnacks = view.findViewById(R.id.layoutEveningSnacks)
         layoutDinner = view.findViewById(R.id.layoutDinner)
 
+        val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
+
         layoutBreakfast.setOnClickListener {
             dismiss()
-            callTabMealFragment()
+            callTabMealFragment("Breakfast")
         }
 
         layoutMorningSnack.setOnClickListener {
             dismiss()
-            callTabMealFragment()
+            callTabMealFragment("Morning Snack")
         }
 
         layoutLunch.setOnClickListener {
             dismiss()
-            callTabMealFragment()
+            callTabMealFragment("Lunch")
         }
 
         layoutEveningSnacks.setOnClickListener {
             dismiss()
-            callTabMealFragment()
+            callTabMealFragment("Evening Snacks")
         }
 
         layoutDinner.setOnClickListener {
             dismiss()
-            callTabMealFragment()
+            callTabMealFragment("Dinner")
         }
     }
 
-    private fun callTabMealFragment(){
+    private fun callTabMealFragment(mealType: String) {
         val fragment = HomeTabMealFragment()
         val args = Bundle()
+        args.putString("mealType", mealType)
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, "mealLog")

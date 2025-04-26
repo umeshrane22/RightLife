@@ -127,6 +127,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        fetchActiveCalories("last_weekly")
        /* fetchActiveCalories("last_weekly")
         setupLineChart()*/
 
@@ -373,7 +374,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
 
                 // Proceed with API call
                 val response = ApiClient.apiServiceFastApi.getConsumedCalories(
-                    userId = "6476d7b5fa0e40d9c0bc9cd1",
+                    userId = userId,
                     period = period,
                     date = selectedDate
                 )

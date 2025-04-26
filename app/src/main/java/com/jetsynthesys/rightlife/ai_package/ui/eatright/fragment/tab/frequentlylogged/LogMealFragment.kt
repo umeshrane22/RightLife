@@ -64,8 +64,8 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
 
     private val macroNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
     private val microNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
-    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
-    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
+//    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
+//    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
     private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

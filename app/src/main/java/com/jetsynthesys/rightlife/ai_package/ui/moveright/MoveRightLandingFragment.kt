@@ -141,6 +141,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         stepsTv = view.findViewById(R.id.steps_text)
         activeStepsTv = view.findViewById(R.id.active_text)
         goalStepsTv = view.findViewById(R.id.goal_tex)
+        fetchMoveLanding()
         moveRightImageBack.setOnClickListener {
             activity?.finish()
         }
@@ -150,7 +151,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         activeStepsTv.setOnClickListener {
             navigateToFragment(SetYourStepGoalFragment(),"StepTakenFragment")
         }
-        fetchUserWorkouts()
+        //fetchUserWorkouts()
         //fetchHealthSummary()
         val workoutImageIcon = view.findViewById<ImageView>(R.id.workout_forward_icon)
         val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
@@ -557,6 +558,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
+    private fun fetchMoveLanding(){
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = ApiClient.apiServiceFastApi.getMoveLanding(
+                    userId = "67f6698fa213d14e22a47c2a",
+                    date = "2025-04-18"
+                )
+                if (response.isSuccessful) {
+                    val fitnessData = response.body()
+                    // Handle the FitnessData response
+                    var heartRate : List<HeartRateData> = ArrayList()
+                   // var heartRate : List<HeartRateData> = ArrayList()
+                    heartRate = response.body()?.heartRate!!
+                    println(fitnessData)
+                } else {
+                    // Handle error
+                    println("Error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                // Handle network or other errors
+                println("Exception: ${e.message}")
+            }
+        }
+    }
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -909,56 +934,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
-    private fun fetchHealthSummary() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val userId: String = "64763fe2fa0e40d9c0bc8264"
-                val date: String = "2025-03-24"
-
-                val response: Response<FitnessResponse> = ApiClient.apiServiceFastApi.getMoveLanding(
-                    userId = userId,
-                    date = date
-                )
-
-                if (response.isSuccessful) {
-                    val healthSummary: FitnessResponse? = response.body()
-                    if (healthSummary != null) {
-                        val heartRateZones = healthSummary.heartRateZones
-                        val steps = healthSummary.steps
-                        val totalBurnedSum = healthSummary.totalBurnedSum
-                        val heartRateVariabilitySDNN = healthSummary.heartRateVariabilitySDNN
-                        val totalStepsSum = healthSummary.totalStepsSum
-                        val totalIntakeCaloriesSum = healthSummary.totalIntakeCaloriesSum
-                        val burnedCaloriesSum = healthSummary.totalBurnedSum
-                        val message = healthSummary.message
-                        val measuredValue = totalIntakeCaloriesSum - totalBurnedSum
-                        withContext(Dispatchers.Main) {
-                            tvBurnValue.text = measuredValue.toString()
-                            totalIntakeCalorieText.text = totalIntakeCaloriesSum.toString()
-                            calorieBalanceDescription.text = message.toString()
-                            Log.d("HealthSummary", "Full Response: $healthSummary")
-                            Log.d("HealthSummary", "Total Steps Sum: $totalStepsSum")
-                            Log.d("HealthSummary", "Total Burned Sum: $totalBurnedSum")
-                            Log.d("HealthSummary", "Total Intake Calories Sum: $totalIntakeCaloriesSum")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Log.e("HealthSummary", "Response body is null")
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
-                        Log.e("HealthSummary", errorMessage)
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("HealthSummary", "Exception: ${e.message}", e)
-                }
-            }
-        }
-    }
 
     fun openAppSettings(context: Context) {
         try {
