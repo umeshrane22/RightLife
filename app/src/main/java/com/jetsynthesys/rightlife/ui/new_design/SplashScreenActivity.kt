@@ -72,8 +72,8 @@ class SplashScreenActivity : AppCompatActivity() {
                     val intent = Intent(this, HomeDashboardActivity::class.java)
                     startActivity(intent)
                 } else {
-                    if (sharedPreferenceManager.userName.isNullOrEmpty()) {
-                        val intent = Intent(this, HomeDashboardActivity::class.java)
+                    if (!sharedPreferenceManager.createUserName) {
+                        val intent = Intent(this, CreateUsernameActivity::class.java)
                         startActivity(intent)
                     } else if (sharedPreferenceManager.selectedWellnessFocus.isNullOrEmpty()
                         || sharedPreferenceManager.wellnessFocusTopics.isNullOrEmpty()

@@ -23,6 +23,7 @@ public class SharedPreferenceConstants {
     public static final String INTEREST = "INTEREST";
     public static final String PERSONALIZATION = "PERSONALIZATION";
     public static final String SYNC_NOW = "SYNC_NOW";
+    public static final String CREATE_USERNAME = "CREATE_USERNAME";
     public static final String CURRENT_QUESTION = "CURRENT_QUESTION";
     public static final String ONBOARDING_QUESTION = "ONBOARDING_QUESTION";
     public static final String FIRST_TIME_AFFIRMATION = "FIRST_TIME_AFFIRMATION";

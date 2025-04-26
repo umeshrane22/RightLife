@@ -2,8 +2,6 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -11,7 +9,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -102,6 +99,7 @@ class CreateUsernameActivity : AppCompatActivity() {
             userdata.firstName = username
             userdata.email = email
             updateUserData(userdata)
+            sharedPreferenceManager.createUserName = true
             val intent = Intent(this, HappyToHaveYouActivity::class.java)
             startActivity(intent)
         }
@@ -132,7 +130,11 @@ class CreateUsernameActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                CommonAPICall.updateChecklistStatus(this@CreateUsernameActivity, "profile", AppConstants.CHECKLIST_INPROGRESS)
+                CommonAPICall.updateChecklistStatus(
+                    this@CreateUsernameActivity,
+                    "profile",
+                    AppConstants.CHECKLIST_INPROGRESS
+                )
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
