@@ -264,6 +264,16 @@ public class SharedPreferenceManager {
         editor.apply();
     }
 
+    public Boolean getCreateUserName() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.CREATE_USERNAME, false);
+    }
+
+    public void setCreateUserName(boolean isCreateUser) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.CREATE_USERNAME, isCreateUser);
+        editor.apply();
+    }
+
     public Boolean getThirdFiller() {
         return sharedPreferences.getBoolean(SharedPreferenceConstants.THIRD_FILLER, false);
     }
