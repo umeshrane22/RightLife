@@ -189,7 +189,6 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
              //  selectedText.text = "No selection"
             }
         }
-
 //        val foodDataResponses = if (Build.VERSION.SDK_INT >= 33) {
 //            arguments?.getParcelable("foodDataResponses", NutritionResponse::class.java)
 //        } else {
@@ -220,7 +219,6 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 //                tvQuantity.text = quantity.toString()
 //            }
 //        }
-
 //            view.findViewById<ImageView>(R.id.ivIncrease).setOnClickListener {
 //                quantity++
 //                tvQuantity.text = quantity.toString()

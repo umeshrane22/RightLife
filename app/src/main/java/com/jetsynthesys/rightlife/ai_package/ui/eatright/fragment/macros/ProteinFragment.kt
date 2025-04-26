@@ -367,7 +367,7 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
                 }
 
                 val response = ApiClient.apiServiceFastApi.getConsumedProtiens(
-                    userId = "6476d7b5fa0e40d9c0bc9cd1", period = period, date = selectedDate)
+                    userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     val activeCaloriesResponse = response.body()
                     if (activeCaloriesResponse?.statusCode == 200){

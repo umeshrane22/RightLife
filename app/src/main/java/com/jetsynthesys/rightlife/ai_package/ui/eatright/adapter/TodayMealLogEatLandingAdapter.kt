@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 
-class TodayMealLogEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<MealList>,
-                                    private var clickPos: Int, private var mealLogListData : MealList?,
-                                    private var isClickView : Boolean, val onTodayMealLogItem: (MealList, Int, Boolean) -> Unit,) :
+class TodayMealLogEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<RegularRecipeEntry>,
+                                    private var clickPos: Int, private var mealLogListData : RegularRecipeEntry?,
+                                    private var isClickView : Boolean, val onTodayMealLogItem: (RegularRecipeEntry, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<TodayMealLogEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -25,20 +27,26 @@ class TodayMealLogEatLandingAdapter(private val context: Context, private var da
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.name
-        holder.servesCount.text = item.numOfServings.toString()
-        holder.calValue.text = item.calories.toString()
-        holder.subtractionValue.text = item.protein.toString()
-        holder.baguetteValue.text = item.carbs.toString()
-        holder.dewpointValue.text = item.fats.toString()
-        if (item.mealType.equals("Breakfast", true)){
-            holder.mealTypeIc.setImageResource(R.drawable.ic_breakfast)
-        }else if (item.mealType.equals("Lunch", true)){
-            holder.mealTypeIc.setImageResource(R.drawable.ic_lunch)
-        }else{
+        holder.mealTitle.text = "Dinner"
+        holder.mealName.text = item.receipe.recipe_name
+        holder.servesCount.text = item.receipe.servings.toString()
+        holder.calValue.text = item.receipe.calories.toInt().toString()
+        holder.subtractionValue.text = item.receipe.protein.toInt().toString()
+        holder.baguetteValue.text = item.receipe.carbs.toInt().toString()
+        holder.dewpointValue.text = item.receipe.fat.toInt().toString()
+        val imageUrl = getDriveImageUrl(item.receipe.photo_url)
+        Glide.with(context)
+            .load(imageUrl)
+            .placeholder(R.drawable.ic_breakfast)
+            .error(R.drawable.ic_breakfast)
+            .into(holder.image_meal)
+//        if (item.mealType.equals("Breakfast", true)){
+//            holder.mealTypeIc.setImageResource(R.drawable.ic_breakfast)
+//        }else if (item.mealType.equals("Lunch", true)){
+//            holder.mealTypeIc.setImageResource(R.drawable.ic_lunch)
+//        }else{
             holder.mealTypeIc.setImageResource(R.drawable.ic_dinner)
-        }
+ //       }
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -96,9 +104,10 @@ class TodayMealLogEatLandingAdapter(private val context: Context, private var da
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
         val mealTypeIc : ImageView = itemView.findViewById(R.id.image_meal_type)
+        val image_meal : ImageView = itemView.findViewById(R.id.image_meal)
     }
 
-    fun addAll(item : ArrayList<MealList>?, pos: Int, mealLogItem : MealList?, isClick : Boolean) {
+    fun addAll(item : ArrayList<RegularRecipeEntry>?, pos: Int, mealLogItem : RegularRecipeEntry?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -107,5 +116,16 @@ class TodayMealLogEatLandingAdapter(private val context: Context, private var da
             isClickView = isClick
         }
         notifyDataSetChanged()
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }

@@ -10,11 +10,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.response.OtherRecipe
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 
-class OtherRecipeEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<RecipeSuggestion>,
-                                   private var clickPos: Int, private var mealLogListData : RecipeSuggestion?,
-                                   private var isClickView : Boolean, val onOtherRecipeItem: (RecipeSuggestion, Int, Boolean) -> Unit,) :
+class OtherRecipeEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<OtherRecipe>,
+                                   private var clickPos: Int, private var mealLogListData : OtherRecipe?,
+                                   private var isClickView : Boolean, val onOtherRecipeItem: (OtherRecipe, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<OtherRecipeEatLandingAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -30,8 +31,9 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
         holder.mealTitle.text = item.meal_name
         // holder.mealName.text = item.mealName
        // holder.iamgeFood.text = item.serve
+        val imageUrl = getDriveImageUrl(item.image)
         Glide.with(context)
-            .load(item.image)
+            .load(imageUrl)
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.iamgeFood)
@@ -102,7 +104,7 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<RecipeSuggestion>?, pos: Int, mealLogItem : RecipeSuggestion?, isClick : Boolean) {
+    fun addAll(item : ArrayList<OtherRecipe>?, pos: Int, mealLogItem : OtherRecipe?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -111,5 +113,16 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
             isClickView = isClick
         }
         notifyDataSetChanged()
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }
