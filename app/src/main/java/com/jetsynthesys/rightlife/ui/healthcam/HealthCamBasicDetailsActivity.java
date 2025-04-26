@@ -143,29 +143,29 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 break;
                             case "smoking":
                                 int selectedSmoke = 0;
-                                for (Option sm : smokeOptions) {
+                                /*for (Option sm : smokeOptions) {
                                     if (sm.getOptionText().equals(smoke)) {
                                         selectedSmoke = Integer.valueOf(sm.getOptionPosition());
                                     }
-                                }
+                                }*/
                                 answer.setAnswer(selectedSmoke);
                                 break;
                             case "bloodpressuremedication":
                                 int selectedBP = 0;
-                                for (Option bp : bpMedicationOptions) {
+                              /*  for (Option bp : bpMedicationOptions) {
                                     if (bp.getOptionText().equals(bpMedication)) {
                                         selectedBP = Integer.valueOf(bp.getOptionPosition());
                                     }
-                                }
+                                }*/
                                 answer.setAnswer(selectedBP);
                                 break;
                             case "diabetes":
                                 int selectedDiabetic = 0;
-                                for (Option dia : diabeticsOptions) {
+                               /* for (Option dia : diabeticsOptions) {
                                     if (dia.getOptionText().equals(diabetic)) {
                                         selectedDiabetic = Integer.valueOf(dia.getOptionPosition());
                                     }
-                                }
+                                }*/
                                 answer.setAnswer(selectedDiabetic);
                                 break;
 
