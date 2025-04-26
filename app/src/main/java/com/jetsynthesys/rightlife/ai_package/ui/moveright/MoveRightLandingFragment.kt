@@ -151,7 +151,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         activeStepsTv.setOnClickListener {
             navigateToFragment(SetYourStepGoalFragment(),"StepTakenFragment")
         }
-        fetchUserWorkouts()
+        //fetchUserWorkouts()
         //fetchHealthSummary()
         val workoutImageIcon = view.findViewById<ImageView>(R.id.workout_forward_icon)
         val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
@@ -568,6 +568,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 if (response.isSuccessful) {
                     val fitnessData = response.body()
                     // Handle the FitnessData response
+                    var heartRate : List<HeartRateData> = ArrayList()
+                   // var heartRate : List<HeartRateData> = ArrayList()
+                    heartRate = response.body()?.heartRate!!
                     println(fitnessData)
                 } else {
                     // Handle error

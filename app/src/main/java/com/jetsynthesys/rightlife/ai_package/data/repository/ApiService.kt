@@ -157,6 +157,10 @@ interface ApiService {
     fun getMealsLogByDate(@Query("user_id") userId: String,
                         @Query("date") startDate: String): Call<MealLogDataResponse>
 
+    @GET("eat/meals/get_log_meals_byDate/")
+    fun getMealsLogHistory(@Query("user_id") userId: String,
+                          @Query("date") startDate: String, @Query("date_range") dateRange: String): Call<MealLogDataResponse>
+
     @POST("eat/snap_meals_log/")
     fun createSnapMealLog(@Body request: SnapMealLogRequest): Call<SnapMealLogResponse>
 

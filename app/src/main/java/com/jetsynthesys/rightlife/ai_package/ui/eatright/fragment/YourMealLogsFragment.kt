@@ -652,6 +652,52 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         })
     }
 
+    private fun getMealsLogHistory(formattedDate: String) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val startDate = "2025-04-24"
+        val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
+        call.enqueue(object : Callback<MealLogDataResponse> {
+            override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                    //  val mealPlanLists = response.body()?.meals ?: emptyList()
+                    //   mealList.addAll(mealPlanLists)
+                    //  onMealLogDateItemRefresh()
+                    if (response.body()?.data != null){
+                        val gson = Gson()
+                        //  val response = gson.fromJson(jsonString, MealLogDataResponse::class.java)
+                        val breakfastRecipes = response.body()?.data!!.meal_detai["Breakfast"]?.regular_receipes
+                        val lunchSnapRecipes = response.body()?.data!!.meal_detai["Lunch"]?.regular_receipes
+                        val dinnerastRecipes = response.body()?.data!!.meal_detai["Dinner"]?.regular_receipes
+                        fullDaySummary = response.body()?.data!!.full_day_summary
+                        if (breakfastRecipes != null){
+                            breakfastRegularRecipesList.addAll(breakfastRecipes)
+                        }
+                        if (lunchSnapRecipes != null){
+                            lunchRegularRecipesList.addAll(lunchSnapRecipes)
+                        }
+                        if (dinnerastRecipes != null) {
+                            dinnerRegularRecipesList.addAll(dinnerastRecipes)
+                        }
+                        if (fullDaySummary != null){
+                            setGraphValue(fullDaySummary)
+                        }
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
+    }
+
     private fun getWeekFrom(startDate: LocalDate): List<MealLogWeeklyDayModel> {
 
         return (0..6).map { i ->

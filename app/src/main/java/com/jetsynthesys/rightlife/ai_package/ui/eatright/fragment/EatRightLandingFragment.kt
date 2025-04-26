@@ -16,6 +16,9 @@ import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -32,22 +35,26 @@ import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.OtherRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TodayMealLogEatLandingAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealSuggestionListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.OtherRecipeEatLandingAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TodayMealLogEatLandingAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealPlanModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
-import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealList
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
+import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
+import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -110,6 +117,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var landingPageResponse : EatRightLandingPageDataResponse
     private  var regularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
 
+     lateinit var userData: Userdata
+     lateinit var userDataResponse: UserProfileResponse
+    private lateinit var sharedPreferenceManager: SharedPreferenceManager
+    val viewModel: MasterCalculationsViewModel by viewModels()
+
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEatRightLandingBinding
         get() = FragmentEatRightLandingBinding::inflate
 
@@ -125,10 +137,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         newBoolean = true
         appPreference = AppPreference(requireContext())
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
-        //SelectMealTypeEat
-        //LogWeightEat
-        //LogWaterIntakeEat
-        //Not
+        sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+
+        userDataResponse = sharedPreferenceManager.userProfile
+        userData = userDataResponse.userdata
+        //viewModel.userResponse = userData
 
         val halfCurveProgressBar = view.findViewById<HalfCurveProgressBar>(R.id.halfCurveProgressBar)
         val snapMealBtn = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
@@ -347,6 +360,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 commit()
             }
         }
+
     }
 
     private fun onMealSuggestionList(landingPageResponse : LandingPageResponse) {
@@ -528,6 +542,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             logFirstMealLayout.visibility = View.VISIBLE
             weightLastLogDateTv.visibility = View.GONE
         }
+
 
         weightIntake.text = landingPageResponse.last_weight_log?.weight?.toFloat().toString()
         weightIntakeUnit.text = landingPageResponse.last_weight_log?.type
@@ -837,7 +852,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
                     LoaderUtil.dismissLoader(requireActivity())
                 }
             }
@@ -848,4 +863,92 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             }
         })
     }
+}
+
+class MasterCalculationsViewModel  : ViewModel() {
+
+
+
+    private val _userResponse = MutableStateFlow<Userdata?>(null)
+    val userResponse: StateFlow<Userdata?> = _userResponse
+
+//    fun getUserDetails(callback: (Boolean, String?) -> Unit) {
+//        viewModelScope.launch {
+//            try {
+//                val response = u // suspend function
+//                _userResponse.value = response
+//                callback(true, null)
+//            } catch (e: Exception) {
+//                val errorMessage = AppUtility.fetchErrorMessage(e)
+//                callback(false, errorMessage ?: "Something went wrong.")
+//            }
+//        }
+//    }
+
+    fun calculateBMI(weight: Double, height: Double): Double {
+        return weight / (height * height)
+    }
+
+    fun calculateBodyFatPercentage(weight: Double, height: Double, age: Int, gender: String): Double {
+        val bmi = calculateBMI(weight, height)
+        return if (gender.lowercase() == "male") {
+            1.20 * bmi + 0.23 * age - 16.2
+        } else {
+            1.20 * bmi + 0.23 * age - 5.4
+        }
+    }
+
+    fun calculateBMR(weight: Double, height: Double, age: Int, gender: String): Double {
+        return if (gender.lowercase() == "male") {
+            10 * weight + 6.25 * height * 100 - 5 * age + 5
+        } else {
+            10 * weight + 6.25 * height * 100 - 5 * age - 161
+        }
+    }
+
+    fun calculateTDEE(bmr: Double, activityLevel: Double): Double {
+        return bmr * activityLevel
+    }
+
+//    fun getCalculatedValues(): NutrientIntakes? {
+//        val model = _userResponse.value
+//        return model?.data?.let {
+//            calculateIntakes(
+//                weight = it.weight ?: 0.0,
+//                height = (it.height ?: 0.0) / 100.0,
+//                age = (it.age ?: 0.0).toInt(),
+//                gender = "male",
+//                activityLevel = 1.55
+//            )
+//        }
+//    }
+//
+//    fun calculateIntakes(
+//        weight: Double,
+//        height: Double,
+//        age: Int,
+//        gender: String,
+//        activityLevel: Double
+//    ): NutrientIntakes {
+//        val bodyFatPercentage = calculateBodyFatPercentage(weight, height, age, gender)
+//        val bmr = calculateBMR(weight, height, age, gender)
+//        val tdee = calculateTDEE(bmr, activityLevel)
+//
+//        val fatMass = weight * (bodyFatPercentage / 100)
+//        val leanMass = weight - fatMass
+//        val idealProtein = 2.6 * leanMass
+//        val caloriesFromProtein = 4 * idealProtein
+//        val remainingCalories = tdee - caloriesFromProtein
+//        val caloriesFromCarbs = 0.6 * remainingCalories
+//        val caloriesFromFats = 0.4 * remainingCalories
+//
+//        return NutrientIntakes(
+//            dailyCaloricGoal = tdee,
+//            protein = idealProtein,
+//            carbs = caloriesFromCarbs / 4,
+//            fats = caloriesFromFats / 9,
+//            bodyFatPercentage = bodyFatPercentage,
+//            tdee = tdee
+//        )
+ //   }
 }
