@@ -98,7 +98,7 @@ class CreateUsernameActivity : AppCompatActivity() {
             val userdata = Userdata()
             userdata.firstName = username
             userdata.email = email
-            updateUserData(userdata)
+            //updateUserData(userdata)
             sharedPreferenceManager.createUserName = true
             val intent = Intent(this, HappyToHaveYouActivity::class.java)
             startActivity(intent)
