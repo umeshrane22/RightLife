@@ -351,7 +351,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                 }
 
                 val response = ApiClient.apiServiceFastApi.getActiveCalories(
-                    userId = "67f6698fa213d14e22a47c2a", period = period, date = selectedDate)
+                    userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
                     val activeCaloriesResponse = response.body()
                     if (activeCaloriesResponse?.statusCode == 200){

@@ -64,6 +64,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedIronResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
@@ -435,7 +436,13 @@ interface ApiService {
     @GET("move/routine/")
     suspend fun getRoutines(
         @Query("user_id") userId: String
-    ): Response<List<RoutineResponse>>
+    ): Response<RoutineResponse>
+
+    @GET("move/landing_page/")
+    suspend fun getLandingPageData(
+        @Query("user_id") userId: String,
+        @Query("date") date: String
+    ): Response<FitnessData>
 
     @POST("move/assign_routine/")
     suspend fun assignRoutine(
