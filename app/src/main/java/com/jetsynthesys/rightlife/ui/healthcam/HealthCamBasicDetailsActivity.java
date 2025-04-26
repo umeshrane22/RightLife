@@ -520,7 +520,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                     } else {
                         Intent intent = new Intent(HealthCamBasicDetailsActivity.this, HealthCamRecorderActivity.class);
                         intent.putExtra("reportID", healthCamSubmitResponse.getData().getAnswerId());
-                        intent.putExtra("USER_PROFILE_HEIGHT", edtHeight.getText().toString());
+                        intent.putExtra("USER_PROFILE_HEIGHT","168"); //edtHeight.getText().toString());
                         intent.putExtra("USER_PROFILE_WEIGHT", edtWeight.getText().toString());
                         intent.putExtra("USER_PROFILE_AGE", edtAge.getText().toString());
                         intent.putExtra("USER_PROFILE_GENDER", edtGender.getText().toString());

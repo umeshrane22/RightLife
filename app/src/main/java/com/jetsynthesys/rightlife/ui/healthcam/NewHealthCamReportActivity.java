@@ -133,7 +133,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Utils.dismissLoader(NewHealthCamReportActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(NewHealthCamReportActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(NewHealthCamReportActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
