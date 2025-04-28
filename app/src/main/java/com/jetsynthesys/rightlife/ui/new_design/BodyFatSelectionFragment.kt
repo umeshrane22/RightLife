@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.new_design.pojo.BodyFat
+import com.jetsynthesys.rightlife.ui.utility.DecimalDigitsInputFilter
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class BodyFatSelectionFragment : Fragment() {
@@ -68,6 +69,8 @@ class BodyFatSelectionFragment : Fragment() {
         cardBodyFat = view.findViewById(R.id.card_view_body_fat)
         edtBodyFat = view.findViewById(R.id.edt_body_fat)
         recyclerView = view.findViewById(R.id.rv_body_fat)
+
+        edtBodyFat.filters = arrayOf(DecimalDigitsInputFilter())
 
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         val iconPlus = view.findViewById<ImageView>(R.id.icon_plus)
@@ -140,25 +143,28 @@ class BodyFatSelectionFragment : Fragment() {
         recyclerView.adapter = adapter
 
         btnContinue.setOnClickListener {
-            tvSelectedBodyFat.text = "${edtBodyFat.text}%"
-            llSelectedBodyFat.visibility = VISIBLE
-            cardBodyFat.visibility = GONE
+            if (edtBodyFat.text.toString().toDouble() in 5.0..60.0) {
 
-            if (edtBodyFat.text.toString().toDouble() < 3 && edtBodyFat.text.toString().toDouble() > 60){
+                tvSelectedBodyFat.text = "${edtBodyFat.text}%"
+                llSelectedBodyFat.visibility = VISIBLE
+                cardBodyFat.visibility = GONE
+
+                val onboardingQuestionRequest =
+                    SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
+                onboardingQuestionRequest.bodyFat = edtBodyFat.text.toString()
+                SharedPreferenceManager.getInstance(requireContext())
+                    .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+                (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+            } else
                 Toast.makeText(
                     requireContext(),
                     "Please select fat between 5% to 60%",
                     Toast.LENGTH_SHORT
                 ).show()
-                return@setOnClickListener
-            }
-            val onboardingQuestionRequest =
-                SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
-            onboardingQuestionRequest.bodyFat = edtBodyFat.text.toString()
-            SharedPreferenceManager.getInstance(requireContext())
-                .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+            return@setOnClickListener
 
-            (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+
         }
 
 

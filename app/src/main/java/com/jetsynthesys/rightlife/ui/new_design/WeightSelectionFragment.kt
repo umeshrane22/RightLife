@@ -146,7 +146,7 @@ class WeightSelectionFragment : Fragment() {
 
         // Generate numbers with increments of 0.1
 
-        for (i in 0..1000) {
+        for (i in 0..3000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
 
