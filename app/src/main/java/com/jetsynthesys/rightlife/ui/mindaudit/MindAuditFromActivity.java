@@ -16,11 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ui.HomeActivity;
 import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
 
-public class MindAuditFromActivity extends AppCompatActivity {
+public class MindAuditFromActivity extends BaseActivity {
 
     public Button nextButton;
     ImageView ic_back_dialog, close_dialog;
@@ -33,7 +34,7 @@ public class MindAuditFromActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_mind_audit_from);
+        setChildContentView(R.layout.activity_mind_audit_from);
 
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);

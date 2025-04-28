@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui.therledit;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,22 +21,11 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.modulecontentlist.ModuleContentDetailsList;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
-import com.jetsynthesys.rightlife.apimodel.rledit.RightLifeEditResponse;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -47,6 +34,14 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
+import com.jetsynthesys.rightlife.apimodel.rledit.RightLifeEditResponse;
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
+import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -58,45 +53,67 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RLEditDetailViewActivity extends AppCompatActivity {
-
-    /*For Music Player*/
-    private MediaPlayer mediaPlayer;
-    private ImageButton playPauseButtonMusic;
-    private boolean isPlayingAudio = false;
-
-    private SeekBar seekBar;
-    private ProgressBar circularProgressBar;
-    private TextView currentTime;
-    private Handler handler = new Handler();
-    // till here music player
+public class RLEditDetailViewActivity extends BaseActivity {
 
     RightLifeEditResponse rightLifeEditResponse;
     int position;
     String contentUrl = "";
+    /*For Music Player*/
+    private MediaPlayer mediaPlayer;
+    private ImageButton playPauseButtonMusic;
+    private final boolean isPlayingAudio = false;
+    private SeekBar seekBar;
+    // till here music player
+    private ProgressBar circularProgressBar;
+    private TextView currentTime;
+    private final Handler handler = new Handler();
+    // Update progress in SeekBar and Circular Progress Bar
+    private final Runnable updateProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                int totalDuration = mediaPlayer.getDuration();
+
+                // Update seek bar and progress bar
+                seekBar.setProgress(currentPosition);
+                // Update Circular ProgressBar
+                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
+                circularProgressBar.setProgress(progressPercent);
+
+
+                // Update time display
+                String timeFormatted = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
+                currentTime.setText(timeFormatted);
+
+                // Update every second
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
     private ImageView ic_back_dialog, close_dialog;
     private TextView txt_desc, tv_header_htw;
     private RecyclerView recyclerView;
     private VideoView videoView;
     private ImageButton playButton;
     private boolean isPlaying = false; // To track the current state of the player
-
-    private RelativeLayout rl_player,rl_video_players_layout;
-
+    private RelativeLayout rl_player, rl_video_players_layout;
     private PlayerView playerView;
     private ExoPlayer player;
     private ImageButton fullscreenButton;
     private ImageButton playPauseButton;
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname, tvViewAll;
-    private boolean isFullscreen = false;
+    private final boolean isFullscreen = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.testdata_layout3);
-         // music player
-        rl_player  = findViewById(R.id.rl_player);
+        setChildContentView(R.layout.testdata_layout3);
+        // music player
+        rl_player = findViewById(R.id.rl_player);
         rl_video_players_layout = findViewById(R.id.rl_video_players_layout);
         playPauseButtonMusic = findViewById(R.id.playPauseButton);
 
@@ -104,7 +121,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
 
-        rl_player  = findViewById(R.id.rl_player);
+        rl_player = findViewById(R.id.rl_player);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
@@ -167,14 +184,14 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 //if (false)
 
         if (!rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("VIDEO")) {
-            if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("AUDIO")){
+            if (rightLifeEditResponse.getData().getTopList().get(position).getContentType().equalsIgnoreCase("AUDIO")) {
                 rl_player.setVisibility(View.VISIBLE);
                 rl_video_players_layout.setVisibility(View.GONE);
                 playerView.setVisibility(View.GONE);
                 img_contentview.setVisibility(View.GONE);
                 setupMusicPlayer(rightLifeEditResponse);
 
-            }else {
+            } else {
                 img_contentview.setVisibility(View.VISIBLE);
                 playerView.setVisibility(View.GONE);
                 rl_video_players_layout.setVisibility(View.VISIBLE);
@@ -211,9 +228,6 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         playButton = findViewById(R.id.playButton);
 
 
-
-
-
         // Handle play/pause button click
         playPauseButton.setOnClickListener(v -> {
             if (isPlaying) {
@@ -234,9 +248,6 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         statiticsRequest.setEpisodeId("");
         updateStaticticsRecord(statiticsRequest);
     }
-
-
-
 
     private void showExitDialog() {
         // Create the dialog
@@ -277,136 +288,9 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
-    private void getContentlistdetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
-                "THINK_RIGHT_POSITIVE_PSYCHOLOGY",
-                10,
-                0,
-                "THINK_RIGHT"
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
-                            Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "User Details: " + successMessage);
-                            ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-                            Log.d("API Response", "User Details: " + ResponseObj.getData().getContentList().size()
-                                    + " " + ResponseObj.getData().getContentList().get(0).getTitle());
-                            //  setupListData(ResponseObj.getData().getContentList());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
-
-    //getRLDetailpage
-    private void getContendetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getRLDetailpage(
-                accessToken,
-                "670ccaaaf0a8929a725c1a56"
-
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
-                            Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "Content Details: " + jsonResponse);
-                            // ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
     // more like this content
     private void getMoreLikeContent(String contentId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, contentId, 0, 5);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId, 0, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -440,7 +324,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
                 tvViewAll.setVisibility(View.GONE);
             }
         });
@@ -454,7 +338,6 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
     }
-
 
     // play video
     private void initializePlayer() {
@@ -479,7 +362,6 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
         player.play();
     }
-
 
     private void playPlayer() {
         player.play();
@@ -507,11 +389,12 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         if (Util.SDK_INT >= 24) {
             releasePlayer();
             releaseMusicPlayer();
-        }else {
+        } else {
             releasePlayer();
             releaseMusicPlayer();
         }
     }
+
     protected void onDestroy() {
         super.onDestroy();
         if (mediaPlayer != null) {
@@ -526,6 +409,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             player = null;
         }
     }
+
     private void releaseMusicPlayer() {
         if (mediaPlayer != null) {
             mediaPlayer.release();
@@ -534,9 +418,7 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
     }
 
     private void updateViewCount(ViewCountRequest viewCountRequest) {
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.updateViewCount(authToken, viewCountRequest);
+        Call<ResponseBody> call = apiService.updateViewCount(sharedPreferenceManager.getAccessToken(), viewCountRequest);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -555,15 +437,13 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
     }
 
     private void updateStaticticsRecord(StatiticsRequest statiticsRequest) {
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.updateStatiticsRecord(authToken, statiticsRequest);
+        Call<ResponseBody> call = apiService.updateStatiticsRecord(sharedPreferenceManager.getAccessToken(), statiticsRequest);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -582,43 +462,10 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
     }
-
-
-
-
-
-
-
-    // Update progress in SeekBar and Circular Progress Bar
-    private final Runnable updateProgress = new Runnable() {
-        @Override
-        public void run() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                int currentPosition = mediaPlayer.getCurrentPosition();
-                int totalDuration = mediaPlayer.getDuration();
-
-                // Update seek bar and progress bar
-                seekBar.setProgress(currentPosition);
-                // Update Circular ProgressBar
-                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
-                circularProgressBar.setProgress(progressPercent);
-
-
-                // Update time display
-                String timeFormatted = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
-                currentTime.setText(timeFormatted);
-
-                // Update every second
-                handler.postDelayed(this, 1000);
-            }
-        }
-    };
 
     private void setupMusicPlayer(RightLifeEditResponse rightLifeEditResponse) {
         seekBar = findViewById(R.id.seekBar);
@@ -628,16 +475,16 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
         ImageView backgroundImage = findViewById(R.id.backgroundImage);
         rl_player.setVisibility(View.VISIBLE);
         //String imageUrl  = rightLifeEditResponse.getData().getTopList().get(position).getThumbnail().getUrl();
-        String imageUrl  = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/e9c5598c82c85de5903195f549a26210.jpg";
+        String imageUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/e9c5598c82c85de5903195f549a26210.jpg";
 
         GlideApp.with(RLEditDetailViewActivity.this)
-                .load(ApiClient.CDN_URL_QA+imageUrl)//episodes.get(1).getThumbnail().getUrl()
+                .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
                 .error(R.drawable.img_logintop)
                 .into(backgroundImage);
 
 
-        String previewUrl  = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";
-        String url = ApiClient.CDN_URL_QA+previewUrl; //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        String previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";
+        String url = ApiClient.CDN_URL_QA + previewUrl; //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: " + url);
         mediaPlayer = new MediaPlayer();
         try {
@@ -683,10 +530,12 @@ public class RLEditDetailViewActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
     }
 

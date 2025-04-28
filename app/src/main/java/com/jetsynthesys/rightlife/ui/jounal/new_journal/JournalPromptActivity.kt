@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -22,11 +23,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class JournalPromptActivity : AppCompatActivity() {
+class JournalPromptActivity : BaseActivity() {
 
     private lateinit var binding: ActivityJournalPromptBinding
     private lateinit var adapter: PromptAdapter
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var questionsList: ArrayList<Question> = ArrayList()
     private var questions4: ArrayList<Question> = ArrayList()
     private var sectionList: ArrayList<Section> = ArrayList()
@@ -35,7 +35,7 @@ class JournalPromptActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalPromptBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
@@ -182,7 +182,6 @@ class JournalPromptActivity : AppCompatActivity() {
 
 
     private fun getSections(id: String, type: String = "section") {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getJournalSections(sharedPreferenceManager.accessToken, type, id)
 
         call.enqueue(object : Callback<JournalSectionResponse> {
@@ -209,18 +208,13 @@ class JournalPromptActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<JournalSectionResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@JournalPromptActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
     }
 
     private fun getQuestions(id: String, type: String = "question") {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getJournalQuestions(sharedPreferenceManager.accessToken, type, id)
 
         call.enqueue(object : Callback<JournalQuestionsResponse> {
@@ -244,11 +238,7 @@ class JournalPromptActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<JournalQuestionsResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@JournalPromptActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

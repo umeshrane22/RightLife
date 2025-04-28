@@ -10,19 +10,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ArtistsDetailsActivity extends AppCompatActivity {
+public class ArtistsDetailsActivity extends BaseActivity {
     private ArtistDetailsResponse artistDetailsResponse;
     private TextView tvHeader, tvAboutMeContent, tvCategories, tvArtistContent, tvViewAll;
     private ImageView ivProfile, ivFacebook, ivInstagram, ivLinkedIn, ivTwitter;
@@ -44,7 +42,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_artists_details);
+        setChildContentView(R.layout.activity_artists_details);
         String artistId = getIntent().getStringExtra("ArtistId");
         getArtistDetails(artistId);
 
@@ -129,7 +127,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
         tvViewAll.setOnClickListener(view -> {
             Intent intent = new Intent(this, ViewAllByArtistActivity.class);
             intent.putExtra("ArtistId", artistData.getId());
-            intent.putExtra("ArtistName",artistData.getFirstName() + " "+artistData.getLastName());
+            intent.putExtra("ArtistName", artistData.getFirstName() + " " + artistData.getLastName());
             startActivity(intent);
         });
 
@@ -165,9 +163,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
 
     private void getArtistDetails(String artistId) {
         Utils.showLoader(this);
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.getArtistDetails(accessToken, artistId);
+        Call<ResponseBody> call = apiService.getArtistDetails(sharedPreferenceManager.getAccessToken(), artistId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -189,7 +185,7 @@ public class ArtistsDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
                 Utils.dismissLoader(ArtistsDetailsActivity.this);
             }
         });

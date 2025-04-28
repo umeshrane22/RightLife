@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.questionnaire
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityQuestionnaireBinding
@@ -20,15 +22,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class QuestionnaireEatRightActivity : AppCompatActivity() {
+class QuestionnaireEatRightActivity : BaseActivity() {
     private lateinit var binding: ActivityQuestionnaireBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuestionnaireBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         // Store activity reference
+        initialize(this)
         instance = this
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         binding.viewPagerQuestionnaire.isUserInputEnabled = false
@@ -97,6 +100,12 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         val questionnaireAnswerRequest: QuestionnaireAnswerRequest = QuestionnaireAnswerRequest()
         private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
+        private var appContext: Context? = null
+
+        fun initialize(context: Context) {
+            appContext = context.applicationContext // Use applicationContext to avoid leaks
+        }
+
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
                 viewPager.currentItem -= 1
@@ -125,7 +134,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 }
             }
 
-            val apiService = ApiClient.getClient().create(ApiService::class.java)
+            val apiService = ApiClient.getClient(appContext).create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
                 sharedPreferenceManager.accessToken,
                 questionnaireAnswerRequest

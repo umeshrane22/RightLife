@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,25 +17,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.chipsmodulefilter.ModuleChipCategory;
-import com.jetsynthesys.rightlife.apimodel.modulecontentlist.Content;
-import com.jetsynthesys.rightlife.apimodel.modulecontentlist.ModuleContentDetailsList;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.apimodel.chipsmodulefilter.ModuleChipCategory;
+import com.jetsynthesys.rightlife.apimodel.modulecontentlist.Content;
+import com.jetsynthesys.rightlife.apimodel.modulecontentlist.ModuleContentDetailsList;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +45,7 @@ import retrofit2.Response;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-public class CategoryListActivity extends AppCompatActivity {
+public class CategoryListActivity extends BaseActivity {
 
     ImageView ic_back_dialog, close_dialog;
     String[] itemNames;
@@ -59,13 +53,13 @@ public class CategoryListActivity extends AppCompatActivity {
     ModuleChipCategory ResponseObj;
     private RecyclerView recyclerView;
     private ChipGroup chipGroup;
-    private int mLimit = 10;
+    private final int mLimit = 10;
     private int mSkip = 0;
     private Button btnLoadMore;
     private String selectedModuleId = "";
     private String selectedCategoryId = "";
     private GridRecyclerViewAdapter adapter;
-    private List<Content> contentList = new ArrayList<>();
+    private final List<Content> contentList = new ArrayList<>();
     private SubCategoryResponse subCategoryResponse;
 
     public static void expand(final View v) {
@@ -125,7 +119,7 @@ public class CategoryListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_categorylist);
+        setChildContentView(R.layout.activity_categorylist);
 
         Intent intent = getIntent();
         selectedCategoryId = intent.getStringExtra("Categorytype");
@@ -276,23 +270,18 @@ public class CategoryListActivity extends AppCompatActivity {
     }
 
     private void getContentlistdetails(String categoryId, String moduleId, int skip, int limit) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        // Make the GET request
         Call<ResponseBody> call = null;
         if (categoryId == null) {
             call = apiService.getContentdetailslist(
-                    accessToken,
+                    sharedPreferenceManager.getAccessToken(),
                     mLimit,
                     skip,
                     moduleId
             );
         } else {
             call = apiService.getContentdetailslist(
-                    accessToken,
+                    sharedPreferenceManager.getAccessToken(),
                     categoryId,
                     mLimit,
                     skip,
@@ -342,18 +331,16 @@ public class CategoryListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
     }
 
     private void getContentListBySubcategory(String subCategoryId, String moduleId, int skip, int limit) {
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         Call<ResponseBody> call = apiService.getContentdetailslistBySubCategory(
-                authToken,
+                sharedPreferenceManager.getAccessToken(),
                 subCategoryId,
                 mLimit,
                 skip,
@@ -398,7 +385,7 @@ public class CategoryListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
     }
@@ -411,20 +398,8 @@ public class CategoryListActivity extends AppCompatActivity {
 
     // get module content chip list
     private void getContentlist(String moduleId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        //Call<JsonElement> call = apiService.getContent(accessToken,"HEALTH_REPORT");
-        // Make the GET request
         Call<JsonElement> call = apiService.getContent(
-                accessToken,
+                sharedPreferenceManager.getAccessToken(),
                 "CATEGORY",
                 moduleId,
                 false,
@@ -435,7 +410,7 @@ public class CategoryListActivity extends AppCompatActivity {
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement promotionResponse5 = response.body();
-                    Log.d("API Response", "Content  list: " + promotionResponse5.toString());
+                    Log.d("API Response", "Content  list: " + promotionResponse5);
                     //Log.d("API Response", "Content  list - : " + affirmationsResponse.toString());
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
@@ -469,10 +444,7 @@ public class CategoryListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(CategoryListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -499,10 +471,8 @@ public class CategoryListActivity extends AppCompatActivity {
     }
 
     private void getSubCategoryList(String moduleId, String categoryId) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<SubCategoryResponse> call = apiService.getSubCategoryList(accessToken, "SUB_CATEGORY", moduleId, categoryId, true);
+        Call<SubCategoryResponse> call = apiService.getSubCategoryList(sharedPreferenceManager.getAccessToken(), "SUB_CATEGORY", moduleId, categoryId, true);
 
         call.enqueue(new Callback<SubCategoryResponse>() {
             @Override
@@ -517,7 +487,7 @@ public class CategoryListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<SubCategoryResponse> call, Throwable t) {
-                Toast.makeText(CategoryListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

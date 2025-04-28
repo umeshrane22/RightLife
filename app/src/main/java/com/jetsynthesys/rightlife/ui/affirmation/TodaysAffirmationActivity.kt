@@ -20,15 +20,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityTodaysAffirmationBinding
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationCategoryData
@@ -39,7 +37,6 @@ import com.jetsynthesys.rightlife.ui.affirmation.pojo.CreateAffirmationPlaylistR
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ui.showBalloon
 import com.jetsynthesys.rightlife.ui.showBalloonWithDim
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -51,7 +48,7 @@ import java.io.IOException
 import kotlin.math.abs
 
 
-class TodaysAffirmationActivity : AppCompatActivity() {
+class TodaysAffirmationActivity : BaseActivity() {
 
     private lateinit var binding: ActivityTodaysAffirmationBinding
     private lateinit var recyclerViewCategory: RecyclerView
@@ -65,14 +62,12 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
     private val affirmationList: ArrayList<AffirmationSelectedCategoryData> = ArrayList()
     private lateinit var affirmationCardPagerAdapter: AffirmationCardPagerAdapter
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTodaysAffirmationBinding.inflate(layoutInflater)
-        setContentView(binding.getRoot())
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.getRoot())
 
         setupCategoryBottomSheet()
         setupCloseBottomSheet()
@@ -407,9 +402,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
     }
 
     private fun getCategoryList() {
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getAffirmationCategoryList(authToken)
+        val call = apiService.getAffirmationCategoryList(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<AffirmationCategoryListResponse> {
             override fun onResponse(
@@ -433,11 +426,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<AffirmationCategoryListResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@TodaysAffirmationActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
@@ -445,9 +434,8 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
     private fun getSelectedCategoryData(id: String?) {
         Utils.showLoader(this)
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getAffirmationSelectedCategoryData(authToken, id)
+        val call =
+            apiService.getAffirmationSelectedCategoryData(sharedPreferenceManager.accessToken, id)
 
         call.enqueue(object : Callback<AffirmationSelectedCategoryResponse> {
             override fun onResponse(
@@ -470,11 +458,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<AffirmationSelectedCategoryResponse>, t: Throwable) {
                 Utils.dismissLoader(this@TodaysAffirmationActivity)
-                Toast.makeText(
-                    this@TodaysAffirmationActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
@@ -482,9 +466,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
     private fun getAffirmationPlaylist() {
         Utils.showLoader(this)
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getAffirmationPlaylist(authToken)
+        val call = apiService.getAffirmationPlaylist(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<GetAffirmationPlaylistResponse> {
             override fun onResponse(
@@ -509,11 +491,7 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<GetAffirmationPlaylistResponse>, t: Throwable) {
                 Utils.dismissLoader(this@TodaysAffirmationActivity)
-                Toast.makeText(
-                    this@TodaysAffirmationActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
@@ -521,13 +499,14 @@ class TodaysAffirmationActivity : AppCompatActivity() {
 
     private fun createAffirmationPlaylist() {
         Utils.showLoader(this)
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val createAffirmationPlaylistRequest = CreateAffirmationPlaylistRequest()
         createAffirmationPlaylistRequest.list?.addAll(affirmationPlaylistRequest)
 
-        val call = apiService.createAffirmationPlaylist(authToken, createAffirmationPlaylistRequest)
+        val call = apiService.createAffirmationPlaylist(
+            sharedPreferenceManager.accessToken,
+            createAffirmationPlaylistRequest
+        )
 
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {

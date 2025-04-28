@@ -19,16 +19,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
 import com.zhpan.indicator.IndicatorView;
 
 import java.time.LocalDate;
@@ -40,7 +37,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VoiceScanActivity extends AppCompatActivity {
+public class VoiceScanActivity extends BaseActivity {
 
     private ImageView ic_back_dialog, close_dialog;
     private VoiceScanPagerAdapter adapter;
@@ -56,7 +53,7 @@ public class VoiceScanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voicescan);
+        setChildContentView(R.layout.activity_voicescan);
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -352,10 +349,7 @@ public class VoiceScanActivity extends AppCompatActivity {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate localDate = LocalDate.parse(date, formatter);
-            if (!formatter.format(localDate).equals(date)) {
-                return false;
-            }
-            return true;
+            return formatter.format(localDate).equals(date);
         } catch (Exception e) {
             return false;
         }
@@ -387,11 +381,7 @@ public class VoiceScanActivity extends AppCompatActivity {
     }
 
     private void getVoiceScanResults() {
-        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
-        String authToken = sharedPreferenceManager.getAccessToken();
-        String ansId = sharedPreferenceManager.getUserId();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.getVoiceScanResults(authToken, ansId, true, 0, 0);
+        Call<ResponseBody> call = apiService.getVoiceScanResults(sharedPreferenceManager.getAccessToken(), sharedPreferenceManager.getUserId(), true, 0, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override

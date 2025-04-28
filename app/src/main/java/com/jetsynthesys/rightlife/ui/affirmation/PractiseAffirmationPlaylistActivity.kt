@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -64,9 +65,8 @@ import java.util.Calendar
 import java.util.Locale
 
 
-class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
+class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private lateinit var binding: ActivityPratciseAffirmationPlaylistBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     private val affirmationList: ArrayList<AffirmationSelectedCategoryData> = ArrayList()
     private lateinit var affirmationCardPagerAdapter: AffirmationCardPagerAdapter
@@ -84,8 +84,7 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPratciseAffirmationPlaylistBinding.inflate(layoutInflater)
-        setContentView(binding.getRoot())
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.getRoot())
         getAffirmationPlaylist()
         getWatchedAffirmationPlaylist(0)
         setupReminderBottomSheet()
@@ -552,9 +551,7 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
 
     private fun getAffirmationPlaylist() {
         Utils.showLoader(this)
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getAffirmationPlaylist(authToken)
+        val call = apiService.getAffirmationPlaylist(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<GetAffirmationPlaylistResponse> {
             override fun onResponse(
@@ -586,20 +583,14 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<GetAffirmationPlaylistResponse>, t: Throwable) {
                 Utils.dismissLoader(this@PractiseAffirmationPlaylistActivity)
-                Toast.makeText(
-                    this@PractiseAffirmationPlaylistActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
 
     private fun getWatchedAffirmationPlaylist(type: Int) {
         Utils.showLoader(this)
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getWatchedAffirmationPlaylist(authToken)
+        val call = apiService.getWatchedAffirmationPlaylist(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<GetWatchedAffirmationPlaylistResponse> {
             override fun onResponse(
@@ -626,11 +617,7 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
                 t: Throwable
             ) {
                 Utils.dismissLoader(this@PractiseAffirmationPlaylistActivity)
-                Toast.makeText(
-                    this@PractiseAffirmationPlaylistActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
@@ -638,7 +625,6 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
     private fun updateWatchedAffirmationPlaylist() {
         Utils.showLoader(this)
         val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val watchAffirmationPlaylistRequest = WatchAffirmationPlaylistRequest()
         watchAffirmationPlaylistRequest.readAffirmation = binding.cardViewPager.currentItem + 1
@@ -669,11 +655,7 @@ class PractiseAffirmationPlaylistActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Utils.dismissLoader(this@PractiseAffirmationPlaylistActivity)
-                Toast.makeText(
-                    this@PractiseAffirmationPlaylistActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

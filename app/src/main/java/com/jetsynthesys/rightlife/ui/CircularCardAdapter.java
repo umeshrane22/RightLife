@@ -167,7 +167,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
     private void updateViewCount(ViewCountRequest viewCountRequest, int position) {
         String authToken = SharedPreferenceManager.getInstance(mContext).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        ApiService apiService = ApiClient.getClient(mContext).create(ApiService.class);
         Call<ResponseBody> call = apiService.UpdateBannerViewCount(authToken, viewCountRequest);
 
         call.enqueue(new Callback<ResponseBody>() {

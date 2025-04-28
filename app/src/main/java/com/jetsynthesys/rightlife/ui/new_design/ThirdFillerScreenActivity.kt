@@ -8,16 +8,16 @@ import android.text.style.ForegroundColorSpan
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class ThirdFillerScreenActivity : AppCompatActivity() {
+class ThirdFillerScreenActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_thiird_filler_screen)
+        setChildContentView(R.layout.activity_thiird_filler_screen)
 
         var header = intent.getStringExtra("WellnessFocus")
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)

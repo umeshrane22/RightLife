@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.auth.GoogleAuthUtil
@@ -22,10 +21,8 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
-import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
@@ -42,7 +39,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ImageSliderActivity : AppCompatActivity() {
+class ImageSliderActivity : BaseActivity() {
 
     private val RC_SIGN_IN = 9001
     private val TAG = "Googlelogin"
@@ -54,7 +51,6 @@ class ImageSliderActivity : AppCompatActivity() {
     private val timeDurationForImageSlider = 2000L
     private lateinit var displayName: String
     private lateinit var mEmail: String
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     // List of images (replace with your own images)
     private val images = listOf(
@@ -81,15 +77,13 @@ class ImageSliderActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_image_slider)
+        setChildContentView(R.layout.activity_image_slider)
 
         // Initialize the ViewPager2 and TabLayout
         viewPager = findViewById(R.id.viewPager_image_slider)
         tabLayout = findViewById(R.id.tabLayout)
 
         viewPager.adapter = ImageSliderAdapter(this, images, headers, descriptions)
-
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         // Set up the TabLayoutMediator to sync dots with the images
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
@@ -235,7 +229,7 @@ class ImageSliderActivity : AppCompatActivity() {
                             if (account != null) {
                                 // User is signed in, display user information
                                 displayName = account.displayName!!
-                                val firstName = displayName?.split(" ")?.get(0) ?: ""
+                                val firstName = displayName.split(" ")?.get(0) ?: ""
                                 displayName = firstName
                                 mEmail = account.email.toString()
                                 val authcode = account.serverAuthCode
@@ -297,7 +291,6 @@ class ImageSliderActivity : AppCompatActivity() {
 
 
     private fun submitAnswer(googleSignInRequest: GoogleSignInRequest) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val call = apiService.submitGoogleLogin("android", googleSignInRequest)
 
@@ -363,11 +356,7 @@ class ImageSliderActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<GoogleLoginTokenResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@ImageSliderActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

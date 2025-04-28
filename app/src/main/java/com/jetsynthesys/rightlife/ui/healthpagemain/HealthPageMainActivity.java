@@ -9,13 +9,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.Articles.ReceipeDetailActivity;
 import com.jetsynthesys.rightlife.ui.HomeActivity;
 import com.jetsynthesys.rightlife.ui.rlpagemain.RLPageActivity;
 
-public class HealthPageMainActivity extends AppCompatActivity implements View.OnClickListener {
+public class HealthPageMainActivity extends BaseActivity implements View.OnClickListener {
 
     private LinearLayout llHealthAudit, llHealthCam, llVoiceScan, llmindaudit,
             ll_homehealthclick,ll_homemenuclick;
@@ -26,7 +27,7 @@ public class HealthPageMainActivity extends AppCompatActivity implements View.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_healthmain);
+        setChildContentView(R.layout.activity_healthmain);
         llHealthAudit = findViewById(R.id.ll_health_audit);
         llHealthCam = findViewById(R.id.ll_health_cam);
         llVoiceScan = findViewById(R.id.ll_voice_scan);

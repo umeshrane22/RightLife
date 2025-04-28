@@ -5,13 +5,11 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleService
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -21,7 +19,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class WellnessFocusActivity : AppCompatActivity() {
+class WellnessFocusActivity : BaseActivity() {
 
     private var selectedWellness: String = ""
     private var selectedService: ModuleService? = null
@@ -33,7 +31,7 @@ class WellnessFocusActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_wellness_focus)
+        setChildContentView(R.layout.activity_wellness_focus)
 
         btnContinue = findViewById(R.id.btn_continue)
         val recyclerView = findViewById<RecyclerView>(R.id.rv_onboarding_module)
@@ -62,10 +60,8 @@ class WellnessFocusActivity : AppCompatActivity() {
 
     private fun getModuleList() {
         Utils.showLoader(this)
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val call = apiService.getOnboardingModule(authToken)
+        val call = apiService.getOnboardingModule(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<OnBoardingModuleResponse> {
             override fun onResponse(
@@ -103,11 +99,7 @@ class WellnessFocusActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<OnBoardingModuleResponse>, t: Throwable) {
                 Utils.dismissLoader(this@WellnessFocusActivity)
-                Toast.makeText(
-                    this@WellnessFocusActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

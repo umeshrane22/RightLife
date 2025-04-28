@@ -14,18 +14,15 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityJournalListBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -35,10 +32,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class JournalListActivity : AppCompatActivity() {
+class JournalListActivity : BaseActivity() {
 
     private lateinit var binding: ActivityJournalListBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var adapter: JournalListAdapter
     private val journalList = mutableListOf<JournalEntry>()
 
@@ -51,8 +47,7 @@ class JournalListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalListBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.root)
 
         binding.addEntryButton.setOnClickListener {
             startActivity(Intent(this, JournalNewActivity::class.java))
@@ -294,7 +289,6 @@ class JournalListActivity : AppCompatActivity() {
 
     private fun getJournalList(date: String) {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getJournalList(sharedPreferenceManager.accessToken, date)
         call.enqueue(object : Callback<JournalListResponse> {
             override fun onResponse(
@@ -318,11 +312,7 @@ class JournalListActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<JournalListResponse>, t: Throwable) {
                 Utils.dismissLoader(this@JournalListActivity)
-                Toast.makeText(
-                    this@JournalListActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
@@ -330,7 +320,6 @@ class JournalListActivity : AppCompatActivity() {
 
     private fun deleteJournal(journalEntry: JournalEntry) {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call =
             apiService.deleteJournalEntry(sharedPreferenceManager.accessToken, journalEntry.id)
 
@@ -356,11 +345,7 @@ class JournalListActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Utils.dismissLoader(this@JournalListActivity)
-                Toast.makeText(
-                    this@JournalListActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

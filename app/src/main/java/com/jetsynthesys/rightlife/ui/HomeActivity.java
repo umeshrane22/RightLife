@@ -28,7 +28,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -41,9 +40,12 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity;
 import com.jetsynthesys.rightlife.apimodel.PromotionResponse;
 import com.jetsynthesys.rightlife.apimodel.affirmations.AffirmationResponse;
@@ -59,6 +61,7 @@ import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityHomeBinding;
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity;
 import com.jetsynthesys.rightlife.ui.Wellness.WellnessDetailViewActivity;
@@ -77,9 +80,6 @@ import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity;
-import com.google.android.material.navigation.NavigationView;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.zhpan.bannerview.BannerViewPager;
 import com.zhpan.bannerview.constants.PageStyle;
 import com.zhpan.indicator.enums.IndicatorStyle;
@@ -93,12 +93,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 import static com.jetsynthesys.rightlife.ui.utility.DateConverter.convertToDate;
 import static com.jetsynthesys.rightlife.ui.utility.DateConverter.convertToTime;
-import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
+public class HomeActivity extends BaseActivity implements View.OnClickListener, NavigationView.OnNavigationItemSelectedListener {
     public WellnessApiResponse wellnessApiResponse;
     public RightLifeEditResponse rightLifeEditResponse;
     public SubModuleResponse ThinkRSubModuleResponse;
@@ -108,7 +106,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     BannerViewPager mViewPager;
     //
     LinearLayout bottom_sheet;
-    LinearLayout ll_journal, ll_affirmations, ll_sleepsounds,ll_health_cam_ql,ll_breathwork,ll_mealplan;
+    LinearLayout ll_journal, ll_affirmations, ll_sleepsounds, ll_health_cam_ql, ll_breathwork, ll_mealplan;
     //RLEdit
     TextView tv_rledt_cont_title1, tv_rledt_cont_title2, tv_rledt_cont_title3,
             nameeditor, nameeditor1, nameeditor2, count, count1, count2;
@@ -149,18 +147,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView profileImage;
     private TextView tvUserName;
 
-    private ActivityResultLauncher<Intent> profileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+    private final ActivityResultLauncher<Intent> profileActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         if (result.getResultCode() == Activity.RESULT_OK) {
             getUserDetails();
         }
     });
     private boolean isAdd = true;
-    private ActivityHomeBinding   homeBinding;
+    private ActivityHomeBinding homeBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_home);
+        setChildContentView(R.layout.activity_home);
         homeBinding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(homeBinding.getRoot());
         //////--------
@@ -179,7 +178,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 // Set initial selection
-         updateMenuSelection(R.id.menu_explore);
+        updateMenuSelection(R.id.menu_explore);
 
 // Handle FAB click
         homeBinding.fab.setBackgroundTintList(ContextCompat.getColorStateList(this, android.R.color.white));
@@ -244,7 +243,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         profileImage.setOnClickListener(view -> {
             /*if (!drawer.isDrawerOpen(Gravity.LEFT)) drawer.openDrawer(Gravity.LEFT);
             else drawer.closeDrawer(Gravity.RIGHT);*/
-            startActivity(new Intent(HomeActivity.this,ProfileSettingsActivity.class));
+            startActivity(new Intent(HomeActivity.this, ProfileSettingsActivity.class));
         });
 
         drawer = findViewById(R.id.drawer_layout);
@@ -659,9 +658,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateViewCount(ViewCountRequest viewCountRequest) {
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.UpdateBannerViewCount(authToken, viewCountRequest);
+        Call<ResponseBody> call = apiService.UpdateBannerViewCount(sharedPreferenceManager.getAccessToken(), viewCountRequest);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -680,29 +677,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
     }
 
     private void getPromotionList() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getPromotionList(accessToken, "HOME_PAGE", "THINK_RIGHT", "TOP");
+        Call<JsonElement> call = apiService.getPromotionList(sharedPreferenceManager.getAccessToken(), "HOME_PAGE", "THINK_RIGHT", "TOP");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement promotionResponse2 = response.body();
-                    Log.d("API Response", "Success: " + promotionResponse2.toString());
+                    Log.d("API Response", "Success: " + promotionResponse2);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
                     PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
@@ -723,10 +710,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -807,31 +791,19 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     //second API
     private void getPromotionList2() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getPromotionList2(accessToken);
+        Call<JsonElement> call = apiService.getPromotionList2(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement promotionResponse2 = response.body();
-                    Log.d("API Response", "SErvice Pane: " + promotionResponse2.toString());
+                    Log.d("API Response", "SErvice Pane: " + promotionResponse2);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
                     ServicePaneResponse ResponseObj = gson.fromJson(jsonResponse, ServicePaneResponse.class);
                     Log.d("API Response body", "Success: Servicepane" + ResponseObj.getData().getHomeServices().get(0).getTitle());
                     handleServicePaneResponse(ResponseObj);
-
-
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -839,10 +811,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -880,23 +849,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // get Affirmation list
 
     private void getAffirmations() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getAffirmationList(accessToken, SharedPreferenceManager.getInstance(getApplicationContext()).getUserId(), true);
+        Call<JsonElement> call = apiService.getAffirmationList(sharedPreferenceManager.getAccessToken(), SharedPreferenceManager.getInstance(getApplicationContext()).getUserId(), true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Affirmation list: " + affirmationsResponse.toString());
+                    Log.d("API Response", "Affirmation list: " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -910,10 +869,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -944,23 +900,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 //Get RightLife Edit
 
     private void getRightlifeEdit() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getRightlifeEdit(accessToken, "HOME");
+        Call<JsonElement> call = apiService.getRightlifeEdit(sharedPreferenceManager.getAccessToken(), "HOME");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "RightLife Edit list: " + affirmationsResponse.toString());
+                    Log.d("API Response", "RightLife Edit list: " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -977,17 +923,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
-                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1044,23 +985,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     //Upcoming Event List -
     private void getUpcomingLiveEvents(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getUpcomingLiveEvent(accessToken, "LIVE_EVENT", "UPCOMING", "HOME");
+        Call<JsonElement> call = apiService.getUpcomingLiveEvent(sharedPreferenceManager.getAccessToken(), "LIVE_EVENT", "UPCOMING", "HOME");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Upcoming Event list: " + affirmationsResponse.toString());
+                    Log.d("API Response", "Upcoming Event list: " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -1074,10 +1005,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1086,23 +1014,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     //WElness PlayList
     private void getWelnessPlaylist() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getWelnessPlaylist(accessToken, "SERIES", "WELLNESS");
+        Call<JsonElement> call = apiService.getWelnessPlaylist(sharedPreferenceManager.getAccessToken(), "SERIES", "WELLNESS");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Wellness Play list: " + affirmationsResponse.toString());
+                    Log.d("API Response", "Wellness Play list: " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -1122,10 +1040,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1190,23 +1105,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void getLiveEvents(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getLiveEvent(accessToken, "HOME");
+        Call<JsonElement> call = apiService.getLiveEvent(sharedPreferenceManager.getAccessToken(), "HOME");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Live Events list: " + affirmationsResponse.toString());
+                    Log.d("API Response", "Live Events list: " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -1220,10 +1125,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1263,23 +1165,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private void getCuratedContent() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getCuratedContent(accessToken);
+        Call<JsonElement> call = apiService.getCuratedContent(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Curated  Content list: " + affirmationsResponse.toString());
+                    Log.d("API Response", "Curated  Content list: " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -1293,10 +1185,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1304,23 +1193,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     // get Module list
     private void getModuleContent() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getmodule(accessToken);
+        Call<JsonElement> call = apiService.getmodule(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Module list - : " + affirmationsResponse.toString());
+                    Log.d("API Response", "Module list - : " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -1334,52 +1213,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
-            }
-        });
-
-    }
-
-
-    //"THINK_RIGHT", "CATEGORY", "ygjh----g"
-    private void getQuestionerList(String s) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "HEALTH_REPORT");
-        call.enqueue(new Callback<JsonElement>() {
-            @Override
-            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "SUB subModule list - : " + affirmationsResponse.toString());
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-
-                    // LiveEventResponse ResponseObj = gson.fromJson(jsonResponse,LiveEventResponse.class);
-                    //Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().get(0).getAuthorName());
-
-                } else {
-                    // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1417,8 +1251,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             finish();
         } else if (viewId == R.id.ll_homemenuclick) {
-              //Toast.makeText(HomeActivity.this, "New Home Coming Soon...", Toast.LENGTH_LONG).show();
-              startActivity(new Intent(HomeActivity.this, HomeDashboardActivity.class));
+            //Toast.makeText(HomeActivity.this, "New Home Coming Soon...", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(HomeActivity.this, HomeDashboardActivity.class));
             /*if (bottom_sheet.getVisibility() == View.VISIBLE) {
                 bottom_sheet.setVisibility(View.GONE);
                 img_homemenu.setBackgroundResource(R.drawable.homeselected);
@@ -1571,25 +1405,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(new Intent(HomeActivity.this, NewSleepSoundActivity.class));
             }
-        }else if (viewId == R.id.ll_breathwork) {
+        } else if (viewId == R.id.ll_breathwork) {
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
             }
-        }else if (viewId == R.id.ll_health_cam_ql) {
+        } else if (viewId == R.id.ll_health_cam_ql) {
             startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
-        }else if (viewId == R.id.ll_mealplan) {
+        } else if (viewId == R.id.ll_mealplan) {
             if (checkTrailEndedAndShowDialog()) {
                 Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
             }
             //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
         } else if (viewId == R.id.btn_wellness_preference) {
-        }
-       else if (view.getId() == R.id.ll_food_log) {
+        } else if (view.getId() == R.id.ll_food_log) {
             if (checkTrailEndedAndShowDialog()) {
-            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
-            intent.putExtra("ModuleName", "EatRight");
-            intent.putExtra("BottomSeatName", "MealLogTypeEat");
-            startActivity(intent);
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "EatRight");
+                intent.putExtra("BottomSeatName", "MealLogTypeEat");
+                startActivity(intent);
             }
 
         } else if (view.getId() == R.id.ll_activity_log) {
@@ -1626,13 +1459,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         } else if (view.getId() == R.id.ll_water_log) {
             if (checkTrailEndedAndShowDialog()) {
-            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
-            intent.putExtra("ModuleName", "EatRight");
-            intent.putExtra("BottomSeatName", "LogWaterIntakeEat");
-            startActivity(intent);
+                Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+                intent.putExtra("ModuleName", "EatRight");
+                intent.putExtra("BottomSeatName", "LogWaterIntakeEat");
+                startActivity(intent);
             }
         }
-
 
 
     }
@@ -1689,23 +1521,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // ----- Test API
 
     private void getSubModuleContent(String moduleid) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getsubmodule(accessToken, moduleid, "CATEGORY");
+        Call<JsonElement> call = apiService.getsubmodule(sharedPreferenceManager.getAccessToken(), moduleid, "CATEGORY");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "SUB subModule list - : " + affirmationsResponse.toString());
+                    Log.d("API Response", "SUB subModule list - : " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
                     // Log.d("API Response", "SUB subModule list - : " + jsonResponse);
@@ -1731,10 +1553,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1743,23 +1562,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     // get user details
     private void getUserDetails() {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call
-        Call<JsonElement> call = apiService.getUserDetais(accessToken);
+        Call<JsonElement> call = apiService.getUserDetais(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement promotionResponse2 = response.body();
-                    Log.d("API Response", "User Details: " + promotionResponse2.toString());
+                    Log.d("API Response", "User Details: " + promotionResponse2);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -1783,10 +1592,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -1797,7 +1603,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         super.onNewIntent(intent, caller);
         if (intent.getBooleanExtra("start_journal", false)) {
             startActivity(new Intent(this, JournalListActivity.class));
-        }else if (intent.getBooleanExtra("start_profile",false)){
+        } else if (intent.getBooleanExtra("start_profile", false)) {
             startActivity(new Intent(this, ProfileSettingsActivity.class));
         }
     }
@@ -1812,13 +1618,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         if (!DashboardChecklistManager.INSTANCE.getPaymentStatus()) {
             showTrailEndedBottomSheet();
             return false; // Return false if condition is true and dialog is shown
-        }
-        else {
-            if (!DashboardChecklistManager.INSTANCE.getChecklistStatus()){
+        } else {
+            if (!DashboardChecklistManager.INSTANCE.getChecklistStatus()) {
                 DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this);
                 return false;
-            }else{
-                return  true ;// Return true if condition is false
+            } else {
+                return true;// Return true if condition is false
             }
         }
     }

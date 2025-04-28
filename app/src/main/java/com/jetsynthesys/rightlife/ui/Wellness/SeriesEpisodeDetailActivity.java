@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -52,7 +53,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SeriesEpisodeDetailActivity extends AppCompatActivity {
+public class SeriesEpisodeDetailActivity extends BaseActivity {
     ActivitySeriesepisodeDetailLayoutBinding binding;
     private MediaPlayer mediaPlayer;
     private boolean isPlaying = false; // To track the current state of the player
@@ -103,13 +104,9 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
     private void getSeriesDetails(String seriesId, String episodeId) {
 
         Utils.showLoader(this);
-        //-----------
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        // Make the GET request
         Call<ResponseBody> call = apiService.getSeriesEpisodesDetails(
-                authToken,
+                sharedPreferenceManager.getAccessToken(),
                 seriesId,
                 episodeId
         );
@@ -151,7 +148,7 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Utils.dismissLoader(SeriesEpisodeDetailActivity.this);
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 

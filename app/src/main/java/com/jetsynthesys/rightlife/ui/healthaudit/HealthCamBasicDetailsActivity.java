@@ -10,10 +10,11 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
 
-public class HealthCamBasicDetailsActivity extends AppCompatActivity {
+public class HealthCamBasicDetailsActivity extends BaseActivity {
 
     private EditText edtFirstName, edtLastName, edtHeight, edtSpinnerHeight, edtWeight, edtSpinnerWeight,
             edtAge, edtGender, edtSmoke, edtBPMedication, edtDiabetic;
@@ -22,7 +23,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_health_cam_basic_details);
+        setChildContentView(R.layout.activity_health_cam_basic_details);
         edtFirstName = findViewById(R.id.edt_first_name);
         edtLastName = findViewById(R.id.edt_last_name);
         edtHeight = findViewById(R.id.edt_height);

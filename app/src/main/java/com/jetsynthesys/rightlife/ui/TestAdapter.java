@@ -106,57 +106,6 @@ public class TestAdapter extends BaseBannerAdapter<SortedService> {
 
     }
 
-
-
-    private void callAffirmationApi(Context context, String consumedCta, String affirmationId, String userId) {
-        //-----------
-        SharedPreferences sharedPreferences = context.getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-        AffirmationRequest request = new AffirmationRequest(consumedCta, affirmationId, userId);
-
-        // Make the API call
-        Call<ResponseBody> call = apiService.postAffirmation(accessToken,request);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ResponseBody affirmationsResponse = response.body();
-                    Log.d("API Response", "Affirmation list: " + affirmationsResponse.toString());
-                    Gson gson = new Gson();
-                    String jsonResponse = gson.toJson(response.body());
-
-                    if (response.isSuccessful()) {
-                        try {
-                            String responseBody = response.body().string();
-                            Log.d("Response consumed", " " +
-                                    responseBody);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    //setupAfirmationContent(ResponseObj);
-
-                } else {
-                    //Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(context, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
-            }
-        });
-
-    }
-
     @Override
     public int getLayoutId(int viewType) {
         // Return the layout resource ID for this adapter

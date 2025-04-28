@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -36,7 +37,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class VoiceRecorderActivity : AppCompatActivity() {
+class VoiceRecorderActivity : BaseActivity() {
 
     private lateinit var progressBar: ProgressBar
     private lateinit var tvPercentage: TextView
@@ -95,7 +96,7 @@ class VoiceRecorderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_start_recording)
+        setChildContentView(R.layout.activity_start_recording)
 
         tvPercentage = findViewById(R.id.percentageText)
         progressBar = findViewById(R.id.progressBar)
@@ -205,15 +206,8 @@ class VoiceRecorderActivity : AppCompatActivity() {
     }
 
     fun submitAnswerRequest(requestAnswer: VoiceScanCheckInRequest?) {
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
 
-        Log.d("Access Token", "Token: $accessToken")
-
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
-        val call = apiService.voiceScanCheckInCreate(accessToken, requestAnswer)
+        val call = apiService.voiceScanCheckInCreate(sharedPreferenceManager.accessToken, requestAnswer)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -248,11 +242,7 @@ class VoiceRecorderActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@VoiceRecorderActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
