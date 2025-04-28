@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:text="What was your gender at birth?"
         android:textColor="@color/txt_color_header"
         android:layout_marginStart="32dp"
