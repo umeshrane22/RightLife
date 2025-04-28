@@ -14,7 +14,6 @@ fun Context.showCustomToast(message: String) {
     toastText.text = message
 
     val ivIcon = layout.findViewById<ImageView>(R.id.ivIcon)
-
     ivIcon.setImageResource(R.drawable.close_journal)
 
     val toast = Toast(this)

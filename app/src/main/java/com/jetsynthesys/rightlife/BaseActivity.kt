@@ -7,6 +7,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityBaseBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import java.io.IOException
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -33,12 +34,13 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun handleNoInternetView(e: Throwable) {
-        e.message?.let { showCustomToast(it) }
         /*when (e) {
             is IOException ->
                 baseBinding.noInternetView.visibility = View.VISIBLE
 
             else -> e.message?.let { showCustomToast(it) }
         }*/
+        if (e is IOException)
+            e.message?.let { showCustomToast(it) }
     }
 }
