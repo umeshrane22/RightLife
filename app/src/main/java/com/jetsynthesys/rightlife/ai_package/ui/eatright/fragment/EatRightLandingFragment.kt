@@ -543,7 +543,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             weightLastLogDateTv.visibility = View.GONE
         }
 
-
         weightIntake.text = landingPageResponse.last_weight_log?.weight?.toFloat().toString()
         weightIntakeUnit.text = landingPageResponse.last_weight_log?.type
         val convertedDate = convertDate(landingPageResponse.last_weight_log?.date.toString())
