@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamBasicDetailsActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamPagerAdapter;
@@ -22,7 +23,7 @@ import com.zhpan.indicator.IndicatorView;
 
 import me.relex.circleindicator.CircleIndicator3;
 
-public class HealthCamActivity extends AppCompatActivity {
+public class HealthCamActivity extends BaseActivity {
 
     ImageView ic_back_dialog, close_dialog;
     HealthCamPagerAdapter adapter;
@@ -37,7 +38,7 @@ public class HealthCamActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_healthcam);
+        setChildContentView(R.layout.activity_healthcam);
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);

@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -18,16 +17,14 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem
 import com.jetsynthesys.rightlife.databinding.ActivityFacialScanReportDetailsBinding
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanRange
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportData
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse
 import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,7 +35,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 
-class FacialScanReportDetailsActivity : AppCompatActivity() {
+class FacialScanReportDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityFacialScanReportDetailsBinding
     private lateinit var dateRange: String
     private lateinit var startDateAPI: String
@@ -54,7 +51,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFacialScanReportDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         binding.backButton.setOnClickListener {
             finish()
@@ -249,9 +246,8 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         }
         //updateChart(entries, getWeekLabels())
 
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getPastReport(
-            SharedPreferenceManager.getInstance(this).accessToken,
+            sharedPreferenceManager.accessToken,
             startDate,
             endDate,
             vitalKey
@@ -305,7 +301,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                 }
             }
             override fun onFailure(call: Call<FacialScanReportResponse>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
 
         })

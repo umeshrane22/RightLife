@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -23,7 +24,6 @@ import com.jetsynthesys.rightlife.ui.therledit.FavouriteErrorResponse;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteRequest;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteResponse;
 import com.jetsynthesys.rightlife.ui.therledit.OnFavouriteClickListener;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -33,12 +33,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Utils {
-    private static final String TAG = "AppLog";
-
     public static final String LOGIN_TYPE_PHONE_NUMBER = "PHONE_NUMBER";
     public static final String BETTER_RIGHT_LIFE_KEY = "ukd5jxlefzxyvgxlq9mbvzre7oxewo0m";
     public static final String BETTER_RIGHT_LIFE_IV = "8PzGKSMLuqSm0MVbviaWHA==";
+    private static final String TAG = "AppLog";
     public static String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+    private static FrameLayout loadingOverlay;
 
     public static String getModuleText(String module) {
         String type = "";
@@ -168,7 +168,7 @@ public class Utils {
         switch (module) {
             case AppConstants.EAT_RIGHT:
             case "EAT_RIGHT":
-                return  R.color.eatright;
+                return R.color.eatright;
 
             case AppConstants.THINK_RIGHT:
             case "THINK_RIGHT":
@@ -202,7 +202,7 @@ public class Utils {
 
     public static void addToFavourite(Context context, String contentId, FavouriteRequest favouriteRequest, OnFavouriteClickListener onFavouriteClickListener) {
         String authToken = SharedPreferenceManager.getInstance(context).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        ApiService apiService = ApiClient.getClient(context).create(ApiService.class);
         Call<ResponseBody> call = apiService.updateFavourite(authToken, contentId, favouriteRequest);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -283,7 +283,6 @@ public class Utils {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
-
     // show custom toast
     public static void showCustomTopToast(Context context, String message) {
         // Inflate the custom layout
@@ -320,32 +319,33 @@ public class Utils {
         toast.show();
     }
 
-    private static FrameLayout loadingOverlay;
-    public static void showLoader(Activity activity){
+    public static void showLoader(Activity activity) {
         loadingOverlay = activity.findViewById(R.id.loading_overlay);
         loadingOverlay.setVisibility(View.VISIBLE);
     }
 
-    public static void dismissLoader(Activity activity){
+    public static void dismissLoader(Activity activity) {
         loadingOverlay = activity.findViewById(R.id.loading_overlay);
         loadingOverlay.setVisibility(View.GONE);
     }
 
-    public static ColorStateList getColorStateListFromColorCode(String colorCode){
-        return ColorStateList.valueOf(Color.parseColor("#"+colorCode));
+    public static ColorStateList getColorStateListFromColorCode(String colorCode) {
+        return ColorStateList.valueOf(Color.parseColor("#" + colorCode));
     }
 
-    public static int getColorFromColorCode(String colorCode){
-        return Color.parseColor("#"+colorCode);
+    public static int getColorFromColorCode(String colorCode) {
+        return Color.parseColor("#" + colorCode);
     }
 
     public static void logDebug(String message) {
         Log.d(TAG, message);
     }
-    public static void logDebug(String Tag,String message) {
+
+    public static void logDebug(String Tag, String message) {
         Log.d(TAG, message);
     }
-    public static void logError(String Tag,String message) {
+
+    public static void logError(String Tag, String message) {
         Log.e(TAG, message);
     }
 }

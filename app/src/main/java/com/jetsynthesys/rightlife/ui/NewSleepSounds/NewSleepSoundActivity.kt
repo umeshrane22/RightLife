@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityNewSleepSoundBinding
@@ -24,12 +25,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class NewSleepSoundActivity : AppCompatActivity() {
+class NewSleepSoundActivity : BaseActivity() {
 
     private lateinit var binding: ActivityNewSleepSoundBinding
     private lateinit var categoryAdapter: SleepCategoryAdapter
     private val categoryList = mutableListOf<SleepCategory>()
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var sleepCategoryResponse: SleepCategoryResponse? = null
     private var selectedCategoryForTitle: SleepCategory? = null
     private var sleepSoundPlaylistResponse: SleepSoundPlaylistResponse? = null
@@ -37,8 +37,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewSleepSoundBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.root)
 
         //back button
         binding.iconBack.setOnClickListener {
@@ -84,7 +83,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
     private fun fetchCategories() {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getSleepCategories(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<SleepCategoryResponse> {
@@ -107,7 +105,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<SleepCategoryResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
 
         })
@@ -119,7 +117,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
     private fun fetchSleepSoundsByCategoryId(categoryId: String, isForHome: Boolean) {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val call = apiService.getSleepSoundsById(
             sharedPreferenceManager.accessToken,
@@ -159,7 +156,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<SleepCategorySoundListResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                showToast("Network Error: ${t.message}")
+                handleNoInternetView(t)
             }
         })
     }
@@ -304,7 +301,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
     // Add Sleep sound to using playlist api
     private fun addToPlaylist(songId: String, position: Int) {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.addToPlaylist(sharedPreferenceManager.accessToken, songId)
 
         call.enqueue(object : Callback<AddPlaylistResponse> {
@@ -323,7 +319,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<AddPlaylistResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                showToast("Network Error: ${t.message}")
+                handleNoInternetView(t)
             }
         })
     }
@@ -332,7 +328,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
     // get user play list from api
     private fun getUserCreatedPlaylist() {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getUserCreatedPlaylist(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<SleepSoundPlaylistResponse> {
@@ -357,7 +352,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<SleepSoundPlaylistResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
 
         })
@@ -366,7 +361,6 @@ class NewSleepSoundActivity : AppCompatActivity() {
     // get New Release from api
     private fun getNewReleases() {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getNewReleases(sharedPreferenceManager.accessToken, "recommended")
 
         call.enqueue(object : Callback<NewReleaseResponse> {
@@ -389,7 +383,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<NewReleaseResponse>, t: Throwable) {
                 Utils.dismissLoader(this@NewSleepSoundActivity)
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
 
         })

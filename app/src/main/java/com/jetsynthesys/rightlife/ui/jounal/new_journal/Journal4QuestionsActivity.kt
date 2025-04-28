@@ -13,30 +13,26 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityJournalAnswerBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAddTagBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Journal4QuestionsActivity : AppCompatActivity() {
+class Journal4QuestionsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityJournalAnswerBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var tagsList1: ArrayList<String> = ArrayList()
     private var isExpanded1 = false
     private var tagsList2: ArrayList<String> = ArrayList()
@@ -54,8 +50,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalAnswerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.root)
 
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
 
@@ -434,7 +429,6 @@ class Journal4QuestionsActivity : AppCompatActivity() {
 
 
     private fun getJournalTags() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getJournalTags(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<JournalTagsResponse> {
@@ -487,11 +481,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<JournalTagsResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@Journal4QuestionsActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
@@ -503,7 +493,6 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         chipGroup: ChipGroup,
         type: Int
     ) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call =
             apiService.addJournalTag(sharedPreferenceManager.accessToken, journalAddTagsRequest)
 
@@ -531,11 +520,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    this@Journal4QuestionsActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
@@ -547,7 +532,6 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         type: Int,
         position: Int
     ) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call =
             apiService.updateJournalTag(
                 sharedPreferenceManager.accessToken,
@@ -578,11 +562,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    this@Journal4QuestionsActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
@@ -594,7 +574,6 @@ class Journal4QuestionsActivity : AppCompatActivity() {
         type: Int,
         position: Int
     ) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call =
             apiService.deleteJournalTag(
                 sharedPreferenceManager.accessToken,
@@ -625,17 +604,12 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    this@Journal4QuestionsActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
 
     private fun createJournal() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call =
             apiService.createJournal(
                 sharedPreferenceManager.accessToken,
@@ -663,17 +637,12 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    this@Journal4QuestionsActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
 
     private fun updateJournal() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call =
             apiService.updateJournalEntry(
                 sharedPreferenceManager.accessToken,
@@ -704,11 +673,7 @@ class Journal4QuestionsActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    this@Journal4QuestionsActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }

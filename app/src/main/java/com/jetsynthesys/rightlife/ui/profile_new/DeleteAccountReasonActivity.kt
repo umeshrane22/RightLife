@@ -3,15 +3,16 @@ package com.jetsynthesys.rightlife.ui.profile_new
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountReasonBinding
 
-class DeleteAccountReasonActivity : AppCompatActivity() {
+class DeleteAccountReasonActivity : BaseActivity() {
     private lateinit var binding: ActivityDeleteAccountReasonBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDeleteAccountReasonBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         val reasonsList = intent.getStringExtra("SelectedReasons")
 

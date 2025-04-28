@@ -1,8 +1,6 @@
 package com.jetsynthesys.rightlife.ui.Articles;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
@@ -20,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -32,9 +29,9 @@ import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
 import com.jetsynthesys.rightlife.ui.Articles.models.Article;
 import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse;
@@ -42,7 +39,6 @@ import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.util.List;
@@ -52,8 +48,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ArticlesDetailActivity extends AppCompatActivity {
+public class ArticlesDetailActivity extends BaseActivity {
     private static final String VIDEO_URL = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"; // Free content URL
+    private final boolean isFullscreen = false;
     // views
     ImageView ic_back_dialog, ic_save_article, iconArrow, image_like_article, image_share_article;
     TextView txt_inthisarticle, txt_inthisarticle_list, txt_article_content;
@@ -64,14 +61,13 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     private ExoPlayer player;
     private ProgressBar progressBar;
     private ImageView fullscreenButton;
-    private boolean isFullscreen = false;
     private String contentId;
     private ArticleDetailsResponse articleDetailsResponse;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_articledetail);
+        setChildContentView(R.layout.activity_articledetail);
 
         binding = ActivityArticledetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -111,11 +107,11 @@ public class ArticlesDetailActivity extends AppCompatActivity {
             if (articleDetailsResponse.getData().getBookmarked()) {
                 binding.icSaveArticle.setImageResource(R.drawable.ic_save_article);
                 articleDetailsResponse.getData().setBookmarked(false);
-                postArticleBookMark(articleDetailsResponse.getData().getId(),false);
+                postArticleBookMark(articleDetailsResponse.getData().getId(), false);
             } else {
                 binding.icSaveArticle.setImageResource(R.drawable.ic_save_article_active);
                 articleDetailsResponse.getData().setBookmarked(true);
-                postArticleBookMark(articleDetailsResponse.getData().getId(),true);
+                postArticleBookMark(articleDetailsResponse.getData().getId(), true);
             }
 
 
@@ -151,21 +147,18 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     private void getArticleDetails(String contentId) {
         //-----------
         Utils.showLoader(this);
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
         // contentId = "679b1e6d4199ddf6752fdb20";
         //contentId = "67a9aeed7864652954596ecb";
 
         // Make the API call
-        Call<JsonElement> call = apiService.getArticleDetails(accessToken, contentId);
+        Call<JsonElement> call = apiService.getArticleDetails(sharedPreferenceManager.getAccessToken(), contentId);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement articleResponse = response.body();
-                    Log.d("API Response", "Article response: " + articleResponse.toString());
+                    Log.d("API Response", "Article response: " + articleResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -184,9 +177,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(ArticlesDetailActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
+                handleNoInternetView(t);
                 Utils.dismissLoader(ArticlesDetailActivity.this);
             }
         });
@@ -352,23 +343,15 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
 
     private void postArticleLike(String contentId, boolean isLike) {
-        //-----------
-
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-
         ArticleLikeRequest request = new ArticleLikeRequest(contentId, isLike);
         // Make the API call
-        Call<ResponseBody> call = apiService.ArticleLikeRequest(accessToken, request);
+        Call<ResponseBody> call = apiService.ArticleLikeRequest(sharedPreferenceManager.getAccessToken(), request);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ResponseBody articleLikeResponse = response.body();
-                    Log.d("API Response", "Article response: " + articleLikeResponse.toString());
+                    Log.d("API Response", "Article response: " + articleLikeResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -380,9 +363,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(ArticlesDetailActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
+                handleNoInternetView(t);
 
             }
         });
@@ -390,23 +371,15 @@ public class ArticlesDetailActivity extends AppCompatActivity {
     }
 
     private void postArticleBookMark(String contentId, boolean isBookmark) {
-        //-----------
-
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-
         ArticleBookmarkRequest request = new ArticleBookmarkRequest(contentId, isBookmark);
         // Make the API call
-        Call<ResponseBody> call = apiService.ArticleBookmarkRequest(accessToken, request);
+        Call<ResponseBody> call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.getAccessToken(), request);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     ResponseBody articleLikeResponse = response.body();
-                    Log.d("API Response", "Article Bookmark response: " + articleLikeResponse.toString());
+                    Log.d("API Response", "Article Bookmark response: " + articleLikeResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -418,10 +391,7 @@ public class ArticlesDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(ArticlesDetailActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 

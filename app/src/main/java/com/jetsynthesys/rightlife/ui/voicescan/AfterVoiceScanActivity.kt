@@ -5,15 +5,16 @@ import android.os.Handler
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 
-class AfterVoiceScanActivity : AppCompatActivity() {
+class AfterVoiceScanActivity : BaseActivity() {
 
     private val nextString = "We respect your privacy. \nYour data is stored securely."
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_after_voicescan)
+        setChildContentView(R.layout.activity_after_voicescan)
         val image: ImageView = findViewById(R.id.image_view)
         val textView: TextView = findViewById(R.id.tv_selected_topic)
 

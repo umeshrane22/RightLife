@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionHistoryBinding
@@ -16,7 +17,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SubscriptionHistoryActivity : AppCompatActivity() {
+class SubscriptionHistoryActivity : BaseActivity() {
     private lateinit var binding: ActivitySubscriptionHistoryBinding
     private lateinit var pastSubscriptionAdapter: SubscriptionHistoryAdapter
     private lateinit var activeSubscriptionAdapter: SubscriptionHistoryAdapter
@@ -26,7 +27,7 @@ class SubscriptionHistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionHistoryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         getSubscriptionHistory()
 
@@ -49,7 +50,6 @@ class SubscriptionHistoryActivity : AppCompatActivity() {
     }
 
     private fun getSubscriptionHistory() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getSubscriptionHistory(
             SharedPreferenceManager.getInstance(this).accessToken,
             "PURCHASES"
@@ -80,7 +80,7 @@ class SubscriptionHistoryActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<PurchaseHistoryResponse>, t: Throwable) {
-                t.message?.let { showToast(it) }
+                handleNoInternetView(t)
             }
 
         })

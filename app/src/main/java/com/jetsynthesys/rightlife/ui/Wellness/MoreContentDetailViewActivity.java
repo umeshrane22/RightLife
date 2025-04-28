@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -58,7 +59,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MoreContentDetailViewActivity extends AppCompatActivity {
+public class MoreContentDetailViewActivity extends BaseActivity {
 
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
@@ -85,7 +86,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wellness_detail_layout);
+        setChildContentView(R.layout.activity_wellness_detail_layout);
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
         txt_episodes_section = findViewById(R.id.txt_episodes_section);
@@ -313,137 +314,11 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
-    private void getContentlistdetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
-                "THINK_RIGHT_POSITIVE_PSYCHOLOGY",
-                10,
-                0,
-                "THINK_RIGHT"
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
-                            Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "User Details: " + successMessage);
-                            ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-                            Log.d("API Response", "User Details: " + ResponseObj.getData().getContentList().size()
-                                    + " " + ResponseObj.getData().getContentList().get(0).getTitle());
-                            //  setupListData(ResponseObj.getData().getContentList());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
-
-    //getRLDetailpage
-    private void getContendetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getRLDetailpage(
-                accessToken,
-                "670ccaaaf0a8929a725c1a56"
-
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
-                            Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "Content Details: " + jsonResponse);
-                            // ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
     // more like this content
     private void getMoreLikeContent(String contentid) {
-        //-----------
         Utils.showLoader(this);
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, contentid, 0, 5);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentid, 0, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -485,7 +360,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Utils.dismissLoader(MoreContentDetailViewActivity.this);
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
@@ -493,17 +368,8 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
 
 
     private void getSeriesWithEpisodes(String seriesId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
-        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
+        Call<JsonElement> call = apiService.getSeriesWithEpisodes(sharedPreferenceManager.getAccessToken(), seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -525,10 +391,7 @@ public class MoreContentDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(MoreContentDetailViewActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 

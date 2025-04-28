@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.questionnaire
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityQuestionnaireBinding
@@ -20,7 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class QuestionnaireThinkRightActivity : AppCompatActivity() {
+class QuestionnaireThinkRightActivity : BaseActivity() {
     private lateinit var binding: ActivityQuestionnaireBinding
 
 
@@ -96,6 +98,12 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
         private var instance: QuestionnaireThinkRightActivity? = null // Store Activity reference
         val questionnaireAnswerRequest = QuestionnaireAnswerRequest()
 
+        private var appContext: Context? = null
+
+        fun initialize(context: Context) {
+            appContext = context.applicationContext // Use applicationContext to avoid leaks
+        }
+
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
                 viewPager.currentItem -= 1
@@ -122,7 +130,7 @@ class QuestionnaireThinkRightActivity : AppCompatActivity() {
                     )
                 }
             }
-            val apiService = ApiClient.getClient().create(ApiService::class.java)
+            val apiService = ApiClient.getClient(appContext).create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
                 sharedPreferenceManager.accessToken,
                 questionnaireAnswerRequest

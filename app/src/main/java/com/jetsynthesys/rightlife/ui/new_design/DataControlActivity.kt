@@ -12,13 +12,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.drawermenu.PrivacyPolicyActivity
 import com.jetsynthesys.rightlife.ui.drawermenu.TermsAndConditionsActivity
 
-class DataControlActivity : AppCompatActivity() {
+class DataControlActivity : BaseActivity() {
     private val agreeString =
         "<html>I agree to process my personal data for providing me RightLife App Functions. See more in <a href=\"https://example.com/privacy\">Privacy Policy</a>.</html>"
     private val policyTermsCondition =
@@ -32,7 +32,7 @@ class DataControlActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_data_control)
+        setChildContentView(R.layout.activity_data_control)
         val chkPrivacyPolicy: CheckBox = findViewById(R.id.ck_privacy_policy)
         val chkTermsAndConditions: CheckBox = findViewById(R.id.ck_terms_conditions)
 

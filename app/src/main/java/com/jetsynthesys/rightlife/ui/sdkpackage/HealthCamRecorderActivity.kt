@@ -13,32 +13,28 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityHealthcamRecorderBinding
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamFacialScanRequest
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamReportIdResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.healthcam.ReportData
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 import kotlin.system.exitProcess
 
-class HealthCamRecorderActivity : AppCompatActivity() {
+class HealthCamRecorderActivity : BaseActivity() {
 
     private lateinit var binding: ActivityHealthcamRecorderBinding
     private val exampleStartViewModel: StartViewModel by viewModels { StartViewModel.Factory }
@@ -255,7 +251,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
 
         if (USER_PROFILE_HEIGHT.isBlank()
             || (USER_PROFILE_HEIGHT.isNotBlank() && measurementQuestionnaire.setHeightInCm(
-                USER_PROFILE_HEIGHT.toInt()
+                USER_PROFILE_HEIGHT.toDouble().toInt()
             ) == AnuraError.Core.INVALID_INPUT)
         ) {
             invalidInputs = invalidInputs.plus("|Height|")
@@ -315,10 +311,8 @@ class HealthCamRecorderActivity : AppCompatActivity() {
     }
 
     private fun submitReport(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
-        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val call = apiService.submitHealthCamReport(accessToken, healthCamFacialScanRequest)
+        val call = apiService.submitHealthCamReport(sharedPreferenceManager.accessToken, healthCamFacialScanRequest)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 Utils.dismissLoader(this@HealthCamRecorderActivity)
@@ -349,22 +343,14 @@ class HealthCamRecorderActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@HealthCamRecorderActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
 
     private fun submitFacialScan(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
         Utils.showLoader(this)
-        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(
-            ApiService::class.java
-        )
-        val call = apiService.getHealthCamByReportId(accessToken, healthCamFacialScanRequest.reportId)
+        val call = apiService.getHealthCamByReportId(sharedPreferenceManager.accessToken, healthCamFacialScanRequest.reportId)
 
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
@@ -396,11 +382,7 @@ class HealthCamRecorderActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
                 Utils.dismissLoader(this@HealthCamRecorderActivity)
-                Toast.makeText(
-                    this@HealthCamRecorderActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }

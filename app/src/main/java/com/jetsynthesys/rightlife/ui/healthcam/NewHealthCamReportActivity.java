@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,15 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
@@ -40,7 +36,6 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
@@ -53,7 +48,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NewHealthCamReportActivity extends AppCompatActivity {
+public class NewHealthCamReportActivity extends HealthCamBasicDetailsActivity {
     private static final String TAG = "NewHealthCamReportActivity";
     ActivityNewhealthcamreportBinding binding;
     LayoutScanProgressBinding scanBinding;
@@ -64,7 +59,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_newhealthcamreport);
+        setChildContentView(R.layout.activity_newhealthcamreport);
         binding = ActivityNewhealthcamreportBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         scanBinding = LayoutScanProgressBinding.bind(binding.scanProgressLayout.getRoot());
@@ -117,16 +112,13 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     }
 
     private void getMyRLHealthCamResult() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
         Utils.showLoader(this);
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         Call<ResponseBody> call;
         if (reportId != null && !reportId.isEmpty())
-            call = apiService.getHealthCamByReportId(accessToken, reportId);
+            call = apiService.getHealthCamByReportId(sharedPreferenceManager.getAccessToken(), reportId);
         else
-            call = apiService.getMyRLHealthCamResult(accessToken);
+            call = apiService.getMyRLHealthCamResult(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -152,7 +144,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Utils.dismissLoader(NewHealthCamReportActivity.this);
-                Toast.makeText(NewHealthCamReportActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
