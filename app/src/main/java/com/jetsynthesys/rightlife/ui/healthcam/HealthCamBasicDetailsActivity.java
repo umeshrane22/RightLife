@@ -139,28 +139,28 @@ public class HealthCamBasicDetailsActivity extends BaseActivity {
                                 answer.setAnswer(selectedGender);
                                 break;
                             case "smoking":
-                                int selectedSmoke = 0;
+                                String selectedSmoke = "0";
                                 for (Option sm : smokeOptions) {
                                     if (sm.getOptionText().equals(smoke)) {
-                                        selectedSmoke = Integer.parseInt(sm.getOptionPosition());
+                                        selectedSmoke = sm.getOptionPosition();
                                     }
                                 }
                                 answer.setAnswer(selectedSmoke);
                                 break;
                             case "bloodpressuremedication":
-                                int selectedBP = 0;
+                                String selectedBP = "0";
                                 for (Option bp : bpMedicationOptions) {
                                     if (bp.getOptionText().equals(bpMedication)) {
-                                        selectedBP = Integer.parseInt(bp.getOptionPosition());
+                                        selectedBP = bp.getOptionPosition();
                                     }
                                 }
                                 answer.setAnswer(selectedBP);
                                 break;
                             case "diabetes":
-                                int selectedDiabetic = 0;
+                                String selectedDiabetic = "0";
                                 for (Option dia : diabeticsOptions) {
                                     if (dia.getOptionText().equals(diabetic)) {
-                                        selectedDiabetic = Integer.parseInt(dia.getOptionPosition());
+                                        selectedDiabetic = dia.getOptionPosition();
                                     }
                                 }
                                 answer.setAnswer(selectedDiabetic);
