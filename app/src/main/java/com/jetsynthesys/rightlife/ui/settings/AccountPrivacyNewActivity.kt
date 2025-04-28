@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityAccountPrivacyNewBinding
 import com.jetsynthesys.rightlife.databinding.ActivityIntegrationsNewBinding
 import com.jetsynthesys.rightlife.databinding.ActivityNotificationsNewBinding
@@ -13,7 +14,7 @@ import com.jetsynthesys.rightlife.ui.profile_new.DeleteAccountSelectionActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 
-class AccountPrivacyNewActivity : AppCompatActivity() {
+class AccountPrivacyNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAccountPrivacyNewBinding
     private lateinit var settingsAdapter: SettingsAdapter
@@ -21,7 +22,7 @@ class AccountPrivacyNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAccountPrivacyNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         setupEmailNotificationsRecyclerView()
 
         binding.iconBack.setOnClickListener {

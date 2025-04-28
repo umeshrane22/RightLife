@@ -7,43 +7,38 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GetInterestResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.InterestDataList
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.SavedInterestResponse
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class YourInterestActivity : AppCompatActivity() {
+class YourInterestActivity : BaseActivity() {
     private lateinit var adapter: YourInterestAdapter
     private val interestList = ArrayList<InterestDataList>()
     private val selectedInterest = ArrayList<InterestDataList>()
     private val savedInterest = ArrayList<InterestDataList>()
     private lateinit var btnSaveInterest: Button
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var isFrom: String
     private lateinit var colorStateListSelected: ColorStateList
     private lateinit var colorStateList: ColorStateList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_your_interest)
+        setChildContentView(R.layout.activity_your_interest)
 
         var header = intent.getStringExtra("WellnessFocus")
         isFrom = intent.getStringExtra("FROM").toString()
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         if (header.isNullOrEmpty()) {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
@@ -93,9 +88,7 @@ class YourInterestActivity : AppCompatActivity() {
 
     private fun getInterests() {
         Utils.showLoader(this)
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getUserInterest(authToken)
+        val call = apiService.getUserInterest(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<GetInterestResponse> {
             override fun onResponse(
                 call: Call<GetInterestResponse>,
@@ -131,20 +124,14 @@ class YourInterestActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<GetInterestResponse>, t: Throwable) {
                 Utils.dismissLoader(this@YourInterestActivity)
-                Toast.makeText(
-                    this@YourInterestActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
 
     private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest, header: String) {
         // Utils.showLoader(this)
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.saveUserInterest(authToken, saveUserInterestRequest)
+        val call = apiService.saveUserInterest(sharedPreferenceManager.accessToken, saveUserInterestRequest)
 
         call.enqueue(object : Callback<SaveUserInterestResponse> {
             override fun onResponse(
@@ -219,9 +206,7 @@ class YourInterestActivity : AppCompatActivity() {
     }
 
     private fun getSavedInterest() {
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getSavedUserInterest(authToken)
+        val call = apiService.getSavedUserInterest(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<SavedInterestResponse> {
             override fun onResponse(
@@ -240,11 +225,7 @@ class YourInterestActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<SavedInterestResponse>, t: Throwable) {
                 getInterests()
-                Toast.makeText(
-                    this@YourInterestActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

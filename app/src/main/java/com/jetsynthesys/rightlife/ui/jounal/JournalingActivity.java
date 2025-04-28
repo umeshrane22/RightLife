@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -29,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class JournalingActivity extends AppCompatActivity {
+public class JournalingActivity extends BaseActivity {
 
     private LinearLayout ll_normal_journal, ll_guided_journal,
             ll_journal_selection_guided, ll_journal_selection_normal, ll_journal_selection;
@@ -43,7 +44,7 @@ public class JournalingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_journal);
+        setChildContentView(R.layout.activity_journal);
         rd_guided = findViewById(R.id.rd_guided);
         rd_normal = findViewById(R.id.rd_normal);
         rl_radio_normal = findViewById(R.id.rl_radio_normal);
@@ -175,9 +176,6 @@ public class JournalingActivity extends AppCompatActivity {
 
 
     private void sendDataToApi(String title, String type, String journal, String situation, String mood) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
 
@@ -190,7 +188,7 @@ public class JournalingActivity extends AppCompatActivity {
 
 
         // Make the API call
-        Call<ResponseBody> call = apiService.createJournal(accessToken, requestData);
+        Call<ResponseBody> call = apiService.createJournal(sharedPreferenceManager.getAccessToken(), requestData);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -222,7 +220,7 @@ public class JournalingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(JournalingActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
 

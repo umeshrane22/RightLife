@@ -8,12 +8,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingQuestionRequest
@@ -24,26 +22,24 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OnboardingQuestionnaireActivity : AppCompatActivity() {
+class OnboardingQuestionnaireActivity : BaseActivity() {
 
     private lateinit var progressBar: ProgressBar
     lateinit var tvSkip: TextView
     lateinit var tv_fragment_count: TextView
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     var forProfileChecklist: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_onboarding_questionnaire)
+        setChildContentView(R.layout.activity_onboarding_questionnaire)
 
         var header = intent.getStringExtra("WellnessFocus")
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-        if (header.isNullOrEmpty()){
+        if (header.isNullOrEmpty()) {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
 
-         forProfileChecklist = intent.getBooleanExtra("forProfileChecklist",false)
+        forProfileChecklist = intent.getBooleanExtra("forProfileChecklist", false)
 
 
         progressBar = findViewById(R.id.progress_bar_onboarding)
@@ -69,7 +65,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             sharedPreferenceManager.currentQuestion = viewPager.currentItem
             navigateToNextPage()
         }
-        if (forProfileChecklist){
+        if (forProfileChecklist) {
             tvSkip.visibility = View.GONE
         }
         adapter = OnBoardingPagerAdapter(this)
@@ -119,7 +115,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             (((fragmentIndex + 1) / adapter.itemCount.toDouble()) * 100).toInt()
         progressBar.progress = progressPercentage
         tv_fragment_count.text = "${fragmentIndex + 1}/7"
-        if (forProfileChecklist){
+        if (forProfileChecklist) {
             tvSkip.visibility = View.GONE
         }
     }
@@ -143,10 +139,11 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
     }
 
     fun submitAnswer(onboardingQuestionRequest: OnboardingQuestionRequest) {
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val call = apiService.submitOnBoardingAnswers(authToken, onboardingQuestionRequest)
+        val call = apiService.submitOnBoardingAnswers(
+            sharedPreferenceManager.accessToken,
+            onboardingQuestionRequest
+        )
 
         call.enqueue(object : Callback<SaveUserInterestResponse> {
             override fun onResponse(
@@ -166,7 +163,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                                     AwesomeScreenActivity::class.java
                                 )
                             )
-                        }else
+                        } else
                             startActivity(
                                 Intent(
                                     this@OnboardingQuestionnaireActivity,
@@ -176,7 +173,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
                         finishAffinity()
                         SharedPreferenceManager.getInstance(this@OnboardingQuestionnaireActivity)
                             .clearOnboardingQuestionRequest()
-                        updateChecklistStatus();
+                        updateChecklistStatus()
                     } else {
                         navigateToNextPage()
                         sharedPreferenceManager.currentQuestion = viewPager.currentItem
@@ -195,11 +192,7 @@ class OnboardingQuestionnaireActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@OnboardingQuestionnaireActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
                 navigateToNextPage()
             }
 

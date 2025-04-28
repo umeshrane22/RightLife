@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityPastReportBinding
@@ -17,17 +18,15 @@ import retrofit2.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class PastReportActivity : AppCompatActivity() {
+class PastReportActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPastReportBinding
     private lateinit var adapter: PastReportAdapter
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPastReportBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.root)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -39,8 +38,6 @@ class PastReportActivity : AppCompatActivity() {
     }
 
     private fun fetchPastReports() {
-
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         apiService.getPastReports(sharedPreferenceManager.accessToken)
             .enqueue(object : Callback<ScanHistoryResponse> {
@@ -89,11 +86,7 @@ class PastReportActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<ScanHistoryResponse>, t: Throwable) {
-                    Toast.makeText(
-                        this@PastReportActivity,
-                        "Network Error: " + t.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    handleNoInternetView(t)
                 }
             })
     }

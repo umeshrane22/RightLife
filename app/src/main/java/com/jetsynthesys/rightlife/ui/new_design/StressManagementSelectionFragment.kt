@@ -117,7 +117,7 @@ class StressManagementSelectionFragment : Fragment() {
 
     private fun getModuleList() {
         val authToken = SharedPreferenceManager.getInstance(requireContext()).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient(requireContext()).create(ApiService::class.java)
 
         val call = apiService.getOnboardingModule(authToken)
 

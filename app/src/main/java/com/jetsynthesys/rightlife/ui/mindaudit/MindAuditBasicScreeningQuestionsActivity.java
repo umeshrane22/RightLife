@@ -14,10 +14,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ui.HomeActivity;
 
-public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity {
+public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
     public Button nextButton, submitButton;
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
@@ -29,7 +30,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends AppCompatActivity 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mind_audit_from);
+        setChildContentView(R.layout.activity_mind_audit_from);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
         viewPager = findViewById(R.id.viewPager);

@@ -91,7 +91,7 @@ public class MindAuditFeelingsFragment extends Fragment {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        ApiService apiService = ApiClient.getClient(requireContext()).create(ApiService.class);
 
         Call<ResponseBody> call = apiService.getAllEmotions(accessToken);
 
@@ -139,7 +139,7 @@ public class MindAuditFeelingsFragment extends Fragment {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+        ApiService apiService = ApiClient.getClient(requireContext()).create(ApiService.class);
         Call<ResponseBody> call = apiService.getBasicScreeningQuestions(accessToken, emotions);
 
         call.enqueue(new Callback<ResponseBody>() {

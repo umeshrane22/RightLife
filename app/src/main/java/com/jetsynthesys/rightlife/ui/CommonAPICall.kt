@@ -29,7 +29,7 @@ object CommonAPICall {
     ) {
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
         val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
         val toolKitRequest = AddToolRequest(moduleId, isSelectedModule)
         val call = apiService.addToToolKit(authToken, toolKitRequest)
@@ -106,7 +106,7 @@ object CommonAPICall {
     ) {
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
         val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
         apiService.updateNotificationSettings(authToken, requestBody)
             .enqueue(object : Callback<CommonResponse> {
                 override fun onResponse(
@@ -132,7 +132,7 @@ object CommonAPICall {
     ) {
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
         val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
         apiService.getNotificationSettings(authToken)
             .enqueue(object : Callback<NotificationsResponse> {
                 override fun onResponse(
@@ -163,7 +163,7 @@ object CommonAPICall {
 
     fun updateChecklistStatus(context: Context, type: String, status: String) {
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
         val body = mapOf(type to status)
 

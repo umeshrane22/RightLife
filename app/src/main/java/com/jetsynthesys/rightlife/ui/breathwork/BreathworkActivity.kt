@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -17,7 +18,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class BreathworkActivity : AppCompatActivity() {
+class BreathworkActivity : BaseActivity() {
 
     private lateinit var adapter: BreathworkAdapter
     private val breathWorks = ArrayList<BreathingData>()
@@ -27,7 +28,7 @@ class BreathworkActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBreathworkBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_breathwork)
+        setChildContentView(R.layout.activity_breathwork)
         binding = ActivityBreathworkBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -65,8 +66,7 @@ class BreathworkActivity : AppCompatActivity() {
     }
 
     private fun getBreathingWork() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        apiService.getBreathingWork(SharedPreferenceManager.getInstance(this).accessToken)
+        apiService.getBreathingWork(sharedPreferenceManager.accessToken)
             .enqueue(object : Callback<GetBreathingResponse> {
                 override fun onResponse(
                     call: Call<GetBreathingResponse>,
@@ -105,13 +105,8 @@ class BreathworkActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<GetBreathingResponse>, t: Throwable) {
-                    Toast.makeText(
-                        this@BreathworkActivity,
-                        "Network Error: " + t.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    handleNoInternetView(t)
                 }
-
             })
     }
 }

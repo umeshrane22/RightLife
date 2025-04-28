@@ -6,14 +6,12 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultDataList
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultRequest
@@ -24,7 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UnlockPowerOfYourMindActivity : AppCompatActivity() {
+class UnlockPowerOfYourMindActivity : BaseActivity() {
 
     private var selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var unlockPowerAdapter: UnlockPowerAdapter
@@ -33,7 +31,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_unlock_power_of_your_mind)
+        setChildContentView(R.layout.activity_unlock_power_of_your_mind)
 
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         var header = sharedPreferenceManager.selectedWellnessFocus
@@ -111,11 +109,9 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
         onboardingModuleResultRequest: OnboardingModuleResultRequest
     ) {
         Utils.showLoader(this)
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
         val call = apiService.getOnboardingModuleResult(
-            authToken,
+            sharedPreferenceManager.accessToken,
             moduleName,
             onboardingModuleResultRequest
         )
@@ -144,11 +140,7 @@ class UnlockPowerOfYourMindActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<OnboardingModuleResultResponse>, t: Throwable) {
                 Utils.dismissLoader(this@UnlockPowerOfYourMindActivity)
-                Toast.makeText(
-                    this@UnlockPowerOfYourMindActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

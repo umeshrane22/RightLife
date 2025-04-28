@@ -9,13 +9,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.apimodel.rlpagemodels.journal.Journals;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
@@ -27,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EditJournalActivity extends AppCompatActivity {
+public class EditJournalActivity extends BaseActivity {
 
     private Journals journals;
     private LinearLayout ll_guided_journal, ll_normal_journal;
@@ -37,7 +34,7 @@ public class EditJournalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_journal);
+        setChildContentView(R.layout.activity_edit_journal);
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
 
@@ -146,8 +143,6 @@ public class EditJournalActivity extends AppCompatActivity {
 
 
     private void sendDataToApi(String title, String type, String journal, String situation, String mood) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         // Create a request body (replace with actual email and phone number)
 
@@ -160,7 +155,7 @@ public class EditJournalActivity extends AppCompatActivity {
 
 
         // Make the API call
-        Call<ResponseBody> call = apiService.updateJournal(accessToken, journals.getId(), requestData);
+        Call<ResponseBody> call = apiService.updateJournal(sharedPreferenceManager.getAccessToken(), journals.getId(), requestData);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -191,7 +186,7 @@ public class EditJournalActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(EditJournalActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
 

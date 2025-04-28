@@ -3,16 +3,17 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.os.Bundle
 import android.text.Html
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFaqDetailsBinding
 import com.jetsynthesys.rightlife.ui.settings.pojo.FAQDetails
 
-class FAQDetailsActivity : AppCompatActivity() {
+class FAQDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityFaqDetailsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFaqDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         //back button
         binding.iconBack.setOnClickListener {

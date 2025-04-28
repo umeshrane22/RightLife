@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -30,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HealthCamActivity extends AppCompatActivity {
+public class HealthCamActivity extends BaseActivity {
 
     ImageView ic_back_dialog, close_dialog;
     HealthCamPagerAdapter adapter;
@@ -46,7 +47,7 @@ public class HealthCamActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_healthcam);
+        setChildContentView(R.layout.activity_healthcam);
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -196,10 +197,7 @@ public class HealthCamActivity extends AppCompatActivity {
 
     private void getHealthCamResult() {
         Utils.showLoader(this);
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
+        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -209,10 +207,8 @@ public class HealthCamActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body", " My RL HEalth Cam Result - " + jsonString);
                         finish();
                         startActivity(new Intent(HealthCamActivity.this, NewHealthCamReportActivity.class));
-
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -224,7 +220,7 @@ public class HealthCamActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(HealthCamActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
                 Utils.dismissLoader(HealthCamActivity.this);
                 btn_howitworks.setEnabled(true);
             }

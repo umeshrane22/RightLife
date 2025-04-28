@@ -1,8 +1,6 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -14,10 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -29,7 +27,6 @@ import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Question;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit;
 import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
@@ -48,7 +45,7 @@ import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertInchT
 import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertKgToLbs;
 import static com.jetsynthesys.rightlife.ui.utility.ConversionUtils.convertLbsToKgs;
 
-public class HealthCamBasicDetailsActivity extends AppCompatActivity {
+public class HealthCamBasicDetailsActivity extends BaseActivity {
 
     private final ArrayList<Option> heightUnits = new ArrayList<>();
     private final ArrayList<Option> weightUnits = new ArrayList<>();
@@ -67,7 +64,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_health_cam_basic_details);
+        setChildContentView(R.layout.activity_health_cam_basic_details);
 
         getViews();
 
@@ -145,7 +142,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 int selectedSmoke = 0;
                                 for (Option sm : smokeOptions) {
                                     if (sm.getOptionText().equals(smoke)) {
-                                        selectedSmoke = Integer.valueOf(sm.getOptionPosition());
+                                        selectedSmoke = Integer.parseInt(sm.getOptionPosition());
                                     }
                                 }
                                 answer.setAnswer(selectedSmoke);
@@ -154,7 +151,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 int selectedBP = 0;
                                 for (Option bp : bpMedicationOptions) {
                                     if (bp.getOptionText().equals(bpMedication)) {
-                                        selectedBP = Integer.valueOf(bp.getOptionPosition());
+                                        selectedBP = Integer.parseInt(bp.getOptionPosition());
                                     }
                                 }
                                 answer.setAnswer(selectedBP);
@@ -163,7 +160,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 int selectedDiabetic = 0;
                                 for (Option dia : diabeticsOptions) {
                                     if (dia.getOptionText().equals(diabetic)) {
-                                        selectedDiabetic = Integer.valueOf(dia.getOptionPosition());
+                                        selectedDiabetic = Integer.parseInt(dia.getOptionPosition());
                                     }
                                 }
                                 answer.setAnswer(selectedDiabetic);
@@ -173,7 +170,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 int selectedHeightUnit = 0;
                                 for (Option heightUnit : heightUnits) {
                                     if (heightUnit.getOptionText().equals(heightUnit)) {
-                                        selectedHeightUnit = Integer.valueOf(heightUnit.getOptionPosition());
+                                        selectedHeightUnit = Integer.parseInt(heightUnit.getOptionPosition());
                                     }
                                 }
                                 answer.setAnswer(selectedHeightUnit);
@@ -182,7 +179,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
                                 int selectedWeightUnit = 0;
                                 for (Option weightUnit : weightUnits) {
                                     if (weightUnit.getOptionText().equals(weightUnit)) {
-                                        selectedWeightUnit = Integer.valueOf(weightUnit.getOptionPosition());
+                                        selectedWeightUnit = Integer.parseInt(weightUnit.getOptionPosition());
                                     }
                                 }
                                 answer.setAnswer(selectedWeightUnit);
@@ -467,10 +464,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     }
 
     private void getQuestionerList() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "FACIAL_SCAN");
+        Call<JsonElement> call = apiService.getsubmoduletest(sharedPreferenceManager.getAccessToken(), "FACIAL_SCAN");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -486,7 +480,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -497,12 +491,8 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
     }
 
     void submitAnswerRequest(FaceScanQuestionRequest requestAnswer) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         // Make the API call
-        Call<JsonElement> call = apiService.postAnswerRequest(accessToken, "FACIAL_SCAN", requestAnswer);
+        Call<JsonElement> call = apiService.postAnswerRequest(sharedPreferenceManager.getAccessToken(), "FACIAL_SCAN", requestAnswer);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -536,7 +526,7 @@ public class HealthCamBasicDetailsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
                 Utils.dismissLoader(HealthCamBasicDetailsActivity.this);
-                Toast.makeText(HealthCamBasicDetailsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

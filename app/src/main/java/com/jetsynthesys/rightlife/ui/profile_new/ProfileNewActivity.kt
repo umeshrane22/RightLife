@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -71,10 +72,9 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.floor
 
-class ProfileNewActivity : AppCompatActivity() {
+class ProfileNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityProfileNewBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private val CAMERA_REQUEST: Int = 100
     private val PICK_IMAGE_REQUEST: Int = 101
     private var cameraImageUri: Uri? = null
@@ -120,8 +120,7 @@ class ProfileNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+        setChildContentView(binding.root)
 
         userDataResponse = sharedPreferenceManager.userProfile
         userData = userDataResponse.userdata
@@ -197,11 +196,16 @@ class ProfileNewActivity : AppCompatActivity() {
 
     private fun setUserData(userData: Userdata) {
 
-        binding.etFirstName.setText(userData.firstName)
-        binding.etLastName.setText(userData.lastName)
-        binding.etEmail.setText(userData.email)
-        binding.etMobile.setText(userData.phoneNumber)
-        binding.tvAge.text = userData.age.toString()
+        if (userData.firstName != null)
+            binding.etFirstName.setText(userData.firstName)
+        if (userData.lastName != null)
+            binding.etLastName.setText(userData.lastName)
+        if (userData.email != null)
+            binding.etEmail.setText(userData.email)
+        if (userData.phoneNumber != null)
+            binding.etMobile.setText(userData.phoneNumber)
+        if (userData.age != null)
+            binding.tvAge.text = userData.age.toString()
         if (userData.gender == "M")
             binding.tvGender.text = "Male"
         else
@@ -211,7 +215,10 @@ class ProfileNewActivity : AppCompatActivity() {
             binding.tvWeight.text = "${userData.weight} ${userData.weightUnit}"
 
         if (userData.profilePicture.isNullOrEmpty())
-            binding.tvProfileLetter.text = userData.firstName.first().toString()
+            if (userData.firstName.isNotEmpty())
+                binding.tvProfileLetter.text = userData.firstName.first().toString()
+            else
+                binding.tvProfileLetter.text = "R"
         else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
@@ -796,7 +803,6 @@ class ProfileNewActivity : AppCompatActivity() {
     }
 
     private fun generateOtp(mobileNumber: String) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.generateOtpForPhoneNumber(
             sharedPreferenceManager.accessToken,
             OtpRequest(mobileNumber)
@@ -816,7 +822,7 @@ class ProfileNewActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
         })
     }
@@ -904,7 +910,6 @@ class ProfileNewActivity : AppCompatActivity() {
         otp: String,
         bindingDialog: DialogOtpVerificationBinding
     ) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.verifyOtpForPhoneNumber(
             sharedPreferenceManager.accessToken,
             VerifyOtpRequest(
@@ -930,7 +935,7 @@ class ProfileNewActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
                 bindingDialog.tvResult.text = "(Verification Failed-Incorrect OTP)"
                 bindingDialog.tvResult.setTextColor(getColor(R.color.menuselected))
             }
@@ -1042,7 +1047,6 @@ class ProfileNewActivity : AppCompatActivity() {
     }
 
     private fun updateUserData(userdata: Userdata) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call: Call<ResponseBody> =
             apiService.updateUser(sharedPreferenceManager.accessToken, userdata)
         call.enqueue(object : Callback<ResponseBody?> {
@@ -1059,13 +1063,12 @@ class ProfileNewActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
         })
     }
 
     private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call: Call<PreSignedUrlResponse> =
             apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
 
@@ -1094,7 +1097,7 @@ class ProfileNewActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
         })
     }
