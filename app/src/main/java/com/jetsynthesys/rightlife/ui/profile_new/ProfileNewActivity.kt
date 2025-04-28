@@ -642,19 +642,22 @@ class ProfileNewActivity : BaseActivity() {
                         val position =
                             recyclerView.layoutManager?.getPosition(snappedView) ?: return
                         val snappedNumber = numbers[position]
-                        dialogBinding.selectedNumberText.text =
-                            "${decimalFormat.format(snappedNumber)} $selectedLabel"
-                        if (selectedLabel == " feet") {
-                            val feet = decimalFormat.format(snappedNumber / 12)
-                            val h = (feet).toString().split(".")
-                            val ft = h[0]
-                            var inch = "0"
-                            if (h.size > 1) {
-                                inch = h[1]
+                        if (dialogBinding.selectedNumberText != null) {
+                            dialogBinding.selectedNumberText.text =
+                                "${decimalFormat.format(snappedNumber)} $selectedLabel"
+                            if (selectedLabel == " feet") {
+                                val feet = decimalFormat.format(snappedNumber / 12)
+                                val remainingInches = snappedNumber.toInt() % 12
+                                val h = (feet).toString().split(".")
+                                val ft = h[0]
+                                var inch = "0"
+                                if (h.size > 1) {
+                                    inch = h[1]
+                                }
+                                dialogBinding.selectedNumberText.text = "$ft Ft $remainingInches In"
                             }
-                            dialogBinding.selectedNumberText.text = "$ft Ft $inch In"
+                            selectedHeight = dialogBinding.selectedNumberText?.text.toString()
                         }
-                        selectedHeight = dialogBinding.selectedNumberText.text.toString()
 
                     }
                 }
