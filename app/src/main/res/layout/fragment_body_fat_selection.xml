@@ -74,7 +74,6 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:singleLine="true"
-                    android:maxLength="3"
                     android:textColor="@color/txt_color_header"
                     android:textSize="16sp"
                     android:focusable="true"
