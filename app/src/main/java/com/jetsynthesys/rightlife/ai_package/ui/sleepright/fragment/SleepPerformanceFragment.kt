@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -14,8 +15,11 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.animation.ChartAnimator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepPerformanceBinding
@@ -30,6 +34,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
@@ -41,6 +46,9 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
 class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>() {
 
@@ -48,6 +56,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         get() = FragmentSleepPerformanceBinding::inflate
     var snackbar: Snackbar? = null
 
+    private lateinit var btnPrevious: ImageView
+    private lateinit var btnNext: ImageView
+    private lateinit var dateRangeText: TextView
     private lateinit var barChart: BarChart
     private lateinit var lineChart: LineChart
     private lateinit var radioGroup: RadioGroup
@@ -55,6 +66,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var stripsContainer: FrameLayout
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
+    private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
+    private var currentDate: LocalDate = LocalDate.now() // today
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,39 +79,22 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        btnPrevious = view.findViewById(R.id.btn_prev)
+        btnNext = view.findViewById(R.id.btn_next)
+        dateRangeText = view.findViewById(R.id.tv_selected_date)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
         // Show Week data by default
-        updateChart(getWeekData(), getWeekLabels())
+     //   updateChart(getWeekData(), getWeekLabels())
+        setupListeners()
+        setupChart()
+        loadWeekData()
         fetchSleepData()
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
-
-        // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek ->{
-                    barChart.visibility = View.VISIBLE
-                    layoutLineChart.visibility = View.GONE
-                    // updateChart(getWeekData(), getWeekLabels())
-                    monthChart()
-                }
-                R.id.rbMonth ->{
-                    barChart.visibility = View.VISIBLE
-                    layoutLineChart.visibility = View.GONE
-                    updateChart(getMonthData(), getMonthLabels())
-                }
-                R.id.rbSixMonths ->{
-                    barChart.visibility = View.GONE
-                    layoutLineChart.visibility = View.VISIBLE
-                    lineChartForSixMonths()
-                    // updateChart(getSixMonthData(), getSixMonthLabels())
-                }
-            }
-        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -113,8 +109,140 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 
+    }
 
+    private fun setupListeners() {
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    barChart.visibility = View.VISIBLE
+                    layoutLineChart.visibility = View.GONE
+                    loadWeekData()
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    barChart.visibility = View.VISIBLE
+                    layoutLineChart.visibility = View.GONE
+                    loadMonthData()
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    barChart.visibility = View.GONE
+                    layoutLineChart.visibility = View.VISIBLE
+                    lineChartForSixMonths()
+                }
+            }
+        }
 
+        btnPrevious.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.minusWeeks(1)
+                    loadWeekData()
+                }
+                1 -> {
+                    currentDate = currentDate.minusMonths(1)
+                    loadMonthData()
+                }
+                2 -> {
+                    currentDate = currentDate.minusMonths(6)
+                    loadSixMonthsData()
+                }
+            }
+        }
+
+        btnNext.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.plusWeeks(1)
+                    loadWeekData()
+                }
+                1 -> {
+                    currentDate = currentDate.plusMonths(1)
+                    loadMonthData()
+                }
+                2 -> {
+                    currentDate = currentDate.plusMonths(6)
+                    loadSixMonthsData()
+                }
+            }
+        }
+    }
+
+    private fun loadWeekData() {
+        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
+        val endOfWeek = startOfWeek.plusDays(6)
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+
+        val entries = mutableListOf<BarEntry>()
+        for (i in 0..6) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+
+    }
+
+    private fun loadMonthData() {
+        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
+        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+
+        val entries = mutableListOf<BarEntry>()
+        val daysInMonth = endOfMonth.dayOfMonth
+        for (i in 0 until daysInMonth) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        val weekRanges = listOf("1-7", "8-14", "15-21", "22-28", "29-31")
+        updateChart(entries, weekRanges)
+    }
+
+    private fun loadSixMonthsData() {
+        val startOfPeriod = currentDate.minusMonths(5).with(TemporalAdjusters.firstDayOfMonth())
+        val endOfPeriod = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+
+        val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
+        dateRangeText.text = "${startOfPeriod.format(formatter)} - ${endOfPeriod.format(formatter)}"
+
+        val entries = mutableListOf<BarEntry>()
+        for (i in 0..5) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        val months = listOf(
+            startOfPeriod.month.name.take(3),
+            startOfPeriod.plusMonths(1).month.name.take(3),
+            startOfPeriod.plusMonths(2).month.name.take(3),
+            startOfPeriod.plusMonths(3).month.name.take(3),
+            startOfPeriod.plusMonths(4).month.name.take(3),
+            startOfPeriod.plusMonths(5).month.name.take(3)
+        )
+        updateChart(entries, months)
+    }
+
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
+        val dataSet = BarDataSet(entries, "Performance")
+        dataSet.color = Color.parseColor("#87CEFA")
+
+        barChart.data = BarData(dataSet)
+        barChart.xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return if (value.toInt() in labels.indices) labels[value.toInt()] else ""
+            }
+        }
+
+        barChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        barChart.axisLeft.axisMinimum = 0f
+        barChart.axisLeft.axisMaximum = 100f
+        barChart.axisRight.isEnabled = false
+        barChart.description.isEnabled = false
+        barChart.invalidate()
     }
 
     private fun fetchSleepData() {
@@ -221,129 +349,28 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
     }
 
-    private fun monthChart(){
-        val entries = listOf(
-            BarEntry(0f, 72f), // Jan
-            BarEntry(1f, 58f), // Feb
-            BarEntry(2f, 68f), // Mar
-            BarEntry(3f, 86f), // Apr
-            BarEntry(4f, 72f), // May
-            BarEntry(5f, 90f)  // Jun
-        )
-
-        val dataSet = BarDataSet(entries, "Performance").apply {
-            color = Color.BLUE
-            valueTextSize = 12f
-            setDrawValues(false) // Hide default values
-        }
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.4f // Adjust bar width
-
-        barChart.data = barData
-
-        // Define months from Jan to Jun
-        val months = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
-
-        // Chart configurations
-        barChart.apply {
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = IndexAxisValueFormatter(months)
-                textSize = 12f
-                granularity = 1f // Ensures each month is evenly spaced
-                setDrawGridLines(false)
-            }
-            axisRight.isEnabled = false
-            axisLeft.axisMinimum = 0f // Ensure bars start from zero
-            description.isEnabled = false
-            setFitBars(true)
-            invalidate()
-        }
-
-        // Apply custom renderer to round bar tops
-        barChart.notifyDataSetChanged()
-        barChart.invalidate()
-    }
-
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
-        val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = resources.getColor(R.color.sleep_duration_blue)
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.valueTextSize = 12f
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.4f // Set bar width
-
-        barChart.data = barData
-        barChart.setFitBars(true)
-
-        // Customize X-Axis
-        val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
-
-        // Customize Y-Axis
-        val leftYAxis: YAxis = barChart.axisLeft
-        leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
-        leftYAxis.setDrawGridLines(true)
-
-        // Disable right Y-axis
-        barChart.axisRight.isEnabled = false
+    private fun setupChart() {
+        barChart.setRenderer(RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler))
         barChart.description.isEnabled = false
-        barChart.animateY(1000) // Smooth animation
-        barChart.invalidate()
-    }
+        barChart.setDrawValueAboveBar(true)
+        barChart.setDrawBarShadow(false)
+        barChart.setPinchZoom(false)
+        barChart.setDrawGridBackground(false)
 
-    private fun getWeekData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 200f),
-            BarEntry(1f, 350f),
-            BarEntry(2f, 270f),
-            BarEntry(3f, 400f),
-            BarEntry(4f, 320f),
-            BarEntry(5f, 500f),
-            BarEntry(6f, 450f)
-        )
-    }
+        barChart.axisRight.isEnabled = false
+        barChart.legend.isEnabled = false
 
-    /** X-Axis Labels for Week */
-    private fun getWeekLabels(): List<String> {
-        return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    }
+        val xAxis = barChart.xAxis
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.setDrawGridLines(false)
+        xAxis.granularity = 1f
+        xAxis.labelCount = 7
 
-    /** Sample Data for Month (4 weeks) */
-    private fun getMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 1500f), // 1-7 Jan
-            BarEntry(1f, 1700f), // 8-14 Jan
-            BarEntry(2f, 1400f), // 15-21 Jan
-            BarEntry(3f, 1800f), // 22-28 Jan
-            BarEntry(4f, 1200f)  // 29-31 Jan
-        )
-    }
-
-    /** X-Axis Labels for Month */
-    private fun getMonthLabels(): List<String> {
-        return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
-    }
-
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 9000f), // Jan
-            BarEntry(1f, 8500f), // Feb
-            BarEntry(2f, 8700f), // Mar
-            BarEntry(3f, 9100f), // Apr
-            BarEntry(4f, 9400f), // May
-            BarEntry(5f, 8800f)  // Jun
-        )
+        val leftAxis = barChart.axisLeft
+        leftAxis.axisMinimum = 0f
+        leftAxis.axisMaximum = 100f
+        leftAxis.setDrawGridLines(true)
+        leftAxis.granularity = 20f
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
@@ -353,51 +380,69 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             commit()
         }
     }
-
-    /** X-Axis Labels for 6 Months */
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
-    }
 }
 
 
 class RoundedBarChartRenderer(
     chart: BarChart,
-    animator: com.github.mikephil.charting.animation.ChartAnimator,
+    animator: ChartAnimator,
     viewPortHandler: ViewPortHandler
 ) : BarChartRenderer(chart, animator, viewPortHandler) {
 
-    private val radius = 20f // Adjust the corner radius
-
-    override fun initBuffers() {
-        super.initBuffers() // Ensure buffers are initialized
-    }
+    private val mBarRect = RectF()
+    private val radius = 20f  // change this for more or less curve
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
-        if (mBarBuffers.isEmpty() || index >= mBarBuffers.size) return // Prevent NullPointerException
+        val trans = mChart.getTransformer(dataSet.axisDependency)
 
-        val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            style = Paint.Style.FILL
+        mBarBorderPaint.color = dataSet.barBorderColor
+        mBarBorderPaint.strokeWidth = dataSet.barBorderWidth
+
+        val drawBorder = dataSet.barBorderWidth > 0f
+
+        val phaseX = mAnimator.phaseX
+        val phaseY = mAnimator.phaseY
+
+        // initialize the buffer
+        mBarBuffers[index].setPhases(phaseX, phaseY)
+        mBarBuffers[index].setDataSet(index)
+        mBarBuffers[index].setInverted(mChart.isInverted(dataSet.axisDependency))
+        mBarBuffers[index].setBarWidth(0.55f)
+
+        mBarBuffers[index].feed(dataSet)
+
+        trans.pointValuesToPixel(mBarBuffers[index].buffer)
+
+        val isSingleColor = dataSet.colors.size == 1
+
+        if (isSingleColor) {
+            mRenderPaint.color = dataSet.color
         }
 
-        val buffer = mBarBuffers[index]
+        val buffer = mBarBuffers[index].buffer
 
-        for (i in 0 until buffer.buffer.size step 4) {
-            val left = buffer.buffer[i]
-            val top = buffer.buffer[i + 1]
-            val right = buffer.buffer[i + 2]
-            val bottom = buffer.buffer[i + 3]
+        for (j in buffer.indices step 4) {
+            if (!mViewPortHandler.isInBoundsLeft(buffer[j + 2])) continue
 
-            val rect = RectF(left, top, right, bottom)
+            if (!mViewPortHandler.isInBoundsRight(buffer[j])) break
 
-            // Set bar color
-            barPaint.color = dataSet.getColor(i / 4)
+            if (!isSingleColor) {
+                mRenderPaint.color = dataSet.getColor(j / 4)
+            }
 
-            // Draw full bar (without rounded top)
-            c.drawRect(rect.left, rect.top + radius, rect.right, rect.bottom, barPaint)
+            mBarRect.set(buffer[j], buffer[j + 1], buffer[j + 2], buffer[j + 3])
 
-            // Draw rounded top separately
-            c.drawRoundRect(rect.left, rect.top, rect.right, rect.bottom, radius, radius, barPaint)
+            val path = Path()
+            path.addRoundRect(
+                mBarRect,
+                floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f),
+                Path.Direction.CW
+            )
+            c.drawPath(path, mRenderPaint)
+
+            if (drawBorder) {
+                c.drawPath(path, mBarBorderPaint)
+            }
         }
     }
 }

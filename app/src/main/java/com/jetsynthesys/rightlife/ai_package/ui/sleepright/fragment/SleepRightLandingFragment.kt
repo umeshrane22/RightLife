@@ -138,6 +138,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val sleepIdeal = view.findViewById<ImageView>(R.id.img_sleep_ideal_actual)
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
+        val openConsistency = view.findViewById<ImageView>(R.id.consistency_right_arrow)
          actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
          restroNoDataCardView = view.findViewById(R.id.restro_nodata_layout)
          performNoDataCardView = view.findViewById(R.id.perform_nodata_layout)
@@ -206,7 +207,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         consistencySleep.setOnClickListener {
-            navigateToFragment(SleepConsistencyFragment(), "Consistency")
+            navigateToFragment(SleepConsistencyFragment(), "SleepConsistencyFragment")
+        }
+        openConsistency.setOnClickListener {
+            navigateToFragment(SleepConsistencyFragment(), "SleepConsistencyFragment")
         }
 
       //  setupBarChart(sleepBarChart)

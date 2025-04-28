@@ -250,6 +250,10 @@ interface ApiService {
     fun logNap(@Query("user_id") userId: String,
                @Query("source") source: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
 
+    @PUT("sleep/set_wakeup_time")
+    fun updateWakeupTime(@Query("user_id") userId: String, @Query("source") source: String, @Query("record_id") record_id: String,
+                         @Query("timer_value") timer_value: String): Call<WakeupTimeResponse>
+
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
         @Query("user_id") userId: String,

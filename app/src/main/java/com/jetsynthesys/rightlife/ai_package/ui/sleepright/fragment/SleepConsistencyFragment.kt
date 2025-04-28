@@ -62,10 +62,10 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek ->{
-                  //  updateChart(getWeekData(), getWeekLabels())
+                   // updateChart(getWeekData(), getWeekLabels())
                 }
                 R.id.rbMonth ->{
-                 //   updateChart(getMonthData(), getMonthLabels())
+                  //  updateChart(getMonthData(), getMonthLabels())
                 }
                 R.id.rbSixMonths ->{
                  //   updateChart(getSixMonthData(), getSixMonthLabels())
