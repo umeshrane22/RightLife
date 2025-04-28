@@ -4,10 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityNewSleepSoundBinding
@@ -44,10 +47,11 @@ class NewSleepSoundActivity : AppCompatActivity() {
         binding.iconBack.setOnClickListener {
             if (binding.layoutVerticalCategoryList.visibility == View.VISIBLE) {
                 binding.layoutVerticalCategoryList.visibility = View.GONE
+                binding.llMusicHome.visibility = View.VISIBLE
                 binding.layouthorizontalMusicList.visibility = View.VISIBLE
                 binding.recyclerViewHorizontalList.visibility = View.VISIBLE
                 binding.recyclerViewVerticalList.visibility = View.GONE
-                fetchSleepSoundsByCategoryId(categoryList[1]._id, true)
+                //fetchSleepSoundsByCategoryId(categoryList[1]._id, true)
                 if (categoryAdapter!=null) {
                     categoryAdapter.updateSelectedPosition(-1)
                 }
@@ -68,7 +72,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
             Log.d("SleepCategory", "Selected: ${selectedCategory.title}")
             Toast.makeText(this, "Selected: ${selectedCategory.title}", Toast.LENGTH_SHORT).show()
             // You can perform an action, like loading content specific to the category!
-            fetchSleepSoundsByCategoryId(selectedCategory._id, false)
+            fetchSleepSoundsByCategoryId(selectedCategory._id, false,selectedCategory.title)
         }
 
         binding.recyclerCategory.apply {
@@ -99,7 +103,11 @@ class NewSleepSoundActivity : AppCompatActivity() {
                     categoryList.clear()
                     sleepCategoryResponse?.let { categoryList.addAll(it.data) }
                     categoryAdapter.notifyDataSetChanged()
-                    fetchSleepSoundsByCategoryId(categoryList.get(1)._id, true)
+                    if (categoryList.isNotEmpty()) {
+                        for (category in categoryList) {
+                            fetchSleepSoundsByCategoryId(category._id, true,category.title)
+                        }
+                    }
                 } else {
                     showToast("Server Error: " + response.code())
                 }
@@ -117,7 +125,7 @@ class NewSleepSoundActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun fetchSleepSoundsByCategoryId(categoryId: String, isForHome: Boolean) {
+    private fun fetchSleepSoundsByCategoryId(categoryId: String, isForHome: Boolean,title: String) {
         Utils.showLoader(this)
         val apiService = ApiClient.getClient().create(ApiService::class.java)
 
@@ -144,7 +152,8 @@ class NewSleepSoundActivity : AppCompatActivity() {
                         binding.llMusicHome.visibility = View.VISIBLE
                         binding.layouthorizontalMusicList.visibility = View.VISIBLE
                         binding.layoutVerticalCategoryList.visibility = View.GONE
-                        setupHorizontalRecyclerView(soundData?.data?.services)
+                        //setupHorizontalRecyclerView(soundData?.data?.services)
+                        soundData?.data?.services?.let { addServicesSection(it,""+title) }
                     } else {
                         binding.llMusicHome.visibility = View.GONE
                         binding.layouthorizontalMusicList.visibility = View.GONE
@@ -228,6 +237,9 @@ class NewSleepSoundActivity : AppCompatActivity() {
                 false
             )
             this.adapter = adapter
+        }
+        if (adapter != null) {
+            adapter.notifyDataSetChanged()
         }
         binding.tvYourPlayList.visibility = View.VISIBLE
     }
@@ -393,6 +405,46 @@ class NewSleepSoundActivity : AppCompatActivity() {
             }
 
         })
+    }
+    private fun addServicesSection(services: ArrayList<Service>,categoryName: String) {
+        val container = binding.linearLayoutContainer  // Your LinearLayout from XML
+
+        // Optional: Clear existing views if you want fresh list every time
+        //container.removeAllViews()
+
+        // 1. Inflate the layout containing TextView + RecyclerView
+        val sectionView = layoutInflater.inflate(R.layout.item_section_layout_musiclisthome, container, false)
+
+        // 2. Set the title (You can make this dynamic too if needed)
+        val titleTextView = sectionView.findViewById<TextView>(R.id.categorytTitleHorizontal)
+        titleTextView.text = categoryName // Or set it from function parameter if dynamic
+
+        // 3. Setup horizontal RecyclerView
+        val recyclerView = sectionView.findViewById<RecyclerView>(R.id.recycler_view_horizontal_list)
+        recyclerView.layoutManager = LinearLayoutManager(
+            this,
+            LinearLayoutManager.HORIZONTAL,
+            false
+        )
+
+        // 4. Setup adapter
+        val adapter = SleepHorizontalListAdapter(
+            services,
+            onItemClick = { selectedList, position ->
+                startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                    putExtra("SOUND_LIST", selectedList)
+                    putExtra("SELECTED_POSITION", position)
+                    putExtra("ISUSERPLAYLIST", false)
+                })
+            },
+            onAddToPlaylistClick = { service, position ->
+                addToPlaylist(service._id, position)
+            }
+        )
+        recyclerView.adapter = adapter
+
+        // 5. Add the section view to container
+        container.addView(sectionView)
     }
 
 }

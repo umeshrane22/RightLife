@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ui.profile_new
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -164,16 +165,7 @@ class ProfileNewActivity : AppCompatActivity() {
         }
 
         binding.ivEditProfile.setOnClickListener {
-            pickImageLauncher.launch("image/*") // Open gallery to pick image
-            /*if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                checkPermissions()
-            } else {
-                openCamera()
-            }*/
+            showImagePickerDialog()
         }
 
         binding.btnVerify.setOnClickListener {
@@ -1098,4 +1090,24 @@ class ProfileNewActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun showImagePickerDialog() {
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+
+        AlertDialog.Builder(this)
+            .setTitle("Upload Profile Picture")
+            .setItems(options) { dialog, which ->
+                when (options[which]) {
+                    "Take Photo" -> checkPermissions()
+                    "Choose from Gallery" -> openGallery()
+                    "Cancel" -> dialog.dismiss()
+                }
+            }
+            .show()
+    }
+
+    private fun openGallery() {
+        pickImageLauncher.launch("image/*") // Open gallery to pick image
+    }
+
 }
