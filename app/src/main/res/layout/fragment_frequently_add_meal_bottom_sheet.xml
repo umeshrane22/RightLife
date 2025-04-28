@@ -14,14 +14,14 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:gravity="start">
 
         <TextView
             android:id="@+id/tvIngredientsCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="4 Dishes/ Ingredients Added"
-            android:textColor="@color/green_text"
+            android:textColor="@color/meal_log_title"
             android:fontFamily="@font/dmsans_bold"
             android:textSize="16sp" />
 
@@ -30,6 +30,7 @@
             android:layout_width="80dp"
             android:layout_height="30dp"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@drawable/green_meal_bg"
@@ -76,7 +77,7 @@
     <!-- Log Your Meal Button -->
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/layout_btnLogMeal"
-        android:layout_width="320dp"
+        android:layout_width="300dp"
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:visibility="gone"
@@ -92,8 +93,8 @@
 
         <ImageView
             android:id="@+id/icon_pl"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_gravity="center"
             android:scaleType="fitXY"
             android:src="@drawable/icon_feather_plus"
@@ -107,7 +108,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textColor="@color/white"

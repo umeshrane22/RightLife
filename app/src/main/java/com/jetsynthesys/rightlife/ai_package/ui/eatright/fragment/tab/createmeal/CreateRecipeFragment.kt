@@ -59,12 +59,12 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
 
     private val mealLogDateAdapter by lazy { MealLogWeeklyDayAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMealLogDateItem) }
-    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
-    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onLunchMealLogItem) }
-    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onDinnerMealLogItem) }
+//    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
+//        null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
+//    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
+//        null, false, :: onLunchMealLogItem) }
+//    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
+//        null, false, :: onDinnerMealLogItem) }
     private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onFrequentlyLoggedItem) }
 
@@ -312,17 +312,17 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
 
     private fun onBreakfastDeleteItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<MealList> = ArrayList()
-        valueLists.addAll(breakfastLists as Collection<MealList>)
-        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+//        val valueLists : ArrayList<MealList> = ArrayList()
+//        valueLists.addAll(breakfastLists as Collection<MealList>)
+//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
 
     }
 
     private fun onBreakfastEditItem(mealItem: MealList, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<MealList> = ArrayList()
-        valueLists.addAll(breakfastLists as Collection<MealList>)
-        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+//        val valueLists : ArrayList<MealList> = ArrayList()
+//        valueLists.addAll(breakfastLists as Collection<MealList>)
+//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
 
     }
 

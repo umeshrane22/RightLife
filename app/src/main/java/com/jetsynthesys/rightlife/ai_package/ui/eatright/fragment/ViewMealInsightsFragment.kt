@@ -52,10 +52,10 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         null, false, :: onMacroNutrientsItem) }
     private val microNutientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItem) }
-    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onLunchMealLogItem) }
-    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onDinnerMealLogItem) }
+//    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
+//        null, false, :: onLunchMealLogItem) }
+//    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
+//        null, false, :: onDinnerMealLogItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
