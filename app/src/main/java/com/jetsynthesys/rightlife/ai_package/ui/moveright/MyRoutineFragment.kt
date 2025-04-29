@@ -5,16 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentMyRoutineBinding
 
 
 class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
     private lateinit var myMealRecyclerView : RecyclerView
+    private lateinit var layout_btn_log_meal : LinearLayoutCompat
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRoutineBinding
         get() = FragmentMyRoutineBinding::inflate
@@ -24,13 +27,28 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.TRANSPARENT)
+        layout_btn_log_meal = view.findViewById(R.id.layout_btn_log_meal)
         myMealRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
         onMyMealItemRefresh()
+        layout_btn_log_meal.setOnClickListener {
+            openAddWorkoutFragment()
+        }
 
     }
-
+    private fun openAddWorkoutFragment() {
+        val fragment = CreateRoutineFragment()
+      /*  val args = Bundle().apply {
+            putParcelable("workout", workout)
+        }
+        fragment.arguments = args*/
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "addWorkoutFragment")
+            addToBackStack("addWorkoutFragment")
+            commit()
+        }
+    }
     private fun onMyMealItemRefresh (){
 
         val meal = listOf(

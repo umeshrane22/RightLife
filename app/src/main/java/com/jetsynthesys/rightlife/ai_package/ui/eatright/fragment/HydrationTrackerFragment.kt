@@ -54,6 +54,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     private lateinit var backwardImage: ImageView
     private lateinit var forwardImage: ImageView
     private lateinit var selectedDate: TextView
+    private lateinit var hydration_description_heading: TextView
+    private lateinit var hydration_description_text: TextView
     private var selectedWeekDate: String = ""
     private var selectedMonthDate: String = ""
     private var selectedHalfYearlyDate: String = ""
@@ -81,6 +83,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         selectHeartRateLayout = view.findViewById(R.id.selectHeartRateLayout)
         selectedItemDate = view.findViewById(R.id.selectedItemDate)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        hydration_description_heading = view.findViewById(R.id.hydration_description_heading)
+        hydration_description_text = view.findViewById(R.id.hydration_description_text)
 
 
         // Show Week data by default
@@ -214,6 +218,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
             navigateToFragment(HomeBottomTabFragment(), "landingFragment")
         }
     }
+
     private fun fetchWaterIntakeData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -271,6 +276,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                         }
 
                         withContext(Dispatchers.Main) {
+                            hydration_description_heading.text = data.heading
+                            hydration_description_text.text =data.description
                             if (data.waterIntakeTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()

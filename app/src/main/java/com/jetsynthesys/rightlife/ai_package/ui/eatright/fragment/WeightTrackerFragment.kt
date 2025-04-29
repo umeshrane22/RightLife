@@ -57,6 +57,8 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private lateinit var backwardImage: ImageView
     private lateinit var forwardImage: ImageView
     private lateinit var selectedDate: TextView
+    private lateinit var weight_description_heading: TextView
+    private lateinit var weight_description_text: TextView
     private var selectedWeekDate: String = ""
     private var selectedMonthDate: String = ""
     private var selectedHalfYearlyDate: String = ""
@@ -90,6 +92,8 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         selectHeartRateLayout = view.findViewById(R.id.selectHeartRateLayout)
         selectedItemDate = view.findViewById(R.id.selectedItemDate)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        weight_description_heading = view.findViewById(R.id.weight_description_heading)
+        weight_description_text = view.findViewById(R.id.weight_description_text)
 
 
         // Show Week data by default
@@ -370,6 +374,8 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         }
 
                         withContext(Dispatchers.Main) {
+                            weight_description_heading.text = data.heading
+                            weight_description_text.text = data.description
                             if (data.weightTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()

@@ -40,6 +40,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentStepBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -94,7 +95,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         selectedDate = view.findViewById(R.id.selectedDate)
 
         stepBck.setOnClickListener {
-            navigateToFragment(MoveRightLandingFragment(), "landingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         // Initial chart setup with sample data
@@ -225,7 +226,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(MoveRightLandingFragment(), "landingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
     }
 

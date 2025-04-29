@@ -11,7 +11,11 @@ data class ConsumedProteinResponse(
     @SerializedName("total_protein") val totalProtein: Double,
     @SerializedName("current_avg_protein") val currentAvgProtein: Double,
     @SerializedName("progress_percentage") val progressPercentage: Double,
-    @SerializedName("progress_sign") val progressSign: String
+    @SerializedName("progress_sign") val progressSign: String,
+    @SerializedName("heading")
+    val heading: String,
+    @SerializedName("description")
+    val description: String,
 )
 
 data class ProteinTotal(

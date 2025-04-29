@@ -27,8 +27,12 @@ data class ConsumedSugarResponse(
     @SerializedName("progress_percentage")
     val progressPercentage: Double,
 
+    @SerializedName("heading")
+    val heading: String,
+    @SerializedName("description")
+    val description: String,
     @SerializedName("progress_sign")
-    val progressSign: String
+    val progressSign: String,
 )
 
 data class ConsumedSugarTotal(

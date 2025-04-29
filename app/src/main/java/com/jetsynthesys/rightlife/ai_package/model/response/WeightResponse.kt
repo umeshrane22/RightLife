@@ -25,7 +25,11 @@ data class WeightResponse(
     val progressPercentage: Double,
 
     @SerializedName("progress_sign")
-    val progressSign: String
+    val progressSign: String,
+    @SerializedName("heading")
+    val heading: String,
+    @SerializedName("description")
+    val description: String,
 )
 
 data class WeightTotal(

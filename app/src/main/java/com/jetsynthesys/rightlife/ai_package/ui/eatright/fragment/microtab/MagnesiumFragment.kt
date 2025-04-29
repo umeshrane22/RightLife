@@ -72,6 +72,8 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
     private var selectedMonthDate : String = ""
     private var selectedHalfYearlyDate : String = ""
     private lateinit var selectedDate : TextView
+    private lateinit var magnesium_description_heading : TextView
+    private lateinit var magnesium_description_text : TextView
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
@@ -112,6 +114,8 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        magnesium_description_heading = view.findViewById(R.id.magnesium_description_heading)
+        magnesium_description_text = view.findViewById(R.id.magnesium_description_text)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -382,6 +386,8 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                             }
                             val totalCalories = data.consumedMagnesiumTotals.sumOf { it.magnesiumConsumed ?: 0.0 }
                             withContext(Dispatchers.Main) {
+                                magnesium_description_heading.text = data.heading
+                                magnesium_description_text.text = data.description
                                 if (data.consumedMagnesiumTotals.size > 31){
                                     barChart.visibility = View.GONE
                                     layoutLineChart.visibility = View.VISIBLE
@@ -499,15 +505,20 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedMagnesiumTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedMagnesiumTotals.forEach { calorie ->
-                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-                if (startDate != null) {
-                    val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.magnesiumConsumed.toFloat() ?: 0f)
+        if (activeCaloriesResponse.consumedMagnesiumTotals.isNotEmpty()) {
+            activeCaloriesResponse.consumedMagnesiumTotals.forEach { magnesium ->
+                val parsedDate = magnesium.date.let { dateFormat.parse(it) }
+                if (parsedDate != null) {
+                    val dayKey = dateFormat.format(parsedDate)
+                    if (calorieMap.containsKey(dayKey)) {
+                        val existing = calorieMap[dayKey] ?: 0f
+                        val consumed = magnesium.magnesiumConsumed.toFloat() ?: 0f
+                        calorieMap[dayKey] = existing + consumed
+                    }
                 }
             }
         }
+
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
