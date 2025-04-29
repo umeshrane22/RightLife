@@ -109,7 +109,7 @@ class ThirdFillerScreenActivity : BaseActivity() {
         tvFillerText5.text = spannable
 
         btnContinue.setOnClickListener {
-            val intent = Intent(this, YourInterestActivity::class.java)
+            val intent = Intent(this, UserInterestActivity::class.java)
             intent.putExtra("WellnessFocus", header)
             sharedPreferenceManager.thirdFiller = true
             startActivity(intent)
