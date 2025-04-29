@@ -77,6 +77,7 @@
                     android:textColor="@color/txt_color_header"
                     android:textSize="16sp"
                     android:focusable="true"
+                    android:imeOptions="actionDone"
                     android:focusableInTouchMode="true"
                     android:cursorVisible="true"/>
 

@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
+import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
 import com.jetsynthesys.rightlife.ui.new_design.YourInterestActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
@@ -91,7 +92,7 @@ class ProfileSettingsActivity : BaseActivity() {
                     })
 
                 "Interests" ->
-                    startActivity(Intent(this, YourInterestActivity::class.java).apply {
+                    startActivity(Intent(this, UserInterestActivity::class.java).apply {
                         putExtra("FROM", "ProfileSetting")
                     })
 

@@ -90,10 +90,10 @@
         <activity android:name=".ui.new_design.WellnessFocusListActivity" />
         <activity android:name=".ui.new_design.UnlockPowerOfYourMindActivity" />
         <activity android:name=".ui.new_design.ThirdFillerScreenActivity" />
-        <activity android:name=".ui.new_design.YourInterestActivity" />
         <activity android:name=".ui.new_design.PersonalisationActivity" />
         <activity android:name=".ui.new_design.SyncNowActivity" />
         <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity" />
+        <activity android:name=".ui.new_design.UserInterestActivity"/>
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
         <activity android:name=".ui.new_design.OnboardingFinalActivity" />

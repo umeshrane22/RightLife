@@ -134,7 +134,6 @@ class BodyFatSelectionFragment : Fragment() {
             btnContinue.backgroundTintList = colorStateListSelected
             edtBodyFat.setText(average(bodyFat.bodyFatNumber).toString())
             edtBodyFat.setSelection(edtBodyFat.text.length)
-            edtBodyFat.requestFocus()
             iconMinus.visibility = VISIBLE
             iconPlus.visibility = VISIBLE
             tvPercentage.visibility = VISIBLE
