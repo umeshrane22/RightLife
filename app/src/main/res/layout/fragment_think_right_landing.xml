@@ -388,6 +388,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
                 <TextView
@@ -419,6 +420,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:visibility="gone"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -942,9 +944,9 @@
                         app:cardCornerRadius="10dp"
                         android:visibility="visible"
                         android:layout_height="140dp"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="20dp"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         >
 
                         <ImageView
@@ -1007,6 +1009,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:elevation="4dp"
+                    android:id="@+id/card_affirmations"
                     android:visibility="visible"
                     android:background="@color/white"
                     app:cardCornerRadius="10dp"
@@ -1066,10 +1069,10 @@
                             android:layout_marginTop="16dp" />
 
                         <TextView
-                            android:id="@+id/tv_sleep_sound_save"
+                            android:id="@+id/tv_affirmation_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="5 Affirmations saved"
+                            android:text="Affirmations saved"
                             android:textSize="12sp"
                             android:textColor="@color/quantum_grey"
                             app:layout_constraintTop_toBottomOf="@id/tv_sleep_sound"
@@ -1086,13 +1089,14 @@
                             android:weightSum="3"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@id/tv_sleep_sound_save">
+                            app:layout_constraintTop_toBottomOf="@id/tv_affirmation_count">
 
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="100dp"
                                 android:layout_weight="1"
                                 android:gravity="center"
+                                android:id="@+id/lyt_affirmation_1"
                                 android:background="@drawable/think_choclate_bg"
                                 android:orientation="horizontal">
 
@@ -1107,6 +1111,7 @@
                                 android:layout_height="100dp"
                                 android:layout_marginStart="10dp"
                                 android:gravity="center"
+                                android:id="@+id/lyt_affirmation_2"
                                 android:background="@drawable/think_dark_quote_bg"
                                 android:layout_weight="1"
                                 android:orientation="horizontal">
@@ -1121,6 +1126,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="100dp"
                                 android:layout_marginStart="10dp"
+                                android:id="@+id/lyt_affirmation_3"
                                 android:background="@drawable/dark_blue_quote_bg"
                                 android:gravity="center"
                                 android:layout_weight="1"

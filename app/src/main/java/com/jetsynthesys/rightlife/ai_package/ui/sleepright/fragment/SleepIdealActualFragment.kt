@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.jetsynthesys.rightlife.R
@@ -22,14 +23,9 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
 import com.jetsynthesys.rightlife.databinding.FragmentIdealActualSleepTimeBinding
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
@@ -39,6 +35,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBinding>() {
@@ -52,6 +51,11 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var radioGroup: RadioGroup
     private lateinit var progressDialog: ProgressDialog
     private lateinit var idealActualResponse: SleepIdealActualResponse
+    private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
+    private var currentDate: LocalDate = LocalDate.now() // today
+    private lateinit var btnPrevious: ImageView
+    private lateinit var btnNext: ImageView
+    private lateinit var dateRangeText: TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,8 +64,10 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
         lineChart = view.findViewById(R.id.idealActualChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        dateRangeText = view.findViewById(R.id.tv_selected_date)
         sixMonthGraph = view.findViewById(R.id.sixMonthGraph)
-
+        btnPrevious = view.findViewById(R.id.btn_prev)
+        btnNext = view.findViewById(R.id.btn_next)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -78,25 +84,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         radioGroup.check(R.id.rbWeek)
 
         // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek ->{
-                    lineChart.visibility = View.VISIBLE
-                    sixMonthGraph.visibility = View.GONE
-                    loadWeekGraph()
-                }
-                R.id.rbMonth -> {
-                    lineChart.visibility = View.VISIBLE
-                    sixMonthGraph.visibility = View.GONE
-                    loadMonthGraph()
-                }
-                R.id.rbSixMonths -> {
-                    lineChart.visibility = View.GONE
-                    sixMonthGraph.visibility = View.VISIBLE
-                    loadSixMonthGraph()
-                }
-            }
-        }
+        setupListeners()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -106,6 +94,65 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         })
 
         loadWeekGraph()
+    }
+
+    private fun setupListeners() {
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    lineChart.visibility = View.VISIBLE
+                    sixMonthGraph.visibility = View.GONE
+                    loadWeekGraph()
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    lineChart.visibility = View.VISIBLE
+                    sixMonthGraph.visibility = View.GONE
+                    loadMonthGraph()
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    lineChart.visibility = View.GONE
+                    sixMonthGraph.visibility = View.VISIBLE
+                    loadSixMonthGraph()
+                }
+            }
+        }
+
+        btnPrevious.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.minusWeeks(1)
+                    loadWeekGraph()
+                }
+                1 -> {
+                    currentDate = currentDate.minusMonths(1)
+                    loadMonthGraph()
+                }
+                2 -> {
+                    currentDate = currentDate.minusMonths(6)
+                    loadSixMonthGraph()
+                }
+            }
+        }
+
+        btnNext.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.plusWeeks(1)
+                    loadWeekGraph()
+                }
+                1 -> {
+                    currentDate = currentDate.plusMonths(1)
+                    loadMonthGraph()
+                }
+                2 -> {
+                    currentDate = currentDate.plusMonths(6)
+                    loadSixMonthGraph()
+                }
+            }
+        }
     }
 
     private fun loadSixMonthGraph() {
@@ -124,42 +171,50 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
 
     private fun loadMonthGraph() {
+        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
+        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
 
-        val monthData = listOf(
-            SleepGraphData("1–7 Jan", 8.0f, 6.0f),
-            SleepGraphData("8–14 Jan", 9.0f, 7.2f),
-            SleepGraphData("15–21 Jan", 10.0f, 8.0f),
-            SleepGraphData("22–28 Jan", 8.5f, 6.5f),
-            SleepGraphData("29–31 Jan", 8.2f, 6.3f)
-        )
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
 
-        setGraphDataFromSleepList(monthData)
+        val monthList = mutableListOf<SleepGraphData>()
+        val daysInMonth = endOfMonth.dayOfMonth
+        for (i in 0 until daysInMonth) {
+            monthList.add(SleepGraphData("${startOfMonth.format(formatter)}", (5..10).random().toFloat(),(5..10).random().toFloat()))
+        }
+
+        val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+
+        setGraphDataFromSleepList(monthList,weekRanges)
     }
 
     private fun loadWeekGraph() {
 
-        val weekData = listOf(
-            SleepGraphData("3 Feb", 8.0f, 6.0f),
-            SleepGraphData("4 Feb", 9.0f, 7.0f),
-            SleepGraphData("5 Feb", 8.0f, 7.0f),
-            SleepGraphData("6 Feb", 8.5f, 6.5f),
-            SleepGraphData("7 Feb", 7.5f, 6.0f),
-            SleepGraphData("8 Feb", 9.0f, 6.5f),
-            SleepGraphData("9 Feb", 8.2f, 6.3f)
-        )
+        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
+        val endOfWeek = startOfWeek.plusDays(6)
 
-        setGraphDataFromSleepList(weekData)
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+
+
+        val weekList = mutableListOf<SleepGraphData>()
+        for (i in 0..6) {
+            weekList.add(SleepGraphData("${startOfWeek.format(formatter)}", (5..10).random().toFloat(),(5..10).random().toFloat()))
+        }
+
+        val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+        setGraphDataFromSleepList(weekList, weekRanges)
     }
 
-    private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>) {
+    private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>, weekRanges: List<String>) {
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
-        val labels = ArrayList<String>()
+        val labels = weekRanges
 
         sleepData.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
-            labels.add(data.date)
         }
 
         val idealSet = LineDataSet(idealEntries, "Ideal").apply {
@@ -195,6 +250,13 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
         lineChart.legend.textSize = 12f
+        lineChart.setPinchZoom(false)
+        lineChart.setDrawGridBackground(false)
+        lineChart.setScaleEnabled(false) // disables pinch and double-tap zoom
+        lineChart.isDoubleTapToZoomEnabled = false // disables zoom on double tap
+
+        lineChart.isDragEnabled = false
+        lineChart.isHighlightPerTapEnabled = false
 
         lineChart.invalidate()
     }

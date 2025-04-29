@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.data.repository
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.AffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.NutritionResponse
@@ -221,12 +222,14 @@ interface ApiService {
     @GET("app/api/mind-audit/q/get-assessment-result")
     fun getAssessmentResult(@Header("Authorization") authToken: String): Call<AssessmentResponse>
 
+    @GET("app/api/affirmationPlaylist")
+    fun getAffirmationPlaylist(@Header("Authorization") authToken: String): Call<AffirmationPlaylistResponse>
+
     @GET("app/api/tools")
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
     @GET("app/api/tools")
     fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
-
 
     @POST("app/api/tools")
     fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<BaseResponse>

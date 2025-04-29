@@ -50,6 +50,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.AffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerData
 import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerResponse
 import com.jetsynthesys.rightlife.ai_package.model.MindfullData
@@ -113,6 +114,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var cardAddTools: CardView
     private lateinit var emotionCardData: CardView
     private lateinit var emotionCardNoData: CardView
+    private lateinit var cardAffirmations: CardView
     private lateinit var journalingCard: CardView
     private lateinit var toolsRecyclerView: RecyclerView
     private lateinit var journalingRecyclerView: RecyclerView
@@ -133,6 +135,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var progressDialog: ProgressDialog
     private lateinit var toolsResponse : ToolsResponse
     private lateinit var mainView : LinearLayout
+    private lateinit var lytAffirmation1 : LinearLayout
+    private lateinit var lytAffirmation2 : LinearLayout
+    private lateinit var lytAffirmation3 : LinearLayout
     private lateinit var downloadView: ImageView
     private var toolsArray : ArrayList<ToolsData> = arrayListOf()
     private lateinit var toolGridResponse : ToolsGridResponse
@@ -146,6 +151,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     var itemCount = 0
     var dotSize = 16
     var dotMargin = 8
+    private lateinit var affirmationCount: TextView
     private lateinit var emotionLabel: TextView
     private lateinit var emotionTime: TextView
     private lateinit var emotionDescription: TextView
@@ -169,9 +175,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         editEmotionIcon = view.findViewById(R.id.editEmotionIcon)
         emotionCardData = view.findViewById(R.id.emotionCard)
         emotionCardNoData = view.findViewById(R.id.lyt_feel)
+        cardAffirmations = view.findViewById(R.id.card_affirmations)
         tvJournalDate = view.findViewById(R.id.tv_journaling_date)
         tvJournalDesc = view.findViewById(R.id.tv_journaling_desc)
         tvJournalTime = view.findViewById(R.id.tv_journaling_time)
+        affirmationCount = view.findViewById(R.id.tv_affirmation_count)
+        lytAffirmation1 = view.findViewById(R.id.lyt_affirmation_1)
+        lytAffirmation2 = view.findViewById(R.id.lyt_affirmation_2)
+        lytAffirmation3 = view.findViewById(R.id.lyt_affirmation_3)
         journalingCard = view.findViewById(R.id.lyt_journaling_card)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
@@ -348,6 +359,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
         fetchToolGridData()
         fetchJournalAnswerData()
+        fetchAffirmationsList()
 
 
     }
@@ -497,7 +509,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private fun fetchMindfulData() {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val startDate = getCurrentDate()
+        val startDate = getYesterdayDate()
         val endDate = getCurrentDate()
         //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchMindFull(token,startDate, endDate)
@@ -704,6 +716,51 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             }
         })
     }
+
+    private fun fetchAffirmationsList() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdmNTAwNWQyZmJmZmRkMzIzNzJjNWIxIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IkJsYXplIiwiZGV2aWNlSWQiOiI5RTRCMDQzOC0xRjE4LTQ5OTItQTNCRS1DOUQxRDA4MDcwODEiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3NDQxODM5MjEsImV4cCI6MTc1OTkwODcyMX0.wB4G4I8UW30jj6FOH0STbs1y8-vHdFT39TTu2_eA_88"  // Replace with actual token
+        val call = ApiClient.apiService.getAffirmationPlaylist(token)
+
+        call.enqueue(object : Callback<AffirmationPlaylistResponse> {
+            override fun onResponse(call: Call<AffirmationPlaylistResponse>, response: Response<AffirmationPlaylistResponse>) {
+                if (response.isSuccessful) {
+                    val assessmentResponse = response.body()
+                    if (assessmentResponse != null) {
+                        if (assessmentResponse.data.isNotEmpty()){
+                            cardAffirmations.visibility = View.VISIBLE
+                            val count = assessmentResponse.data.size
+                            affirmationCount.setText(count.toString() + " Affirmations Saved")
+                            if (count > 2){
+                                lytAffirmation1.visibility = View.VISIBLE
+                                lytAffirmation2.visibility = View.VISIBLE
+                                lytAffirmation3.visibility = View.VISIBLE
+                            }else if (count == 2){
+                                lytAffirmation1.visibility = View.VISIBLE
+                                lytAffirmation2.visibility = View.VISIBLE
+                                lytAffirmation3.visibility = View.GONE
+                            }else if (count == 1){
+                                lytAffirmation1.visibility = View.VISIBLE
+                                lytAffirmation2.visibility = View.GONE
+                                lytAffirmation3.visibility = View.GONE
+                            }
+                        } else{
+                            cardAffirmations.visibility = View.GONE
+                        }
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    cardAffirmations.visibility = View.GONE
+                }
+            }
+
+            override fun onFailure(call: Call<AffirmationPlaylistResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                cardAffirmations.visibility = View.GONE
+            }
+        })
+    }
+
     private fun fetchAssessmentResult() {
        // val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken

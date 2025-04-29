@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
 import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
@@ -159,6 +160,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         val barData = BarData(dataSet).apply {
             barWidth = 0.4f // ✅ Thin
             chart.setVisibleXRangeMaximum(31f)
+            chart.setRenderer(RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler))
         }
 
         chart.apply {
@@ -257,7 +259,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             valueTextColor = Color.BLACK
             valueTextSize = 10f
         }
-
+        barChart.setRenderer(RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler))
         barChart.apply {
             data = BarData(dataSet)
             description.isEnabled = false
@@ -354,66 +356,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             commit()
         }
     }
-
-    class RoundedBarChartRenderer(
-        chart: BarDataProvider,
-        animator: ChartAnimator,
-        viewPortHandler: ViewPortHandler
-    ) : BarChartRenderer(chart, animator, viewPortHandler) {
-
-        private val radius = 20f // corner radius in pixels
-
-        override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
-            val trans = mChart.getTransformer(dataSet.axisDependency)
-            mBarBorderPaint.color = dataSet.barBorderColor
-            val drawBorder = dataSet.barBorderWidth > 0f
-
-            mShadowPaint.color = dataSet.barShadowColor
-
-            val phaseX = mAnimator.phaseX
-            val phaseY = mAnimator.phaseY
-
-            val barData = mChart.barData
-            val barWidth = barData.barWidth
-
-            val buffer = mBarBuffers[index]
-            buffer.setPhases(phaseX, phaseY)
-            buffer.setDataSet(index)
-            buffer.setInverted(mChart.isInverted(dataSet.axisDependency))
-            buffer.setBarWidth(barData.barWidth)
-            buffer.feed(dataSet)
-
-            trans.pointValuesToPixel(buffer.buffer)
-
-            for (j in 0 until buffer.size() step 4) {
-                if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue
-                if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
-
-                val left = buffer.buffer[j]
-                val top = buffer.buffer[j + 1]
-                val right = buffer.buffer[j + 2]
-                val bottom = buffer.buffer[j + 3]
-
-                val entryIndex = j / 4
-                if (entryIndex >= dataSet.entryCount) continue
-
-                val isTopSegment = isTopBarSegment(dataSet, entryIndex)
-
-                if (isTopSegment) {
-                    val rectF = RectF(left, top, right, bottom)
-                    c.drawRoundRect(rectF, radius, radius, mRenderPaint)
-                } else {
-                    c.drawRect(left, top, right, bottom, mRenderPaint)
-                }
-            }
-        }
-
-        private fun isTopBarSegment(dataSet: IBarDataSet, index: Int): Boolean {
-            val entry = dataSet.getEntryForIndex(index) as? BarEntry ?: return false
-            val stackedValues = entry.yVals
-            return stackedValues == null // Only draw rounded if it's not part of a stack
-        }
-    }
 }
+
 
 
