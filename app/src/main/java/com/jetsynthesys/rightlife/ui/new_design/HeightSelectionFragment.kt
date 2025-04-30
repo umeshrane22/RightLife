@@ -20,10 +20,8 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.CommonAPICall
-import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.text.DecimalFormat
-import kotlin.math.floor
 
 class HeightSelectionFragment : Fragment() {
 
@@ -37,6 +35,7 @@ class HeightSelectionFragment : Fragment() {
     private lateinit var adapter: RulerAdapterVertical
     private var selectedLabel: String = " feet"
     private val decimalFormat = DecimalFormat("###.##")
+    private lateinit var rulerView: RecyclerView
 
     companion object {
         fun newInstance(pageIndex: Int): HeightSelectionFragment {
@@ -45,6 +44,27 @@ class HeightSelectionFragment : Fragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val gender =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
+        selectedHeight = if (gender == "Male")
+            "5 Ft 8 In"
+        else
+            "5 Ft 4 In"
+
+        selected_number_text!!.text = selectedHeight
+
+        rulerView.post {
+            if (gender == "Male") {
+                rulerView.scrollToPosition(68)
+            } else {
+                rulerView.scrollToPosition(64)
+            }
+        }
+
     }
 
     override fun onCreateView(
@@ -63,7 +83,7 @@ class HeightSelectionFragment : Fragment() {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
 
-        val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
