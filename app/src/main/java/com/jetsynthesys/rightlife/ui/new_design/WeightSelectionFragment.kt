@@ -37,6 +37,7 @@ class WeightSelectionFragment : Fragment() {
     private val numbers = mutableListOf<Float>()
     private lateinit var adapter: RulerAdapter
     private var selectedLabel: String = " kg"
+    private lateinit var rulerView: RecyclerView
 
     companion object {
         fun newInstance(pageIndex: Int): WeightSelectionFragment {
@@ -44,6 +45,21 @@ class WeightSelectionFragment : Fragment() {
             val args = Bundle()
             fragment.arguments = args
             return fragment
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val gender =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
+        selectedWeight = if (gender == "Male")
+            "75 kg"
+        else
+            "55 kg"
+        selected_number_text!!.text = selectedWeight
+
+        rulerView.post {
+            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
         }
     }
 
@@ -66,7 +82,7 @@ class WeightSelectionFragment : Fragment() {
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
         selected_number_text = view.findViewById(R.id.selected_number_text)
-        val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 

@@ -17,7 +17,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/toproundedcornershape"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="30dp"
@@ -43,8 +43,10 @@
                 android:padding="8dp"
                 android:maxLength="2"
                 android:focusable="true"
-                android:focusableInTouchMode="true"/>
-                />
+                android:focusableInTouchMode="true"
+                android:cursorVisible="true"
+                android:textColor="@color/black"/>
+
 
             <TextView
                 android:id="@+id/timesLabel"
