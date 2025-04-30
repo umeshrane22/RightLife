@@ -1,12 +1,10 @@
 package com.jetsynthesys.rightlife.ui.questionnaire
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jetsynthesys.rightlife.BaseActivity
@@ -17,7 +15,6 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireThinkRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,7 +27,6 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityQuestionnaireBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         instance = this
         binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
@@ -94,15 +90,8 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
 
         private lateinit var viewPager: ViewPager2
         private lateinit var questionnairePagerAdapter: QuestionnaireThinkRightPagerAdapter
-        private lateinit var sharedPreferenceManager: SharedPreferenceManager
         private var instance: QuestionnaireThinkRightActivity? = null // Store Activity reference
         val questionnaireAnswerRequest = QuestionnaireAnswerRequest()
-
-        private var appContext: Context? = null
-
-        fun initialize(context: Context) {
-            appContext = context.applicationContext // Use applicationContext to avoid leaks
-        }
 
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
@@ -121,7 +110,7 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     navigateToNextPage()
                 }, 500)
-            }else{
+            } else {
                 instance?.let {
                     DialogUtils.showSuccessDialog(
                         it,
@@ -130,9 +119,9 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
                     )
                 }
             }
-            val apiService = ApiClient.getClient(appContext).create(ApiService::class.java)
+            val apiService = ApiClient.getClient(instance).create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
-                sharedPreferenceManager.accessToken,
+                instance?.sharedPreferenceManager?.accessToken,
                 questionnaireAnswerRequest
             )
 
@@ -142,7 +131,7 @@ class QuestionnaireThinkRightActivity : BaseActivity() {
                     response: Response<CommonResponse>
                 ) {
                     if (response.isSuccessful && response.body() != null) {
-                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1){
+                        if (viewPager.currentItem == questionnairePagerAdapter.itemCount - 1) {
 
                         }
 

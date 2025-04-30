@@ -14,7 +14,6 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
-import com.jetsynthesys.rightlife.ui.new_design.YourInterestActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
 import com.jetsynthesys.rightlife.ui.settings.SupportActivity

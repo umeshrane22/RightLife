@@ -104,7 +104,7 @@ class UserInterestActivity : BaseActivity() {
             val chipGroup = ChipGroup(this@UserInterestActivity).apply {
                 isSingleLine = false
                 chipSpacingHorizontal = 8
-                chipSpacingVertical = 8
+                chipSpacingVertical = 2
             }
 
             userInterest.topics?.forEach { topic ->
@@ -112,6 +112,7 @@ class UserInterestActivity : BaseActivity() {
                     selectedInterests.add(topic)
                 binding.btnSaveInterest.backgroundTintList =
                     if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
+                binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
 
                 val chip = Chip(this).apply {
                     text = topic.topic
@@ -125,7 +126,7 @@ class UserInterestActivity : BaseActivity() {
                     )
                     textSize = 12f
 
-                    val heightInDp = 60 // or whatever height you want
+                    val heightInDp = 50 // or whatever height you want
                     val heightInPx = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         heightInDp.toFloat(),
@@ -174,6 +175,7 @@ class UserInterestActivity : BaseActivity() {
 
                         binding.btnSaveInterest.backgroundTintList =
                             if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected
+                        binding.btnSaveInterest.isEnabled = selectedInterests.size >= 2
                     }
                 }
                 chipGroup.addView(chip)
@@ -186,7 +188,10 @@ class UserInterestActivity : BaseActivity() {
 
     private fun saveUserInterest(saveUserInterestRequest: SaveUserInterestRequest, header: String) {
         Utils.showLoader(this)
-        val call = apiService.saveUserInterest(sharedPreferenceManager.accessToken, saveUserInterestRequest)
+        val call = apiService.saveUserInterest(
+            sharedPreferenceManager.accessToken,
+            saveUserInterestRequest
+        )
 
         call.enqueue(object : Callback<SaveUserInterestResponse> {
             override fun onResponse(
@@ -203,11 +208,13 @@ class UserInterestActivity : BaseActivity() {
                                 this@UserInterestActivity,
                                 ProfileSettingsActivity::class.java
                             ).apply {
-                                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                                 putExtra("start_profile", true)
                             })
                     } else {
-                        val intent = Intent(this@UserInterestActivity, PersonalisationActivity::class.java)
+                        val intent =
+                            Intent(this@UserInterestActivity, PersonalisationActivity::class.java)
                         intent.putExtra("WellnessFocus", header)
                         sharedPreferenceManager.interest = true
                         startActivity(intent)
@@ -223,7 +230,7 @@ class UserInterestActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<SaveUserInterestResponse>, t: Throwable) {
-                 Utils.dismissLoader(this@UserInterestActivity)
+                Utils.dismissLoader(this@UserInterestActivity)
                 handleNoInternetView(t)
             }
 
