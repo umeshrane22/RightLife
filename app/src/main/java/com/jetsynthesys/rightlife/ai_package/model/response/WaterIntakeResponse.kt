@@ -18,18 +18,26 @@ data class WaterIntakeResponse(
     @SerializedName("water_intake_totals")
     val waterIntakeTotals: List<WaterIntakeTotal>,
 
-    @SerializedName("current_avg_water_ml")
-    val currentAvgWaterMl: Double,
+    @SerializedName("total_water")
+    val totalWater: Double,
+
+    @SerializedName("current_avg_water")
+    val currentAvgWater: Double,
 
     @SerializedName("progress_percentage")
     val progressPercentage: Double,
 
     @SerializedName("progress_sign")
     val progressSign: String,
+
     @SerializedName("heading")
     val heading: String,
+
     @SerializedName("description")
     val description: String,
+
+    @SerializedName("todays_water_log")
+    val todaysWaterLog: TodayWaterLog
 )
 
 data class WaterIntakeTotal(
@@ -38,4 +46,14 @@ data class WaterIntakeTotal(
 
     @SerializedName("date")
     val date: String
+)
+data class TodayWaterLog(
+    @SerializedName("total_water")
+    val totalWater: Float,
+
+    @SerializedName("date")
+    val date: String,
+
+    @SerializedName("goal")
+    val goal: Float
 )
