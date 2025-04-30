@@ -596,6 +596,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         withContext(Dispatchers.Main) {
                             weight_description_heading.text = data.heading
                             weight_description_text.text = data.description
+
                             if (data.weightTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
