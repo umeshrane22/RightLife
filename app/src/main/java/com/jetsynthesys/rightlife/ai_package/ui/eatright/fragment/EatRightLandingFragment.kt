@@ -891,6 +891,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             val request = WeightIntakeRequest(
                 userId = userId,
                 source = "apple",
+                type = weightUnit,
                 waterMl = weightValue.toFloat(),
                 date = currentDate
             )

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -52,8 +53,18 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     private lateinit var stripsContainer: FrameLayout
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var backwardImage: ImageView
+    private lateinit var backwardImageHydration: ImageView
+    private lateinit var today_water_intake_layout: CardView
+    private lateinit var log_your_water_intake_filled : LinearLayout
+
     private lateinit var forwardImage: ImageView
     private lateinit var selectedDate: TextView
+    private lateinit var tv_water_quantity: TextView
+    private lateinit var glassWithWaterView: GlassWithWaterView
+
+
+    private lateinit var hydration_description_heading: TextView
+    private lateinit var hydration_description_text: TextView
     private var selectedWeekDate: String = ""
     private var selectedMonthDate: String = ""
     private var selectedHalfYearlyDate: String = ""
@@ -81,29 +92,53 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         selectHeartRateLayout = view.findViewById(R.id.selectHeartRateLayout)
         selectedItemDate = view.findViewById(R.id.selectedItemDate)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        hydration_description_heading = view.findViewById(R.id.hydration_description_heading)
+        hydration_description_text = view.findViewById(R.id.hydration_description_text)
+        log_your_water_intake_filled = view.findViewById(R.id.log_your_water_intake_filled)
+        tv_water_quantity = view.findViewById(R.id.tv_water_quantity)
+        glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
+        today_water_intake_layout = view.findViewById(R.id.today_water_intake_layout)
+        backwardImageHydration = view.findViewById(R.id.backIc)
+        backwardImageHydration.setOnClickListener {
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+
+        }
+
+
+
 
 
         // Show Week data by default
         radioGroup.check(R.id.rbWeek)
         fetchWaterIntakeData("last_weekly")
-        setupLineChart()
 
+
+        //today_water_intake_layout.visibility = View.VISIBLE
+
+        // setupLineChart()
+        log_your_water_intake_filled.setOnClickListener {
+            showWaterIntakeBottomSheet()
+        }
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            today_water_intake_layout.visibility = if (checkedId == R.id.rbWeek) View.VISIBLE else View.GONE
             when (checkedId) {
                 R.id.rbWeek ->{
                     layoutLineChart.visibility =View.VISIBLE
-
                     fetchWaterIntakeData("last_weekly")
+                    today_water_intake_layout.visibility = View.VISIBLE
                 }
                 R.id.rbMonth ->{
                     layoutLineChart.visibility =View.VISIBLE
-
                     fetchWaterIntakeData("last_monthly")
+                    today_water_intake_layout.visibility = View.GONE
+
                 }
                 R.id.rbSixMonths -> {
                     Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
                     layoutLineChart.visibility =View.GONE
+                    today_water_intake_layout.visibility = View.GONE
+
                     //fetchWaterIntakeData("last_six_months")
                 }
             }
@@ -214,6 +249,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
             navigateToFragment(HomeBottomTabFragment(), "landingFragment")
         }
     }
+
     private fun fetchWaterIntakeData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -271,6 +307,12 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                         }
 
                         withContext(Dispatchers.Main) {
+                            tv_water_quantity.text =data.todaysWaterLog.totalWater.toString()
+                            val waterIntake = data.todaysWaterLog.totalWater.toFloat()
+                            val waterGoal = data.todaysWaterLog.goal.toFloat()
+                            glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
+                            hydration_description_heading.text = data.heading
+                            hydration_description_text.text =data.description
                             if (data.waterIntakeTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
@@ -534,114 +576,134 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         lineChart.invalidate()
     }
 
-    private fun processWeeklyData(data: WaterIntakeResponse, currentDate: String): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val date = dateFormat.parse(currentDate)
-        calendar.time = date!!
-        calendar.add(Calendar.DAY_OF_YEAR, -6)
+    private suspend fun processWeeklyData(data: WaterIntakeResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+        return withContext(Dispatchers.Main) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val date = dateFormat.parse(currentDate)
+            calendar.time = date!!
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
 
-        val waterMap = mutableMapOf<String, Float>()
-        val labels = mutableListOf<String>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+            val waterMap = mutableMapOf<String, Float>()
+            val labels = mutableListOf<String>()
+            val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
 
-        repeat(7) {
-            val dateStr = dateFormat.format(calendar.time)
-            waterMap[dateStr] = 0f
-            labels.add(dayFormat.format(calendar.time))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        data.waterIntakeTotals.forEach { intake ->
-            val date = dateFormat.parse(intake.date)
-            if (date != null) {
-                val dayKey = dateFormat.format(date)
-                waterMap[dayKey] = intake.waterMl.toFloat()
+            repeat(7) {
+                val dateStr = dateFormat.format(calendar.time)
+                waterMap[dateStr] = 0f
+                labels.add(dayFormat.format(calendar.time))
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
-        }
 
-        val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+            data.waterIntakeTotals.forEach { intake ->
+                val date = dateFormat.parse(intake.date)
+                if (date != null) {
+                    val dayKey = dateFormat.format(date)
+                    waterMap[dayKey] = intake.waterMl.toFloat()
+                }
+            }
+
+            val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Pair(entries, labels)
+        }
     }
 
-    private fun processMonthlyData(data: WaterIntakeResponse, currentDate: String): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val date = dateFormat.parse(currentDate)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        calendar.set(year, month, 1)
+    private suspend fun processMonthlyData(data: WaterIntakeResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+        return withContext(Dispatchers.Main) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val date = dateFormat.parse(currentDate)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            calendar.set(year, month, 1)
 
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val waterMap = mutableMapOf<String, Float>()
+            val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val waterMap = mutableMapOf<String, Float>()
 
-        // Initialize water map for all days in the month
-        repeat(daysInMonth) {
-            val dateStr = dateFormat.format(calendar.time)
-            waterMap[dateStr] = 0f
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        // Populate water intake data
-        data.waterIntakeTotals.forEach { intake ->
-            val date = dateFormat.parse(intake.date)
-            if (date != null) {
-                val dayKey = dateFormat.format(date)
-                waterMap[dayKey] = intake.waterMl.toFloat()
+            // Initialize water map for all days in the month
+            repeat(daysInMonth) {
+                val dateStr = dateFormat.format(calendar.time)
+                waterMap[dateStr] = 0f
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
-        }
 
-        // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
-        val weeklyWater = mutableListOf<Float>()
-        val labels = mutableListOf<String>()
-        var weekIndex = 0
-        var weeklySum = 0f
-        var dayCount = 0
-
-        waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
-            weeklySum += entry.value
-            dayCount++
-
-            when (index + 1) {
-                7 -> {
-                    weeklyWater.add(weeklySum / dayCount) // Average for the week
-                    labels.add("1-7")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                14 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("8-14")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                21 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("15-21")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                28 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("22-28")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                daysInMonth -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("29-${daysInMonth}")
+            // Populate water intake data
+            data.waterIntakeTotals.forEach { intake ->
+                val date = dateFormat.parse(intake.date)
+                if (date != null) {
+                    val dayKey = dateFormat.format(date)
+                    waterMap[dayKey] = intake.waterMl.toFloat()
                 }
             }
-        }
 
-        // Create entries for the chart
-        val entries = weeklyWater.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+            // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
+            val weeklyWater = mutableListOf<Float>()
+            val labels = mutableListOf<String>()
+            var weekIndex = 0
+            var weeklySum = 0f
+            var dayCount = 0
+
+            waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
+                weeklySum += entry.value
+                dayCount++
+
+                when (index + 1) {
+                    7 -> {
+                        weeklyWater.add(weeklySum / dayCount) // Average for the week
+                        labels.add("1-7")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    14 -> {
+                        weeklyWater.add(weeklySum / dayCount)
+                        labels.add("8-14")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    21 -> {
+                        weeklyWater.add(weeklySum / dayCount)
+                        labels.add("15-21")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    28 -> {
+                        weeklyWater.add(weeklySum / dayCount)
+                        labels.add("22-28")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    daysInMonth -> {
+                        weeklyWater.add(weeklySum / dayCount)
+                        labels.add("29-$daysInMonth")
+                    }
+                }
+            }
+
+            // Create entries for the chart
+            val entries = weeklyWater.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Pair(entries, labels)
+        }
+    }
+    private fun showWaterIntakeBottomSheet() {
+        val waterIntakeBottomSheet = WaterIntakeBottomSheet()
+        waterIntakeBottomSheet.isCancelable = false
+        waterIntakeBottomSheet.listener = object : OnWaterIntakeConfirmedListener {
+            override fun onWaterIntakeConfirmed(amount: Int) {
+                // 👇 Use the amount here
+                //Toast.makeText(requireContext(), "Water Intake: $amount ml", Toast.LENGTH_SHORT).show()
+                /*tv_water_quantity.text = amount.toString()
+                val waterIntake = amount.toFloat()
+                val waterGoal = 3000f
+                glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)*/
+                // You can now call API or update UI etc.
+            }
+        }
+        waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
     }
 
     private fun processSixMonthsData(data: WaterIntakeResponse, currentDate: String): Pair<List<Entry>, List<String>> {

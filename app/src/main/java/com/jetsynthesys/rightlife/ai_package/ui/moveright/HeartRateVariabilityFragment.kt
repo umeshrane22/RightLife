@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -36,6 +37,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
     private lateinit var lineChart: LineChart
     private lateinit var radioGroup: RadioGroup
+    private lateinit var heart_rate_variability_back_image:ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,7 +45,10 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
         lineChart = view.findViewById(R.id.heartRateChart)
         radioGroup = view.findViewById(R.id.tabGroup)
-
+        heart_rate_variability_back_image = view.findViewById(R.id.heart_rate_variability_back_image)
+        heart_rate_variability_back_image.setOnClickListener {
+            navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
+        }
         // Show Week data by default
         updateChart(getWeekData(), getWeekLabels())
         fetchHeartRateVariability("last_weekly") // Fetch data on load

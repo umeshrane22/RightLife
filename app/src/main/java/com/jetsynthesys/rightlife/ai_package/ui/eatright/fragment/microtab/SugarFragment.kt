@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -17,6 +18,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -79,6 +81,8 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : TextView
+    private lateinit var sugar_description_heading : TextView
+    private lateinit var sugar_description_text : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
@@ -93,6 +97,7 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
         super.onActivityCreated(savedInstanceState)
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -113,6 +118,8 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        sugar_description_heading = view.findViewById(R.id.sugar_description_heading)
+        sugar_description_text = view.findViewById(R.id.sugar_description_text)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -329,70 +336,94 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
     }
 
     /** Fetch and update chart with API data */
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun fetchActiveCalories(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                var selectedDate : String
+                var selectedDate: String
 
-                if (period.contentEquals("last_weekly")){
-                    if (selectedWeekDate.contentEquals("")){
+                when (period) {
+                    "last_weekly" -> {
+                        if (selectedWeekDate.isEmpty()) {
+                            selectedDate = currentDateTime.format(formatter)
+                            selectedWeekDate = selectedDate
+                        } else {
+                            selectedDate = selectedWeekDate
+                        }
+                        setSelectedDate(selectedWeekDate)
+                    }
+                    "last_monthly" -> {
+                        if (selectedMonthDate.isEmpty()) {
+                            selectedDate = currentDateTime.format(formatter)
+                            val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+                            selectedDate = firstDateOfMonth
+                            selectedMonthDate = firstDateOfMonth
+                        } else {
+                            val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                            selectedDate = firstDateOfMonth
+                        }
+                        setSelectedDateMonth(selectedMonthDate, "Month")
+                    }
+                    "last_six_months" -> {
+                        if (selectedHalfYearlyDate.isEmpty()) {
+                            selectedDate = currentDateTime.format(formatter)
+                            val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+                            selectedDate = firstDateOfMonth
+                            selectedHalfYearlyDate = firstDateOfMonth
+                        } else {
+                            val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1) // Fixed to use selectedHalfYearlyDate
+                            selectedDate = firstDateOfMonth
+                        }
+                        setSelectedDateMonth(selectedHalfYearlyDate, "Year")
+                    }
+                    else -> {
                         selectedDate = currentDateTime.format(formatter)
                         selectedWeekDate = selectedDate
-                    }else{
-                        selectedDate = selectedWeekDate
+                        setSelectedDate(selectedWeekDate)
                     }
-                    setSelectedDate(selectedWeekDate)
-                }else if (period.contentEquals("last_monthly")){
-                    if (selectedMonthDate.contentEquals("")){
-                        selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedMonthDate = firstDateOfMonth
-                    }else{
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
-                    }
-                    setSelectedDateMonth(selectedMonthDate, "Month")
-                }else{
-                    if (selectedHalfYearlyDate.contentEquals("")){
-                        selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedHalfYearlyDate = firstDateOfMonth
-                    }else{
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
-                    }
-                    setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
 
                 val response = ApiClient.apiServiceFastApi.getConsumedSugar(
-                    userId = userId, period = period, date = selectedDate)
+                    userId = userId,
+                    period = period,
+                    date = selectedDate
+                )
+
                 if (response.isSuccessful) {
                     val activeCaloriesResponse = response.body()
-                    if (activeCaloriesResponse?.statusCode == 200){
-                        activeCaloriesResponse.let { data ->
+                    if (activeCaloriesResponse?.statusCode == 200) {
+                        activeCaloriesResponse?.let { data ->
                             val (entries, labels, labelsDate) = when (period) {
                                 "last_weekly" -> processWeeklyData(data, selectedDate)
                                 "last_monthly" -> processMonthlyData(data, selectedDate)
-                                "last_six_months" -> processSixMonthsData(data, selectedDate )
+                                "last_six_months" -> processSixMonthsData(data, selectedDate)
                                 else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate()) // Fallback
                             }
-                            val totalCalories = data.consumedSugarTotals.sumOf { it.sugarConsumed ?: 0.0 }
                             withContext(Dispatchers.Main) {
-                                if (data.consumedSugarTotals.size > 31){
+                                sugar_description_heading.text = data.heading ?: "No Heading Available"
+                                sugar_description_text.text = data.description ?: "No Description Available"
+                                val totalCalories = data.consumedSugarTotals?.sumOf { it.sugarConsumed ?: 0.0 } ?: 0.0
+                                if (data.consumedSugarTotals?.size ?: 0 > 31) {
                                     barChart.visibility = View.GONE
                                     layoutLineChart.visibility = View.VISIBLE
                                     lineChartForSixMonths()
-                                }else{
+                                } else {
                                     barChart.visibility = View.VISIBLE
                                     layoutLineChart.visibility = View.GONE
                                     updateChart(entries, labels, labelsDate)
                                 }
                             }
+                        } ?: run {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(requireContext(), "No data received from API", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(requireContext(), "Invalid response status: ${activeCaloriesResponse?.statusCode}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {
@@ -403,6 +434,7 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("FetchActiveCalories", "Exception: ${e.message}", e)
                 }
             }
         }
@@ -500,15 +532,20 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedSugarTotals.isNotEmpty()){
+        if (activeCaloriesResponse.consumedSugarTotals.isNotEmpty()) {
             activeCaloriesResponse.consumedSugarTotals.forEach { calorie ->
-                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-                if (startDate != null) {
-                    val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.sugarConsumed.toFloat() ?: 0f)
+                val parsedDate = calorie.date.let { dateFormat.parse(it) }
+                if (parsedDate != null) {
+                    val dayKey = dateFormat.format(parsedDate)
+                    if (calorieMap.containsKey(dayKey)) {
+                        val existing = calorieMap[dayKey] ?: 0f
+                        val newValue = calorie.sugarConsumed.toFloat() ?: 0f
+                        calorieMap[dayKey] = existing + newValue
+                    }
                 }
             }
         }
+
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)

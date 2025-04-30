@@ -117,6 +117,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         healthConnectSyncButton.setOnClickListener {
+
             // AddWorkoutSearchFragment navigation (commented as per original)
         }
 

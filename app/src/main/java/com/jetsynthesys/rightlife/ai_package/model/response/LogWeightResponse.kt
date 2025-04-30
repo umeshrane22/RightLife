@@ -7,6 +7,7 @@ data class LogWeightResponse(
     @SerializedName("source") val source: String,
     @SerializedName("weight") val waterMl: Double,
     @SerializedName("date") val date: String,
+    @SerializedName("type") val type: String,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String
 )

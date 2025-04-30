@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -19,6 +21,10 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -28,18 +34,27 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentWeightTrackerBinding
+import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,6 +62,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.floor
 
 class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
@@ -55,14 +71,23 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private lateinit var stripsContainer: FrameLayout
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var backwardImage: ImageView
+    private lateinit var weight_tracker_layout: CardView
     private lateinit var forwardImage: ImageView
     private lateinit var selectedDate: TextView
+    private lateinit var weight_description_heading: TextView
+    private lateinit var weight_description_text: TextView
     private var selectedWeekDate: String = ""
     private var selectedMonthDate: String = ""
     private var selectedHalfYearlyDate: String = ""
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
+    private lateinit var loss_new_weight_filled : LinearLayout
+    private lateinit var logWeightRulerAdapter: LogWeightRulerAdapter
+    private val numbers = mutableListOf<Float>()
+    private lateinit var weightIntake: TextView
+    private lateinit var weightIntakeUnit: TextView
+
 
     private val viewModel: HydrationViewModelNew by viewModels()
 
@@ -90,15 +115,29 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         selectHeartRateLayout = view.findViewById(R.id.selectHeartRateLayout)
         selectedItemDate = view.findViewById(R.id.selectedItemDate)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        weight_description_heading = view.findViewById(R.id.weight_description_heading)
+        weight_description_text = view.findViewById(R.id.weight_description_text)
+        weight_tracker_layout = view.findViewById(R.id.weight_tracker_layout)
+        loss_new_weight_filled = view.findViewById(R.id.loss_new_weight_filled)
+        weightIntake = view.findViewById(R.id.weightIntake)
+        weightIntakeUnit = view.findViewById(R.id.weightIntakeUnit)
+
+
+
 
 
         // Show Week data by default
         radioGroup.check(R.id.rbMonth)
         fetchWeightData("last_monthly")
         setupLineChart()
+        loss_new_weight_filled.setOnClickListener {
+            showLogWeightBottomSheet()
+        }
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            weight_tracker_layout.visibility = if (checkedId == R.id.rbWeek) View.VISIBLE else View.GONE
+
             when (checkedId) {
                 R.id.rbWeek ->{
                     layoutLineChart.visibility =View.VISIBLE
@@ -313,6 +352,191 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             }
         }
     }*/
+   private fun showLogWeightBottomSheet() {
+       // Create and configure BottomSheetDialog
+       val bottomSheetDialog = BottomSheetDialog(requireActivity())
+       var selectedLabel = " kg"
+       var selectedWeight = ""//binding.tvWeight.text.toString()
+       if (selectedWeight.isEmpty()) {
+           selectedWeight = "50 kg"
+       } else {
+           val w = selectedWeight.split(" ")
+           selectedLabel = " ${w[1]}"
+       }
+       // Inflate the BottomSheet layout
+       val dialogBinding = BottomsheetLogWeightSelectionBinding.inflate(layoutInflater)
+       val bottomSheetView = dialogBinding.root
+       bottomSheetDialog.setContentView(bottomSheetView)
+       dialogBinding.selectedNumberText.text = selectedWeight
+       if (selectedLabel == " lbs") {
+           dialogBinding.switchWeightMetric.isChecked = true
+       }
+
+       val thumbColors = ColorStateList(
+           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+           intArrayOf(Color.parseColor("#03B27B"), Color.parseColor("#03B27B"))
+       )
+
+       val trackColors = ColorStateList(
+           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+           intArrayOf(Color.parseColor("#F2F2F2"), Color.parseColor("#F2F2F2"))
+       )
+
+       dialogBinding.switchWeightMetric.thumbTintList = thumbColors
+       dialogBinding.switchWeightMetric.trackTintList = trackColors
+       dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
+           val w = selectedWeight.split(" ")
+           if (isChecked) {
+               selectedLabel = " lbs"
+               selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+               setLbsValue()
+           } else {
+               selectedLabel = " kgs"
+               selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+               setKgsValue()
+           }
+           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+           selectedWeight += selectedLabel
+           dialogBinding.selectedNumberText.text = selectedWeight
+       }
+
+       val layoutManager =
+           LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+       dialogBinding.rulerView.layoutManager = layoutManager
+       // Generate numbers with increments of 0.1
+
+       for (i in 0..1000) {
+           numbers.add(i / 10f) // Increment by 0.1
+       }
+
+       logWeightRulerAdapter = LogWeightRulerAdapter(numbers) { number ->
+           // Handle the selected number
+       }
+       dialogBinding.rulerView.adapter = logWeightRulerAdapter
+
+       // Center number with snap alignment
+       val snapHelper: SnapHelper = LinearSnapHelper()
+       snapHelper.attachToRecyclerView(dialogBinding.rulerView)
+
+       dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+           override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+               super.onScrollStateChanged(recyclerView, newState)
+               if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                   // Get the currently snapped position
+                   val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
+                   if (snappedView != null) {
+                       val position = recyclerView.layoutManager!!.getPosition(snappedView)
+                       val snappedNumber = numbers[position]
+                       //selected_number_text.setText("$snappedNumber Kg")
+                       dialogBinding.selectedNumberText.text = "$snappedNumber $selectedLabel"
+                       selectedWeight = dialogBinding.selectedNumberText.text.toString()
+                   }
+               }
+           }
+       })
+
+       dialogBinding.rlRulerContainer.post {
+           // Get the width of the parent LinearLayout
+           val parentWidth: Int = dialogBinding.rlRulerContainer.width
+           // Calculate horizontal padding (half of parent width)
+           val paddingHorizontal = parentWidth / 2
+           // Set horizontal padding programmatically
+           dialogBinding.rulerView.setPadding(
+               paddingHorizontal,
+               dialogBinding.rulerView.paddingTop,
+               paddingHorizontal,
+               dialogBinding.rulerView.paddingBottom
+           )
+       }
+
+       // Scroll to the center after layout is measured
+       dialogBinding.rulerView.post {
+           // Calculate the center position
+           val itemCount =
+               if (dialogBinding.rulerView.adapter != null) dialogBinding.rulerView.adapter!!.itemCount else 0
+           val centerPosition = itemCount / 2
+           // Scroll to the center position
+           layoutManager.scrollToPositionWithOffset(centerPosition, 0)
+       }
+
+       dialogBinding.btnConfirm.setOnClickListener {
+           // bottomSheetDialog.dismiss()
+           dialogBinding.rulerView.adapter = null
+           val fullWeight = selectedWeight.trim()
+           val parts = fullWeight.split(Regex("\\s+"))
+           val weightValue = parts[0]   // "50.7"
+           val weightUnit = parts.getOrElse(1) { "kg" }
+          /* weightIntake.text = weightValue
+           weightIntakeUnit.text = weightUnit*/
+           val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+           val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+           val request = WeightIntakeRequest(
+               userId = userId,
+               source = "apple",
+               type = weightUnit,
+               waterMl = weightValue.toFloat(),
+               date = currentDate
+           )
+           val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWeightIntake(request)
+           call.enqueue(object : Callback<LogWeightResponse> {
+               override fun onResponse(
+                   call: Call<LogWeightResponse>,
+                   response: Response<LogWeightResponse>
+               ) {
+                   if (response.isSuccessful) {
+                       val responseBody = response.body()
+                       bottomSheetDialog.dismiss()
+                       dialogBinding.rulerView.adapter = null
+                       val fullWeight = selectedWeight.trim()
+                       val parts = fullWeight.split(Regex("\\s+"))
+                       val weightValue = parts[0]   // "50.7"
+                       val weightUnit = parts.getOrElse(1) { "kg" }
+                       weightIntake.text = response.body()?.waterMl.toString()
+                       weightIntakeUnit.text = response.body()?.type.toString()
+                       Log.d("LogWaterAPI", "Success: $responseBody")
+                       // You can do something with responseBody here
+                   } else {
+                       Log.e(
+                           "LogWaterAPI",
+                           "Error: ${response.code()} - ${response.errorBody()?.string()}"
+                       )
+                   }
+               }
+               override fun onFailure(call: Call<LogWeightResponse>, t: Throwable) {
+                   Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
+               }
+           })
+           //   binding.tvWeight.text = selectedWeight
+       }
+
+       dialogBinding.closeIV.setOnClickListener {
+           bottomSheetDialog.dismiss()
+           dialogBinding.rulerView.adapter = null
+       }
+       bottomSheetDialog.show()
+       fun logUserWaterIntake(
+           userId: String,
+           source: String,
+           waterMl: Int,
+           date: String
+       ) {
+       }
+   }
+    private fun setKgsValue() {
+        numbers.clear()
+        for (i in 0..1000) {
+            numbers.add(i / 10f) // Increment by 0.1
+        }
+        logWeightRulerAdapter.notifyDataSetChanged()
+    }
+
+    private fun setLbsValue() {
+        numbers.clear()
+        for (i in 0..2204) {
+            numbers.add(i / 10f)
+        }
+        logWeightRulerAdapter.notifyDataSetChanged()
+    }
     private fun fetchWeightData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -370,6 +594,8 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         }
 
                         withContext(Dispatchers.Main) {
+                            weight_description_heading.text = data.heading
+                            weight_description_text.text = data.description
                             if (data.weightTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
@@ -633,114 +859,118 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         lineChart.invalidate()
     }
 
-    private fun processWeeklyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val date = dateFormat.parse(currentDate)
-        calendar.time = date!!
-        calendar.add(Calendar.DAY_OF_YEAR, -6)
+    private suspend fun processWeeklyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+        return withContext(Dispatchers.Main) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val date = dateFormat.parse(currentDate)
+            calendar.time = date!!
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
 
-        val waterMap = mutableMapOf<String, Float>()
-        val labels = mutableListOf<String>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+            val waterMap = mutableMapOf<String, Float>()
+            val labels = mutableListOf<String>()
+            val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
 
-        repeat(7) {
-            val dateStr = dateFormat.format(calendar.time)
-            waterMap[dateStr] = 0f
-            labels.add(dayFormat.format(calendar.time))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        data.weightTotals.forEach { intake ->
-            val date = dateFormat.parse(intake.date)
-            if (date != null) {
-                val dayKey = dateFormat.format(date)
-                waterMap[dayKey] = intake.weight.toFloat()
+            repeat(7) {
+                val dateStr = dateFormat.format(calendar.time)
+                waterMap[dateStr] = 0f
+                labels.add(dayFormat.format(calendar.time))
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
-        }
 
-        val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+            data.weightTotals.forEach { intake ->
+                val date = dateFormat.parse(intake.date)
+                if (date != null) {
+                    val dayKey = dateFormat.format(date)
+                    waterMap[dayKey] = intake.weight.toFloat()
+                }
+            }
+
+            val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Pair(entries, labels)
+        }
     }
 
-    private fun processMonthlyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val date = dateFormat.parse(currentDate)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        calendar.set(year, month, 1)
+    private suspend fun processMonthlyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+        return withContext(Dispatchers.Main) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val date = dateFormat.parse(currentDate)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            calendar.set(year, month, 1)
 
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val waterMap = mutableMapOf<String, Float>()
+            val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val waterMap = mutableMapOf<String, Float>()
 
-        // Initialize water map for all days in the month
-        repeat(daysInMonth) {
-            val dateStr = dateFormat.format(calendar.time)
-            waterMap[dateStr] = 0f
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        // Populate water intake data
-        data.weightTotals.forEach { intake ->
-            val date = dateFormat.parse(intake.date)
-            if (date != null) {
-                val dayKey = dateFormat.format(date)
-                waterMap[dayKey] = intake.weight.toFloat()
+            // Initialize water map for all days in the month
+            repeat(daysInMonth) {
+                val dateStr = dateFormat.format(calendar.time)
+                waterMap[dateStr] = 0f
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
-        }
 
-        // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
-        val weeklyWater = mutableListOf<Float>()
-        val labels = mutableListOf<String>()
-        var weekIndex = 0
-        var weeklySum = 0f
-        var dayCount = 0
-
-        waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
-            weeklySum += entry.value
-            dayCount++
-
-            when (index + 1) {
-                7 -> {
-                    weeklyWater.add(weeklySum / dayCount) // Average for the week
-                    labels.add("1-7")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                14 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("8-14")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                21 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("15-21")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                28 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("22-28")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                daysInMonth -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("29-${daysInMonth}")
+            // Populate weight data
+            data.weightTotals.forEach { intake ->
+                val date = dateFormat.parse(intake.date)
+                if (date != null) {
+                    val dayKey = dateFormat.format(date)
+                    waterMap[dayKey] = intake.weight.toFloat()
                 }
             }
-        }
 
-        // Create entries for the chart
-        val entries = weeklyWater.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+            // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
+            val weeklyWeight = mutableListOf<Float>()
+            val labels = mutableListOf<String>()
+            var weekIndex = 0
+            var weeklySum = 0f
+            var dayCount = 0
+
+            waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
+                weeklySum += entry.value
+                dayCount++
+
+                when (index + 1) {
+                    7 -> {
+                        weeklyWeight.add(weeklySum / dayCount) // Average for the week
+                        labels.add("1-7")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    14 -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("8-14")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    21 -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("15-21")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    28 -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("22-28")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    daysInMonth -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("29-$daysInMonth")
+                    }
+                }
+            }
+
+            // Create entries for the chart
+            val entries = weeklyWeight.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Pair(entries, labels)
+        }
     }
 
     private fun processSixMonthsData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {

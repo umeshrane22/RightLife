@@ -28,7 +28,11 @@ data class ConsumedIronResponse(
     val progressPercentage: Double,
 
     @SerializedName("progress_sign")
-    val progressSign: String
+    val progressSign: String,
+    @SerializedName("heading")
+    val heading: String,
+    @SerializedName("description")
+    val description: String,
 )
 
 data class ConsumedIronTotal(

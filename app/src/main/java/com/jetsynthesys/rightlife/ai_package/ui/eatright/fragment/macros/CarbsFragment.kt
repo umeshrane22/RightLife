@@ -61,6 +61,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
+    private lateinit var carbs_description_heading : TextView
+    private lateinit var carbs_description_text : TextView
     private lateinit var averageBurnCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
@@ -100,6 +102,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        carbs_description_heading = view.findViewById(R.id.carbs_description_heading)
+        carbs_description_text = view.findViewById(R.id.carbs_description_text)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -107,6 +111,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        fetchActiveCalories("last_weekly")
         /* fetchActiveCalories("last_weekly")
          setupLineChart()*/
 
@@ -379,6 +384,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
 
                         // Ensure all UI updates are on the main thread
                         withContext(Dispatchers.Main) {
+                            carbs_description_heading.text = data.heading
+                            carbs_description_text.text = data.description
                             if (data.consumedCarbsTotals.size > 31) {
                                 barChart.visibility = View.GONE
                                 layoutLineChart.visibility = View.VISIBLE
@@ -495,15 +502,20 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedCarbsTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedCarbsTotals.forEach { calorie ->
-                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-                if (startDate != null) {
-                    val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.carbsConsumed.toFloat() ?: 0f)
+        if (activeCaloriesResponse.consumedCarbsTotals.isNotEmpty()) {
+            activeCaloriesResponse.consumedCarbsTotals.forEach { carb ->
+                val parsedDate = carb.date.let { dateFormat.parse(it) }
+                if (parsedDate != null) {
+                    val dayKey = dateFormat.format(parsedDate)
+                    if (calorieMap.containsKey(dayKey)) {
+                        val existing = calorieMap[dayKey] ?: 0f
+                        val consumed = carb.carbsConsumed.toFloat() ?: 0f
+                        calorieMap[dayKey] = existing + consumed
+                    }
                 }
             }
         }
+
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)

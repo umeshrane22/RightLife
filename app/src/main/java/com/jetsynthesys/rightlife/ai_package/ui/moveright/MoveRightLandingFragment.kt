@@ -162,10 +162,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
 
         workoutImageIcon.setOnClickListener {
-            navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+
         }
 
         layoutAddWorkout.setOnClickListener {
+            navigateToFragment(YourActivityFragment(), "YourActivityFragment")
             // navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
         }
 

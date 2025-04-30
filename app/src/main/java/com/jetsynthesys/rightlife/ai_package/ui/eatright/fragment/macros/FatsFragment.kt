@@ -73,6 +73,8 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
     private var selectedMonthDate : String = ""
     private var selectedHalfYearlyDate : String = ""
     private lateinit var selectedDate : TextView
+    private lateinit var fats_description_heading : TextView
+    private lateinit var fats_description_text : TextView
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
@@ -115,6 +117,8 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        fats_description_heading = view.findViewById(R.id.fats_description_heading)
+        fats_description_text = view.findViewById(R.id.fats_description_text)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -382,8 +386,11 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
                                 "last_six_months" -> processSixMonthsData(data, selectedDate )
                                 else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate()) // Fallback
                             }
+
                             val totalCalories = data.consumedFatTotals.sumOf { it.fatConsumed ?: 0.0 }
                             withContext(Dispatchers.Main) {
+                                fats_description_heading.text = data.heading
+                                fats_description_text.text = data.description
                                 if (data.consumedFatTotals.size > 31){
                                     barChart.visibility = View.GONE
                                     layoutLineChart.visibility = View.VISIBLE
@@ -500,15 +507,20 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedFatTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedFatTotals.forEach { calorie ->
-                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-                if (startDate != null) {
-                    val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.fatConsumed.toFloat() ?: 0f)
+        if (activeCaloriesResponse.consumedFatTotals.isNotEmpty()) {
+            activeCaloriesResponse.consumedFatTotals.forEach { fat ->
+                val parsedDate = fat.date.let { dateFormat.parse(it) }
+                if (parsedDate != null) {
+                    val dayKey = dateFormat.format(parsedDate)
+                    if (calorieMap.containsKey(dayKey)) {
+                        val existing = calorieMap[dayKey] ?: 0f
+                        val consumed = fat.fatConsumed.toFloat() ?: 0f
+                        calorieMap[dayKey] = existing + consumed
+                    }
                 }
             }
         }
+
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)

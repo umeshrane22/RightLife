@@ -72,6 +72,8 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
     private var selectedMonthDate : String = ""
     private var selectedHalfYearlyDate : String = ""
     private lateinit var selectedDate : TextView
+    private lateinit var protein_description_heading : TextView
+    private lateinit var protein_description_text : TextView
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
@@ -111,6 +113,8 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        protein_description_heading = view.findViewById(R.id.protein_description_heading)
+        protein_description_text = view.findViewById(R.id.protein_description_text)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -381,6 +385,8 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
                             }
                             val totalCalories = data.consumedProteinTotals.sumOf { it.proteinConsumed ?: 0.0 }
                             withContext(Dispatchers.Main) {
+                                protein_description_heading.text = data.heading
+                                protein_description_text.text = data.description
                                 if (data.consumedProteinTotals.size > 31){
                                     barChart.visibility = View.GONE
                                     layoutLineChart.visibility = View.VISIBLE
@@ -497,15 +503,20 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedProteinTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedProteinTotals.forEach { calorie ->
-                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-                if (startDate != null) {
-                    val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.proteinConsumed.toFloat() ?: 0f)
+        if (activeCaloriesResponse.consumedProteinTotals.isNotEmpty()) {
+            activeCaloriesResponse.consumedProteinTotals.forEach { protein ->
+                val parsedDate = protein.date.let { dateFormat.parse(it) }
+                if (parsedDate != null) {
+                    val dayKey = dateFormat.format(parsedDate)
+                    if (calorieMap.containsKey(dayKey)) {
+                        val existing = calorieMap[dayKey] ?: 0f
+                        val consumed = protein.proteinConsumed.toFloat() ?: 0f
+                        calorieMap[dayKey] = existing + consumed
+                    }
                 }
             }
         }
+
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
