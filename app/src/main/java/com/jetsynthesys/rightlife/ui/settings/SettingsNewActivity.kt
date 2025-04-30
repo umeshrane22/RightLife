@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -207,7 +208,7 @@ class SettingsNewActivity : BaseActivity() {
         editor.apply()
         SharedPreferenceManager.getInstance(this).clearData()
 
-        val intent = Intent(this, ImageSliderActivity::class.java)
+        val intent = Intent(this, DataControlActivity::class.java)
         startActivity(intent)
 
         finishAffinity()

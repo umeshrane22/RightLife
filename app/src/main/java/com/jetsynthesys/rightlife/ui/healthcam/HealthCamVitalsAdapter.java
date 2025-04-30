@@ -60,6 +60,7 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
             Intent intent = new Intent(context, FacialScanReportDetailsActivity.class);
             intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
             intent.putExtra("UNIFIED_LIST", new ArrayList<>(unifiedList)); // Serializable list
+            intent.putExtra("position", holder.getBindingAdapterPosition());
             context.startActivity(intent);
         });
         Glide.with(context)

@@ -19,9 +19,9 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 class EnergyLevelFragment : Fragment() {
     private lateinit var energyCountTexts: Array<TextView>
     private lateinit var energyValues: Array<String>
-    private var morningEneryValue: String = "Low"
-    private var afternoonEneryValue: String = "Low"
-    private var eveningEneryValue: String = "Low"
+    private var morningEneryValue: String = "Medium"
+    private var afternoonEneryValue: String = "Medium"
+    private var eveningEneryValue: String = "Medium"
 
     private var _binding: FragmentEnergyLevelBinding? = null
     private val binding get() = _binding!!

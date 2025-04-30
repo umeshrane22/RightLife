@@ -41,7 +41,10 @@
                 android:gravity="center"
                 android:textSize="16sp"
                 android:padding="8dp"
-                android:maxLength="2"/>
+                android:maxLength="2"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
+                />
 
             <TextView
                 android:id="@+id/timesLabel"

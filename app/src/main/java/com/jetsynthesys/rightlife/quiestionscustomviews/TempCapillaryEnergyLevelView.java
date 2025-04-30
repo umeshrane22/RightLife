@@ -36,7 +36,7 @@ public class TempCapillaryEnergyLevelView extends View {
         backgroundPaint.setStyle(Paint.Style.FILL);
 
         fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        //fillPaint.setColor(Color.parseColor("#E35D5B")); // Default fill color
+        fillPaint.setColor(Color.parseColor("#66B12D")); // Default fill color
         fillPaint.setStyle(Paint.Style.FILL);
 
         markerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -72,7 +72,7 @@ public class TempCapillaryEnergyLevelView extends View {
         for (int i = 0; i < markerCount; i++) {
             markerPositions[i] = h - (i * h / (markerCount - 1));
         }
-        thumbY = markerPositions[0];
+        thumbY = markerPositions[2];
     }
 
     @Override
