@@ -33,7 +33,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         // Store activity reference
         initialize(this)
         instance = this
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+
         binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
         viewPager = binding.viewPagerQuestionnaire
@@ -136,7 +136,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
 
             val apiService = ApiClient.getClient(appContext).create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
-                sharedPreferenceManager.accessToken,
+                instance?.sharedPreferenceManager?.accessToken ?: "",
                 questionnaireAnswerRequest
             )
 

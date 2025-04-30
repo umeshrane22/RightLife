@@ -1,9 +1,11 @@
 package com.jetsynthesys.rightlife.ui.questionnaire.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.databinding.FragmentExercisePreferenceBinding
@@ -46,6 +48,11 @@ class ExercisePreferenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.inputTimes.requestFocus()
+
+        // Show keyboard explicitly
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
         binding.btnAdd.setOnClickListener {
             val times = binding.inputTimes.text.toString()
