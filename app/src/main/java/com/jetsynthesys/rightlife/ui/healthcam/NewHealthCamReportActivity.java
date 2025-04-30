@@ -33,6 +33,8 @@ import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
+import com.jetsynthesys.rightlife.ui.settings.SubscriptionPlansActivity;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
@@ -285,7 +287,14 @@ public class NewHealthCamReportActivity extends HealthCamBasicDetailsActivity {
         } else {
             layout.buttonText.setText("Scan Again");
         }
-        layout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class)));
+        layout.btnScanAgain.setOnClickListener(v -> {
+            if (layout.buttonText.getText().toString().equalsIgnoreCase("Scan Again @ 99")) {
+                startActivity(new Intent(NewHealthCamReportActivity.this, SubscriptionHistoryActivity.class));
+            } else {
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
+            }
+        });
+
     }
 
     private void DownLaodReport(String pdf) {

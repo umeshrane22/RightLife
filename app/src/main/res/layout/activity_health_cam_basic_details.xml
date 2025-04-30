@@ -219,7 +219,7 @@
                         android:layout_marginEnd="4dp"
                         android:imeOptions="actionNext"
                         android:textColor="@color/black"
-                        android:layout_weight="7" />
+                        android:layout_weight="5" />
 
                     <TextView
                         android:id="@+id/edt_spinnerheight"
@@ -233,7 +233,8 @@
                         android:drawableEnd="@drawable/icon_arrow_article"
                         android:drawableTint="@color/black"
                         android:gravity="center"
-                        android:text="cm"
+                        android:text="ft_and_inches"
+                        android:textSize="@dimen/textsize_small"
                         android:textColor="@color/black" />
                 </LinearLayout>
 
@@ -270,7 +271,7 @@
                         android:layout_marginEnd="4dp"
                         android:imeOptions="actionNext"
                         android:textColor="@color/black"
-                        android:layout_weight="7" />
+                        android:layout_weight="5" />
 
                     <TextView
                         android:id="@+id/edt_spinner_weight"
@@ -285,6 +286,7 @@
                         android:drawableTint="@color/black"
                         android:gravity="center"
                         android:text="kgs"
+                        android:textSize="@dimen/textsize_small"
                         android:textColor="@color/black" />
                 </LinearLayout>
 

@@ -47,6 +47,7 @@
                 android:cursorVisible="true"
                 android:textColor="@color/black"/>
 
+
             <TextView
                 android:id="@+id/timesLabel"
                 android:layout_width="wrap_content"

@@ -44,6 +44,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     private var monthOffset = 0
     private var sixMonthOffset = 0
     private var weekOffsetDays = 0
+    private var defaultPosition = 0
     var vitalKey = ""
     private lateinit var graphData: FacialScanReportData
 
@@ -59,7 +60,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
         val healthCamItems: ArrayList<HealthCamItem>? =
             intent.getSerializableExtra("healthCamItemList") as ArrayList<HealthCamItem>?
-
+        defaultPosition = intent.getIntExtra("position", 0)
         // Receive the UNIFIED_LIST
         val unifiedList = intent.getSerializableExtra("UNIFIED_LIST") as ArrayList<ParameterModel>?
 
@@ -192,7 +193,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     binding.reportDate.text = date.toString()
                     binding.reportNameAverageValue.text = value.toString()
                     binding.reportUnit.text =graphData.data?.get(0)?.unit
-                    showToast("date = $date  and value = $value")
+                  //  showToast("date = $date  and value = $value")
                     binding.llSelectedGraphItem.setVisibility(View.VISIBLE)
                 }
             }
@@ -217,7 +218,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     private fun selectDefaultVital(healthCamItems: ArrayList<ParameterModel>?) {
         if (healthCamItems != null) {
             if (healthCamItems.isNotEmpty()) {
-                val firstItem = healthCamItems[0]!!
+                val firstItem = healthCamItems[defaultPosition]!!
                 binding.tvWitale.text = firstItem.name
                 vitalKey = firstItem.key
                 fetchPastFacialScanReport(

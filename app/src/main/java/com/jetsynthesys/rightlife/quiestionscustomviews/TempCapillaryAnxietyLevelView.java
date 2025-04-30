@@ -18,7 +18,7 @@ public class TempCapillaryAnxietyLevelView extends View {
     private float thumbY;
     private int[] markerPositions;
     private int minValue = 0, maxValue = 5000, stepValue = 1000;
-    private float cornerRadiusFactor = 0.5f;
+    private float cornerRadiusFactor = 0.7f;
     private float thumbWidth = 80f;
     private float thumbHeight = 40f;
     private float thumbCornerRadius = 20f;
@@ -61,7 +61,7 @@ public class TempCapillaryAnxietyLevelView extends View {
         }
     }
 
-    @Override
+ /*   @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         viewWidth = w;
@@ -73,7 +73,29 @@ public class TempCapillaryAnxietyLevelView extends View {
             markerPositions[i] = h - (i * h / (markerCount - 1));
         }
         thumbY = markerPositions[0];
-    }
+    }*/
+ @Override
+ protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+     super.onSizeChanged(w, h, oldw, oldh);
+     viewWidth = w;
+     viewHeight = h;
+
+     int markerCount = (maxValue - minValue) / stepValue + 1;
+
+     // Compute available height for markers after padding
+     float padding = thumbHeight / 2f;
+     float availableHeight = viewHeight - 2 * padding;
+
+     markerPositions = new int[markerCount];
+     for (int i = 0; i < markerCount; i++) {
+         float fraction = (float) i / (markerCount - 1); // value from 0 to 1
+         markerPositions[i] = (int) (viewHeight - padding - (availableHeight * fraction));
+     }
+
+     // Set initial thumb position to first marker
+     thumbY = markerPositions[0];
+ }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
