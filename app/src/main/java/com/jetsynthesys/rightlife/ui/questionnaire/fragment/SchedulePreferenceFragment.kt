@@ -41,9 +41,9 @@ class SchedulePreferenceFragment : Fragment() {
     private var _binding: FragmentSchedulePreferenceBinding? = null
     private val binding get() = _binding!!
 
-    private var selectedMorningTime: String? = ""
-    private var selectedAfternoonTime: String? = ""
-    private var selectedEveningTime: String? = ""
+    private var selectedMorningTime: String? = "9:00 AM"
+    private var selectedAfternoonTime: String? = "1:00 PM"
+    private var selectedEveningTime: String? = "8:00 PM"
 
     private val scheduleOptions = listOf(
         ScheduleOption(R.drawable.ic_schedule_1, "Always", "I stick to a fixed schedule"),
