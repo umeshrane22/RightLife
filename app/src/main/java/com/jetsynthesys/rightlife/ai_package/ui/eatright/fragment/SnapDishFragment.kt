@@ -83,8 +83,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         null, false, :: onMacroNutrientsItemClick) }
     private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItemClick) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -463,7 +461,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 //                commit()
 //            }
         }
-        onFrequentlyLoggedItemRefresh()
     }
 
     private fun setDishData(snapRecipeData: SnapRecipeData) {
@@ -593,20 +590,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onFrequentlyLoggedItemRefresh (){
-
-        val meal = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
-        )
-
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(meal as Collection<MyMealModel>)
-        val mealLogDateData: MyMealModel? = null
-        frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
-    }
 
     private fun onFrequentlyLoggedItem(myMealModel: MyMealModel, position: Int, isRefresh: Boolean) {
 

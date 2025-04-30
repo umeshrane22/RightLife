@@ -79,13 +79,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
         appPreference = AppPreference(requireContext())
 
-//        searchLayout = view.findViewById(R.id.layout_search)
-//        searchEditText = view.findViewById(R.id.et_search)
-//        cancel = view.findViewById(R.id.tv_cancel)
-//        searchResultLayout = view.findViewById(R.id.layout_search_result)
-//        tvSearchResult = view.findViewById(R.id.tv_search_result)
-//        searchResultListLayout = view.findViewById(R.id.layout_search_resultList)
-//        tvAllDishes = view.findViewById(R.id.tv_all_dishes)
+        searchLayout = view.findViewById(R.id.layout_search)
+        searchEditText = view.findViewById(R.id.et_search)
+        cancel = view.findViewById(R.id.tv_cancel)
+        searchResultLayout = view.findViewById(R.id.layout_search_result)
+        tvSearchResult = view.findViewById(R.id.tv_search_result)
+        searchResultListLayout = view.findViewById(R.id.layout_search_resultList)
+        tvAllDishes = view.findViewById(R.id.tv_all_dishes)
         allDishesRecyclerview = view.findViewById(R.id.recyclerView_all_dishes)
         backButton = view.findViewById(R.id.backButton)
 
@@ -136,12 +136,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
         }
 
-        cancel.setOnClickListener {
-            if (searchEditText.text.toString().isNotEmpty()){
-                dishesViewModel.setSearchQuery("")
-                searchEditText.setText("")
-            }
-        }
+//        cancel.setOnClickListener {
+//            if (searchEditText.text.toString().isNotEmpty()){
+//                dishesViewModel.setSearchQuery("")
+//                searchEditText.setText("")
+//            }
+//        }
 
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -190,12 +190,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             if (query.isNotEmpty()) {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.VISIBLE
-                cancel.visibility = View.VISIBLE
+               // cancel.visibility = View.VISIBLE
                 tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.GONE
-                cancel.visibility = View.GONE
+              //  cancel.visibility = View.GONE
             }
         }else{
             val filteredList = if (query.isEmpty()) snapRecipesList
@@ -204,12 +204,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             if (query.isNotEmpty()) {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.VISIBLE
-                cancel.visibility = View.VISIBLE
+              //  cancel.visibility = View.VISIBLE
                 tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
                 searchResultLayout.visibility = View.VISIBLE
                 tvSearchResult.visibility = View.GONE
-                cancel.visibility = View.GONE
+             //   cancel.visibility = View.GONE
             }
         }
     }

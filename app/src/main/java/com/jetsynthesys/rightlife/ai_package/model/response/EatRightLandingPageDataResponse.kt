@@ -14,7 +14,7 @@ data class EatRightLandingPageDataResponse(
     val last_weight_log: LastWeightLog?,
     val other_recipes_you_might_like: List<OtherRecipe>,
     val insight: String,
-    val macros_message: String
+    val micros: MicrosDetails
 )
 
 data class LastWeightLog(
@@ -31,4 +31,12 @@ data class OtherRecipe(
     val fats: Double,
     val carbs: Double,
     val image: String
+)
+
+data class MicrosDetails(
+    val micros_message: String,
+    val title: String,
+    val value: Double,
+    val micros_name: String,
+    val unit: String,
 )

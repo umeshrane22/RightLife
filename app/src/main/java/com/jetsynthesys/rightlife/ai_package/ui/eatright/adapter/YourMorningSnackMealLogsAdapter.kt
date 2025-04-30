@@ -14,13 +14,13 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 
-class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: ArrayList<MergedLogsMealItem>,
-                                   private var clickPos: Int, private var regularRecipeEntry : RegularRecipeEntry?,
-                                   private var snapMealData : SnapMeal?, private var isClickView : Boolean,
-                                   val onBreakFastRegularRecipeDeleteItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
-                                   val onBreakFastRegularRecipeEditItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
-                                   val onBreakFastSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
-                                   val onBreakFastSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
+class YourMorningSnackMealLogsAdapter(val context: Context, private var dataLists: ArrayList<MergedLogsMealItem>,
+                                      private var clickPos: Int, private var regularRecipeEntry : RegularRecipeEntry?,
+                                      private var snapMealData : SnapMeal?, private var isClickView : Boolean,
+                                      val onMSRegularRecipeDeleteItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
+                                      val onMSRegularRecipeEditItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
+                                      val onMSSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
+                                      val onMSSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedItem = -1
@@ -115,16 +115,16 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             val imageUrl = getDriveImageUrl(data.receipe.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_breakfast)
-                .error(R.drawable.ic_breakfast)
+                .placeholder(R.drawable.ic_morning_snack)
+                .error(R.drawable.ic_morning_snack)
                 .into(mealImage)
 
             delete.setOnClickListener {
-                onBreakFastRegularRecipeDeleteItem(data, bindingAdapterPosition, true)
+                onMSRegularRecipeDeleteItem(data, bindingAdapterPosition, true)
             }
 
             edit.setOnClickListener {
-                onBreakFastRegularRecipeEditItem(data, bindingAdapterPosition, true)
+                onMSRegularRecipeEditItem(data, bindingAdapterPosition, true)
             }
         }
 
@@ -193,16 +193,16 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             val imageUrl = ""//getDriveImageUrl(data.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_breakfast)
-                .error(R.drawable.ic_breakfast)
+                .placeholder(R.drawable.ic_morning_snack)
+                .error(R.drawable.ic_morning_snack)
                 .into(mealImage)
 
             delete.setOnClickListener {
-                onBreakFastSnapMealDeleteItem(data, bindingAdapterPosition, true)
+                onMSSnapMealDeleteItem(data, bindingAdapterPosition, true)
             }
 
             edit.setOnClickListener {
-                onBreakFastSnapMealEditItem(data, bindingAdapterPosition, true)
+                onMSSnapMealEditItem(data, bindingAdapterPosition, true)
             }
         }
 

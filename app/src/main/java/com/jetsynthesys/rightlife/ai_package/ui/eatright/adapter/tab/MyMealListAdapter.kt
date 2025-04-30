@@ -14,7 +14,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 
 class MyMealListAdapter(private val context: Context, private var dataLists: ArrayList<MergedMealItem>,
-                        private var clickPos: Int, private var mealLogListData : MergedMealItem?,
+                        private var clickPos: Int, private var mealDetails : MealDetails?,
+                        private var snapMealDetail : SnapMealDetail?,
                         private var isClickView : Boolean, val onMealDeleteItem: (MealDetails, Int, Boolean) -> Unit,
                         val onMealLogItem: (MealDetails, Int, Boolean) -> Unit,
                         val onSnapMealDeleteItem: (SnapMealDetail, Int, Boolean) -> Unit,
@@ -51,7 +52,6 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
        // val item = dataLists[position]
-
         when (val item = dataLists[position]) {
             is MergedMealItem.SnapMeal -> (holder as SnapMealViewHolder).bind(item.data)
             is MergedMealItem.SavedMeal -> (holder as SavedMealViewHolder).bind(item.data)
@@ -120,6 +120,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             baguetteValue.text = item.total_carbs.toInt().toString()
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
             dewpointValue.text = item.total_fat.toInt().toString()
+
             delete.setOnClickListener {
                 onSnapMealDeleteItem(item, bindingAdapterPosition, true)
             }
@@ -149,6 +150,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             baguetteValue.text = item.total_carbs.toInt().toString()
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
             dewpointValue.text = item.total_fat.toInt().toString()
+
             delete.setOnClickListener {
             onMealDeleteItem(item, bindingAdapterPosition, true)
         }
@@ -184,12 +186,14 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 //         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
 //     }
 
-    fun addAll(item : ArrayList<MergedMealItem>?, pos: Int, mealLogItem : MergedMealItem?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MergedMealItem>?, pos: Int, mealLogItem : MealDetails?, snapMealLogItem : SnapMealDetail?,
+               isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
             clickPos = pos
-            mealLogListData = mealLogItem
+            mealDetails = mealLogItem
+            snapMealDetail = snapMealLogItem
             isClickView = isClick
         }
         notifyDataSetChanged()

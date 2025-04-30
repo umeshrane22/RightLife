@@ -9,7 +9,7 @@ data class MealLogDataResponse(
 data class MealLogSummary(
     val user_id: String,
     val date: String,
-    val meal_detai: Map<String, MealDetailsLog>,
+    val meal_detail: Map<String, MealDetailsLog>,
     val full_day_summary : FullDaySummary
 )
 

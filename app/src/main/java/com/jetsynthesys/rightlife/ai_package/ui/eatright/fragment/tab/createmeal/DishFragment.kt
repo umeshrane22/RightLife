@@ -87,8 +87,6 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         null, false, :: onMacroNutrientsItemClick) }
     private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItemClick) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

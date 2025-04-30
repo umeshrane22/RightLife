@@ -53,7 +53,8 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.SaveMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
@@ -67,6 +68,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinRespo
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
+import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
@@ -80,7 +82,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -116,6 +117,10 @@ interface ApiService {
     fun getSnapMealRecipesDetails(
         @Path("foodId") foodId: String): Call<RecipeResponse>
 
+    @GET("eat/recipes/frequently_more_than_five/{userId}")
+    fun getFrequentlyLog(
+        @Path("userId") userId: String): Call<FrequentRecipesResponse>
+
     @GET("app/api/meal-plan/meal-recipes-lists/{foodId}")
     fun getMealRecipesDetails(
         @Path("foodId") foodId: String,
@@ -144,9 +149,14 @@ interface ApiService {
     @POST("eat/meals/create_meal/")
     fun createMealsSave(@Query("user_id") userId: String,@Body request: MealSaveRequest): Call<MealUpdateResponse>
 
-    @POST("eat/meals/log_saved_meal/")
+    @POST("eat/meals/log_meal/")
     fun createSaveMealsToLog(@Query("user_id") userId: String,
-                             @Query("date") startDate: String,@Body request: SaveMealLogRequest
+                             @Query("date") startDate: String,@Body request: SaveDishLogRequest
+    ): Call<MealUpdateResponse>
+
+    @POST("eat/meals/log_saved_meal/")
+    fun createSaveSnapMealsToLog(@Query("user_id") userId: String,
+                             @Query("date") startDate: String,@Body request: SaveSnapMealLogRequest
     ): Call<MealUpdateResponse>
 
     @GET("eat/meals/get_log_meals/")

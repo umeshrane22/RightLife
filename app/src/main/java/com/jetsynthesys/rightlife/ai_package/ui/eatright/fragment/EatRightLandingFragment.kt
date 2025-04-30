@@ -33,12 +33,19 @@ import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.OtherRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealSuggestionListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.OtherRecipeEatLandingAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TodayMealLogEatLandingAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourEveningSnacksMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnackMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
@@ -67,36 +74,36 @@ import kotlin.math.floor
 
 class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
-    private lateinit var mealPlanRecyclerView: RecyclerView
-    private lateinit var frequentlyLoggedRecyclerView: RecyclerView
-    private lateinit var otherReciepeRecyclerView: RecyclerView
-    private lateinit var glassWithWaterView: GlassWithWaterView
-    private lateinit var todayMacrosWithDataLayout: ConstraintLayout
-    private lateinit var todayMacroNoDataLayout: ConstraintLayout
-    private lateinit var todayMicrosWithDataLayout: ConstraintLayout
-    private lateinit var todayMacroNoDataLayoutOne: ConstraintLayout
-    private lateinit var todayMealLogNoDataHeading: ConstraintLayout
-    private lateinit var log_your_meal_balance_layout: CardView
-    private lateinit var tv_water_quantity: TextView
-    private lateinit var last_logged_no_data: TextView
+    private lateinit var todayMealLogsRecyclerView : RecyclerView
+    private lateinit var loggedNextMealSuggestionRecyclerView : RecyclerView
+    private lateinit var otherRecipeRecyclerView : RecyclerView
+    private lateinit var glassWithWaterView : GlassWithWaterView
+    private lateinit var todayMacrosWithDataLayout : ConstraintLayout
+    private lateinit var todayMacroNoDataLayout : ConstraintLayout
+    private lateinit var todayMicrosWithDataLayout : ConstraintLayout
+    private lateinit var todayMacroNoDataLayoutOne : ConstraintLayout
+    private lateinit var todayMealLogNoDataHeading : ConstraintLayout
+    private lateinit var logNextMealSuggestionLayout: CardView
+    private lateinit var waterQuantityTv : TextView
+    private lateinit var lastLoggedNoData: TextView
     private lateinit var weightIntake: TextView
-    private lateinit var weightIntakeUnit: TextView
-    private lateinit var otherRecipeMightLikeWithData: LinearLayout
-    private lateinit var new_improvement_layout: LinearLayout
-    private  var newBoolean: Boolean = false
-    private lateinit var appPreference: AppPreference
+    private lateinit var weightIntakeUnit : TextView
+    private lateinit var otherRecipeMightLikeWithData : LinearLayout
+    private lateinit var newImprovementLayout : LinearLayout
+    private  var newBoolean : Boolean = false
+    private lateinit var appPreference : AppPreference
     private lateinit var tvProteinValue : TextView
     private lateinit var tvFatsValue : TextView
     private lateinit var tvCabsValue : TextView
-    private lateinit var log_your_water_intake_filled : LinearLayout
-    private lateinit var loss_new_weight_filled : LinearLayout
+    private lateinit var logYourWaterIntakeFilled : LinearLayout
+    private lateinit var lossNewWeightFilled : LinearLayout
     private lateinit var tvCaloriesValue : TextView
     private lateinit var fatsProgressBar : ProgressBar
     private lateinit var proteinProgressBar : ProgressBar
     private lateinit var cabsProgressBar : ProgressBar
     private lateinit var imageBack : ImageView
-    private lateinit var hydration_tracker_forward_image : ImageView
-    private lateinit var logWeightRulerAdapter: LogWeightRulerAdapter
+    private lateinit var hydrationTrackerForwardImage : ImageView
+    private lateinit var logWeightRulerAdapter : LogWeightRulerAdapter
     private val numbers = mutableListOf<Float>()
     private lateinit var waterIntakeBottomSheet: WaterIntakeBottomSheet
     private lateinit var macroIc : ImageView
@@ -112,13 +119,24 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var microValueTv : TextView
     private lateinit var unitMicroTv : TextView
     private lateinit var energyTypeTv : TextView
+    private lateinit var microsMessage : TextView
     private lateinit var recipesButton : ConstraintLayout
     private lateinit var yourMealsLogBtn : ImageView
+    private lateinit var breakfastMealRecyclerView : RecyclerView
+    private lateinit var morningSnackMealsRecyclerView : RecyclerView
+    private lateinit var lunchMealRecyclerView : RecyclerView
+    private lateinit var eveningSnacksMealRecyclerView : RecyclerView
+    private lateinit var dinnerMealRecyclerView : RecyclerView
     private lateinit var landingPageResponse : EatRightLandingPageDataResponse
     private  var regularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
+    private val breakfastCombinedList = ArrayList<MergedLogsMealItem>()
+    private val morningSnackCombinedList = ArrayList<MergedLogsMealItem>()
+    private val lunchCombinedList = ArrayList<MergedLogsMealItem>()
+    private val eveningSnacksCombinedList = ArrayList<MergedLogsMealItem>()
+    private val dinnerCombinedList = ArrayList<MergedLogsMealItem>()
 
-     lateinit var userData: Userdata
-     lateinit var userDataResponse: UserProfileResponse
+    private lateinit var userData: Userdata
+    private lateinit var userDataResponse: UserProfileResponse
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     val viewModel: MasterCalculationsViewModel by viewModels()
 
@@ -131,6 +149,21 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         null, false, ::onOtherRecipeItem) }
     private val mealSuggestionAdapter by lazy { MealSuggestionListAdapter(requireContext(), arrayListOf(),
         -1, null, false, ::onMealSuggestionItem) }
+    private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null, false, ::onBreakFastRegularRecipeDeleteItem,
+        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, true) }
+    private val morningSnackMealLogsAdapter by lazy { YourMorningSnackMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null,false, :: onMSRegularRecipeDeleteItem, :: onMSRegularRecipeEditItem,
+        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, true) }
+    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null,false, :: onLunchRegularRecipeDeleteItem, :: onLunchRegularRecipeEditItem,
+        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, true) }
+    private val eveningSnacksMealLogsAdapter by lazy { YourEveningSnacksMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null,false, :: onESRegularRecipeDeleteItem, :: onESRegularRecipeEditItem,
+        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, true) }
+    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
+        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, true) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -146,13 +179,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val halfCurveProgressBar = view.findViewById<HalfCurveProgressBar>(R.id.halfCurveProgressBar)
         val snapMealBtn = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
         val mealLogLayout = view.findViewById<LinearLayout>(R.id.layout_meal_log)
-        mealPlanRecyclerView = view.findViewById(R.id.recyclerview_meal_plan_item)
+        todayMealLogsRecyclerView = view.findViewById(R.id.todayMealLogsRecyclerView)
         todayMacrosWithDataLayout = view.findViewById(R.id.today_macros_with_data_layout)
         tvProteinValue = view.findViewById(R.id.tv_protien_value)
-        hydration_tracker_forward_image = view.findViewById(R.id.hydration_tracker_forward_image)
+        hydrationTrackerForwardImage = view.findViewById(R.id.hydration_tracker_forward_image)
         tvFatsValue = view.findViewById(R.id.tv_fats_value)
         tvCabsValue = view.findViewById(R.id.tv_carbs_value)
-        log_your_water_intake_filled = view.findViewById(R.id.log_your_water_intake_filled)
+        logYourWaterIntakeFilled = view.findViewById(R.id.log_your_water_intake_filled)
         weightTrackerIc = view.findViewById(R.id.weightTrackerIc)
         fatsProgressBar = view.findViewById(R.id.fats_progressBar)
         proteinProgressBar = view.findViewById(R.id.protein_progressBar)
@@ -163,14 +196,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         todayMicrosWithDataLayout = view.findViewById(R.id.today_micros_with_data_layout)
         todayMacroNoDataLayoutOne = view.findViewById(R.id.today_macro_no_data_layout_one)
         todayMealLogNoDataHeading = view.findViewById(R.id.today_meal_log_no_data)
-        log_your_meal_balance_layout = view.findViewById(R.id.log_your_meal_balance_layout)
+        logNextMealSuggestionLayout = view.findViewById(R.id.logNextMealSuggestionLayout)
         otherRecipeMightLikeWithData = view.findViewById(R.id.other_reciepie_might_like_with_data)
-        tv_water_quantity = view.findViewById(R.id.tv_water_quantity)
+        waterQuantityTv = view.findViewById(R.id.tv_water_quantity)
         weightIntake = view.findViewById(R.id.weightIntake)
-        last_logged_no_data = view.findViewById(R.id.last_logged_no_data)
+        lastLoggedNoData = view.findViewById(R.id.last_logged_no_data)
         weightIntakeUnit = view.findViewById(R.id.weightIntakeUnit)
-        new_improvement_layout = view.findViewById(R.id.new_improvement_layout)
-        loss_new_weight_filled = view.findViewById(R.id.loss_new_weight_filled)
+        newImprovementLayout = view.findViewById(R.id.new_improvement_layout)
+        lossNewWeightFilled = view.findViewById(R.id.loss_new_weight_filled)
         macroIc = view.findViewById(R.id.macroIc)
         fatsUnitTv = view.findViewById(R.id.fatsUnitTv)
         proteinUnitTv = view.findViewById(R.id.proteinUnitTv)
@@ -181,30 +214,55 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         energyTypeTv = view.findViewById(R.id.energyTypeTv)
         microValueTv = view.findViewById(R.id.microValueTv)
         unitMicroTv = view.findViewById(R.id.unitMicroTv)
+        microsMessage = view.findViewById(R.id.microsMessage)
         recipesButton = view.findViewById(R.id.recipes_button)
         yourMealsLogBtn = view.findViewById(R.id.yourMealsLogBtn)
         logFirstMealLayout = view.findViewById(R.id.logFirstMealLayout)
         weightLastLogDateTv = view.findViewById(R.id.weightLastLogDateTv)
+        breakfastMealRecyclerView = view.findViewById(R.id.recyclerview_breakfast_meals_item)
+        morningSnackMealsRecyclerView = view.findViewById(R.id.recyclerviewMorningSnackMealsItem)
+        lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
+        eveningSnacksMealRecyclerView = view.findViewById(R.id.recyclerview_eveningSnacks_meals_item)
+        dinnerMealRecyclerView = view.findViewById(R.id.recyclerview_dinner_meals_item)
 
-        frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
-        otherReciepeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
-        otherReciepeRecyclerView.layoutManager = LinearLayoutManager(context)
-        otherReciepeRecyclerView.adapter = otherRecipeAdapter
+        loggedNextMealSuggestionRecyclerView = view.findViewById(R.id.loggedNextMealSuggestionRecyclerView)
+        otherRecipeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
+        otherRecipeRecyclerView.layoutManager = LinearLayoutManager(context)
+        otherRecipeRecyclerView.adapter = otherRecipeAdapter
+        breakfastMealRecyclerView.layoutManager = LinearLayoutManager(context)
+        breakfastMealRecyclerView.adapter = breakfastMealLogsAdapter
+        morningSnackMealsRecyclerView.layoutManager = LinearLayoutManager(context)
+        morningSnackMealsRecyclerView.adapter = morningSnackMealLogsAdapter
+        lunchMealRecyclerView.layoutManager = LinearLayoutManager(context)
+        lunchMealRecyclerView.adapter = lunchMealLogsAdapter
+        eveningSnacksMealRecyclerView.layoutManager = LinearLayoutManager(context)
+        eveningSnacksMealRecyclerView.adapter = eveningSnacksMealLogsAdapter
+        dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
+        dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
+        // onOtherReciepeDateItemRefresh()
+        todayMealLogsRecyclerView.layoutManager = LinearLayoutManager(context)
+        todayMealLogsRecyclerView.adapter = todayMealLogAdapter
+        // onMealPlanItemRefresh()
+        loggedNextMealSuggestionRecyclerView.layoutManager = LinearLayoutManager(context)
+        loggedNextMealSuggestionRecyclerView.adapter = mealSuggestionAdapter
+        // onFrequentlyLoggedItemRefresh()
+        //  halfCurveProgressBar.setValues(2000,2000)
+        glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
 
         if (bottomSeatName.contentEquals("LogWeightEat")){
             showLogWeightBottomSheet()
         }else if (bottomSeatName.contentEquals("LogWaterIntakeEat")){
             showWaterIntakeBottomSheet()
         }
-        loss_new_weight_filled.setOnClickListener {
+        lossNewWeightFilled.setOnClickListener {
             showLogWeightBottomSheet()
         }
-        log_your_water_intake_filled.setOnClickListener {
+        logYourWaterIntakeFilled.setOnClickListener {
             showWaterIntakeBottomSheet()
         }
 
         getMealLandingSummary(halfCurveProgressBar)
-        hydration_tracker_forward_image.setOnClickListener {
+        hydrationTrackerForwardImage.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = HydrationTrackerFragment()
                 val args = Bundle()
@@ -227,15 +285,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 commit()
             }
         }
-       // onOtherReciepeDateItemRefresh()
-        mealPlanRecyclerView.layoutManager = LinearLayoutManager(context)
-        mealPlanRecyclerView.adapter = todayMealLogAdapter
-       // onMealPlanItemRefresh()
-        frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
-        frequentlyLoggedRecyclerView.adapter = mealSuggestionAdapter
-       // onFrequentlyLoggedItemRefresh()
-      //  halfCurveProgressBar.setValues(2000,2000)
-         glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
 
         snapMealBtn.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -312,10 +361,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
 
         recipesButton.setOnClickListener {
-            val fragment = SearchDishToLogFragment()
+            val fragment = RecipesSearchFragment()
             val args = Bundle()
-            args.putString("searchType", "EatRight")
-            args.putParcelable("snapDishLocalListModel", null)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -360,7 +407,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 commit()
             }
         }
-
     }
 
     private fun onMealSuggestionList(landingPageResponse : LandingPageResponse) {
@@ -373,9 +419,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 true),
         )
         if (meal.size > 0) {
-            frequentlyLoggedRecyclerView.visibility = View.VISIBLE
+            loggedNextMealSuggestionRecyclerView.visibility = View.VISIBLE
         } else {
-            frequentlyLoggedRecyclerView.visibility = View.GONE
+            loggedNextMealSuggestionRecyclerView.visibility = View.GONE
         }
         val valueLists: ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(meal as Collection<MyMealModel>)
@@ -435,9 +481,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         )
 
         if (recipeSuggestion.size > 0) {
-            frequentlyLoggedRecyclerView.visibility = View.VISIBLE
+            loggedNextMealSuggestionRecyclerView.visibility = View.VISIBLE
         } else {
-            frequentlyLoggedRecyclerView.visibility = View.GONE
+            loggedNextMealSuggestionRecyclerView.visibility = View.GONE
         }
         val valueLists: ArrayList<OtherRecipe> = ArrayList()
         valueLists.addAll(recipeSuggestion as Collection<OtherRecipe>)
@@ -467,7 +513,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
         LoaderUtil.showLoader(requireActivity())
-       // val userId = appPreference.getUserId().toString()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
        // val userId = "67f6698fa213d14e22a47c2a"
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -481,12 +526,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
                     landingPageResponse = response.body()!!
-                    println(landingPageResponse)
-//                    val mealPlanLists = response.body()?.data ?: emptyList()
-//                    recipesList.addAll(mealPlanLists)
                     setMealSummaryData(landingPageResponse, halfCurveProgressBar)
-                   // onTodayMealLogList(landingPageResponse)
-                    //onMealSuggestionList(landingPageResponse)
                     getMealsLogList()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -507,39 +547,64 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         if(landingPageResponse.total_calories.toInt() > 0){
             todayMacrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayout.visibility = View.GONE
+        }else{
+            todayMacrosWithDataLayout.visibility = View.GONE
+            todayMacroNoDataLayout.visibility = View.VISIBLE
+        }
+
+        if(landingPageResponse.micros.value > 0){
             todayMicrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayoutOne.visibility = View.GONE
-            todayMealLogNoDataHeading.visibility = View.GONE
-            mealPlanRecyclerView.visibility =View.VISIBLE
-            log_your_meal_balance_layout.visibility = View.GONE
+            microsMessage.text = landingPageResponse.micros.micros_message
+            microValueTv.text = landingPageResponse.micros.value.toInt().toString()
+            unitMicroTv.text = landingPageResponse.micros.unit
+            energyTypeTv.text = landingPageResponse.micros.micros_name
+        }else{
+            todayMicrosWithDataLayout.visibility = View.GONE
+            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
+        }
+
+//        //meal log
+//        if(landingPageResponse.total_calories.toInt() > 0){
+//            todayMealLogNoDataHeading.visibility = View.GONE
+//            todayMealLogsRecyclerView.visibility =View.VISIBLE
+//            logFirstMealLayout.visibility = View.GONE
+//        }else{
+//            todayMealLogNoDataHeading.visibility = View.VISIBLE
+//            todayMealLogsRecyclerView.visibility = View.GONE
+//            logFirstMealLayout.visibility = View.VISIBLE
+//        }
+
+        if(landingPageResponse.other_recipes_you_might_like.size > 0){
+            logNextMealSuggestionLayout.visibility = View.GONE
             otherRecipeMightLikeWithData.visibility = View.VISIBLE
-            otherReciepeRecyclerView.visibility = View.VISIBLE
-            tv_water_quantity.text = landingPageResponse.total_water_ml.toInt().toString()
+            otherRecipeRecyclerView.visibility = View.VISIBLE
+        }else{
+            logNextMealSuggestionLayout.visibility = View.GONE
+            otherRecipeMightLikeWithData.visibility = View.GONE
+            otherRecipeRecyclerView.visibility = View.GONE
+        }
+
+        if(landingPageResponse.total_water_ml.toInt() > 0){
+            waterQuantityTv.text = landingPageResponse.total_water_ml.toInt().toString()
             val waterIntake = landingPageResponse.total_water_ml.toFloat()
             val waterGoal = 3000f
             glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
-            last_logged_no_data.visibility = View.GONE
+        }else{
+            waterQuantityTv.text = "0"
+        }
+
+        if(landingPageResponse.last_weight_log != null){
+            lastLoggedNoData.visibility = View.GONE
             weightIntake.visibility = View.VISIBLE
             weightIntakeUnit.visibility = View.VISIBLE
-            new_improvement_layout.visibility = View.VISIBLE
-            logFirstMealLayout.visibility = View.GONE
+            newImprovementLayout.visibility = View.VISIBLE
             weightLastLogDateTv.visibility = View.VISIBLE
         }else{
-            todayMacroNoDataLayout.visibility = View.VISIBLE
-            todayMacrosWithDataLayout.visibility = View.GONE
-            todayMicrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
-            todayMealLogNoDataHeading.visibility = View.VISIBLE
-            mealPlanRecyclerView.visibility = View.GONE
-            log_your_meal_balance_layout.visibility = View.GONE
-            otherRecipeMightLikeWithData.visibility = View.GONE
-            otherReciepeRecyclerView.visibility = View.GONE
-            tv_water_quantity.text = "0"
-            last_logged_no_data.visibility = View.VISIBLE
+            lastLoggedNoData.visibility = View.VISIBLE
             weightIntake.visibility = View.GONE
             weightIntakeUnit.visibility = View.GONE
-            new_improvement_layout.visibility = View.GONE
-            logFirstMealLayout.visibility = View.VISIBLE
+            newImprovementLayout.visibility = View.GONE
             weightLastLogDateTv.visibility = View.GONE
         }
 
@@ -593,6 +658,42 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         onOtherRecipeList(landingPageResponse.other_recipes_you_might_like)
     }
 
+    private fun setTodayMealLogsData(){
+
+        val regularRecipeData : RegularRecipeEntry? = null
+        val snapMealData : SnapMeal? = null
+
+        if(regularRecipesList.size > 0){
+            todayMealLogNoDataHeading.visibility = View.GONE
+            todayMealLogsRecyclerView.visibility =View.VISIBLE
+            logFirstMealLayout.visibility = View.GONE
+        }else{
+            todayMealLogNoDataHeading.visibility = View.VISIBLE
+            todayMealLogsRecyclerView.visibility = View.GONE
+            logFirstMealLayout.visibility = View.VISIBLE
+        }
+
+        if (breakfastCombinedList.size > 0){
+            breakfastMealLogsAdapter.addAll(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
+        }
+
+        if (morningSnackCombinedList.size > 0){
+            morningSnackMealLogsAdapter.addAll(morningSnackCombinedList, -1, regularRecipeData, snapMealData, false)
+        }
+
+        if (lunchCombinedList.size > 0){
+            lunchMealLogsAdapter.addAll(lunchCombinedList, -1, regularRecipeData, snapMealData, false)
+        }
+
+        if (eveningSnacksCombinedList.size > 0){
+            eveningSnacksMealLogsAdapter.addAll(eveningSnacksCombinedList, -1, regularRecipeData, snapMealData,false)
+        }
+
+        if  (dinnerCombinedList.size > 0){
+            dinnerMealLogsAdapter.addAll(dinnerCombinedList, -1, regularRecipeData, snapMealData, false)
+        }
+    }
+
     fun convertDate(inputDate: String): String {
         return inputDate.substringBefore("T")
     }
@@ -621,6 +722,47 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 LoaderUtil.dismissLoader(requireActivity())
             }
         })
+    }
+
+    private fun onBreakFastRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onMSRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onMSRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onMSSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onMSSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onLunchRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onLunchRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onLunchSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onLunchSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onESRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onESRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onESSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onESSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onDinnerRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onDinnerRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onDinnerSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onDinnerSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
     }
 
     private fun showLogWeightBottomSheet() {
@@ -739,6 +881,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             val weightUnit = parts.getOrElse(1) { "kg" }
             weightIntake.text = weightValue
             weightIntakeUnit.text = weightUnit
+            lastLoggedNoData.visibility = View.GONE
+            weightIntake.visibility = View.VISIBLE
+            weightIntakeUnit.visibility = View.VISIBLE
+            newImprovementLayout.visibility = View.VISIBLE
+            weightLastLogDateTv.visibility = View.VISIBLE
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             val request = WeightIntakeRequest(
@@ -816,7 +963,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             override fun onWaterIntakeConfirmed(amount: Int) {
                 // 👇 Use the amount here
                 //Toast.makeText(requireContext(), "Water Intake: $amount ml", Toast.LENGTH_SHORT).show()
-                tv_water_quantity.text = amount.toString()
+                waterQuantityTv.text = amount.toString()
                 val waterIntake = amount.toFloat()
                 val waterGoal = 3000f
                 glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
@@ -828,26 +975,65 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
     private fun getMealsLogList() {
         LoaderUtil.showLoader(requireActivity())
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "67e5420bf52608412bfa4216"//SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
+        val formattedDate = "2025-04-29"//currentDateTime.format(formatter)
         val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
         call.enqueue(object : Callback<MealLogDataResponse> {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
-                    //  val mealPlanLists = response.body()?.meals ?: emptyList()
-                    //   mealList.addAll(mealPlanLists)
-                    //  onMealLogDateItemRefresh()
-                    val gson = Gson()
-                  //  val response = gson.fromJson(jsonString, MealLogDataResponse::class.java)
-                    val breakfastRecipes = response.body()?.data!!.meal_detai["Breakfast"]?.regular_receipes
-                    val dinnerastRecipes = response.body()?.data!!.meal_detai["Dinner"]?.regular_receipes
-                    val lunchSnapMeals = response.body()?.data!!.meal_detai["Lunch"]?.snap_meals
-                    if (dinnerastRecipes != null) {
-                        regularRecipesList.addAll(dinnerastRecipes)
-                        onTodayMealLogList(regularRecipesList)
+                    val breakfastRecipes = response.body()?.data!!.meal_detail["breakFast"]?.regular_receipes
+                    val morningSnackRecipes = response.body()?.data!!.meal_detail["morningSnack"]?.regular_receipes
+                    val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
+                    val eveningSnacksRecipes = response.body()?.data!!.meal_detail["eveningSnacks"]?.regular_receipes
+                    val dinnerRecipes = response.body()?.data!!.meal_detail["dinner"]?.regular_receipes
+
+                    val breakfastSnapMeals = response.body()?.data!!.meal_detail["breakFast"]?.snap_meals
+                    val morningSnackSnapMeals = response.body()?.data!!.meal_detail["morningSnack"]?.snap_meals
+                    val lunchSnapSnapMeals = response.body()?.data!!.meal_detail["lunch"]?.snap_meals
+                    val eveningSnacksSnapMeals = response.body()?.data!!.meal_detail["eveningSnacks"]?.snap_meals
+                    val dinnerSnapMeals = response.body()?.data!!.meal_detail["dinner"]?.snap_meals
+
+                    if (breakfastRecipes != null){
+                        //  breakfastRegularRecipesList.addAll(breakfastRecipes)
+                        breakfastCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                    }
+                    if (breakfastSnapMeals != null){
+                        breakfastCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                    }
+                    if (morningSnackRecipes != null){
+                        // morningSnackRegularRecipesList.addAll(morningSnackRecipes)
+                        morningSnackCombinedList.addAll(morningSnackRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                    }
+                    if (morningSnackSnapMeals != null){
+                        morningSnackCombinedList.addAll(morningSnackSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                    }
+                    if (lunchSnapRecipes != null){
+                        //lunchRegularRecipesList.addAll(lunchSnapRecipes)
+                        lunchCombinedList.addAll(lunchSnapRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                    }
+                    if (lunchSnapSnapMeals != null){
+                        lunchCombinedList.addAll(lunchSnapSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                    }
+                    if (eveningSnacksRecipes != null){
+                        //eveningSnacksRegularRecipesList.addAll(eveningSnacksRecipes)
+                        eveningSnacksCombinedList.addAll(eveningSnacksRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                    }
+                    if (eveningSnacksSnapMeals != null){
+                        eveningSnacksCombinedList.addAll(eveningSnacksSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                    }
+                    if (dinnerRecipes != null) {
+                        // dinnerRegularRecipesList.addAll(dinnerRecipes)
+                        dinnerCombinedList.addAll(dinnerRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                    }
+                    if (dinnerSnapMeals != null){
+                        dinnerCombinedList.addAll(dinnerSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                    }
+
+                    if (response.body()?.data != null) {
+                        setTodayMealLogsData()
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")

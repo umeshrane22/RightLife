@@ -37,11 +37,15 @@ import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogWeeklyDayAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourEveningSnacksMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnackMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DinnerMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
@@ -63,7 +67,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var layoutToolbar :ConstraintLayout
     private lateinit var mealLogWeeklyDayRecyclerView : RecyclerView
     private lateinit var breakfastMealRecyclerView : RecyclerView
+    private lateinit var morningSnackMealsRecyclerView : RecyclerView
     private lateinit var lunchMealRecyclerView : RecyclerView
+    private lateinit var eveningSnacksMealRecyclerView : RecyclerView
     private lateinit var dinnerMealRecyclerView : RecyclerView
     private lateinit var imageCalender : ImageView
     private lateinit var breakfastDotMenu : ImageView
@@ -101,12 +107,12 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private var mealLogWeeklyDayList : List<MealLogWeeklyDayModel> = ArrayList()
     private var mealPlanData : ArrayList<MealLogData> = ArrayList()
     private var mealList : ArrayList<MealLists> = ArrayList()
-  //  var breakfastLists : ArrayList<MealList> = ArrayList()
-    var lunchLists : ArrayList<MealList> = ArrayList()
-    var dinnerLists : ArrayList<MealList> = ArrayList()
-    private  var breakfastRegularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
-    private  var lunchRegularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
-    private  var dinnerRegularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
+    private val breakfastCombinedList = ArrayList<MergedLogsMealItem>()
+    private val morningSnackCombinedList = ArrayList<MergedLogsMealItem>()
+    private val lunchCombinedList = ArrayList<MergedLogsMealItem>()
+    private val eveningSnacksCombinedList = ArrayList<MergedLogsMealItem>()
+    private val dinnerCombinedList = ArrayList<MergedLogsMealItem>()
+
     private var fullDaySummary : FullDaySummary? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
@@ -115,11 +121,20 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private val mealLogWeeklyDayAdapter by lazy { MealLogWeeklyDayAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMealLogDateItem) }
     private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onBreakfastMealLogItem, :: onBreakfastDeleteItem, :: onBreakfastEditItem) }
+        null, null, false, ::onBreakFastRegularRecipeDeleteItem,
+        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, false) }
+    private val morningSnackMealLogsAdapter by lazy { YourMorningSnackMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null,false, :: onMSRegularRecipeDeleteItem, :: onMSRegularRecipeEditItem,
+        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, false) }
     private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onLunchMealLogItem) }
+        null, null,false, :: onLunchRegularRecipeDeleteItem, :: onLunchRegularRecipeEditItem,
+        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, false) }
+    private val eveningSnacksMealLogsAdapter by lazy { YourEveningSnacksMealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null,false, :: onESRegularRecipeDeleteItem, :: onESRegularRecipeEditItem,
+        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, false) }
     private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onDinnerMealLogItem) }
+        null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
+        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, false) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -135,7 +150,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
         mealLogWeeklyDayRecyclerView = view.findViewById(R.id.recyclerview_calender)
         breakfastMealRecyclerView = view.findViewById(R.id.recyclerview_breakfast_meals_item)
+        morningSnackMealsRecyclerView = view.findViewById(R.id.recyclerviewMorningSnackMealsItem)
         lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
+        eveningSnacksMealRecyclerView = view.findViewById(R.id.recyclerview_eveningSnacks_meals_item)
         dinnerMealRecyclerView = view.findViewById(R.id.recyclerview_dinner_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
         btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
@@ -186,14 +203,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         getMealPlanList()
         //getMealList()
 
-        mealLogWeeklyDayRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        mealLogWeeklyDayRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
+            false)
         mealLogWeeklyDayRecyclerView.adapter = mealLogWeeklyDayAdapter
 
         breakfastMealRecyclerView.layoutManager = LinearLayoutManager(context)
         breakfastMealRecyclerView.adapter = breakfastMealLogsAdapter
 
+        morningSnackMealsRecyclerView.layoutManager = LinearLayoutManager(context)
+        morningSnackMealsRecyclerView.adapter = morningSnackMealLogsAdapter
+
         lunchMealRecyclerView.layoutManager = LinearLayoutManager(context)
         lunchMealRecyclerView.adapter = lunchMealLogsAdapter
+
+        eveningSnacksMealRecyclerView.layoutManager = LinearLayoutManager(context)
+        eveningSnacksMealRecyclerView.adapter = eveningSnacksMealLogsAdapter
 
         dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
         dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
@@ -436,65 +460,34 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         fatsProgressBar.max = 65  // Set maximum value
         fatsProgressBar.progress = dailyRecipe?.fat!!.toInt()
 
-        // Group meals by mealType
-//        val groupTourList = dailyRecipe.meals.groupBy { it.mealType }
-//        val value = groupTourList.values
-//        val key = groupTourList.keys
+        val regularRecipeData : RegularRecipeEntry? = null
+        val snapMealData : SnapMeal? = null
 
-//        val valueLists : ArrayList<ArrayList<MealList>> = ArrayList()
-//        valueLists.addAll(value as Collection<java.util.ArrayList<MealList>>)
-        val mealList: RegularRecipeEntry? = null
-//        breakfastRegularRecipesList.clear()
-//        lunchLists.clear()
-//        dinnerLists.clear()
-//        for (item in key){
-        if (breakfastRegularRecipesList.size > 0){
-            breakfastMealLogsAdapter.addAll(breakfastRegularRecipesList, -1, mealList, false)
+        if (breakfastCombinedList.size > 0){
+            breakfastMealLogsAdapter.addAll(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
         }
-        if (lunchRegularRecipesList.size > 0){
-            lunchMealLogsAdapter.addAll(lunchRegularRecipesList, -1, mealList, false)
+
+        if (morningSnackCombinedList.size > 0){
+            morningSnackMealLogsAdapter.addAll(morningSnackCombinedList, -1, regularRecipeData, snapMealData, false)
         }
-        if  (dinnerRegularRecipesList.size > 0){
-            dinnerMealLogsAdapter.addAll(dinnerRegularRecipesList, -1, mealList, false)
+
+        if (lunchCombinedList.size > 0){
+            lunchMealLogsAdapter.addAll(lunchCombinedList, -1, regularRecipeData, snapMealData, false)
         }
-//        }
+
+        if (eveningSnacksCombinedList.size > 0){
+            eveningSnacksMealLogsAdapter.addAll(eveningSnacksCombinedList, -1, regularRecipeData, snapMealData,false)
+        }
+
+        if  (dinnerCombinedList.size > 0){
+            dinnerMealLogsAdapter.addAll(dinnerCombinedList, -1, regularRecipeData, snapMealData, false)
+        }
     }
 
-    private fun onBreakfastMealLogItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-//            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-//        )
-//        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-      //  breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onLunchMealLogItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-       // lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onDinnerMealLogItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-      //  val mealLogs = listOf(
-//            LunchMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-//            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-//        )
-//        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-      //  dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onBreakfastDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-
-        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
-        valueLists.addAll(breakfastRegularRecipesList as Collection<RegularRecipeEntry>)
-        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+    private fun onBreakFastRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+//        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
+//        valueLists.addAll(breakfastCombinedList as Collection<RegularRecipeEntry>)
+//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
         deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
@@ -503,11 +496,92 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
     }
 
-    private fun onBreakfastEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    private fun onBreakFastRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+//        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
+//        valueLists.addAll(breakfastCombinedList as Collection<RegularRecipeEntry>)
+//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+    }
 
-        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
-        valueLists.addAll(breakfastRegularRecipesList as Collection<RegularRecipeEntry>)
-        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+    private fun onBreakFastSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+//        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
+//        valueLists.addAll(breakfastCombinedList as Collection<RegularRecipeEntry>)
+//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+        deleteBottomSheetFragment = DeleteMealBottomSheet()
+        deleteBottomSheetFragment.isCancelable = true
+        val bundle = Bundle()
+        bundle.putBoolean("test",false)
+        deleteBottomSheetFragment.arguments = bundle
+        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+    }
+
+    private fun onBreakFastSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+//        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
+//        valueLists.addAll(breakfastCombinedList as Collection<RegularRecipeEntry>)
+//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
+    }
+
+    private fun onMSRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onMSRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onMSSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onMSSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onLunchRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onLunchRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onLunchSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onLunchSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onESRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onESRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onESSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onESSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onDinnerRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onDinnerRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onDinnerSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
+    }
+
+    private fun onDinnerSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+
     }
 
     private fun deleteMealDialog(){
@@ -608,32 +682,62 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
     private fun getMealsLogList(formattedDate: String) {
         LoaderUtil.showLoader(requireActivity())
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "67e5420bf52608412bfa4216"//SharedPreferenceManager.getInstance(requireActivity()).userId
         val startDate = "2025-04-24"
         val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
         call.enqueue(object : Callback<MealLogDataResponse> {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
-                    //  val mealPlanLists = response.body()?.meals ?: emptyList()
-                    //   mealList.addAll(mealPlanLists)
-                    //  onMealLogDateItemRefresh()
                     if (response.body()?.data != null){
-                        val gson = Gson()
-                        //  val response = gson.fromJson(jsonString, MealLogDataResponse::class.java)
-                        val breakfastRecipes = response.body()?.data!!.meal_detai["Breakfast"]?.regular_receipes
-                        val lunchSnapRecipes = response.body()?.data!!.meal_detai["Lunch"]?.regular_receipes
-                        val dinnerastRecipes = response.body()?.data!!.meal_detai["Dinner"]?.regular_receipes
-                        fullDaySummary = response.body()?.data!!.full_day_summary
+                        val breakfastRecipes = response.body()?.data!!.meal_detail["breakFast"]?.regular_receipes
+                        val morningSnackRecipes = response.body()?.data!!.meal_detail["morningSnack"]?.regular_receipes
+                        val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
+                        val eveningSnacksRecipes = response.body()?.data!!.meal_detail["eveningSnacks"]?.regular_receipes
+                        val dinnerRecipes = response.body()?.data!!.meal_detail["dinner"]?.regular_receipes
+
+                        val breakfastSnapMeals = response.body()?.data!!.meal_detail["breakFast"]?.snap_meals
+                        val morningSnackSnapMeals = response.body()?.data!!.meal_detail["morningSnack"]?.snap_meals
+                        val lunchSnapSnapMeals = response.body()?.data!!.meal_detail["lunch"]?.snap_meals
+                        val eveningSnacksSnapMeals = response.body()?.data!!.meal_detail["eveningSnacks"]?.snap_meals
+                        val dinnerSnapMeals = response.body()?.data!!.meal_detail["dinner"]?.snap_meals
+
                         if (breakfastRecipes != null){
-                            breakfastRegularRecipesList.addAll(breakfastRecipes)
+                          //  breakfastRegularRecipesList.addAll(breakfastRecipes)
+                            breakfastCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                        }
+                        if (breakfastSnapMeals != null){
+                            breakfastCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                        }
+                        if (morningSnackRecipes != null){
+                           // morningSnackRegularRecipesList.addAll(morningSnackRecipes)
+                            morningSnackCombinedList.addAll(morningSnackRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                        }
+                        if (morningSnackSnapMeals != null){
+                            morningSnackCombinedList.addAll(morningSnackSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                         }
                         if (lunchSnapRecipes != null){
-                            lunchRegularRecipesList.addAll(lunchSnapRecipes)
+                            //lunchRegularRecipesList.addAll(lunchSnapRecipes)
+                            lunchCombinedList.addAll(lunchSnapRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                         }
-                        if (dinnerastRecipes != null) {
-                            dinnerRegularRecipesList.addAll(dinnerastRecipes)
+                        if (lunchSnapSnapMeals != null){
+                            lunchCombinedList.addAll(lunchSnapSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                         }
+                        if (eveningSnacksRecipes != null){
+                            //eveningSnacksRegularRecipesList.addAll(eveningSnacksRecipes)
+                            eveningSnacksCombinedList.addAll(eveningSnacksRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                        }
+                        if (eveningSnacksSnapMeals != null){
+                            eveningSnacksCombinedList.addAll(eveningSnacksSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                        }
+                        if (dinnerRecipes != null) {
+                           // dinnerRegularRecipesList.addAll(dinnerRecipes)
+                            dinnerCombinedList.addAll(dinnerRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                        }
+                        if (dinnerSnapMeals != null){
+                            dinnerCombinedList.addAll(dinnerSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                        }
+                        fullDaySummary = response.body()?.data!!.full_day_summary
                         if (fullDaySummary != null){
                             setGraphValue(fullDaySummary)
                         }
@@ -667,22 +771,22 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                     if (response.body()?.data != null){
                         val gson = Gson()
                         //  val response = gson.fromJson(jsonString, MealLogDataResponse::class.java)
-                        val breakfastRecipes = response.body()?.data!!.meal_detai["Breakfast"]?.regular_receipes
-                        val lunchSnapRecipes = response.body()?.data!!.meal_detai["Lunch"]?.regular_receipes
-                        val dinnerastRecipes = response.body()?.data!!.meal_detai["Dinner"]?.regular_receipes
-                        fullDaySummary = response.body()?.data!!.full_day_summary
-                        if (breakfastRecipes != null){
-                            breakfastRegularRecipesList.addAll(breakfastRecipes)
-                        }
-                        if (lunchSnapRecipes != null){
-                            lunchRegularRecipesList.addAll(lunchSnapRecipes)
-                        }
-                        if (dinnerastRecipes != null) {
-                            dinnerRegularRecipesList.addAll(dinnerastRecipes)
-                        }
-                        if (fullDaySummary != null){
-                            setGraphValue(fullDaySummary)
-                        }
+                        val breakfastRecipes = response.body()?.data!!.meal_detail["breakFast"]?.regular_receipes
+                        val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
+                        val dinnerastRecipes = response.body()?.data!!.meal_detail["dinner"]?.regular_receipes
+                      //  fullDaySummary = response.body()?.data!!.full_day_summary
+//                        if (breakfastRecipes != null){
+//                            breakfastRegularRecipesList.addAll(breakfastRecipes)
+//                        }
+//                        if (lunchSnapRecipes != null){
+//                            lunchRegularRecipesList.addAll(lunchSnapRecipes)
+//                        }
+//                        if (dinnerastRecipes != null) {
+//                            dinnerRegularRecipesList.addAll(dinnerastRecipes)
+//                        }
+//                        if (fullDaySummary != null){
+//                            setGraphValue(fullDaySummary)
+//                        }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")

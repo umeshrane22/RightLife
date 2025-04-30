@@ -21,7 +21,7 @@ class RecipeSearchAdapter(private val context: Context, private var dataLists: A
     private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_dish_search_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recipe_card, parent, false)
         return ViewHolder(view)
     }
 
@@ -35,9 +35,9 @@ class RecipeSearchAdapter(private val context: Context, private var dataLists: A
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.dishImage)
-        holder.layoutMain.setOnClickListener {
-            onSearchDishItem(item, position, true)
-        }
+//        holder.layoutMain.setOnClickListener {
+//            onSearchDishItem(item, position, true)
+//        }
     }
 
     override fun getItemCount(): Int {
@@ -47,9 +47,9 @@ class RecipeSearchAdapter(private val context: Context, private var dataLists: A
      inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
          val dishName: TextView = itemView.findViewById(R.id.recipeName)
-         val rightArrow: ImageView = itemView.findViewById(R.id.image_right_arrow)
+       //  val rightArrow: ImageView = itemView.findViewById(R.id.image_right_arrow)
          val dishImage: ImageView = itemView.findViewById(R.id.imageView)
-         val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
+       //  val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
      }
 
     fun addAll(item : ArrayList<SnapRecipeList>?, pos: Int, mealLogItem : SnapRecipeList?, isClick : Boolean) {

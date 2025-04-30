@@ -49,27 +49,27 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
         layoutBreakfast.setOnClickListener {
             dismiss()
-            callTabMealFragment("Breakfast")
+            callTabMealFragment("breakFast")
         }
 
         layoutMorningSnack.setOnClickListener {
             dismiss()
-            callTabMealFragment("Morning Snack")
+            callTabMealFragment("morningSnack")
         }
 
         layoutLunch.setOnClickListener {
             dismiss()
-            callTabMealFragment("Lunch")
+            callTabMealFragment("lunch")
         }
 
         layoutEveningSnacks.setOnClickListener {
             dismiss()
-            callTabMealFragment("Evening Snacks")
+            callTabMealFragment("eveningSnacks")
         }
 
         layoutDinner.setOnClickListener {
             dismiss()
-            callTabMealFragment("Dinner")
+            callTabMealFragment("dinner")
         }
     }
 

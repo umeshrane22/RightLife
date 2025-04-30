@@ -42,6 +42,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -78,6 +79,8 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvMeasure :TextView
     private var dishLists : ArrayList<SnapRecipeData> = ArrayList()
     private lateinit var snapDishLocalListModel : SnapDishLocalListModel
+    private var mealLogRequests : SelectedMealLogList? = null
+    private var snapMealLogRequests : SelectedMealLogList? = null
     private lateinit var mealType : String
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
@@ -87,8 +90,6 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         null, false, :: onMacroNutrientsItemClick) }
     private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItemClick) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -131,11 +132,25 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
             arguments?.getParcelable("snapDishLocalListModel")
         }
 
-//        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
-//            arguments?.getParcelable("dishLocalListModel", DishLocalListModel::class.java)
-//        } else {
-//            arguments?.getParcelable("dishLocalListModel")
-//        }
+        val selectedMealLogListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("selectedMealLogList", SelectedMealLogList::class.java)
+        } else {
+            arguments?.getParcelable("selectedMealLogList")
+        }
+
+        val selectedSnapMealLogListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("selectedSnapMealLogList", SelectedMealLogList::class.java)
+        } else {
+            arguments?.getParcelable("selectedSnapMealLogList")
+        }
+
+        if (selectedMealLogListModels != null){
+            mealLogRequests = selectedMealLogListModels
+        }
+
+        if (selectedSnapMealLogListModels != null){
+            snapMealLogRequests = selectedSnapMealLogListModels
+        }
 
         if (snapDishLocalListModels != null){
             snapDishLocalListModel = snapDishLocalListModels
@@ -268,6 +283,8 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 args.putString("searchType","DishToLog")
                 args.putString("mealType", mealType)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                args.putParcelable("selectedMealLogList", mealLogRequests)
+                args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "mealLog")

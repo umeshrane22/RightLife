@@ -19,14 +19,11 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteMealBott
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentMyMealBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.request.MealLog
-import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
+import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.SaveMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
@@ -36,7 +33,8 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.FrequentlyAddDishBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -55,12 +53,13 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
     private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var mealPlanTitleLayout : ConstraintLayout
     private lateinit var addLayout : LinearLayoutCompat
-   // private var mealData: List<MealPlan> = listOf()
+    private lateinit var mealType : String
+    private val mergedList = mutableListOf<MergedMealItem>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyMealBinding
         get() = FragmentMyMealBinding::inflate
 
-    private val myMealListAdapter by lazy { MyMealListAdapter(requireContext(), arrayListOf(), -1, null,
+    private val myMealListAdapter by lazy { MyMealListAdapter(requireContext(), arrayListOf(), -1, null,null,
         false, :: onMealDeleteItem, :: onMealLogItem, :: onSnapMealDeleteItem, :: onSnapMealLogItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -78,6 +77,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         mealPlanTitleLayout = view.findViewById(R.id.layout_meal_plan_title)
         addLayout = view.findViewById(R.id.addLayout)
 
+        mealType = arguments?.getString("mealType").toString()
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
 
@@ -130,15 +130,12 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
             }
         }
 
-       // onMyMealItemRefresh(mealData)
+       // myMealLists(mealData)
     }
 
-    private fun onMyMealItemRefresh(mealData: MutableList<MergedMealItem>) {
-        val meal = listOf(
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
-        )
-        if (mealData?.size!! > 0){
+    private fun myMealsList(mealData: MutableList<MergedMealItem>) {
+
+        if (mealData.size > 0){
             myMealRecyclerView.visibility = View.VISIBLE
             layoutBottomCreateMeal.visibility = View.GONE
             mealPlanTitleLayout.visibility = View.VISIBLE
@@ -151,15 +148,13 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         }
         val valueLists : ArrayList<MergedMealItem> = ArrayList()
         valueLists.addAll(mealData as Collection<MergedMealItem>)
-        val mealLogDateData: MergedMealItem? = null
-        myMealListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        val mealDetails: MealDetails? = null
+        val snapMealDetail: SnapMealDetail? = null
+        myMealListAdapter.addAll(valueLists, -1, mealDetails, snapMealDetail, false)
     }
 
     private fun onMealDeleteItem(mealLogDateModel: MealDetails, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
+
 //        val valueLists : ArrayList<MyMealModel> = ArrayList()
 //        valueLists.addAll(mealLogs as Collection<MyMealModel>)
 //        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
@@ -171,28 +166,43 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
     }
 
-    private fun onMealLogItem(mealPlan: MealDetails, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
-//        val valueLists : ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    private fun onMealLogItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean) {
+
+        val valueLists : ArrayList<MergedMealItem> = ArrayList()
+        valueLists.addAll(mergedList as Collection<MergedMealItem>)
+        val snapMealDetail: SnapMealDetail? = null
+        myMealListAdapter.addAll(valueLists, position, mealDetails, snapMealDetail, isRefresh)
+         val mealLogList : ArrayList<MealLogItems> = ArrayList()
+
+        val dishList = mealDetails.receipe_data
+        dishList?.forEach { selectedDish ->
+            val mealLogData = MealLogItems(
+                meal_id = selectedDish.receipe._id,
+                recipe_name = "My Meal " + mealDetails.meal_name,
+                meal_quantity = 1,
+                unit = "g",
+                measure = "Bowl"
+            )
+            mealLogList.add(mealLogData)
+        }
+        val mealLogRequest = SelectedMealLogList(
+            meal_name = "",
+            meal_type = mealType,
+            meal_log = mealLogList
+        )
+        //  mealLogRequests = mealLogRequest
+        val parent = parentFragment as? HomeTabMealFragment
+        parent?.setSelectedFrequentlyLog(null, false, mealLogRequest)
       //  createMealPlanLog(mealPlan)
-       val frequentlyAddDishBottomSheet = FrequentlyAddDishBottomSheet()
-        frequentlyAddDishBottomSheet.isCancelable = true
-        val bundle = Bundle()
-        bundle.putBoolean("test",false)
-        frequentlyAddDishBottomSheet.arguments = bundle
-        activity?.supportFragmentManager?.let { frequentlyAddDishBottomSheet.show(it, "FrequentlyAddDishBottomSheet") }
+//       val frequentlyAddDishBottomSheet = FrequentlyAddDishBottomSheet()
+//        frequentlyAddDishBottomSheet.isCancelable = true
+//        val bundle = Bundle()
+//        bundle.putBoolean("test",false)
+//        frequentlyAddDishBottomSheet.arguments = bundle
+//        activity?.supportFragmentManager?.let { frequentlyAddDishBottomSheet.show(it, "FrequentlyAddDishBottomSheet") }
     }
 
     private fun onSnapMealDeleteItem(mealLogDateModel: SnapMealDetail, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
 //        val valueLists : ArrayList<MyMealModel> = ArrayList()
 //        valueLists.addAll(mealLogs as Collection<MyMealModel>)
 //        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
@@ -204,15 +214,20 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
     }
 
-    private fun onSnapMealLogItem(mealPlan: SnapMealDetail, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
-//        val valueLists : ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-        //  createMealPlanLog(mealPlan)
+    private fun onSnapMealLogItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean) {
+        val valueLists : ArrayList<MergedMealItem> = ArrayList()
+        valueLists.addAll(mergedList as Collection<MergedMealItem>)
+        val mealDetails: MealDetails? = null
+        myMealListAdapter.addAll(valueLists, position,mealDetails, snapMealDetail, isRefresh)
+        val mealLogData = MealLogItems(
+            meal_id = snapMealDetail._id,
+            recipe_name = "My Meal " + snapMealDetail.meal_name,
+            meal_quantity = 1,
+            unit = "g",
+            measure = "Bowl"
+        )
+        val parent = parentFragment as? HomeTabMealFragment
+        parent?.setSelectedFrequentlyLog(mealLogData, true, null)
     }
 
     private fun getMealLog() {
@@ -290,28 +305,21 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
 
     private fun getMyMealList() {
        // LoaderUtil.showLoader(requireActivity())
-        val userId = "64763fe2fa0e40d9c0bc8264"//SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMyMealList(userId)
         call.enqueue(object : Callback<MyMealsSaveResponse> {
             override fun onResponse(call: Call<MyMealsSaveResponse>, response: Response<MyMealsSaveResponse>) {
                 if (response.isSuccessful) {
 //                    LoaderUtil.dismissLoader(requireActivity())
                     if (response.body() != null){
-                        val myMealsSaveList : ArrayList<MyMealsSaveResponse> = ArrayList()
-                      //  myMealsSaveList = response.body().data
-                        val mergedList = mutableListOf<MergedMealItem>()
-
-                        response.body()!!.data.snap_meal_detail.forEach { snap ->
+                        val myMealsSaveList = response.body()!!.data
+                        myMealsSaveList.snap_meal_detail.forEach { snap ->
                             mergedList.add(MergedMealItem.SnapMeal(snap))
                         }
-
-                        response.body()!!.data.meal_details.forEach { saved ->
+                        myMealsSaveList.meal_details.forEach { saved ->
                             mergedList.add(MergedMealItem.SavedMeal(saved))
                         }
-
-//                        var mealData = response.body()?.meal_plans
-//                        mealData = mealData
-                        onMyMealItemRefresh(mergedList)
+                        myMealsList(mergedList)
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -327,7 +335,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         })
     }
 
-    private fun createMealsSave(snapRecipeList : ArrayList<SnapRecipeData>) {
+    private fun createDishLog(snapRecipeList : ArrayList<SnapRecipeData>) {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -336,12 +344,12 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
 
-        val mealLogList : ArrayList<MealLogItem> = ArrayList()
+        val mealLogList : ArrayList<DishLog> = ArrayList()
         val mealNamesString = snapRecipeList.map { it.recipe_name ?: "" }.joinToString(", ")
 
         snapRecipeList?.forEach { snapRecipe ->
-            val mealLogData = MealLogItem(
-                meal_id = snapRecipe.id,
+            val mealLogData = DishLog(
+                receipe_id = snapRecipe.id,
                 meal_quantity = 1,
                 unit = "g",
                 measure = "Bowl"
@@ -349,25 +357,11 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
             mealLogList.add(mealLogData)
         }
 
-        val mealLogRequest = SaveMealLogRequest(
-            meal_name = "",
+        val mealLogRequest = SaveDishLogRequest(
             meal_type = "",
             meal_log = mealLogList
         )
 
-//        val mealLogRequest = MealLogRequest(
-//            mealId = mealDetails._id,
-//            userId = "64763fe2fa0e40d9c0bc8264",
-//            meal = mealDetails.name,
-//            date = formattedDate,
-//            image = mealDetails.image,
-//            mealType = mealDetails.mealType,
-//            mealQuantity = mealDetails.mealQuantity,
-//            unit = mealDetails.unit,
-//            isRepeat = mealDetails.isRepeat,
-//            isFavourite = mealDetails.isFavourite,
-//            isLogged = true
-//        )
         val call = ApiClient.apiServiceFastApi.createSaveMealsToLog(userId, formattedDate, mealLogRequest)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
