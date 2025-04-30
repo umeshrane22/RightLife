@@ -81,6 +81,7 @@ import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import okhttp3.internal.notify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -591,7 +592,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     toolResponse?.let {
                         if (it.success == true) {
                             val tools = it.data
-                            setToolListData(tools)
+                            toolsList.clear()
+                            toolsList.addAll(tools)
+                            toolAdapter.notifyDataSetChanged()
                         } else {
                             Toast.makeText(activity, "Request failed with status: ${it.statusCode}", Toast.LENGTH_SHORT).show()
                         }
@@ -611,11 +614,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
       //          Toast.makeText(activity, "Failure: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
-    }
-    private fun setToolListData(tools: List<ModuleData>) {
-        toolsList.clear()
-        toolsList.addAll(tools)
-        toolAdapter.notifyDataSetChanged()
     }
 
     private fun setupSeverityRangeBar(layout: LinearLayout, assessment: Phq9Assessment) {

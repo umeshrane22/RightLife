@@ -23,12 +23,43 @@ class ToolAdapter(context: Context, private val tools: List<ModuleData>, val onT
 
     override fun onBindViewHolder(holder: ToolViewHolder, position: Int) {
         holder.itemView.findViewById<TextView>(R.id.tv_module_name).setText(tools.getOrNull(position)?.title)
-        Glide.with(mContext)
-            .load(tools.getOrNull(position)?.image)
-            .placeholder(R.drawable.ic_plus)
-            .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+        when (tools.getOrNull(position)?.title) {
+            "Affirmation" ->{
+                Glide.with(mContext)
+                    .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/dccba8e93b41dc3f856d7c18b13d5783.png")
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+            "Box Breathing" ->{
+                Glide.with(mContext)
+                    .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/62e1e78cca28251bf83e46bc0018ba0b.png")
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+            "Alternate Nostril Breathing" ->{
+                Glide.with(mContext)
+                    .load( "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/4a37e4954896bd3a53d90424be77a724.png")
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+            "Equal Breathing" ->{
+                Glide.with(mContext)
+                    .load( "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/4a37e4954896bd3a53d90424be77a724.png")
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+            "4-7-8 Breathing" ->{
+                Glide.with(mContext)
+                    .load(  "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/c88072eb32c47a1e385fae66696dc293.png")
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+            else -> println("Regular day")
+        }
+
         holder.mainLayout.setOnClickListener {
-            tools.getOrNull(position)?.let { it1 -> onToolItem(it1, position, true) }
+            tools.getOrNull(position)?.let { it1 ->
+                onToolItem(it1, position, true) }
         }
     }
 

@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -72,10 +73,65 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                 val tool = item.data
                 val toolHolder = holder as ToolViewHolder
 
-                Glide.with(contexts)
-                    .load(tool.image)
-                    .placeholder(R.drawable.ic_plus)
-                    .into(toolHolder.icon)
+                when (tool.title) {
+                    "Affirmation" ->{
+                        Glide.with(contexts)
+                            .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/dccba8e93b41dc3f856d7c18b13d5783.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Box Breathing" ->{
+                        Glide.with(contexts)
+                            .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/62e1e78cca28251bf83e46bc0018ba0b.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Alternate Nostril Breathing" ->{
+                        Glide.with(contexts)
+                            .load( "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/4a37e4954896bd3a53d90424be77a724.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Equal Breathing" ->{
+                        Glide.with(contexts)
+                            .load( "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/4a37e4954896bd3a53d90424be77a724.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "4-7-8 Breathing" ->{
+                        Glide.with(contexts)
+                            .load(  "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/c88072eb32c47a1e385fae66696dc293.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Free Form" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_freeform_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+
+                    "Bullet" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_bullet_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+
+                    "Gratitude" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_gratitude_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+
+                    "Grief" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_grief_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                }
 
                 toolHolder.name.text = tool.title
                 toolHolder.description.text = tool.desc
