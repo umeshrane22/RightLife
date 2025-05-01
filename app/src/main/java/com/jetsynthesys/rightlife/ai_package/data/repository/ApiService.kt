@@ -113,6 +113,13 @@ interface ApiService {
     fun getSnapMealRecipesList(
        ): Call<SnapMealRecipeResponseModel>
 
+    @GET("eat/recipes/names")
+    fun getRecipesList(
+        @Query("meal_type") mealType: String? = null,
+        @Query("food_type") foodType: String? = null,
+        @Query("cuisine") cuisine: String? = null
+    ): Call<SnapMealRecipeResponseModel>
+
     @GET("eat/recipes/{foodId}")
     fun getSnapMealRecipesDetails(
         @Path("foodId") foodId: String): Call<RecipeResponse>

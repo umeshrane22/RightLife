@@ -97,7 +97,7 @@
                 android:layout_marginTop="10dp"
                 android:background="@color/meal_log_background"
                 app:tabIndicatorHeight="0dp"
-                app:tabPadding="5dp"
+                app:tabPadding="2dp"
                 app:tabGravity="center"
                 app:tabMode="scrollable"
                 app:tabRippleColor="@android:color/transparent"
@@ -105,14 +105,56 @@
                 app:tabSelectedTextColor="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.cardview.widget.CardView
+            android:id="@+id/tabContentCard"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:background="@color/black"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/meal_log_background"
             android:elevation="20dp"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_toolbar">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/cardview_recipe_main_heading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/tabContentRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:layout_marginBottom="20dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cardview_recipe_main_heading"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <Spinner
+                    android:id="@+id/spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:padding="2dp"
+                    android:textStyle="bold"
+                    android:layout_weight="0.9"
+                    android:background="@color/white"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="gone"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black_no_meals"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/cardview_recipe_main_heading"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
 
@@ -207,6 +249,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
+                android:visibility="gone"
                 android:text="All Recipe"
                 android:textColor="@color/dark_green_meal_background"
                 android:fontFamily="@font/dmsans_bold"
