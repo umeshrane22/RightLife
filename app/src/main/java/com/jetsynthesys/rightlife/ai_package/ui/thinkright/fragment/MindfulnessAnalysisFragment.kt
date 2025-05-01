@@ -370,7 +370,6 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                             setupWeeklyBarChart(barChart,mindfullResponse.data,endDate)
                         }
                     }
-
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

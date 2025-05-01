@@ -42,10 +42,7 @@ class WakeUpTimeDialogFragment : BottomSheetDialogFragment() {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.wakeup_dialog_fragment, container, false)
     }
 

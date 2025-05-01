@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.databinding.FragmentSleepStagesBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.AwakeProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.CoreProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.DeepprogressBar
@@ -127,12 +128,12 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
             }
         })
     }

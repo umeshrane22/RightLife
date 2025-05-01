@@ -31,6 +31,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.github.mikephil.charting.data.Entry
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,21 +75,18 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         progressDialog.setCancelable(false)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
-        // Show Week data by default
         fetchSleepData()
 
-        // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
 
-        // Handle Radio Button Selection
         setupListeners()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
 
             }
         })

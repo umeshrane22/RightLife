@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -86,19 +87,16 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
-        // Show Week data by default
-     //   updateChart(getWeekData(), getWeekLabels())
         setupListeners()
         setupChart()
         loadWeekData()
         fetchSleepData()
 
-        // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
 
             }
         })
@@ -106,7 +104,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
     }
