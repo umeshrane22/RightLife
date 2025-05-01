@@ -73,11 +73,13 @@ import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
@@ -140,6 +142,9 @@ interface ApiService {
     fun getMealList(@Query("user_id") userId: String,
                 @Query("date") startDate: String): Call<MealsResponse>
 
+    @GET("eat/meals/get_search/")
+    fun getSearchMealList(@Query("keyword") keyword: String): Call<SearchResultsResponse>
+
     @POST("eat/log-meal/")
     fun createLogDish(@Body request: MealLogRequest): Call<MealLogResponse>
 
@@ -168,8 +173,12 @@ interface ApiService {
                         @Query("date") startDate: String): Call<MealLogDataResponse>
 
     @GET("eat/meals/get_log_meals_byDate/")
-    fun getMealsLogHistory(@Query("user_id") userId: String,
+    fun getMealsLogHistoryCalender(@Query("user_id") userId: String,
                           @Query("date") startDate: String, @Query("date_range") dateRange: String): Call<MealLogDataResponse>
+
+    @GET("eat/meals/get_logs_history/")
+    fun getMealsLogHistory(@Query("user_id") userId: String,
+                           @Query("date") startDate: String): Call<MealLogsHistoryResponse>
 
     @POST("eat/snap_meals_log/")
     fun createSnapMealLog(@Body request: SnapMealLogRequest): Call<SnapMealLogResponse>

@@ -976,10 +976,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
     private fun getMealsLogList() {
         LoaderUtil.showLoader(requireActivity())
-        val userId = "67e5420bf52608412bfa4216"//SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = "2025-04-29"//currentDateTime.format(formatter)
+        val formattedDate = currentDateTime.format(formatter)
         val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
         call.enqueue(object : Callback<MealLogDataResponse> {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {

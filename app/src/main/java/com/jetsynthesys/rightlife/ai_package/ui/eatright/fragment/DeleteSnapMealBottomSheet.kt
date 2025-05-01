@@ -55,7 +55,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
             if (snapDishLocalListModel != null) {
                 if (snapDishLocalListModel.data.size > 0) {
                     for (item in snapDishLocalListModel.data) {
-                        if (item.recipe_name.contentEquals(snapRecipeName)) {
+                        if (item.name.contentEquals(snapRecipeName)) {
                             snapDishLocalListModel.data.remove(item)
                             dismiss()
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()

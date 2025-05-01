@@ -32,7 +32,7 @@ class MealLogWeeklyDayAdapter(private val context: Context, private var dataList
         holder.mealDay.text = day.toString()
         val date = item.dayNumber
         holder.mealDate.text = date
-        if (item.status == true) {
+        if (item.is_available) {
             holder.circleStatus.setImageResource(R.drawable.circle_check)
             if (mealLogListData != null){
                 if (clickPos == position && mealLogListData == item && isClickView == true){

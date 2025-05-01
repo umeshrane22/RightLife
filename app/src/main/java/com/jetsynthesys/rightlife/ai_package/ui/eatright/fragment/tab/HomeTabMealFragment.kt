@@ -29,6 +29,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SearchDishToLogFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.FrequentlyAddDishBottomSheet
@@ -57,7 +58,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private lateinit var btnLogMeal: LinearLayoutCompat
     private lateinit var checkCircle : ImageView
     private lateinit var loggedSuccess : TextView
-    private var dishLists : ArrayList<SnapRecipeData> = ArrayList()
+    private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
     private var mealLogRequests : SelectedMealLogList? = null
     private var selectedMealLogList : ArrayList<MealLogItems> = ArrayList()
@@ -206,7 +207,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 // Display default ingredients
                 if (dishLists.size > 0){
                     for (dishItem in dishLists) {
-                        ingredientsList.add(dishItem.recipe_name!!)
+                        ingredientsList.add(dishItem.name!!)
                     }
                 }
                 if (mealLogRequests != null) {
@@ -312,7 +313,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         val formattedDate = currentDateTime.format(formatter)
 
         val dishLogList : ArrayList<DishLog> = ArrayList()
-        val mealNamesString = dishLists.map { it.recipe_name ?: "" }.joinToString(", ")
+        val mealNamesString = dishLists.map { it.name ?: "" }.joinToString(", ")
 
         if (snapDishLocalListModel != null){
             if (dishLists.size > 0) {

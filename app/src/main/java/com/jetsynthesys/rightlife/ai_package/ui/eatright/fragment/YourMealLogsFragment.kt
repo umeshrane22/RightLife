@@ -26,17 +26,17 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.MealList
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogData
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
+import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
@@ -60,6 +60,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
@@ -103,6 +104,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var nextWeekBtn : ImageView
     private lateinit var prevWeekBtn : ImageView
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
+    private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
+    private var  mealLogHistory :  ArrayList<LoggedMeal> = ArrayList()
 
     private var mealLogWeeklyDayList : List<MealLogWeeklyDayModel> = ArrayList()
     private var mealPlanData : ArrayList<MealLogData> = ArrayList()
@@ -235,17 +238,24 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
             }
         })
 
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        getMealsLogHistory(formattedDate)
+
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
-        onMealLogWeeklyDayList(mealLogWeeklyDayList)
+        onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
        prevWeekBtn.setOnClickListener {
             currentWeekStart = currentWeekStart.minusWeeks(1)
            mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
-           onMealLogWeeklyDayList(mealLogWeeklyDayList)
+           onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+           getMealsLogHistory(currentWeekStart.toString())
         }
        nextWeekBtn.setOnClickListener {
             currentWeekStart = currentWeekStart.plusWeeks(1)
            mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
-           onMealLogWeeklyDayList(mealLogWeeklyDayList)
+           onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+           getMealsLogHistory(currentWeekStart.toString())
         }
 
         onBreakfastMealLogItemRefresh()
@@ -354,9 +364,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         }
     }
 
-    private fun onMealLogWeeklyDayList(weekList : List<MealLogWeeklyDayModel>) {
+    private fun onMealLogWeeklyDayList(weekList: List<MealLogWeeklyDayModel>, mealLogHistory: ArrayList<LoggedMeal>) {
         val today = LocalDate.now()
         val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
+        if (mealLogHistory.size > 0 && weekList.isNotEmpty()){
+            mealLogHistory.forEach { mealLog ->
+                for (item in weekList){
+                    if (item.fullDate.toString() == mealLog.date){
+                        if (mealLog.is_available == true){
+                           item.is_available = true
+                        }
+                    }
+                }
+            }
+        }
+
         if (weekList.isNotEmpty()){
             weekLists.addAll(weekList as Collection<MealLogWeeklyDayModel>)
             var mealLogDateData: MealLogWeeklyDayModel? = null
@@ -682,7 +704,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
     private fun getMealsLogList(formattedDate: String) {
         LoaderUtil.showLoader(requireActivity())
-        val userId = "67e5420bf52608412bfa4216"//SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val startDate = "2025-04-24"
         val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
         call.enqueue(object : Callback<MealLogDataResponse> {
@@ -760,33 +782,17 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val startDate = "2025-04-24"
-        val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
-        call.enqueue(object : Callback<MealLogDataResponse> {
-            override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
+        val call = ApiClient.apiServiceFastApi.getMealsLogHistory(userId, formattedDate)
+        call.enqueue(object : Callback<MealLogsHistoryResponse> {
+            override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
-                    //  val mealPlanLists = response.body()?.meals ?: emptyList()
-                    //   mealList.addAll(mealPlanLists)
-                    //  onMealLogDateItemRefresh()
-                    if (response.body()?.data != null){
-                        val gson = Gson()
-                        //  val response = gson.fromJson(jsonString, MealLogDataResponse::class.java)
-                        val breakfastRecipes = response.body()?.data!!.meal_detail["breakFast"]?.regular_receipes
-                        val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
-                        val dinnerastRecipes = response.body()?.data!!.meal_detail["dinner"]?.regular_receipes
-                      //  fullDaySummary = response.body()?.data!!.full_day_summary
-//                        if (breakfastRecipes != null){
-//                            breakfastRegularRecipesList.addAll(breakfastRecipes)
-//                        }
-//                        if (lunchSnapRecipes != null){
-//                            lunchRegularRecipesList.addAll(lunchSnapRecipes)
-//                        }
-//                        if (dinnerastRecipes != null) {
-//                            dinnerRegularRecipesList.addAll(dinnerastRecipes)
-//                        }
-//                        if (fullDaySummary != null){
-//                            setGraphValue(fullDaySummary)
-//                        }
+                    if (response.body() != null){
+                        mealLogsHistoryResponse = response.body()
+                        if (mealLogsHistoryResponse?.is_logged_meal_list!!.size > 0){
+                            mealLogHistory.addAll(mealLogsHistoryResponse!!.is_logged_meal_list!!)
+                            onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+                        }
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -794,7 +800,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                     LoaderUtil.dismissLoader(requireActivity())
                 }
             }
-            override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
+            override fun onFailure(call: Call<MealLogsHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 LoaderUtil.dismissLoader(requireActivity())
@@ -803,7 +809,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     }
 
     private fun getWeekFrom(startDate: LocalDate): List<MealLogWeeklyDayModel> {
-
         return (0..6).map { i ->
             val date = startDate.plusDays(i.toLong())
             MealLogWeeklyDayModel(

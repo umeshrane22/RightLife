@@ -27,6 +27,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.DishListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
@@ -57,7 +58,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private lateinit var continueLayout : LinearLayoutCompat
     private lateinit var addedNameTv : TextView
   //  var mealLogLists : ArrayList<MealLists> = ArrayList()
-    private var dishLists : ArrayList<SnapRecipeData> = ArrayList()
+    private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
@@ -205,10 +206,6 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     }
 
     private fun onMealLoggedList (){
-//        val meal = listOf(
-//            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-//            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false)
-//        )
         if (dishLists.size > 0){
             addedDishItemRecyclerview.visibility = View.VISIBLE
             layoutNoDishes.visibility = View.GONE
@@ -219,30 +216,30 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             saveMealLayout.visibility = View.GONE
         }
 
-        val valueLists : ArrayList<SnapRecipeData> = ArrayList()
-        valueLists.addAll(dishLists as Collection<SnapRecipeData>)
-        val mealLog: SnapRecipeData? = null
+        val valueLists : ArrayList<SearchResultItem> = ArrayList()
+        valueLists.addAll(dishLists as Collection<SearchResultItem>)
+        val mealLog: SearchResultItem? = null
         dishListAdapter.addAll(valueLists, -1, mealLog, false)
     }
 
-    private fun onMealLogClickItem(mealLog: SnapRecipeData, position: Int, isRefresh: Boolean) {
+    private fun onMealLogClickItem(mealLog: SearchResultItem, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<SnapRecipeData> = ArrayList()
-        valueLists.addAll(dishLists as Collection<SnapRecipeData>)
+        val valueLists : ArrayList<SearchResultItem> = ArrayList()
+        valueLists.addAll(dishLists as Collection<SearchResultItem>)
         dishListAdapter.addAll(valueLists, position, mealLog, isRefresh)
     }
 
-    private fun onMealLogDeleteItem(mealItem: SnapRecipeData, position: Int, isRefresh: Boolean) {
+    private fun onMealLogDeleteItem(mealItem: SearchResultItem, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<SnapRecipeData> = ArrayList()
-        valueLists.addAll(dishLists as Collection<SnapRecipeData>)
+        val valueLists : ArrayList<SearchResultItem> = ArrayList()
+        valueLists.addAll(dishLists as Collection<SearchResultItem>)
         dishListAdapter.addAll(valueLists, position, mealItem, isRefresh)
     }
 
-    private fun onMealLogEditItem(mealItem: SnapRecipeData, position: Int, isRefresh: Boolean) {
+    private fun onMealLogEditItem(mealItem: SearchResultItem, position: Int, isRefresh: Boolean) {
 
-        val valueLists : ArrayList<SnapRecipeData> = ArrayList()
-        valueLists.addAll(dishLists as Collection<SnapRecipeData>)
+        val valueLists : ArrayList<SearchResultItem> = ArrayList()
+        valueLists.addAll(dishLists as Collection<SearchResultItem>)
         dishListAdapter.addAll(valueLists, position, mealItem, isRefresh)
     }
 
@@ -346,7 +343,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         })
     }
 
-    private fun createMealsSave(snapRecipeList : ArrayList<SnapRecipeData>) {
+    private fun createMealsSave(snapRecipeList : ArrayList<SearchResultItem>) {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -356,8 +353,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         val formattedDate = currentDateTime.format(formatter)
 
         val mealLogList : ArrayList<MealLog> = ArrayList()
-        val mealNamesString = snapRecipeList.map { it.recipe_name ?: "" }.joinToString(", ")
-
+        val mealNamesString = snapRecipeList.map { it.name ?: "" }.joinToString(", ")
 
         snapRecipeList?.forEach { snapRecipe ->
             val mealLogData = MealLog(
