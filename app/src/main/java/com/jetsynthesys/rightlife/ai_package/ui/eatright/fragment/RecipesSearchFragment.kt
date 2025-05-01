@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -48,9 +50,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private lateinit var searchEditText : EditText
     private lateinit var cancel : TextView
     private lateinit var searchResultLayout : LinearLayout
-    private lateinit var tvSearchResult : TextView
+    //private lateinit var tvSearchResult : TextView
+    private lateinit var tabLayout: TabLayout
+
     private lateinit var searchResultListLayout: ConstraintLayout
     private lateinit var tvAllDishes : TextView
+    private lateinit var et_search : EditText
     private lateinit var allDishesRecyclerview : RecyclerView
     private lateinit var searchType : String
     private lateinit var appPreference: AppPreference
@@ -62,6 +67,9 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private lateinit var backButton : ImageView
     private lateinit var currentPhotoPathsecound : Uri
     private lateinit var mealType : String
+    private val tabTitles = arrayOf("Calorie", "Protein", "Carbs", "Fats")
+    private var currentFragmentTag: String? = null // Track the current fragment tag
+
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRecipeSearchBinding
         get() = FragmentRecipeSearchBinding::inflate
@@ -83,11 +91,42 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         searchEditText = view.findViewById(R.id.et_search)
         cancel = view.findViewById(R.id.tv_cancel)
         searchResultLayout = view.findViewById(R.id.layout_search_result)
-        tvSearchResult = view.findViewById(R.id.tv_search_result)
+        //tvSearchResult = view.findViewById(R.id.tv_search_result)
         searchResultListLayout = view.findViewById(R.id.layout_search_resultList)
         tvAllDishes = view.findViewById(R.id.tv_all_dishes)
         allDishesRecyclerview = view.findViewById(R.id.recyclerView_all_dishes)
         backButton = view.findViewById(R.id.backButton)
+        tabLayout = view.findViewById(R.id.tabMacroLayout)
+        for (title in tabTitles) {
+            val tab = tabLayout.newTab()
+            val customView = LayoutInflater.from(context).inflate(R.layout.custom_tab, null) as TextView
+            customView.text = title
+            tab.customView = customView
+            tabLayout.addTab(tab)
+        }
+        if (currentFragmentTag == null) {
+            currentFragmentTag = "Calorie"
+           // showFragment("Calorie")
+            tabLayout.getTabAt(0)?.select()
+        } else {
+           // showFragment(currentFragmentTag!!)
+            tabLayout.getTabAt(tabTitles.indexOf(currentFragmentTag))?.select()
+        }
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.position?.let { position ->
+                    val tag = tabTitles[position]
+                    currentFragmentTag = tag
+                    //showFragment(tag)
+                    updateTabColors()
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
+        // et_search = view.findViewById(R.id.et_search)
 
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
@@ -159,6 +198,24 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             onSnapSearchDishItemRefresh()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun updateTabColors() {
+        for (i in 0 until tabLayout.tabCount) {
+            val tab = tabLayout.getTabAt(i)
+            val customView = tab?.customView
+            val tabText = customView?.findViewById<TextView>(R.id.tabText)
+
+            if (tab?.isSelected == true) {
+                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                val typeface = resources.getFont(R.font.dmsans_bold)
+                tabText?.typeface = typeface
+            } else {
+                val typeface = resources.getFont(R.font.dmsans_regular)
+                tabText?.typeface = typeface
+                tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
+            }
+        }
+    }
 
     private fun onSnapSearchDishItemRefresh() {
 
@@ -189,12 +246,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             recipeSearchAdapter.updateList(filteredList)
             if (query.isNotEmpty()) {
                 searchResultLayout.visibility = View.VISIBLE
-                tvSearchResult.visibility = View.VISIBLE
+                //tvSearchResult.visibility = View.VISIBLE
                // cancel.visibility = View.VISIBLE
-                tvSearchResult.text = "Search Result: ${filteredList.size}"
+               // tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
                 searchResultLayout.visibility = View.VISIBLE
-                tvSearchResult.visibility = View.GONE
+              //  tvSearchResult.visibility = View.GONE
               //  cancel.visibility = View.GONE
             }
         }else{
@@ -203,12 +260,12 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             recipeSearchAdapter.updateList(filteredList)
             if (query.isNotEmpty()) {
                 searchResultLayout.visibility = View.VISIBLE
-                tvSearchResult.visibility = View.VISIBLE
+               // tvSearchResult.visibility = View.VISIBLE
               //  cancel.visibility = View.VISIBLE
-                tvSearchResult.text = "Search Result: ${filteredList.size}"
+               // tvSearchResult.text = "Search Result: ${filteredList.size}"
             } else {
                 searchResultLayout.visibility = View.VISIBLE
-                tvSearchResult.visibility = View.GONE
+              //  tvSearchResult.visibility = View.GONE
              //   cancel.visibility = View.GONE
             }
         }
@@ -275,5 +332,9 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
           //      LoaderUtil.dismissLoader(requireActivity())
             }
         })
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("currentFragmentTag", currentFragmentTag)
     }
 }
