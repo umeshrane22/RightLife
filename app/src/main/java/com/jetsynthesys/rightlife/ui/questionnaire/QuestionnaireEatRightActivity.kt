@@ -33,6 +33,7 @@ class QuestionnaireEatRightActivity : BaseActivity() {
         binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
         viewPager = binding.viewPagerQuestionnaire
+        viewPager.offscreenPageLimit = 1
 
         binding.iconBack.setOnClickListener {
             val currentItem = binding.viewPagerQuestionnaire.currentItem

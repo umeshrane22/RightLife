@@ -148,8 +148,6 @@
         <activity android:name=".ui.jounal.new_journal.BulletJournalActivity" />
         <activity android:name=".ui.jounal.new_journal.GriefJournalActivity" />
         <activity android:name=".ui.jounal.new_journal.JournalListActivity" />
-        <activity android:name=".ui.affirmation.AffirmationLandingActivity1" />
-        <activity android:name=".ui.affirmation.AffirmationLandingActivity2" />
         <activity android:name=".ui.affirmation.TodaysAffirmationActivity" />
         <activity android:name=".ui.affirmation.PractiseAffirmationPlaylistActivity" />
         <activity android:name=".newdashboard.HomeDashboardActivity" />

@@ -1620,7 +1620,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             return false; // Return false if condition is true and dialog is shown
         } else {
             if (!DashboardChecklistManager.INSTANCE.getChecklistStatus()) {
-                DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this);
+                DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this,"Finish Checklist to Unlock");
                 return false;
             } else {
                 return true;// Return true if condition is false
