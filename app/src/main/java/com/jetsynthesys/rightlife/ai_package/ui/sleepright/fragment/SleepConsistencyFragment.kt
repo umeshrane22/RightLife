@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
@@ -17,6 +18,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -24,12 +26,16 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.DataPoints
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
+import com.jetsynthesys.rightlife.ai_package.model.SleepJson
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepConsistencyBinding
 import kotlinx.coroutines.async
@@ -37,10 +43,14 @@ import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>() {
 
@@ -58,6 +68,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDate: LocalDate = LocalDate.now() // today
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -88,22 +99,39 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
+        val jsonData : SleepJson = loadStepData()
+        val fullList = jsonData.dataPoints
+        val firstSeven = ArrayList(fullList.take(7))
+        setJsonData(firstSeven)
+
         fetchSleepData()
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun setupListeners() {
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek -> {
                     currentTab = 0
+                    val jsonData : SleepJson = loadStepData()
+                    val fullList = jsonData.dataPoints
+                    val firstSeven = ArrayList(fullList.take(7))
+                    setJsonData(firstSeven)
                     loadWeekData()
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
+                    val jsonData : SleepJson = loadStepData()
+                    val fullList = jsonData.dataPoints
+                    val firstSeven = ArrayList(fullList.take(30))
+                    setJsonData(firstSeven)
                     loadMonthData()
                 }
                 R.id.rbSixMonths -> {
                     currentTab = 2
+                    val jsonData : SleepJson = loadStepData()
+                    val fullList = jsonData.dataPoints
+                    setJsonData(fullList)
                     loadSixMonthsData()
                 }
             }
@@ -201,6 +229,20 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
       //  updateChart(entries, months)
     }
 
+    private fun loadStepData(): SleepJson {
+        //D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\fit\alldata\derived_com.google.heart_rate.bpm_com.google.a(1).json
+        val json = context?.assets?.open("assets/fit/alldata/derived_com.google.sleep.segment_com.google.an.json")?.bufferedReader().use { it?.readText() }
+        return Gson().fromJson(json, object : TypeToken<SleepJson>() {}.type)
+//        val json = context?.assets.open("derived_com.google.active_minutes_com.google.a.json").readText()
+//
+
+//        val jsonString = json/* load JSON file as string */
+//        val activeMinutesData = gson.fromJson(jsonString, HeartRateFitData::class.java)
+//
+//     //   D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\Fit\All data\derived_com.google.active_minutes_com.google.a(4).json
+
+//
+    }
 
     private fun fetchSleepData() {
         progressDialog.show()
@@ -215,7 +257,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                     progressDialog.dismiss()
                     sleepConsistencyResponse = response.body()!!
                     sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
-                        setData(it)
+                       // setData(it)
                     }
 
                 } else {
@@ -233,11 +275,41 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    fun setJsonData(parseSleepData: ArrayList<DataPoints>) = runBlocking {
+        val result = async {
+            parseSleepJsonData(parseSleepData)
+        }.await()
+        barChart.setSleepData(result)
+    }
+
     fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
         val result = async {
             parseSleepData(parseSleepData)
         }.await()
         barChart.setSleepData(result)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    private fun parseSleepJsonData(sleepDetails: List<DataPoints>): List<SleepEntry> {
+        val sleepSegments = mutableListOf<SleepEntry>()
+        for (sleepEntry in sleepDetails) {
+            val startTime = sleepEntry.startTimeNanos!!
+            val endTime = sleepEntry.endTimeNanos!!
+            val duration = sleepEntry.fitValue.getOrNull(0)?.value?.intVal?.toFloat()!!
+            sleepSegments.add(SleepEntry(convertNanoToFormattedDate(startTime), convertNanoToFormattedDate(endTime), duration))
+        }
+        return sleepSegments
+    }
+
+    fun convertNanoToFormattedDate(nanoTime: Long): String {
+        val millis = nanoTime / 1_000_000
+        val date = Date(millis)
+
+        // Format the date
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        return formatter.format(date)
     }
 
     private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {

@@ -61,9 +61,12 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
+import com.jetsynthesys.rightlife.ai_package.model.SleepJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
@@ -277,6 +280,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 putExtra("PlayList", "PlayList")
             })
         }
+
     }
 
     private fun fetchWakeupData() {
@@ -330,8 +334,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchSleepLandingData() {
         Utils.showLoader(requireActivity())
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-      //  val userId = "user_test_1"
+     //   val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "68010b615a508d0cfd6ac9ca"
         val date = getCurrentDate()
         val source = "apple"
         val preferences = "nature_sounds"
@@ -438,10 +442,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchIdealActualData() {
         Utils.showLoader(requireActivity())
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        //val userId = "user_test_1"
+       // val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "68010b615a508d0cfd6ac9ca"
         val period = "daily"
-        val source = "apple"
+        val source = "health_connect"
         val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
         call.enqueue(object : Callback<SleepIdealActualResponse> {
             override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
