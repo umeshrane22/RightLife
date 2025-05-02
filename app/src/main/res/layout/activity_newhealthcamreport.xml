@@ -86,8 +86,7 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="15dp"
-                        android:gravity="center">
+                        android:layout_marginVertical="@dimen/margin_card_16dp">
 
                         <TextView
                             android:id="@+id/txt_card_header"
@@ -96,9 +95,16 @@
                             android:layout_centerInParent="true"
                             android:layout_centerHorizontal="true"
                             android:fontFamily="@font/merriweather_bold"
-                            android:paddingStart="10dp"
                             android:text="Overall Wellness Score"
                             android:textSize="18sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:src="@drawable/ic_db_report_right_arrow"
+                            android:layout_alignParentEnd="true"
+                            android:rotation="-45"
+                            android:layout_marginEnd="5dp"
+                            android:layout_height="wrap_content"/>
 
                     </RelativeLayout>
 
@@ -380,6 +386,14 @@
                     android:text="Your scan shows that HRV, Blood Pressure Stress Body Mass Index parameters needs your attention. Let’s take steps to improve them!" />
             </LinearLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Vitals"
+                android:layout_marginStart="@dimen/margin_card_16dp"
+                android:paddingStart="10dp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="@dimen/textsize_large"
+                android:layout_height="wrap_content"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_vital_cards"
                 android:layout_width="match_parent"

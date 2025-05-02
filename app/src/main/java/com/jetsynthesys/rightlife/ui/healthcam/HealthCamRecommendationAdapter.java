@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
+import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.Recommendation;
+import com.jetsynthesys.rightlife.ui.Wellness.MoreContentDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.utility.Utils; // Import your Utils class
 
 import java.util.List;
@@ -84,6 +87,16 @@ public class HealthCamRecommendationAdapter extends RecyclerView.Adapter<HealthC
             text = "";
         }*/
         holder.timeLeftTextView.setText(text);
+
+        holder.itemView.setOnClickListener(view -> {
+            //Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
+            Gson gson = new Gson();
+            String json = gson.toJson(recommendations);
+            Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
+            intent.putExtra("Categorytype", json);
+            intent.putExtra("position", position);
+            holder.itemView.getContext().startActivity(intent);
+        });
     }
 
     private Drawable getModuleTypeDrawable(Context ctx, String moduleName) {
