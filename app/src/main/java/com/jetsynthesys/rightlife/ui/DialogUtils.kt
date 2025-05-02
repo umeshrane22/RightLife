@@ -40,28 +40,10 @@ object DialogUtils {
         dialog.show()
     }
 
-    fun showCheckListQuestionCommonDialog(context: Context) {
-        val htmlText = """
-    <h3>Finish Checklist to Unlock</h3>
-    ompleting your checklist unlocks the full power of RightLife.</p>
-
-    <b>Smart logging, Deep–dive insights.</b><br>
-    Here’s what’s waiting for you on the other side:</p>
-
-    🍽️ <b>Eat</b><br>
-    Get meal insights, nutrient tracking, and food logging tailored to your goals.</p>
-
-    🏃‍♂️ <b>Move</b><br>
-    See activity trends, heart rate zones, and movement suggestions and insights.</p>
-
-    <p>😴 <b>Sleep</b><br>
-    Understand your sleep patterns, consistency, and get smarter wind–down tips.</p>
-
-    <p>🧠 <b>Think</b><br>
-    Access affirmations, mood logging, and guided mental wellness tools.</p>
-
-    <p>The sooner you complete it, the sooner your health journey truly begins.</p>
-""".trimIndent()
+    fun showCheckListQuestionCommonDialog(
+        context: Context,
+        header: String = "Finish Checklist to Unlock"
+    ) {
         val dialog = Dialog(context)
         val binding = DialogChecklistQuestionsBinding.inflate(LayoutInflater.from(context))
         dialog.setContentView(binding.root)
@@ -73,8 +55,7 @@ object DialogUtils {
         layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
         window.attributes = layoutParams
 
-        binding.tvTitle.text = "Finish Checklist to Unlock"
-        binding.tvDescription.text = Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)
+        binding.titleText.text = header
 
         // Handle close button click
         binding.btnClose.setOnClickListener {

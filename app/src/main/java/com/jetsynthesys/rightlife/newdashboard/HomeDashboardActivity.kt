@@ -128,7 +128,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         //handle bottom menu
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
-            DialogUtils.showCheckListQuestionCommonDialog(this)
+            DialogUtils.showCheckListQuestionCommonDialog(this,"Why Checklist?")
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)

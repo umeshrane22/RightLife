@@ -190,13 +190,10 @@ public class Utils {
 
     public static void hideSoftKeyboard(Activity activity) {
         InputMethodManager inputMethodManager =
-                (InputMethodManager) activity.getSystemService(
-                        Activity.INPUT_METHOD_SERVICE);
-        if (inputMethodManager.isAcceptingText()) {
-            inputMethodManager.hideSoftInputFromWindow(
-                    activity.getCurrentFocus().getWindowToken(),
-                    0
-            );
+                (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View currentFocus = activity.getCurrentFocus();
+        if (currentFocus != null && inputMethodManager != null && inputMethodManager.isAcceptingText()) {
+            inputMethodManager.hideSoftInputFromWindow(currentFocus.getWindowToken(), 0);
         }
     }
 
