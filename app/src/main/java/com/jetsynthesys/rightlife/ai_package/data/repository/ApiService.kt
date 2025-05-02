@@ -87,6 +87,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -117,6 +118,11 @@ interface ApiService {
     @GET("eat/recipes/names")
     fun getSnapMealRecipesList(
        ): Call<SnapMealRecipeResponseModel>
+
+    @GET("eat/recipes/{id}")
+    fun getSnapMealRecipeById(
+        @Path("id") recipeId: String
+    ): Call<RecipeResponseNew>
 
     @GET("eat/recipes/names")
     fun getRecipesList(
