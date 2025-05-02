@@ -144,24 +144,24 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
             snapMealLogRequests = selectedSnapMealLogListModels
         }
 
-        if (snapDishLocalListModels != null){
-            snapDishLocalListModel = snapDishLocalListModels
-
-            if (foodDetailsResponse?.data != null){
-                val data = foodDetailsResponse?.data
-                if (snapDishLocalListModel.data.size > 0){
-                    dishLists.addAll(snapDishLocalListModel.data)
-                }
-                dishLists.add(data)
-                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            }
-        }else{
-            if (foodDetailsResponse?.data != null) {
-                val data = foodDetailsResponse?.data
-                dishLists.add(data)
-                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
-            }
-        }
+//        if (snapDishLocalListModels != null) {
+//            snapDishLocalListModel = snapDishLocalListModels
+//
+//            if (foodDetailsResponse?.data != null){
+//                val data = foodDetailsResponse?.data
+//                if (snapDishLocalListModel.data.size > 0){
+//                    dishLists.addAll(snapDishLocalListModel.data)
+//                }
+//                dishLists.add(data)
+//                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+//            }
+//        }else{
+//            if (foodDetailsResponse?.data != null) {
+//                val data = foodDetailsResponse?.data
+//                dishLists.add(data)
+//                snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+//            }
+//        }
 
 
         layoutMacroTitle.setOnClickListener {
@@ -207,12 +207,12 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         })
 
 
-        if (foodDetailsResponse?.data != null){
-            setDishData(foodDetailsResponse.data)
-            onMacroNutrientsList(foodDetailsResponse.data, 1)
-            onMicroNutrientsList(foodDetailsResponse.data, 1)
-            // onFrequentlyLoggedItemRefresh(foodDetailsResponse.data)
-        }
+//        if (foodDetailsResponse?.data != null){
+//            setDishData(foodDetailsResponse.data)
+//            onMacroNutrientsList(foodDetailsResponse.data, 1)
+//            onMicroNutrientsList(foodDetailsResponse.data, 1)
+//            // onFrequentlyLoggedItemRefresh(foodDetailsResponse.data)
+//        }
 
         addToTheMealLayout.setOnClickListener {
 
