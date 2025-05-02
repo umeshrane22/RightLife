@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -23,7 +24,9 @@ import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem
 import com.jetsynthesys.rightlife.databinding.ActivityFacialScanReportDetailsBinding
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanRange
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportData
+import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportDataWrapper
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse
+import com.jetsynthesys.rightlife.ui.healthcam.HealthCamRecommendationAdapter
 import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -297,6 +300,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                         binding.tvIndicatorValueBg.backgroundTintList = colorStateList
                     }
                     SetupBottomCard(responseBody?.data?.range)
+                    HandleContinueWatchUI(responseBody?.data)
                 } else {
                     showToast("Server Error: ${response.code()}")
                 }
@@ -811,6 +815,17 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
             "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
             else -> R.drawable.ic_db_report_heart_rate
+        }
+    }
+
+    private fun HandleContinueWatchUI(facialReportResponseNew: FacialScanReportDataWrapper?) {
+        if (facialReportResponseNew?.recommendation?.isNotEmpty() == true) {
+            val adapter =
+                HealthCamRecommendationAdapter(this, facialReportResponseNew?.recommendation)
+            val horizontalLayoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager)
+            binding.recyclerViewContinue.setAdapter(adapter)
         }
     }
 }

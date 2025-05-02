@@ -280,12 +280,17 @@ public class NewHealthCamReportActivity extends HealthCamBasicDetailsActivity {
         if (usedCount == 1) {
             layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
         } else {
-            layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
+            layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
+           // layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
         }
         if (usedCount == limit) {
             layout.buttonText.setText("Scan Again @ 99");
+            layout.btnScanAgain.setVisibility(View.GONE);
+            layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
+            binding.cardFacescanBooster.setVisibility(View.VISIBLE);
         } else {
             layout.buttonText.setText("Scan Again");
+            layout.btnScanAgain.setVisibility(View.VISIBLE);
         }
         layout.btnScanAgain.setOnClickListener(v -> {
             if (layout.buttonText.getText().toString().equalsIgnoreCase("Scan Again @ 99")) {
