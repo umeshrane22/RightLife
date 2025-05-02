@@ -28,16 +28,17 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerData
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RecordEmotionDialogFragment(emojiSelected:Int,journalText:String) : BottomSheetDialogFragment() {
+class RecordEmotionDialogFragment(emojiSelected:Int,journalText:String,journalData:JournalAnswerData?) : BottomSheetDialogFragment() {
 
-    val activities = listOf("Driving", "Eating", "Fitness", "Resting", "Hobbies")
-    val withWhom = listOf("By Myself", "Pets", "Co–workers", "Family", "Friends")
-    val locations = listOf("Commuting", "Home", "Outside", "School")
+    val activities : ArrayList<String> = arrayListOf()
+    val withWhom : ArrayList<String> = arrayListOf()
+    val locations : ArrayList<String> = arrayListOf()
     private var tagsList: ArrayList<String> = arrayListOf()
     val emoji = emojiSelected
     var journalTexts = journalText
@@ -49,6 +50,7 @@ class RecordEmotionDialogFragment(emojiSelected:Int,journalText:String) : Bottom
     private lateinit var emotionLabel: TextView
     private lateinit var journalText: TextView
     private lateinit var baseResponse: BaseResponse
+    private var journalAnswerData = journalData
     var emojiSelected = 0
     private lateinit var progressDialog: ProgressDialog
 
@@ -96,7 +98,11 @@ class RecordEmotionDialogFragment(emojiSelected:Int,journalText:String) : Bottom
         }
         addJournalEntry.setOnClickListener {
             dismiss()
-            navigateToFragment(JournalFragment(emoji), "JournalFragment")
+            navigateToFragment(JournalFragment(emoji,""), "JournalFragment")
+        }
+        journalText.setOnClickListener {
+            dismiss()
+            navigateToFragment(JournalFragment(emoji,journalTexts), "JournalFragment")
         }
         if (journalTexts != "") {
             addJournalEntry.visibility = View.GONE
@@ -144,26 +150,24 @@ class RecordEmotionDialogFragment(emojiSelected:Int,journalText:String) : Bottom
             progressDialog.show()
             val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
             // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
-            val call = ApiClient.apiService.addThinkJournalEmoji(token,
-                AddEmojiRequest(title = "", questionId ="", answer = "", emotion = emotionLabel.text.toString(), tags = tagsList ))
+            val call = ApiClient.apiService.addThinkJournalEmoji(token, AddEmojiRequest(title = journalAnswerData?.title, questionId =journalAnswerData?.questionId, answer = journalTexts, emotion = emotionLabel.text.toString(), tags = tagsList ))
             call.enqueue(object : Callback<BaseResponse> {
                 override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                     if (response.isSuccessful) {
                         progressDialog.dismiss()
                         if (response.body()!=null) {
                             baseResponse = response.body()!!
-                            Toast.makeText(requireContext(), "${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
-                            Log.e("Success", "Response is successful: ${response.isSuccessful}")
+                           // Toast.makeText(activity, "${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                      //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                         progressDialog.dismiss()
                     }
                 }
                 override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
-                    Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+               //     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             })

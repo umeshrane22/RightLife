@@ -10,7 +10,7 @@ data class RestorativeSleepDetail(
     var sleepStartTime             : String?,
     @SerializedName("sleep_end_time")
     var sleepEndTime               : String?,
-    @SerializedName("sleep_stages")
+    @SerializedName("sleep_stages_data")
     var sleepStages                : ArrayList<SleepStages>                = arrayListOf(),
     @SerializedName("calculated_restorative_sleep")
     var calculatedRestorativeSleep : CalculatedRestorativeSleep?

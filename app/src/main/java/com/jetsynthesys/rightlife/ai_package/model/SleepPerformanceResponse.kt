@@ -9,6 +9,6 @@ data class SleepPerformanceResponse(
     var startDatetime        : String?,
     @SerializedName("end_datetime")
     var endDatetime          : String?,
-    @SerializedName("sleep_performance_data")
+    @SerializedName("sleep_performance_data" )
     var sleepPerformanceData : ArrayList<SleepPerformanceList> = arrayListOf()
 )

@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Path
 import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.jetsynthesys.rightlife.R
@@ -27,6 +29,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -34,11 +37,15 @@ import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepDetail
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStages
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
 class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
 
@@ -49,6 +56,11 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     private lateinit var barChart: BarChart
     private lateinit var radioGroup: RadioGroup
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var btnPrevious: ImageView
+    private lateinit var btnNext: ImageView
+    private lateinit var dateRangeText: TextView
+    private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
+    private var currentDate: LocalDate = LocalDate.now() // today
 
     private val stageColorMap = mapOf(
         "Light" to Color.parseColor("#AEE2FF"),
@@ -65,12 +77,16 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
         barChart = view.findViewById(R.id.restorativeBarChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        btnPrevious = view.findViewById(R.id.btn_prev)
+        btnNext = view.findViewById(R.id.btn_next)
+        dateRangeText = view.findViewById(R.id.tv_selected_date)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
         // Show Week data by default
       //  updateChart(getWeekData(), getWeekLabels())
         fetchSleepData()
+        setupListeners()
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -79,23 +95,10 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         renderStackedChart(weekData)
 
         // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek ->{
-                  renderStackedChart(weekData)
-                }
-                R.id.rbMonth ->{
-                 renderMonthChart(barChart,monthData)
-                }
-                R.id.rbSixMonths ->{
-                    renderMonthChart(barChart,monthData)
-                }
-            }
-        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
 
             }
         })
@@ -103,7 +106,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         /*barChart.renderer = RoundedBarChartRenderer(
@@ -113,6 +116,118 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         )*/
 
 
+    }
+
+    private fun setupListeners() {
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    loadWeekData()
+                    renderStackedChart(getDummyWeekSleepData())
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    loadMonthData()
+                    renderMonthChart(barChart,getDummyMonthSleepData())
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    loadSixMonthsData()
+                }
+            }
+        }
+
+        btnPrevious.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.minusWeeks(1)
+                    loadWeekData()
+                }
+                1 -> {
+                    currentDate = currentDate.minusMonths(1)
+                    loadMonthData()
+                }
+                2 -> {
+                    currentDate = currentDate.minusMonths(6)
+                    loadSixMonthsData()
+                }
+            }
+        }
+
+        btnNext.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.plusWeeks(1)
+                    loadWeekData()
+                }
+                1 -> {
+                    currentDate = currentDate.plusMonths(1)
+                    loadMonthData()
+                }
+                2 -> {
+                    currentDate = currentDate.plusMonths(6)
+                    loadSixMonthsData()
+                }
+            }
+        }
+    }
+
+    private fun loadWeekData() {
+        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
+        val endOfWeek = startOfWeek.plusDays(6)
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+
+        val entries = mutableListOf<BarEntry>()
+        for (i in 0..6) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+    //    updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+
+    }
+
+    private fun loadMonthData() {
+        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
+        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+
+        val entries = mutableListOf<BarEntry>()
+        val daysInMonth = endOfMonth.dayOfMonth
+        for (i in 0 until daysInMonth) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+
+     //   updateChart(entries, weekRanges)
+    }
+
+    private fun loadSixMonthsData() {
+        val startOfPeriod = currentDate.minusMonths(5).with(TemporalAdjusters.firstDayOfMonth())
+        val endOfPeriod = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+
+        val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
+        dateRangeText.text = "${startOfPeriod.format(formatter)} - ${endOfPeriod.format(formatter)}"
+
+        val entries = mutableListOf<BarEntry>()
+        for (i in 0..5) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        val months = listOf(
+            startOfPeriod.month.name.take(3),
+            startOfPeriod.plusMonths(1).month.name.take(3),
+            startOfPeriod.plusMonths(2).month.name.take(3),
+            startOfPeriod.plusMonths(3).month.name.take(3),
+            startOfPeriod.plusMonths(4).month.name.take(3),
+            startOfPeriod.plusMonths(5).month.name.take(3)
+        )
+       // updateChart(entries, months)
     }
 
     fun renderMonthChart(chart: BarChart, data: List<Pair<String, RestorativeSleepDetail>>) {
@@ -159,6 +274,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         val barData = BarData(dataSet).apply {
             barWidth = 0.4f // ✅ Thin
             chart.setVisibleXRangeMaximum(31f)
+            chart.setRenderer(RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler,stageColorMap))
         }
 
         chart.apply {
@@ -191,8 +307,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
     private fun fetchSleepData() {
         progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
+         val userId = "67f6698fa213d14e22a47c2a"
         val date = "2025-03-18"
         val source = "apple"
         val period = "weekly"
@@ -258,7 +373,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             valueTextColor = Color.BLACK
             valueTextSize = 10f
         }
-
+        barChart.setRenderer(RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler,stageColorMap))
         barChart.apply {
             data = BarData(dataSet)
             description.isEnabled = false
@@ -355,66 +470,112 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             commit()
         }
     }
+}
 
-    class RoundedBarChartRenderer(
-        chart: BarDataProvider,
-        animator: ChartAnimator,
-        viewPortHandler: ViewPortHandler
-    ) : BarChartRenderer(chart, animator, viewPortHandler) {
+class RestorativeBarChartRenderer(
+    private val chart: BarDataProvider,
+    animator: ChartAnimator,
+    viewPortHandler: ViewPortHandler,
+    private val stageColorMap: Map<String, Int>
+) : BarChartRenderer(chart, animator, viewPortHandler) {
 
-        private val radius = 20f // corner radius in pixels
+    private val radius = 20f
+    private val stageNames = arrayOf("Light", "Deep", "REM", "Awake")
 
-        override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
-            val trans = mChart.getTransformer(dataSet.axisDependency)
-            mBarBorderPaint.color = dataSet.barBorderColor
-            val drawBorder = dataSet.barBorderWidth > 0f
+    override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
+        val trans = chart.getTransformer(dataSet.axisDependency)
+        val drawBorder = dataSet.barBorderWidth > 0f
 
-            mShadowPaint.color = dataSet.barShadowColor
+        if (mBarBuffers.size < index + 1) return
 
-            val phaseX = mAnimator.phaseX
-            val phaseY = mAnimator.phaseY
+        val buffer = mBarBuffers[index]
+        buffer.setPhases(mAnimator.phaseX, mAnimator.phaseY)
+        buffer.setDataSet(index)
+        buffer.setInverted(chart.isInverted(dataSet.axisDependency))
+        buffer.setBarWidth(chart.barData.barWidth)
 
-            val barData = mChart.barData
-            val barWidth = barData.barWidth
+        buffer.feed(dataSet)
 
-            val buffer = mBarBuffers[index]
-            buffer.setPhases(phaseX, phaseY)
-            buffer.setDataSet(index)
-            buffer.setInverted(mChart.isInverted(dataSet.axisDependency))
-            buffer.setBarWidth(barData.barWidth)
-            buffer.feed(dataSet)
+        trans.pointValuesToPixel(buffer.buffer)
 
-            trans.pointValuesToPixel(buffer.buffer)
-
-            for (j in 0 until buffer.size() step 4) {
-                if (!mViewPortHandler.isInBoundsLeft(buffer.buffer[j + 2])) continue
-                if (!mViewPortHandler.isInBoundsRight(buffer.buffer[j])) break
-
+        if (!dataSet.isStacked) {
+            for (j in buffer.buffer.indices step 4) {
                 val left = buffer.buffer[j]
                 val top = buffer.buffer[j + 1]
                 val right = buffer.buffer[j + 2]
                 val bottom = buffer.buffer[j + 3]
 
-                val entryIndex = j / 4
-                if (entryIndex >= dataSet.entryCount) continue
+                val rect = RectF(left, top, right, bottom)
 
-                val isTopSegment = isTopBarSegment(dataSet, entryIndex)
+                val path = Path().apply {
+                    addRoundRect(
+                        rect,
+                        floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f),
+                        Path.Direction.CW
+                    )
+                }
+                c.drawPath(path, mRenderPaint)
+                if (drawBorder) c.drawPath(path, mBarBorderPaint)
+            }
+        } else {
+            val barWidth = chart.barData.barWidth
 
-                if (isTopSegment) {
-                    val rectF = RectF(left, top, right, bottom)
-                    c.drawRoundRect(rectF, radius, radius, mRenderPaint)
-                } else {
-                    c.drawRect(left, top, right, bottom, mRenderPaint)
+            for (i in 0 until dataSet.entryCount) {
+                val entry = dataSet.getEntryForIndex(i) as? BarEntry ?: continue
+                val vals = entry.yVals ?: continue
+                val topIndex = vals.indexOfLast { it != 0f }
+
+                var posY = 0f
+                var negY = -entry.negativeSum
+
+                for (k in vals.indices) {
+                    val value = vals[k]
+                    val stageName = stageNames.getOrNull(k) ?: "Light"
+                    mRenderPaint.color = stageColorMap[stageName] ?: Color.GRAY
+
+                    val yStart: Float
+                    val yEnd: Float
+
+                    if (value >= 0f) {
+                        yStart = posY
+                        posY += value
+                        yEnd = posY
+                    } else {
+                        yStart = negY
+                        negY += value
+                        yEnd = negY
+                    }
+
+                    val x = entry.x
+                    val rect = RectF(
+                        x - barWidth / 2f,
+                        yEnd,
+                        x + barWidth / 2f,
+                        yStart
+                    )
+                    trans.rectToPixelPhase(rect, mAnimator.phaseY)
+
+                    val drawRounded = (k == topIndex)
+
+                    if (drawRounded) {
+                        val path = Path().apply {
+                            addRoundRect(
+                                rect,
+                                floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f),
+                                Path.Direction.CW
+                            )
+                        }
+                        c.drawPath(path, mRenderPaint)
+                        if (drawBorder) c.drawPath(path, mBarBorderPaint)
+                    } else {
+                        c.drawRect(rect, mRenderPaint)
+                        if (drawBorder) c.drawRect(rect, mBarBorderPaint)
+                    }
                 }
             }
         }
-
-        private fun isTopBarSegment(dataSet: IBarDataSet, index: Int): Boolean {
-            val entry = dataSet.getEntryForIndex(index) as? BarEntry ?: return false
-            val stackedValues = entry.yVals
-            return stackedValues == null // Only draw rounded if it's not part of a stack
-        }
     }
 }
+
 
 

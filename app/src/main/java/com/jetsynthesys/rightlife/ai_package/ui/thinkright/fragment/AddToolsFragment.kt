@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -21,11 +22,9 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
-import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
-import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentAllToolsListBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -33,46 +32,156 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class ToolsAdapterList(context1:Context, private val tools: ArrayList<ToolsData>, private val onItemClick: (Int,ToolsData) -> Unit) :
-    RecyclerView.Adapter<ToolsAdapterList.ToolViewHolder>() {
-        val contexts = context1
+class ToolsAdapterList(private val context1: Context, private val items: List<ToolDisplayItem>, private val onItemClick: (Int, ToolsData) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private val contexts = context1
+
+    companion object {
+        private const val TYPE_TOOL = 0
+        private const val TYPE_AFFIRMATION_CARD = 1
+    }
+
     class ToolViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.tool_icon)
         val name: TextView = itemView.findViewById(R.id.tool_name)
         val description: TextView = itemView.findViewById(R.id.tool_description)
         val selectButton: ImageView = itemView.findViewById(R.id.tool_select_button)
     }
-    val imageList = arrayListOf(
-        R.drawable.breathing_male,
-        R.drawable.write_note_icon
-    )
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToolViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_tools, parent, false)
-        return ToolViewHolder(view)
-    }
 
-    override fun onBindViewHolder(holder: ToolViewHolder, position: Int) {
-        val tool = tools[position]
-        Glide.with(contexts)
-            .load(tools.getOrNull(position)?.image)
-            .placeholder(R.drawable.ic_plus)
-            .into(holder.icon)
-        holder.name.text = tools.getOrNull(position)?.title
-        holder.description.text = tools.getOrNull(position)?.desc
-        /*if (tools.getOrNull(position)?.title == "Breathing"){
-             holder.icon.setImageResource(R.drawable.breathing_male)
-        }else if (tools.getOrNull(position)?.title == "Affirmation"){
-            holder.icon.setImageResource(R.drawable.write_note_icon)
-        }*/
+    class AffirmationCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-        holder.selectButton.setImageResource(if (tool.isSelectedModule == true) R.drawable.green_check_item else R.drawable.add_think_brown_icon)
-
-        holder.selectButton.setOnClickListener {
-            onItemClick(position,tool)
+    override fun getItemViewType(position: Int): Int {
+        return when (items[position]) {
+            is ToolDisplayItem.ToolItem -> TYPE_TOOL
+            is ToolDisplayItem.AffirmationCard -> TYPE_AFFIRMATION_CARD
         }
     }
 
-    override fun getItemCount(): Int = tools.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == TYPE_TOOL) {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_tools, parent, false)
+            ToolViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_affirmation, parent, false)
+            AffirmationCardViewHolder(view)
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = items[position]) {
+            is ToolDisplayItem.ToolItem -> {
+                val tool = item.data
+                val toolHolder = holder as ToolViewHolder
+
+                when (tool.title) {
+                    "Affirmation" ->{
+                        Glide.with(contexts)
+                            .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/dccba8e93b41dc3f856d7c18b13d5783.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Box Breathing" ->{
+                        Glide.with(contexts)
+                            .load("https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/62e1e78cca28251bf83e46bc0018ba0b.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Alternate Nostril Breathing" ->{
+                        Glide.with(contexts)
+                            .load( "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/4a37e4954896bd3a53d90424be77a724.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Equal Breathing" ->{
+                        Glide.with(contexts)
+                            .load( "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/4a37e4954896bd3a53d90424be77a724.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "4-7-8 Breathing" ->{
+                        Glide.with(contexts)
+                            .load(  "https://jetsynthesisqa-us-east-1.s3.amazonaws.com/media/cms/content/module/c88072eb32c47a1e385fae66696dc293.png")
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                    "Free Form" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_freeform_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+
+                    "Bullet" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_bullet_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+
+                    "Gratitude" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_gratitude_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+
+                    "Grief" -> {
+                        Glide.with(contexts)
+                            .load(  R.drawable.ic_grief_journal)
+                            .placeholder(R.drawable.ic_plus)
+                            .into(holder.itemView.findViewById<ImageView>(R.id.tool_icon))
+                    }
+                }
+
+                toolHolder.name.text = tool.title
+                toolHolder.description.text = tool.desc
+
+                toolHolder.selectButton.setImageResource(
+                    if (tool.isSelectedModule == true)
+                        R.drawable.green_check_item
+                    else
+                        R.drawable.add_think_brown_icon
+                )
+
+                toolHolder.selectButton.setOnClickListener {
+                    onItemClick(position, tool)
+                }
+            }
+
+            is ToolDisplayItem.AffirmationCard -> {
+
+            }
+        }
+    }
+
+    override fun getItemCount(): Int = items.size
+}
+
+fun transformTools(tools: List<ToolsData>): List<ToolDisplayItem> {
+    val result = mutableListOf<ToolDisplayItem>()
+    var hasInsertedAffirmationCard = false
+
+    for (tool in tools) {
+        val isAffirmation = tool.title?.contains("affirmation", ignoreCase = true)
+
+        // If it's an affirmation, insert the card once and skip the actual tool item
+        if (isAffirmation == true) {
+            if (!hasInsertedAffirmationCard) {
+                result.add(ToolDisplayItem.AffirmationCard)
+                hasInsertedAffirmationCard = true
+            }
+            continue // skip adding the original tool
+        }
+
+        result.add(ToolDisplayItem.ToolItem(tool))
+    }
+
+    return result
+}
+
+sealed class ToolDisplayItem {
+    data class ToolItem(val data: ToolsData) : ToolDisplayItem()
+    object AffirmationCard : ToolDisplayItem()
 }
 
 class FilterAdapter(private val filters: List<FilterItem>, private val onFilterClick: (Int,FilterItem) -> Unit) :
@@ -116,8 +225,8 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     private lateinit var toolsAdapter: ToolsAdapterList
     private lateinit var filterRecyclerView: RecyclerView
     private lateinit var filterAdapter: FilterAdapter
-   // private var tools = mutableListOf<ToolsData>()
-    var tools: ArrayList<ToolsData> = ArrayList()
+    val tools = mutableListOf<ToolDisplayItem>()
+  //  var tools: ArrayList<ToolsData> = ArrayList()
    var toolsId = ""
     var userId =""
     var moduleName = ""
@@ -195,12 +304,10 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                         progressDialog.dismiss()
                         if (response.body()!=null) {
                             toolsResponse = response.body()!!
-                            tools.clear()
-                            for (i in 0 until toolsResponse.data.size) {
-                                toolsResponse.data.getOrNull(i)?.let {
-                                    tools.add(it)
+                                toolsResponse.data.let {
+                                    tools.clear()
+                                    tools.addAll(transformTools(it))
                                 }
-                            }
                             toolsAdapter.notifyDataSetChanged()
                         }
                     } else {
@@ -223,12 +330,10 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                         progressDialog.dismiss()
                         if (response.body()!=null) {
                             toolsResponse = response.body()!!
-                            tools.clear()
-                            for (i in 0 until toolsResponse.data.size) {
-                                toolsResponse.data.getOrNull(i)?.let {
-                                    tools.add(it)
+                                toolsResponse.data.let {
+                                    tools.clear()
+                                    tools.addAll(transformTools(it))
                                 }
-                            }
                             toolsAdapter.notifyDataSetChanged()
                         }
                     } else {

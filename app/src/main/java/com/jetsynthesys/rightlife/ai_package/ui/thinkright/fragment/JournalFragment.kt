@@ -13,9 +13,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.databinding.FragmentJournalBinding
 
-class JournalFragment(emojiRes:Int) : BaseFragment<FragmentJournalBinding>() {
+class JournalFragment(emojiRes:Int,journalText:String) : BaseFragment<FragmentJournalBinding>() {
 
-    var journalAnswer = ""
+    var journalAnswer = journalText
     var emojis = emojiRes
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentJournalBinding
@@ -24,6 +24,8 @@ class JournalFragment(emojiRes:Int) : BaseFragment<FragmentJournalBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<EditText>(R.id.journalEditText).setText(journalAnswer)
 
         view.findViewById<LinearLayout>(R.id.btn_save).setOnClickListener {
             journalAnswer = view.findViewById<EditText>(R.id.journalEditText).text.toString()

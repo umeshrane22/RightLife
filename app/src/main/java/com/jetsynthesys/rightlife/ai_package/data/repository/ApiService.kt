@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.data.repository
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.AffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.NutritionResponse
@@ -26,6 +27,7 @@ import com.jetsynthesys.rightlife.ai_package.model.HeartRateFitDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.JournalAnswerResponse
+import com.jetsynthesys.rightlife.ai_package.model.LogNapRequest
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
@@ -45,6 +47,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
+import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveMainResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
@@ -364,12 +367,14 @@ interface ApiService {
     @GET("app/api/mind-audit/q/get-assessment-result")
     fun getAssessmentResult(@Header("Authorization") authToken: String): Call<AssessmentResponse>
 
+    @GET("app/api/affirmationPlaylist")
+    fun getAffirmationPlaylist(@Header("Authorization") authToken: String): Call<AffirmationPlaylistResponse>
+
     @GET("app/api/tools")
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
     @GET("app/api/tools")
     fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
-
 
     @POST("app/api/tools")
     fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<BaseResponse>
@@ -383,6 +388,19 @@ interface ApiService {
     @GET("app/api/mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
+
+    @GET("sleep/fetch_sleep_time")
+    fun fetchWakeupTime(@Query("user_id") userId: String,
+                        @Query("source") source: String,
+                        @Query("date") date: String): Call<WakeupTimeResponse>
+
+    @POST("sleep/set_nap_log")
+    fun logNap(@Query("user_id") userId: String,
+               @Query("source") source: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
+
+    @PUT("sleep/set_wakeup_time")
+    fun updateWakeupTime(@Query("user_id") userId: String, @Query("source") source: String, @Query("record_id") record_id: String,
+                         @Query("timer_value") timer_value: String): Call<WakeupTimeResponse>
 
     @GET("sleep/fetch_sleep_performance_data/")
     fun fetchSleepPerformance(
@@ -426,7 +444,7 @@ interface ApiService {
     ): Call<MoodTrackerMonthlyResponse>
 
     @POST("app/api/journalNew")
-    fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest,): Call<BaseResponse>
+    fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest): Call<BaseResponse>
 
     @GET("sleep/landing_page/")
     fun fetchSleepLandingPage(

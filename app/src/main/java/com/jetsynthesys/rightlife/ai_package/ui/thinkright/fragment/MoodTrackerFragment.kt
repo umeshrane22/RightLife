@@ -108,7 +108,7 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(ThinkRightReportFragment(), "MoodTrackerFragment")
+                navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
 
             }
         })
@@ -120,8 +120,8 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
         }
 
         if (fromFragments == "JournalFragment"){
-            val bottomSheet = RecordEmotionDialogFragment(emojiSelected,journalAnswers)
-            bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
+            val bottomSheet = RecordEmotionDialogFragment(emojiSelected,journalAnswers,null)
+            bottomSheet.show(parentFragmentManager, "RecordEmotionDialogFragment")
         }
 
         //renderCalendar(moodsMonthlyList)
@@ -448,8 +448,8 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
                 }
                 setOnClickListener {
                     onEmotionSelected(emojiRes)
-                    val bottomSheet = RecordEmotionDialogFragment(emojiRes,"")
-                    bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
+                    val bottomSheet = RecordEmotionDialogFragment(emojiRes,"",null)
+                    bottomSheet.show(parentFragmentManager, "RecordEmotionDialogFragment")
                     dialog.dismiss()
                 }
             }

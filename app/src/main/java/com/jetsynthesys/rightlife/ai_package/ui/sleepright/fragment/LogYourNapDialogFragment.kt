@@ -7,6 +7,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,14 @@ import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.LogNapRequest
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
@@ -28,7 +37,7 @@ class LogYourNapDialogFragment : BottomSheetDialogFragment() {
 
     private var startTime: LocalTime = LocalTime.of(21, 0)
     private var endTime: LocalTime = LocalTime.of(5, 30)
-    private var selectedDate: LocalDate = LocalDate.of(2025, 2, 28)
+    private var selectedDate: LocalDate = LocalDate.now()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -76,12 +85,33 @@ class LogYourNapDialogFragment : BottomSheetDialogFragment() {
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
-            Toast.makeText(context, "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
+            logNap()
             dismiss()
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             dismiss()
         }
+    }
+
+    private fun logNap() {
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val source = "apple"
+          val call = ApiClient.apiServiceFastApi.logNap(userId, source, LogNapRequest(sleep_time = tvStartTime.text.toString(), wakeup_time = tvEndTime.text.toString(), required_sleep_duration = tvDuration.text.toString(), set_reminder = 0, reminder_value = "test"))
+        call.enqueue(object : Callback<BaseResponse> {
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if (response.isSuccessful) {
+                      //  Toast.makeText(requireContext(), "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                   // Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun updateDuration() {
