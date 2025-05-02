@@ -5,18 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
-import com.jetsynthesys.rightlife.ai_package.model.RecipeList
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
 
-class RecipeSearchAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeList>,
-                          private var clickPos: Int, private var mealLogListData : SnapRecipeList?,
-                          private var isClickView : Boolean, val onSearchDishItem: (SnapRecipeList, Int, Boolean) -> Unit) :
-    RecyclerView.Adapter<RecipeSearchAdapter.ViewHolder>() {
+class RecipeSearchAdapter(
+    private val context: Context,
+    private var dataLists: ArrayList<SnapRecipeList>,
+    private var clickPos: Int,
+    private var mealLogListData: SnapRecipeList?,
+    private var isClickView: Boolean,
+    val onSearchDishItem: (SnapRecipeList, Int, Boolean) -> Unit
+) : RecyclerView.Adapter<RecipeSearchAdapter.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -35,24 +37,22 @@ class RecipeSearchAdapter(private val context: Context, private var dataLists: A
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.dishImage)
-//        holder.layoutMain.setOnClickListener {
-//            onSearchDishItem(item, position, true)
-//        }
+
+        holder.itemView.setOnClickListener {
+            onSearchDishItem(item, position, true)
+        }
     }
 
     override fun getItemCount(): Int {
         return dataLists.size
     }
 
-     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val dishName: TextView = itemView.findViewById(R.id.recipeName)
+        val dishImage: ImageView = itemView.findViewById(R.id.imageView)
+    }
 
-         val dishName: TextView = itemView.findViewById(R.id.recipeName)
-       //  val rightArrow: ImageView = itemView.findViewById(R.id.image_right_arrow)
-         val dishImage: ImageView = itemView.findViewById(R.id.imageView)
-       //  val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
-     }
-
-    fun addAll(item : ArrayList<SnapRecipeList>?, pos: Int, mealLogItem : SnapRecipeList?, isClick : Boolean) {
+    fun addAll(item: ArrayList<SnapRecipeList>?, pos: Int, mealLogItem: SnapRecipeList?, isClick: Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
