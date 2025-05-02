@@ -29,15 +29,10 @@ import com.google.android.material.tabs.TabLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.createmeal.SearchDishesAdapter
-import com.jetsynthesys.rightlife.ai_package.model.RecipeList
-import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TabContentAdapter
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.RecipeSearchAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapSearchDishesAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.TabContentAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
@@ -62,21 +57,17 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private lateinit var appPreference: AppPreference
     private lateinit var tabContentCard: CardView
     private val dishesViewModel: DishesViewModel by activityViewModels()
-    private var recipesList: ArrayList<RecipeList> = ArrayList()
     private var snapRecipesList: ArrayList<SnapRecipeList> = ArrayList()
     private var mealTypeList: ArrayList<String> = ArrayList()
     private var foodTypeList: ArrayList<String> = ArrayList()
     private var cuisineList: ArrayList<String> = ArrayList()
-    private var dishLocalListModel: DishLocalListModel? = null
     private var snapDishLocalListModel: SnapDishLocalListModel? = null
     private lateinit var backButton: ImageView
     private lateinit var currentPhotoPathsecound: Uri
     private lateinit var mealType: String
     private val tabTitles = arrayOf("Meal Type", "Food Type", "Cuisine")
-    private var currentFragmentTag: String? = null // Track the current fragment tag
+    private var currentFragmentTag: String? = null
     private lateinit var tabContentAdapter: TabContentAdapter
-
-    // Variables to store selected items
     private var selectedMealType: String? = null
     private var selectedFoodType: String? = null
     private var selectedCuisine: String? = null
@@ -86,10 +77,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
     private val recipeSearchAdapter by lazy {
         RecipeSearchAdapter(requireContext(), arrayListOf(), -1, null, false, ::onSnapSearchDishItem)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -111,53 +98,43 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         tabContentRecyclerView = view.findViewById(R.id.tabContentRecyclerView)
         spinner = view.findViewById(R.id.spinner)
 
-        // Initialize RecyclerView for tab content
         tabContentRecyclerView.layoutManager = GridLayoutManager(context, 4)
         tabContentAdapter = TabContentAdapter { item, position ->
             if (position < tabContentAdapter.itemCount) {
                 when (currentFragmentTag) {
                     "Meal Type" -> {
                         selectedMealType = item
-                        getFilterRecipesList(selectedMealType)
-                        // tabContentCard.visibility = View.GONE
+                        getFilterRecipesList(selectedMealType, null, null)
                         Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
                     }
                     "Food Type" -> {
                         selectedFoodType = item
-                        getFilterRecipesList(selectedFoodType)
-                        // tabContentCard.visibility = View.GONE
+                        getFilterRecipesList(null, selectedFoodType, null)
                         Log.d("RecipesSearchFragment", "Selected Food Type: $selectedFoodType")
                     }
                     "Cuisine" -> {
                         selectedCuisine = item
-                        getFilterRecipesList(selectedCuisine)
-                        // tabContentCard.visibility = View.GONE
+                        getFilterRecipesList(null, null, selectedCuisine)
                         Log.d("RecipesSearchFragment", "Selected Cuisine: $selectedCuisine")
                     }
                 }
-                // Update the selected position in the adapter
                 tabContentAdapter.setSelectedPosition(position)
-                // Optionally refresh the recipe list based on the selected filters
                 refreshRecipesList()
             }
-            // Handle item click: Store the selected item based on the current tab
-
         }
         tabContentRecyclerView.adapter = tabContentAdapter
 
-        // Initialize tabs without selecting any
         for (title in tabTitles) {
             val tab = tabLayout.newTab()
             val customView = LayoutInflater.from(context).inflate(R.layout.custom_tab_recipe_search, null) as ConstraintLayout
             val tabTextView = customView.findViewById<TextView>(R.id.tabText)
             tabTextView.text = title
             tab.customView = customView
-            tabLayout.addTab(tab, false) // Add tab without selecting it
+            tabLayout.addTab(tab, false)
         }
-        // Clear any automatic selection
-        tabLayout.clearOnTabSelectedListeners() // Ensure no tab is selected
-        updateTabColors() // Style all tabs as unselected
-        tabContentCard.visibility = View.GONE // Ensure CardView is hidden initially
+        tabLayout.clearOnTabSelectedListeners()
+        updateTabColors()
+        tabContentCard.visibility = View.GONE
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -165,27 +142,22 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
                     updateTabColors()
-                    // Always show CardView and update content when a tab is selected
                     tabContentCard.visibility = View.VISIBLE
                     updateCardViewContent(tag)
                 }
             }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-                // Do nothing; we'll handle visibility toggle in onTabReselected
-            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
-                    // Toggle CardView visibility on reselection (double-click)
                     if (tabContentCard.visibility == View.VISIBLE) {
                         tabContentCard.visibility = View.GONE
                     } else {
                         tabContentCard.visibility = View.VISIBLE
                         updateCardViewContent(tag)
                     }
-                    // Keep the tab selected; do not deselect
                     updateTabColors()
                 }
             }
@@ -257,7 +229,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun updateCardViewContent(tag: String) {
-        // Hide RecyclerView and Spinner initially
         tabContentRecyclerView.visibility = View.GONE
         spinner.visibility = View.GONE
 
@@ -277,17 +248,13 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 spinner.adapter = adapter
                 spinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        val selectedCuisine = cuisineList[position]
-                        this@RecipesSearchFragment.selectedCuisine = selectedCuisine
+                        selectedCuisine = cuisineList[position]
+                        getFilterRecipesList(null, null, selectedCuisine)
                         Log.d("RecipesSearchFragment", "Selected cuisine: $selectedCuisine")
-                        // Refresh recipes based on the selected cuisine
                         refreshRecipesList()
                     }
-                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
-                        // Do nothing
-                    }
+                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
                 }
-                // Simulate a click to open the Spinner dropdown
                 spinner.performClick()
             }
         }
@@ -300,20 +267,17 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val customView = tab?.customView
             val tabText = customView?.findViewById<TextView>(R.id.tabText)
             val circleText = customView?.findViewById<TextView>(R.id.circleText)
-            // val arrowImage = customView?.findViewById<ImageView>(R.id.tabArrow)
 
             if (tab?.isSelected == true) {
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 val typeface = resources.getFont(R.font.dmsans_bold)
                 tabText?.typeface = typeface
                 circleText?.visibility = View.VISIBLE
-                // arrowImage?.visibility = View.VISIBLE
             } else {
                 val typeface = resources.getFont(R.font.dmsans_regular)
                 tabText?.typeface = typeface
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
                 circleText?.visibility = View.GONE
-                // arrowImage?.visibility = View.GONE
             }
         }
     }
@@ -334,7 +298,19 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
         recipeSearchAdapter.addAll(valueLists, position, recipesModel, isRefresh)
 
-        getSnapMealRecipesDetails(recipesModel.id)
+        // Navigate to DishToLogFragment with the complete SnapRecipeList data
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            val snapMealFragment = RecipeDetailsFragment()
+            val args = Bundle()
+            args.putString("searchType", searchType)
+            args.putString("mealType", mealType)
+            args.putParcelable("snapRecipeList", recipesModel)
+            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            snapMealFragment.arguments = args
+            replace(R.id.flFragment, snapMealFragment, "Steps")
+            addToBackStack(null)
+            commit()
+        }
     }
 
     private fun filterDishes(query: String) {
@@ -350,10 +326,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     private fun refreshRecipesList() {
-        // Reapply filters based on the current search query and selected items
         val currentQuery = dishesViewModel.searchQuery.value ?: ""
         filterDishes(currentQuery)
     }
+
     private fun getFilterRecipesList(
         mealType: String? = selectedMealType,
         foodType: String? = selectedFoodType,
@@ -370,15 +346,8 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
                 if (response.isSuccessful) {
                     val mealPlanLists = response.body()?.data ?: emptyList()
-                    snapRecipesList.clear() // Clear previous data
+                    snapRecipesList.clear()
                     snapRecipesList.addAll(mealPlanLists)
-                    // Extract unique meal_type, food_type, and cuisine values
-                   /* mealTypeList.clear()
-                    foodTypeList.clear()
-                    cuisineList.clear()
-                    mealTypeList.addAll(snapRecipesList.map { it.meal_type }.distinct())
-                    foodTypeList.addAll(snapRecipesList.map { it.food_type }.distinct())
-                    cuisineList.addAll(snapRecipesList.map { it.cuisine }.distinct())*/
                     Log.d("RecipesSearchFragment", "Meal Types: $mealTypeList")
                     Log.d("RecipesSearchFragment", "Food Types: $foodTypeList")
                     Log.d("RecipesSearchFragment", "Cuisines: $cuisineList")
@@ -403,9 +372,8 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
                 if (response.isSuccessful) {
                     val mealPlanLists = response.body()?.data ?: emptyList()
-                    snapRecipesList.clear() // Clear previous data
+                    snapRecipesList.clear()
                     snapRecipesList.addAll(mealPlanLists)
-                    // Extract unique meal_type, food_type, and cuisine values
                     mealTypeList.clear()
                     foodTypeList.clear()
                     cuisineList.clear()
@@ -428,43 +396,9 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         })
     }
 
-    private fun getSnapMealRecipesDetails(foodId: String) {
-        val userId = appPreference.getUserId().toString()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val call = ApiClient.apiServiceFastApi.getSnapMealRecipesDetails(foodId)
-        call.enqueue(object : Callback<RecipeResponse> {
-            override fun onResponse(call: Call<RecipeResponse>, response: Response<RecipeResponse>) {
-                if (response.isSuccessful) {
-                    if (response.body()?.data != null) {
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            val snapMealFragment = DishToLogFragment()
-                            val args = Bundle()
-                            args.putString("searchType", searchType)
-                            args.putString("mealType", mealType)
-                            args.putParcelable("recipeResponse", response.body())
-                            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
-                            snapMealFragment.arguments = args
-                            replace(R.id.flFragment, snapMealFragment, "Steps")
-                            addToBackStack(null)
-                            commit()
-                        }
-                    }
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                }
-            }
-            override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString("currentFragmentTag", currentFragmentTag)
-        // Save selected items to restore state
         outState.putString("selectedMealType", selectedMealType)
         outState.putString("selectedFoodType", selectedFoodType)
         outState.putString("selectedCuisine", selectedCuisine)
@@ -472,7 +406,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        // Restore selected items
         savedInstanceState?.let {
             selectedMealType = it.getString("selectedMealType")
             selectedFoodType = it.getString("selectedFoodType")
