@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
-  <ImageView
+        <ImageView
             android:id="@+id/ic_back_dialog"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -24,7 +24,8 @@
             android:layout_centerInParent="true"
             android:fontFamily="@font/dmsans_bold"
             android:text="Mind Audit"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="18sp"
+            android:textColor="@color/txt_color_mind" />
 
     </RelativeLayout>
 
@@ -42,6 +43,7 @@
         android:visibility="visible"
         android:backgroundTint="@color/buttoncolormind"
         android:progressDrawable="@drawable/roundedcornerprogessbarpink" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:background="@drawable/roundedcornerpinkborder_radius10"
@@ -49,61 +51,63 @@
         android:layout_marginBottom="-20dp"
         android:layout_marginTop="10dp"
         android:layout_height="match_parent">
-    <TextView
-        android:layout_width="match_parent"
-        android:text="Over the last 2 weeks, how often have you been bothered by any of the following problems?"
-        android:gravity="center"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:fontFamily="@font/dmsans_regular"
-        android:textSize="@dimen/textsize_medium"
-        android:layout_height="wrap_content"/>
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Over the last 2 weeks, how often have you been bothered by any of the following problems?"
+            android:gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/dmsans_regular"
+            android:textSize="@dimen/textsize_medium"
+            android:layout_height="wrap_content" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginBottom="30dp"
-        android:orientation="horizontal">
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/prevButton"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:text="Previous" />
+            android:gravity="center"
+            android:layout_marginBottom="30dp"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/nextButton"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:backgroundTint="@color/buttoncolormind"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:visibility="gone"
-            android:text="Next" />
-        <Button
-            android:id="@+id/submitButton"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:backgroundTint="@color/buttoncolormind"
-            android:visibility="visible"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:text="Submit" />
+            <Button
+                android:id="@+id/prevButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="Previous" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/nextButton"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/buttoncolormind"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:visibility="gone"
+                android:text="Next" />
+
+            <Button
+                android:id="@+id/submitButton"
+                android:layout_width="150dp"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:backgroundTint="@color/buttoncolormind"
+                android:visibility="visible"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="Submit" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -19,6 +19,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.cardview.widget.CardView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -270,8 +271,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
-                putExtra("PlayList", "PlayList")
+                putExtra("PlayList", "ForPlayList")
             })
+        }
+
+        view.findViewById<AppCompatImageView>(R.id.arrowSleepSound).setOnClickListener {
+            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java))
         }
     }
 
