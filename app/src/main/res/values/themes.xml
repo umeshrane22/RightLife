@@ -79,6 +79,7 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
     <style name="ChipStyle">
         <item name="android:background">@drawable/bg_chip</item>
         <item name="android:paddingLeft">12dp</item>
@@ -108,17 +109,21 @@
     <style name="LoggedBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/LoggedBottomSheetStyle</item>
     </style>
+
     <style name="LoggedBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/rounded_dialog</item>
     </style>
+
     <style name="TimePickerStyle" parent="Theme.MaterialComponents.Light">
         <item name="android:textSize">24sp</item>
     </style>
+
     <style name="RatingBar" parent="Theme.AppCompat">
         <item name="colorControlActivated">#FF9EA5</item> <!-- pink -->
         <item name="colorControlNormal">#D3D3D3</item>    <!-- light gray -->
         <item name="colorControlHighlight">#FF9EA5</item>
     </style>
+
     <style name="CustomRatingBar" parent="@android:style/Widget.RatingBar">
         <item name="colorControlActivated">#FF9EA5</item> <!-- Orange -->
         <item name="colorControlNormal">#D3D3D3</item> <!-- Light gray -->
@@ -188,6 +193,7 @@
     <style name="Theme.Imagine.Toolbar.DrawerArrowToggle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@color/color_on_background</item>
     </style>
+
     <style name="MyCustomTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
     </style>

@@ -161,8 +161,9 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         binding.txtDesc.setText(contentResponseObj.data.desc);
         setModuleColor(binding.txtDesc, contentResponseObj.data.moduleId);
 
-        binding.tvArtistname.setText(contentResponseObj.data.artist.get(0).firstName +
-                " " + contentResponseObj.data.artist.get(0).lastName);
+        /*binding.tvArtistname.setText(contentResponseObj.data.artist.get(0).firstName +
+                " " + contentResponseObj.data.artist.get(0).lastName);*/
+        setArtistname(contentResponseObj);
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + contentResponseObj.data.artist.get(0).profilePicture)
                 .placeholder(R.drawable.profile_man) // Replace with your placeholder image
@@ -187,6 +188,25 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
             // ... (set other views for the next episode using the same IDs)
         } else {
             // Handle case where there is no next episode
+        }
+    }
+
+    private void setArtistname(EpisodeDetailContentResponse contentResponseObj) {
+        if (binding != null && binding.tvArtistname != null && contentResponseObj != null
+                && contentResponseObj.data != null && contentResponseObj.data.artist != null
+                && !contentResponseObj.data.artist.isEmpty()) {
+
+            String name = "";
+            if (contentResponseObj.data.artist.get(0).firstName != null) {
+                name = contentResponseObj.data.artist.get(0).firstName;
+            }
+            if (contentResponseObj.data.artist.get(0).lastName != null) {
+                name += (name.isEmpty() ? "" : " ") + contentResponseObj.data.artist.get(0).lastName;
+            }
+
+            binding.tvArtistname.setText(name);
+        } else if (binding != null && binding.tvArtistname != null) {
+            binding.tvArtistname.setText(""); // or set some default value
         }
     }
 

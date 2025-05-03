@@ -63,6 +63,7 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
             Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
             intent.putExtra("Categorytype", json);
             intent.putExtra("position", position);
+
             holder.itemView.getContext().startActivity(intent);
         });
         holder.txt_modulename.setText(Utils.getModuleText(contentList.get(position).getModuleId()));

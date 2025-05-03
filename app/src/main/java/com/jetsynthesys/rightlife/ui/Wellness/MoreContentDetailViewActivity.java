@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui.Wellness;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,33 +12,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.jetsynthesys.rightlife.BaseActivity;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel;
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel;
-import com.jetsynthesys.rightlife.apimodel.modulecontentlist.ModuleContentDetailsList;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
-import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
-import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
-import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
-import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -50,6 +32,18 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
+import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
+import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
+import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
+import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +57,8 @@ public class MoreContentDetailViewActivity extends BaseActivity {
 
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    TextView txt_desc, tv_header_htw,txt_episodes_section;
+    TextView txt_desc, tv_header_htw, txt_episodes_section;
+    RelativeLayout rl_more_like_section;
     String[] itemNames;
     int[] itemImages;
     int position;
@@ -90,6 +85,7 @@ public class MoreContentDetailViewActivity extends BaseActivity {
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
         txt_episodes_section = findViewById(R.id.txt_episodes_section);
+        rl_more_like_section = findViewById(R.id.rl_more_like_section);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
@@ -144,7 +140,7 @@ public class MoreContentDetailViewActivity extends BaseActivity {
         // get morelike content
         getMoreLikeContent(contentList.get(position).getId());
 
-         getSeriesWithEpisodes(contentList.get(position).getId());
+        getSeriesWithEpisodes(contentList.get(position).getId());
 
         List<Like> contentList1 = Collections.emptyList();
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
@@ -339,15 +335,19 @@ public class MoreContentDetailViewActivity extends BaseActivity {
                     }*/
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
-                        Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
-                                + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
-                        setupListData(ResponseObj.getData().getLikeList());
-
-                        if (ResponseObj.getData().getLikeList().size() < 5) {
-                            tvViewAll.setVisibility(View.GONE);
-                        } else {
-                            tvViewAll.setVisibility(View.VISIBLE);
+                        if (ResponseObj != null) {
+                            if (!ResponseObj.getData().getLikeList().isEmpty() && ResponseObj.getData().getLikeList().size() > 0) {
+                                setupListData(ResponseObj.getData().getLikeList());
+                                if (ResponseObj.getData().getLikeList().size() < 5) {
+                                    tvViewAll.setVisibility(View.GONE);
+                                } else {
+                                    tvViewAll.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                rl_more_like_section.setVisibility(View.GONE);
+                            }
                         }
+
 
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
@@ -382,7 +382,11 @@ public class MoreContentDetailViewActivity extends BaseActivity {
                     EpisodeResponseModel episodeResponseModel = gson.fromJson(jsonResponse, EpisodeResponseModel.class);
                     Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
+                    if (episodeResponseModel != null) {
+                        if (!episodeResponseModel.getData().getEpisodes().isEmpty() && episodeResponseModel.getData().getEpisodes().size() > 0) {
+                            setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
+                        }
+                    }
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -399,6 +403,7 @@ public class MoreContentDetailViewActivity extends BaseActivity {
 
 
     private void setupListData(List<Like> contentList) {
+        rl_more_like_section.setVisibility(View.VISIBLE);
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
@@ -464,7 +469,7 @@ public class MoreContentDetailViewActivity extends BaseActivity {
     protected void onStop() {
         super.onStop();
 
-            releasePlayer();
+        releasePlayer();
 
     }
 
