@@ -75,7 +75,11 @@ public class ConversionUtils {
     public static String convertKgToLbs(String kgs) {
         try {
             double kg = Double.parseDouble(kgs);
+            if (kg >= 300){
+                return "300";
+            }
             double lbs = kg / 2.20462;
+
             return decimalFormatWeight.format(lbs);
         } catch (Exception e) {
             return "";
@@ -85,6 +89,9 @@ public class ConversionUtils {
     public static String convertLbsToKgs(String lbs) {
         try {
             double lb = Double.parseDouble(lbs);
+            if (lb >= 661.4){
+                return "661.4";
+            }
             double kgs = lb * 2.20462;
             return decimalFormatWeight.format(kgs);
         } catch (Exception e) {

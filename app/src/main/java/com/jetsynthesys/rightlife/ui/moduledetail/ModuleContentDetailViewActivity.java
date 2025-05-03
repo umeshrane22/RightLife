@@ -68,6 +68,7 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
     TextView txt_desc, tv_header_htw, txt_episodes_section;
+    RelativeLayout rl_more_like_section;
     String[] itemNames;
     int[] itemImages;
     int position;
@@ -137,7 +138,7 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
         txt_episodes_section = findViewById(R.id.txt_episodes_section);
-
+        rl_more_like_section = findViewById(R.id.rl_more_like_section);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
@@ -453,15 +454,19 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
                         Gson gson = new Gson();
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
-                        Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
-                                + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
-                        setupListData(ResponseObj.getData().getLikeList());
-
-                        if (ResponseObj.getData().getLikeList().size() < 5) {
-                            tvViewAll.setVisibility(View.GONE);
-                        } else {
-                            tvViewAll.setVisibility(View.VISIBLE);
+                        if (ResponseObj != null) {
+                            if (!ResponseObj.getData().getLikeList().isEmpty() && ResponseObj.getData().getLikeList().size() > 0) {
+                                setupListData(ResponseObj.getData().getLikeList());
+                                if (ResponseObj.getData().getLikeList().size() < 5) {
+                                    tvViewAll.setVisibility(View.GONE);
+                                } else {
+                                    tvViewAll.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                rl_more_like_section.setVisibility(View.GONE);
+                            }
                         }
+
 
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
@@ -493,7 +498,11 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
                     EpisodeResponseModel episodeResponseModel = gson.fromJson(jsonResponse, EpisodeResponseModel.class);
                     Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
+                    if (episodeResponseModel != null) {
+                        if (!episodeResponseModel.getData().getEpisodes().isEmpty() && episodeResponseModel.getData().getEpisodes().size() > 0) {
+                            setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
+                        }
+                    }
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -510,6 +519,7 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
     }
 
     private void setupListData(List<Like> contentList) {
+        rl_more_like_section.setVisibility(View.VISIBLE);
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);

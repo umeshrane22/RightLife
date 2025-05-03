@@ -54,7 +54,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class RLEditDetailViewActivity extends BaseActivity {
-
+    RelativeLayout rl_more_like_section;
     RightLifeEditResponse rightLifeEditResponse;
     int position;
     String contentUrl = "";
@@ -120,7 +120,7 @@ public class RLEditDetailViewActivity extends BaseActivity {
         // till here
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
-
+        rl_more_like_section = findViewById(R.id.rl_more_like_section);
         rl_player = findViewById(R.id.rl_player);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
@@ -302,14 +302,19 @@ public class RLEditDetailViewActivity extends BaseActivity {
                         Log.d("API_RESPONSE", "more like content: " + jsonString);
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
-                        Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
-                                + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
-                        setupListData(ResponseObj.getData().getLikeList());
 
-                        if (ResponseObj.getData().getLikeList().size() < 5) {
-                            tvViewAll.setVisibility(View.GONE);
-                        } else {
-                            tvViewAll.setVisibility(View.VISIBLE);
+                        if (ResponseObj != null) {
+                            if (!ResponseObj.getData().getLikeList().isEmpty() && ResponseObj.getData().getLikeList().size() > 0) {
+                                setupListData(ResponseObj.getData().getLikeList());
+
+                                if (ResponseObj.getData().getLikeList().size() < 5) {
+                                    tvViewAll.setVisibility(View.GONE);
+                                } else {
+                                    tvViewAll.setVisibility(View.VISIBLE);
+                                }
+                            }else {
+                                rl_more_like_section.setVisibility(View.GONE);
+                            }
                         }
 
                     } catch (Exception e) {

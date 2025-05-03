@@ -314,7 +314,7 @@ public class WellnessDetailViewActivity extends BaseActivity {
                         Gson gson = new Gson();
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
-                        setupListData(ResponseObj.getData().getLikeList());
+                     //   setupListData(ResponseObj.getData().getLikeList());
                         // setupEpisodeListData(ResponseObj.getData().getLikeList());
 
                         if (ResponseObj.getData().getLikeList().size() < 5) {
