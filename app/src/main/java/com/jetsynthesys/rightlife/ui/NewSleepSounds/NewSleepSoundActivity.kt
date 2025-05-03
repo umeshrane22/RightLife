@@ -38,10 +38,13 @@ class NewSleepSoundActivity : BaseActivity() {
     private var mSkip = 0
     private var isLoading = false
     private var isLastPage = false
+    private var isForPlayList = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewSleepSoundBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+
+        isForPlayList = intent.getStringExtra("PlayList").toString()
 
         //back button
         binding.iconBack.setOnClickListener {
@@ -396,6 +399,14 @@ class NewSleepSoundActivity : BaseActivity() {
                     sleepSoundPlaylistResponse = response.body()
                     useplaylistdata = sleepSoundPlaylistResponse?.data as ArrayList<Service>
                     if (sleepSoundPlaylistResponse?.data?.isNotEmpty() == true) {
+                        if (isForPlayList == "ForPlayList"){
+                            startActivity(Intent(this@NewSleepSoundActivity, SleepSoundPlayerActivity::class.java).apply {
+                                putExtra("SOUND_LIST", useplaylistdata)
+                                putExtra("SELECTED_POSITION", 0)
+                                putExtra("ISUSERPLAYLIST", true)
+                            })
+                            finish()
+                        }
                         setupYourPlayListRecyclerView(useplaylistdata)
                     } else {
                         showToast("No playlist data available")

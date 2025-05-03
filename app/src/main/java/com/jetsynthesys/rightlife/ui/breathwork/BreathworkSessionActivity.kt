@@ -4,7 +4,6 @@ package com.jetsynthesys.rightlife.ui.breathwork
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
@@ -62,10 +61,6 @@ class BreathworkSessionActivity : BaseActivity() {
         }
 
         binding.btnContinue.setOnClickListener {
-            Toast.makeText(this, "Session Started with $sessionCount sets!", Toast.LENGTH_SHORT)
-                .show()
-            // Navigate to actual breathing session logic here
-
             val intent = Intent(this, BreathworkPracticeActivity::class.java)
             intent.putExtra("sessionCount", sessionCount)
             intent.putExtra("BREATHWORK", breathingData)

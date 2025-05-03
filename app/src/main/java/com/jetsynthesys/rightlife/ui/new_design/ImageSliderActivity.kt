@@ -68,10 +68,10 @@ class ImageSliderActivity : BaseActivity() {
     )
 
     private val descriptions = listOf(
-        "The only app you need to optimize your mind, body,\n nutrition, and sleep, all from your smartphone.",
-        "Predict risks, get personalized insights, and transform\n your health with data-driven recommendations.",
-        "Live classes, meditation, sleep sounds, nutrition\n tracking, tailored just for you, accessible 24/7.",
-        "Forget the gimmicks—our information is backed by\n evidence and tailored to your unique health goals."
+        "The only app you need to optimize your mind, body, nutrition, and sleep, all from your smartphone.",
+        "Predict risks, get personalized insights, and transform your health with data-driven recommendations.",
+        "Live classes, meditation, sleep sounds, nutrition tracking, tailored just for you, accessible 24/7.",
+        "Forget the gimmicks—our information is backed by evidence and tailored to your unique health goals."
     )
 
 

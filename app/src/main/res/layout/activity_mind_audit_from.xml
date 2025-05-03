@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
-  <ImageView
+        <ImageView
             android:id="@+id/ic_back_dialog"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -22,7 +22,8 @@
             android:layout_toLeftOf="@id/tv_header_htw"
             android:src="@drawable/mind_audit"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"/>
+            android:layout_marginEnd="8dp" />
+
         <TextView
             android:id="@+id/tv_header_htw"
             android:layout_width="wrap_content"
@@ -30,7 +31,8 @@
             android:layout_centerInParent="true"
             android:fontFamily="@font/dmsans_bold"
             android:text="Mind Audit"
-            android:textSize="@dimen/textsize_medium" />
+            android:textSize="18sp"
+            android:textColor="@color/txt_color_mind" />
 
 
         <ImageView
@@ -41,7 +43,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
             android:src="@drawable/closebtncircle"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </RelativeLayout>
 
     <ProgressBar
@@ -86,6 +88,7 @@
             android:paddingEnd="20dp"
             android:layout_marginBottom="8dp"
             android:text="Next" />
+
         <Button
             android:id="@+id/submitButton"
             android:layout_width="150dp"
