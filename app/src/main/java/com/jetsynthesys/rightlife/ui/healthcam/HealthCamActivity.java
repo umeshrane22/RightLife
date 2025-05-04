@@ -9,17 +9,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.zhpan.indicator.IndicatorView;
 
@@ -183,7 +179,7 @@ public class HealthCamActivity extends BaseActivity {
         dialogButtonStay.setOnClickListener(v -> {
             // Perform your action
             dialog.dismiss();
-            Intent intent = new Intent(HealthCamActivity.this, HealthCamBasicDetailsActivity.class);
+            Intent intent = new Intent(HealthCamActivity.this, HealthCamBasicDetailsNewActivity.class);
             startActivity(intent);
         });
         dialogButtonExit.setOnClickListener(v -> {

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
@@ -33,6 +34,7 @@ import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionPlansActivity;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
@@ -50,7 +52,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NewHealthCamReportActivity extends HealthCamBasicDetailsActivity {
+public class NewHealthCamReportActivity extends BaseActivity {
     private static final String TAG = "NewHealthCamReportActivity";
     ActivityNewhealthcamreportBinding binding;
     LayoutScanProgressBinding scanBinding;
@@ -70,19 +72,19 @@ public class NewHealthCamReportActivity extends HealthCamBasicDetailsActivity {
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
         binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
         binding.cardviewLastCheckin.setOnClickListener(v -> {
-            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
+            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
         });
 
         binding.btnBuyFacescan.setOnClickListener(v -> {
             // put check here if facescan remaning count is 0 buy new else Scan again
             if (facialReportResponseNew.data.boosterLimit > 0 && facialReportResponseNew.data.boosterUsed < facialReportResponseNew.data.boosterLimit) {
-                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
             } else {
                 Toast.makeText(NewHealthCamReportActivity.this, "Buy New Process here...", Toast.LENGTH_SHORT).show();
             }
 
         });
-        binding.scanProgressLayout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class)));
+        binding.scanProgressLayout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class)));
         getMyRLHealthCamResult();
 
         UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
@@ -296,7 +298,7 @@ public class NewHealthCamReportActivity extends HealthCamBasicDetailsActivity {
             if (layout.buttonText.getText().toString().equalsIgnoreCase("Scan Again @ 99")) {
                 startActivity(new Intent(NewHealthCamReportActivity.this, SubscriptionHistoryActivity.class));
             } else {
-                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
             }
         });
 

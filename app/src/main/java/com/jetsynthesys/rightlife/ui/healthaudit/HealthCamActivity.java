@@ -12,13 +12,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamBasicDetailsActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamPagerAdapter;
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
 import com.zhpan.indicator.IndicatorView;
 
 import me.relex.circleindicator.CircleIndicator3;
@@ -28,6 +27,7 @@ public class HealthCamActivity extends BaseActivity {
     ImageView ic_back_dialog, close_dialog;
     HealthCamPagerAdapter adapter;
     Button btn_howitworks;
+
     /**
      * {@inheritDoc}
      * <p>
@@ -46,9 +46,9 @@ public class HealthCamActivity extends BaseActivity {
         btn_howitworks = findViewById(R.id.btn_howitworks);
 
         CircleIndicator3 indicator = findViewById(R.id.indicator);
-       IndicatorView indicator_view = findViewById(R.id.indicator_view);
-       indicator_view.setSliderHeight(21);
-       indicator_view.setSliderWidth(80);
+        IndicatorView indicator_view = findViewById(R.id.indicator_view);
+        indicator_view.setSliderHeight(21);
+        indicator_view.setSliderWidth(80);
         // Array of layout resources to use in the ViewPager
         int[] layouts = {
                 R.layout.page_one_health_cam, // Define these layout files in your res/layout directory
@@ -62,7 +62,7 @@ public class HealthCamActivity extends BaseActivity {
         indicator.setViewPager(viewPager);
         indicator_view.setupWithViewPager(viewPager);
 
-       // showCustomDialog();
+        // showCustomDialog();
 
 
         ic_back_dialog.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +89,7 @@ public class HealthCamActivity extends BaseActivity {
             }
         });
 
-        
+
         close_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,6 +134,7 @@ public class HealthCamActivity extends BaseActivity {
             btn_howitworks.setText("Start Now");
         }
     }
+
     private void showCustomDialog() {
         // Create the dialog
         Dialog dialog = new Dialog(this);
@@ -223,7 +224,7 @@ public class HealthCamActivity extends BaseActivity {
         Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
 
         // Optional: Set dynamic content
-       // dialogText.setText("Please find a quiet and comfortable place before starting");
+        // dialogText.setText("Please find a quiet and comfortable place before starting");
 
         // Set button click listener
         dialogButtonStay.setOnClickListener(v -> {
@@ -269,7 +270,7 @@ public class HealthCamActivity extends BaseActivity {
             // Perform your action
             dialog.dismiss();
             //Toast.makeText(VoiceScanActivity.this, "Scan feature is Coming Soon", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(HealthCamActivity.this, HealthCamBasicDetailsActivity.class);
+            Intent intent = new Intent(HealthCamActivity.this, HealthCamBasicDetailsNewActivity.class);
             startActivity(intent);
         });
         dialogButtonExit.setOnClickListener(v -> {
