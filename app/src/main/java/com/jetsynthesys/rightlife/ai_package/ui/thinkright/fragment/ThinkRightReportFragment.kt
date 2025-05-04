@@ -519,7 +519,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 if (response.isSuccessful) {
                     mindfullResponse = response.body()!!
                     progressDialog.dismiss()
-                    mindfullResponse.data.getOrNull(0)?.duration?.toString().let {
+                    mindfullResponse.data?.formattedData?.getOrNull(0)?.duration?.toString().let {
                         tvMindfullMinute.setText(it+" min")
                     }
 
