@@ -627,18 +627,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 val duration = Duration.between(startDateTime, endDateTime).toMinutes()
                     .toFloat() / 60f // Convert to hours
 
-                when (sleepStageResponse[i].entryValue) {
-                    "REM" -> {
+                when (sleepStageResponse[i].value) {
+                    "REM Sleep" -> {
                         remData.add(duration)
                         totalRemDuration += duration
                     }
 
-                    "Deep" -> {
+                    "Deep Sleep" -> {
                         deepData.add(duration)
                         totalDeepDuration += duration
                     }
 
-                    "Core" -> {
+                    "In Bed" -> {
                         coreData.add(duration)
                         totalCoreDuration += duration
                     }
@@ -717,7 +717,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val duration = Duration.between(startDateTime, endDateTime).toMinutes().toFloat()
             val start = currentPosition / totalDuration
             val end = (currentPosition + duration) / totalDuration
-            val color = when (stage.entryValue) {
+            val color = when (stage.value) {
                 "REM" -> Color.parseColor("#66CCFF") // Light blue
                 "Deep" -> Color.parseColor("#4444DD") // Dark blue
                 "Core" -> Color.parseColor("#B0D8FF") // Medium blue
