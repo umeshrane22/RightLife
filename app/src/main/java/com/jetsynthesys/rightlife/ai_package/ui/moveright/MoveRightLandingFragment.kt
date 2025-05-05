@@ -81,6 +81,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var tvBurnValue: TextView
+    private lateinit var text_activity: TextView
     private lateinit var lightZoneBelow: TextView
     private lateinit var lightZoneHighl: TextView
     private lateinit var fatLossHighl: TextView
@@ -144,6 +145,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         fatLossHighl = view.findViewById(R.id.fatLossHigh)
         cardioHighl = view.findViewById(R.id.cardioHigh)
         peakHighl = view.findViewById(R.id.peakHigh)
+        text_activity = view.findViewById(R.id.text_activity)
         nodataWorkout = view.findViewById(R.id.no_data_workout_landing)
         dataFilledworkout = view.findViewById(R.id.data_filled_workout)
         step_forward_icon = view.findViewById(R.id.step_forward_icon)
@@ -257,7 +259,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         val avgHrData = padData(it.data.averageHeartRate.last7Days.map { day -> day.heartRate }, 7)
                         val hrvData = padData(it.data.heartRateVariability.last7Days.map { day -> day.hrv }, 7)
                         val burnData = padData(it.data.caloriesBurned.last7Days.map { day -> day.caloriesBurned }, 7)
-                        val activityFactorData = padData(it.data.averageHeartRate.last7Days.map { day -> day.heartRate }, 7)
+                        val activityFactorData = padData(it.data.activityFactor.last7Days.map { day -> day.activityFactor }, 7)
                         val todayStepsData = it.data.steps.todayCumulativeSteps?.takeIf { it.isNotEmpty() }?.let { data ->
                             data.map { it.cumulativeSteps.toFloat() }.toFloatArray()
                         } ?: FloatArray(24) { 0f }.also {
@@ -308,7 +310,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
                         // Heart rate zone checks and UI updates
                         withContext(Dispatchers.Main) {
-
+                            text_activity.text = it.data.activityFactor.today.toString() ?: "0"
                             val allInvalid = (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0f) &&
                                     (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0f) &&
                                     (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0f)

@@ -12,6 +12,7 @@ import android.widget.RelativeLayout
 import android.widget.VideoView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 
@@ -61,7 +62,7 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
                 if (loggedInUser?.isOnboardingComplete == true) {
-                    val intent = Intent(this, HomeDashboardActivity::class.java)
+                    val intent = Intent(this, MainAIActivity::class.java)
                     startActivity(intent)
                 } else {
                     if (!sharedPreferenceManager.createUserName) {

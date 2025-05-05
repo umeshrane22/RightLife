@@ -82,7 +82,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             -1,
             null,
             false,
-            ::onWorkoutItemClick
+            ::onWorkoutItemClick,
+            onCirclePlusClick = { activityModel, position ->
+                //showActivityDetailsDialog(activityModel, position)
+                println(activityModel)
+                println(position)
+            }
         )
     }
 
@@ -267,6 +272,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
                     val activityList = ArrayList<ActivityModel>()
+                    activityList.clear()
 
                     caloriesResponse?.data?.forEachIndexed { index, workout ->
                         Log.d("FetchCalories", "Workout $index - ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}")
@@ -275,10 +281,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             activityType = workout.workoutType,
                             duration = "${workout.duration} min",
                             caloriesBurned = "${workout.caloriesBurned.toInt()} kcal",
-                            intensity = "",
+                            intensity = workout.intensity,
                             calorieId = workout.id,
                             userId = userId
                         )
+
                         activityList.add(activity)
                     }
 

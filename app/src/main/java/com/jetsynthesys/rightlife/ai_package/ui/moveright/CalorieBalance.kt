@@ -125,7 +125,10 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
-                R.id.rbSixMonths -> fetchActiveCalories("last_six_months")
+                R.id.rbSixMonths ->{
+                    Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
+                   // fetchActiveCalories("last_six_months")
+                }
             }
         }
 
@@ -166,8 +169,9 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 selectedMonthDate = firstDateOfMonth
                 fetchActiveCalories("last_monthly")
             }else{
-                selectedHalfYearlyDate = ""
-                fetchActiveCalories("last_six_months")
+                Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
+               /* selectedHalfYearlyDate = ""
+                fetchActiveCalories("last_six_months")*/
             }
         }
 
@@ -219,12 +223,13 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 }
             }else{
-                if (!selectedHalfYearlyDate.contentEquals(currentDate)){
+                Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
+                /*if (!selectedHalfYearlyDate.contentEquals(currentDate)){
                     selectedHalfYearlyDate = ""
                     fetchActiveCalories("last_six_months")
                 }else{
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
-                }
+                }*/
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {

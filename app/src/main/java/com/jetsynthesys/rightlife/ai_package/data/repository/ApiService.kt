@@ -386,7 +386,7 @@ interface ApiService {
         @Query("time_range") timeRange: String
     ): Response<ActivityFactorResponse>
 
-    @POST("move/data/calculate_calories/")
+    @POST("move/data/fetch_calculate_calories/")
     suspend fun calculateCalories(
         @Body request: CalculateCaloriesRequest
     ): Response<CalculateCaloriesResponse>
@@ -530,7 +530,7 @@ interface ApiService {
     ): Response<WaterIntakeResponse>
 
 
-    @DELETE("/move/data/delete_calories/")
+    @DELETE("move/data/delete_calories/")
     suspend fun deleteCalorie(
         @Query("calorie_id") calorieId: String,
         @Query("user_id") userId: String

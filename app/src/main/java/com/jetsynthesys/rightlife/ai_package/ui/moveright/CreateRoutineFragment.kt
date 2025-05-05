@@ -248,6 +248,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             }
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun createWorkout(name: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -281,6 +282,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                     if (response.isSuccessful) {
                         val responseBody = response.body()
                         responseBody?.let {
+                            Toast.makeText(requireContext(),"Workout Created Successfully",Toast.LENGTH_SHORT).show()
 
                         } ?: Toast.makeText(
                             requireContext(),

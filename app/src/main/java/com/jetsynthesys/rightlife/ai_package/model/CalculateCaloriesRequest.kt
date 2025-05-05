@@ -7,5 +7,6 @@ data class CalculateCaloriesRequest(
     @SerializedName("activity_id") val activityId: String,
     @SerializedName("duration_min") val durationMin: Int,
     @SerializedName("intensity") val intensity: String,
-    @SerializedName("sessions") val sessions: Int
+    @SerializedName("sessions") val sessions: Int,
+    @SerializedName("date") val date: String
 )
