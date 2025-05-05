@@ -19,24 +19,30 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.DeleteMealBott
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentMyMealBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.request.MealLog
-import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
+import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.SaveMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
+import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
+import com.jetsynthesys.rightlife.ai_package.model.response.Micros
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.Nutrients
+import com.jetsynthesys.rightlife.ai_package.model.response.RecipeData
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.FrequentlyAddDishBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealScanResultFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -45,23 +51,25 @@ import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
+class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSheet.OnMealDeletedListener {
 
     private lateinit var myMealRecyclerView : RecyclerView
     private lateinit var layoutNoMeals : LinearLayoutCompat
     private lateinit var layoutBottomCreateMeal : LinearLayoutCompat
     private lateinit var layoutCreateMeal : LinearLayoutCompat
     private lateinit var loggedBottomSheetFragment : LoggedBottomSheet
-    private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var mealPlanTitleLayout : ConstraintLayout
     private lateinit var addLayout : LinearLayoutCompat
-   // private var mealData: List<MealPlan> = listOf()
+    private lateinit var mealType : String
+    private val mergedList = mutableListOf<MergedMealItem>()
+    private  var snapDishLocalListModel : SnapDishLocalListModel? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyMealBinding
         get() = FragmentMyMealBinding::inflate
 
-    private val myMealListAdapter by lazy { MyMealListAdapter(requireContext(), arrayListOf(), -1, null,
-        false, :: onMealDeleteItem, :: onMealLogItem, :: onSnapMealDeleteItem, :: onSnapMealLogItem) }
+    private val myMealListAdapter by lazy { MyMealListAdapter(requireContext(), arrayListOf(), -1, null,null,
+        false, :: onDeleteMealItem, :: onAddMealLogItem, :: onEditMealLogItem, :: onDeleteSnapMealItem,
+        :: onAddSnapMealLogItem, :: onEditSnapMealLogItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -78,6 +86,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         mealPlanTitleLayout = view.findViewById(R.id.layout_meal_plan_title)
         addLayout = view.findViewById(R.id.addLayout)
 
+        mealType = arguments?.getString("mealType").toString()
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
 
@@ -95,7 +104,6 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         })
 
         getMyMealList()
-        //getMealLog()
 
         addLayout.setOnClickListener {
             val fragment = CreateMealFragment()
@@ -129,90 +137,254 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
                 commit()
             }
         }
-
-       // onMyMealItemRefresh(mealData)
     }
 
-    private fun onMyMealItemRefresh(mealData: MutableList<MergedMealItem>) {
-        val meal = listOf(
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false)
-        )
-        if (mealData?.size!! > 0){
-            myMealRecyclerView.visibility = View.VISIBLE
-            layoutBottomCreateMeal.visibility = View.GONE
-            mealPlanTitleLayout.visibility = View.VISIBLE
-            layoutNoMeals.visibility = View.GONE
-        }else{
-            layoutNoMeals.visibility = View.VISIBLE
-            myMealRecyclerView.visibility = View.GONE
-            layoutBottomCreateMeal.visibility = View.GONE
-            mealPlanTitleLayout.visibility = View.GONE
+    private fun myMealsList(mealData: MutableList<MergedMealItem>) {
+        activity?.runOnUiThread {
+            if (mealData.size > 0){
+                myMealRecyclerView.visibility = View.VISIBLE
+                layoutBottomCreateMeal.visibility = View.GONE
+                mealPlanTitleLayout.visibility = View.VISIBLE
+                layoutNoMeals.visibility = View.GONE
+            }else{
+                layoutNoMeals.visibility = View.VISIBLE
+                myMealRecyclerView.visibility = View.GONE
+                layoutBottomCreateMeal.visibility = View.GONE
+                mealPlanTitleLayout.visibility = View.GONE
+            }
+            val valueLists : ArrayList<MergedMealItem> = ArrayList()
+            valueLists.addAll(mealData as Collection<MergedMealItem>)
+            val mealDetails: MealDetails? = null
+            val snapMealDetail: SnapMealDetail? = null
+            myMealListAdapter.addAll(valueLists, -1, mealDetails, snapMealDetail, false)
         }
+    }
+
+    private fun onDeleteMealItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean) {
+        val deleteBottomSheetFragment = DeleteMealBottomSheet()
+        deleteBottomSheetFragment.isCancelable = true
+        val bundle = Bundle()
+        bundle.putString("mealId",mealDetails._id)
+        bundle.putString("deleteType", "MyMeal")
+        deleteBottomSheetFragment.arguments = bundle
+        parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteMealBottomSheet") }
+    }
+
+    private fun onAddMealLogItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean) {
         val valueLists : ArrayList<MergedMealItem> = ArrayList()
-        valueLists.addAll(mealData as Collection<MergedMealItem>)
-        val mealLogDateData: MergedMealItem? = null
-        myMealListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        valueLists.addAll(mergedList as Collection<MergedMealItem>)
+        val snapMealDetail: SnapMealDetail? = null
+        myMealListAdapter.addAll(valueLists, position, mealDetails, snapMealDetail, isRefresh)
+         val mealLogList : ArrayList<MealLogItems> = ArrayList()
+        val dishList = mealDetails.receipe_data
+        dishList?.forEach { selectedDish ->
+            val mealLogData = MealLogItems(
+                meal_id = selectedDish.receipe._id,
+                recipe_name = "My Meal " + mealDetails.meal_name,
+                meal_quantity = 1,
+                unit = "g",
+                measure = "Bowl"
+            )
+            mealLogList.add(mealLogData)
+        }
+        val mealLogRequest = SelectedMealLogList(
+            meal_name = "",
+            meal_type = mealType,
+            meal_log = mealLogList
+        )
+        val parent = parentFragment as? HomeTabMealFragment
+        parent?.setSelectedFrequentlyLog(null, false, mealLogRequest)
     }
 
-    private fun onMealDeleteItem(mealLogDateModel: MealDetails, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
-//        val valueLists : ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-        deleteBottomSheetFragment = DeleteMealBottomSheet()
+    private fun onEditMealLogItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean){
+        if (mealDetails != null){
+            val dishList = mealDetails.receipe_data
+             val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            dishList?.forEach { foodData ->
+                val macrosData = Macros(
+                    Calories = foodData.receipe.calories,
+                    Carbs = foodData.receipe.carbs,
+                    Fats = foodData.receipe.fat,
+                    Protein = foodData.receipe.protein
+                )
+                val microsData = Micros(
+                    Cholesterol = foodData.receipe.cholesterol,
+                    Vitamin_A = 0.0,
+                    Vitamin_C = 0.0,
+                    Vitamin_K = 0.0,
+                    Vitamin_D = 0.0,
+                    Folate = 0.0,
+                    Iron = foodData.iron_mg,
+                    Calcium = 0.0,
+                    Magnesium = foodData.magnesium_mg,
+                    Potassium = foodData.receipe.potassium,
+                    Fiber = foodData.receipe.fiber,
+                    Zinc = 0.0,
+                    Sodium = foodData.receipe.sodium,
+                    Sugar = foodData.receipe.sugar,
+                    b12_mcg = 0.0,
+                    b1_mg = 0.0,
+                    b2_mg = 0.0,
+                    b5_mg = 0.0,
+                    b3_mg = 0.0,
+                    b6_mg = 0.0,
+                    vitamin_e_mg = 0.0,
+                    omega_3_fatty_acids_g = 0.0,
+                    omega_6_fatty_acids_g = 0.0,
+                    copper_mg = 0.0,
+                    phosphorus_mg = 0.0,
+                    saturated_fats_g = foodData.receipe.saturated_fat,
+                    selenium_mcg = 0.0,
+                    trans_fats_g = foodData.receipe.trans_fat,
+                    polyunsaturated_g = 0.0,
+                    is_beverage = false,
+                    mass_g = 0.0,
+                    monounsaturated_g = 0.0,
+                    percent_fruit = 0.0,
+                    percent_vegetable = 0.0,
+                    percent_legume_or_nuts = 0.0,
+                    source_urls = emptyList()
+                )
+                val nutrientsData = Nutrients(
+                    macros = macrosData,
+                    micros = microsData
+                )
+                val snapRecipeData = SearchResultItem(
+                    id = foodData.receipe._id,
+                    name = foodData.receipe.recipe_name,
+                    category = "",
+                    photo_url = foodData.receipe.photo_url,
+                    servings = foodData.receipe.servings,
+                    cooking_time_in_seconds = foodData.receipe.time_in_seconds,
+                    calories = foodData.calories_kcal,
+                    nutrients = nutrientsData,
+                    source = "",
+                    unit = foodData.unit,
+                    mealQuantity = foodData.quantity
+                )
+                dishLists.add(snapRecipeData)
+            }
+            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val fragment = CreateMealFragment()
+            val args = Bundle()
+            args.putString("mealId", mealDetails._id)
+            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
+    }
+
+    private fun onDeleteSnapMealItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean) {
+        val deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
-        bundle.putBoolean("test",false)
+        bundle.putString("mealId",snapMealDetail._id)
+        bundle.putString("deleteType", "MyMeal")
         deleteBottomSheetFragment.arguments = bundle
-        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+        parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteMealBottomSheet") }
     }
 
-    private fun onMealLogItem(mealPlan: MealDetails, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
-//        val valueLists : ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-      //  createMealPlanLog(mealPlan)
-       val frequentlyAddDishBottomSheet = FrequentlyAddDishBottomSheet()
-        frequentlyAddDishBottomSheet.isCancelable = true
-        val bundle = Bundle()
-        bundle.putBoolean("test",false)
-        frequentlyAddDishBottomSheet.arguments = bundle
-        activity?.supportFragmentManager?.let { frequentlyAddDishBottomSheet.show(it, "FrequentlyAddDishBottomSheet") }
+    private fun onAddSnapMealLogItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean) {
+        val valueLists : ArrayList<MergedMealItem> = ArrayList()
+        valueLists.addAll(mergedList as Collection<MergedMealItem>)
+        val mealDetails: MealDetails? = null
+        myMealListAdapter.addAll(valueLists, position,mealDetails, snapMealDetail, isRefresh)
+        val mealLogData = MealLogItems(
+            meal_id = snapMealDetail._id,
+            recipe_name = "My Meal " + snapMealDetail.meal_name,
+            meal_quantity = 1,
+            unit = "g",
+            measure = "Bowl"
+        )
+        val parent = parentFragment as? HomeTabMealFragment
+        parent?.setSelectedFrequentlyLog(mealLogData, true, null)
     }
 
-    private fun onSnapMealDeleteItem(mealLogDateModel: SnapMealDetail, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
-//        val valueLists : ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-        deleteBottomSheetFragment = DeleteMealBottomSheet()
-        deleteBottomSheetFragment.isCancelable = true
-        val bundle = Bundle()
-        bundle.putBoolean("test",false)
-        deleteBottomSheetFragment.arguments = bundle
-        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
-    }
-
-    private fun onSnapMealLogItem(mealPlan: SnapMealDetail, position: Int, isRefresh: Boolean) {
-//        val mealLogs = listOf(
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17", false),
-//            MyMealModel("Breakfast", "Poha, Sev", "1", "1,157", "8", "308", "17",false)
-//        )
-//        val valueLists : ArrayList<MyMealModel> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-//        myMealListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-        //  createMealPlanLog(mealPlan)
+    private fun onEditSnapMealLogItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean){
+        if (snapMealDetail != null){
+            val dishList = snapMealDetail.dish
+            val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            dishList?.forEach { foodData ->
+                val macrosData = Macros(
+                    Calories = foodData.calories_kcal,
+                    Carbs = foodData.carb_g,
+                    Fats = foodData.fat_g,
+                    Protein = foodData.protein_g
+                )
+                val microsData = Micros(
+                    Cholesterol = foodData.cholesterol_mg,
+                    Vitamin_A = foodData.vitamin_a_mcg,
+                    Vitamin_C = foodData.vitamin_c_mg,
+                    Vitamin_K = foodData.calories_kcal,
+                    Vitamin_D = foodData.vitamin_d_iu,
+                    Folate = foodData.folate_mcg,
+                    Iron = foodData.iron_mg,
+                    Calcium =foodData.calcium_mg,
+                    Magnesium = foodData.magnesium_mg,
+                    Potassium = foodData.potassium_mg,
+                    Fiber = foodData.fiber_g,
+                    Zinc = foodData.zinc_mg,
+                    Sodium = foodData.sodium_mg,
+                    Sugar = foodData.sugar_g,
+                    b12_mcg = foodData.b12_mcg,
+                    b1_mg = foodData.b1_mg,
+                    b2_mg = foodData.b2_mg,
+                    b5_mg = 0.0,
+                    b3_mg = foodData.b3_mg,
+                    b6_mg = foodData.b6_mg,
+                    vitamin_e_mg = foodData.vitamin_e_mg,
+                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
+                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
+                    copper_mg = foodData.copper_mg,
+                    phosphorus_mg = foodData.phosphorus_mg,
+                    saturated_fats_g = foodData.saturated_fats_g,
+                    selenium_mcg = foodData.selenium_mcg,
+                    trans_fats_g = 0.0,
+                    polyunsaturated_g = foodData.polyunsaturated_g,
+                    is_beverage = false,
+                    mass_g = foodData.mass_g,
+                    monounsaturated_g = foodData.monounsaturated_g,
+                    percent_fruit = foodData.percent_fruit,
+                    percent_vegetable = foodData.percent_vegetable,
+                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
+                    source_urls = foodData.source_urls
+                )
+                val nutrientsData = Nutrients(
+                    macros = macrosData,
+                    micros = microsData
+                )
+                val snapRecipeData = SearchResultItem(
+                    id = "",
+                    name = foodData.name,
+                    category = "",
+                    photo_url = "",
+                    servings = 1,
+                    cooking_time_in_seconds = 0,
+                    calories = foodData.calories_kcal,
+                    nutrients = nutrientsData,
+                    source = "",
+                    unit = "",
+                    mealQuantity = 0.0
+                )
+                dishLists.add(snapRecipeData)
+            }
+            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val fragment = MealScanResultFragment()
+            val args = Bundle()
+            args.putString("mealId", snapMealDetail._id)
+            args.putString("mealName", snapMealDetail.meal_name)
+            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
     }
 
     private fun getMealLog() {
@@ -288,30 +460,24 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         })
     }
 
-    private fun getMyMealList() {
+     private fun getMyMealList() {
        // LoaderUtil.showLoader(requireActivity())
-        val userId = "64763fe2fa0e40d9c0bc8264"//SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMyMealList(userId)
         call.enqueue(object : Callback<MyMealsSaveResponse> {
             override fun onResponse(call: Call<MyMealsSaveResponse>, response: Response<MyMealsSaveResponse>) {
                 if (response.isSuccessful) {
 //                    LoaderUtil.dismissLoader(requireActivity())
                     if (response.body() != null){
-                        val myMealsSaveList : ArrayList<MyMealsSaveResponse> = ArrayList()
-                      //  myMealsSaveList = response.body().data
-                        val mergedList = mutableListOf<MergedMealItem>()
-
-                        response.body()!!.data.snap_meal_detail.forEach { snap ->
+                        val myMealsSaveList = response.body()!!.data
+                        mergedList.clear()
+                        myMealsSaveList.snap_meal_detail.forEach { snap ->
                             mergedList.add(MergedMealItem.SnapMeal(snap))
                         }
-
-                        response.body()!!.data.meal_details.forEach { saved ->
+                        myMealsSaveList.meal_details.forEach { saved ->
                             mergedList.add(MergedMealItem.SavedMeal(saved))
                         }
-
-//                        var mealData = response.body()?.meal_plans
-//                        mealData = mealData
-                        onMyMealItemRefresh(mergedList)
+                        myMealsList(mergedList)
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -327,7 +493,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         })
     }
 
-    private fun createMealsSave(snapRecipeList : ArrayList<SnapRecipeData>) {
+    private fun createDishLog(snapRecipeList : ArrayList<SnapRecipeData>) {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -336,12 +502,12 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
 
-        val mealLogList : ArrayList<MealLogItem> = ArrayList()
+        val mealLogList : ArrayList<DishLog> = ArrayList()
         val mealNamesString = snapRecipeList.map { it.recipe_name ?: "" }.joinToString(", ")
 
         snapRecipeList?.forEach { snapRecipe ->
-            val mealLogData = MealLogItem(
-                meal_id = snapRecipe.id,
+            val mealLogData = DishLog(
+                receipe_id = snapRecipe.id,
                 meal_quantity = 1,
                 unit = "g",
                 measure = "Bowl"
@@ -349,25 +515,11 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
             mealLogList.add(mealLogData)
         }
 
-        val mealLogRequest = SaveMealLogRequest(
-            meal_name = "",
+        val mealLogRequest = SaveDishLogRequest(
             meal_type = "",
             meal_log = mealLogList
         )
 
-//        val mealLogRequest = MealLogRequest(
-//            mealId = mealDetails._id,
-//            userId = "64763fe2fa0e40d9c0bc8264",
-//            meal = mealDetails.name,
-//            date = formattedDate,
-//            image = mealDetails.image,
-//            mealType = mealDetails.mealType,
-//            mealQuantity = mealDetails.mealQuantity,
-//            unit = mealDetails.unit,
-//            isRepeat = mealDetails.isRepeat,
-//            isFavourite = mealDetails.isFavourite,
-//            isLogged = true
-//        )
         val call = ApiClient.apiServiceFastApi.createSaveMealsToLog(userId, formattedDate, mealLogRequest)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
@@ -395,5 +547,9 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>() {
                 LoaderUtil.dismissLoader(requireActivity())
             }
         })
+    }
+
+    override fun onMealDeleted(deleted: String) {
+        getMyMealList()
     }
 }

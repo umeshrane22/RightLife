@@ -30,6 +30,7 @@ import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
+import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CreateRoutineListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -38,8 +39,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
@@ -51,10 +55,12 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var createListRoutineLayout: ConstraintLayout
     private var workout: WorkoutList? = null
     private var workoutRecord: WorkoutSessionRecord? = null
+    private  var myroutine:String = ""
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
+
 
     private val myRoutineListAdapter by lazy {
         CreateRoutineListAdapter(
@@ -73,6 +79,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
+        myroutine = arguments?.getString("myRoutine").toString()
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
@@ -98,19 +105,35 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = myRoutineListAdapter
 
         createRoutineBackButton.setOnClickListener {
-           // navigateToFragment(YourworkOutsFragment(), "LandingFragment")
-            val fragment = YourworkOutsFragment()
-            val args = Bundle().apply {
+            if(myroutine.equals("myRoutine")){
+                val fragment = SearchWorkoutFragment()
+                /*val args = Bundle().apply {
 
-                putParcelable("workout", workout)
-                putParcelable("workoutRecord", workoutRecord)// Pass the full record
+                    putParcelable("workout", workout)
+                    putParcelable("workoutRecord", workoutRecord)// Pass the full record
+                }
+                fragment.arguments = args*/
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                    addToBackStack("YourworkOutsFragment")
+                    commit()
+                }
+            }else{
+                val fragment = YourworkOutsFragment()
+                val args = Bundle().apply {
+
+                    putParcelable("workout", workout)
+                    putParcelable("workoutRecord", workoutRecord)// Pass the full record
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
+                    addToBackStack("YourworkOutsFragment")
+                    commit()
+                }
             }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "YourworkOutsFragment")
-                addToBackStack("YourworkOutsFragment")
-                commit()
-            }
+           // navigateToFragment(YourworkOutsFragment(), "LandingFragment")
+
         }
 
         editText.addTextChangedListener(object : TextWatcher {
@@ -148,10 +171,18 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         })
 
         layoutBtnLog.setOnClickListener {
-            addNameLayout.visibility = View.GONE
-            createListRoutineLayout.visibility = View.VISIBLE
-            textViewRoutine.text = editText.text
-            createRoutine(editText.text.toString())
+            if(myroutine.equals("myRoutine")){
+                addNameLayout.visibility = View.GONE
+                createListRoutineLayout.visibility = View.VISIBLE
+                textViewRoutine.text = editText.text
+            }else{
+                addNameLayout.visibility = View.GONE
+                createListRoutineLayout.visibility = View.VISIBLE
+                textViewRoutine.text = editText.text
+                //createRoutine(editText.text.toString())
+                createWorkout(editText.text.toString())
+            }
+
             // assignWorkoutRoutine() // Assign the routine first
             //fetchMoveRoutine()     // Then fetch the updated routine data
         }
@@ -202,6 +233,64 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                         Toast.makeText(
                             requireContext(),
                             "Error creating routine: ${response.code()} - ${response.message()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun createWorkout(name: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "64763fe2fa0e40d9c0bc8264"
+
+                // Get current date in YYYY-MM-DD format
+                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+                // Map data to CreateWorkoutRequest
+                val request = workoutRecord?.let {
+                    CreateWorkoutRequest(
+                        userId = userId,
+                        activityId = it.activityId,
+                        durationMin = it.durationMin,
+                        intensity = it.intensity,
+                        sessions = 1, // Hardcoded as in createRoutine
+                        date = currentDate
+                    )
+                } ?: run {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Workout data is missing", Toast.LENGTH_SHORT).show()
+                    }
+                    return@launch
+                }
+
+                val response = ApiClient.apiServiceFastApi.createWorkout(request)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        responseBody?.let {
+
+                        } ?: Toast.makeText(
+                            requireContext(),
+                            "Empty response",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Error creating workout: ${response.code()} - ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

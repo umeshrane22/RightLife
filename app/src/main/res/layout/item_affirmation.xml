@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <!-- Icon Box -->
+        <FrameLayout
+            android:layout_width="84dp"
+            android:layout_height="94dp"
+            android:background="@drawable/yellow_curved_affirmation"
+            android:layout_marginEnd="16dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:src="@drawable/quote_icon"
+                android:textSize="28sp"
+                android:textColor="#914600" />
+        </FrameLayout>
+
+        <!-- Text + Button Column -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Affirmation Playlist"
+                android:fontFamily="@font/dmsans_medium"
+                android:textSize="16sp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create playlist &amp; practice affirmation playlist"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:fontFamily="@font/dmsans_regular"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:id="@+id/createPlaylistButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Playlist"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/eatright_text_color"
+                android:paddingStart="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingEnd="20dp"
+                android:background="@drawable/yellow_round_bg" />
+        </LinearLayout>
+    </LinearLayout>

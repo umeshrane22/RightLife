@@ -120,7 +120,7 @@
                     </RadioGroup>
 
                     <ImageView
-                        android:id="@+id/backward_image_heart_rate"
+                        android:id="@+id/btn_prev"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginStart="21dp"
@@ -130,7 +130,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/tabGroup" />
 
                     <ImageView
-                        android:id="@+id/forward_image_heart_rate"
+                        android:id="@+id/btn_next"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="21dp"
@@ -143,12 +143,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="3 Feb -9 Feb, 2O25"
+                        android:id="@+id/tv_selected_date"
                         android:fontFamily="@font/dmsans_bold"
                         android:textSize="14sp"
                         android:textColor="@color/black"
-                        app:layout_constraintBottom_toBottomOf="@+id/backward_image_heart_rate"
-                        app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate"
-                        app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate" />
+                        app:layout_constraintBottom_toBottomOf="@+id/btn_prev"
+                        app:layout_constraintStart_toEndOf="@+id/btn_prev"
+                        app:layout_constraintEnd_toStartOf="@+id/btn_next" />
 
                     <View
                         android:layout_width="match_parent"
@@ -157,7 +158,7 @@
                         android:layout_marginTop="18dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate" />
+                        app:layout_constraintTop_toBottomOf="@+id/btn_prev" />
 
                     <TextView
                         android:id="@+id/average_text_heading"
@@ -448,6 +449,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
@@ -460,6 +462,7 @@
                 android:layout_width="339dp"
                 android:layout_height="wrap_content"
                 android:textSize="16dp"
+                android:visibility="gone"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
                 android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."

@@ -14,23 +14,33 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepConsistencyBinding
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
 class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>() {
 
@@ -42,6 +52,11 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var radioGroup: RadioGroup
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
+    private lateinit var btnPrevious: ImageView
+    private lateinit var btnNext: ImageView
+    private lateinit var dateRangeText: TextView
+    private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
+    private var currentDate: LocalDate = LocalDate.now() // today
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,42 +65,142 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
         barChart = view.findViewById(R.id.sleepConsistencyChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        btnPrevious = view.findViewById(R.id.btn_prev)
+        btnNext = view.findViewById(R.id.btn_next)
+        dateRangeText = view.findViewById(R.id.tv_selected_date)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
-
-        // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek ->{
-                  //  updateChart(getWeekData(), getWeekLabels())
-                }
-                R.id.rbMonth ->{
-                 //   updateChart(getMonthData(), getMonthLabels())
-                }
-                R.id.rbSixMonths ->{
-                 //   updateChart(getSixMonthData(), getSixMonthLabels())
-                }
-            }
-        }
+        setupListeners()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
 
             }
         })
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         fetchSleepData()
     }
+
+    private fun setupListeners() {
+        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    loadWeekData()
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    loadMonthData()
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    loadSixMonthsData()
+                }
+            }
+        }
+
+        btnPrevious.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.minusWeeks(1)
+                    loadWeekData()
+                }
+                1 -> {
+                    currentDate = currentDate.minusMonths(1)
+                    loadMonthData()
+                }
+                2 -> {
+                    currentDate = currentDate.minusMonths(6)
+                    loadSixMonthsData()
+                }
+            }
+        }
+
+        btnNext.setOnClickListener {
+            when (currentTab) {
+                0 -> {
+                    currentDate = currentDate.plusWeeks(1)
+                    loadWeekData()
+                }
+                1 -> {
+                    currentDate = currentDate.plusMonths(1)
+                    loadMonthData()
+                }
+                2 -> {
+                    currentDate = currentDate.plusMonths(6)
+                    loadSixMonthsData()
+                }
+            }
+        }
+    }
+
+    private fun loadWeekData() {
+        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
+        val endOfWeek = startOfWeek.plusDays(6)
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+
+        val entries = mutableListOf<BarEntry>()
+        for (i in 0..6) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+     //   updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+
+    }
+
+    private fun loadMonthData() {
+        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
+        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+
+        val entries = mutableListOf<BarEntry>()
+        val daysInMonth = endOfMonth.dayOfMonth
+        for (i in 0 until daysInMonth) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+
+      //  updateChart(entries, weekRanges)
+    }
+
+    private fun loadSixMonthsData() {
+        val startOfPeriod = currentDate.minusMonths(5).with(TemporalAdjusters.firstDayOfMonth())
+        val endOfPeriod = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+
+        val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
+        dateRangeText.text = "${startOfPeriod.format(formatter)} - ${endOfPeriod.format(formatter)}"
+
+        val entries = mutableListOf<BarEntry>()
+        for (i in 0..5) {
+            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
+        }
+
+        val months = listOf(
+            startOfPeriod.month.name.take(3),
+            startOfPeriod.plusMonths(1).month.name.take(3),
+            startOfPeriod.plusMonths(2).month.name.take(3),
+            startOfPeriod.plusMonths(3).month.name.take(3),
+            startOfPeriod.plusMonths(4).month.name.take(3),
+            startOfPeriod.plusMonths(5).month.name.take(3)
+        )
+      //  updateChart(entries, months)
+    }
+
 
     private fun fetchSleepData() {
         progressDialog.show()
@@ -99,7 +214,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepConsistencyResponse = response.body()!!
-                    sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.let {
+                    sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
                         setData(it)
                     }
 
@@ -118,14 +233,14 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         })
     }
 
-    fun setData(parseSleepData: ArrayList<SleepDurationData>) = runBlocking {
+    fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
         val result = async {
             parseSleepData(parseSleepData)
         }.await()
         barChart.setSleepData(result)
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDurationData>): List<SleepEntry> {
+    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.startDatetime ?: ""
@@ -136,7 +251,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         return sleepSegments
     }
 
-/*private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
+/*
+private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
         val dataSet = BarDataSet(entries, "Calories Burned")
         dataSet.color = resources.getColor(R.color.sleep_duration_blue)
         dataSet.valueTextColor = Color.BLACK
@@ -169,7 +285,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         barChart.description.isEnabled = false
         barChart.animateY(1000) // Smooth animation
         barChart.invalidate()
-    }*/
+    }
+*/
 
     private fun getWeekData(): List<BarEntry> {
         return listOf(

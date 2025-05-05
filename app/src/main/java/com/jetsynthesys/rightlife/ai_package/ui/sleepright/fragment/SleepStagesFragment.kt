@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.databinding.FragmentSleepStagesBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.AwakeProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.CoreProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.DeepprogressBar
@@ -127,12 +128,12 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(SleepRightLandingFragment(), "SleepRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
             }
         })
     }
@@ -140,7 +141,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     private fun fetchSleepData() {
         progressDialog.show()
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
+        val userId = "user_test_1"
         val date = "2025-03-18"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userId, source, date)

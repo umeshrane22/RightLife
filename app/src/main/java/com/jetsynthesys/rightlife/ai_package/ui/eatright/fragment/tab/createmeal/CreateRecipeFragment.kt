@@ -65,8 +65,6 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
 //        null, false, :: onLunchMealLogItem) }
 //    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
 //        null, false, :: onDinnerMealLogItem) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -96,9 +94,6 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
      //   val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
         continueLayout.isEnabled = false
         continueLayout.setBackgroundResource(R.drawable.light_green_bg)
-
-        addedIngredientsItemRecyclerview.layoutManager = LinearLayoutManager(context)
-        addedIngredientsItemRecyclerview.adapter = frequentlyLoggedListAdapter
 //
 //        breakfastMealRecyclerView.layoutManager = LinearLayoutManager(context)
 //        breakfastMealRecyclerView.adapter = breakfastMealLogsAdapter
@@ -225,10 +220,6 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             saveRecipeLayout.visibility = View.GONE
         }
 
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(meal as Collection<MyMealModel>)
-        val mealLogDateData: MyMealModel? = null
-        frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun onFrequentlyLoggedItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
@@ -238,9 +229,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false)
         )
 
-        val valueLists : ArrayList<MyMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+
     }
 
     private fun onLunchMealLogItemRefresh() {

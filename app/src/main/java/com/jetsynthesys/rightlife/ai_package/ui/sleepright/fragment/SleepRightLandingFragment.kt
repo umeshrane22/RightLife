@@ -1,13 +1,24 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.ProgressDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.pdf.PdfDocument
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +30,10 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.widget.AppCompatImageView
+import androidx.annotation.RequiresPermission
 import androidx.cardview.widget.CardView
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -49,15 +62,24 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
+import com.jetsynthesys.rightlife.ai_package.model.WakeupData
+import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -78,6 +100,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private val deepData: ArrayList<Float> = arrayListOf()
     private val formatters = DateTimeFormatter.ISO_DATE_TIME
     private lateinit var idealActualResponse: SleepIdealActualResponse
+    private lateinit var wakeupTimeResponse: WakeupTimeResponse
     private lateinit var sleepStagesView: SleepChartViewLanding
     private lateinit var sleepConsistencyChart: SleepGraphView
     private lateinit var progressDialog: ProgressDialog
@@ -89,6 +112,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var performNoDataCardView : CardView
     private lateinit var restroNoDataCardView : CardView
     private lateinit var consistencyNoDataCardView : CardView
+    private lateinit var mainView : LinearLayout
+    private lateinit var downloadView: ImageView
+    private lateinit var sleepArrowView: ImageView
+    private lateinit var sleepPerformView: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,9 +124,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         //LogLastNightSleep
 
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
+        sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
+        sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
+        downloadView = view.findViewById(R.id.sleep_download_icon)
+        mainView = view.findViewById(R.id.lyt_main_view)
         logYourNap = view.findViewById(R.id.btn_log_nap)
         val sleepInfo = view.findViewById<ImageView>(R.id.img_sleep_right)
         val editWakeup = view.findViewById<ImageView>(R.id.img_edit_wakeup_time)
@@ -107,6 +138,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val sleepIdeal = view.findViewById<ImageView>(R.id.img_sleep_ideal_actual)
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
+        val openConsistency = view.findViewById<ImageView>(R.id.consistency_right_arrow)
          actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
          restroNoDataCardView = view.findViewById(R.id.restro_nodata_layout)
          performNoDataCardView = view.findViewById(R.id.perform_nodata_layout)
@@ -135,6 +167,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }
 
+        downloadView.setOnClickListener {
+            saveViewAsPdf(requireContext(),mainView,"SleepRight")
+        }
+
         logYourNap.setOnClickListener {
             val bottomSheet = LogYourNapDialogFragment()
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
@@ -150,8 +186,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             navigateToFragment(HomeBottomTabFragment(), "Home")
         }
 
+        sleepArrowView.setOnClickListener {
+            navigateToFragment(SleepStagesFragment(), "SleepStagesFragment")
+        }
+
+        sleepPerformView.setOnClickListener {
+            navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
+        }
+
         sleepPerform.setOnClickListener {
-            navigateToFragment(SleepPerformanceFragment(), "Performance")
+            navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
         }
 
         sleepIdeal.setOnClickListener {
@@ -163,7 +207,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         consistencySleep.setOnClickListener {
-            navigateToFragment(SleepConsistencyFragment(), "Consistency")
+            navigateToFragment(SleepConsistencyFragment(), "SleepConsistencyFragment")
+        }
+        openConsistency.setOnClickListener {
+            navigateToFragment(SleepConsistencyFragment(), "SleepConsistencyFragment")
         }
 
       //  setupBarChart(sleepBarChart)
@@ -171,55 +218,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchSleepLandingData()
         fetchIdealActualData()
         fetchSleepConsistencyData()
+        fetchWakeupData()
 
         editWakeup.setOnClickListener {
             openBottomSheet()
         }
-
-        // Sample data for Ideal vs Actual Sleep Time chart
-        /*val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-        val idealEntries = listOf(
-            Entry(0f, 8.3f), Entry(1f, 8.5f), Entry(2f, 9f),
-            Entry(3f, 8.2f), Entry(4f, 8.7f), Entry(5f, 8.3f),
-            Entry(6f, 8.2f)
-        )
-        val actualEntries = listOf(
-            Entry(0f, 6f), Entry(1f, 6.5f), Entry(2f, 7f),
-            Entry(3f, 6.2f), Entry(4f, 6.8f), Entry(5f, 6.3f),
-            Entry(6f, 6.2f)
-        )
-
-        val idealDataSet = LineDataSet(idealEntries, "Ideal").apply {
-            color = Color.GREEN
-            valueTextSize = 12f
-            setCircleColor(Color.GREEN)
-            setDrawCircles(true)
-            setDrawValues(false)
-        }
-
-        val actualDataSet = LineDataSet(actualEntries, "Actual").apply {
-            color = Color.BLUE
-            valueTextSize = 12f
-            setCircleColor(Color.BLUE)
-            setDrawCircles(true)
-            setDrawValues(false)
-        }
-
-        val lineData = LineData(listOf<ILineDataSet>(idealDataSet, actualDataSet))
-        sleepChart.data = lineData
-
-        // Chart Customization
-        sleepChart.apply {
-            description.isEnabled = false
-            axisRight.isEnabled = false
-            axisLeft.axisMinimum = 0f
-            xAxis.position = XAxis.XAxisPosition.BOTTOM
-            xAxis.setDrawGridLines(false)
-            xAxis.valueFormatter = IndexAxisValueFormatter(weekdays)
-            xAxis.granularity = 1f
-            xAxis.labelCount = weekdays.size
-            invalidate()
-        }*/
 
         // Sleep Stages Bar Chart
         restoChart = view.findViewById<BarChart>(R.id.barChart)
@@ -280,52 +283,35 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    private fun setupBarChart(barChart: BarChart) {
-        val sleepEntries = ArrayList<BarEntry>()
-        sleepEntries.add(BarEntry(0f, floatArrayOf(2f, 6f)))
-        sleepEntries.add(BarEntry(1f, floatArrayOf(12f, 6f)))
-        sleepEntries.add(BarEntry(2f, floatArrayOf(10f, 6f)))
-        sleepEntries.add(BarEntry(3f, floatArrayOf(11f, 6f)))
-        sleepEntries.add(BarEntry(4f, floatArrayOf(3f, 4f)))
-        sleepEntries.add(BarEntry(5f, floatArrayOf(1f, 7f)))
-        sleepEntries.add(BarEntry(6f, floatArrayOf(3f, 5f)))
+    private fun fetchWakeupData() {
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val date = getCurrentDate()
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source, date)
+        call.enqueue(object : Callback<WakeupTimeResponse> {
+            override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
+                if (response.isSuccessful) {
+                    wakeupTimeResponse = response.body()!!
+                    setWakeupData(wakeupTimeResponse.data.getOrNull(0))
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                   // Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
 
-        val barDataSet = BarDataSet(sleepEntries, "Sleep Duration")
-        barDataSet.colors = listOf(
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#B0D8FF"),
-            Color.parseColor("#007AFF")
-        )
-        barDataSet.setDrawValues(false)
-        barDataSet.stackLabels = arrayOf("Start Time", "Sleep Hours")
+                }
+            }
+            override fun onFailure(call: Call<WakeupTimeResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+            }
+        })
+    }
 
-        val barData = BarData(barDataSet)
-        barData.barWidth = 0.6f
-        barChart.data = barData
-        barChart.setFitBars(true)
-        barChart.invalidate()
+    fun setWakeupData(wakeupData: WakeupData?){
 
-        val xAxis = barChart.xAxis
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.valueFormatter = IndexAxisValueFormatter(listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
-        xAxis.setDrawGridLines(false)
-        xAxis.textSize = 12f
+    }
 
-        val yAxisLeft = barChart.axisLeft
-        yAxisLeft.axisMinimum = 0f
-        yAxisLeft.axisMaximum = 14f
-        yAxisLeft.setDrawGridLines(true)
-        yAxisLeft.textSize = 12f
-
-        val yAxisRight = barChart.axisRight
-        yAxisRight.isEnabled = false
-        barChart.description.isEnabled = false
-        barChart.legend.isEnabled = false
-        barChart.setTouchEnabled(false)
+    fun getCurrentDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().format(formatter)
     }
 
     private fun openBottomSheet() {
@@ -346,25 +332,25 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchSleepLandingData() {
-        LoaderUtil.showLoader(requireActivity())
-      //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-      //  val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val userId = "67f6698fa213d14e22a47c2a"
-        val date = "2025-03-18"
+        Utils.showLoader(requireActivity())
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+      //  val userId = "user_test_1"
+        val date = getCurrentDate()
         val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {
             override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                  //  Utils.dismissLoader(requireActivity())
                     landingPageResponse = response.body()!!
                     println(landingPageResponse)
                     setSleepRightLandingData(landingPageResponse)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                   //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                 //   Utils.dismissLoader(requireActivity())
                     stageNoDataCardView.visibility = View.VISIBLE
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
@@ -377,7 +363,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
          //       Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                Utils.dismissLoader(requireActivity())
                 stageNoDataCardView.visibility = View.VISIBLE
                 sleepStagesView.visibility = View.GONE
                 performNoDataCardView.visibility = View.VISIBLE
@@ -454,40 +440,33 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchIdealActualData() {
-        LoaderUtil.showLoader(requireActivity())
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
-        val period = "weekly"
+        Utils.showLoader(requireActivity())
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        //val userId = "user_test_1"
+        val period = "daily"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
         call.enqueue(object : Callback<SleepIdealActualResponse> {
             override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    Utils.dismissLoader(requireActivity())
                     if (response.body() != null) {
                         idealActualResponse = response.body()!!
                         // setSleepRightLandingData(idealActualResponse)
                         if (idealActualResponse.data?.sleepTimeDetail?.size!! > 0) {
                             actualNoDataCardView.visibility = View.GONE
                             lineChart.visibility = View.VISIBLE
-                            val sleepDataList: List<SleepGraphData>? =
-                                idealActualResponse.data?.sleepTimeDetail?.map { detail ->
-                                    val formattedDate =
-                                        detail.sleepDuration.first().startDatetime?.let {
-                                            formatDate(
-                                                it
-                                            )
+                            val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
+                                    val formattedDate = detail.sleepDuration.first().startDatetime?.let {
+                                            formatDate(it)
                                         }
                                     return@map formattedDate?.let {
                                         detail.sleepTimeData?.idealSleepData?.toFloat()
                                             ?.let { it1 ->
                                                 detail.sleepTimeData!!.actualSleepData?.toFloat()
                                                     ?.let { it2 ->
-                                                        SleepGraphData(
-                                                            date = it,
-                                                            idealSleep = it1,
-                                                            actualSleep = it2
-                                                        )
+                                                        SleepGraphData(date = it, idealSleep = it1, actualSleep = it2)
                                                     }
                                             }
                                     }!!
@@ -504,7 +483,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
               //      Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    Utils.dismissLoader(requireActivity())
                     actualNoDataCardView.visibility = View.VISIBLE
                     lineChart.visibility = View.GONE
                 }
@@ -513,7 +492,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             override fun onFailure(call: Call<SleepIdealActualResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
         //        Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                Utils.dismissLoader(requireActivity())
                 actualNoDataCardView.visibility = View.VISIBLE
                 lineChart.visibility = View.GONE
             }
@@ -737,8 +716,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchSleepConsistencyData() {
         progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+       // val userId = "user_test_1"
         val period = "weekly"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period)
@@ -748,10 +728,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     progressDialog.dismiss()
                     if (response.body() != null) {
                         sleepConsistencyResponse = response.body()!!
-                        if (sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.size!! > 0) {
+                        if (sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.size!! > 0) {
                             sleepConsistencyChart.visibility = View.VISIBLE
                             consistencyNoDataCardView.visibility = View.GONE
-                            sleepConsistencyResponse.sleepConsistencyData?.sleepDetails?.let {
+                            sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
                                 setData(it)
                             }
                         }else{
@@ -779,14 +759,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         })
     }
 
-    fun setData(parseSleepData: ArrayList<SleepDurationData>) = runBlocking {
+    fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
         val result = async {
             parseSleepData(parseSleepData)
         }.await()
         sleepConsistencyChart.setSleepData(result)
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDurationData>): List<SleepEntry> {
+    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.startDatetime ?: ""
@@ -795,6 +775,102 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
+    }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun saveViewAsPdf(context: Context, view: View, fileName: String) {
+        val bitmap = getBitmapFromView(view)
+        val document = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, 1).create()
+        val page = document.startPage(pageInfo)
+        val canvas: Canvas = page.canvas
+        canvas.drawBitmap(bitmap, 0f, 0f, null)
+        document.finishPage(page)
+
+        var fileUri: Uri? = null
+        var success = false
+        var outputStream: OutputStream? = null
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, "$fileName.pdf")
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                }
+                val resolver = context.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                if (uri != null) {
+                    fileUri = uri
+                    outputStream = resolver.openOutputStream(uri)
+                }
+            } else {
+                val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val file = File(directory, "$fileName.pdf")
+                fileUri = Uri.fromFile(file)
+                outputStream = file.outputStream()
+            }
+
+            outputStream?.use {
+                document.writeTo(it)
+                success = true
+            }
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            document.close()
+            outputStream?.close()
+        }
+
+        if (success && fileUri != null) {
+            showDownloadNotification(context, fileName, fileUri)
+        }
+    }
+
+    fun getBitmapFromView(view: View): Bitmap {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.draw(canvas)
+        return bitmap
+    }
+
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
+        val channelId = "download_channel"
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Downloads",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Download Notifications"
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Intent to open the PDF file
+        val openPdfIntent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, "application/pdf")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, openPdfIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .setContentTitle("Download Complete")
+            .setContentText("$fileName.pdf saved to Downloads")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setContentIntent(pendingIntent) // Open PDF on click
+            .setAutoCancel(true) // Dismiss when tapped
+            .build()
+
+        NotificationManagerCompat.from(context).notify(1, notification)
     }
 }
 

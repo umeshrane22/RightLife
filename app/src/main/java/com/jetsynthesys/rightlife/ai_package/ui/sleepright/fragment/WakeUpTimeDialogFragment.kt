@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,14 @@ import android.widget.NumberPicker
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.LogNapRequest
+import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class WakeUpTimeDialogFragment : BottomSheetDialogFragment() {
@@ -33,10 +42,7 @@ class WakeUpTimeDialogFragment : BottomSheetDialogFragment() {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.wakeup_dialog_fragment, container, false)
     }
 
@@ -62,6 +68,7 @@ class WakeUpTimeDialogFragment : BottomSheetDialogFragment() {
         val btnSendData = view.findViewById<LinearLayout>(R.id.btn_confirm)
         btnSendData.setOnClickListener {
             listener?.onDataReceived("10:00 AM")
+            updateWakeupTime()
             dismiss()
         }
 
@@ -90,5 +97,26 @@ class WakeUpTimeDialogFragment : BottomSheetDialogFragment() {
         minutePicker.setOnValueChangedListener(listener)
         amPmPicker.setOnValueChangedListener(listener)
         refreshPickers()
+    }
+
+    private fun updateWakeupTime() {
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.updateWakeupTime(userId, source, record_id =  "", timer_value = "" )
+        call.enqueue(object : Callback<WakeupTimeResponse> {
+            override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
+                if (response.isSuccessful) {
+                    //  Toast.makeText(requireContext(), "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    // Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<WakeupTimeResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

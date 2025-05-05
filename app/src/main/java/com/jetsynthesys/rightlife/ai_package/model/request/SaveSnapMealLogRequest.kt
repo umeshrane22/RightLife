@@ -1,6 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.model.request
 
-data class SaveMealLogRequest(
+data class SaveSnapMealLogRequest(
     val meal_name: String,
     val meal_type: String,
     val meal_log: List<MealLogItem>

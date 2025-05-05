@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.ai_package.model.RecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
 
-class SnapSearchDishesAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeList>,
-                              private var clickPos: Int, private var mealLogListData : SnapRecipeList?,
-                              private var isClickView : Boolean, val onSearchDishItem: (SnapRecipeList, Int, Boolean) -> Unit) :
+class SnapSearchDishesAdapter(private val context: Context, private var dataLists: ArrayList<SearchResultItem>,
+                              private var clickPos: Int, private var mealLogListData : SearchResultItem?,
+                              private var isClickView : Boolean, val onSearchDishItem: (SearchResultItem, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<SnapSearchDishesAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -35,6 +36,7 @@ class SnapSearchDishesAdapter(private val context: Context, private var dataList
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.dishImage)
+
         holder.layoutMain.setOnClickListener {
             onSearchDishItem(item, position, true)
         }
@@ -52,7 +54,7 @@ class SnapSearchDishesAdapter(private val context: Context, private var dataList
          val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
      }
 
-    fun addAll(item : ArrayList<SnapRecipeList>?, pos: Int, mealLogItem : SnapRecipeList?, isClick : Boolean) {
+    fun addAll(item : ArrayList<SearchResultItem>?, pos: Int, mealLogItem : SearchResultItem?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -63,8 +65,8 @@ class SnapSearchDishesAdapter(private val context: Context, private var dataList
         notifyDataSetChanged()
     }
 
-    fun updateList(newList: List<SnapRecipeList>) {
-        dataLists = newList as ArrayList<SnapRecipeList>
+    fun updateList(newList: List<SearchResultItem>) {
+        dataLists = newList as ArrayList<SearchResultItem>
         notifyDataSetChanged()
     }
 

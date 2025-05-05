@@ -18,10 +18,14 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalList
 
 class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
 
-    private lateinit var currentPhotoPathsecound : Uri
+    private var currentPhotoPathsecound : Uri? = null
+    private var mealId : String = ""
+    private var mealName : String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,9 +45,14 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.layoutDelete)
 
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
-
+        mealId = arguments?.getString("mealId").toString()
+        mealName = arguments?.getString("mealName").toString()
         val imagePathString = arguments?.getString("ImagePathsecound")
-        currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+        if (imagePathString != null){
+            currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+        }else{
+            currentPhotoPathsecound = null
+        }
 
         val snapDishLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -55,12 +64,14 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
             if (snapDishLocalListModel != null) {
                 if (snapDishLocalListModel.data.size > 0) {
                     for (item in snapDishLocalListModel.data) {
-                        if (item.recipe_name.contentEquals(snapRecipeName)) {
+                        if (item.name.contentEquals(snapRecipeName)) {
                             snapDishLocalListModel.data.remove(item)
                             dismiss()
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
                             val fragment = MealScanResultFragment()
                             val args = Bundle()
+                            args.putString("mealId", mealId)
+                            args.putString("mealName", mealName)
                             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                             fragment.arguments = args

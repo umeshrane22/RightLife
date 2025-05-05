@@ -9,12 +9,13 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 
-class SnapMealScanResultAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeData>,
-                                private var clickPos: Int, private var mealLogListData : SnapRecipeData?,
-                                private var isClickView : Boolean, val onMenuEditItem: (SnapRecipeData, Int, Boolean) -> Unit,
-                                val onMenuDeleteItem: (SnapRecipeData, Int, Boolean) -> Unit) :
+class SnapMealScanResultAdapter(private val context: Context, private var dataLists: ArrayList<SearchResultItem>,
+                                private var clickPos: Int, private var mealLogListData : SearchResultItem?,
+                                private var isClickView : Boolean, val onMenuEditItem: (SearchResultItem, Int, Boolean) -> Unit,
+                                val onMenuDeleteItem: (SearchResultItem, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<SnapMealScanResultAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -28,12 +29,16 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
         val item = dataLists[position]
 
         if (item.mealQuantity?.toInt() != 0){
-            holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + item.unit
+            var unit = ""
+            if (item.unit != null){
+                unit = item.unit
+            }
+            holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + unit
         }else{
             holder.mealQuantityTv.text = "1"
         }
 
-        val capitalized = item.recipe_name.toString().replaceFirstChar { it.uppercase() }
+        val capitalized = item.name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
 //        Glide.with(context)
 //            .load(item.url)
@@ -43,10 +48,10 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
         // holder.mealName.text = item.mealName
         if (item != null){
          //   holder.servesCount.text = "1"
-            holder.calValue.text = item.calories?.toInt().toString()
-            holder.proteinValue.text = item.protein?.toInt().toString()
-            holder.cabsValue.text = item.carbs?.toInt().toString()
-            holder.fatsValue.text = item.fat?.toInt().toString()
+            holder.calValue.text = item.nutrients.macros.Calories?.toInt().toString()
+            holder.proteinValue.text = item.nutrients.macros.Protein?.toInt().toString()
+            holder.cabsValue.text = item.nutrients.macros.Carbs?.toInt().toString()
+            holder.fatsValue.text = item.nutrients.macros.Fats?.toInt().toString()
         }else{
           //  holder.servesCount.text = "NA"
             holder.calValue.text = "NA"
@@ -173,7 +178,7 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<SnapRecipeData>?, pos: Int, mealLogItem : SnapRecipeData?, isClick : Boolean) {
+    fun addAll(item : ArrayList<SearchResultItem>?, pos: Int, mealLogItem : SearchResultItem?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

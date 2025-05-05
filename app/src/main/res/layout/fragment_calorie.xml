@@ -377,8 +377,8 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:visibility="invisible"
-                android:text="Average"
+                android:visibility="visible"
+                android:text=""
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
@@ -387,10 +387,11 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
+                android:id="@+id/calorie_description_text"
                 android:layout_width="339dp"
                 android:layout_height="wrap_content"
                 android:textSize="16dp"
-                android:visibility="invisible"
+                android:visibility="visible"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
                 android:text=""

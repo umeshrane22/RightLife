@@ -20,9 +20,10 @@ import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
-import com.jetsynthesys.rightlife.ai_package.model.request.SaveMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
@@ -38,7 +39,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
     private lateinit var flexboxLayout: FlexboxLayout
     private val ingredientsList = ArrayList<String>()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
-    private var dishLists : ArrayList<SnapRecipeData> = ArrayList()
+    private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private lateinit var mealType : String
     private lateinit var layoutTitle : LinearLayout
     private lateinit var btnLogMeal: LinearLayoutCompat
@@ -88,7 +89,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
 
         if (dishLists.size > 0){
             for (dishItem in dishLists) {
-                ingredientsList.add(dishItem.recipe_name!!)
+                ingredientsList.add(dishItem.name!!)
             }
             if (ingredientsList.size > 0){
                 updateIngredientChips()
@@ -106,7 +107,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
         btnLogMeal.setOnClickListener {
             if (mealType.isNotEmpty()){
                 if (dishLists.size > 0){
-                    createMealsSave(dishLists)
+                    createDishLog(dishLists)
                 }
             }
         }
@@ -129,7 +130,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun createMealsSave(snapRecipeList : ArrayList<SnapRecipeData>) {
+    private fun createDishLog(snapRecipeList : ArrayList<SearchResultItem>) {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -138,20 +139,19 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
 
-        val mealLogList : ArrayList<MealLogItem> = ArrayList()
-        val mealNamesString = snapRecipeList.map { it.recipe_name ?: "" }.joinToString(", ")
+        val mealLogList : ArrayList<DishLog> = ArrayList()
+        val mealNamesString = snapRecipeList.map { it.name ?: "" }.joinToString(", ")
 
         snapRecipeList?.forEach { snapRecipe ->
-            val mealLogData = MealLogItem(
-                meal_id = snapRecipe.id,
+            val mealLogData = DishLog(
+                receipe_id = snapRecipe.id,
                 meal_quantity = 1,
                 unit = "g",
                 measure = "Bowl"
             )
             mealLogList.add(mealLogData)
         }
-        val mealLogRequest = SaveMealLogRequest(
-            meal_name = "",
+        val mealLogRequest = SaveDishLogRequest(
             meal_type = mealType,
             meal_log = mealLogList
         )

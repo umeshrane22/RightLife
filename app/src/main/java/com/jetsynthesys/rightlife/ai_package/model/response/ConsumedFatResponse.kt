@@ -11,7 +11,10 @@ data class ConsumedFatResponse(
     @SerializedName("total_fat") val totalFat: Double,
     @SerializedName("current_avg_fat") val currentAvgFat: Double,
     @SerializedName("progress_percentage") val progressPercentage: Double,
-    @SerializedName("progress_sign") val progressSign: String
+    @SerializedName("progress_sign") val progressSign: String,
+    @SerializedName("heading") val heading: String,
+    @SerializedName("description") val description: String,
+
 )
 
 data class FatTotal(

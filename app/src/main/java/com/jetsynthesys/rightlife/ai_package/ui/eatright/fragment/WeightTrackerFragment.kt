@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
@@ -19,6 +21,10 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -28,18 +34,27 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentWeightTrackerBinding
+import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -47,6 +62,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.floor
 
 class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
@@ -55,14 +71,23 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private lateinit var stripsContainer: FrameLayout
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var backwardImage: ImageView
+    private lateinit var weight_tracker_layout: CardView
     private lateinit var forwardImage: ImageView
     private lateinit var selectedDate: TextView
+    private lateinit var weight_description_heading: TextView
+    private lateinit var weight_description_text: TextView
     private var selectedWeekDate: String = ""
     private var selectedMonthDate: String = ""
     private var selectedHalfYearlyDate: String = ""
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
+    private lateinit var loss_new_weight_filled : LinearLayout
+    private lateinit var logWeightRulerAdapter: LogWeightRulerAdapter
+    private val numbers = mutableListOf<Float>()
+    private lateinit var weightIntake: TextView
+    private lateinit var weightIntakeUnit: TextView
+
 
     private val viewModel: HydrationViewModelNew by viewModels()
 
@@ -90,15 +115,29 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         selectHeartRateLayout = view.findViewById(R.id.selectHeartRateLayout)
         selectedItemDate = view.findViewById(R.id.selectedItemDate)
         selectedCalorieTv = view.findViewById(R.id.selectedCalorieTv)
+        weight_description_heading = view.findViewById(R.id.weight_description_heading)
+        weight_description_text = view.findViewById(R.id.weight_description_text)
+        weight_tracker_layout = view.findViewById(R.id.weight_tracker_layout)
+        loss_new_weight_filled = view.findViewById(R.id.loss_new_weight_filled)
+        weightIntake = view.findViewById(R.id.weightIntake)
+        weightIntakeUnit = view.findViewById(R.id.weightIntakeUnit)
+
+
+
 
 
         // Show Week data by default
         radioGroup.check(R.id.rbMonth)
         fetchWeightData("last_monthly")
-        setupLineChart()
+        //setupLineChart()
+        loss_new_weight_filled.setOnClickListener {
+            showLogWeightBottomSheet()
+        }
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            weight_tracker_layout.visibility = if (checkedId == R.id.rbWeek) View.VISIBLE else View.GONE
+
             when (checkedId) {
                 R.id.rbWeek ->{
                     layoutLineChart.visibility =View.VISIBLE
@@ -313,6 +352,191 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             }
         }
     }*/
+   private fun showLogWeightBottomSheet() {
+       // Create and configure BottomSheetDialog
+       val bottomSheetDialog = BottomSheetDialog(requireActivity())
+       var selectedLabel = " kg"
+       var selectedWeight = ""//binding.tvWeight.text.toString()
+       if (selectedWeight.isEmpty()) {
+           selectedWeight = "50 kg"
+       } else {
+           val w = selectedWeight.split(" ")
+           selectedLabel = " ${w[1]}"
+       }
+       // Inflate the BottomSheet layout
+       val dialogBinding = BottomsheetLogWeightSelectionBinding.inflate(layoutInflater)
+       val bottomSheetView = dialogBinding.root
+       bottomSheetDialog.setContentView(bottomSheetView)
+       dialogBinding.selectedNumberText.text = selectedWeight
+       if (selectedLabel == " lbs") {
+           dialogBinding.switchWeightMetric.isChecked = true
+       }
+
+       val thumbColors = ColorStateList(
+           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+           intArrayOf(Color.parseColor("#03B27B"), Color.parseColor("#03B27B"))
+       )
+
+       val trackColors = ColorStateList(
+           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+           intArrayOf(Color.parseColor("#F2F2F2"), Color.parseColor("#F2F2F2"))
+       )
+
+       dialogBinding.switchWeightMetric.thumbTintList = thumbColors
+       dialogBinding.switchWeightMetric.trackTintList = trackColors
+       dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
+           val w = selectedWeight.split(" ")
+           if (isChecked) {
+               selectedLabel = " lbs"
+               selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+               setLbsValue()
+           } else {
+               selectedLabel = " kgs"
+               selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+               setKgsValue()
+           }
+           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+           selectedWeight += selectedLabel
+           dialogBinding.selectedNumberText.text = selectedWeight
+       }
+
+       val layoutManager =
+           LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+       dialogBinding.rulerView.layoutManager = layoutManager
+       // Generate numbers with increments of 0.1
+
+       for (i in 0..1000) {
+           numbers.add(i / 10f) // Increment by 0.1
+       }
+
+       logWeightRulerAdapter = LogWeightRulerAdapter(numbers) { number ->
+           // Handle the selected number
+       }
+       dialogBinding.rulerView.adapter = logWeightRulerAdapter
+
+       // Center number with snap alignment
+       val snapHelper: SnapHelper = LinearSnapHelper()
+       snapHelper.attachToRecyclerView(dialogBinding.rulerView)
+
+       dialogBinding.rulerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+           override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+               super.onScrollStateChanged(recyclerView, newState)
+               if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                   // Get the currently snapped position
+                   val snappedView = snapHelper.findSnapView(recyclerView.layoutManager)
+                   if (snappedView != null) {
+                       val position = recyclerView.layoutManager!!.getPosition(snappedView)
+                       val snappedNumber = numbers[position]
+                       //selected_number_text.setText("$snappedNumber Kg")
+                       dialogBinding.selectedNumberText.text = "$snappedNumber $selectedLabel"
+                       selectedWeight = dialogBinding.selectedNumberText.text.toString()
+                   }
+               }
+           }
+       })
+
+       dialogBinding.rlRulerContainer.post {
+           // Get the width of the parent LinearLayout
+           val parentWidth: Int = dialogBinding.rlRulerContainer.width
+           // Calculate horizontal padding (half of parent width)
+           val paddingHorizontal = parentWidth / 2
+           // Set horizontal padding programmatically
+           dialogBinding.rulerView.setPadding(
+               paddingHorizontal,
+               dialogBinding.rulerView.paddingTop,
+               paddingHorizontal,
+               dialogBinding.rulerView.paddingBottom
+           )
+       }
+
+       // Scroll to the center after layout is measured
+       dialogBinding.rulerView.post {
+           // Calculate the center position
+           val itemCount =
+               if (dialogBinding.rulerView.adapter != null) dialogBinding.rulerView.adapter!!.itemCount else 0
+           val centerPosition = itemCount / 2
+           // Scroll to the center position
+           layoutManager.scrollToPositionWithOffset(centerPosition, 0)
+       }
+
+       dialogBinding.btnConfirm.setOnClickListener {
+           // bottomSheetDialog.dismiss()
+           dialogBinding.rulerView.adapter = null
+           val fullWeight = selectedWeight.trim()
+           val parts = fullWeight.split(Regex("\\s+"))
+           val weightValue = parts[0]   // "50.7"
+           val weightUnit = parts.getOrElse(1) { "kg" }
+          /* weightIntake.text = weightValue
+           weightIntakeUnit.text = weightUnit*/
+           val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+           val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+           val request = WeightIntakeRequest(
+               userId = userId,
+               source = "apple",
+               type = weightUnit,
+               waterMl = weightValue.toFloat(),
+               date = currentDate
+           )
+           val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWeightIntake(request)
+           call.enqueue(object : Callback<LogWeightResponse> {
+               override fun onResponse(
+                   call: Call<LogWeightResponse>,
+                   response: Response<LogWeightResponse>
+               ) {
+                   if (response.isSuccessful) {
+                       val responseBody = response.body()
+                       bottomSheetDialog.dismiss()
+                       dialogBinding.rulerView.adapter = null
+                       val fullWeight = selectedWeight.trim()
+                       val parts = fullWeight.split(Regex("\\s+"))
+                       val weightValue = parts[0]   // "50.7"
+                       val weightUnit = parts.getOrElse(1) { "kg" }
+                      // weightIntake.text = response.body()?.waterMl.toString()
+                       weightIntakeUnit.text = response.body()?.type.toString()
+                       Log.d("LogWaterAPI", "Success: $responseBody")
+                       // You can do something with responseBody here
+                   } else {
+                       Log.e(
+                           "LogWaterAPI",
+                           "Error: ${response.code()} - ${response.errorBody()?.string()}"
+                       )
+                   }
+               }
+               override fun onFailure(call: Call<LogWeightResponse>, t: Throwable) {
+                   Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
+               }
+           })
+           //   binding.tvWeight.text = selectedWeight
+       }
+
+       dialogBinding.closeIV.setOnClickListener {
+           bottomSheetDialog.dismiss()
+           dialogBinding.rulerView.adapter = null
+       }
+       bottomSheetDialog.show()
+       fun logUserWaterIntake(
+           userId: String,
+           source: String,
+           waterMl: Int,
+           date: String
+       ) {
+       }
+   }
+    private fun setKgsValue() {
+        numbers.clear()
+        for (i in 0..1000) {
+            numbers.add(i / 10f) // Increment by 0.1
+        }
+        logWeightRulerAdapter.notifyDataSetChanged()
+    }
+
+    private fun setLbsValue() {
+        numbers.clear()
+        for (i in 0..2204) {
+            numbers.add(i / 10f)
+        }
+        logWeightRulerAdapter.notifyDataSetChanged()
+    }
     private fun fetchWeightData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -370,6 +594,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         }
 
                         withContext(Dispatchers.Main) {
+                            weight_description_heading.text = data.heading
+                            weight_description_text.text = data.description
+                            weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                           // weightIntakeUnit.text = data.lastWeightLog.
+
                             if (data.weightTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
@@ -441,141 +670,144 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     }
 
     private fun lineChartForSixMonths() {
-        val entries = if (viewModel.filteredData.isNotEmpty()) {
-            viewModel.filteredData.mapIndexed { index, item ->
-                Entry(index.toFloat(), item.waterMl.toFloat())
-            }
-        } else {
-            listOf(Entry(0f, 0f), Entry(1f, 0f))
-        }
-        Log.d("HydrationTracker", "lineChartForSixMonths: entries size = ${entries.size}")
-
-        val dataSet = LineDataSet(entries, "Water Intake (ml)").apply {
-            color = Color.rgb(255, 102, 128)
-            lineWidth = 1f
-            setDrawCircles(false)
-            setDrawValues(false)
-            mode = LineDataSet.Mode.LINEAR
-            fillAlpha = 20
-            fillColor = Color.rgb(255, 102, 128)
-            setDrawFilled(true)
-        }
-
-        val lineData = LineData(dataSet)
-        lineChart.data = lineData
-
-        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(
-            viewModel.monthlyGroups.map { formatDate(it.startDate, "LLL\nyyyy") }.ifEmpty { listOf("No Data", "No Data") }
-        )
-        lineChart.xAxis.apply {
-            position = XAxis.XAxisPosition.BOTTOM
-            textColor = Color.BLACK
-            textSize = 10f
-            setDrawGridLines(true)
-            setDrawLabels(true)
-            granularity = 1f
-            labelCount = viewModel.monthlyGroups.size.coerceAtLeast(2)
-            setAvoidFirstLastClipping(true)
-        }
-
-        lineChart.axisLeft.apply {
-            axisMaximum = viewModel.yMax.toFloat() * 1.2f
-            axisMinimum = 0f
-            setDrawGridLines(true)
-            textColor = Color.BLACK
-            textSize = 10f
-            setLabelCount(6, true)
-            valueFormatter = object : IndexAxisValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
+        activity?.runOnUiThread {
+            val entries = if (viewModel.filteredData.isNotEmpty()) {
+                viewModel.filteredData.mapIndexed { index, item ->
+                    Entry(index.toFloat(), item.waterMl.toFloat())
                 }
+            } else {
+                listOf(Entry(0f, 0f), Entry(1f, 0f))
             }
-            setDrawAxisLine(true)
-        }
-        lineChart.axisRight.isEnabled = false
+            Log.d("HydrationTracker", "lineChartForSixMonths: entries size = ${entries.size}")
 
-        lineChart.animateX(1000)
-        lineChart.animateY(1000)
-        lineChart.invalidate()
+            val dataSet = LineDataSet(entries, "Water Intake (ml)").apply {
+                color = Color.rgb(255, 102, 128)
+                lineWidth = 1f
+                setDrawCircles(false)
+                setDrawValues(false)
+                mode = LineDataSet.Mode.LINEAR
+                fillAlpha = 20
+                fillColor = Color.rgb(255, 102, 128)
+                setDrawFilled(true)
+            }
 
-        lineChart.post {
-            val transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
-            val hMargin = 40f
-            val vMargin = 20f
-            if (viewModel.currentRange == RangeTypeChartsNew.SIX_MONTHS) {
-                val overallStart = viewModel.filteredData.firstOrNull()?.date ?: viewModel.startDate
-                val overallEnd = viewModel.filteredData.lastOrNull()?.date ?: viewModel.endDate
-                val totalInterval = if (overallEnd.time > overallStart.time) overallEnd.time - overallStart.time.toDouble() else 1.0
+            val lineData = LineData(dataSet)
+            lineChart.data = lineData
 
-                Log.d("HydrationTracker", "filteredData size: ${viewModel.filteredData.size}, overallStart: $overallStart, overallEnd: $overallEnd")
+            lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(
+                viewModel.monthlyGroups.map { formatDate(it.startDate, "LLL\nyyyy") }.ifEmpty { listOf("No Data", "No Data") }
+            )
+            lineChart.xAxis.apply {
+                position = XAxis.XAxisPosition.BOTTOM
+                textColor = Color.BLACK
+                textSize = 10f
+                setDrawGridLines(true)
+                setDrawLabels(true)
+                granularity = 1f
+                labelCount = viewModel.monthlyGroups.size.coerceAtLeast(2)
+                setAvoidFirstLastClipping(true)
+            }
 
-                stripsContainer.removeAllViews()
-                viewModel.monthlyGroups.forEach { group ->
-                    val monthEntries = viewModel.filteredData.filter { it.date >= group.startDate && it.date <= group.endDate }
-                    if (monthEntries.isNotEmpty()) {
-                        val startIndex = viewModel.filteredData.indexOfFirst { it.date >= group.startDate }
-                        val endIndex = viewModel.filteredData.indexOfLast { it.date <= group.endDate }
-                        if (startIndex >= 0 && endIndex >= 0) {
-                            val xStartFraction = startIndex.toDouble() / viewModel.filteredData.size
-                            val xEndFraction = endIndex.toDouble() / viewModel.filteredData.size
-                            val yFraction = group.avgWater.toDouble() / viewModel.yMax
-                            val pixelStart = transformer.getPixelForValues(
-                                (xStartFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
-                                ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
-                            )
-                            val pixelEnd = transformer.getPixelForValues(
-                                (xEndFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
-                                ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
-                            )
+            lineChart.axisLeft.apply {
+                axisMaximum = viewModel.yMax.toFloat() * 1.2f
+                axisMinimum = 0f
+                setDrawGridLines(true)
+                textColor = Color.BLACK
+                textSize = 10f
+                setLabelCount(6, true)
+                valueFormatter = object : IndexAxisValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
+                    }
+                }
+                setDrawAxisLine(true)
+            }
+            lineChart.axisRight.isEnabled = false
 
-                            // Draw red capsule
-                            val capsuleView = View(requireContext()).apply {
-                                val width = (pixelEnd.x - pixelStart.x).toInt().coerceAtLeast(20)
-                                layoutParams = FrameLayout.LayoutParams(width, 8)
-                                background = GradientDrawable().apply {
-                                    shape = GradientDrawable.RECTANGLE
-                                    cornerRadius = 4f
-                                    setColor(Color.RED)
+            lineChart.animateX(1000)
+            lineChart.animateY(1000)
+            lineChart.invalidate()
+
+            lineChart.post {
+                val transformer = lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+                val hMargin = 40f
+                val vMargin = 20f
+                if (viewModel.currentRange == RangeTypeChartsNew.SIX_MONTHS) {
+                    val overallStart = viewModel.filteredData.firstOrNull()?.date ?: viewModel.startDate
+                    val overallEnd = viewModel.filteredData.lastOrNull()?.date ?: viewModel.endDate
+                    val totalInterval = if (overallEnd.time > overallStart.time) overallEnd.time - overallStart.time.toDouble() else 1.0
+
+                    Log.d("HydrationTracker", "filteredData size: ${viewModel.filteredData.size}, overallStart: $overallStart, overallEnd: $overallEnd")
+
+                    stripsContainer.removeAllViews()
+                    viewModel.monthlyGroups.forEach { group ->
+                        val monthEntries = viewModel.filteredData.filter { it.date >= group.startDate && it.date <= group.endDate }
+                        if (monthEntries.isNotEmpty()) {
+                            val startIndex = viewModel.filteredData.indexOfFirst { it.date >= group.startDate }
+                            val endIndex = viewModel.filteredData.indexOfLast { it.date <= group.endDate }
+                            if (startIndex >= 0 && endIndex >= 0) {
+                                val xStartFraction = startIndex.toDouble() / viewModel.filteredData.size
+                                val xEndFraction = endIndex.toDouble() / viewModel.filteredData.size
+                                val yFraction = group.avgWater.toDouble() / viewModel.yMax
+                                val pixelStart = transformer.getPixelForValues(
+                                    (xStartFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
+                                    ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
+                                )
+                                val pixelEnd = transformer.getPixelForValues(
+                                    (xEndFraction * (lineChart.width - 2 * hMargin)).toFloat() + hMargin,
+                                    ((1 - yFraction) * (lineChart.height - 2 * vMargin) + vMargin).toFloat()
+                                )
+
+                                // Draw red capsule
+                                val capsuleView = View(requireContext()).apply {
+                                    val width = (pixelEnd.x - pixelStart.x).toInt().coerceAtLeast(20)
+                                    layoutParams = FrameLayout.LayoutParams(width, 8)
+                                    background = GradientDrawable().apply {
+                                        shape = GradientDrawable.RECTANGLE
+                                        cornerRadius = 4f
+                                        setColor(Color.RED)
+                                    }
+                                    x = pixelStart.x.toFloat()
+                                    y = (pixelStart.y - 3).toFloat()
                                 }
-                                x = pixelStart.x.toFloat()
-                                y = (pixelStart.y - 3).toFloat()
-                            }
-                            stripsContainer.addView(capsuleView)
+                                stripsContainer.addView(capsuleView)
 
-                            // Average label
-                            val avgText = TextView(requireContext()).apply {
-                                text = "${group.avgWater / 1000}k"
-                                setTextColor(Color.BLACK)
-                                textSize = 12f
-                                setPadding(6, 4, 6, 4)
-                                layoutParams = FrameLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT
-                                )
-                                x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
-                                y = (pixelStart.y - 20).toFloat()
-                            }
-                            stripsContainer.addView(avgText)
+                                // Average label
+                                val avgText = TextView(requireContext()).apply {
+                                    text = "${group.avgWater / 1000}k"
+                                    setTextColor(Color.BLACK)
+                                    textSize = 12f
+                                    setPadding(6, 4, 6, 4)
+                                    layoutParams = FrameLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT
+                                    )
+                                    x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
+                                    y = (pixelStart.y - 20).toFloat()
+                                }
+                                stripsContainer.addView(avgText)
 
-                            // Difference label
-                            val diffText = TextView(requireContext()).apply {
-                                text = group.monthDiffString
-                                setTextColor(if (group.isPositiveChange) Color.GREEN else Color.RED)
-                                textSize = 12f
-                                setPadding(6, 4, 6, 4)
-                                layoutParams = FrameLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT
-                                )
-                                x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
-                                y = (pixelStart.y + 20).toFloat()
+                                // Difference label
+                                val diffText = TextView(requireContext()).apply {
+                                    text = group.monthDiffString
+                                    setTextColor(if (group.isPositiveChange) Color.GREEN else Color.RED)
+                                    textSize = 12f
+                                    setPadding(6, 4, 6, 4)
+                                    layoutParams = FrameLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT
+                                    )
+                                    x = ((pixelStart.x + pixelEnd.x) / 2 - 20).toFloat()
+                                    y = (pixelStart.y + 20).toFloat()
+                                }
+                                stripsContainer.addView(diffText)
                             }
-                            stripsContainer.addView(diffText)
                         }
                     }
                 }
             }
         }
+
     }
 
     private fun formatDate(date: Date, format: String): String {
@@ -586,161 +818,168 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
 
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
-        val dataSet = LineDataSet(entries, "Water Intake (ml)")
-        dataSet.color = context?.let { ContextCompat.getColor(it, R.color.border_green) }!!
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.setCircleColor(context?.let { ContextCompat.getColor(it, R.color.border_green) }!!)
-        dataSet.circleRadius = 5f
-        dataSet.lineWidth = 2f
-        dataSet.setDrawValues(false)
+        activity?.runOnUiThread {
+            val dataSet = LineDataSet(entries, "Water Intake (ml)")
+            dataSet.color = context?.let { ContextCompat.getColor(it, R.color.border_green) }!!
+            dataSet.valueTextColor = Color.BLACK
+            dataSet.setCircleColor(context?.let { ContextCompat.getColor(it, R.color.border_green) }!!)
+            dataSet.circleRadius = 5f
+            dataSet.lineWidth = 2f
+            dataSet.setDrawValues(false)
 
-        val lineData = LineData(dataSet)
-        lineChart.data = lineData
+            val lineData = LineData(dataSet)
+            lineChart.data = lineData
 
-        val xAxis = lineChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f
+            val xAxis = lineChart.xAxis
+            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.textSize = 12f
+            xAxis.granularity = 1f
+            xAxis.setDrawGridLines(false)
+            xAxis.textColor = Color.BLACK
+            xAxis.yOffset = 15f
 
-        val leftYAxis: YAxis = lineChart.axisLeft
-        leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
-        leftYAxis.setDrawGridLines(true)
-        lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-            override fun onValueSelected(e: Entry?, h: Highlight?) {
-                selectHeartRateLayout.visibility = View.VISIBLE
-                if (e != null) {
-                    val x = e.x.toInt()
-                    val y = e.y
-                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    selectedItemDate.text = labels.get(x)
-                    selectedCalorieTv.text = y.toInt().toString()
+            val leftYAxis: YAxis = lineChart.axisLeft
+            leftYAxis.textSize = 12f
+            leftYAxis.textColor = Color.BLACK
+            leftYAxis.setDrawGridLines(true)
+            lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    selectHeartRateLayout.visibility = View.VISIBLE
+                    if (e != null) {
+                        val x = e.x.toInt()
+                        val y = e.y
+                        Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                        selectedItemDate.text = labels.get(x)
+                        selectedCalorieTv.text = y.toInt().toString()
+                    }
                 }
-            }
-            override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
-                selectHeartRateLayout.visibility = View.INVISIBLE
-            }
-        })
+                override fun onNothingSelected() {
+                    Log.d("ChartClick", "Nothing selected")
+                    selectHeartRateLayout.visibility = View.INVISIBLE
+                }
+            })
 
-        lineChart.axisRight.isEnabled = false
-        lineChart.description.isEnabled = false
+            lineChart.axisRight.isEnabled = false
+            lineChart.description.isEnabled = false
 
-        lineChart.invalidate()
+            lineChart.invalidate()
+        }
+
     }
 
-    private fun processWeeklyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val date = dateFormat.parse(currentDate)
-        calendar.time = date!!
-        calendar.add(Calendar.DAY_OF_YEAR, -6)
+    private suspend fun processWeeklyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+        return withContext(Dispatchers.Main) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val date = dateFormat.parse(currentDate)
+            calendar.time = date!!
+            calendar.add(Calendar.DAY_OF_YEAR, -6)
 
-        val waterMap = mutableMapOf<String, Float>()
-        val labels = mutableListOf<String>()
-        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+            val waterMap = mutableMapOf<String, Float>()
+            val labels = mutableListOf<String>()
+            val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
 
-        repeat(7) {
-            val dateStr = dateFormat.format(calendar.time)
-            waterMap[dateStr] = 0f
-            labels.add(dayFormat.format(calendar.time))
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        data.weightTotals.forEach { intake ->
-            val date = dateFormat.parse(intake.date)
-            if (date != null) {
-                val dayKey = dateFormat.format(date)
-                waterMap[dayKey] = intake.weight.toFloat()
+            repeat(7) {
+                val dateStr = dateFormat.format(calendar.time)
+                waterMap[dateStr] = 0f
+                labels.add(dayFormat.format(calendar.time))
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
-        }
 
-        val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+            data.weightTotals.forEach { intake ->
+                val date = dateFormat.parse(intake.date)
+                if (date != null) {
+                    val dayKey = dateFormat.format(date)
+                    waterMap[dayKey] = intake.weight.toFloat()
+                }
+            }
+
+            val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Pair(entries, labels)
+        }
     }
 
-    private fun processMonthlyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val date = dateFormat.parse(currentDate)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        calendar.set(year, month, 1)
+    private suspend fun processMonthlyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+        return withContext(Dispatchers.Main) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val date = dateFormat.parse(currentDate)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            calendar.set(year, month, 1)
 
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val waterMap = mutableMapOf<String, Float>()
+            val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val waterMap = mutableMapOf<String, Float>()
 
-        // Initialize water map for all days in the month
-        repeat(daysInMonth) {
-            val dateStr = dateFormat.format(calendar.time)
-            waterMap[dateStr] = 0f
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        // Populate water intake data
-        data.weightTotals.forEach { intake ->
-            val date = dateFormat.parse(intake.date)
-            if (date != null) {
-                val dayKey = dateFormat.format(date)
-                waterMap[dayKey] = intake.weight.toFloat()
+            // Initialize water map for all days in the month
+            repeat(daysInMonth) {
+                val dateStr = dateFormat.format(calendar.time)
+                waterMap[dateStr] = 0f
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
-        }
 
-        // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
-        val weeklyWater = mutableListOf<Float>()
-        val labels = mutableListOf<String>()
-        var weekIndex = 0
-        var weeklySum = 0f
-        var dayCount = 0
-
-        waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
-            weeklySum += entry.value
-            dayCount++
-
-            when (index + 1) {
-                7 -> {
-                    weeklyWater.add(weeklySum / dayCount) // Average for the week
-                    labels.add("1-7")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                14 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("8-14")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                21 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("15-21")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                28 -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("22-28")
-                    weeklySum = 0f
-                    dayCount = 0
-                    weekIndex++
-                }
-                daysInMonth -> {
-                    weeklyWater.add(weeklySum / dayCount)
-                    labels.add("29-${daysInMonth}")
+            // Populate weight data
+            data.weightTotals.forEach { intake ->
+                val date = dateFormat.parse(intake.date)
+                if (date != null) {
+                    val dayKey = dateFormat.format(date)
+                    waterMap[dayKey] = intake.weight.toFloat()
                 }
             }
-        }
 
-        // Create entries for the chart
-        val entries = weeklyWater.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+            // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
+            val weeklyWeight = mutableListOf<Float>()
+            val labels = mutableListOf<String>()
+            var weekIndex = 0
+            var weeklySum = 0f
+            var dayCount = 0
+
+            waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
+                weeklySum += entry.value
+                dayCount++
+
+                when (index + 1) {
+                    7 -> {
+                        weeklyWeight.add(weeklySum / dayCount) // Average for the week
+                        labels.add("1-7")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    14 -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("8-14")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    21 -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("15-21")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    28 -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("22-28")
+                        weeklySum = 0f
+                        dayCount = 0
+                        weekIndex++
+                    }
+                    daysInMonth -> {
+                        weeklyWeight.add(weeklySum / dayCount)
+                        labels.add("29-$daysInMonth")
+                    }
+                }
+            }
+
+            // Create entries for the chart
+            val entries = weeklyWeight.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Pair(entries, labels)
+        }
     }
 
     private fun processSixMonthsData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {

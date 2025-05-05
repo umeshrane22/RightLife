@@ -1,9 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Path
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -12,22 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -36,33 +25,17 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.github.mikephil.charting.renderer.BarChartRenderer
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.FrequentlyLoggedListAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LogMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
-import com.jetsynthesys.rightlife.databinding.FragmentFrequentlyLoggedBinding
-import com.google.android.flexbox.FlexboxLayout
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentCarbsBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -88,6 +61,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
+    private lateinit var carbs_description_heading : TextView
+    private lateinit var carbs_description_text : TextView
     private lateinit var averageBurnCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
@@ -127,6 +102,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        carbs_description_heading = view.findViewById(R.id.carbs_description_heading)
+        carbs_description_text = view.findViewById(R.id.carbs_description_text)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -134,6 +111,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        fetchActiveCalories("last_weekly")
         /* fetchActiveCalories("last_weekly")
          setupLineChart()*/
 
@@ -406,6 +384,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
 
                         // Ensure all UI updates are on the main thread
                         withContext(Dispatchers.Main) {
+                            carbs_description_heading.text = data.heading
+                            carbs_description_text.text = data.description
                             if (data.consumedCarbsTotals.size > 31) {
                                 barChart.visibility = View.GONE
                                 layoutLineChart.visibility = View.VISIBLE
@@ -522,15 +502,20 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             }
         }
         // Aggregate calories by week
-        if ( activeCaloriesResponse.consumedCarbsTotals.isNotEmpty()){
-            activeCaloriesResponse.consumedCarbsTotals.forEach { calorie ->
-                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
-                if (startDate != null) {
-                    val dayKey = dateFormat.format(startDate)
-                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.carbsConsumed.toFloat() ?: 0f)
+        if (activeCaloriesResponse.consumedCarbsTotals.isNotEmpty()) {
+            activeCaloriesResponse.consumedCarbsTotals.forEach { carb ->
+                val parsedDate = carb.date.let { dateFormat.parse(it) }
+                if (parsedDate != null) {
+                    val dayKey = dateFormat.format(parsedDate)
+                    if (calorieMap.containsKey(dayKey)) {
+                        val existing = calorieMap[dayKey] ?: 0f
+                        val consumed = carb.carbsConsumed.toFloat() ?: 0f
+                        calorieMap[dayKey] = existing + consumed
+                    }
                 }
             }
         }
+
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)

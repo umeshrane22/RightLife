@@ -44,6 +44,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var usernameReset: EditText
@@ -117,6 +120,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         healthConnectSyncButton.setOnClickListener {
+
             // AddWorkoutSearchFragment navigation (commented as per original)
         }
 
@@ -140,7 +144,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             })
 
         onMealLogDateItemRefresh()
-        fetchActivities()
+        //fetchActivities()
+        fetchCalories()
 
         imageCalender.setOnClickListener {
             val fragment = ActivitySyncCalenderFragment()
@@ -190,7 +195,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 activityType = workout.activity_name,
                                 duration = "${workout.duration_min.toInt()} min",
                                 caloriesBurned = workout.calories_burned.toInt().toString(),
-                                intensity = workout.intensity
+                                intensity = workout.intensity,
+                                calorieId = workout.activityId,
+                                userId = userId
                             )
                             activityList.add(activity)
                         }
@@ -238,7 +245,84 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun fetchCalories() {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "64763fe2fa0e40d9c0bc8264"
+               // Log.d("FetchCalories", "Fetching calories for userId: $userId, startDate: $startDate, endDate: $endDate")
+                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                val response = ApiClient.apiServiceFastApi.getCalories(
+                    userId = userId,
+                    startDate = currentDate,
+                    endDate = currentDate,
+                    page = 1,
+                    limit = 10,
+                    includeStats = false
+                )
 
+                if (response.isSuccessful) {
+                    val caloriesResponse = response.body()
+                    Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
+
+                    val activityList = ArrayList<ActivityModel>()
+
+                    caloriesResponse?.data?.forEachIndexed { index, workout ->
+                        Log.d("FetchCalories", "Workout $index - ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}")
+
+                        val activity = ActivityModel(
+                            activityType = workout.workoutType,
+                            duration = "${workout.duration} min",
+                            caloriesBurned = "${workout.caloriesBurned.toInt()} kcal",
+                            intensity = "",
+                            calorieId = workout.id,
+                            userId = userId
+                        )
+                        activityList.add(activity)
+                    }
+
+                    withContext(Dispatchers.Main) {
+                        if (isAdded && view != null) {
+                            if (activityList.isNotEmpty()) {
+                                myActivityRecyclerView.visibility = View.VISIBLE
+                                Log.d("FetchCalories", "Displaying ${activityList.size} activities")
+                            } else {
+                                myActivityRecyclerView.visibility = View.GONE
+                                Log.d("FetchCalories", "No activities to display")
+                            }
+                            myActivityAdapter.addAll(activityList, -1, null, false)
+                        }
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error details"
+                    withContext(Dispatchers.Main) {
+                        if (isAdded && view != null) {
+                            Log.e("FetchCalories", "API Error ${response.code()}: $errorBody")
+                            myActivityRecyclerView.visibility = View.GONE
+                            Toast.makeText(
+                                context,
+                                "Failed to fetch calories: ${response.code()}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    if (isAdded && view != null) {
+                        Log.e("FetchCalories", "Exception: ${e.message}", e)
+                        myActivityRecyclerView.visibility = View.GONE
+                        Toast.makeText(
+                            context,
+                            "Error fetching calories: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
 
 
     private fun showTooltipsSequentially() {

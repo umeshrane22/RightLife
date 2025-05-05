@@ -11,13 +11,14 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 
-class DishListAdapter(private val context: Context, private var dataLists: ArrayList<SnapRecipeData>,
-                      private var clickPos: Int, private var mealLogListData : SnapRecipeData?,
-                      private var isClickView : Boolean, val onMealLogClickItem: (SnapRecipeData, Int, Boolean) -> Unit,
-                      val onMealLogDeleteItem: (SnapRecipeData, Int, Boolean) -> Unit,
-                      val onMealLogEditItem: (SnapRecipeData, Int, Boolean) -> Unit) :
+class DishListAdapter(private val context: Context, private var dataLists: ArrayList<SearchResultItem>,
+                      private var clickPos: Int, private var mealLogListData : SearchResultItem?,
+                      private var isClickView : Boolean, val onMealLogClickItem: (SearchResultItem, Int, Boolean) -> Unit,
+                      val onMealLogDeleteItem: (SearchResultItem, Int, Boolean) -> Unit,
+                      val onMealLogEditItem: (SearchResultItem, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<DishListAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -31,17 +32,17 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
         val item = dataLists[position]
 
       //  holder.mealTitle.text = item.mealType
-        val capitalized = item.recipe_name.toString().replaceFirstChar { it.uppercase() }
+        val capitalized = item.name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
         holder.servesCount.text = item.servings.toString()
-        if (item.cookingTime != null){
-            val mealTime = item.cookingTime!!.split(" ")[0]
+        if (item.cooking_time_in_seconds != null){
+            val mealTime = item.cooking_time_in_seconds.toString()
             holder.mealTime.text = mealTime
         }
-        holder.calValue.text = item.calories?.toInt().toString()
-        holder.subtractionValue.text = item.carbs?.toInt().toString()
-        holder.baguetteValue.text = item.protein?.toInt().toString()
-        holder.dewpointValue.text = item.fat?.toInt().toString()
+        holder.calValue.text = item.nutrients.macros.Calories?.toInt().toString()
+        holder.subtractionValue.text = item.nutrients.macros.Carbs?.toInt().toString()
+        holder.baguetteValue.text = item.nutrients.macros.Protein?.toInt().toString()
+        holder.dewpointValue.text = item.nutrients.macros.Fats?.toInt().toString()
         val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
             .load(imageUrl)
@@ -110,7 +111,7 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<SnapRecipeData>?, pos: Int, mealLogItem : SnapRecipeData?, isClick : Boolean) {
+    fun addAll(item : ArrayList<SearchResultItem>?, pos: Int, mealLogItem : SearchResultItem?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

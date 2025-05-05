@@ -76,6 +76,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : ImageView
+    private lateinit var burn_back_button_image : ImageView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
@@ -100,6 +101,10 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        burn_back_button_image = view.findViewById(R.id.burn_back_button_image)
+        burn_back_button_image.setOnClickListener {
+            navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
+        }
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())

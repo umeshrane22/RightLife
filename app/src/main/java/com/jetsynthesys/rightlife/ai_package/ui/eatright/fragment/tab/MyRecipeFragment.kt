@@ -29,6 +29,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
     private lateinit var addRecipeLayout : LinearLayoutCompat
     private lateinit var layoutNoRecipe : LinearLayoutCompat
     private lateinit var yourRecipesLayout : ConstraintLayout
+    private lateinit var mealType : String
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRecipeBinding
         get() = FragmentMyRecipeBinding::inflate
@@ -51,6 +52,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() {
         layoutNoRecipe = view.findViewById(R.id.layout_no_recipe)
         yourRecipesLayout = view.findViewById(R.id.yourRecipesLayout)
 
+        mealType = arguments?.getString("mealType").toString()
         recipeRecyclerView.layoutManager = LinearLayoutManager(context)
         recipeRecyclerView.adapter = recipeAdapter
 

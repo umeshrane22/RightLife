@@ -9,16 +9,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
-import com.jetsynthesys.rightlife.ai_package.model.response.MealPlan
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 
 class MyMealListAdapter(private val context: Context, private var dataLists: ArrayList<MergedMealItem>,
-                        private var clickPos: Int, private var mealLogListData : MergedMealItem?,
-                        private var isClickView : Boolean, val onMealDeleteItem: (MealDetails, Int, Boolean) -> Unit,
-                        val onMealLogItem: (MealDetails, Int, Boolean) -> Unit,
-                        val onSnapMealDeleteItem: (SnapMealDetail, Int, Boolean) -> Unit,
-                        val onSnapMealLogItem: (SnapMealDetail, Int, Boolean) -> Unit) :
+                        private var clickPos: Int, private var mealDetails : MealDetails?,
+                        private var snapMealDetail : SnapMealDetail?,
+                        private var isClickView : Boolean, val onDeleteMealItem: (MealDetails, Int, Boolean) -> Unit,
+                        val onAddMealLogItem: (MealDetails, Int, Boolean) -> Unit,
+                        val onEditMealLogItem: (MealDetails, Int, Boolean) -> Unit,
+                        val onDeleteSnapMealItem: (SnapMealDetail, Int, Boolean) -> Unit,
+                        val onAddSnapMealLogItem: (SnapMealDetail, Int, Boolean) -> Unit,
+                        val onEditSnapMealLogItem: (SnapMealDetail, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedItem = -1
@@ -50,8 +52,6 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-       // val item = dataLists[position]
-
         when (val item = dataLists[position]) {
             is MergedMealItem.SnapMeal -> (holder as SnapMealViewHolder).bind(item.data)
             is MergedMealItem.SavedMeal -> (holder as SavedMealViewHolder).bind(item.data)
@@ -87,14 +87,6 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 //                }
 //            }
    //     }
-
-//        holder.delete.setOnClickListener {
-//            onMealDeleteItem(item, position, true)
-//        }
-//
-//        holder.circlePlus.setOnClickListener {
-//            onMealLogItem(item, position, true)
-//        }
     }
 
     override fun getItemCount(): Int {
@@ -103,60 +95,73 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 
     inner class SnapMealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: SnapMealDetail) {
-            // Bind your SnapMealDetail data here
             itemView.findViewById<TextView>(R.id.tv_meal_name).text = item.meal_name
             val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
-            mealTitle.text = item.meal_type
             val delete: ImageView = itemView.findViewById(R.id.image_delete)
             val edit: ImageView = itemView.findViewById(R.id.image_edit)
             val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
             val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
-            servesCount.text = item.total_servings.toString()
             val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
-            calValue.text = item.total_calories.toInt().toString()
             val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
-            subtractionValue.text = item.total_protein.toInt().toString()
             val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
-            baguetteValue.text = item.total_carbs.toInt().toString()
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
+
+            mealTitle.text = item.meal_type
+            servesCount.text = item.total_servings.toString()
+            calValue.text = item.total_calories.toInt().toString()
+            subtractionValue.text = item.total_protein.toInt().toString()
+            baguetteValue.text = item.total_carbs.toInt().toString()
             dewpointValue.text = item.total_fat.toInt().toString()
+
             delete.setOnClickListener {
-                onSnapMealDeleteItem(item, bindingAdapterPosition, true)
+                onDeleteSnapMealItem(item, bindingAdapterPosition, true)
             }
 
             circlePlus.setOnClickListener {
-                onSnapMealLogItem(item, bindingAdapterPosition, true)
+                onAddSnapMealLogItem(item, bindingAdapterPosition, true)
+            }
+
+            edit.setOnClickListener {
+                onEditSnapMealLogItem(item, bindingAdapterPosition, true)
             }
         }
     }
 
     inner class SavedMealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: MealDetails) {
-            // Bind your MealDetail data here
             itemView.findViewById<TextView>(R.id.tv_meal_name).text = item.meal_name
             val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
-            mealTitle.text = item.meal_type
             val delete: ImageView = itemView.findViewById(R.id.image_delete)
             val edit: ImageView = itemView.findViewById(R.id.image_edit)
-            val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+            val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
             val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
-            servesCount.text = item.total_servings.toString()
             val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
-            calValue.text = item.total_calories.toInt().toString()
             val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
-            subtractionValue.text = item.total_protein.toInt().toString()
             val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
-            baguetteValue.text = item.total_carbs.toInt().toString()
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
+
+            mealTitle.text = item.meal_type
+            servesCount.text = item.total_servings.toString()
+            calValue.text = item.total_calories.toInt().toString()
+            subtractionValue.text = item.total_protein.toInt().toString()
+            baguetteValue.text = item.total_carbs.toInt().toString()
             dewpointValue.text = item.total_fat.toInt().toString()
+
             delete.setOnClickListener {
-            onMealDeleteItem(item, bindingAdapterPosition, true)
-        }
+                onDeleteMealItem(item, bindingAdapterPosition, true)
+            }
 
-       circlePlus.setOnClickListener {
-            onMealLogItem(item, bindingAdapterPosition, true)
-        }
+            circlePlus.setOnClickListener {
+                onAddMealLogItem(item, bindingAdapterPosition, true)
+            }
 
+            circlePlus.setOnClickListener {
+                onAddMealLogItem(item, bindingAdapterPosition, true)
+            }
+
+            edit.setOnClickListener {
+                onEditMealLogItem(item, bindingAdapterPosition, true)
+            }
         }
     }
 
@@ -184,12 +189,14 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 //         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
 //     }
 
-    fun addAll(item : ArrayList<MergedMealItem>?, pos: Int, mealLogItem : MergedMealItem?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MergedMealItem>?, pos: Int, mealLogItem : MealDetails?, snapMealLogItem : SnapMealDetail?,
+               isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
             clickPos = pos
-            mealLogListData = mealLogItem
+            mealDetails = mealLogItem
+            snapMealDetail = snapMealLogItem
             isClickView = isClick
         }
         notifyDataSetChanged()

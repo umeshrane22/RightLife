@@ -66,7 +66,7 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
     private val microNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onMealLogDateItem) }
 //    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onLunchMealLogItem) }
 //    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1, null, false, :: onDinnerMealLogItem) }
-    private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
+  //  private val frequentlyLoggedListAdapter by lazy { FrequentlyLoggedListAdapter(requireContext(), arrayListOf(), -1, null, false, :: onFrequentlyLoggedItem) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -84,8 +84,8 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
         tvMealType = view.findViewById(R.id.tvMealType)
         tvQuantity = view.findViewById(R.id.tvQuantity)
 
-        frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
-        frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
+//        frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
+//        frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
 
         view.findViewById<ImageView>(R.id.ivDatePicker).setOnClickListener {
             // Open Date Picker
@@ -235,7 +235,7 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
         val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(meal as Collection<MyMealModel>)
         val mealLogDateData: MyMealModel? = null
-        frequentlyLoggedListAdapter.addAll(valueLists, -1, mealLogDateData, false)
+
     }
 
     private fun onFrequentlyLoggedItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
@@ -249,7 +249,7 @@ class LogMealFragment : BaseFragment<FragmentLogMealBinding>() {
 
         val valueLists : ArrayList<MyMealModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MyMealModel>)
-        frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+        //frequentlyLoggedListAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
     private fun onBreakfastMealLogItemRefresh() {

@@ -11,10 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.ai_package.model.RecipeList
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 
-class SearchDishesAdapter(private val context: Context, private var dataLists: ArrayList<RecipeList>,
-                          private var clickPos: Int, private var mealLogListData : RecipeList?,
-                          private var isClickView : Boolean, val onSearchDishItem: (RecipeList, Int, Boolean) -> Unit) :
+class SearchDishesAdapter(private val context: Context, private var dataLists: ArrayList<SearchResultItem>,
+                          private var clickPos: Int, private var mealLogListData : SearchResultItem?,
+                          private var isClickView : Boolean, val onSearchDishItem: (SearchResultItem, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<SearchDishesAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -28,11 +29,14 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
         val item = dataLists[position]
 
         holder.dishName.text = item.name
+
+        val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
-            .load(item.image)
+            .load(imageUrl)
             .placeholder(R.drawable.ic_breakfast)
             .error(R.drawable.ic_breakfast)
             .into(holder.dishImage)
+
         holder.layoutMain.setOnClickListener {
             onSearchDishItem(item, position, true)
         }
@@ -50,7 +54,7 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
          val layoutMain : LinearLayout = itemView.findViewById(R.id.lyt_meal_item)
      }
 
-    fun addAll(item : ArrayList<RecipeList>?, pos: Int, mealLogItem : RecipeList?, isClick : Boolean) {
+    fun addAll(item : ArrayList<SearchResultItem>?, pos: Int, mealLogItem : SearchResultItem?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item
@@ -61,8 +65,19 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
         notifyDataSetChanged()
     }
 
-    fun updateList(newList: List<RecipeList>) {
-        dataLists = newList as ArrayList<RecipeList>
+    fun updateList(newList: List<SearchResultItem>) {
+        dataLists = newList as ArrayList<SearchResultItem>
         notifyDataSetChanged()
+    }
+
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }
