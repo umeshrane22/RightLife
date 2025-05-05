@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.WorkoutModel
 
 class YourActivitiesAdapter(
     private val context: Context,
@@ -43,7 +43,14 @@ class YourActivitiesAdapter(
 
         // Set up edit button click listener
         holder.edit.setOnClickListener {
-            val bottomSheet = DeleteWorkoutBottomSheet()
+            val bottomSheet = DeleteWorkoutBottomSheet.newInstance(
+                calorieId = item.calorieId,
+                userId = item.userId // Replace with dynamic userId if available
+            )
+            bottomSheet.setOnDeleteSuccessListener {
+                dataLists.removeAt(position)
+                notifyDataSetChanged()
+            }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
 

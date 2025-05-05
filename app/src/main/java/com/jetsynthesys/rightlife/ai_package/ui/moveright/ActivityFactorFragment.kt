@@ -8,9 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -29,6 +31,7 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentActivityFactorBinding
 import com.jetsynthesys.rightlife.databinding.FragmentAverageHeartRateBinding
@@ -50,6 +53,7 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
 
     private lateinit var lineChart: LineChart
     private lateinit var radioGroup: RadioGroup
+    private lateinit var  average_heart_rate_back_image: ImageView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,6 +61,10 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
 
         lineChart = view.findViewById(R.id.heartRateChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        average_heart_rate_back_image = view.findViewById(R.id.average_heart_rate)
+        average_heart_rate_back_image.setOnClickListener {
+            navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
+        }
 
         // Show Week data by default and fetch API data
         updateChart(getWeekData(), getWeekLabels())
@@ -96,10 +104,8 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
         dataSet.circleRadius = 5f
         dataSet.lineWidth = 2f
         dataSet.setDrawValues(false) // Hide values on points
-
         val lineData = LineData(dataSet)
         lineChart.data = lineData
-
         // Customize X-Axis
         val xAxis = lineChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
@@ -109,17 +115,14 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
         xAxis.setDrawGridLines(false)
         xAxis.textColor = Color.BLACK
         xAxis.yOffset = 15f // Move labels down
-
         // Customize Y-Axis
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = Color.BLACK
         leftYAxis.setDrawGridLines(true)
-
         // Disable right Y-axis
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
-
         // Refresh chart
         lineChart.invalidate()
     }
@@ -162,36 +165,52 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
 
     /** Fetch and update chart with API data */
     private fun fetchHeartRate(period: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val response = ApiClient.apiServiceFastApi.getHeartRate(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    period = period,
-                    date = "2025-03-24"
+                val response = ApiClient.apiServiceFastApi.getActivityFactor(
+                    userId = "67f6698fa213d14e22a47c2a",
+                    timeRange = "monthly",
+                    date = "2025-04-28"
                 )
 
                 if (response.isSuccessful) {
-                    val hrResponse = response.body()
-                    hrResponse?.let { data ->
+                    val activityResponse = response.body()
+                    activityResponse?.let { data ->
+
                         val (entries, labels) = when (period) {
                             "last_weekly" -> processWeeklyData(data)
                             "last_monthly" -> processMonthlyData(data)
                             "last_six_months" -> processSixMonthsData(data)
                             else -> Pair(getWeekData(), getWeekLabels()) // Fallback
                         }
-                        val averageHr = data.activeHeartRateTotals
-                            ?.mapNotNull { it.heartRate }
-                            ?.average()
+
+                        val activityFactors = data.data.activity_factor_trend
+                        val averageActivityFactor = if (activityFactors.isNotEmpty()) {
+                            activityFactors
+                                .map { it.activity_factor }
+                                .average()
+                        } else {
+                            0.0
+                        }
+
                         withContext(Dispatchers.Main) {
                             updateChart(entries, labels)
-                            Toast.makeText(
-                                requireContext(),
-                                "Average Heart Rate: ${String.format("%.2f", averageHr)} bpm",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            if (averageActivityFactor > 0) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Average Activity Factor: ${String.format("%.2f", averageActivityFactor)}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No valid activity factor data available",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     } ?: withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "No heart rate data received", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No activity factor data received", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -210,113 +229,116 @@ class ActivityFactorFragment : BaseFragment<FragmentActivityFactorBinding>() {
         }
     }
 
-    /** Process API data for last_weekly (7 days) */
-    private fun processWeeklyData(data: HeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24) // Reference date
-        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week (March 18)
 
-        val hrMap = mutableMapOf<String, MutableList<Float>>()
+    /** Process API data for last_weekly (7 days) */
+    private fun processWeeklyData(data: ActivityFactorResponse): Pair<List<Entry>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        val startDateStr = data.data.start_date?.substring(0, 10) ?: "2025-03-24" // Extract yyyy-MM-dd
+        val startDate = dateFormat.parse(startDateStr) ?: return Pair(getWeekData(), getWeekLabels())
+        calendar.time = startDate
+        calendar.add(Calendar.DAY_OF_YEAR, -6) // Start of the week
+
+        val hrMap = mutableMapOf<String, Float>()
         val labels = mutableListOf<String>()
         val dayFormat = SimpleDateFormat("EEE", Locale.getDefault()) // e.g., "Mon"
 
         // Initialize 7 days
         repeat(7) {
             val dateStr = dateFormat.format(calendar.time)
-            hrMap[dateStr] = mutableListOf()
+            hrMap[dateStr] = 0f
             labels.add(dayFormat.format(calendar.time))
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
 
         // Aggregate HR by day
-        data.activeHeartRateTotals?.forEach { hr ->
-            val startDate = dateFormat.parse(hr.date)?.let { Date(it.time) }
-            if (startDate != null) {
-                val dayKey = dateFormat.format(startDate)
-                hrMap[dayKey]?.add(hr.date.toFloatOrNull() ?: 0f)
+        data.data.activity_factor_trend?.forEach { hr ->
+            val dayKey = hr.date
+            if (hrMap.containsKey(dayKey)) {
+                hrMap[dayKey] = hr.activity_factor?.toFloat() ?: 0f
             }
         }
 
-        // Average HR per day
-        val entries = hrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
+        // Create entries
+        val entries = hrMap.values.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
         }
         return Pair(entries, labels)
     }
 
     /** Process API data for last_monthly (5 weeks) */
-    private fun processMonthlyData(data: HeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    private fun processMonthlyData(data: ActivityFactorResponse): Pair<List<Entry>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 1) // Start of March
+        val startDateStr = data.data.start_date?.substring(0, 10) ?: "2025-03-24"
+        val startDate = dateFormat.parse(startDateStr) ?: return Pair(getMonthData(), getMonthLabels())
+        calendar.time = startDate
+        calendar.set(Calendar.DAY_OF_MONTH, 1) // Start of the month
 
-        val hrMap = mutableMapOf<Int, MutableList<Float>>()
+        val hrMap = mutableMapOf<Int, Float>()
         val labels = mutableListOf<String>()
+        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
         // Initialize 5 weeks
         repeat(5) { week ->
             val startDay = week * 7 + 1
-            val endDay = if (week == 4) 31 else startDay + 6
-            hrMap[week] = mutableListOf()
+            val endDay = if (week == 4) daysInMonth else minOf(startDay + 6, daysInMonth)
+            hrMap[week] = 0f
             labels.add("$startDay-$endDay")
         }
 
         // Aggregate HR by week
-        data.activeHeartRateTotals?.forEach { hr ->
-            val startDate = dateFormat.parse(hr.date)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-                val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
-                hrMap[weekIndex]?.add(hr.date.toFloatOrNull() ?: 0f)
+        data.data.activity_factor_trend?.forEach { hr ->
+            val hrDate = dateFormat.parse(hr.date) ?: return Pair(getMonthData(), getMonthLabels())
+            calendar.time = hrDate
+            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+            val weekIndex = (dayOfMonth - 1) / 7 // 0-based week index
+            if (weekIndex in 0..4) {
+                hrMap[weekIndex] = hr.activity_factor?.toFloat() ?: 0f
             }
         }
 
-        // Average HR per week
-        val entries = hrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
+        // Create entries
+        val entries = hrMap.values.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
         }
         return Pair(entries, labels)
     }
 
     /** Process API data for last_six_months (6 months) */
-    private fun processSixMonthsData(data: HeartRateResponse): Pair<List<Entry>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+    private fun processSixMonthsData(data: ActivityFactorResponse): Pair<List<Entry>, List<String>> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
         val calendar = Calendar.getInstance()
-        calendar.set(2025, Calendar.MARCH, 24)
-        calendar.add(Calendar.MONTH, -5) // Start 6 months back (Oct 2024)
+        val startDateStr = data.data.start_date?.substring(0, 10) ?: "2025-03-24"
+        val startDate = dateFormat.parse(startDateStr) ?: return Pair(getSixMonthData(), getSixMonthLabels())
+        calendar.time = startDate
+        calendar.add(Calendar.MONTH, -5) // Start 6 months back
 
-        val hrMap = mutableMapOf<Int, MutableList<Float>>()
+        val hrMap = mutableMapOf<Int, Float>()
         val labels = mutableListOf<String>()
 
         // Initialize 6 months
         repeat(6) { month ->
-            hrMap[month] = mutableListOf()
+            hrMap[month] = 0f
             labels.add(monthFormat.format(calendar.time))
             calendar.add(Calendar.MONTH, 1)
         }
 
         // Aggregate HR by month
-        data.activeHeartRateTotals?.forEach { hr ->
-            val startDate = dateFormat.parse(hr.date)?.let { Date(it.time) }
-            if (startDate != null) {
-                calendar.time = startDate
-                val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
-                val monthIndex = 5 - monthDiff // Reverse to align with labels
-                if (monthIndex in 0..5) {
-                    hrMap[monthIndex]?.add(hr.date.toFloatOrNull() ?: 0f)
-                }
+        data.data.activity_factor_trend?.forEach { hr ->
+            val hrDate = dateFormat.parse(hr.date)
+            calendar.time = hrDate
+            val monthDiff = ((2025 - 1900) * 12 + Calendar.MARCH) - ((calendar.get(Calendar.YEAR) - 1900) * 12 + calendar.get(Calendar.MONTH))
+            val monthIndex = 5 - monthDiff // Reverse to align with labels
+            if (monthIndex in 0..5) {
+                hrMap[monthIndex] = hr.activity_factor?.toFloat() ?: 0f
             }
         }
 
-        // Average HR per month
-        val entries = hrMap.values.mapIndexed { index, values ->
-            val average = if (values.isNotEmpty()) values.average().toFloat() else 0f
-            Entry(index.toFloat(), average)
+        // Create entries
+        val entries = hrMap.values.mapIndexed { index, value ->
+            Entry(index.toFloat(), value)
         }
         return Pair(entries, labels)
     }

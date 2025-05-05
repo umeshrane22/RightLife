@@ -12,13 +12,14 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.BarGraphView
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphView
 
 class GridAdapter(
-    private val items: List<GridItem>,
+    private var items: List<GridItem>,
     private val onItemClick: (String) -> Unit
 ) : RecyclerView.Adapter<GridAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.item_image)
         val textView: TextView = itemView.findViewById(R.id.item_text)
+        val no_data_cardview: TextView = itemView.findViewById(R.id.no_data_cardview)
         val additionalTextView: TextView = itemView.findViewById(R.id.unit_rating)
         val fourthTextView: TextView = itemView.findViewById(R.id.rating)
         val lineGraphView: LineGraphView = itemView.findViewById(R.id.line_graph)
@@ -37,20 +38,33 @@ class GridAdapter(
         holder.additionalTextView.text = item.additionalInfo
         holder.fourthTextView.text = item.fourthParameter
 
-        // Show Bar Graph if the item is "Burn", else show Line Graph
-        if (item.name == "Burn") {
-            holder.barGraphView.visibility = View.VISIBLE
-            holder.lineGraphView.visibility = View.GONE
-        } else {
-            holder.lineGraphView.visibility = View.VISIBLE
+        // Check if dataPoints is empty or all values are zero for this specific item
+        if (item.dataPoints.isEmpty() || item.dataPoints.all { it == 0f }) {
             holder.barGraphView.visibility = View.GONE
+            holder.lineGraphView.visibility = View.GONE
+            holder.no_data_cardview.visibility = View.VISIBLE
+        } else {
+            holder.no_data_cardview.visibility = View.GONE
+            if (item.name == "Burn") {
+                holder.barGraphView.visibility = View.VISIBLE
+                holder.lineGraphView.visibility = View.GONE
+                holder.barGraphView.setDataPoints(item.dataPoints)
+            } else {
+                holder.lineGraphView.visibility = View.VISIBLE
+                holder.barGraphView.visibility = View.GONE
+                holder.lineGraphView.setDataPoints(item.dataPoints)
+            }
         }
 
-        // **Click Listener for Each Item**
         holder.itemView.setOnClickListener {
             onItemClick(item.name)
         }
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun updateItems(newItems: List<GridItem>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 }

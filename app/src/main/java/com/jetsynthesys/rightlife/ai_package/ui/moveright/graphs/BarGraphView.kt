@@ -6,77 +6,43 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 
-class BarGraphView : View {
-    private var barPaint: Paint? = null // Paint for the bars
-    private var dataPoints = floatArrayOf(30f, 60f, 4f, 80f, 40f, 90f) // Example data points
-    private var spacing = 10f // Space between bars (in pixels)
+class  BarGraphView(context: Context, attrs: android.util.AttributeSet? = null) : android.view.View(context, attrs) {
+    private val barPaint = android.graphics.Paint().apply {
+        color = 0xFFB11414.toInt()
+        style = android.graphics.Paint.Style.FILL
+        isAntiAlias = true
+    }
+    private var dataPoints: FloatArray = FloatArray(7) { 0f }
+    private var spacing = 10f
 
-    constructor(context: Context?) : super(context) {
-        init()
+    fun setDataPoints(points: FloatArray) {
+        dataPoints = points
+        invalidate()
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-        init()
+    fun setSpacing(spacing: Float) {
+        this.spacing = spacing
+        invalidate()
     }
 
-    private fun init() {
-        // Initialize bar paint
-        barPaint = Paint()
-        barPaint!!.color = -0x4eebec // Bar color
-        barPaint!!.style = Paint.Style.FILL // Solid bars
-        barPaint!!.isAntiAlias = true // Smooth edges
-    }
-
-    override fun onDraw(canvas: Canvas) {
+    override fun onDraw(canvas: android.graphics.Canvas) {
         super.onDraw(canvas)
-
-        // Get the width and height of the view
         val width = width.toFloat()
         val height = height.toFloat()
-
-        // Find the minimum and maximum values in the data points
-        val minValue = 0f // Bars start from 0
-        var maxValue = Float.MIN_VALUE
-        for (value in dataPoints) {
-            if (value > maxValue) maxValue = value
-        }
-
-
+        val minValue = 0f
+        val maxValue = dataPoints.maxOrNull() ?: 100f
         val scaleY = height / maxValue
         val totalSpacing = spacing * (dataPoints.size - 1)
         val availableWidth = width - totalSpacing
         val barWidth = availableWidth / dataPoints.size
 
-
-        for (i in dataPoints.indices) {
-            val barHeight = dataPoints[i] * scaleY
-            val left = i * (barWidth + spacing)
+        dataPoints.forEachIndexed { index, value ->
+            val barHeight = value * scaleY
+            val left = index * (barWidth + spacing)
             val top = height - barHeight
             val right = left + barWidth
             val bottom = height
-
-            // Draw the bar
-            canvas.drawRect(left, top, right, bottom, barPaint!!)
+            canvas.drawRect(left, top, right, bottom, barPaint)
         }
-    }
-
-    /**
-     * Set the data points for the bar graph.
-     *
-     * @param dataPoints Array of values to be displayed as bars.
-     */
-    fun setDataPoints(dataPoints: FloatArray) {
-        this.dataPoints = dataPoints
-        invalidate() // Redraw the view
-    }
-
-    /**
-     * Set the spacing between bars.
-     *
-     * @param spacing Spacing between bars in pixels.
-     */
-    fun setSpacing(spacing: Float) {
-        this.spacing = spacing
-        invalidate() // Redraw the view
     }
 }
