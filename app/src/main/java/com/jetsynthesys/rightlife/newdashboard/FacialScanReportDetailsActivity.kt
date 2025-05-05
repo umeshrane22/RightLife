@@ -194,6 +194,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     val value = it.y
 
                     binding.reportDate.text = date.toString()
+                    binding.reportDate.visibility = View.GONE
                     binding.reportNameAverageValue.text = value.toString()
                     binding.reportUnit.text =graphData.data?.get(0)?.unit
                   //  showToast("date = $date  and value = $value")
