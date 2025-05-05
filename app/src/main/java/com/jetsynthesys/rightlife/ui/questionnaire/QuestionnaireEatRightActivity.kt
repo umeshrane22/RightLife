@@ -5,9 +5,9 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityQuestionnaireBinding
@@ -15,25 +15,25 @@ import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.QuestionnaireEatRightPagerAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.QuestionnaireAnswerRequest
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class QuestionnaireEatRightActivity : AppCompatActivity() {
+class QuestionnaireEatRightActivity : BaseActivity() {
     private lateinit var binding: ActivityQuestionnaireBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityQuestionnaireBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         // Store activity reference
         instance = this
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
+
         binding.viewPagerQuestionnaire.isUserInputEnabled = false
 
         viewPager = binding.viewPagerQuestionnaire
+        viewPager.offscreenPageLimit = 1
 
         binding.iconBack.setOnClickListener {
             val currentItem = binding.viewPagerQuestionnaire.currentItem
@@ -95,7 +95,6 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
         lateinit var questionnairePagerAdapter: QuestionnaireEatRightPagerAdapter
         private var instance: QuestionnaireEatRightActivity? = null // Store Activity reference
         val questionnaireAnswerRequest: QuestionnaireAnswerRequest = QuestionnaireAnswerRequest()
-        private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
         fun navigateToPreviousPage() {
             if (viewPager.currentItem > 0) {
@@ -115,7 +114,7 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 Handler(Looper.getMainLooper()).postDelayed({
                     navigateToNextPage()
                 }, 500)
-            }else{
+            } else {
                 instance?.let {
                     DialogUtils.showSuccessDialog(
                         it,
@@ -125,9 +124,9 @@ class QuestionnaireEatRightActivity : AppCompatActivity() {
                 }
             }
 
-            val apiService = ApiClient.getClient().create(ApiService::class.java)
+            val apiService = ApiClient.getClient(instance).create(ApiService::class.java)
             val call = apiService.submitERQuestionnaire(
-                sharedPreferenceManager.accessToken,
+                instance?.sharedPreferenceManager?.accessToken ?: "",
                 questionnaireAnswerRequest
             )
 

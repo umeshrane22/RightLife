@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -26,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ViewAllActivity extends AppCompatActivity {
+public class ViewAllActivity extends BaseActivity {
 
     private RLEditDetailMoreAdapter adapter;
     private RecyclerView rvViewAll;
@@ -39,7 +40,7 @@ public class ViewAllActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_all);
+        setChildContentView(R.layout.activity_view_all);
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
         rvViewAll = findViewById(R.id.rv_view_all);
@@ -59,11 +60,8 @@ public class ViewAllActivity extends AppCompatActivity {
 
 
     private void getMoreLikeContent(String contentId, int skip, int limit) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, contentId, skip, limit);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId, skip, limit);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -94,7 +92,7 @@ public class ViewAllActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 

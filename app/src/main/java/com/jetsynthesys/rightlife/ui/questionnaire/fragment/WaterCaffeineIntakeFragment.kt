@@ -8,9 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentWaterCaffeineIntakeBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.AnswerWaterCoffee
@@ -18,6 +17,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Coffee
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionFive
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Water
+import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class WaterCaffeineIntakeFragment : Fragment() {
 
@@ -79,7 +79,7 @@ class WaterCaffeineIntakeFragment : Fragment() {
         )
 
         coffee.cups = coffeeCountTexts[0].text.toString()
-        coffee.quantity = (125 *1).toString() + " ml"
+        coffee.quantity = (125 * 1).toString() + " ml"
 
         //binding.waterView.setMinSteps(0)
         //binding.waterView.setMaxSteps(12000)
@@ -100,12 +100,12 @@ class WaterCaffeineIntakeFragment : Fragment() {
                 water.cups = waterCountTexts[index].text.toString()
                 //water.quantity = (500*(index+1)).toString() + " ml"
             }
-            if (stepCount ==0){
+            if (stepCount == 0) {
                 binding.tvWaterQuantity.text = "0 ml"
-            }else{
+            } else {
                 var value = stepCount / 1000
-                Log.d("Steps ", ": $stepCount - "+value)
-                water.quantity = (250*(value)).toString() + " ml"
+                Log.d("Steps ", ": $stepCount - " + value)
+                water.quantity = (250 * (value)).toString() + " ml"
                 binding.tvWaterQuantity.text = water.quantity
             }
         }
@@ -128,27 +128,27 @@ class WaterCaffeineIntakeFragment : Fragment() {
             val index = stepCount / 2000 - 1
             if (index >= 0 && index < coffeeCountTexts.size) {
                 coffeeCountTexts.get(index).setTypeface(null, Typeface.BOLD)
-                binding.tvCoffeeQuantity.text = (125*(index+1)).toString() + " ml"
-               /* if (index==0) {
-                    binding.tvCoffeeQuantity.text = (125 *1).toString() + " ml"
-                }else if (index==1){
-                    binding.tvCoffeeQuantity.text =  (125 *3).toString() + " ml"
-                }else if (index==2){
-                    binding.tvCoffeeQuantity.text =  (125 *5).toString() + " ml"
-                }else if (index==3){
-                    binding.tvCoffeeQuantity.text =  (125 *7).toString() + " ml"
-                }*/
+                binding.tvCoffeeQuantity.text = (125 * (index + 1)).toString() + " ml"
+                /* if (index==0) {
+                     binding.tvCoffeeQuantity.text = (125 *1).toString() + " ml"
+                 }else if (index==1){
+                     binding.tvCoffeeQuantity.text =  (125 *3).toString() + " ml"
+                 }else if (index==2){
+                     binding.tvCoffeeQuantity.text =  (125 *5).toString() + " ml"
+                 }else if (index==3){
+                     binding.tvCoffeeQuantity.text =  (125 *7).toString() + " ml"
+                 }*/
                 coffee.cups = coffeeCountTexts[index].text.toString()
                 coffee.quantity = binding.tvCoffeeQuantity.text.toString()
             }
-            if (stepCount ==0){
+            if (stepCount == 0) {
                 binding.tvCoffeeQuantity.text = "0 ml"
-            }else{
-            var value = stepCount / 1000
-                Log.d("Steps ", ": $stepCount - "+value)
-                coffee.quantity = (125*(value)).toString() + " ml"
+            } else {
+                var value = stepCount / 1000
+                Log.d("Steps ", ": $stepCount - " + value)
+                coffee.quantity = (125 * (value)).toString() + " ml"
                 binding.tvCoffeeQuantity.text = coffee.quantity
-                }
+            }
 
         }
 
@@ -157,14 +157,19 @@ class WaterCaffeineIntakeFragment : Fragment() {
             val answerWaterCoffee = AnswerWaterCoffee()
             answerWaterCoffee.water = water
             answerWaterCoffee.coffee = coffee
-            submit(answerWaterCoffee)
+            if (binding.tvWaterQuantity.text.toString().equals("0 ml", ignoreCase = true)) {
+                Toast.makeText(requireContext(), "Please select water intake", Toast.LENGTH_SHORT).show()
+            }else {
+                submit(answerWaterCoffee)
+            }
         }
     }
 
     private fun submit(answer: AnswerWaterCoffee) {
         val questionFive = ERQuestionFive()
         questionFive.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionFive = questionFive
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionFive =
+            questionFive
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )

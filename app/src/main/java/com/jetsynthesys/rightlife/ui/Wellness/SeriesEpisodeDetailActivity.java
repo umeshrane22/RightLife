@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -52,7 +53,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SeriesEpisodeDetailActivity extends AppCompatActivity {
+public class SeriesEpisodeDetailActivity extends BaseActivity {
     ActivitySeriesepisodeDetailLayoutBinding binding;
     private MediaPlayer mediaPlayer;
     private boolean isPlaying = false; // To track the current state of the player
@@ -103,13 +104,9 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
     private void getSeriesDetails(String seriesId, String episodeId) {
 
         Utils.showLoader(this);
-        //-----------
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        // Make the GET request
         Call<ResponseBody> call = apiService.getSeriesEpisodesDetails(
-                authToken,
+                sharedPreferenceManager.getAccessToken(),
                 seriesId,
                 episodeId
         );
@@ -151,7 +148,7 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Utils.dismissLoader(SeriesEpisodeDetailActivity.this);
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
@@ -164,8 +161,9 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
         binding.txtDesc.setText(contentResponseObj.data.desc);
         setModuleColor(binding.txtDesc, contentResponseObj.data.moduleId);
 
-        binding.tvArtistname.setText(contentResponseObj.data.artist.get(0).firstName +
-                " " + contentResponseObj.data.artist.get(0).lastName);
+        /*binding.tvArtistname.setText(contentResponseObj.data.artist.get(0).firstName +
+                " " + contentResponseObj.data.artist.get(0).lastName);*/
+        setArtistname(contentResponseObj);
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + contentResponseObj.data.artist.get(0).profilePicture)
                 .placeholder(R.drawable.profile_man) // Replace with your placeholder image
@@ -181,6 +179,7 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
 
 
         if (contentResponseObj.data.nextEpisode != null) {
+
             NextEpisode nextEpisode = contentResponseObj.data.nextEpisode;
             binding.txtEpisodesSection.setText("Next Episode"+contentResponseObj.data.episodeNumber);
             binding.itemText.setText(nextEpisode.title); // Use the same TextView for the title
@@ -190,6 +189,27 @@ public class SeriesEpisodeDetailActivity extends AppCompatActivity {
             // ... (set other views for the next episode using the same IDs)
         } else {
             // Handle case where there is no next episode
+            binding.llNextEpisode.setVisibility(View.GONE);
+            binding.txtEpisodesSection.setVisibility(View.GONE);
+        }
+    }
+
+    private void setArtistname(EpisodeDetailContentResponse contentResponseObj) {
+        if (binding != null && binding.tvArtistname != null && contentResponseObj != null
+                && contentResponseObj.data != null && contentResponseObj.data.artist != null
+                && !contentResponseObj.data.artist.isEmpty()) {
+
+            String name = "";
+            if (contentResponseObj.data.artist.get(0).firstName != null) {
+                name = contentResponseObj.data.artist.get(0).firstName;
+            }
+            if (contentResponseObj.data.artist.get(0).lastName != null) {
+                name += (name.isEmpty() ? "" : " ") + contentResponseObj.data.artist.get(0).lastName;
+            }
+
+            binding.tvArtistname.setText(name);
+        } else if (binding != null && binding.tvArtistname != null) {
+            binding.tvArtistname.setText(""); // or set some default value
         }
     }
 

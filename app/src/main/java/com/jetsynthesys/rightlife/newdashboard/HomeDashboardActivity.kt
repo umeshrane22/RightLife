@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -20,7 +19,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
@@ -44,7 +42,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
@@ -64,7 +62,6 @@ import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
-import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
@@ -72,7 +69,6 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -85,7 +81,7 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
-class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
+class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityHomeDashboardBinding
     private var isAdd = true
     private var checklistComplete = true
@@ -106,7 +102,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeDashboardBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         // Set default fragment
         loadFragment(HomeFragment())
@@ -132,7 +128,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
         //handle bottom menu
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
-            DialogUtils.showCheckListQuestionCommonDialog(this)
+            DialogUtils.showCheckListQuestionCommonDialog(this,"Why Checklist?")
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)
@@ -334,14 +330,12 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
-            //Toast.makeText(this, "Snap Meal", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
                 putExtra("BottomSeatName", "SnapMealTypeEat")
             })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
-            //Toast.makeText(this, "Face Scan", Toast.LENGTH_SHORT).show()
             if (DashboardChecklistManager.facialScanStatus) {
                 startActivity(
                     Intent(
@@ -503,17 +497,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     // get user details
     private fun getUserDetails(s: String) {
-        //-----------
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
-
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
-        // Create a request body (replace with actual email and phone number)
-
         // Make the API call
-        val call = apiService.getUserDetais(accessToken)
+        val call = apiService.getUserDetais(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -553,10 +538,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
-                Toast.makeText(
-                    this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT
-                ).show()
-                t.printStackTrace() // Print the full stack trace for more details
+                handleNoInternetView(t)
             }
         })
     }
@@ -572,15 +554,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     // get AI Dashboard Data
     private fun getAiDashboard(s: String) {
-        //-----------
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
-
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
         // Make the API call
-        val call = apiService.getAiDashboard(accessToken)
+        val call = apiService.getAiDashboard(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -602,11 +577,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT
-                ).show()
-                Log.e("API ERROR", "onFailure: " + t.message)
-                t.printStackTrace() // Print the full stack trace for more details
+                handleNoInternetView(t)
             }
         })
     }
@@ -647,7 +618,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
         if (modules.isNullOrEmpty()) {
             binding.llNodataMain.visibility = View.VISIBLE
             var moduleId = SharedPreferenceManager.getInstance(this).selectedOnboardingModule
-            if (moduleId.isEmpty()){
+            if (moduleId.isEmpty()) {
                 moduleId = "EAT_RIGHT"
             }
             when (moduleId) {
@@ -685,7 +656,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
 
             //for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
-            aiDashboardResponseMain?.data?.updatedModules?.forEach { module ->
+            aiDashboardResponseMain.data.updatedModules.forEach { module ->
                 val moduleId = module.moduleId
                 val isSelected = module.isSelectedModule
 
@@ -770,9 +741,9 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                         binding.halfCurveProgressBar.setProgress(60f)
                         // value is wrong for eatright progress let backend correct then uncomment below
                         /*val (curent, max) = extractNumericValues(module.calories.toString())
-                    binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
-                    val percentage = calculatePercentage(curent.toInt(), max.toInt())
-                    binding.halfCurveProgressBar.setProgress(percentage.toFloat())*/
+                            binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
+                            val percentage = calculatePercentage(curent.toInt(), max.toInt())
+                            binding.halfCurveProgressBar.setProgress(percentage.toFloat())*/
 
                         setIfNotNullOrBlank(
                             binding.tvModuleValueEatright,
@@ -914,15 +885,8 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     //getDashboardChecklist
     private fun getDashboardChecklist(s: String) {
-        //-----------
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
-
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
         // Make the API call
-        val call = apiService.getDashboardChecklist(accessToken)
+        val call = apiService.getDashboardChecklist(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -938,10 +902,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@HomeDashboardActivity, "Network Error: " + t.message, Toast.LENGTH_SHORT
-                ).show()
-                t.printStackTrace() // Print the full stack trace for more details
+                handleNoInternetView(t) // Print the full stack trace for more details
             }
         })
     }
@@ -1169,7 +1130,6 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     // get dashbord checklist status complete or not
     private fun getDashboardChecklistStatus() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         apiService.getdashboardChecklistStatus(SharedPreferenceManager.getInstance(this).accessToken)
             .enqueue(object : Callback<DashboardChecklistResponse> {
                 override fun onResponse(
@@ -1201,11 +1161,7 @@ class HomeDashboardActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 override fun onFailure(call: Call<DashboardChecklistResponse>, t: Throwable) {
-                    Toast.makeText(
-                        this@HomeDashboardActivity,
-                        "Network Error: " + t.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    handleNoInternetView(t)
                 }
 
             })

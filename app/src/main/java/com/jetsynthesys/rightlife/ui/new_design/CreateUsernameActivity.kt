@@ -11,11 +11,9 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
@@ -26,11 +24,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CreateUsernameActivity : AppCompatActivity() {
+class CreateUsernameActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_username)
+        setChildContentView(R.layout.activity_create_username)
 
 
         var username = intent.getStringExtra("USERNAME_KEY")
@@ -116,9 +114,7 @@ class CreateUsernameActivity : AppCompatActivity() {
     }
 
     private fun updateUserData(userdata: Userdata) {
-        val token = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call: Call<ResponseBody> = apiService.updateUser(token, userdata)
+        val call: Call<ResponseBody> = apiService.updateUser(sharedPreferenceManager.accessToken, userdata)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -138,11 +134,7 @@ class CreateUsernameActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@CreateUsernameActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }

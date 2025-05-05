@@ -8,21 +8,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.rlpagemodels.journal.Journals;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyJournalActivity extends AppCompatActivity {
+public class MyJournalActivity extends BaseActivity {
 
     private Journals journals;
     private TextView tvDate, tvJournalTitle, tvFeeling, tvSituation, tvMood;
@@ -30,7 +27,7 @@ public class MyJournalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_journal);
+        setChildContentView(R.layout.activity_my_journal);
 
         journals = (Journals) getIntent().getSerializableExtra("Journal");
 
@@ -72,9 +69,7 @@ public class MyJournalActivity extends AppCompatActivity {
     }
 
     private void deleteJournal() {
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.deleteMyRLJournal(authToken, journals.getId());
+        Call<ResponseBody> call = apiService.deleteMyRLJournal(sharedPreferenceManager.getAccessToken(), journals.getId());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -89,7 +84,7 @@ public class MyJournalActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MyJournalActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

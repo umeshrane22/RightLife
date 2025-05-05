@@ -168,7 +168,7 @@ class PlaylistBottomSheetDialogFragment(
 
     private fun removeFromPlaylist(songId: String, position: Int) {
         //Utils.showLoader(context)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
+        val apiService = ApiClient.getClient(requireContext()).create(ApiService::class.java)
         val call = apiService.removeFromPlaylist(sharedPreferenceManager.accessToken, songId)
 
         call.enqueue(object : Callback<AddPlaylistResponse> {

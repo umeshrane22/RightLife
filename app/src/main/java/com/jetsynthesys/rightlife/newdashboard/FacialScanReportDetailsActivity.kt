@@ -9,7 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -18,16 +18,16 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem
 import com.jetsynthesys.rightlife.databinding.ActivityFacialScanReportDetailsBinding
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanRange
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportData
+import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportDataWrapper
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse
+import com.jetsynthesys.rightlife.ui.healthcam.HealthCamRecommendationAdapter
 import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,7 +38,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 
-class FacialScanReportDetailsActivity : AppCompatActivity() {
+class FacialScanReportDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityFacialScanReportDetailsBinding
     private lateinit var dateRange: String
     private lateinit var startDateAPI: String
@@ -47,6 +47,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     private var monthOffset = 0
     private var sixMonthOffset = 0
     private var weekOffsetDays = 0
+    private var defaultPosition = 0
     var vitalKey = ""
     private lateinit var graphData: FacialScanReportData
 
@@ -54,7 +55,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFacialScanReportDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         binding.backButton.setOnClickListener {
             finish()
@@ -62,7 +63,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
 
         val healthCamItems: ArrayList<HealthCamItem>? =
             intent.getSerializableExtra("healthCamItemList") as ArrayList<HealthCamItem>?
-
+        defaultPosition = intent.getIntExtra("position", 0)
         // Receive the UNIFIED_LIST
         val unifiedList = intent.getSerializableExtra("UNIFIED_LIST") as ArrayList<ParameterModel>?
 
@@ -195,7 +196,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                     binding.reportDate.text = date.toString()
                     binding.reportNameAverageValue.text = value.toString()
                     binding.reportUnit.text =graphData.data?.get(0)?.unit
-                    showToast("date = $date  and value = $value")
+                  //  showToast("date = $date  and value = $value")
                     binding.llSelectedGraphItem.setVisibility(View.VISIBLE)
                 }
             }
@@ -220,7 +221,7 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
     private fun selectDefaultVital(healthCamItems: ArrayList<ParameterModel>?) {
         if (healthCamItems != null) {
             if (healthCamItems.isNotEmpty()) {
-                val firstItem = healthCamItems[0]!!
+                val firstItem = healthCamItems[defaultPosition]!!
                 binding.tvWitale.text = firstItem.name
                 vitalKey = firstItem.key
                 fetchPastFacialScanReport(
@@ -249,9 +250,8 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
         }
         //updateChart(entries, getWeekLabels())
 
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getPastReport(
-            SharedPreferenceManager.getInstance(this).accessToken,
+            sharedPreferenceManager.accessToken,
             startDate,
             endDate,
             vitalKey
@@ -300,12 +300,13 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
                         binding.tvIndicatorValueBg.backgroundTintList = colorStateList
                     }
                     SetupBottomCard(responseBody?.data?.range)
+                    HandleContinueWatchUI(responseBody?.data)
                 } else {
                     showToast("Server Error: ${response.code()}")
                 }
             }
             override fun onFailure(call: Call<FacialScanReportResponse>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
 
         })
@@ -814,6 +815,17 @@ class FacialScanReportDetailsActivity : AppCompatActivity() {
             "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
             "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
             else -> R.drawable.ic_db_report_heart_rate
+        }
+    }
+
+    private fun HandleContinueWatchUI(facialReportResponseNew: FacialScanReportDataWrapper?) {
+        if (facialReportResponseNew?.recommendation?.isNotEmpty() == true) {
+            val adapter =
+                HealthCamRecommendationAdapter(this, facialReportResponseNew?.recommendation)
+            val horizontalLayoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager)
+            binding.recyclerViewContinue.setAdapter(adapter)
         }
     }
 }

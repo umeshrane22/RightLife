@@ -6,13 +6,11 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingDataModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleRequest
@@ -24,7 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class WellnessFocusListActivity : AppCompatActivity() {
+class WellnessFocusListActivity : BaseActivity() {
 
     private val selectedWellnessFocus = ArrayList<ModuleTopic>()
     private lateinit var wellnessFocusListAdapter: WellnessFocusListAdapter
@@ -33,7 +31,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_wellness_focus_list)
+        setChildContentView(R.layout.activity_wellness_focus_list)
 
         var header = intent.getStringExtra("WellnessFocus")
         isFrom = intent.getStringExtra("FROM").toString()
@@ -122,10 +120,9 @@ class WellnessFocusListActivity : AppCompatActivity() {
 
     private fun getOnboardingDataModule(moduleName: String?) {
         Utils.showLoader(this)
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
 
-        val call = apiService.getOnboardingDataModule(authToken, moduleName)
+        val call =
+            apiService.getOnboardingDataModule(sharedPreferenceManager.accessToken, moduleName)
         call.enqueue(object : Callback<OnBoardingDataModuleResponse> {
             override fun onResponse(
                 call: Call<OnBoardingDataModuleResponse>,
@@ -150,25 +147,21 @@ class WellnessFocusListActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<OnBoardingDataModuleResponse>, t: Throwable) {
                 Utils.dismissLoader(this@WellnessFocusListActivity)
-                Toast.makeText(
-                    this@WellnessFocusListActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })
     }
 
     private fun updateOnBoardingModule(selectedModule: String, selectedOptions: List<String>) {
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
         val onboardingModuleRequest = OnboardingModuleRequest()
         onboardingModuleRequest.selectedModule = selectedModule
         onboardingModuleRequest.selectedOptions = selectedOptions
 
-        val call = apiService.onboardingModuleResult(authToken, onboardingModuleRequest)
+        val call = apiService.onboardingModuleResult(
+            sharedPreferenceManager.accessToken,
+            onboardingModuleRequest
+        )
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -183,11 +176,7 @@ class WellnessFocusListActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Toast.makeText(
-                    this@WellnessFocusListActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
 
         })

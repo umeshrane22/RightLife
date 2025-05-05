@@ -74,6 +74,9 @@
         android:layout_below="@id/tv_choose_str"
         android:layout_above="@id/btn_continue"
         android:layout_centerHorizontal="true"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@color/rightlife"
+        android:scrollbarTrackVertical="@color/darker_gray"
         android:layout_margin="16dp" />
 
     <Button

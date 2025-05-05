@@ -71,6 +71,7 @@ public class ExploreRecommendedAdapter extends RecyclerView.Adapter<ExploreRecom
             Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
             intent.putExtra("Categorytype", json);
             intent.putExtra("position", position);
+            intent.putExtra("contentId", contentList.get(position).getId());
             holder.itemView.getContext().startActivity(intent);
         });
 

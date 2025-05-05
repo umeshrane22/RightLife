@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.RetrofitData;
 
 
 
+import android.content.Context;
+
 import com.jetsynthesys.rightlife.ui.utility.LoggingInterceptor;
 
 import java.util.concurrent.TimeUnit;
@@ -25,7 +27,32 @@ public class ApiClient {
     private static Retrofit retrofit = null;
     HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
 
-    public static Retrofit getClient() {
+    public static Retrofit getClient(Context context) {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        // Set logging level (BODY for detailed logging, BASIC for minimal)
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
+        // Add the logging interceptor to OkHttpClient
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
+                .addInterceptor(new NetworkConnectionInterceptor(context))
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+        //if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL2)
+                    .client(client)
+                    .addConverterFactory(GsonConverterFactory.create()) // This converts JSON to Java objects
+                    .build();
+        //}
+        return retrofit;
+    }
+
+    /*public static Retrofit getClient() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         // Set logging level (BODY for detailed logging, BASIC for minimal)
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -37,16 +64,17 @@ public class ApiClient {
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
                 .build();
         //if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(BASE_URL2)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create()) // This converts JSON to Java objects
-                    .build();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL2)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create()) // This converts JSON to Java objects
+                .build();
         //}
         return retrofit;
-    }
+    }*/
 
     public static Retrofit getDevClient() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();

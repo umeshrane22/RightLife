@@ -5,11 +5,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.sdkpackage.VoiceRecorderActivity
 
 
-class VoiceScanWaitingActivity : AppCompatActivity() {
+class VoiceScanWaitingActivity : BaseActivity() {
 
     private lateinit var timeTextView: TextView
     private lateinit var tvTopic: TextView

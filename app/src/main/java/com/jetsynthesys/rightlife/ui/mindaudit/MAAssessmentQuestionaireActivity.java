@@ -1,8 +1,6 @@
 package com.jetsynthesys.rightlife.ui.mindaudit;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,19 +11,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.MindAuditAssessmentQuestions;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.Question;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.ScoringPattern;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
+public class MAAssessmentQuestionaireActivity extends BaseActivity {
     public Button submitButton, nextButton;
     GetAssessmentScoreCASRequest CASRequest = new GetAssessmentScoreCASRequest();
     GetAssessmentScoreGad7Request gad7Request = new GetAssessmentScoreGad7Request();
@@ -57,7 +52,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maassessment_questions);
+        setChildContentView(R.layout.activity_maassessment_questions);
 
         tvHeader = findViewById(R.id.tv_header);
         imgBack = findViewById(R.id.ic_back_dialog);
@@ -178,11 +173,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
     }
 
     private void getQuestionList(String type) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.getAssessmentByType(accessToken, type);
+        Call<ResponseBody> call = apiService.getAssessmentByType(sharedPreferenceManager.getAccessToken(), type);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -203,7 +194,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -246,9 +237,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
     }*/
 
     private void saveAssessment(MindAuditAssessmentSaveRequest mindAuditAssessmentSaveRequest) {
-        String assessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.saveMindAuditAssessment(assessToken, mindAuditAssessmentSaveRequest);
+        Call<ResponseBody> call = apiService.saveMindAuditAssessment(sharedPreferenceManager.getAccessToken(), mindAuditAssessmentSaveRequest);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -277,16 +266,14 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
 
     private void getAssessmentScore(Map<String, Object> requestData) {
-        String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<ResponseBody> call = apiService.getMindAuditAssessmentScore(authToken, requestData);
+        Call<ResponseBody> call = apiService.getMindAuditAssessmentScore(sharedPreferenceManager.getAccessToken(), requestData);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -309,7 +296,7 @@ public class MAAssessmentQuestionaireActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MAAssessmentQuestionaireActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

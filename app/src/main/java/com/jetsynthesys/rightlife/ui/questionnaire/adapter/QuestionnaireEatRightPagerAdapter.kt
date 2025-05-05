@@ -21,9 +21,10 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 
 class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
     FragmentStateAdapter(fragment) {
+
     private val fragmentList = ArrayList<String>()
 
-    override fun getItemCount() = fragmentList.size
+    override fun getItemCount(): Int = fragmentList.size
 
     override fun createFragment(position: Int): Fragment {
         val question = Question("Q1", "How do you to feel?", "EatRight")
@@ -42,14 +43,36 @@ class QuestionnaireEatRightPagerAdapter(fragment: FragmentActivity) :
             "StepsTakenFragment" -> StepsTakenFragment.newInstance(question)
             "EnergyLevelFragment" -> EnergyLevelFragment.newInstance(question)
             "BreaksToStretchFragment" -> BreaksToStretchFragment.newInstance(question)
-            else -> throw IllegalStateException("Invalid position")
+            else -> throw IllegalStateException("Invalid fragment name: ${fragmentList[position]}")
         }
     }
 
-    fun setQuestionnaireData(list: ArrayList<String>) = fragmentList.addAll(list)
+    // ⚠️ Critical for dynamic removal support
+    override fun getItemId(position: Int): Long {
+        return fragmentList[position].hashCode().toLong()
+    }
 
-    fun removeItem(name: String) = fragmentList.remove(name)
+    override fun containsItem(itemId: Long): Boolean {
+        return fragmentList.any { it.hashCode().toLong() == itemId }
+    }
 
-    fun addItem(position: Int, name: String) = fragmentList.add(position, name)
+    fun setQuestionnaireData(list: ArrayList<String>) {
+        fragmentList.clear()
+        fragmentList.addAll(list)
+    }
 
+    fun removeItem(name: String) {
+        val index = fragmentList.indexOf(name)
+        if (index != -1) {
+            fragmentList.removeAt(index)
+            notifyItemRemoved(index)
+        }
+    }
+
+    fun addItem(position: Int, name: String) {
+        fragmentList.add(position, name)
+        notifyItemInserted(position)
+    }
+
+    fun getCurrentList(): List<String> = fragmentList
 }

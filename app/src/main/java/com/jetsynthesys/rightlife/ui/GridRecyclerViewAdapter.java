@@ -17,6 +17,9 @@ import com.bumptech.glide.Glide;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.apimodel.modulecontentlist.Content;
+import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteRequest;
 import com.jetsynthesys.rightlife.ui.therledit.OnFavouriteClickListener;
@@ -71,13 +74,30 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent;
                 Gson gson = new Gson();
-                String json = gson.toJson(contentList);
-                Intent intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);
+                /*String json = gson.toJson(contentList);
+                 intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);
                 intent.putExtra("Categorytype", contentList.get(position).getId());
                 intent.putExtra("position", position);
                 intent.putExtra("contentId", contentList.get(position).getId());
-                holder.itemView.getContext().startActivity(intent);
+                holder.itemView.getContext().startActivity(intent);*/
+
+                if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")) {
+                    intent = new Intent(holder.itemView.getContext(), ArticlesDetailActivity.class);
+                    intent.putExtra("contentId", contentList.get(position).getId());
+                    holder.itemView.getContext().startActivity(intent);
+                } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")) {
+                    intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                    intent.putExtra("contentId", contentList.get(position).getId());
+                    holder.itemView.getContext().startActivity(intent);
+
+                } else if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
+
+                    intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
+                    intent.putExtra("contentId", contentList.get(position).getId());
+                    holder.itemView.getContext().startActivity(intent);
+                }
             }
         });
         if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")) {

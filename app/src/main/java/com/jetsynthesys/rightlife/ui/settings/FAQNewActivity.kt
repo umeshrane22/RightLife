@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityFaqNewBinding
@@ -16,16 +17,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class FAQNewActivity : AppCompatActivity() {
+class FAQNewActivity : BaseActivity() {
     private lateinit var binding: ActivityFaqNewBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var faqNewAdapter: FAQNewAdapter
     private val faqList = mutableListOf<FAQDetails>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFaqNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
@@ -51,7 +51,6 @@ class FAQNewActivity : AppCompatActivity() {
     }
 
     private fun getFAQ() {
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getFAQData(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<FAQResponse> {
             override fun onResponse(call: Call<FAQResponse>, response: Response<FAQResponse>) {

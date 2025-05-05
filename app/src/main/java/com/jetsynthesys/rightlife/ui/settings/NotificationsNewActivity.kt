@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityNotificationsNewBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 
-class NotificationsNewActivity : AppCompatActivity() {
+class NotificationsNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityNotificationsNewBinding
     private lateinit var settingsAdapter: SettingsAdapter
@@ -18,7 +19,7 @@ class NotificationsNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNotificationsNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         setupEmailNotificationsRecyclerView()
 
         binding.iconBack.setOnClickListener {

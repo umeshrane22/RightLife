@@ -83,6 +83,15 @@ public class Data {
     @SerializedName("isAffirmation")
     @Expose
     private Boolean isAffirmation;
+    @SerializedName("isLike")
+    @Expose
+    private Boolean isLike;
+    @SerializedName("likeCount")
+    @Expose
+    private Integer likeCount;
+    @SerializedName("isBookmarked")
+    @Expose
+    private Boolean isBookmarked;
 
     public String getContentType() {
         return contentType;
@@ -284,4 +293,27 @@ public class Data {
         this.isAffirmation = isAffirmation;
     }
 
+    public Boolean getLike() {
+        return isLike;
+    }
+
+    public void setLike(Boolean like) {
+        isLike = like;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public Boolean getBookmarked() {
+        return isBookmarked;
+    }
+
+    public void setBookmarked(Boolean bookmarked) {
+        isBookmarked = bookmarked;
+    }
 }

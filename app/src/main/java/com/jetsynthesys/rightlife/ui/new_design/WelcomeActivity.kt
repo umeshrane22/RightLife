@@ -7,16 +7,15 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
-import com.jetsynthesys.rightlife.ui.HomeActivity
 
-class WelcomeActivity : AppCompatActivity() {
+class WelcomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_welcome)
+        setChildContentView(R.layout.activity_welcome)
 
         val textView = findViewById<TextView>(R.id.textview1)
 

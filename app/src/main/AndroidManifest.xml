@@ -40,6 +40,14 @@
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="androidx.health.ACTION_READ_HEALTH_DATA" />
 
+    <queries>
+        <package android:name="com.google.android.apps.healthdata" />
+
+        <intent>
+            <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -52,7 +60,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ui.contentdetailvideo.ContentDetailsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_content_details"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.NewSleepSounds.SleepSoundPlayerActivity"
             android:exported="false" />
@@ -76,24 +88,11 @@
             android:label="@string/title_activity_homepage"
             android:launchMode="singleTop" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".SplashActivity"
-            android:exported="true">
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            -->
-        </activity>
-        <activity
             android:name=".ui.new_design.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -104,10 +103,10 @@
         <activity android:name=".ui.new_design.WellnessFocusListActivity" />
         <activity android:name=".ui.new_design.UnlockPowerOfYourMindActivity" />
         <activity android:name=".ui.new_design.ThirdFillerScreenActivity" />
-        <activity android:name=".ui.new_design.YourInterestActivity" />
         <activity android:name=".ui.new_design.PersonalisationActivity" />
         <activity android:name=".ui.new_design.SyncNowActivity" />
         <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity" />
+        <activity android:name=".ui.new_design.UserInterestActivity" />
         <activity android:name=".ui.new_design.AwesomeScreenActivity" />
         <activity android:name=".ui.new_design.EnableNotificationActivity" />
         <activity android:name=".ui.new_design.OnboardingFinalActivity" />
@@ -121,6 +120,7 @@
         <activity android:name=".ui.healthcam.HealthCamActivity" />
         <activity android:name=".ui.voicescan.VoiceScanWaitingActivity" />
         <activity android:name=".ui.healthcam.HealthCamBasicDetailsActivity" />
+        <activity android:name=".ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity" />
         <activity android:name=".ui.CategoryListActivity" />
         <activity android:name=".ui.healthaudit.HealthAuditFormActivity" />
         <activity android:name=".ui.healthpagemain.HealthPageMainActivity" />
@@ -145,7 +145,6 @@
         <activity android:name=".ui.sdkpackage.HealthCamRecorderActivity" />
         <activity android:name=".ui.sdkpackage.VoiceRecorderActivity" />
         <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
-
         <activity android:name=".ui.jounal.JournalingActivity" />
         <activity android:name=".ui.jounal.JournalingListActivity" />
         <activity
@@ -162,13 +161,10 @@
         <activity android:name=".ui.jounal.new_journal.BulletJournalActivity" />
         <activity android:name=".ui.jounal.new_journal.GriefJournalActivity" />
         <activity android:name=".ui.jounal.new_journal.JournalListActivity" />
-        <activity android:name=".ui.affirmation.AffirmationLandingActivity1" />
-        <activity android:name=".ui.affirmation.AffirmationLandingActivity2" />
         <activity android:name=".ui.affirmation.TodaysAffirmationActivity" />
         <activity android:name=".ui.affirmation.PractiseAffirmationPlaylistActivity" />
         <activity android:name=".newdashboard.HomeDashboardActivity" />
         <activity android:name=".newdashboard.FacialScanReportDetailsActivity" />
-
         <activity android:name=".ui.breathwork.BreathworkActivity" />
         <activity android:name=".ui.breathwork.BreathworkSessionActivity" />
         <activity android:name=".ui.breathwork.BreathworkPracticeActivity" />
@@ -190,27 +186,27 @@
         <activity android:name=".ui.profile_new.DeleteAccountReasonActivity" />
         <activity android:name=".ui.profile_new.DeleteAccountEmailDataActivity" />
         <activity android:name=".ui.NewSleepSounds.NewSleepSoundActivity" />
-
-        <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity" />
-
+        <activity android:name=".ui.questionnaire.QuestionnaireEatRightActivity" />
+        <activity android:name=".ui.questionnaire.QuestionnaireThinkRightActivity" />
         <activity
-            android:name="com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity"
+            android:name=".ai_package.ui.MainAIActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
         </activity>
-
-        <activity android:name="com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.new_design.HappyToHaveYouActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.settings.IntegrationsNewActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.settings.AccountPrivacyNewActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity" />
+        <activity android:name=".ui.scan_history.PastReportActivity" />
+        <activity android:name=".ui.new_design.HappyToHaveYouActivity" />
+        <activity android:name=".ui.settings.IntegrationsNewActivity" />
+        <activity android:name=".ui.settings.AccountPrivacyNewActivity" />
+        <activity android:name=".ui.settings.SubscriptionHistoryActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -225,14 +221,6 @@
         <receiver
             android:name=".ui.affirmation.ReminderReceiver"
             android:exported="true" />
-
     </application>
-
-    <queries>
-        <package android:name="com.google.android.apps.healthdata" />
-        <intent>
-            <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
-        </intent>
-    </queries>
 
 </manifest>

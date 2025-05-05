@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -26,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MindAuditActivity extends AppCompatActivity {
+public class MindAuditActivity extends BaseActivity {
 
     ImageView ic_back_dialog, close_dialog;
     HealthAuditPagerAdapter adapter;
@@ -42,7 +43,7 @@ public class MindAuditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mindaudit);
+        setChildContentView(R.layout.activity_mindaudit);
 
         getAssessmentResult("CAS");
 
@@ -161,10 +162,8 @@ public class MindAuditActivity extends AppCompatActivity {
     }
 
     private void getAssessmentResult(String assessment) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<MindAuditResultResponse> call = apiService.getMindAuditAssessmentResult(accessToken, assessment);
+        Call<MindAuditResultResponse> call = apiService.getMindAuditAssessmentResult(sharedPreferenceManager.getAccessToken(), assessment);
         call.enqueue(new Callback<MindAuditResultResponse>() {
             @Override
             public void onResponse(Call<MindAuditResultResponse> call, Response<MindAuditResultResponse> response) {
@@ -182,7 +181,7 @@ public class MindAuditActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<MindAuditResultResponse> call, Throwable t) {
-                Toast.makeText(MindAuditActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

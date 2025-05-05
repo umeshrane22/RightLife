@@ -100,6 +100,7 @@ class HeartRateAdapter(
             val unifiedList = getUnifiedParameterList()
             val intent = Intent(context, FacialScanReportDetailsActivity::class.java).apply {
                 putExtra("UNIFIED_LIST", unifiedList as Serializable)
+                putExtra("position", holder.bindingAdapterPosition)
             }
             context.startActivity(intent)
         }

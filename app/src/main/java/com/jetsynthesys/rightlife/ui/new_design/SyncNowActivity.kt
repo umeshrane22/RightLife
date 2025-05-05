@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
@@ -23,15 +22,15 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
 
-class SyncNowActivity : AppCompatActivity() {
+class SyncNowActivity : BaseActivity() {
 
-    val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
     private lateinit var healthConnectClient: HealthConnectClient
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -47,7 +46,7 @@ class SyncNowActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sync_now)
+        setChildContentView(R.layout.activity_sync_now)
 
         var header = intent.getStringExtra("WellnessFocus")
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)

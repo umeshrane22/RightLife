@@ -3,39 +3,31 @@ package com.jetsynthesys.rightlife.ui.new_design
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.VideoView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
-import com.jetsynthesys.rightlife.ui.HomeActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class SplashScreenActivity : AppCompatActivity() {
+class SplashScreenActivity : BaseActivity() {
 
     private lateinit var videoView: VideoView
     private lateinit var rlview1: RelativeLayout
     private lateinit var imgview2: ImageView
     private val SPLASH_DELAY: Long = 3000 // 3 seconds
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_screen)
+        setChildContentView(R.layout.activity_splash_screen)
         videoView = findViewById(R.id.videoView)
         rlview1 = findViewById(R.id.rlview1)
         imgview2 = findViewById(R.id.imgview2)
-
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         // Need this Dark Mode selection logic for next phase
         /*val appMode = sharedPreferenceManager.appMode

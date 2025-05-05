@@ -3,17 +3,18 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityEmailNotificationsBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 
-class EmailNotificationsNewActivity : AppCompatActivity() {
+class EmailNotificationsNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEmailNotificationsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEmailNotificationsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()

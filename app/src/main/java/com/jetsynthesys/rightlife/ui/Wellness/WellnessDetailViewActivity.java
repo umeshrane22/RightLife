@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui.Wellness;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,31 +13,15 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel;
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel;
-import com.jetsynthesys.rightlife.apimodel.modulecontentlist.ModuleContentDetailsList;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
-import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
-import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
-import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
-import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -49,6 +31,18 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
+import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
+import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
+import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
+import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +52,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class WellnessDetailViewActivity extends AppCompatActivity {
+public class WellnessDetailViewActivity extends BaseActivity {
 
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
@@ -80,13 +74,13 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
     private ImageButton playPauseButton;
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname;
-    private boolean isFullscreen = false;
+    private final boolean isFullscreen = false;
     private TextView tvViewAll;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wellness_detail_layout);
+        setChildContentView(R.layout.activity_wellness_detail_layout);
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
 
@@ -306,136 +300,10 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
-    private void getContentlistdetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
-                "THINK_RIGHT_POSITIVE_PSYCHOLOGY",
-                10,
-                0,
-                "THINK_RIGHT"
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
-                            Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "User Details: " + successMessage);
-                            ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-                            Log.d("API Response", "User Details: " + ResponseObj.getData().getContentList().size()
-                                    + " " + ResponseObj.getData().getContentList().get(0).getTitle());
-                            //  setupListData(ResponseObj.getData().getContentList());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
-
-    //getRLDetailpage
-    private void getContendetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
-        // Make the GET request
-        Call<ResponseBody> call = apiService.getRLDetailpage(
-                accessToken,
-                "670ccaaaf0a8929a725c1a56"
-
-        );
-
-        // Handle the response
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    try {
-                        if (response.body() != null) {
-                            String successMessage = response.body().string();
-                            System.out.println("Request successful: " + successMessage);
-                            //Log.d("API Response", "User Details: " + response.body().toString());
-                            Gson gson = new Gson();
-                            String jsonResponse = gson.toJson(response.body().toString());
-                            Log.d("API Response", "Content Details: " + jsonResponse);
-                            // ModuleContentDetailsList ResponseObj = gson.fromJson(successMessage, ModuleContentDetailsList.class);
-
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorMessage = response.errorBody().string();
-                            System.out.println("Request failed with error: " + errorMessage);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
-            }
-        });
-
-    }
-
     // more like this content
     private void getMoreLikeContent(String contentid) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, contentid, 0, 5);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentid, 0, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -444,20 +312,9 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
                         // Parse the raw JSON into the LikeResponse class
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
-                        Log.d("API_RESPONSE", "more like content: " + jsonString);
-                    /*LikeResponse likeResponse = gson.fromJson(jsonString, LikeResponse.class);
-
-                    // Use the parsed object
-                    Log.d("API_RESPONSE", "Status: " + likeResponse.getStatus());
-                    for (LikeResponse.Content content : likeResponse.getData()) {
-                        Log.d("API_RESPONSE", "Content Title: " + content.getTitle());
-                        Log.d("API_RESPONSE", "Like Count: " + content.getLikeCount());
-                    }*/
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
-                        Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
-                                + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
-                        setupListData(ResponseObj.getData().getLikeList());
+                     //   setupListData(ResponseObj.getData().getLikeList());
                         // setupEpisodeListData(ResponseObj.getData().getLikeList());
 
                         if (ResponseObj.getData().getLikeList().size() < 5) {
@@ -476,7 +333,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
@@ -484,25 +341,14 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
 
 
     private void getSeriesWithEpisodes(String seriesId) {
-        //-----------
-        Utils.showLoader(this);
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-
-        // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
-        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
+        Call<JsonElement> call = apiService.getSeriesWithEpisodes(sharedPreferenceManager.getAccessToken(), seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 Utils.dismissLoader(WellnessDetailViewActivity.this);
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Wellness:episodes " + affirmationsResponse.toString());
+                    Log.d("API Response", "Wellness:episodes " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
@@ -519,10 +365,7 @@ public class WellnessDetailViewActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
                 Utils.dismissLoader(WellnessDetailViewActivity.this);
-                Toast.makeText(WellnessDetailViewActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 

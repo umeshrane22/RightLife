@@ -5,10 +5,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountSelectionBinding
 import com.jetsynthesys.rightlife.ui.profile_new.adapter.DeleteReasonAdapter
 
-class DeleteAccountSelectionActivity : AppCompatActivity() {
+class DeleteAccountSelectionActivity : BaseActivity() {
 
     private lateinit var binding: ActivityDeleteAccountSelectionBinding
     private lateinit var adapter: DeleteReasonAdapter
@@ -23,7 +24,7 @@ class DeleteAccountSelectionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDeleteAccountSelectionBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         adapter = DeleteReasonAdapter(reasons)
         binding.reasonRecyclerView.layoutManager = LinearLayoutManager(this)

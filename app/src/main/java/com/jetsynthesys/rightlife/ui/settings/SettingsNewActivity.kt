@@ -25,11 +25,13 @@ import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SettingsNewActivity : AppCompatActivity() {
+class SettingsNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySettingsNewBinding
     private lateinit var settingsAdapter: SettingsAdapter
@@ -38,7 +40,7 @@ class SettingsNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         setupSettingsRecyclerView()
         setupOtherRecyclerView()
@@ -175,14 +177,11 @@ class SettingsNewActivity : AppCompatActivity() {
     }
 
     private fun logoutUser() {
-        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
         val deviceId = Utils.getDeviceId(this)
         val request = LogoutUserRequest()
         request.deviceId = deviceId
 
-        val call = apiService.LogoutUser(accessToken, request)
+        val call = apiService.LogoutUser(sharedPreferenceManager.accessToken, request)
         call.enqueue(object : Callback<JsonElement?> {
             override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -196,7 +195,7 @@ class SettingsNewActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
-                showToast("Network Error: " + t.message)
+                handleNoInternetView(t)
             }
         })
     }
@@ -209,7 +208,7 @@ class SettingsNewActivity : AppCompatActivity() {
         editor.apply()
         SharedPreferenceManager.getInstance(this).clearData()
 
-        val intent = Intent(this, ImageSliderActivity::class.java)
+        val intent = Intent(this, DataControlActivity::class.java)
         startActivity(intent)
 
         finishAffinity()

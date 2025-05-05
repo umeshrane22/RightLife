@@ -58,6 +58,7 @@ public class AffrimationRecyclerViewAdapter extends RecyclerView.Adapter<Affrima
                 Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
                 intent.putExtra("Categorytype", json);
                 intent.putExtra("position", position);
+                intent.putExtra("contentId", affirmationList.get(position).getId());
                 holder.itemView.getContext().startActivity(intent);
             }
         });

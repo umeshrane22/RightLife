@@ -3,16 +3,17 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.os.Bundle
 import android.text.Html
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityHtmlTextBinding
 
-class HtmlTextActivity : AppCompatActivity() {
+class HtmlTextActivity : BaseActivity() {
 
     private lateinit var binding: ActivityHtmlTextBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHtmlTextBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         val string = intent.getStringExtra("GeneralInformation")
 
