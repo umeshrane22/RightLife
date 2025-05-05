@@ -67,6 +67,8 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity;
 import com.jetsynthesys.rightlife.ui.Wellness.WellnessDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity;
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthAuditActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
 import com.jetsynthesys.rightlife.ui.healthpagemain.HealthPageMainActivity;
@@ -114,7 +116,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     RelativeLayout rl_wellness_lock;
     Button btn_wellness_preference;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
-    RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4;
+    RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4,rl_wellness_main;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
             tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
     //LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
@@ -365,6 +367,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         btn_mr_explore.setOnClickListener(this);
 
         // Wellness lock
+        rl_wellness_main = findViewById(R.id.rl_wellness_main);
         rl_wellness_lock = findViewById(R.id.rl_wellness_lock);
         btn_wellness_preference = findViewById(R.id.btn_wellness_preference);
         btn_wellness_preference.setOnClickListener(this);
@@ -1050,6 +1053,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private void setupWellnessContent(List<ContentWellness> contentList) {
         if (contentList == null || contentList.size() < 4) return;
 
+        rl_wellness_main.setVisibility(View.VISIBLE);
         // Bind data for item 1
         bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5, imgtag_tv1);
 
@@ -1478,7 +1482,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             Gson gson = new Gson();
             String json = gson.toJson(rightLifeEditResponse);
-            Intent intent = new Intent(HomeActivity.this, ModuleContentDetailViewActivity.class);
+            Intent intent = new Intent(HomeActivity.this, ContentDetailsActivity.class);
             intent.putExtra("Categorytype", rightLifeEditResponse.getData().getTopList().get(position).getId());
             intent.putExtra("position", position);
             intent.putExtra("contentId", rightLifeEditResponse.getData().getTopList().get(position).getId());
@@ -1498,9 +1502,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         if (wellnessApiResponse != null) {
             Gson gson = new Gson();
             String json = gson.toJson(wellnessApiResponse);
-            Intent intent = new Intent(HomeActivity.this, WellnessDetailViewActivity.class);
+            Intent intent = new Intent(HomeActivity.this, SeriesListActivity.class);
             intent.putExtra("responseJson", json);
             intent.putExtra("position", position);
+            intent.putExtra("contentId", wellnessApiResponse.getData().getContentList().get(position).get_id());
             startActivity(intent);
         } else {
             // Handle null case

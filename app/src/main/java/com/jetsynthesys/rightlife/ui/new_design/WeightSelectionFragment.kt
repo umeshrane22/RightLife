@@ -232,7 +232,7 @@ class WeightSelectionFragment : Fragment() {
 
     private fun setLbsValue() {
         numbers.clear()
-        for (i in 0..2204) {
+        for (i in 0..6615) {
             numbers.add(i / 10f)
         }
         adapter.notifyDataSetChanged()
@@ -240,7 +240,7 @@ class WeightSelectionFragment : Fragment() {
 
     private fun setKgsValue() {
         numbers.clear()
-        for (i in 0..1000) {
+        for (i in 0..3000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
         adapter.notifyDataSetChanged()

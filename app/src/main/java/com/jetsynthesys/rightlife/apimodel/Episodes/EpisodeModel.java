@@ -1,5 +1,11 @@
 package com.jetsynthesys.rightlife.apimodel.Episodes;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.Artist;
+
+import java.util.List;
+
 public class EpisodeModel {
     private String _id;
     private String contentId;
@@ -18,6 +24,9 @@ public class EpisodeModel {
     private MetaModel meta;
     private boolean isWatched;
     private boolean isFavourited;
+    @SerializedName("artist")
+    @Expose
+    private List<Artist> artist;
 
     // Getters and Setters
     public String get_id() {
@@ -154,5 +163,13 @@ public class EpisodeModel {
 
     public void setFavourited(boolean favourited) {
         isFavourited = favourited;
+    }
+
+    public List<Artist> getArtist() {
+        return artist;
+    }
+
+    public void setArtist(List<Artist> artist) {
+        this.artist = artist;
     }
 }

@@ -95,6 +95,7 @@ public class HealthCamRecommendationAdapter extends RecyclerView.Adapter<HealthC
             Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
             intent.putExtra("Categorytype", json);
             intent.putExtra("position", position);
+            intent.putExtra("contentId", recommendations.get(position).id);
             holder.itemView.getContext().startActivity(intent);
         });
     }
