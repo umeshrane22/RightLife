@@ -445,9 +445,9 @@ interface ApiService {
                         @Query("source") source: String,
                         @Query("date") date: String): Call<WakeupTimeResponse>
 
-    @POST("sleep/set_nap_log")
+    @POST("sleep/set_nap_log/")
     fun logNap(@Query("user_id") userId: String,
-               @Query("source") source: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
+               @Query("source") source: String, @Query("date") date: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
 
     @PUT("sleep/set_wakeup_time")
     fun updateWakeupTime(@Query("user_id") userId: String, @Query("source") source: String, @Query("record_id") record_id: String,

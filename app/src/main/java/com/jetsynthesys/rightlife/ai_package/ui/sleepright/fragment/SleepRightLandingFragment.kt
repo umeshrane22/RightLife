@@ -66,7 +66,6 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
-import com.jetsynthesys.rightlife.ai_package.model.SleepStages
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -160,7 +159,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         progressDialog.setCancelable(false)
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
-            val bottomSheet = LogYourNapDialogFragment()
+            val bottomSheet = LogYourNapDialogFragment(requireContext())
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
@@ -180,7 +179,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         logYourNap.setOnClickListener {
-            val bottomSheet = LogYourNapDialogFragment()
+            val bottomSheet = LogYourNapDialogFragment(requireContext())
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
