@@ -53,6 +53,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
@@ -74,6 +75,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarRespons
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.GetCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
@@ -89,6 +91,9 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MoveDashboardResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -119,6 +124,11 @@ interface ApiService {
     @GET("eat/recipes/names")
     fun getSnapMealRecipesList(
        ): Call<SnapMealRecipeResponseModel>
+
+    @GET("eat/recipes/{id}")
+    fun getSnapMealRecipeById(
+        @Path("id") recipeId: String
+    ): Call<RecipeResponseNew>
 
     @GET("eat/recipes/names")
     fun getRecipesList(
@@ -243,6 +253,21 @@ interface ApiService {
         @Body request: CreateRoutineRequest
     ): Response<CreateRoutineResponse>
 
+    @GET("move/data/get_calories/")
+    suspend fun getCalories(
+        @Query("user_id") userId: String,
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("page") page: Int,
+        @Query("limit") limit: Int,
+        @Query("include_stats") includeStats: Boolean
+    ): Response<GetCaloriesResponse>
+
+    @POST("move/data/calculate_calories/")
+    suspend fun createWorkout(
+        @Body request: CreateWorkoutRequest
+    ): Response<CalculateCaloriesResponse>
+
     @GET("move/fetch_active_burned/")
     suspend fun getActiveCalories(
         @Query("user_id") userId: String,
@@ -347,6 +372,13 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<HeartRateResponse>
+
+    @GET("move/fetch-activity-factor")
+    suspend fun getActivityFactor(
+        @Query("user_id") userId: String,
+        @Query("date") date: String,
+        @Query("time_range") timeRange: String
+    ): Response<ActivityFactorResponse>
 
     @POST("move/data/calculate_calories/")
     suspend fun calculateCalories(
@@ -471,7 +503,7 @@ interface ApiService {
     suspend fun getMoveLanding(
         @Query("user_id") userId: String,
         @Query("date") date: String
-    ): Response<FitnessResponse>
+    ): Response<MoveDashboardResponse>
 
     @GET("eat/log_weight/")
     suspend fun getLogWeight(
@@ -492,7 +524,7 @@ interface ApiService {
     ): Response<WaterIntakeResponse>
 
 
-    @DELETE("move/data/delete_calories/")
+    @DELETE("/move/data/delete_calories/")
     suspend fun deleteCalorie(
         @Query("calorie_id") calorieId: String,
         @Query("user_id") userId: String

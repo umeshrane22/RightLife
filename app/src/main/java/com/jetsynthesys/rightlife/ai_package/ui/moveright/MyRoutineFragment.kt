@@ -39,10 +39,11 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
     }
     private fun openAddWorkoutFragment() {
         val fragment = CreateRoutineFragment()
-      /*  val args = Bundle().apply {
-            putParcelable("workout", workout)
+
+        val args = Bundle().apply {
+           putString("myRoutine","myRoutine")
         }
-        fragment.arguments = args*/
+        fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, "addWorkoutFragment")
             addToBackStack("addWorkoutFragment")

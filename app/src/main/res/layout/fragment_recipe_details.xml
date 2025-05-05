@@ -9,7 +9,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="100dp">
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -104,7 +104,7 @@
                         android:id="@+id/veg_image"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_breakfast"
+                        android:src="@drawable/veg"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toEndOf="@+id/breakfast_text"
                         app:layout_constraintTop_toTopOf="parent"
@@ -114,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
-                        android:text="Breakfast"
+                        android:text="Veg"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_regular"
                         app:layout_constraintStart_toEndOf="@+id/veg_image"
@@ -134,8 +134,8 @@
                         android:id="@+id/like_image"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_marginStart="10dp"
-                        android:src="@drawable/ic_breakfast"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/like"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -150,33 +150,40 @@
                         app:layout_constraintStart_toEndOf="@+id/like_image"
                         app:layout_constraintTop_toTopOf="@+id/like_image"
                         app:layout_constraintBottom_toBottomOf="@+id/like_image"/>
-                    <ImageView
-                        android:id="@+id/time_image"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="10dp"
-                        android:src="@drawable/ic_breakfast"
-                       app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
-                    <TextView
-                        android:id="@+id/time_text"
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:text="233 likes"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/dmsans_regular"
-                        app:layout_constraintStart_toEndOf="@+id/time_image"
-                        app:layout_constraintTop_toTopOf="@+id/time_image"
-                        app:layout_constraintBottom_toBottomOf="@+id/time_image"/>
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/like_text"
+                        app:layout_constraintEnd_toStartOf="@+id/serves_image">
+                        <ImageView
+                            android:id="@+id/time_image"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/time"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+                        <TextView
+                            android:id="@+id/time_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:text="233 likes"
+                            android:textSize="12sp"
+                            android:fontFamily="@font/dmsans_regular"
+                            app:layout_constraintStart_toEndOf="@+id/time_image"
+                            app:layout_constraintTop_toTopOf="@+id/time_image"
+                            app:layout_constraintBottom_toBottomOf="@+id/time_image"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                     <ImageView
                         android:id="@+id/serves_image"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginEnd="10dp"
-                        android:src="@drawable/ic_breakfast"
+                        android:src="@drawable/serves"
                       app:layout_constraintEnd_toStartOf="@+id/serves_text"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -184,7 +191,7 @@
                         android:id="@+id/serves_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="20dp"
                         android:text="233 likes"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_regular"
@@ -201,7 +208,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:paddingBottom="10dp"
-                    android:background="@drawable/white_meal_date_bg"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/recipe_background_bg"
                     app:layout_constraintTop_toBottomOf="@+id/second_layout"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
@@ -230,7 +239,7 @@
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_bold"
                             android:textColor="@color/black_no_meals"
-                            android:text="Macro Nutrients Breakdown" />
+                            android:text="Nutritional Information" />
 
                         <ImageView
                             android:id="@+id/icMacroUP"
@@ -296,8 +305,8 @@
                             android:textColor="@color/black"
                             android:fontFamily="@font/dmsans_bold"
                             app:layout_constraintTop_toBottomOf="@+id/calorie_value"
-                            app:layout_constraintStart_toStartOf="@+id/calorie_value"
-                            app:layout_constraintEnd_toEndOf="@+id/calorie_value"/>
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -327,7 +336,7 @@
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="@+id/carbs_image"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/carbs_image" />
                         <TextView
                             android:id="@+id/carbs_name"
@@ -369,8 +378,8 @@
                             android:textColor="@color/black"
                             android:fontFamily="@font/dmsans_bold"
                             app:layout_constraintTop_toBottomOf="@+id/protein_image"
-                            app:layout_constraintStart_toStartOf="@+id/protein_image"
-                            app:layout_constraintEnd_toEndOf="@+id/protein_image"/>
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
                         <TextView
                             android:id="@+id/protein_name"
                             android:layout_width="wrap_content"
@@ -410,8 +419,8 @@
                             android:textColor="@color/black"
                             android:fontFamily="@font/dmsans_bold"
                             app:layout_constraintTop_toBottomOf="@+id/fat_image"
-                            app:layout_constraintStart_toStartOf="@+id/fat_image"
-                            app:layout_constraintEnd_toEndOf="@+id/fat_image"/>
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
                         <TextView
                             android:id="@+id/fat_name"
                             android:layout_width="wrap_content"
@@ -445,10 +454,70 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
                 <TextView
+                    android:id="@+id/recipe_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="Kanda Poha hails from Maharashtra and is a popular breakfast dish made from flattened rice (poha), onions (kanda), and spices. It’s light, easy to digest, and packed with essential nutrients like iron, fiber, and vitamins. Low in calories yet filling, Kanda Poha provides sustained energy throughout the morning. Its balance of carbs and healthy fats makes it a perfect, nutritious breakfast choice. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_macro_list"/>
+                <TextView
+                    android:id="@+id/ingredients_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:text="Ingredients"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/dmsans_bold"
+                    app:layout_constraintTop_toBottomOf="@+id/recipe_description"
+                    app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:id="@+id/ingredients_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    app:layout_constraintTop_toBottomOf="@+id/ingredients_heading"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_macro_list"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/steps_heading"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="Step by step instructions"
+                    android:fontFamily="@font/dmsans_bold"
+                    app:layout_constraintTop_toBottomOf="@+id/ingredients_description"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/steps_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_regular"
+                    app:layout_constraintTop_toBottomOf="@+id/steps_heading"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

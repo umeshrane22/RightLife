@@ -684,7 +684,7 @@
                 android:elevation="4dp"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
@@ -738,6 +738,23 @@
                         android:layout_marginTop="56dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:id="@+id/text_no_data_activity_factor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No Data"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        android:textColor="@color/black"
+
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="56dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/text_activity"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                       />
 
                     <ImageView
                         android:layout_width="62dp"
@@ -755,6 +772,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
+                        android:visibility="visible"
                         android:layout_marginBottom="20dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent" />
@@ -1232,13 +1250,13 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/lightZoneBelow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="113"
                         android:textSize="20dp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light_bgmtext"
                         app:layout_constraintEnd_toEndOf="@+id/vertical_line_start_light_bgmtext"
                         app:layout_constraintStart_toStartOf="@+id/vertical_line_start_light_bgmtext" />
@@ -1287,6 +1305,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
+                        android:id="@+id/lightZoneHigh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="124"
@@ -1353,6 +1372,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
+                        android:id="@+id/fatLossHigh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="139"
@@ -1406,6 +1426,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
+                        android:id="@+id/cardioHigh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="152"
@@ -1459,6 +1480,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
+                        android:id="@+id/peakHigh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="188"
