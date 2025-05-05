@@ -1013,6 +1013,8 @@
 
                                 <RelativeLayout
                                     android:layout_width="match_parent"
+                                    android:id="@+id/rl_wellness_main"
+                                    android:visibility="gone"
                                     android:layout_height="wrap_content">
                                     <androidx.cardview.widget.CardView
                                         android:layout_width="match_parent"
