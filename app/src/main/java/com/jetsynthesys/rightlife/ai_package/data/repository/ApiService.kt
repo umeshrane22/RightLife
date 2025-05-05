@@ -37,6 +37,7 @@ import com.jetsynthesys.rightlife.ai_package.model.RoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
@@ -246,6 +247,11 @@ interface ApiService {
     @POST("move/store/")
     suspend fun storeHealthData(
         @Body request: StoreHealthDataRequest
+    ): Response<StoreHealthDataResponse>
+
+    @POST("move/store/")
+    suspend fun storeSleepData(
+        @Body request: SleepJsonRequest
     ): Response<StoreHealthDataResponse>
 
     @POST("move/routine/create/")

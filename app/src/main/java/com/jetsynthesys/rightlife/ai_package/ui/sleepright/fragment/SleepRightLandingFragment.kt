@@ -23,13 +23,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.cardview.widget.CardView
 import androidx.core.app.NotificationCompat
@@ -57,20 +56,27 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
-import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
-import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepJson
+import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
+import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
+import com.jetsynthesys.rightlife.ai_package.model.SleepStages
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,7 +88,9 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>(), WakeUpTimeDialogFragment.BottomSheetListener {
 
@@ -274,13 +282,71 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
-                putExtra("PlayList", "ForPlayList")
+                putExtra("PlayList", "PlayList")
             })
         }
+      //  storeData()
+    }
 
-        view.findViewById<AppCompatImageView>(R.id.arrowSleepSound).setOnClickListener {
-            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java))
+    private fun storeData(){
+        val jsonData : SleepJson = loadStepData()
+        val fullList = jsonData.dataPoints
+        val sleepJsonRequest = SleepJsonRequest(
+            user_id = "68010b615a508d0cfd6ac9ca",
+            source = "android",
+            sleep_stage = fullList.map {
+                SleepStageJson(
+                    value = it.fitValue[0].value?.intVal.toString(),
+                    record_type = it.originDataSourceId.toString(),
+                    end_datetime = convertNanoToFormattedDate(it.endTimeNanos!!),
+                    unit = it.dataTypeName.toString(),
+                    start_datetime = convertNanoToFormattedDate(it.startTimeNanos!!),
+                    source_name = "android"
+                )
+            } as ArrayList<SleepStageJson>
+        )
+        storeHealthData(sleepJsonRequest)
+    }
+
+    fun convertNanoToFormattedDate(nanoTime: Long): String {
+        val millis = nanoTime / 1_000_000
+        val date = Date(millis)
+
+        // Format the date
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        formatter.timeZone = TimeZone.getTimeZone("UTC")
+        return formatter.format(date)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun storeHealthData(sleepJsonRequest: SleepJsonRequest) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "68010b615a508d0cfd6ac9ca"
+
+                val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        Toast.makeText(requireContext(), responseBody?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
+    }
+
+    private fun loadStepData(): SleepJson {
+         val json = context?.assets?.open("assets/fit/alldata/derived_com.google.sleep.segment_com.google.an.json")
+                ?.bufferedReader().use { it?.readText() }
+        return Gson().fromJson(json, object : TypeToken<SleepJson>() {}.type)
     }
 
     private fun fetchWakeupData() {
@@ -334,8 +400,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchSleepLandingData() {
         Utils.showLoader(requireActivity())
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-      //  val userId = "user_test_1"
+     //   val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "68010b615a508d0cfd6ac9ca"
         val date = getCurrentDate()
         val source = "apple"
         val preferences = "nature_sounds"
@@ -442,10 +508,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchIdealActualData() {
         Utils.showLoader(requireActivity())
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        //val userId = "user_test_1"
+       // val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = "68010b615a508d0cfd6ac9ca"
         val period = "daily"
-        val source = "apple"
+        val source = "health_connect"
         val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
         call.enqueue(object : Callback<SleepIdealActualResponse> {
             override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
