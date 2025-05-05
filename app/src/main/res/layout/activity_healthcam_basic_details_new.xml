@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- Back Arrow and Title -->
+    <LinearLayout
+        android:id="@+id/llTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="16dp"
+        android:layout_alignParentTop="true">
+
+        <ImageView
+            android:id="@+id/icon_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_back" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Your Details"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_mind"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <include layout="@layout/loader_layout" />
+
+    <ScrollView
+        android:layout_below="@id/llTopBar"
+        android:layout_above="@id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:padding="@dimen/margin_card_16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Name"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtName"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingHorizontal="16dp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="textPersonName"
+                android:textSize="16sp"
+                android:imeOptions="actionNext"
+                android:drawableEnd="@drawable/edit_create_routine"
+                android:drawableTint="@color/text_color_char_left"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvHeight"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Height"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtHeight"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="16sp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:drawableEnd="@drawable/edit_create_routine"
+                android:drawableTint="@color/text_color_char_left"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvWeight"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Weight"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtWeight"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingHorizontal="16dp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:focusable="false"
+                android:textSize="16sp"
+                android:cursorVisible="false"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:drawableEnd="@drawable/edit_create_routine"
+                android:drawableTint="@color/text_color_char_left"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvAge"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Age"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtAge"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingHorizontal="16dp"
+                android:textSize="16sp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:focusable="false"
+                android:cursorVisible="false"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvGender"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Gender At Birth"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtGender"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingStart="16dp"
+                android:textSize="16sp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:focusable="false"
+                android:cursorVisible="false"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:drawablePadding="8dp"
+                android:drawableEnd="@drawable/arrow_drop_down_50"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:fontFamily="@font/merriweather_bold"
+                android:text="Medical History"
+                android:textColor="@color/txt_color_health"
+                android:textSize="@dimen/textsize_extralarge" />
+
+            <TextView
+                android:id="@+id/tvSmoke"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Do You Smoke?"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtSmoke"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:hint="Select An Option"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:textSize="16sp"
+                android:drawableEnd="@drawable/arrow_drop_down_50"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvBloodPressure"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Are You Taking Blood Pressure Medication?"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtBloodPressure"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:cursorVisible="false"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:focusable="false"
+                android:hint="Select An Option"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:textSize="16sp"
+                android:drawableEnd="@drawable/arrow_drop_down_50"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvDiabetic"
+                android:textColor="@color/txt_color_health"
+                android:drawablePadding="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/dmsans_bold"
+                android:layout_marginTop="16dp"
+                android:text="Are You Diabetic?"
+                android:textSize="@dimen/textsize_medium" />
+
+            <EditText
+                android:id="@+id/edtDiabetic"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="4dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="8dp"
+                android:background="@drawable/bg_gray_border"
+                android:backgroundTint="@color/settings_bg_color"
+                android:inputType="text"
+                android:focusable="false"
+                android:hint="Select An Option"
+                android:focusableInTouchMode="false"
+                android:editable="false"
+                android:cursorVisible="false"
+                android:textSize="16sp"
+                android:drawableEnd="@drawable/arrow_drop_down_50"
+                android:drawablePadding="8dp"
+                android:textColor="@color/black"
+                android:layout_marginBottom="80dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Buttons -->
+    <LinearLayout
+        android:id="@+id/bottomButtonsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@drawable/toproundedcornershape">
+
+        <Button
+            android:id="@+id/btnProceed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Proceed To Scan"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/menuselected" />
+
+    </LinearLayout>
+
+</RelativeLayout>

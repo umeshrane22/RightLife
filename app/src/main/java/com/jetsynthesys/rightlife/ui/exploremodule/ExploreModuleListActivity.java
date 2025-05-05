@@ -16,12 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.chip.ChipGroup;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -40,10 +43,6 @@ import com.jetsynthesys.rightlife.ui.utility.JsonUtil;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 
-import com.google.android.material.chip.ChipGroup;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,12 +52,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ExploreModuleListActivity extends AppCompatActivity {
+public class ExploreModuleListActivity extends BaseActivity {
 
-    TextView txt_morelikethis_section, txt_categories_section, txt_curated_section,txt_coming_soon_banner;
-    ImageView ic_back_dialog, close_dialog,img_explore_banner;
-    private RecyclerView recyclerView, recycler_view_suggestions,recycler_view_curated,recycler_view_cards;
-    private ChipGroup chipGroup;
+    TextView txt_morelikethis_section, txt_categories_section, txt_curated_section, txt_coming_soon_banner;
+    ImageView ic_back_dialog, close_dialog, img_explore_banner;
     String[] itemNames;
     int[] itemImages;
     ModuleChipCategory ResponseObj;
@@ -66,12 +63,14 @@ public class ExploreModuleListActivity extends AppCompatActivity {
     ThinkRightCardResponse thinkRightCardResponse;
     String moduleId;
     TextView tv_header_htw;
+    private RecyclerView recyclerView, recycler_view_suggestions, recycler_view_curated, recycler_view_cards;
+    private ChipGroup chipGroup;
     private RelativeLayout rl_cards_layout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exploremodulelist);
+        setChildContentView(R.layout.activity_exploremodulelist);
 
         //get views
         txt_coming_soon_banner = findViewById(R.id.txt_coming_soon_banner);
@@ -164,7 +163,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         }
 
 
-         thinkRightCardResponse = JsonUtil.fetchJsonFromRaw(this);
+        thinkRightCardResponse = JsonUtil.fetchJsonFromRaw(this);
         if (thinkRightCardResponse != null && thinkRightCardResponse.getThinkRightCard() != null) {
             for (ThinkRightCard card : thinkRightCardResponse.getThinkRightCard()) {
                 // Use the card data System.out.println("ID: " + card.getId());
@@ -176,12 +175,11 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
         if (moduleId.equalsIgnoreCase("THINK_RIGHT")) {
             rl_cards_layout.setVisibility(View.GONE);
-        }
-        else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
+        } else if (moduleId.equalsIgnoreCase("SLEEP_RIGHT")) {
             rl_cards_layout.setVisibility(View.VISIBLE);
         } else if (moduleId.equalsIgnoreCase("MOVE_RIGHT")) {
             rl_cards_layout.setVisibility(View.GONE);
-        }else if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
+        } else if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
             rl_cards_layout.setVisibility(View.GONE);
         }
     }
@@ -228,18 +226,12 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
 
     private void getContentlistdetails(String categoryId, String moduleId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
 // Create an instance of the ApiService
 
-
         // Make the GET request
         Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
+                sharedPreferenceManager.getAccessToken(),
                 categoryId,
                 10,
                 0,
@@ -281,24 +273,15 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
     }
 
 
-
     private void getCuratedContent(String moduleId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-        Call<ResponseBody> call = apiService.getRecommendedLikeContent(accessToken, 5, 0, moduleId);
+        Call<ResponseBody> call = apiService.getRecommendedLikeContent(sharedPreferenceManager.getAccessToken(), 5, 0, moduleId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -333,7 +316,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
@@ -341,15 +324,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
 
     private void getMoreLikeContent(String moduleId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-        Call<ResponseBody> call = apiService.getMightLikeContent(accessToken, 5, 0, moduleId);
+        Call<ResponseBody> call = apiService.getMightLikeContent(sharedPreferenceManager.getAccessToken(), 5, 0, moduleId);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -376,7 +351,7 @@ public class ExploreModuleListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
@@ -387,13 +362,14 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         recycler_view_cards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recycler_view_cards.setAdapter(adapter);
     }
+
     private void setupModuleListData(List<SubModuleData> contentList) {
         ExploreModuleRecyclerAdapter adapter = new ExploreModuleRecyclerAdapter(this, itemNames, itemImages, subModuleResponse.getData());
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
         recyclerView.setAdapter(adapter);
     }
 
-    private void setupCuratedList(List<Recommended> contentList){
+    private void setupCuratedList(List<Recommended> contentList) {
         recycler_view_curated.setVisibility(View.VISIBLE);
         ExploreRecommendedAdapter adapter1 = new ExploreRecommendedAdapter(this, itemNames, itemImages, contentList);
         LinearLayoutManager horizontalLayoutManager1 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -408,57 +384,52 @@ public class ExploreModuleListActivity extends AppCompatActivity {
         recycler_view_suggestions.setAdapter(adapter);
 
         setupModuleListData(subModuleResponse.getData());
-      //  setStaticCardListData(thinkRightCardResponse.getThinkRightCard());
+        //  setStaticCardListData(thinkRightCardResponse.getThinkRightCard());
 
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
-               recyclerView.requestLayout();
+                recyclerView.requestLayout();
             }
         });
     }
 
 
-   // get top banner image
-   private void getTopBannerImage(String moduleId) {
-       //-----------
-       String authToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-       ApiService apiService = ApiClient.getClient().create(ApiService.class);
+    // get top banner image
+    private void getTopBannerImage(String moduleId) {
+        Call<JsonElement> call = apiService.getPromotionList(sharedPreferenceManager.getAccessToken(), moduleId, null, "TOP");
+        call.enqueue(new Callback<JsonElement>() {
+            @Override
+            public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    JsonElement promotionResponse2 = response.body();
+                    Log.d("API Response", "Success: " + promotionResponse2);
+                    Gson gson = new Gson();
+                    String jsonResponse = gson.toJson(response.body());
+                    PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
+                    Log.d("API Response body", "Success: promotion " + jsonResponse);
+                    if (promotionResponse.getSuccess()) {
+                        Toast.makeText(ExploreModuleListActivity.this, "Success: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                        Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
 
-       Call<JsonElement> call = apiService.getPromotionList(authToken, moduleId, null, "TOP");
-       call.enqueue(new Callback<JsonElement>() {
-           @Override
-           public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
-               if (response.isSuccessful() && response.body() != null) {
-                   JsonElement promotionResponse2 = response.body();
-                   Log.d("API Response", "Success: " + promotionResponse2.toString());
-                   Gson gson = new Gson();
-                   String jsonResponse = gson.toJson(response.body());
-                   PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
-                   Log.d("API Response body", "Success: promotion " + jsonResponse);
-                   if (promotionResponse.getSuccess()) {
-                       Toast.makeText(ExploreModuleListActivity.this, "Success: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
-                       Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
+                        handleBannerResponse(promotionResponse);
+                    } else {
+                        Toast.makeText(ExploreModuleListActivity.this, "Failed: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+                    }
 
-                       handleBannerResponse(promotionResponse);
-                   } else {
-                       Toast.makeText(ExploreModuleListActivity.this, "Failed: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
-                   }
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
 
-               } else {
-                   //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
-               }
-           }
+            @Override
+            public void onFailure(Call<JsonElement> call, Throwable t) {
+                handleNoInternetView(t);
 
-           @Override
-           public void onFailure(Call<JsonElement> call, Throwable t) {
-               Toast.makeText(ExploreModuleListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-               t.printStackTrace();  // Print the full stack trace for more details
+            }
+        });
 
-           }
-       });
-
-   }
+    }
 
     private void handleBannerResponse(PromotionResponse promotionResponse) {
         Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());

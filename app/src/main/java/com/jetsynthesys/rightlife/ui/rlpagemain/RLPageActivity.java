@@ -15,13 +15,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -54,9 +57,6 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.voicescan.VoiceScanActivity;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RLPageActivity extends AppCompatActivity implements View.OnClickListener {
+public class RLPageActivity extends BaseActivity implements View.OnClickListener {
 
     LinearLayout rlmenu, ll_homemenuclick, bottom_sheet,
             ll_journal, ll_affirmations, ll_sleepsounds;
@@ -95,7 +95,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rlpage);
+        setChildContentView(R.layout.activity_rlpage);
         recyclerViewContinue = findViewById(R.id.recyclerViewContinue);
         recyclerViewrecent = findViewById(R.id.recyclerViewrecent);
 
@@ -231,12 +231,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void GetMyRLContent() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLContent(accessToken);
+        Call<ResponseBody> call = apiService.getMyRLContent(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -262,7 +257,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -285,12 +280,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void FirstLookReport() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLFirstLookReport(accessToken);
+        Call<ResponseBody> call = apiService.getMyRLFirstLookReport(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -314,18 +304,13 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
 
     private void MyRLContinueWatching() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLContinueWatching(accessToken, "continue", 4, 0);
+        Call<ResponseBody> call = apiService.getMyRLContinueWatching(sharedPreferenceManager.getAccessToken(), "continue", 4, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -350,7 +335,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -370,12 +355,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
     // Get Recently Watched Content List here
     private void MyRLRecentlyWatched() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLRecentlyWatched(accessToken, "recently", 4, 0);
+        Call<ResponseBody> call = apiService.getMyRLRecentlyWatched(sharedPreferenceManager.getAccessToken(), "recently", 4, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -400,7 +381,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -422,12 +403,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
     //getMyRLHealthCamResult
     private void getMyRLHealthCamResult() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(accessToken);
+        Call<ResponseBody> call = apiService.getMyRLHealthCamResult(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -456,7 +433,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
                 cardview_healthcam.setVisibility(View.GONE);
                 cardview_healthcam_new_user.setVisibility(View.VISIBLE);
             }
@@ -465,12 +442,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
     //getMyRLGetMindAuditDate
     private void getMyRLGetMindAuditDate() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLGetMindAuditDate(accessToken);
+        Call<ResponseBody> call = apiService.getMyRLGetMindAuditDate(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -497,7 +469,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -506,12 +478,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     // get voice scan Result data here // check api with backend is this the correct one
 
     private void getMyRLVoiceScanCheckinResult() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getVoiceScanCheckInData(accessToken, true, 0, 0);
+        Call<ResponseBody> call = apiService.getVoiceScanCheckInData(sharedPreferenceManager.getAccessToken(), true, 0, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -528,8 +495,6 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
                         } else {
                             cardview_voicescan.setVisibility(View.GONE);
                         }
-
-
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -542,7 +507,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -562,12 +527,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void MyRLJournal() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLJournal(accessToken, 0, 10);
+        Call<ResponseBody> call = apiService.getMyRLJournal(sharedPreferenceManager.getAccessToken(), 0, 10);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -592,7 +552,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -600,7 +560,6 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     private void HandleJournalUI(RLpageJournalResponse rLpageJournalResponse) {
         if (rLpageJournalResponse.getData().getJournalsList().isEmpty()) {
             ll_journal_main.setVisibility(View.GONE);
-            return;
         } else {
             txt_journal_date.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(rLpageJournalResponse.getData().getJournalsList().get(0).getUpdatedAt()));
             tv_title_journal.setText(rLpageJournalResponse.getData().getJournalsList().get(0).getTitle());
@@ -611,12 +570,8 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
     //Mind Audit Section
     private void getSuggestedAssessment(UserEmotions userEmotions) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
 
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getSuggestedAssessment(accessToken, userEmotions);
+        Call<ResponseBody> call = apiService.getSuggestedAssessment(sharedPreferenceManager.getAccessToken(), userEmotions);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -639,7 +594,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -757,12 +712,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void getFaceScanResultsForId() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getScanPastReport(accessToken, "faceScan");
+        Call<ResponseBody> call = apiService.getScanPastReport(sharedPreferenceManager.getAccessToken(), "faceScan");
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -795,19 +745,14 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
 
 
     private void getFacialScanReport(String reportId) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getFacialScanReport(accessToken, reportId);
+        Call<ResponseBody> call = apiService.getFacialScanReport(sharedPreferenceManager.getAccessToken(), reportId);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -841,7 +786,7 @@ public class RLPageActivity extends AppCompatActivity implements View.OnClickLis
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(RLPageActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

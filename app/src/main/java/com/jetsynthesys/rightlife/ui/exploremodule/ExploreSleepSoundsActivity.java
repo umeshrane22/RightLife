@@ -20,8 +20,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -35,7 +35,6 @@ import com.jetsynthesys.rightlife.ui.sleepsounds.models.SubCategory;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +45,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ExploreSleepSoundsActivity extends AppCompatActivity {
+public class ExploreSleepSoundsActivity extends BaseActivity {
+    RadioButton radio_set_routine;
+    Button btn_play_sleepsound;
     private MediaPlayer mediaPlayer;
     private ImageButton playPauseButton;
     private boolean isPlaying = false;
@@ -54,20 +55,64 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private ProgressBar circularProgressBar;
     private TextView currentTime;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
+    // Update progress in SeekBar and Circular Progress Bar
+    private final Runnable updateProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                int totalDuration = mediaPlayer.getDuration();
+
+                // Update seek bar and progress bar
+                seekBar.setProgress(currentPosition);
+                // Update Circular ProgressBar
+                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
+                circularProgressBar.setProgress(progressPercent);
+
+
+                // Update time display
+                String timeFormatted = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
+                currentTime.setText(timeFormatted);
+
+                // Update every second
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
     private RelativeLayout rl_player;
-    RadioButton radio_set_routine;
-    Button btn_play_sleepsound;
     private List<Category> sleepCategoryData;
     private List<SubCategory> sleepSubCategoryData;
     private SleepSoundCategoryResponse sleepCategoryResponse;
     private ActivityExploreSleepSoundsBinding binding;
+    /*private void playSong(int index) {
+        if (index < 0 || index >= songUrls.size()) {
+            Toast.makeText(this, "No more songs available", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(songUrls.get(index));
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mediaPlayer.setOnPreparedListener(mp -> {
+            mediaPlayer.start();
+            seekBar.setMax(mediaPlayer.getDuration());
+            handler.post(updateProgress);
+        });
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_explore_sleep_sounds);
+        setChildContentView(R.layout.activity_explore_sleep_sounds);
 
         binding = ActivityExploreSleepSoundsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -106,9 +151,9 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
         btn_play_sleepsound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (edt_category.getText().toString().isEmpty() || edt_subcategory.getText().toString().isEmpty()){
+                if (edt_category.getText().toString().isEmpty() || edt_subcategory.getText().toString().isEmpty()) {
                     Toast.makeText(ExploreSleepSoundsActivity.this, "Please select category and subcategory", Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     postSleepAidsRequest();
                 }
             }
@@ -158,27 +203,6 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
         });
         getSleepSoundsList();
     }
-    /*private void playSong(int index) {
-        if (index < 0 || index >= songUrls.size()) {
-            Toast.makeText(this, "No more songs available", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        mediaPlayer.reset();
-        try {
-            mediaPlayer.setDataSource(songUrls.get(index));
-            mediaPlayer.prepareAsync();
-        } catch (IOException e) {
-            Toast.makeText(this, "Failed to load audio", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        mediaPlayer.setOnPreparedListener(mp -> {
-            mediaPlayer.start();
-            seekBar.setMax(mediaPlayer.getDuration());
-            handler.post(updateProgress);
-        });
-    }*/
 
     private void setupMusicPlayer(List<Episode> episodes) {
         seekBar = findViewById(R.id.seekBar);
@@ -251,33 +275,6 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
         });
     }
 
-    // Update progress in SeekBar and Circular Progress Bar
-    private final Runnable updateProgress = new Runnable() {
-        @Override
-        public void run() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                int currentPosition = mediaPlayer.getCurrentPosition();
-                int totalDuration = mediaPlayer.getDuration();
-
-                // Update seek bar and progress bar
-                seekBar.setProgress(currentPosition);
-                // Update Circular ProgressBar
-                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
-                circularProgressBar.setProgress(progressPercent);
-
-
-                // Update time display
-                String timeFormatted = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
-                currentTime.setText(timeFormatted);
-
-                // Update every second
-                handler.postDelayed(this, 1000);
-            }
-        }
-    };
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -297,18 +294,8 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
                 54, "SLEEP_RIGHT_SLEEP_AND_PERFORMANCE",
                 "64cb6d97aa443ed535ecc6ad"
         );
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        // SignupOtpRequest request = new SignupOtpRequest("+91"+mobileNumber);
-        // AffirmationRequest request = new AffirmationRequest(consumedCta, affirmationId, userId);
-
         // Make the API call
-        Call<ResponseBody> call = apiService.postSleepAids(accessToken, request);
+        Call<ResponseBody> call = apiService.postSleepAids(sharedPreferenceManager.getAccessToken(), request);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -347,10 +334,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(ExploreSleepSoundsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
-
+                handleNoInternetView(t);
             }
         });
 
@@ -359,12 +343,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
 
     // get sleep aid category for category and subcategory
     private void getCategorylist() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getSleepAidCategory(accessToken);
+        Call<ResponseBody> call = apiService.getSleepAidCategory(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -376,10 +355,10 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
                         Log.d("Sleep categoty", "  - " + jsonString);
                         Gson gson = new Gson();
 
-                         sleepCategoryResponse = gson.fromJson(jsonString, SleepSoundCategoryResponse.class);
+                        sleepCategoryResponse = gson.fromJson(jsonString, SleepSoundCategoryResponse.class);
 
                         if (sleepCategoryResponse != null && sleepCategoryResponse.isSuccess()) {
-                             sleepCategoryData = sleepCategoryResponse.getData().getCategory();
+                            sleepCategoryData = sleepCategoryResponse.getData().getCategory();
                             if (sleepCategoryData != null) {
                                 Utils.logDebug(sleepCategoryData.get(0).getName());
                             }
@@ -396,7 +375,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(ExploreSleepSoundsActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -474,12 +453,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
 
     // Get sleep sounds list here
     private void getSleepSoundsList() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getSleepSoundsList(accessToken, 20, 0);
+        Call<ResponseBody> call = apiService.getSleepSoundsList(sharedPreferenceManager.getAccessToken(), 20, 0);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -489,7 +463,7 @@ public class ExploreSleepSoundsActivity extends AppCompatActivity {
                         String jsonString = response.body().string();
                         Log.d("Response Body", " Sleep Sounds list - " + jsonString);
                         Gson gson = new Gson();
-                    //    RlPageContinueWatchResponse rlPageContinueWatchResponse = gson.fromJson(jsonString, RlPageContinueWatchResponse.class);
+                        //    RlPageContinueWatchResponse rlPageContinueWatchResponse = gson.fromJson(jsonString, RlPageContinueWatchResponse.class);
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);

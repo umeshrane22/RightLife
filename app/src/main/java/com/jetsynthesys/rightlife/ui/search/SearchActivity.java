@@ -16,22 +16,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.ui.CategoryListActivity;
-import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.ui.CategoryListActivity;
+import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends BaseActivity {
     SearchQueryResults filerResults = new SearchQueryResults();
     private SearchResponse searchResponse;
     private SearchCategoryAdapter searchCategoryAdapter;
@@ -61,7 +58,7 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setChildContentView(R.layout.activity_search);
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
             finish();
@@ -273,11 +270,8 @@ public class SearchActivity extends AppCompatActivity {
 
 
     private void getSearchContent() {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         // Make the API call
-        Call<ResponseBody> call = apiService.getSearchContent(accessToken);
+        Call<ResponseBody> call = apiService.getSearchContent(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -305,19 +299,14 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
+                handleNoInternetView(t);
             }
         });
     }
 
     private void getSearchHistory() {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         // Make the API call
-        Call<ResponseBody> call = apiService.getSearchHistory(accessToken);
+        Call<ResponseBody> call = apiService.getSearchHistory(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -332,17 +321,14 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
 
     private void performSearch(String query) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         // Make the API call
-        Call<ResponseBody> call = apiService.searchQuery(accessToken, query);
+        Call<ResponseBody> call = apiService.searchQuery(sharedPreferenceManager.getAccessToken(), query);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -385,17 +371,14 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
 
     private void performSearchByModule(String query, String[] modules) {
-        String accessToken = SharedPreferenceManager.getInstance(this).getAccessToken();
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         // Make the API call
-        Call<ResponseBody> call = apiService.searchQuery(accessToken, query, modules);
+        Call<ResponseBody> call = apiService.searchQuery(sharedPreferenceManager.getAccessToken(), query, modules);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -438,7 +421,7 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(SearchActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

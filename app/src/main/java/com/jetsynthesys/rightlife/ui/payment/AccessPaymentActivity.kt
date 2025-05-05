@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
@@ -19,7 +20,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AccessPaymentActivity : AppCompatActivity() {
+class AccessPaymentActivity : BaseActivity() {
 
     private lateinit var rvPaymentCard: RecyclerView
     private lateinit var adapter: AccessPaymentCardAdapter
@@ -77,14 +78,8 @@ class AccessPaymentActivity : AppCompatActivity() {
     // get user details
     private fun getPaymentCardList(type: String?) {
         Utils.showLoader(this)
-        val sharedPreferences =
-            getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
 
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
-        // Make the API call
-        val call = apiService.getPaymentPlan(accessToken, type)
+        val call = apiService.getPaymentPlan(sharedPreferenceManager.accessToken, type)
         call.enqueue(object : Callback<PaymentCardResponse?> {
             override fun onResponse(
                 call: Call<PaymentCardResponse?>,
@@ -115,13 +110,7 @@ class AccessPaymentActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<PaymentCardResponse?>, t: Throwable) {
                 Utils.dismissLoader(this@AccessPaymentActivity)
-                Toast.makeText(
-                    this@AccessPaymentActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.e("API ERROR", "onFailure: " + t.message)
-                t.printStackTrace()
+                handleNoInternetView(t)
             }
         })
     }

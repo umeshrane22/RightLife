@@ -1,9 +1,7 @@
 package com.jetsynthesys.rightlife.ui.moduledetail;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -24,16 +22,24 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel;
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel;
 import com.jetsynthesys.rightlife.apimodel.modulecontentdetails.ModuleContentDetail;
@@ -45,18 +51,8 @@ import com.jetsynthesys.rightlife.ui.Wellness.EpisodesListAdapter2;
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -68,10 +64,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ModuleContentDetailViewActivity extends AppCompatActivity {
+public class ModuleContentDetailViewActivity extends BaseActivity {
     public WellnessApiResponse wellnessApiResponse;
     ImageView ic_back_dialog, close_dialog;
-    TextView txt_desc, tv_header_htw,txt_episodes_section;
+    TextView txt_desc, tv_header_htw, txt_episodes_section;
+    RelativeLayout rl_more_like_section;
     String[] itemNames;
     int[] itemImages;
     int position;
@@ -89,23 +86,49 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
     private ImageButton playPauseButton;
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname, tvViewAll;
-    private boolean isFullscreen = false;
+    private final boolean isFullscreen = false;
 
     // Music player
     private MediaPlayer mediaPlayer;
     private ImageButton playPauseButtonmusic;
-    private boolean isPlayingmusic = false;
+    private final boolean isPlayingmusic = false;
 
     private SeekBar seekBar;
     private ProgressBar circularProgressBar;
     private TextView currentTime;
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
+    // Update progress in SeekBar and Circular Progress Bar
+    private final Runnable updateProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                int totalDuration = mediaPlayer.getDuration();
+
+                // Update seek bar and progress bar
+                seekBar.setProgress(currentPosition);
+                // Update Circular ProgressBar
+                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
+                circularProgressBar.setProgress(progressPercent);
+
+
+                // Update time display
+                String timeFormatted = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
+                currentTime.setText(timeFormatted);
+
+                // Update every second
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
     private RelativeLayout rl_player;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wellness_detail_layout);
+        setChildContentView(R.layout.activity_wellness_detail_layout);
 
         // for music player new
         rl_player = findViewById(R.id.rl_player);
@@ -115,7 +138,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         img_artist = findViewById(R.id.img_artist);
         tv_artistname = findViewById(R.id.tv_artistname);
         txt_episodes_section = findViewById(R.id.txt_episodes_section);
-
+        rl_more_like_section = findViewById(R.id.rl_more_like_section);
         playerView = findViewById(R.id.exoPlayerView);
         playPauseButton = findViewById(R.id.playButton);
         img_contentview = findViewById(R.id.img_contentview);
@@ -157,7 +180,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         getMoreLikeContent(contentId);
 
 
-
         List<Like> contentList1 = Collections.emptyList();
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList1);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
@@ -196,9 +218,9 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
             }
         });
 
-        //--- for Audio content  
-        
-        
+        //--- for Audio content
+
+
     }
 
     private void setModuleColor(TextView txtDesc, String moduleId) {
@@ -233,14 +255,14 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
 
-        } else  if (responseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
+        } else if (responseObj.getData().getContentType().equalsIgnoreCase("AUDIO")) {
             setupAudioContent(responseObj);
             img_contentview.setVisibility(View.GONE);
             playerView.setVisibility(View.GONE);
         } else {
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
 
-            if (ContentResponseObj.getData().getPreviewUrl().isEmpty()){
+            if (ContentResponseObj.getData().getPreviewUrl().isEmpty()) {
                 finish();
             }
             playerView.setVisibility(View.VISIBLE);
@@ -316,20 +338,10 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
     private void getContentlistdetails(String categoryId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
         // Make the GET request
         Call<ResponseBody> call = apiService.getContentdetailslist(
-                accessToken,
+                sharedPreferenceManager.getAccessToken(),
                 "THINK_RIGHT_POSITIVE_PSYCHOLOGY",
                 10,
                 0,
@@ -371,28 +383,18 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
     }
 
-
     //getRLDetailpage
     private void getContendetails(String categoryId) {
         Utils.showLoader(this);
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-
         // Make the GET request
         Call<ResponseBody> call = apiService.getRLDetailpage(
-                accessToken,
+                sharedPreferenceManager.getAccessToken(),
                 categoryId
 
         );
@@ -433,7 +435,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Utils.dismissLoader(ModuleContentDetailViewActivity.this);
-                System.out.println("Request failed: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
@@ -441,15 +443,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
     // more like this content
     private void getMoreLikeContent(String contentid) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-// Create an instance of the ApiService
-
-        Call<ResponseBody> call = apiService.getMoreLikeContent(accessToken, contentid, 0, 5);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentid, 0, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -460,15 +454,19 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
                         Gson gson = new Gson();
 
                         MoreLikeContentResponse ResponseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
-                        Log.d("API Response", "User Details: " + ResponseObj.getData().getLikeList().size()
-                                + " " + ResponseObj.getData().getLikeList().get(0).getTitle());
-                        setupListData(ResponseObj.getData().getLikeList());
-
-                        if (ResponseObj.getData().getLikeList().size() < 5) {
-                            tvViewAll.setVisibility(View.GONE);
-                        } else {
-                            tvViewAll.setVisibility(View.VISIBLE);
+                        if (ResponseObj != null) {
+                            if (!ResponseObj.getData().getLikeList().isEmpty() && ResponseObj.getData().getLikeList().size() > 0) {
+                                setupListData(ResponseObj.getData().getLikeList());
+                                if (ResponseObj.getData().getLikeList().size() < 5) {
+                                    tvViewAll.setVisibility(View.GONE);
+                                } else {
+                                    tvViewAll.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                rl_more_like_section.setVisibility(View.GONE);
+                            }
                         }
+
 
                     } catch (Exception e) {
                         Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
@@ -480,35 +478,31 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("API_FAILURE", "Failure: " + t.getMessage());
+                handleNoInternetView(t);
             }
         });
 
     }
 
-
     private void getSeriesWithEpisodes(String seriesId) {
-        //-----------
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Make the API call   getSeriesWithEpisodes(accessToken,seriesId, true);
-        Call<JsonElement> call = apiService.getSeriesWithEpisodes(accessToken, seriesId, true);
+        Call<JsonElement> call = apiService.getSeriesWithEpisodes(sharedPreferenceManager.getAccessToken(), seriesId, true);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Wellness:episodes " + affirmationsResponse.toString());
+                    Log.d("API Response", "Wellness:episodes " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 
                     EpisodeResponseModel episodeResponseModel = gson.fromJson(jsonResponse, EpisodeResponseModel.class);
                     Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
+                    if (episodeResponseModel != null) {
+                        if (!episodeResponseModel.getData().getEpisodes().isEmpty() && episodeResponseModel.getData().getEpisodes().size() > 0) {
+                            setupEpisodeListData(episodeResponseModel.getData().getEpisodes());
+                        }
+                    }
 
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -517,29 +511,27 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(ModuleContentDetailViewActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
+                handleNoInternetView(t);
 
             }
         });
 
     }
 
-
     private void setupListData(List<Like> contentList) {
+        rl_more_like_section.setVisibility(View.VISIBLE);
         RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);
     }
 
-  /*  private void setupEpisodeListData(List<Like> contentList) {
-        EpisodesListAdapter adapter = new EpisodesListAdapter(this, itemNames, itemImages, contentList);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerViewEpisode.setLayoutManager(horizontalLayoutManager);
-        recyclerViewEpisode.setAdapter(adapter);
-    }*/
+    /*  private void setupEpisodeListData(List<Like> contentList) {
+          EpisodesListAdapter adapter = new EpisodesListAdapter(this, itemNames, itemImages, contentList);
+          LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+          recyclerViewEpisode.setLayoutManager(horizontalLayoutManager);
+          recyclerViewEpisode.setAdapter(adapter);
+      }*/
     private void setupEpisodeListData(List<EpisodeModel> contentList) {
         txt_episodes_section.setVisibility(View.VISIBLE);
         EpisodesListAdapter2 adapter = new EpisodesListAdapter2(this, itemNames, itemImages, contentList);
@@ -547,7 +539,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         recyclerViewEpisode.setLayoutManager(horizontalLayoutManager);
         recyclerViewEpisode.setAdapter(adapter);
     }
-
 
     // play video
     private void initializePlayer() {
@@ -564,7 +555,7 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
         Uri videoUri = Uri.parse(ApiClient.CDN_URL_QA + ContentResponseObj.getData().getPreviewUrl());// responseObj.getPreviewUrl()
         //MediaItem mediaItem = MediaItem.fromUri(videoUri);
         //player.setMediaItem(mediaItem);
-        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA + ""); //responseObj.getUrl()
+        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA); //responseObj.getUrl()
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(this))
                 .createMediaSource(MediaItem.fromUri(videoUri));
 
@@ -575,7 +566,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
 
         player.play();
     }
-
 
     private void playPlayer() {
         player.play();
@@ -691,34 +681,6 @@ public class ModuleContentDetailViewActivity extends AppCompatActivity {
             }
         });
     }
-
-    // Update progress in SeekBar and Circular Progress Bar
-    private final Runnable updateProgress = new Runnable() {
-        @Override
-        public void run() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                int currentPosition = mediaPlayer.getCurrentPosition();
-                int totalDuration = mediaPlayer.getDuration();
-
-                // Update seek bar and progress bar
-                seekBar.setProgress(currentPosition);
-                // Update Circular ProgressBar
-                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
-                circularProgressBar.setProgress(progressPercent);
-
-
-                // Update time display
-                String timeFormatted = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
-                currentTime.setText(timeFormatted);
-
-                // Update every second
-                handler.postDelayed(this, 1000);
-            }
-        }
-    };
-
 
 
 }

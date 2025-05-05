@@ -7,13 +7,13 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
+import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
-import com.jetsynthesys.rightlife.ui.new_design.YourInterestActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
 import com.jetsynthesys.rightlife.ui.settings.SupportActivity
@@ -21,10 +21,9 @@ import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class ProfileSettingsActivity : AppCompatActivity() {
+class ProfileSettingsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityProfileSettingsBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
 
     private val activityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -36,7 +35,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileSettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         setUserData()
@@ -92,7 +91,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                     })
 
                 "Interests" ->
-                    startActivity(Intent(this, YourInterestActivity::class.java).apply {
+                    startActivity(Intent(this, UserInterestActivity::class.java).apply {
                         putExtra("FROM", "ProfileSetting")
                     })
 
@@ -114,7 +113,10 @@ class ProfileSettingsActivity : AppCompatActivity() {
             name = name.plus(" ${user.lastName}")
         binding.userName.text = name
         if (user.profilePicture.isNullOrEmpty()) {
-            binding.tvProfileLetter.text = user.firstName.first().toString()
+            if (user.firstName.isNotEmpty())
+                binding.tvProfileLetter.text = user.firstName.first().toString()
+            else
+                binding.tvProfileLetter.text = "R"
         } else {
             binding.ivProfileImage.visibility = VISIBLE
             binding.tvProfileLetter.visibility = GONE
@@ -122,7 +124,7 @@ class ProfileSettingsActivity : AppCompatActivity() {
                 .load(ApiClient.CDN_URL_QA + user.profilePicture)
                 .into(binding.ivProfileImage)
         }
-        if (user.age!=null) {
+        if (user.age != null) {
             binding.tvUserAge.text = user.age.toString() + " years"
         }
         binding.tvUserCity.text = user.country

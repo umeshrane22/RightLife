@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityGeneralInformationBinding
@@ -17,18 +18,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GeneralInformationActivity : AppCompatActivity() {
+class GeneralInformationActivity : BaseActivity() {
 
     private lateinit var binding: ActivityGeneralInformationBinding
     private lateinit var settingsAdapter: SettingsAdapter
     private var generalInformationResponse: GeneralInformationResponse? = null
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var whichInfo: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGeneralInformationBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         whichInfo = intent.getStringExtra("INFO") ?: ""
 
@@ -83,7 +83,6 @@ class GeneralInformationActivity : AppCompatActivity() {
 
     private fun getGeneralInfo() {
         Utils.showLoader(this)
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
         val call = apiService.getGeneralInformation(sharedPreferenceManager.accessToken)
 
         call.enqueue(object : Callback<GeneralInformationResponse> {

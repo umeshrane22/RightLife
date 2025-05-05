@@ -3,18 +3,15 @@ package com.jetsynthesys.rightlife.ui.jounal.new_journal
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityJournalNewBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class JournalNewActivity : AppCompatActivity() {
+class JournalNewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityJournalNewBinding
     private lateinit var adapter: JournalAdapter
@@ -24,7 +21,7 @@ class JournalNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
@@ -39,9 +36,7 @@ class JournalNewActivity : AppCompatActivity() {
     }
 
     private fun fetchJournalData() {
-        val authToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-        val call = apiService.getJournals(authToken)
+        val call = apiService.getJournals(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<JournalResponse> {
             override fun onResponse(
                 call: Call<JournalResponse>,
@@ -100,11 +95,7 @@ class JournalNewActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<JournalResponse>, t: Throwable) {
-                Toast.makeText(
-                    this@JournalNewActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }

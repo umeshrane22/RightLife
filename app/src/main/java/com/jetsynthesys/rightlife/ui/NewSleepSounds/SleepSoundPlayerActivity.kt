@@ -16,13 +16,14 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivitySleepSoundPlayerBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist.PlaylistBottomSheetDialogFragment
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
 
-class SleepSoundPlayerActivity : AppCompatActivity() {
+class SleepSoundPlayerActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySleepSoundPlayerBinding
     private lateinit var player: ExoPlayer
@@ -35,7 +36,7 @@ class SleepSoundPlayerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySleepSoundPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         //back button
         binding.backButton.setOnClickListener {

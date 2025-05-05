@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountEmailDataBinding
@@ -15,14 +16,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DeleteAccountEmailDataActivity : AppCompatActivity() {
+class DeleteAccountEmailDataActivity : BaseActivity() {
 
     private lateinit var binding: ActivityDeleteAccountEmailDataBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDeleteAccountEmailDataBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         val reasonsList = intent.getStringExtra("SelectedReasons")
         val option = intent.getStringExtra("Message")
@@ -45,10 +46,6 @@ class DeleteAccountEmailDataActivity : AppCompatActivity() {
     }
 
     private fun deleteAccountAPI(reason: String, message: String) {
-        val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-        val authToken = sharedPreferenceManager.accessToken
-        val apiService = ApiClient.getClient().create(ApiService::class.java)
-
         val body = mapOf(
             "name" to sharedPreferenceManager.userProfile.userdata.firstName,
             "email" to sharedPreferenceManager.userProfile.userdata.email,
@@ -57,7 +54,7 @@ class DeleteAccountEmailDataActivity : AppCompatActivity() {
             "message" to message
         )
 
-        apiService.deleteAccount(authToken, body).enqueue(object : Callback<CommonResponse> {
+        apiService.deleteAccount(sharedPreferenceManager.accessToken, body).enqueue(object : Callback<CommonResponse> {
             override fun onResponse(
                 call: Call<CommonResponse>,
                 response: Response<CommonResponse>
@@ -71,7 +68,7 @@ class DeleteAccountEmailDataActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
-                t.message?.let { showToast(it) }
+                handleNoInternetView(t)
             }
 
         })

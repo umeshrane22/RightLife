@@ -109,7 +109,7 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="1dp"
-                android:padding="5dp"
+                android:paddingBottom="20dp"
                 android:src="@drawable/ic_exellent"
                 android:gravity="top" />
 
@@ -118,8 +118,9 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="1dp"
-                android:padding="5dp"
+
                 android:src="@drawable/ic_good"
+                android:paddingBottom="20dp"
                 android:gravity="top" />
 
             <ImageView
@@ -127,8 +128,9 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="1dp"
-                android:padding="5dp"
+
                 android:src="@drawable/ic_average"
+                android:paddingBottom="20dp"
                 android:gravity="top" />
 
             <ImageView
@@ -136,8 +138,9 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="1dp"
-                android:padding="5dp"
+
                 android:src="@drawable/ic_poor"
+                android:paddingBottom="20dp"
                 android:gravity="top" />
 
             <ImageView
@@ -146,8 +149,8 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"
                 android:layout_margin="1dp"
-                android:padding="5dp"
                 android:src="@drawable/ic_very_poor"
+                android:paddingBottom="20dp"
                 android:gravity="top" />
 
         </LinearLayout>

@@ -8,10 +8,10 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.BaseActivity
 
-class OnboardingFinalActivity : AppCompatActivity() {
+class OnboardingFinalActivity : BaseActivity() {
 
     private lateinit var imageFinalOnboarding: ImageView
     private lateinit var imageRefresh: ImageView
@@ -26,7 +26,7 @@ class OnboardingFinalActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_onboarding_final)
+        setChildContentView(R.layout.activity_onboarding_final)
 
         imageFinalOnboarding = findViewById(R.id.img_final_onboarding)
         imageRefresh = findViewById(R.id.img_refresh)

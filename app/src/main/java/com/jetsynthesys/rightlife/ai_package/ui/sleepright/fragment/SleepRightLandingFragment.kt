@@ -274,8 +274,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
-                putExtra("PlayList", "PlayList")
+                putExtra("PlayList", "ForPlayList")
             })
+        }
+
+        view.findViewById<AppCompatImageView>(R.id.arrowSleepSound).setOnClickListener {
+            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java))
         }
     }
 

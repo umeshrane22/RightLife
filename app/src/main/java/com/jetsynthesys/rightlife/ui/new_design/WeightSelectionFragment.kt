@@ -37,6 +37,7 @@ class WeightSelectionFragment : Fragment() {
     private val numbers = mutableListOf<Float>()
     private lateinit var adapter: RulerAdapter
     private var selectedLabel: String = " kg"
+    private lateinit var rulerView: RecyclerView
 
     companion object {
         fun newInstance(pageIndex: Int): WeightSelectionFragment {
@@ -44,6 +45,21 @@ class WeightSelectionFragment : Fragment() {
             val args = Bundle()
             fragment.arguments = args
             return fragment
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val gender =
+            SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
+        selectedWeight = if (gender == "Male")
+            "75 kg"
+        else
+            "55 kg"
+        selected_number_text!!.text = selectedWeight
+
+        rulerView.post {
+            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
         }
     }
 
@@ -66,7 +82,7 @@ class WeightSelectionFragment : Fragment() {
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
         selected_number_text = view.findViewById(R.id.selected_number_text)
-        val rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
@@ -146,7 +162,7 @@ class WeightSelectionFragment : Fragment() {
 
         // Generate numbers with increments of 0.1
 
-        for (i in 0..1000) {
+        for (i in 0..3000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
 
@@ -216,7 +232,7 @@ class WeightSelectionFragment : Fragment() {
 
     private fun setLbsValue() {
         numbers.clear()
-        for (i in 0..2204) {
+        for (i in 0..6615) {
             numbers.add(i / 10f)
         }
         adapter.notifyDataSetChanged()
@@ -224,7 +240,7 @@ class WeightSelectionFragment : Fragment() {
 
     private fun setKgsValue() {
         numbers.clear()
-        for (i in 0..1000) {
+        for (i in 0..3000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
         adapter.notifyDataSetChanged()

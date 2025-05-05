@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,15 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew;
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
@@ -37,10 +34,12 @@ import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
+import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
+import com.jetsynthesys.rightlife.ui.settings.SubscriptionPlansActivity;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
@@ -53,7 +52,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NewHealthCamReportActivity extends AppCompatActivity {
+public class NewHealthCamReportActivity extends BaseActivity {
     private static final String TAG = "NewHealthCamReportActivity";
     ActivityNewhealthcamreportBinding binding;
     LayoutScanProgressBinding scanBinding;
@@ -64,7 +63,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_newhealthcamreport);
+        setChildContentView(R.layout.activity_newhealthcamreport);
         binding = ActivityNewhealthcamreportBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         scanBinding = LayoutScanProgressBinding.bind(binding.scanProgressLayout.getRoot());
@@ -73,19 +72,19 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
         binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
         binding.cardviewLastCheckin.setOnClickListener(v -> {
-            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
+            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
         });
 
         binding.btnBuyFacescan.setOnClickListener(v -> {
             // put check here if facescan remaning count is 0 buy new else Scan again
             if (facialReportResponseNew.data.boosterLimit > 0 && facialReportResponseNew.data.boosterUsed < facialReportResponseNew.data.boosterLimit) {
-                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class));
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
             } else {
                 Toast.makeText(NewHealthCamReportActivity.this, "Buy New Process here...", Toast.LENGTH_SHORT).show();
             }
 
         });
-        binding.scanProgressLayout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class)));
+        binding.scanProgressLayout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class)));
         getMyRLHealthCamResult();
 
         UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
@@ -117,16 +116,13 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
     }
 
     private void getMyRLHealthCamResult() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
         Utils.showLoader(this);
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
         Call<ResponseBody> call;
         if (reportId != null && !reportId.isEmpty())
-            call = apiService.getHealthCamByReportId(accessToken, reportId);
+            call = apiService.getHealthCamByReportId(sharedPreferenceManager.getAccessToken(), reportId);
         else
-            call = apiService.getMyRLHealthCamResult(accessToken);
+            call = apiService.getMyRLHealthCamResult(sharedPreferenceManager.getAccessToken());
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -152,7 +148,7 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Utils.dismissLoader(NewHealthCamReportActivity.this);
-                Toast.makeText(NewHealthCamReportActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }
@@ -286,14 +282,26 @@ public class NewHealthCamReportActivity extends AppCompatActivity {
         if (usedCount == 1) {
             layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
         } else {
-            layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
+            layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
+           // layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
         }
         if (usedCount == limit) {
             layout.buttonText.setText("Scan Again @ 99");
+            layout.btnScanAgain.setVisibility(View.GONE);
+            layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
+            binding.cardFacescanBooster.setVisibility(View.VISIBLE);
         } else {
             layout.buttonText.setText("Scan Again");
+            layout.btnScanAgain.setVisibility(View.VISIBLE);
         }
-        layout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsActivity.class)));
+        layout.btnScanAgain.setOnClickListener(v -> {
+            if (layout.buttonText.getText().toString().equalsIgnoreCase("Scan Again @ 99")) {
+                startActivity(new Intent(NewHealthCamReportActivity.this, SubscriptionHistoryActivity.class));
+            } else {
+                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
+            }
+        });
+
     }
 
     private void DownLaodReport(String pdf) {

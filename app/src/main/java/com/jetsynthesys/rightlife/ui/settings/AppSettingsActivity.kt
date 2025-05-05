@@ -5,11 +5,12 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityAppSettingsBinding
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 
-class AppSettingsActivity : AppCompatActivity() {
+class AppSettingsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAppSettingsBinding
     private lateinit var settingsAdapter: SettingsAdapter
@@ -17,7 +18,7 @@ class AppSettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAppSettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         setupAppSettingsRecyclerView()
 

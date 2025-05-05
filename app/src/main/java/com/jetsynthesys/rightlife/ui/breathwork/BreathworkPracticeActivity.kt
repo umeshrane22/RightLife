@@ -14,9 +14,10 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetBreathworkCompleteBindi
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.BottomsheetEarlyFinishBinding
 
-class BreathworkPracticeActivity : AppCompatActivity() {
+class BreathworkPracticeActivity : BaseActivity() {
 
     private lateinit var binding: ActivityBreathworkPracticeBinding
 
@@ -32,7 +33,7 @@ class BreathworkPracticeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBreathworkPracticeBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         // Retrieve the selected breathing practice from the intent
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData

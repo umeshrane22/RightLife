@@ -1,8 +1,6 @@
 package com.jetsynthesys.rightlife.ui.voicescan;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,12 +9,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Answer;
 import com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.Option;
 import com.jetsynthesys.rightlife.apimodel.UserAuditAnswer.UserAnswerRequest;
@@ -24,10 +22,7 @@ import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Question;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionData;
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit;
 import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,21 +31,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVoiceScanFragmentClickListener {
+public class VoiceScanFromActivity extends BaseActivity implements OnNextVoiceScanFragmentClickListener {
 
+    private final ArrayList<Answer> answerVoiceScanData = new ArrayList<>();
     public Button prevButton, nextButton, submitButton;
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
     private VoiceScanFormPagerAdapter adapter;
     private ProgressBar progressBar;
     private QuestionListHealthAudit responseObj;
-    private ArrayList<Answer> answerVoiceScanData = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_voice_scan_from);
+        setChildContentView(R.layout.activity_voice_scan_from);
 
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -134,25 +129,14 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
     }
 
     void submitAnswerRequest(UserAnswerRequest requestAnswer) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        Log.d("Access Token", "Token: " + accessToken);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Create a request body (replace with actual email and phone number)
-        //SubmitLoginOtpRequest request = new SubmitLoginOtpRequest("+91"+mobileNumber,OTP,"ABC123","Asus ROG 6","hp","ABC123");
-
-        // Make the API call
-        Call<JsonElement> call = apiService.postAnswerRequest(accessToken, "CHECK_IN", requestAnswer);
+        Call<JsonElement> call = apiService.postAnswerRequest(sharedPreferenceManager.getAccessToken(), "CHECK_IN", requestAnswer);
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     //LoginResponseMobile loginResponse = response.body();
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Success: " + response.body().toString());
+                    Log.d("API Response", "Success: " + response.body());
                     Log.d("API Response 2", "Success: " + response.body().toString());
 
                     Gson gson = new Gson();
@@ -190,7 +174,7 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(VoiceScanFromActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
 
@@ -218,10 +202,7 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
     }
 
     private void getQuestionerList() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<JsonElement> call = apiService.getsubmoduletest(accessToken, "CHECK_IN");
+        Call<JsonElement> call = apiService.getsubmoduletest(sharedPreferenceManager.getAccessToken(), "CHECK_IN");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -239,9 +220,7 @@ public class VoiceScanFromActivity extends AppCompatActivity implements OnNextVo
 
             @Override
             public void onFailure(Call<JsonElement> call, Throwable t) {
-                Toast.makeText(VoiceScanFromActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("API ERROR", "onFailure: " + t.getMessage());
-                t.printStackTrace();  // Print the full stack trace for more details
+                handleNoInternetView(t);
             }
         });
     }

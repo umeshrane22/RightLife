@@ -10,6 +10,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentExercisePreferenceBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionOne
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class ExercisePreferenceFragment : Fragment() {
     private var _binding: FragmentExercisePreferenceBinding? = null
@@ -46,7 +47,6 @@ class ExercisePreferenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.btnAdd.setOnClickListener {
             val times = binding.inputTimes.text.toString()
             if (times.isEmpty()) {
@@ -55,6 +55,8 @@ class ExercisePreferenceFragment : Fragment() {
                 QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("ActiveDuringSessionsFragment")
                 QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("PhysicalActivitiesFragment")
                 QuestionnaireEatRightActivity.questionnairePagerAdapter.removeItem("ExerciseLocationFragment")
+                QuestionnaireEatRightActivity.questionnairePagerAdapter.notifyDataSetChanged()
+                Utils.hideSoftKeyboard(requireActivity())
                 submit(times)
             } else if (times.toInt() > 15) {
                 Toast.makeText(
@@ -65,19 +67,21 @@ class ExercisePreferenceFragment : Fragment() {
             } else {
                 if (QuestionnaireEatRightActivity.questionnairePagerAdapter.itemCount == 11) {
                     QuestionnaireEatRightActivity.questionnairePagerAdapter.addItem(
-                        9,
+                        8,
                         "ActiveDuringSessionsFragment"
                     )
                     QuestionnaireEatRightActivity.questionnairePagerAdapter.addItem(
-                        10,
+                        9,
                         "PhysicalActivitiesFragment"
                     )
                     QuestionnaireEatRightActivity.questionnairePagerAdapter.addItem(
-                        11,
+                        10,
                         "ExerciseLocationFragment"
                     )
                 }
+                QuestionnaireEatRightActivity.questionnairePagerAdapter.notifyDataSetChanged()
                 submit(times)
+                Utils.hideSoftKeyboard(requireActivity())
             }
         }
 

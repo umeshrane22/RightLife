@@ -19,9 +19,7 @@
             android:id="@+id/ivIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:padding="6dp"
-            android:background="@drawable/greentick"
-             />
+            android:src="@drawable/greentick" />
 
         <TextView
             android:id="@+id/tvMessage"

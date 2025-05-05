@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
@@ -35,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MASuggestedAssessmentActivity extends AppCompatActivity {
+public class MASuggestedAssessmentActivity extends BaseActivity {
     private ImageView ic_back_dialog, close_dialog;
     private RecyclerView rvSuggestedAssessment, rvAllAssessment, rvCurated;
     private TextView tv_curated;
@@ -49,7 +50,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ma_suggested_assessment);
+        setChildContentView(R.layout.activity_ma_suggested_assessment);
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
         close_dialog = findViewById(R.id.ic_close_dialog);
@@ -218,11 +219,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
         context.setAssessmentUndertaken(assessmentUndertaken);
         curatedUserData.setContext(context);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, android.content.Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<ResponseBody> call = apiService.getCuratedAssessment(accessToken, curatedUserData);
+        Call<ResponseBody> call = apiService.getCuratedAssessment(sharedPreferenceManager.getAccessToken(), curatedUserData);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -246,7 +243,7 @@ public class MASuggestedAssessmentActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(MASuggestedAssessmentActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

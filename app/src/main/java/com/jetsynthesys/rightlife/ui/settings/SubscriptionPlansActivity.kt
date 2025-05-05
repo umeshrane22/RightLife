@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionPlansBinding
 import com.jetsynthesys.rightlife.ui.settings.adapter.PlanAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.Plan
 
-class SubscriptionPlansActivity : AppCompatActivity() {
+class SubscriptionPlansActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySubscriptionPlansBinding
     private lateinit var planAdapter: PlanAdapter
@@ -16,7 +17,7 @@ class SubscriptionPlansActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionPlansBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         val plans = listOf(
             Plan("Monthly Plan", "First 14 days free · XXX/month", "XXX/month"),

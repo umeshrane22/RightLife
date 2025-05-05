@@ -1,7 +1,5 @@
 package com.jetsynthesys.rightlife.ui.jounal;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,18 +10,15 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.rlpagemodels.journal.RLpageJournalResponse;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.apimodel.rlpagemodels.journal.RLpageJournalResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,29 +29,29 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class JournalingListActivity extends AppCompatActivity {
+public class JournalingListActivity extends BaseActivity {
 
     private LinearLayout ll_normal_journal, ll_guided_journal,
             ll_journal_selection_guided, ll_journal_selection_normal, ll_journal_selection;
     private RelativeLayout rlMoveRight;
     private RecyclerView recyclerView;
     private TextInputEditText etTitle, et_title_normal_journal, et_your_journal_normal, etFeeling, etSituation, etMood;
-    private Button btnSave, btnSaveNormal,btn_continue_journal;
-    private RadioButton rd_guided,rd_normal;
+    private Button btnSave, btnSaveNormal, btn_continue_journal;
+    private RadioButton rd_guided, rd_normal;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_journaling_list);
+        setChildContentView(R.layout.activity_journaling_list);
 
         // Initialize views
         initializeViews();
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> {
-            if (ll_journal_selection.getVisibility() == View.VISIBLE){
+            if (ll_journal_selection.getVisibility() == View.VISIBLE) {
                 finish();
-            }else {
+            } else {
                 ll_journal_selection.setVisibility(View.VISIBLE);
                 ll_guided_journal.setVisibility(View.GONE);
                 ll_normal_journal.setVisibility(View.GONE);
@@ -81,7 +76,7 @@ public class JournalingListActivity extends AppCompatActivity {
      * Initialize the input fields and button.
      */
     private void initializeViews() {
-        recyclerView  = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         ll_guided_journal = findViewById(R.id.ll_guided_journal);
         ll_normal_journal = findViewById(R.id.ll_normal_journal);
         ll_journal_selection_guided = findViewById(R.id.ll_journal_selection_guided);
@@ -98,9 +93,6 @@ public class JournalingListActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save_guided_journal);
         btnSaveNormal = findViewById(R.id.btn_save_normal_journal);
     }
-
-
-
 
 
     /**
@@ -135,10 +127,6 @@ public class JournalingListActivity extends AppCompatActivity {
 
 
     private void sendDataToApi(String title, String type, String journal, String situation, String mood) {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
         // Create a request body (replace with actual email and phone number)
 
         Map<String, String> requestData = new HashMap<>();
@@ -150,7 +138,7 @@ public class JournalingListActivity extends AppCompatActivity {
 
 
         // Make the API call
-        Call<ResponseBody> call = apiService.createJournal(accessToken, requestData);
+        Call<ResponseBody> call = apiService.createJournal(sharedPreferenceManager.getAccessToken(), requestData);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -181,7 +169,7 @@ public class JournalingListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(JournalingListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
 
@@ -237,12 +225,7 @@ public class JournalingListActivity extends AppCompatActivity {
 
 
     private void MyRLJournal() {
-        SharedPreferences sharedPreferences = getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null);
-
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        Call<ResponseBody> call = apiService.getMyRLJournal(accessToken,0,10);
+        Call<ResponseBody> call = apiService.getMyRLJournal(sharedPreferenceManager.getAccessToken(), 0, 10);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -251,10 +234,10 @@ public class JournalingListActivity extends AppCompatActivity {
                     Toast.makeText(JournalingListActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
                     try {
                         String jsonString = response.body().string();
-                        Log.d("Response Body"," My RL journal - "+jsonString);
+                        Log.d("Response Body", " My RL journal - " + jsonString);
                         Gson gson = new Gson();
                         RLpageJournalResponse rLpageJournalResponse = gson.fromJson(jsonString, RLpageJournalResponse.class);
-                        Log.d("Response Body"," My RL journal - "+jsonString);
+                        Log.d("Response Body", " My RL journal - " + jsonString);
                         HandleJournalUI(rLpageJournalResponse);
 
                     } catch (IOException e) {
@@ -267,7 +250,7 @@ public class JournalingListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Toast.makeText(JournalingListActivity.this, "Network Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                handleNoInternetView(t);
             }
         });
     }

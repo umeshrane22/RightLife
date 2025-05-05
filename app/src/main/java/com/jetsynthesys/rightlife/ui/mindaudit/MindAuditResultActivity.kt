@@ -1,7 +1,6 @@
 package com.jetsynthesys.rightlife.ui.mindaudit
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
@@ -9,18 +8,14 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityMindAuditResultBinding
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -28,7 +23,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 
-class MindAuditResultActivity : AppCompatActivity() {
+class MindAuditResultActivity : BaseActivity() {
     private val allAssessments = java.util.ArrayList<String>()
     private val suggestedAssessments = java.util.ArrayList<String>()
     private var userEmotionsString: ArrayList<String> = ArrayList()
@@ -37,19 +32,17 @@ class MindAuditResultActivity : AppCompatActivity() {
     private var suggestedAssessmentString = java.util.ArrayList<String>()
     private var selectedAssessment = "CAS"
     private var emotionsAdapter: EmotionsAdapter? = null
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var reportId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMindAuditResultBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
         reportId = intent.getStringExtra("REPORT_ID")
-        sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         binding.btnTakeAssessment.setOnClickListener {
             //startActivity(Intent(this, MindAuditFromActivity::class.java))
@@ -93,12 +86,8 @@ class MindAuditResultActivity : AppCompatActivity() {
 
 
     private fun getAssessmentResult(assessment: String) {
-        val accessToken = SharedPreferenceManager.getInstance(this).accessToken
-        val apiService = ApiClient.getClient().create(
-            ApiService::class.java
-        )
-
-        val call = apiService.getMindAuditAssessmentResult(accessToken, assessment)
+        val call =
+            apiService.getMindAuditAssessmentResult(sharedPreferenceManager.accessToken, assessment)
         call.enqueue(object : Callback<MindAuditResultResponse?> {
             override fun onResponse(
                 call: Call<MindAuditResultResponse?>,
@@ -147,11 +136,7 @@ class MindAuditResultActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<MindAuditResultResponse?>, t: Throwable) {
-                Toast.makeText(
-                    this@MindAuditResultActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                handleNoInternetView(t)
             }
         })
     }
@@ -376,17 +361,8 @@ class MindAuditResultActivity : AppCompatActivity() {
 
     //get all assesments
     private fun getSuggestedAssessment(userEmotions: UserEmotions) {
-        val sharedPreferences: SharedPreferences = getSharedPreferences(
-            SharedPreferenceConstants.ACCESS_TOKEN,
-            MODE_PRIVATE
-        )
-        val accessToken = sharedPreferences.getString(SharedPreferenceConstants.ACCESS_TOKEN, null)
-
-        val apiService = ApiClient.getClient().create(
-            ApiService::class.java
-        )
-
-        val call = apiService.getSuggestedAssessment(accessToken, userEmotions)
+        val call =
+            apiService.getSuggestedAssessment(sharedPreferenceManager.accessToken, userEmotions)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {
@@ -413,12 +389,7 @@ class MindAuditResultActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Toast.makeText(
-                    this@MindAuditResultActivity,
-                    "Network Error: " + t.message,
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                handleNoInternetView(t)
             }
         })
     }
@@ -481,8 +452,7 @@ class MindAuditResultActivity : AppCompatActivity() {
         suggestedAssessmentString = allAssessments
         suggestedAssessmentAdapter = OtherAssessmentsAdapter(
             this, allAssessments
-        ) {
-            header: String? -> this.showDisclaimerDialog(header) }
+        ) { header: String? -> this.showDisclaimerDialog(header) }
         binding.rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter)
 
         val gridLayoutManager = GridLayoutManager(this, 2)
@@ -493,7 +463,7 @@ class MindAuditResultActivity : AppCompatActivity() {
             emotionsList.add(Emotions(Utils.toTitleCase(s), false))
         }
         emotionsAdapter = EmotionsAdapter(
-            this, emotionsList,"2"
+            this, emotionsList, "2"
         ) {
         }
 
@@ -569,7 +539,7 @@ class MindAuditResultActivity : AppCompatActivity() {
                     binding.llOtherSection.visibility = View.VISIBLE
                     binding.scrollviewResult.visibility = View.GONE
                     binding.rlAssessmentNotTaken.visibility = View.GONE
-                }else {
+                } else {
                     binding.llOtherSection.visibility = View.GONE
                     binding.scrollviewResult.visibility = View.VISIBLE
                     getAssessmentResult(selectedChip.text.toString())

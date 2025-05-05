@@ -13,10 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthAuditFormActivity;
 
-public class ReceipeDetailActivity extends AppCompatActivity {
+public class ReceipeDetailActivity extends BaseActivity {
 
     ImageView ic_back_dialog, close_dialog;
 
@@ -25,7 +26,7 @@ public class ReceipeDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipedetail);
+        setChildContentView(R.layout.activity_recipedetail);
 
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);

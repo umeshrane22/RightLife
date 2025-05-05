@@ -83,6 +83,7 @@ public class ExploremightlikeAdapter extends RecyclerView.Adapter<Exploremightli
                 Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
                 intent.putExtra("Categorytype", json);
                 intent.putExtra("position", position);
+                intent.putExtra("contentId", contentList.get(position).getId());
                 holder.itemView.getContext().startActivity(intent);
             }
         });

@@ -83,6 +83,8 @@ public class ExploreModuleRecyclerAdapter extends RecyclerView.Adapter<ExploreMo
                 Intent intent = new Intent(ctx, CategoryListActivity.class);
                 intent.putExtra("Categorytype", contentList.get(holder.getBindingAdapterPosition()).getCategoryId());
                 intent.putExtra("moduleId", contentList.get(holder.getBindingAdapterPosition()).getModuleId());
+                intent.putExtra("contentId", contentList.get(position).getId());
+
                 ctx.startActivity(intent);
             }
         });

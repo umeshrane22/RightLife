@@ -21,6 +21,7 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityIntegrationsNewBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
@@ -28,7 +29,7 @@ import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import kotlinx.coroutines.launch
 
-class IntegrationsNewActivity : AppCompatActivity() {
+class IntegrationsNewActivity : BaseActivity() {
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
@@ -46,7 +47,7 @@ class IntegrationsNewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityIntegrationsNewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         setupEmailNotificationsRecyclerView()
 
         binding.iconBack.setOnClickListener {
