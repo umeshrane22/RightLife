@@ -14,7 +14,6 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -26,47 +25,47 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.apimodel.modulecontentdetails.ModuleContentDetail
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
-import com.jetsynthesys.rightlife.databinding.ActivityContentDetailsBinding
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse
+import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
-import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
-import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
-import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.concurrent.TimeUnit
 
-class ContentDetailsActivity : BaseActivity() {
+class NewSeriesDetailsActivity : BaseActivity() {
     private var isPlaying = false
     private val handler = Handler()
     private lateinit var mediaPlayer: MediaPlayer
     private var isExpanded = false
     private lateinit var player: ExoPlayer
-    private lateinit var binding: ActivityContentDetailsBinding
+    private lateinit var binding: ActivityNewSeriesDetailsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityContentDetailsBinding.inflate(layoutInflater)
+        binding = ActivityNewSeriesDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         var contentId = intent.getStringExtra("contentId")
+        var seriesId = intent.getStringExtra("seriesId")
+        var episodeId = intent.getStringExtra("episodeId")
         //API Call
-        if (contentId != null) {
-            getContendetails(contentId)
-            // get morelike content
-            getMoreLikeContent(contentId)
-            binding.tvViewAll.setOnClickListener(View.OnClickListener { view: View? ->
-                val intent1 = Intent(this, ViewAllActivity::class.java)
-                intent1.putExtra("ContentId", contentId)
-                startActivity(intent1)
-            })
+        if (seriesId != null) {
+
+            if (seriesId != null) {
+                if (episodeId != null) {
+                    getSeriesDetails(seriesId, episodeId)
+                }
+            }
         }
         binding.icBackDialog.setOnClickListener{
             finish()
@@ -75,30 +74,35 @@ class ContentDetailsActivity : BaseActivity() {
 
     // get single content details
 
-    private fun getContendetails(categoryId: String) {
+    private fun getSeriesDetails(seriesId: String, episodeId: String) {
         Utils.showLoader(this)
-        // Make the GET request
-        val call: Call<ResponseBody> = apiService.getRLDetailpage(
-            sharedPreferenceManager.getAccessToken(),
-            categoryId
 
+        val call = apiService.getSeriesEpisodesDetails(
+            sharedPreferenceManager.accessToken,
+            seriesId,
+            episodeId
         )
 
         // Handle the response
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-                Utils.dismissLoader(this@ContentDetailsActivity)
+                Utils.dismissLoader(this@NewSeriesDetailsActivity)
                 if (response.isSuccessful) {
                     try {
                         if (response.body() != null) {
                             val successMessage = response.body()!!.string()
+                            println("Request successful: $successMessage")
+                            //Log.d("API Response", "User Details: " + response.body().toString());
                             val gson = Gson()
                             val jsonResponse = gson.toJson(response.body().toString())
-                            val contentResponseObj = gson.fromJson<ModuleContentDetail>(
+                            Log.d("API Response", "Content Details: $jsonResponse")
+                            val ContentResponseObj = gson.fromJson<EpisodeDetailContentResponse>(
                                 successMessage,
-                                ModuleContentDetail::class.java
+                                EpisodeDetailContentResponse::class.java
                             )
-                            setcontentDetails(contentResponseObj)
+                            setcontentDetails(ContentResponseObj)
+
+                        //getSeriesWithEpisodes(ContentResponseObj.getData().getId());
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -116,48 +120,60 @@ class ContentDetailsActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                Utils.dismissLoader(this@ContentDetailsActivity)
+                Utils.dismissLoader(this@NewSeriesDetailsActivity)
                 handleNoInternetView(t)
             }
         })
     }
 
-    private fun setcontentDetails(contentResponseObj: ModuleContentDetail?) {
-        binding.tvContentTitle.setText(contentResponseObj?.getData()?.getTitle())
-        binding.tvContentDesc.setText(contentResponseObj?.getData()?.getDesc())
+    private fun setcontentDetails(contentResponseObj: EpisodeDetailContentResponse) {
+        binding.tvContentTitle.setText(contentResponseObj?.data?.title ?: "")
+        binding.tvContentDesc.setText(contentResponseObj?.data?.desc)
+        binding.tvTime.setText(contentResponseObj?.data?.meta?.let { formatTimeInMinSec(it.duration) })
         if (contentResponseObj != null) {
-            binding.authorName.setText(
-                contentResponseObj.getData().getArtist().get(0).getFirstName() + " " + contentResponseObj.getData().getArtist().get(0).getLastName()
-            )
+            //binding.authorName.setText(contentResponseObj.data.artist.get(0).firstName + " " + contentResponseObj.data.artist.get(0).lastName)
+
+            setArtistname(contentResponseObj)
 
             Glide.with(applicationContext)
                 .load(
-                    ApiClient.CDN_URL_QA + contentResponseObj.getData().getArtist().get(0)
-                        .getProfilePicture()
-                )
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist.get(0).profilePicture)
+                .placeholder(R.drawable.profile_man) // Replace with your placeholder image
                 .circleCrop()
                 .into(binding.profileImage)
-            setModuleColor(contentResponseObj.getData().getModuleId())
-            binding.category.setText(contentResponseObj.getData().categoryName)
-            if (contentResponseObj.getData().getContentType().equals("AUDIO", ignoreCase = true)) {
+            setModuleColor(contentResponseObj.data.moduleId)
+            binding.category.setText(contentResponseObj.data.seriesTitle)
+
+            if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
+                val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
+
+                if (videoId != null) {
+                    Log.e("YouTube", "video ID - call player$videoId")
+                    setupYouTubePlayer(videoId)
+
+                    //getLifecycle().addObserver(binding.youtubevideoPlayer);
+                } else {
+                    Log.e("YouTube", "Invalid video ID")
+                    //Provide user feedback
+                }
+            }else if (contentResponseObj.data.type.equals("AUDIO", ignoreCase = true)) {
                 // For Audio Player
                 setupMusicPlayer(contentResponseObj)
                 binding.rlPlayerMusicMain.visibility = View.VISIBLE
                 binding.rlVideoPlayerMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Audio"
-            }else {
+            }else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
                 // For video Player
-                initializePlayer(contentResponseObj.getData().getPreviewUrl())
+                initializePlayer(contentResponseObj.data.previewUrl)
                 binding.rlVideoPlayerMain.visibility = View.VISIBLE
                 binding.rlPlayerMusicMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Video"
             }
-            setReadMoreView(contentResponseObj.getData().getDesc())
+            setReadMoreView(contentResponseObj.data.desc)
 
-            binding.imageLikeArticle.setOnClickListener { v ->
+         /*   binding.imageLikeArticle.setOnClickListener { v ->
                 binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
-                if (contentResponseObj.data.like) {
+                if (contentResponseObj.data.li) {
                     binding.imageLikeArticle.setImageResource(R.drawable.like)
                     contentResponseObj.data.like = false
                     postContentLike(contentResponseObj.data.id, false)
@@ -166,8 +182,32 @@ class ContentDetailsActivity : BaseActivity() {
                     contentResponseObj.data.like = true
                     postContentLike(contentResponseObj.data.id, true)
                 }
-            }
+            }*/
             binding.imageShareArticle.setOnClickListener { shareIntent() }
+        }
+
+
+        if (contentResponseObj.data.nextEpisode != null) {
+            val nextEpisode = contentResponseObj.data.nextEpisode
+
+            //binding.txtEpisodesSection.setText("Next Episode" + contentResponseObj.data.episodeNumber)
+            binding.itemText.setText(nextEpisode.title) // Use the same TextView for the title
+            Glide.with(this)
+                .load(ApiClient.CDN_URL_QA + nextEpisode.thumbnail.url)
+                .into(binding.itemImage) // Use the same ImageView for the thumbnail
+            // ... (set other views for the next episode using the same IDs)
+
+            binding.cardviewEpisodeSingle.setOnClickListener(){
+                val intent = Intent(this, NewSeriesDetailsActivity::class.java)
+                intent.putExtra("seriesId", nextEpisode.contentId)
+                intent.putExtra("episodeId", nextEpisode._id)
+                startActivity(intent)
+            }
+        } else {
+            // Handle case where there is no next episode
+            binding.cardviewEpisodeSingle.setVisibility(View.GONE)
+
+
         }
 
     }
@@ -235,35 +275,27 @@ class ContentDetailsActivity : BaseActivity() {
         if (moduleId.equals("EAT_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.eatright)
             binding.imgModuleTag.setImageTintList(colorStateList)
-            binding.imgModule.setImageResource(R.drawable.ic_db_eatright)
-            binding.tvModulename.setText(AppConstants.EAT_RIGHT)
         } else if (moduleId.equals("THINK_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright)
-            binding.imgModule.setImageResource(R.drawable.ic_db_thinkright)
             binding.imgModuleTag.setImageTintList(colorStateList)
-            binding.tvModulename.setText(AppConstants.THINK_RIGHT)
         } else if (moduleId.equals("SLEEP_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright)
             binding.imgModuleTag.setImageTintList(colorStateList)
-            binding.imgModule.setImageResource(R.drawable.ic_db_sleepright)
-            binding.tvModulename.setText(AppConstants.SLEEP_RIGHT)
         } else if (moduleId.equals("MOVE_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.moveright)
             binding.imgModuleTag.setImageTintList(colorStateList)
-            binding.imgModule.setImageResource(R.drawable.ic_db_moveright)
-            binding.tvModulename.setText(AppConstants.MOVE_RIGHT)
         }
     }
 
 
     // For music player and audio content
-    private fun setupMusicPlayer(moduleContentDetail: ModuleContentDetail?) {
+    private fun setupMusicPlayer(moduleContentDetail: EpisodeDetailContentResponse) {
         val backgroundImage = findViewById<ImageView>(R.id.backgroundImage)
         binding.rlPlayerMusicMain.setVisibility(View.VISIBLE)
 
 
         if (moduleContentDetail != null) {
-            GlideApp.with(this@ContentDetailsActivity)
+            GlideApp.with(this@NewSeriesDetailsActivity)
                 .load(ApiClient.CDN_URL_QA + moduleContentDetail.data.thumbnail.url) //episodes.get(1).getThumbnail().getUrl()
                 .error(R.drawable.img_logintop)
                 .into(backgroundImage)
@@ -395,7 +427,7 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
 
 
     // more like this content
-    private fun getMoreLikeContent(contentid: String) {
+    /*private fun getMoreLikeContent(contentid: String) {
         val call =
             apiService.getMoreLikeContent(sharedPreferenceManager.accessToken, contentid, 0, 5)
         call.enqueue(object : Callback<ResponseBody?> {
@@ -434,16 +466,16 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
                 handleNoInternetView(t)
             }
         })
-    }
+    }*/
 
-    private fun setupListData(contentList: List<Like>) {
+/*    private fun setupListData(contentList: List<Like>) {
         binding.rlMoreLikeSection.setVisibility(View.VISIBLE)
         val adapter = RLEditDetailMoreAdapter(this, contentList)
         val horizontalLayoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.setLayoutManager(horizontalLayoutManager)
         binding.recyclerView.setAdapter(adapter)
-    }
+    }*/
 
 
     private fun playPlayer() {
@@ -485,5 +517,76 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails","onDestroyCalled")
+    }
+
+
+    private fun extractVideoId(youtubeUrl: String): String? {
+        try {
+            val uri = URI(youtubeUrl)
+            val query = uri.query
+
+            if (query != null) {
+                val params =
+                    query.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                for (param in params) {
+                    val keyValue =
+                        param.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                    if (keyValue.size == 2 && keyValue[0] == "v") {
+                        return keyValue[1]
+                    }
+                }
+            }
+        } catch (e: URISyntaxException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private fun setupYouTubePlayer(videoId: String) {
+        binding.youtubevideoPlayer.setVisibility(View.VISIBLE)
+        binding.youtubevideoPlayer.addYouTubePlayerListener(object :
+            AbstractYouTubePlayerListener() {
+            override fun onReady(youTubePlayer: YouTubePlayer) {
+                youTubePlayer.loadVideo(videoId, 0f)
+                Log.d("YouTube", "Video loaded: $videoId")
+            }
+
+            override fun onStateChange(youTubePlayer: YouTubePlayer, state: PlayerState) {
+                Log.d("YouTube", "Player state changed: $state")
+                if (state == PlayerState.UNSTARTED) {
+                    Log.e("YouTube", "Player error")
+                    //Handle the error
+                }
+                super.onStateChange(youTubePlayer, state)
+            }
+        })
+    }
+
+    private fun formatTimeInMinSec(seconds: Int): String {
+        val mins = seconds / 60
+        val secs = seconds % 60
+
+        return when {
+            mins > 0 && secs > 0 -> String.format("%.2f min", mins + secs / 100.0)
+            mins > 0 -> "$mins min"
+            else -> "$secs sec"
+        }
+    }
+    private fun setArtistname(contentResponseObj: EpisodeDetailContentResponse?) {
+        //if (binding != null && binding.tvAuthorName != null && contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist != null && !contentResponseObj.data.artist.isEmpty())
+        if (contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist != null)
+        {
+            var name = ""
+            if (contentResponseObj.data.artist[0].firstName != null) {
+                name = contentResponseObj.data.artist[0].firstName
+            }
+            if (contentResponseObj.data.artist[0].lastName != null) {
+                name += (if (name.isEmpty()) "" else " ") + contentResponseObj.data.artist[0].lastName
+            }
+
+            binding.tvArtistname.setText(name)
+        } else if (binding != null && binding.tvAuthorName != null) {
+            binding.tvArtistname.setText("") // or set some default value
+        }
     }
 }

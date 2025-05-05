@@ -19,7 +19,10 @@ import com.bumptech.glide.Glide;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
+import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.Wellness.MoreContentDetailViewActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.google.gson.Gson;
 
@@ -58,13 +61,29 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
 
         holder.itemView.setOnClickListener(view -> {
             //Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
-            Gson gson = new Gson();
+            /*Gson gson = new Gson();
             String json = gson.toJson(contentList);
             Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
             intent.putExtra("Categorytype", json);
             intent.putExtra("position", position);
 
-            holder.itemView.getContext().startActivity(intent);
+            holder.itemView.getContext().startActivity(intent);*/
+            Intent intent;
+            if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")) {
+                intent = new Intent(holder.itemView.getContext(), ArticlesDetailActivity.class);
+                intent.putExtra("contentId", contentList.get(position).getId());
+                holder.itemView.getContext().startActivity(intent);
+            } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")) {
+                intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                intent.putExtra("contentId", contentList.get(position).getId());
+                holder.itemView.getContext().startActivity(intent);
+
+            } else if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
+
+                intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
+                intent.putExtra("contentId", contentList.get(position).getId());
+                holder.itemView.getContext().startActivity(intent);
+            }
         });
         holder.txt_modulename.setText(Utils.getModuleText(contentList.get(position).getModuleId()));
         int color = Utils.getModuleColor(ctx, contentList.get(position).getModuleId());

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.Articles;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.text.Html;
@@ -17,6 +18,8 @@ import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.databinding.ArticleItemRowBinding;
 import com.jetsynthesys.rightlife.ui.Articles.models.Article;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 
@@ -117,6 +120,16 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 holder.binding.card3Series.setVisibility(View.GONE);
                 int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
                 holder.binding.imgTagVideo.setBackgroundTintList(ColorStateList.valueOf(color));
+
+                holder.binding.card3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                        intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                        holder.itemView.getContext().startActivity(intent);
+                    }
+                });
+
             }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")){
                 holder.binding.card3.setVisibility(View.GONE);
                 holder.binding.card3Series.setVisibility(View.VISIBLE);
@@ -141,6 +154,18 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
                 int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
                 holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
+
+                holder.binding.card3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
+                        intent.putExtra("contentId",article.getRecommendedArticle().getId());
+                        holder.itemView.getContext().startActivity(intent);
+                    }
+                });
+
+
+
             }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
                 holder.binding.card3.setVisibility(View.GONE);
                 holder.binding.card3Series.setVisibility(View.VISIBLE);

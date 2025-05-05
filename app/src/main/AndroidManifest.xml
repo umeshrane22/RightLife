@@ -119,7 +119,7 @@
         <activity android:name=".ui.mindaudit.MindAuditResultActivity" />
         <activity android:name=".ui.healthcam.HealthCamActivity" />
         <activity android:name=".ui.voicescan.VoiceScanWaitingActivity" />
-        <activity android:name=".ui.healthcam.HealthCamBasicDetailsActivity" />
+        <activity android:name=".ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity" />
         <activity android:name=".ui.CategoryListActivity" />
         <activity android:name=".ui.healthaudit.HealthAuditFormActivity" />
         <activity android:name=".ui.healthpagemain.HealthPageMainActivity" />
@@ -204,6 +204,8 @@
         <activity android:name=".ui.settings.IntegrationsNewActivity" />
         <activity android:name=".ui.settings.AccountPrivacyNewActivity" />
         <activity android:name=".ui.settings.SubscriptionHistoryActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity" />
+        <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

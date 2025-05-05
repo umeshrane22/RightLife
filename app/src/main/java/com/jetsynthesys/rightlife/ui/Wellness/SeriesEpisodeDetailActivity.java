@@ -179,6 +179,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
 
         if (contentResponseObj.data.nextEpisode != null) {
+
             NextEpisode nextEpisode = contentResponseObj.data.nextEpisode;
             binding.txtEpisodesSection.setText("Next Episode"+contentResponseObj.data.episodeNumber);
             binding.itemText.setText(nextEpisode.title); // Use the same TextView for the title
@@ -188,6 +189,8 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
             // ... (set other views for the next episode using the same IDs)
         } else {
             // Handle case where there is no next episode
+            binding.llNextEpisode.setVisibility(View.GONE);
+            binding.txtEpisodesSection.setVisibility(View.GONE);
         }
     }
 
