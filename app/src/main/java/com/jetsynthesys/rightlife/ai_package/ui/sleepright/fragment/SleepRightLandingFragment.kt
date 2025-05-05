@@ -285,7 +285,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 putExtra("PlayList", "PlayList")
             })
         }
-        storeData()
+      //  storeData()
     }
 
     private fun storeData(){
