@@ -39,7 +39,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.MindfullData
+import com.jetsynthesys.rightlife.ai_package.model.FormattedData
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMindfullGraphBinding
@@ -64,7 +64,8 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
-    private var currentDate: LocalDate = LocalDate.now() // today
+    private var currentDateWeek: LocalDate = LocalDate.now() // today
+    private var currentDateMonth: LocalDate = LocalDate.now() // today
     private var mStartDate = ""
     private var mEndDate = ""
 
@@ -91,11 +92,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         mStartDate = getOneWeekEarlierDate().format(dateFormatter)
         mEndDate = getTodayDate().format(dateFormatter)
-        val endOfWeek = currentDate
-        val startOfWeek = endOfWeek.minusDays(7)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
         setupListeners()
        // updateChart(getWeekData(), getWeekLabels())
         fetchMindfullnessData(mStartDate, mEndDate)
@@ -141,7 +142,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     val startDate = getOneWeekEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDate.year}"
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
                     fetchMindfullnessData(startDate,endDate)
                 }
                 R.id.rbMonth -> {
@@ -152,7 +153,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     val startDate = getOneMonthEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDate.year}"
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
                     fetchMindfullnessData(startDate,endDate)
                 }
                 R.id.rbSixMonths -> {
@@ -163,7 +164,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     val startDate = getSixMonthsEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDate.year}"
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
                     fetchMindfullnessData(startDate,endDate)
                 }
             }
@@ -172,15 +173,15 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         btnPrevious.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.minusWeeks(1)
+                    currentDateWeek = currentDateWeek.minusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.minusMonths(1)
+                    currentDateMonth = currentDateMonth.minusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.minusMonths(6)
+                    currentDateMonth = currentDateMonth.minusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -189,15 +190,15 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.plusWeeks(1)
+                    currentDateWeek = currentDateWeek.plusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.plusMonths(1)
+                    currentDateMonth = currentDateMonth.plusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.plusMonths(6)
+                    currentDateMonth = currentDateMonth.plusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -205,11 +206,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     }
 
     private fun loadWeekData() {
-        val endOfWeek = currentDate
+        val endOfWeek = currentDateWeek
         val startOfWeek = endOfWeek.minusDays(6)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
 
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
@@ -228,11 +229,10 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     }
 
     private fun loadMonthData() {
-        val endOfMonth = currentDate
-        val startOfMonth = endOfMonth.minusDays(30)
-
+        val endOfMonth = currentDateMonth
+        val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
 
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
@@ -363,11 +363,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 if (response.isSuccessful) {
                     mindfullResponse = response.body()!!
                     progressDialog.dismiss()
-                    if (mindfullResponse.data.isNotEmpty()) {
-                        if (mindfullResponse.data.size > 8){
-                            setupMonthlyBarChart(barChart,mindfullResponse.data,startDate,endDate)
+                    if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
+                        if (mindfullResponse.data?.formattedData?.size!! > 8){
+                            setupMonthlyBarChart(barChart,mindfullResponse.data?.formattedData,startDate,endDate)
                         }else{
-                            setupWeeklyBarChart(barChart,mindfullResponse.data,endDate)
+                            setupWeeklyBarChart(barChart, mindfullResponse.data?.formattedData,endDate)
                         }
                     }
                 } else {
@@ -384,61 +384,8 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         })
     }
 
-    val dummyMindfulData = listOf(
-        MindfullData("3 Feb", "Mon", 12),
-        MindfullData("4 Feb", "Tue", 21),
-        MindfullData("5 Feb", "Wed", 16),
-        MindfullData("6 Feb", "Thu", 20),
-        MindfullData("7 Feb", "Fri", 18),
-        MindfullData("8 Feb", "Sat", 19),
-        MindfullData("9 Feb", "Sun", 22)
-    )
 
-    val dummyMonthlyMindfulData = listOf(
-        // 1–7 Jan
-        MindfullData("01 Jan", "Mon", 18),
-        MindfullData("02 Jan", "Tue", 20),
-        MindfullData("03 Jan", "Wed", 22),
-        MindfullData("04 Jan", "Thu", 17),
-        MindfullData("05 Jan", "Fri", 21),
-        MindfullData("06 Jan", "Sat", 19),
-        MindfullData("07 Jan", "Sun", 23),
-
-        // 8–14 Jan
-        MindfullData("08 Jan", "Mon", 22),
-        MindfullData("09 Jan", "Tue", 24),
-        MindfullData("10 Jan", "Wed", 20),
-        MindfullData("11 Jan", "Thu", 21),
-        MindfullData("12 Jan", "Fri", 18),
-        MindfullData("13 Jan", "Sat", 23),
-        MindfullData("14 Jan", "Sun", 19),
-
-        // 15–21 Jan
-        MindfullData("15 Jan", "Mon", 20),
-        MindfullData("16 Jan", "Tue", 21),
-        MindfullData("17 Jan", "Wed", 22),
-        MindfullData("18 Jan", "Thu", 19),
-        MindfullData("19 Jan", "Fri", 20),
-        MindfullData("20 Jan", "Sat", 18),
-        MindfullData("21 Jan", "Sun", 23),
-
-        // 22–28 Jan
-        MindfullData("22 Jan", "Mon", 24),
-        MindfullData("23 Jan", "Tue", 22),
-        MindfullData("24 Jan", "Wed", 21),
-        MindfullData("25 Jan", "Thu", 23),
-        MindfullData("26 Jan", "Fri", 20),
-        MindfullData("27 Jan", "Sat", 19),
-        MindfullData("28 Jan", "Sun", 22),
-
-        // 29–31 Jan
-        MindfullData("29 Jan", "Mon", 20),
-        MindfullData("30 Jan", "Tue", 21),
-        MindfullData("31 Jan", "Wed", 23)
-    )
-
-
-    fun setupMonthlyBarChart(chart: BarChart, data: List<MindfullData>,startDateStr:String,endDateStr:String) {
+    fun setupMonthlyBarChart(chart: BarChart, data: List<FormattedData>?, startDateStr:String, endDateStr:String) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val startDate = LocalDate.parse(startDateStr, formatter)
         val endDate = LocalDate.parse(endDateStr, formatter)
@@ -462,7 +409,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             val label = if (i == 0 || i % 7 == 0) labelGroup else ""
             labels.add(label)
         }
-        data.forEachIndexed { index, item ->
+        data?.forEachIndexed { index, item ->
             entries.add(BarEntry(index.toFloat(), item.duration?.toFloat() ?: 0f))
         }
 
@@ -507,13 +454,13 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             startOfWeek.plusDays(dayOffset.toLong()).format(formatter)
         }
     }
-    fun setupWeeklyBarChart(chart: BarChart, data: List<MindfullData>, endDate: String) {
+    fun setupWeeklyBarChart(chart: BarChart, data: List<FormattedData>?, endDate: String) {
         val entries = ArrayList<BarEntry>()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(endDate, formatter)
         val labels = getWeekDayNames(localDate)
 
-        data.forEachIndexed { index, item ->
+        data?.forEachIndexed { index, item ->
             entries.add(BarEntry(index.toFloat(), item.duration?.toFloat() ?: 0f))
         }
 
