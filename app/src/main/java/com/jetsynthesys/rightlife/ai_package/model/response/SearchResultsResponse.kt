@@ -28,7 +28,7 @@ data class SearchResultItem(
     val photo_url: String,
     val servings: Int,
     val cooking_time_in_seconds: Int,
-    val calories: Double,
+    val calories: Double?,
     val nutrients: Nutrients,
     val source: String,
     val unit: String?,
@@ -43,10 +43,10 @@ data class Nutrients(
 
 @Parcelize
 data class Macros(
-    val Calories: Double,
-    val Carbs: Double,
-    val Fats: Double,
-    val Protein: Double
+    val Calories: Double?,
+    val Carbs: Double?,
+    val Fats: Double?,
+    val Protein: Double?
 ):Parcelable
 
 @Parcelize

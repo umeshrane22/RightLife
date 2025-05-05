@@ -59,6 +59,8 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
@@ -169,10 +171,21 @@ interface ApiService {
                              @Query("date") startDate: String,@Body request: SaveDishLogRequest
     ): Call<MealUpdateResponse>
 
+    @PUT("eat/meals/update_meal/")
+    fun updateSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateMealRequest
+    ): Call<MealUpdateResponse>
+
+    @PUT("eat/meals/update_meal/")
+    fun updateSnapSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateSnapMealRequest
+    ): Call<MealUpdateResponse>
+
     @POST("eat/meals/log_saved_meal/")
     fun createSaveSnapMealsToLog(@Query("user_id") userId: String,
                              @Query("date") startDate: String,@Body request: SaveSnapMealLogRequest
     ): Call<MealUpdateResponse>
+
+    @DELETE("eat/meals/delete_meal/")
+    fun deleteMyMeal(@Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealUpdateResponse>
 
     @GET("eat/meals/get_log_meals/")
     fun getMealsLogList(@Query("user_id") userId: String,

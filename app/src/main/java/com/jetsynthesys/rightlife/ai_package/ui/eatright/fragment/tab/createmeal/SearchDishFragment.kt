@@ -67,6 +67,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var backButton : ImageView
     private lateinit var currentPhotoPathsecound : Uri
     private var searchMealList : ArrayList<SearchResultItem> = ArrayList()
+    private var mealId : String = ""
+    private var mealName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -98,6 +100,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         backButton = view.findViewById(R.id.backButton)
 
         searchType = arguments?.getString("searchType").toString()
+        mealId = arguments?.getString("mealId").toString()
+        mealName = arguments?.getString("mealName").toString()
 
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
@@ -139,6 +143,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     if (searchType.contentEquals("mealScanResult")){
                         val fragment = MealScanResultFragment()
                         val args = Bundle()
+                        mealId = arguments?.getString("mealId").toString()
+                        mealName = arguments?.getString("mealName").toString()
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -163,6 +169,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             if (searchType.contentEquals("mealScanResult")){
                 val fragment = MealScanResultFragment()
                 val args = Bundle()
+                mealId = arguments?.getString("mealId").toString()
+                mealName = arguments?.getString("mealName").toString()
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -180,6 +188,10 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     commit()
                 }
             }
+        }
+
+        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+            filterDishes(query)
         }
 
         cancel.setOnClickListener {
@@ -216,9 +228,9 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         val mealLogDateData: SearchResultItem? = null
         searchDishAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
-            filterDishes(query)
-        }
+//        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+//            filterDishes(query)
+//        }
     }
 
     private fun onSnapSearchDishItemRefresh() {
@@ -227,10 +239,6 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         valueLists.addAll(searchMealList as Collection<SearchResultItem>)
         val mealLogDateData: SearchResultItem? = null
         snapSearchDishAdapter.addAll(valueLists, -1, mealLogDateData, false)
-
-        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
-            filterDishes(query)
-        }
     }
 
     private fun onSearchDishItem(recipesModel: SearchResultItem, position: Int, isRefresh: Boolean) {
@@ -244,6 +252,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val snapMealFragment = SnapDishFragment()
                 val args = Bundle()
+                args.putString("mealId", mealId)
+                args.putString("mealName", mealName)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 args.putString("searchType", "searchScanResult")
                 args.putParcelable("searchResultItem", recipesModel)
@@ -258,6 +268,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val snapMealFragment = DishFragment()
                 val args = Bundle()
                 args.putString("searchType", searchType)
+                args.putString("mealId", mealId)
                 args.putParcelable("searchResultItem", recipesModel)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 snapMealFragment.arguments = args
@@ -278,6 +289,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val snapMealFragment = SnapDishFragment()
                 val args = Bundle()
+                args.putString("mealId", mealId)
+                args.putString("mealName", mealName)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 args.putString("searchType", "SearchDish")
                 args.putParcelable("searchResultItem", recipesModel)
@@ -291,7 +304,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val snapMealFragment = DishFragment()
                 val args = Bundle()
-                args.putString("searchType", searchType)
+                args.putString("searchType", "SearchDish")
+                args.putString("mealId", mealId)
                 args.putParcelable("searchResultItem", recipesModel)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 snapMealFragment.arguments = args

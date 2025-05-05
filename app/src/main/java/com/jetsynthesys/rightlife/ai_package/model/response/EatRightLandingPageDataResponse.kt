@@ -6,14 +6,14 @@ data class EatRightLandingPageDataResponse(
     val total_protein: Double,
     val total_fat: Double,
     val total_carbs: Double,
-    val max_calories: Int,
-    val max_protein: Int,
-    val max_carbs: Int,
-    val max_fat: Int,
+    val max_calories: Double,
+    val max_protein: Double,
+    val max_carbs: Double,
+    val max_fat: Double,
     val total_water_ml: Double,
     val last_weight_log: LastWeightLog?,
     val other_recipes_you_might_like: List<OtherRecipe>,
-    val insight: String,
+    val insight: InsightDetails,
     val micros: MicrosDetails
 )
 
@@ -39,4 +39,9 @@ data class MicrosDetails(
     val value: Double,
     val micros_name: String,
     val unit: String,
+)
+
+data class InsightDetails(
+    val macros_message: String,
+    val heading: String
 )

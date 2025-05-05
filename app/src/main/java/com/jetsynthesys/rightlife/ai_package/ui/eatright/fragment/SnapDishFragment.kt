@@ -78,7 +78,9 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvMeasure :TextView
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private lateinit var snapDishLocalListModel : SnapDishLocalListModel
-    private lateinit var currentPhotoPathsecound : Uri
+    private var currentPhotoPathsecound : Uri? = null
+    private var mealId : String = ""
+    private var mealName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -113,8 +115,14 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         ivEdit = view.findViewById(R.id.ivEdit)
 
+        mealId = arguments?.getString("mealId").toString()
+        mealName = arguments?.getString("mealName").toString()
         val imagePathString = arguments?.getString("ImagePathsecound")
-        currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+        if (imagePathString != null){
+            currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+        }else{
+            currentPhotoPathsecound = null
+        }
         searchType = arguments?.getString("searchType").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
@@ -347,6 +355,8 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 Toast.makeText(activity, "Added To Meal", Toast.LENGTH_SHORT).show()
                 val fragment = MealScanResultFragment()
                     val args = Bundle()
+                args.putString("mealId", mealId)
+                args.putString("mealName", mealName)
                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                     args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     fragment.arguments = args
@@ -431,6 +441,8 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                     Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
                                     val fragment = MealScanResultFragment()
                                     val args = Bundle()
+                                    args.putString("mealId", mealId)
+                                    args.putString("mealName", mealName)
                                     args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                                     fragment.arguments = args

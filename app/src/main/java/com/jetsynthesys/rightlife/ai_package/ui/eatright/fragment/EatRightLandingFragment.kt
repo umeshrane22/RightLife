@@ -128,6 +128,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var eveningSnacksMealRecyclerView : RecyclerView
     private lateinit var dinnerMealRecyclerView : RecyclerView
     private lateinit var landingPageResponse : EatRightLandingPageDataResponse
+    private lateinit var breakfastListLayout : ConstraintLayout
+    private lateinit var morningSnackListLayout : ConstraintLayout
+    private lateinit var lunchListLayout : ConstraintLayout
+    private lateinit var eveningSnacksListLayout : ConstraintLayout
+    private lateinit var dinnerListLayout : ConstraintLayout
     private  var regularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
     private val breakfastCombinedList = ArrayList<MergedLogsMealItem>()
     private val morningSnackCombinedList = ArrayList<MergedLogsMealItem>()
@@ -224,6 +229,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
         eveningSnacksMealRecyclerView = view.findViewById(R.id.recyclerview_eveningSnacks_meals_item)
         dinnerMealRecyclerView = view.findViewById(R.id.recyclerview_dinner_meals_item)
+        breakfastListLayout = view.findViewById(R.id.layout_breakfast_list)
+        morningSnackListLayout = view.findViewById(R.id.layoutMorningSnackList)
+        lunchListLayout = view.findViewById(R.id.layout_lunch_list)
+        eveningSnacksListLayout = view.findViewById(R.id.layout_eveningSnacks_list)
+        dinnerListLayout = view.findViewById(R.id.layout_dinner_list)
 
         loggedNextMealSuggestionRecyclerView = view.findViewById(R.id.loggedNextMealSuggestionRecyclerView)
         otherRecipeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
@@ -473,12 +483,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun onOtherRecipeList(recipeSuggestion: List<OtherRecipe>) {
-        val meal = listOf(
-            MyMealModel("Breakfast", "Poha", "1", "1,157", "8", "308", "17", true),
-            MyMealModel("Breakfast", "Dal", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Rice", "1", "1,157", "8", "308", "17", false),
-            MyMealModel("Breakfast", "Roti", "1", "1,157", "8", "308", "17", false)
-        )
 
         if (recipeSuggestion.size > 0) {
             loggedNextMealSuggestionRecyclerView.visibility = View.VISIBLE
@@ -493,33 +497,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
     private fun onOtherRecipeItem(recipesModel: OtherRecipe, position: Int, isRefresh: Boolean) {
 
-//        val valueLists : ArrayList<RecipeList> = ArrayList()
-//        valueLists.addAll(recipesList as Collection<RecipeList>)
-//        searchDishAdapter.addAll(valueLists, position, recipesModel, isRefresh)
-
-//        val fragment = DishFragment()
-//        val args = Bundle()
-//        args.putString("searchType", "EatRight")
-//        args.putString("recipeName", recipesModel.name)
-//        args.putString("recipeImage", recipesModel.image)
-//        fragment.arguments = args
-//        requireActivity().supportFragmentManager.beginTransaction().apply {
-//            replace(R.id.flFragment, fragment, "landing")
-//            addToBackStack("landing")
-//            commit()
-//        }
     }
-
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
         LoaderUtil.showLoader(requireActivity())
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-       // val userId = "67f6698fa213d14e22a47c2a"
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-
         val call = ApiClient.apiServiceFastApi.getMealLandingSummary(userId, formattedDate)
         call.enqueue(object : Callback<EatRightLandingPageDataResponse> {
             override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
@@ -563,17 +548,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             todayMicrosWithDataLayout.visibility = View.GONE
             todayMacroNoDataLayoutOne.visibility = View.VISIBLE
         }
-
-//        //meal log
-//        if(landingPageResponse.total_calories.toInt() > 0){
-//            todayMealLogNoDataHeading.visibility = View.GONE
-//            todayMealLogsRecyclerView.visibility =View.VISIBLE
-//            logFirstMealLayout.visibility = View.GONE
-//        }else{
-//            todayMealLogNoDataHeading.visibility = View.VISIBLE
-//            todayMealLogsRecyclerView.visibility = View.GONE
-//            logFirstMealLayout.visibility = View.VISIBLE
-//        }
 
         if(landingPageResponse.other_recipes_you_might_like.size > 0){
             logNextMealSuggestionLayout.visibility = View.GONE
@@ -663,34 +637,39 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         val regularRecipeData : RegularRecipeEntry? = null
         val snapMealData : SnapMeal? = null
 
-        if(regularRecipesList.size > 0){
-            todayMealLogNoDataHeading.visibility = View.GONE
-            todayMealLogsRecyclerView.visibility =View.VISIBLE
-            logFirstMealLayout.visibility = View.GONE
-        }else{
-            todayMealLogNoDataHeading.visibility = View.VISIBLE
-            todayMealLogsRecyclerView.visibility = View.GONE
-            logFirstMealLayout.visibility = View.VISIBLE
-        }
-
         if (breakfastCombinedList.size > 0){
+            breakfastListLayout.visibility = View.VISIBLE
             breakfastMealLogsAdapter.addAll(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
+        }else{
+            breakfastListLayout.visibility = View.GONE
         }
 
         if (morningSnackCombinedList.size > 0){
+            morningSnackListLayout.visibility = View.VISIBLE
             morningSnackMealLogsAdapter.addAll(morningSnackCombinedList, -1, regularRecipeData, snapMealData, false)
+        }else{
+            morningSnackListLayout.visibility = View.GONE
         }
 
         if (lunchCombinedList.size > 0){
+            lunchListLayout.visibility = View.VISIBLE
             lunchMealLogsAdapter.addAll(lunchCombinedList, -1, regularRecipeData, snapMealData, false)
+        }else{
+            lunchListLayout.visibility = View.GONE
         }
 
         if (eveningSnacksCombinedList.size > 0){
+            eveningSnacksListLayout.visibility = View.VISIBLE
             eveningSnacksMealLogsAdapter.addAll(eveningSnacksCombinedList, -1, regularRecipeData, snapMealData,false)
+        }else{
+            eveningSnacksListLayout.visibility = View.GONE
         }
 
         if  (dinnerCombinedList.size > 0){
+            dinnerListLayout.visibility = View.VISIBLE
             dinnerMealLogsAdapter.addAll(dinnerCombinedList, -1, regularRecipeData, snapMealData, false)
+        }else{
+            dinnerListLayout.visibility = View.GONE
         }
     }
 
@@ -998,35 +977,30 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                     val dinnerSnapMeals = response.body()?.data!!.meal_detail["dinner"]?.snap_meals
 
                     if (breakfastRecipes != null){
-                        //  breakfastRegularRecipesList.addAll(breakfastRecipes)
                         breakfastCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     }
                     if (breakfastSnapMeals != null){
                         breakfastCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                     }
                     if (morningSnackRecipes != null){
-                        // morningSnackRegularRecipesList.addAll(morningSnackRecipes)
                         morningSnackCombinedList.addAll(morningSnackRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     }
                     if (morningSnackSnapMeals != null){
                         morningSnackCombinedList.addAll(morningSnackSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                     }
                     if (lunchSnapRecipes != null){
-                        //lunchRegularRecipesList.addAll(lunchSnapRecipes)
                         lunchCombinedList.addAll(lunchSnapRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     }
                     if (lunchSnapSnapMeals != null){
                         lunchCombinedList.addAll(lunchSnapSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                     }
                     if (eveningSnacksRecipes != null){
-                        //eveningSnacksRegularRecipesList.addAll(eveningSnacksRecipes)
                         eveningSnacksCombinedList.addAll(eveningSnacksRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     }
                     if (eveningSnacksSnapMeals != null){
                         eveningSnacksCombinedList.addAll(eveningSnacksSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
                     }
                     if (dinnerRecipes != null) {
-                        // dinnerRegularRecipesList.addAll(dinnerRecipes)
                         dinnerCombinedList.addAll(dinnerRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     }
                     if (dinnerSnapMeals != null){
@@ -1034,7 +1008,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                     }
 
                     if (response.body()?.data != null) {
-                        setTodayMealLogsData()
+                        if (response.body()?.data!!.meal_detail.size > 0){
+                            todayMealLogNoDataHeading.visibility = View.GONE
+                            logFirstMealLayout.visibility = View.GONE
+                            setTodayMealLogsData()
+                        }else{
+                            todayMealLogNoDataHeading.visibility = View.VISIBLE
+                            logFirstMealLayout.visibility = View.VISIBLE
+                        }
+                    }else{
+                        todayMealLogNoDataHeading.visibility = View.VISIBLE
+                        logFirstMealLayout.visibility = View.VISIBLE
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")

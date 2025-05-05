@@ -14,13 +14,12 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import com.jetsynthesys.rightlife.R
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 
-class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
+class DeleteDishBottomSheet : BottomSheetDialogFragment() {
 
-    private var currentPhotoPathsecound : Uri? = null
     private var mealId : String = ""
-    private var mealName : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +29,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_delete_snap_meal_bottom_sheet, container, false)
+        return inflater.inflate(R.layout.fragment_delete_meal_bottom_sheet, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -40,19 +39,12 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         val dialog = BottomSheetDialog(requireContext(), R.style.LoggedBottomSheetDialogTheme)
         dialog.setContentView(R.layout.fragment_meal_scan_results)
         dialog.window?.setBackgroundDrawableResource(transparent)
-        val closeIcon = view.findViewById<ImageView>(R.id.closeIc)
-        val layoutCancel = view.findViewById<LinearLayoutCompat>(R.id.layoutCancel)
-        val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.layoutDelete)
+       // val closeIcon = view.findViewById<ImageView>(R.id.closeIc)
+        val layoutCancel = view.findViewById<LinearLayoutCompat>(R.id.noBtn)
+        val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.yesBtn)
 
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         mealId = arguments?.getString("mealId").toString()
-        mealName = arguments?.getString("mealName").toString()
-        val imagePathString = arguments?.getString("ImagePathsecound")
-        if (imagePathString != null){
-            currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
-        }else{
-            currentPhotoPathsecound = null
-        }
 
         val snapDishLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -68,11 +60,9 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                             snapDishLocalListModel.data.remove(item)
                             dismiss()
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
-                            val fragment = MealScanResultFragment()
+                            val fragment = CreateMealFragment()
                             val args = Bundle()
                             args.putString("mealId", mealId)
-                            args.putString("mealName", mealName)
-                            args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -87,9 +77,9 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        closeIcon.setOnClickListener {
-            dismiss()
-        }
+//        closeIcon.setOnClickListener {
+//            dismiss()
+//        }
 
         layoutCancel.setOnClickListener {
             dismiss()
@@ -99,7 +89,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "LoggedBottomSheet"
         @JvmStatic
-        fun newInstance() = DeleteSnapMealBottomSheet().apply {
+        fun newInstance() = DeleteDishBottomSheet().apply {
             arguments = Bundle().apply {
                 // Add any required arguments here
             }

@@ -237,11 +237,12 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layout_calorie_weight_loss"
+                    android:id="@+id/dailyCalorieGraphLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/white_meal_date_bg"
                     android:padding="10dp"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -563,11 +564,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/white_meal_date_bg"
                     android:paddingBottom="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_calorie_weight_loss">
+                    app:layout_constraintTop_toBottomOf="@+id/dailyCalorieGraphLayout">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/layout_breakfast_title"
@@ -923,6 +925,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/white_meal_date_bg"
                     android:paddingBottom="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1284,6 +1287,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/white_meal_date_bg"
                     android:paddingBottom="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1641,6 +1645,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/white_meal_date_bg"
                     android:paddingBottom="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -2002,6 +2007,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/white_meal_date_bg"
                     android:paddingBottom="10dp"
                     app:layout_constraintEnd_toEndOf="parent"

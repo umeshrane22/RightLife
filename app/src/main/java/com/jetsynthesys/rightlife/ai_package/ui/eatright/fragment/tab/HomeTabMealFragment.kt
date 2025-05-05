@@ -134,10 +134,20 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             tabLayout.addTab(tab)
         }
 
-        // Set default fragment
-        if (savedInstanceState == null) {
-            replaceFragment(FrequentlyLoggedFragment())
-            updateTabColors()
+        val deleteType = arguments?.getString("deleteType").toString()?: ""
+
+        if (deleteType.contentEquals("MyMeal")){
+            // Set default fragment
+            //if (savedInstanceState == null) {
+                replaceFragment(MyMealFragment())
+                updateTabColors()
+          //  }
+        }else{
+            // Set default fragment
+            if (savedInstanceState == null) {
+                replaceFragment(FrequentlyLoggedFragment())
+                updateTabColors()
+            }
         }
 
         // Handle tab clicks manually

@@ -15,7 +15,8 @@ data class MealLogSummary(
 
 data class MealDetailsLog(
     val regular_receipes: List<RegularRecipeEntry>,
-    val snap_meals: List<SnapMeal>
+    val snap_meals: List<SnapMeal>,
+    val meal_nutrition_summary: List<MealNutritionSummary>
 )
 
 data class RegularRecipeEntry(
@@ -93,6 +94,24 @@ data class SnapMeal(
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
     val zinc_mg: Double?
+)
+
+data class MealNutritionSummary(
+    val time_in_seconds: Double,
+    val servings: Double,
+    val serving_weight: Double,
+    val calories: Double,
+    val carbs: Double,
+    val sugar: Double,
+    val fiber: Double,
+    val protein: Double,
+    val fat: Double,
+    val saturated_fat: Double,
+    val trans_fat: Double,
+    val cholesterol: Double,
+    val sodium: Double,
+    val potassium: Double,
+    val quantity: Double
 )
 
 data class FullDaySummary(
