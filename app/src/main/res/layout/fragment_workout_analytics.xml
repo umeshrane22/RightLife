@@ -326,7 +326,7 @@
                 android:id="@+id/peak_bpm_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="155-175 Bpm"
+                android:text="159-183 Bpm"
                 android:textSize="16sp"
                 android:layout_marginStart="5dp"
                 app:layout_constraintStart_toEndOf="@+id/peak_text_heading"
@@ -334,6 +334,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/peak_text_heading" />
 
             <TextView
+                android:id="@+id/peak_text_time_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -377,6 +378,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
+                android:id="@+id/cardio_text_percentage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50%"
@@ -403,7 +405,7 @@
                 android:id="@+id/cardio_bpm_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="155-175 Bpm"
+                android:text="136-159 Bpm"
                 android:textSize="16sp"
                 android:layout_marginStart="5dp"
                 app:layout_constraintStart_toEndOf="@+id/cardio_text_heading"
@@ -411,6 +413,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/cardio_text_heading" />
 
             <TextView
+                android:id="@+id/cardio_text_time_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -454,6 +457,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
+                android:id="@+id/fat_burn_percentage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50%"
@@ -480,7 +484,7 @@
                 android:id="@+id/fat_burn_bpm_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="155-175 Bpm"
+                android:text="124-139 Bpm"
                 android:textSize="16sp"
                 android:layout_marginStart="5dp"
                 app:layout_constraintStart_toEndOf="@+id/fat_burn_text_heading"
@@ -488,6 +492,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/fat_burn_text_heading" />
 
             <TextView
+                android:id="@+id/fat_burn_time_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -531,6 +536,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
+                android:id="@+id/light_percentage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50%"
@@ -557,7 +563,7 @@
                 android:id="@+id/light_bpm_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="155-175 Bpm"
+                android:text="112-124 Bpm"
                 android:textSize="16sp"
                 android:layout_marginStart="5dp"
                 app:layout_constraintStart_toEndOf="@+id/light_text_heading"
@@ -565,6 +571,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/light_text_heading" />
 
             <TextView
+                android:id="@+id/light_time_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
@@ -608,6 +615,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
+                android:id="@+id/light_text_percentage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="50%"

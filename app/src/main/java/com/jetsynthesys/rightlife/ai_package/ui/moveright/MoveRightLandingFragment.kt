@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -53,7 +52,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -178,11 +176,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
         val logMealButton = view.findViewById<ConstraintLayout>(R.id.log_meal_button)
         val layoutAddWorkout = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
+        val lyt_snap_meal_no_data = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal_no_data)
         calorieBalanceIcon.setOnClickListener {
             navigateToFragment(CalorieBalance(), "CalorieBalance")
         }
         workoutImageIcon.setOnClickListener {
             // Define action if needed
+        }
+        lyt_snap_meal_no_data.setOnClickListener{
+            navigateToFragment(YourActivityFragment(), "YourActivityFragment")
         }
         layoutAddWorkout.setOnClickListener {
             navigateToFragment(YourActivityFragment(), "YourActivityFragment")
@@ -311,9 +313,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         // Heart rate zone checks and UI updates
                         withContext(Dispatchers.Main) {
                             text_activity.text = it.data.activityFactor.today.toString() ?: "0"
-                            val allInvalid = (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0f) &&
-                                    (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0f) &&
-                                    (it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0f)
+                            val allInvalid = (/*it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0f) &&
+                                    (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0f) &&*/
+                                    it.data.calorieBalance.calorieIntake == null || it.data.calorieBalance.calorieIntake == 0f)
 
                             // Always set layout to VISIBLE
                             calorie_no_data_filled_layout.visibility = View.VISIBLE
@@ -703,39 +705,41 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
-                    userId = /*userid ?: "64763fe2fa0e40d9c0bc8264"*/"67f6698fa213d14e22a47c2a",
-                    start_date = "2025-04-04",
-                    end_date = "2025-04-04",
+                    userId = userid ?: "64763fe2fa0e40d9c0bc8264",
+                    start_date = currentDate,
+                    end_date = currentDate,
                     page = 1,
                     limit = 10
                 )
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
-                        val hasHeartRateData = it.synced_workouts?.any { workout -> workout.heartRateData?.isNotEmpty() == true } ?: false
+                        val hasHeartRateData = it.syncedWorkouts.any { workout -> workout.heartRateData.isNotEmpty() }
                         if (hasHeartRateData) {
-                            val totalSyncedCalories = it.synced_workouts.sumOf { workout -> workout.caloriesBurned.toIntOrNull() ?: 0 }
-                            val totalUnsyncedCalories = it.unsynced_workouts?.sumOf { it.calories_burned } ?: 0
-                            val cardItems = it.synced_workouts.map { workout ->
+                            val totalSyncedCalories = it.syncedWorkouts.sumOf { workout -> workout.caloriesBurned.toDoubleOrNull() ?: 0.0 }
+                            val cardItems = it.syncedWorkouts.map { workout ->
                                 val durationMinutes = workout.duration.toIntOrNull() ?: 0
                                 val hours = durationMinutes / 60
                                 val minutes = durationMinutes % 60
                                 val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
                                 val caloriesText = "${workout.caloriesBurned} cal"
-                                val avgHeartRate = if (workout.heartRateData?.isNotEmpty() == true) {
+                                val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
                                     val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
                                     val count = workout.heartRateData.size
                                     "${(totalHeartRate / count).toInt()} bpm"
                                 } else "N/A"
-                                workout.heartRateData?.forEach { heartRateData ->
-                                    heartRateData.trendData.addAll(listOf("110", "112", "115", "118", "120", "122", "125"))
+                                workout.heartRateData.forEach { heartRateData ->
+                                    heartRateData.trendData.addAll(listOf(listOf(110, 112, 115, 118, 120, 122, 125).toString()))
                                 }
                                 CardItem(
                                     title = workout.workoutType,
                                     duration = durationText,
                                     caloriesBurned = caloriesText,
                                     avgHeartRate = avgHeartRate,
-                                    heartRateData = workout.heartRateData ?: emptyList()
+                                    heartRateData = workout.heartRateData,
+                                    heartRateZones = workout.heartRateZones,
+                                    heartRateZoneMinutes = workout.heartRateZoneMinutes,
+                                    heartRateZonePercentages = workout.heartRateZonePercentages
                                 )
                             }
                             withContext(Dispatchers.Main) {
