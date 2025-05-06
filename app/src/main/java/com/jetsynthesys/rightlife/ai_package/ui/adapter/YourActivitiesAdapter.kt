@@ -59,9 +59,9 @@ class YourActivitiesAdapter(
         }
 
         // Set up item click listener
-        holder.itemView.setOnClickListener {
+       /* holder.itemView.setOnClickListener {
             onWorkoutItemClick(item, position, true)
-        }
+        }*/
     }
 
     override fun getItemCount(): Int {

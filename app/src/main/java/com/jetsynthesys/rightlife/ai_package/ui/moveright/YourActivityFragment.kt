@@ -96,8 +96,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     commit()
                 }
                 //showActivityDetailsDialog(activityModel, position)
-                println(activityModel)
-                println(position)
+//                println(activityModel)
+//                println(position)
             }
         )
     }
@@ -209,6 +209,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
                             val activity = ActivityModel(
                                 activityType = workout.activity_name,
+                                activity_id = workout.activityId,
                                 duration = "${workout.duration_min.toInt()} min",
                                 caloriesBurned = workout.calories_burned.toInt().toString(),
                                 intensity = workout.intensity,
@@ -290,6 +291,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
                         val activity = ActivityModel(
                             activityType = workout.workoutType,
+                            activity_id = workout.activity_id,
                             duration = "${workout.duration} min",
                             caloriesBurned = "${workout.caloriesBurned.toInt()} kcal",
                             intensity = workout.intensity,

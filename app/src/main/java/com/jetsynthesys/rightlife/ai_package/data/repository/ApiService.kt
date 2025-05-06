@@ -61,6 +61,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
@@ -91,6 +92,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
@@ -274,6 +276,12 @@ interface ApiService {
     suspend fun createWorkout(
         @Body request: CreateWorkoutRequest
     ): Response<CalculateCaloriesResponse>
+
+    @PUT("move/data/update_calories/")
+    suspend fun updateCalories(
+        @Query("calorie_id") calorieId: String,
+        @Body request: UpdateCaloriesRequest
+    ): Response<UpdateCaloriesResponse>
 
     @GET("move/fetch_active_burned/")
     suspend fun getActiveCalories(

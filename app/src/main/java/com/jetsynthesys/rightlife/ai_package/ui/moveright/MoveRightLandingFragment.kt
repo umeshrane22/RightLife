@@ -202,7 +202,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 requestPermissionsAndReadAllData()
             }
         } else {
-            Toast.makeText(context, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
         }
         val progressBarSteps = view.findViewById<ProgressBar>(R.id.progressBar)
         val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
@@ -809,7 +809,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "ActiveEnergyBurned",
                             unit = "kcal",
                             value = record.energy.inKilocalories.toInt().toString(),
-                            source_name = "Health Connect"
+                            source_name = "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -822,7 +822,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format("%.2f", record.distance.inKilometers),
-                            source_name = "Health Connect"
+                            source_name = "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -834,7 +834,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = "Health Connect"
+                            source_name = "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -847,7 +847,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = "Health Connect"
+                                source_name = "samsung"
                             )
                         } else null
                     }
@@ -862,7 +862,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format("%.1f", record.rate),
-                            source_name = "Health Connect"
+                            source_name = "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -874,7 +874,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format("%.1f", record.percentage.value),
-                            source_name = "Health Connect"
+                            source_name = "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -888,7 +888,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format("%.1f", record.weight.inKilograms),
-                            source_name = "Health Connect"
+                            source_name = "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -909,7 +909,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 record_type = "SleepStage",
                                 unit = "stage",
                                 value = it,
-                                source_name = "Health Connect"
+                                source_name = "samsung"
                             )
                         }
                     }
@@ -926,7 +926,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         WorkoutRequest(
                             start_datetime = record.startTime.toString(),
                             end_datetime = record.endTime.toString(),
-                            source_name = "Health Connect",
+                            source_name = "samsung",
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
@@ -940,7 +940,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val request = StoreHealthDataRequest(
                     user_id = userid,
-                    source = "health_connect",
+                    source = "samsung",
                     active_energy_burned = activeEnergyBurned,
                     basal_energy_burned = basalEnergyBurned,
                     distance_walking_running = distanceWalkingRunning,
@@ -1018,7 +1018,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
         val permissionLauncher = requireActivity().registerForActivityResult(requestPermissionActivityContract) { granted ->
             if (granted.containsAll(permissions)) {
-                Toast.makeText(activity, "Health Connect Permissions Granted", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "samsung Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(activity, "Permissions Denied", Toast.LENGTH_SHORT).show()
             }

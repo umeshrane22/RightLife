@@ -11,6 +11,7 @@ data class GetCaloriesResponse(
 data class WorkoutData(
     @SerializedName("_id") val id: String,
     @SerializedName("user_id") val userId: String,
+    @SerializedName("activity_id") val activity_id: String,
     @SerializedName("record_type") val recordType: String,
     @SerializedName("workout_type") val workoutType: String,
     @SerializedName("duration") val duration: Int,
