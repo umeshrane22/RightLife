@@ -50,7 +50,9 @@ import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity;
 import com.jetsynthesys.rightlife.apimodel.PromotionResponse;
 import com.jetsynthesys.rightlife.apimodel.affirmations.AffirmationResponse;
 import com.jetsynthesys.rightlife.apimodel.liveevents.LiveEventResponse;
+import com.jetsynthesys.rightlife.apimodel.rledit.Artist;
 import com.jetsynthesys.rightlife.apimodel.rledit.RightLifeEditResponse;
+import com.jetsynthesys.rightlife.apimodel.rledit.Top;
 import com.jetsynthesys.rightlife.apimodel.servicepane.ServicePaneResponse;
 import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse;
 import com.jetsynthesys.rightlife.apimodel.upcomingevents.UpcomingEventResponse;
@@ -937,7 +939,88 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     }
 
-    private void setupRLEditContent(RightLifeEditResponse rightLifeEditResponse) {
+    private void setupRLEditContent(RightLifeEditResponse response) {
+        if (response == null || response.getData() == null) return;
+
+        List<Top> topList = response.getData().getTopList();
+        if (topList == null || topList.isEmpty()) return;
+
+        if (topList.size() > 0) {
+            Top item0 = topList.get(0);
+            tv_rledt_cont_title1.setText(item0.getDesc());
+
+            if (item0.getArtist() != null && !item0.getArtist().isEmpty()) {
+                Artist artist = item0.getArtist().get(0);
+                nameeditor.setText((artist.getFirstName() != null ? artist.getFirstName() : "") +
+                        " " +
+                        (artist.getLastName() != null ? artist.getLastName() : ""));
+            }
+
+            count.setText(String.valueOf(item0.getViewCount()));
+
+            if ("VIDEO".equalsIgnoreCase(item0.getContentType())) {
+                img_contenttype_rledit.setImageResource(R.drawable.ic_playrledit);
+            } else {
+                img_contenttype_rledit.setImageResource(R.drawable.read);
+            }
+
+            if (item0.getThumbnail() != null) {
+                Glide.with(getApplicationContext())
+                        .load(ApiClient.CDN_URL_QA + item0.getThumbnail().getUrl())
+                        .placeholder(R.drawable.img_logintop)
+                        .into(img_rledit);
+            }
+        }
+
+        if (topList.size() > 1) {
+            Top item1 = topList.get(1);
+            tv_rledt_cont_title2.setText(item1.getTitle());
+
+            if (item1.getArtist() != null && !item1.getArtist().isEmpty()) {
+                Artist artist = item1.getArtist().get(0);
+                nameeditor1.setText((artist.getFirstName() != null ? artist.getFirstName() : "") +
+                        " " +
+                        (artist.getLastName() != null ? artist.getLastName() : ""));
+            }
+
+            count1.setText(String.valueOf(item1.getViewCount()));
+
+            if (item1.getThumbnail() != null) {
+                Glide.with(getApplicationContext())
+                        .load(ApiClient.CDN_URL_QA + item1.getThumbnail().getUrl())
+                        .placeholder(R.drawable.img_logintop)
+                        .error(R.drawable.img_logintop)
+                        .transform(new RoundedCorners(25))
+                        .into(img_rledit1);
+            }
+        }
+
+        if (topList.size() > 2) {
+            Top item2 = topList.get(2);
+            tv_rledt_cont_title3.setText(item2.getTitle());
+
+            if (item2.getArtist() != null && !item2.getArtist().isEmpty()) {
+                Artist artist = item2.getArtist().get(0);
+                nameeditor2.setText((artist.getFirstName() != null ? artist.getFirstName() : "") +
+                        " " +
+                        (artist.getLastName() != null ? artist.getLastName() : ""));
+            }
+
+            count2.setText(String.valueOf(item2.getViewCount()));
+
+            if (item2.getThumbnail() != null) {
+                Glide.with(getApplicationContext())
+                        .load(ApiClient.CDN_URL_QA + item2.getThumbnail().getUrl())
+                        .placeholder(R.drawable.img_logintop)
+                        .error(R.drawable.img_logintop)
+                        .transform(new RoundedCorners(25))
+                        .into(img_rledit2);
+            }
+        }
+    }
+
+
+    /*private void setupRLEditContent(RightLifeEditResponse rightLifeEditResponse) {
 
         if (rightLifeEditResponse != null && rightLifeEditResponse.getData() != null
                 && rightLifeEditResponse.getData().getTopList() != null
@@ -984,7 +1067,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     .into(img_rledit2);
         }
 
-    }
+    }*/
 
     //Upcoming Event List -
     private void getUpcomingLiveEvents(String s) {

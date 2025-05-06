@@ -137,7 +137,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
             Glide.with(applicationContext)
                 .load(
-                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist.get(0).profilePicture)
+                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist.firstOrNull()?.profilePicture)
                 .placeholder(R.drawable.profile_man) // Replace with your placeholder image
                 .circleCrop()
                 .into(binding.profileImage)
@@ -189,7 +189,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
         if (contentResponseObj.data.nextEpisode != null) {
             val nextEpisode = contentResponseObj.data.nextEpisode
-
+            binding.cardviewEpisodeSingle.visibility = View.VISIBLE
             //binding.txtEpisodesSection.setText("Next Episode" + contentResponseObj.data.episodeNumber)
             binding.itemText.setText(nextEpisode.title) // Use the same TextView for the title
             Glide.with(this)
@@ -205,7 +205,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
             }
         } else {
             // Handle case where there is no next episode
-            binding.cardviewEpisodeSingle.setVisibility(View.GONE)
+            binding.cardviewEpisodeSingle.visibility = View.GONE
 
 
         }

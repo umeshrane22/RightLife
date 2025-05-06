@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/ll_container_main"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -149,6 +149,17 @@
                 android:layout_marginHorizontal="5dp"
                 android:ellipsize="end"
                 android:textColor="@color/txt_color_header"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerArtists"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:overScrollMode="never"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:id="@+id/ll_author_main"

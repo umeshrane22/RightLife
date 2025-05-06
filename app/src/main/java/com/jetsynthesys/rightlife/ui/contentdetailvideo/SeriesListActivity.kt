@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentRespon
 import com.jetsynthesys.rightlife.databinding.ActivitySeriesListBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.Wellness.SeriesListAdapter
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.SeriesResponse
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
@@ -121,6 +122,7 @@ class SeriesListActivity : BaseActivity() {
             binding.authorName.setText(
                 contentResponseObj.getData().getArtist().get(0).getFirstName() + " " + contentResponseObj.getData().getArtist().get(0).getLastName()
             )
+
 
             Glide.with(applicationContext)
                 .load(
@@ -289,11 +291,12 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
 
                     val episodeResponseModel = gson.fromJson(
                         jsonResponse,
-                        EpisodeResponseModel::class.java
-                    )
+                        EpisodeResponseModel::class.java)
+                    val seriesResponseModel = gson.fromJson(jsonResponse, SeriesResponse::class.java)
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
                     setupEpisodeListData(episodeResponseModel.data.episodes)
+                    setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -304,6 +307,14 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    private fun setupArtistList(seriesResponseModel: SeriesResponse?) {
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.recyclerArtists.layoutManager = layoutManager
+        val adapter =
+            seriesResponseModel?.data?.let { ArtistAdapter(it.artist) } // artistList is List<Artist>
+        binding.recyclerArtists.adapter = adapter
     }
 
     private fun setupEpisodeListData(contentList: List<EpisodeModel>) {

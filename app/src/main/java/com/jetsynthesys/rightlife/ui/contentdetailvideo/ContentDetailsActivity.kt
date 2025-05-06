@@ -168,6 +168,7 @@ class ContentDetailsActivity : BaseActivity() {
                 }
             }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
+            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
         }
 
     }

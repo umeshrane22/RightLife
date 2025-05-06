@@ -393,6 +393,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         dialogBinding.numberPicker.setOnScrollListener { view, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
                 selectedAge = years[view.value - 1]
+                binding.edtAge.setText(selectedAge)
             }
         }
 
