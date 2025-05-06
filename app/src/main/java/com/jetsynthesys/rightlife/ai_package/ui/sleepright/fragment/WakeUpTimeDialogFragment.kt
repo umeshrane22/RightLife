@@ -41,6 +41,9 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
     private var mHour = 0
     private var mMinute = 0
     private var mAmPm = ""
+    private lateinit var hourPicker : NumberPicker
+    private lateinit var minutePicker : NumberPicker
+    private lateinit var amPmPicker : NumberPicker
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -57,9 +60,9 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         bottomSheet.backgroundTintMode = PorterDuff.Mode.CLEAR
         bottomSheet.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
         bottomSheet.setBackgroundColor(Color.TRANSPARENT)
-        val hourPicker = view.findViewById<NumberPicker>(R.id.hourPickerWake)
-        val minutePicker = view.findViewById<NumberPicker>(R.id.minutePickerWake)
-        val amPmPicker = view.findViewById<NumberPicker>(R.id.amPmPickerWake)
+        hourPicker = view.findViewById<NumberPicker>(R.id.hourPickerWake)
+        minutePicker = view.findViewById<NumberPicker>(R.id.minutePickerWake)
+        amPmPicker = view.findViewById<NumberPicker>(R.id.amPmPickerWake)
 
         mHour = getHourFromIso(mWakeupTime)
         mMinute = getMinuteFromIso(mWakeupTime)
@@ -83,8 +86,12 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
 
         val btnSendData = view.findViewById<LinearLayout>(R.id.btn_confirm)
         btnSendData.setOnClickListener {
-            updateWakeupTime()
-            listener.onWakeUpTimeSelected(mWakeupTime)
+            var str1 = hourPicker.value.toString()
+            var str2 = ":"+minutePicker.value.toString()
+            var str3 = " "+amPmPicker.displayedValues[amPmPicker.value]
+            val result = "$str1$str2$str3"
+            updateWakeupTime(result)
+            listener.onWakeUpTimeSelected(result)
             dismiss()
         }
 
@@ -139,10 +146,10 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         return if (dateTime.hour < 12) "AM" else "PM"
     }
 
-    private fun updateWakeupTime() {
+    private fun updateWakeupTime(result: String) {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val source = "apple"
-        val call = ApiClient.apiServiceFastApi.updateWakeupTime(userId, source, record_id =  mRecordId, timer_value = mWakeupTime )
+        val call = ApiClient.apiServiceFastApi.updateWakeupTime(userId, source, record_id =  mRecordId, timer_value = result )
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
