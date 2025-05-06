@@ -222,6 +222,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             //loadFragment(ExploreFragment())
             startActivity(Intent(this, HomeActivity::class.java))
             updateMenuSelection(R.id.menu_explore)
+            finish()
         }
 
         // Set initial selection

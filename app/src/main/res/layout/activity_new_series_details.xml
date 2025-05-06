@@ -289,6 +289,7 @@
                 android:layout_margin="10dp"
                 app:cardCornerRadius="@dimen/textsize_small"
                 android:background="@color/white"
+                android:visibility="gone"
                 android:padding="1dp">
 
 
@@ -490,7 +491,7 @@
         android:background="@drawable/roundedcornershape"
         android:gravity="center"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/image_like_article"

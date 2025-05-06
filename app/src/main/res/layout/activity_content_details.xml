@@ -345,7 +345,7 @@
             android:src="@drawable/like_article_inactive" />
 
         <TextView
-            android:id="@+id/txt_topic2"
+            android:id="@+id/txt_like_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

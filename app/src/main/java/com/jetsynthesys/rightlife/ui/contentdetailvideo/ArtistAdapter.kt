@@ -1,0 +1,44 @@
+package com.jetsynthesys.rightlife.ui.contentdetailvideo
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.databinding.ItemHorizontalArtistBinding
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Artist
+import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
+
+class ArtistAdapter(
+    private val artists: List<Artist>
+) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
+
+    inner class ArtistViewHolder(val binding: ItemHorizontalArtistBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
+        val binding = ItemHorizontalArtistBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return ArtistViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
+        val artist = artists[position]
+        holder.binding.tvArtistname.text = artist.firstName
+
+        val profileUrl = if (artist.profilePicture.startsWith("http")) {
+            artist.profilePicture
+        } else {
+            ApiClient.CDN_URL_QA + artist.profilePicture
+        }
+
+        GlideApp.with(holder.itemView.context)
+            .load(profileUrl)
+            .placeholder(R.drawable.profile_man)
+            .error(R.drawable.profile_man)
+            .into(holder.binding.imageProfile)
+    }
+
+    override fun getItemCount(): Int = artists.size
+}
