@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,8 +20,21 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.databinding.FragmentMealLogCalenderBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
+import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
@@ -30,6 +45,9 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     private lateinit var btnClose : ImageView
     private lateinit var recyclerCalendar : RecyclerView
     private lateinit var recyclerSummary : RecyclerView
+    private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
+    private var  mealLogHistory :  ArrayList<LoggedMeal> = ArrayList()
+    private var mealLogYearlyList : List<CalendarDateModel> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealLogCalenderBinding
         get() = FragmentMealLogCalenderBinding::inflate
@@ -93,33 +111,40 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
             txtDate.text = "Thur, 7 Feb 2025"
         }
 
-        onMealLogCalenderItemRefresh()
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedCurrentDate = currentDateTime.format(formatter)
+        val ninetyDaysAgo = currentDateTime.minusDays(60)
+        val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
+        getMealsLogHistory(dateRange)
+        mealLogYearlyList = generateYearCalendar()
+
+      //  onMealLogCalenderItemRefresh()
         onMealLogCalenderSummaryRefresh()
     }
 
-    private fun onMealLogCalenderItemRefresh (){
-
-        val yearDays = generateYearCalendar()
-       // val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
-
-//        val calendarDays = listOf(
-//            MealLogDateModel("01", "M", true),
-//            MealLogDateModel("02", "T", false),
-//            MealLogDateModel("03", "W", true),
-//            MealLogDateModel("04", "T", false),
-//            MealLogDateModel("05", "F", true),
-//            MealLogDateModel("06", "S", true),
-//            MealLogDateModel("07", "S", true)
-//        )
+    private fun onMealLogCalenderList (yearList: List<CalendarDateModel>, mealLogHistory: ArrayList<LoggedMeal>){
+        val today = LocalDate.now()
+        val yearLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
+        if (mealLogHistory.size > 0 && yearList.isNotEmpty()){
+            mealLogHistory.forEach { mealLog ->
+                for (item in yearList){
+                    if (item.fullDate == mealLog.date){
+                        if (mealLog.is_available == true){
+                            item.is_available = true
+                        }
+                    }
+                }
+            }
+        }
 
         val valueLists : ArrayList<CalendarDateModel> = ArrayList()
-        valueLists.addAll(yearDays as Collection<CalendarDateModel>)
+        valueLists.addAll(yearList as Collection<CalendarDateModel>)
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun onMealLogCalenderSummaryRefresh (){
-
         val summaryList = listOf(
             CalendarSummaryModel("Deficit", "2140"),
             CalendarSummaryModel("Surplus", "12.3 kCal"),
@@ -131,7 +156,6 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
             CalendarSummaryModel("Surplus", "0"),
             CalendarSummaryModel("Surplus", "0")
         )
-
         val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
         valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         val mealLogDateData: CalendarSummaryModel? = null
@@ -139,17 +163,14 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     }
 
     private fun onMealLogCalenderItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
-
         val yearDays = generateYearCalendar()
      //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
-
         val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
     private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
-
         val summaryList = listOf(
             CalendarSummaryModel("Deficit", "2140"),
             CalendarSummaryModel("Surplus", "12.3 kCal"),
@@ -208,6 +229,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         // Add previous year days
         calendar.add(Calendar.DAY_OF_YEAR, -daysToFill)
         for (i in 0 until daysToFill) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             daysList.add(
                 CalendarDateModel(
                     date = calendar.get(Calendar.DAY_OF_MONTH),
@@ -216,6 +238,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK),
                     currentDate = currentDate,
                     currentMonth = currentMonth,
+                    fullDate = formatter.format(calendar.time),
                     surplus = (i * 50) % 500 // Random surplus example
                 )
             )
@@ -224,6 +247,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         // Now reset to actual year and start adding days
         calendar.set(year, Calendar.JANUARY, 1)
         while (calendar.get(Calendar.YEAR) == year) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             daysList.add(
                 CalendarDateModel(
                     date = calendar.get(Calendar.DAY_OF_MONTH),
@@ -232,6 +256,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK),
                     currentDate = currentDate,
                     currentMonth = currentMonth,
+                    fullDate = formatter.format(calendar.time),
                     surplus = (1 * 50) % 500 // Random surplus example
                 )
             )
@@ -245,5 +270,34 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         calendar.set(Calendar.MONTH, monthNumber) // Months are 0-based
         val dateFormat = SimpleDateFormat("MMM", Locale.ENGLISH) // "MMM" for 3-letter month
         return dateFormat.format(calendar.time)
+    }
+
+    private fun getMealsLogHistory(dateRange: String) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val call = ApiClient.apiServiceFastApi.getMealsLogHistoryCalender(userId, dateRange)
+        call.enqueue(object : Callback<MealLogsHistoryResponse> {
+            override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                    if (response.body() != null){
+                        mealLogsHistoryResponse = response.body()
+                        if (mealLogsHistoryResponse?.is_logged_meal_list!!.isNotEmpty()){
+                            mealLogHistory.addAll(mealLogsHistoryResponse!!.is_logged_meal_list!!)
+                            onMealLogCalenderList(mealLogYearlyList , mealLogHistory)
+                        }
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealLogsHistoryResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
     }
 }

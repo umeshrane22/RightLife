@@ -1,31 +1,39 @@
 package com.jetsynthesys.rightlife.ai_package.model.response
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class MealLogDataResponse(
     val status_code: Int,
     val message: String,
     val data: MealLogSummary
-)
+):Parcelable
 
+@Parcelize
 data class MealLogSummary(
     val user_id: String,
     val date: String,
     val meal_detail: Map<String, MealDetailsLog>,
     val full_day_summary : FullDaySummary
-)
+):Parcelable
 
+@Parcelize
 data class MealDetailsLog(
     val regular_receipes: List<RegularRecipeEntry>,
     val snap_meals: List<SnapMeal>,
     val meal_nutrition_summary: List<MealNutritionSummary>
-)
+):Parcelable
 
+@Parcelize
 data class RegularRecipeEntry(
     val receipe: Recipe,
     val quantity: Int,
     val unit: String,
     val measure: String
-)
+):Parcelable
 
+@Parcelize
 data class Recipe(
     val _id: String,
     val recipe_name: String,
@@ -52,8 +60,9 @@ data class Recipe(
     val sodium: Double,
     val potassium: Double,
     val recipe_id: String
-)
+):Parcelable
 
+@Parcelize
 data class SnapMeal(
     val name: String,
     val b12_mcg: Double?,
@@ -94,8 +103,9 @@ data class SnapMeal(
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
     val zinc_mg: Double?
-)
+):Parcelable
 
+@Parcelize
 data class MealNutritionSummary(
     val time_in_seconds: Double,
     val servings: Double,
@@ -112,8 +122,9 @@ data class MealNutritionSummary(
     val sodium: Double,
     val potassium: Double,
     val quantity: Double
-)
+):Parcelable
 
+@Parcelize
 data class FullDaySummary(
     val time_in_seconds: Double?,
     val servings: Double?,
@@ -123,7 +134,7 @@ data class FullDaySummary(
     val sugar: Double?,
     val fiber: Double?,
     val protein: Double?,
-    val fat: Double?,
+    val fats: Double?,
     val saturated_fat: Double?,
     val trans_fat: Double?,
     val cholesterol: Double?,
@@ -167,5 +178,5 @@ data class FullDaySummary(
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
     val zinc_mg: Double?
-)
+):Parcelable
 

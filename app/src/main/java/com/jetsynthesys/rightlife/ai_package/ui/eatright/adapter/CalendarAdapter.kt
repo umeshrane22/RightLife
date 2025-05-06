@@ -31,7 +31,7 @@ class CalendarAdapter(private val context: Context, private var dataLists: Array
         holder.txtMonth.text = item.month
         if (item.month.contentEquals(item.currentMonth)){
             val day = item.currentDate.split(" ")[1]
-            if (day.contentEquals(item.date.toString())){
+            if (day.toInt() == item.date){
                 holder.viewDate.visibility = View.VISIBLE
             }else{
                 holder.viewDate.visibility = View.INVISIBLE
@@ -53,10 +53,8 @@ class CalendarAdapter(private val context: Context, private var dataLists: Array
             holder.txtMonth.visibility = View.INVISIBLE
         }
 
-        if (item.isSelected){
+        if (item.is_available){
             holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
-
-
             if (mealLogListData != null){
                 if (clickPos == position && mealLogListData == item && isClickView == true){
                     holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
@@ -75,9 +73,9 @@ class CalendarAdapter(private val context: Context, private var dataLists: Array
             }
         }
 
-        holder.layoutCalendar.setOnClickListener {
-            onMealLogCalenderItem(item, position, true)
-        }
+//        holder.layoutCalendar.setOnClickListener {
+//            onMealLogCalenderItem(item, position, true)
+//        }
     }
 
     override fun getItemCount(): Int {

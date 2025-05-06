@@ -52,7 +52,7 @@
                 android:layout_width="350dp"
                 android:layout_height="300dp"
                 android:layout_gravity="center"
-                android:src="@drawable/poha_image"
+                android:src="@drawable/ic_view_meal_place"
                 android:scaleType="centerCrop" />
 
             <TextView

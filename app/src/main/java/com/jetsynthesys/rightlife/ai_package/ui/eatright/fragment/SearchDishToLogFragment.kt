@@ -169,6 +169,10 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             }
         }
 
+        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+            filterDishes(query)
+        }
+
         cancel.setOnClickListener {
             if (searchEditText.text.toString().isNotEmpty()){
                 dishesViewModel.setSearchQuery("")
@@ -202,10 +206,6 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
         valueLists.addAll(searchMealList as Collection<SearchResultItem>)
         val mealLogDateData: SearchResultItem? = null
         snapSearchDishAdapter.addAll(valueLists, -1, mealLogDateData, false)
-
-        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
-            filterDishes(query)
-        }
     }
 
     private fun onSearchDishItem(recipesModel: SearchResultItem, position: Int, isRefresh: Boolean) {

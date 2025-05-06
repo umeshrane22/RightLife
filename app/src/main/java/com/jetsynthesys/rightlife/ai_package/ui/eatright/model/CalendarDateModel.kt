@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.model
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 @Parcelize
 data class CalendarDateModel(
@@ -21,5 +22,9 @@ data class CalendarDateModel(
     @SerializedName("currentMonth")
     val currentMonth: String,
     @SerializedName("isSelected")
-    val isSelected: Boolean = false
+    val isSelected: Boolean = false,
+    @SerializedName("fullDate")
+    val fullDate: String,
+    @SerializedName("is_available")
+    var is_available: Boolean = false
 ): Parcelable

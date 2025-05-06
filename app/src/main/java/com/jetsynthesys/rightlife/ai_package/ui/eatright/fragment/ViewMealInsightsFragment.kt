@@ -1,61 +1,66 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
+import com.jetsynthesys.rightlife.ai_package.model.response.MealNutritionSummary
+import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
+import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
+import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MicroNutrientsAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealLogsAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourBreakfastMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DinnerMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.databinding.FragmentViewMealInsightsBinding
 
 class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>() {
 
-    private lateinit var progressBarConfirmation :ProgressBar
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
-    private lateinit var lunchMealRecyclerView : RecyclerView
-    private lateinit var dinnerMealRecyclerView : RecyclerView
-    private lateinit var imageCalender : ImageView
-    private lateinit var breakfastDotMenu : ImageView
-    private lateinit var lunchDotMenu : ImageView
-    private lateinit var dinnerDotMenu : ImageView
-    private lateinit var btnLogMeal : LinearLayoutCompat
-    private lateinit var editDeleteBreakfast : CardView
-    private lateinit var editDeleteLunch : CardView
-    private lateinit var editDeleteDinner : CardView
-    private lateinit var layoutMain : ConstraintLayout
-    private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
-    private lateinit var layoutDelete :LinearLayoutCompat
+    private lateinit var dishesItemRecyclerview : RecyclerView
+    private lateinit var backButton : ImageView
+    private lateinit var layoutMicroTitle : ConstraintLayout
+    private lateinit var layoutMacroTitle : ConstraintLayout
+    private lateinit var icMacroUP : ImageView
+    private lateinit var microUP : ImageView
+    private lateinit var imgFood : ImageView
+    private lateinit var tvMealName : TextView
+    private lateinit var tvDishes : TextView
+    private val mealNutritionSummary = ArrayList<MealNutritionSummary>()
+    private val mealCombinedList = ArrayList<MergedLogsMealItem>()
+    private var mealNames = emptyList<String>()
+
+    private var mealDetailsLog : MealDetailsLog? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentViewMealInsightsBinding
         get() = FragmentViewMealInsightsBinding::inflate
 
-    private val macroNutientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onMacroNutrientsItem) }
-    private val microNutientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onMicroNutrientsItem) }
-//    private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
-//        null, false, :: onLunchMealLogItem) }
-//    private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
-//        null, false, :: onDinnerMealLogItem) }
+    private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMacroNutrientsItemClick) }
+    private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMicroNutrientsItemClick) }
+    private val mealLogsAdapter by lazy { MealLogsAdapter(requireContext(), arrayListOf(), -1,
+        null, null, false, ::onBreakFastRegularRecipeDeleteItem,
+        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, true) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -68,159 +73,266 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
 
         macroItemRecyclerView = view.findViewById(R.id.recyclerview_macro_item)
         microItemRecyclerView = view.findViewById(R.id.recyclerview_micro_item)
-//        lunchMealRecyclerView = view.findViewById(R.id.recyclerview_lunch_meals_item)
-//        dinnerMealRecyclerView = view.findViewById(R.id.recyclerview_dinner_meals_item)
-//        imageCalender = view.findViewById(R.id.image_calender)
-//        btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
-//        breakfastDotMenu = view.findViewById(R.id.image_dot_menu)
-//        lunchDotMenu = view.findViewById(R.id.image_lunch_dot_menu)
-//        dinnerDotMenu = view.findViewById(R.id.image_dinner_dot_menu)
-//        editDeleteBreakfast = view.findViewById(R.id.btn_edit_delete)
-//        editDeleteLunch = view.findViewById(R.id.btn_edit_delete_lunch)
-//        editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
-//        layoutMain = view.findViewById(R.id.layout_main)
-//        layoutDelete = view.findViewById(R.id.layout_delete)
-//        val progressBar = view.findViewById<ProgressBar>(R.id.progressBar)
-     //   val circleIndicator = view.findViewById<View>(R.id.circleIndicator)
- //       val transparentOverlay = view.findViewById<View>(R.id.transparentOverlay)
-
-//        progressBar.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-//            override fun onGlobalLayout() {
-//                progressBar.viewTreeObserver.removeOnGlobalLayoutListener(this)
-//                val progressBarWidth = progressBar.width.toFloat()
-//                val overlayPosition = 0.7f * progressBarWidth
-//                val progress = 1285
-//                val max = progressBar.max
-//                val circlePosition = (progress.toFloat() / max) * progressBarWidth
-////                val circleRadius = circleIndicator.width / 2f
-////                circleIndicator.x = circlePosition - circleRadius
-////                circleIndicator.y = progressBar.y + (progressBar.height - circleIndicator.height) / 2f
-//                val overlayRadius = transparentOverlay.width / 2f
-//                transparentOverlay.x = overlayPosition - overlayRadius
-//                transparentOverlay.y = progressBar.y + (progressBar.height - transparentOverlay.height) / 2f
-//            }
-//        })
+        dishesItemRecyclerview = view.findViewById(R.id.dishesItemRecyclerview)
+        backButton = view.findViewById(R.id.back_button)
+        tvMealName = view.findViewById(R.id.tvMealName)
+        imgFood = view.findViewById(R.id.imgFood)
+        layoutMicroTitle = view.findViewById(R.id.layoutMicroTitle)
+        layoutMacroTitle = view.findViewById(R.id.layoutMacroTitle)
+        microUP = view.findViewById(R.id.microUP)
+        icMacroUP = view.findViewById(R.id.icMacroUP)
+        tvDishes = view.findViewById(R.id.tvDishes)
 
         macroItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        macroItemRecyclerView.adapter = macroNutientsAdapter
-//
+        macroItemRecyclerView.adapter = macroNutrientsAdapter
         microItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        microItemRecyclerView.adapter = microNutientsAdapter
-//
-//        lunchMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        lunchMealRecyclerView.adapter = lunchMealLogsAdapter
-//
-//        dinnerMealRecyclerView.layoutManager = LinearLayoutManager(context)
-//        dinnerMealRecyclerView.adapter = dinnerMealLogsAdapter
+        microItemRecyclerView.adapter = microNutrientsAdapter
+        dishesItemRecyclerview.layoutManager = LinearLayoutManager(context)
+        dishesItemRecyclerview.adapter = mealLogsAdapter
+
+        val mealDetailsLogResponse = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("mealDetailsLog", MealDetailsLog::class.java)
+        } else {
+            arguments?.getParcelable("mealDetailsLog")
+        }
+
+        if (mealDetailsLogResponse != null){
+            mealDetailsLog = mealDetailsLogResponse
+          //  setDishData(foodDetailsResponse)
+
+            mealNutritionSummary.addAll(mealDetailsLog!!.meal_nutrition_summary)
+            if (mealNutritionSummary.size > 0){
+                onMacroNutrientsList(mealNutritionSummary.get(0), 1)
+                onMicroNutrientsList(mealNutritionSummary.get(0), 1)
+            }
+
+            val breakfastRecipes = mealDetailsLog!!.regular_receipes
+            if (breakfastRecipes != null){
+                if (breakfastRecipes.isNotEmpty()){
+                    mealCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
+                    mealNames = breakfastRecipes.map { it.receipe.recipe_name }
+                }
+            }
+            val breakfastSnapMeals = mealDetailsLog!!.snap_meals
+            if (breakfastSnapMeals != null){
+                if (breakfastSnapMeals.isNotEmpty()){
+                    mealCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
+                    mealNames = breakfastSnapMeals.map { it.name }
+                }
+            }
+            setMealLogsList()
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
-
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
+                    replace(R.id.flFragment, fragment, "mealLog")
+                    addToBackStack("mealLog")
                     commit()
                 }
             }
         })
+        backButton.setOnClickListener {
+            val fragment = YourMealLogsFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
 
-        onMacroNutrientsItemRefresh()
-        onMicroNutrientsItemRefresh()
-//        onBreakfastMealLogItemRefresh()
-//        onLunchMealLogItemRefresh()
-//        onDinnerMealLogItemRefresh()
-//
-//        imageCalender.setOnClickListener {
-//            val fragment = MealLogCalenderFragment()
-//            val args = Bundle()
-//
-//            fragment.arguments = args
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flFragment, fragment, "mealLog")
-//                addToBackStack("mealLog")
-//                commit()
-//            }
-//        }
-//
-//        btnLogMeal.setOnClickListener {
-//            val fragment = HomeTabMealFragment()
-//            val args = Bundle()
-//            fragment.arguments = args
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flFragment, fragment, "mealLog")
-//                addToBackStack("mealLog")
-//                commit()
-//            }
-//        }
-//
-//        breakfastDotMenu.setOnClickListener {
-//            if (editDeleteBreakfast.visibility == View.GONE){
-//                //layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteBreakfast.visibility = View.VISIBLE
-//            }else{
-//               // layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteBreakfast.visibility = View.GONE
-//            }
-//        }
-//
-//        lunchDotMenu.setOnClickListener {
-//            if (editDeleteLunch.visibility == View.GONE){
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteLunch.visibility = View.VISIBLE
-//            }else{
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteLunch.visibility = View.GONE
-//            }
-//        }
-//
-//        dinnerDotMenu.setOnClickListener {
-//            if (editDeleteDinner.visibility == View.GONE){
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteDinner.visibility = View.VISIBLE
-//            }else{
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteDinner.visibility = View.GONE
-//            }
-//        }
-//
-//        layoutDelete.setOnClickListener {
-//            deleteMealDialog()
-//        }
+        layoutMacroTitle.setOnClickListener {
+            if (macroItemRecyclerView.isVisible){
+                macroItemRecyclerView.visibility = View.GONE
+                icMacroUP.setImageResource(R.drawable.ic_down)
+                view.findViewById<View>(R.id.view_macro).visibility = View.GONE
+            }else{
+                macroItemRecyclerView.visibility = View.VISIBLE
+                icMacroUP.setImageResource(R.drawable.ic_up)
+                view.findViewById<View>(R.id.view_macro).visibility = View.VISIBLE
+            }
+        }
+
+        layoutMicroTitle.setOnClickListener {
+            if (microItemRecyclerView.isVisible){
+                microItemRecyclerView.visibility = View.GONE
+                microUP.setImageResource(R.drawable.ic_down)
+                view.findViewById<View>(R.id.view_micro).visibility = View.GONE
+            }else{
+                microItemRecyclerView.visibility = View.VISIBLE
+                microUP.setImageResource(R.drawable.ic_up)
+                view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
+            }
+        }
     }
 
-    private fun onMacroNutrientsItemRefresh (){
+    private fun setDishData(snapRecipeData: SearchResultItem) {
+
+        val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
+        Glide.with(this)
+            .load(imageUrl)
+            .placeholder(R.drawable.ic_breakfast)
+            .error(R.drawable.ic_breakfast)
+            .into(imgFood)
+
+    }
+
+    private fun setMealLogsList() {
+
+        val regularRecipeData: RegularRecipeEntry? = null
+        val snapMealData: SnapMeal? = null
+        activity?.runOnUiThread {
+            if (mealCombinedList.size > 0) {
+                tvDishes.visibility = View.VISIBLE
+                dishesItemRecyclerview.visibility = View.VISIBLE
+                val name = mealNames.joinToString(", ")
+                val capitalized = name.toString().replaceFirstChar { it.uppercase() }
+                tvMealName.text = capitalized
+                mealLogsAdapter.addAll(mealCombinedList, -1, regularRecipeData, snapMealData, false)
+            } else {
+                tvDishes.visibility = View.GONE
+                dishesItemRecyclerview.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun onMacroNutrientsList(mealDetails: MealNutritionSummary, value: Int) {
+
+        val calories_kcal : String = mealDetails.calories?.times(value)?.toInt().toString()?: "NA"
+        val protein_g : String = mealDetails.protein?.times(value)?.toInt().toString()?: "NA"
+        val carb_g : String = mealDetails.carbs?.times(value)?.toInt().toString()?: "NA"
+        val fat_g : String = mealDetails.fat?.times(value)?.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
-            MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
-            MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
+            MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
+            MacroNutrientsModel(protein_g, "g", "Protein", R.drawable.ic_cabs),
+            MacroNutrientsModel(carb_g, "g", "Carbs", R.drawable.ic_protein),
+            MacroNutrientsModel(fat_g, "g", "Fats", R.drawable.ic_fats),
         )
 
         val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
         valueLists.addAll(mealLogs as Collection<MacroNutrientsModel>)
         val mealLogDateData: MacroNutrientsModel? = null
-        macroNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        macroNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMicroNutrientsItemRefresh (){
+    private fun onMicroNutrientsList(mealDetails: MealNutritionSummary, value: Int) {
+
+        val cholesterol = if (mealDetails.cholesterol != null){
+            mealDetails.cholesterol.times(value)?.toInt().toString()
+        }else{
+            "0"
+        }
+
+//        val vitamin_A = if (mealDetails.nutrients.micros.Vitamin_A != null){
+//            mealDetails.nutrients.micros.Vitamin_A.times(value)?.toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+//        val vitamin_C = if (mealDetails.nutrients.micros.Vitamin_C != null){
+//            mealDetails.nutrients.micros.Vitamin_C.times(value)?.toInt().toString()
+//        }else{
+//            "0"
+//        }
+//
+//        val vitamin_k = if (mealDetails.nutrients.micros.Vitamin_K != null){
+//            mealDetails.nutrients.micros.Vitamin_K.times(value)?.toInt().toString()
+//        }else{
+//            "0"
+//        }
+//
+//        val vitaminD = if (mealDetails.nutrients.micros.Vitamin_D != null){
+//            mealDetails.nutrients.micros.Vitamin_D.toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+//        val folate = if (mealDetails.nutrients.micros.Folate != null){
+//            mealDetails.nutrients.micros.Folate.toInt().toString()
+//        }else{
+//            "0"
+//        }
+//
+//        val iron_mg = if (mealDetails.nutrients.micros.Iron != null){
+//            mealDetails.nutrients.micros.Iron.toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+//        val calcium = if (mealDetails.nutrients.micros.Calcium != null){
+//            mealDetails.nutrients.micros.Calcium.toInt().toString()
+//        }else{
+//            "0"
+//        }
+//
+//        val magnesium = if (mealDetails.nutrients.micros.Magnesium != null){
+//            mealDetails.nutrients.micros.Magnesium.times(value)?.toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+        val potassium_mg = if (mealDetails.potassium != null){
+            mealDetails.potassium.times(value)?.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val fiber_mg = if (mealDetails.fiber != null){
+            mealDetails.fiber.times(value)?.toInt().toString()
+        }else{
+            "0"
+        }
+//
+//        val zinc = if (mealDetails.nutrients.micros.Zinc != null){
+//            mealDetails.nutrients.micros.Zinc.times(value)?.toInt().toString()
+//        }else{
+//            "0"
+//        }
+
+        val sodium = if (mealDetails.sodium != null){
+            mealDetails.sodium.times(value)?.toInt().toString()
+        }else{
+            "0"
+        }
+
+        val sugar_mg = if (mealDetails.sugar != null){
+            mealDetails.sugar.times(value)?.toInt().toString()
+        }else{
+            "0"
+        }
 
         val mealLogs = listOf(
-            MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
-            MicroNutrientsModel("3", "mg", "Iron", R.drawable.ic_cabs),
-            MicroNutrientsModel("25", "mg", "Magnesium", R.drawable.ic_protein),
-            MicroNutrientsModel("65", "mg", "Phasphorus", R.drawable.ic_fats),
-            MicroNutrientsModel("150", "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
+            MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
+//            MicroNutrientsModel(vitamin_A, "mg", "Vitamin A", R.drawable.ic_fats),
+//            MicroNutrientsModel(vitamin_C, "mg", "Vitamin C", R.drawable.ic_fats),
+//            MicroNutrientsModel(vitamin_k, "mg", "Vitamin K", R.drawable.ic_fats),
+//            MicroNutrientsModel(vitaminD, "mg", "Vitamin D", R.drawable.ic_fats),
+//            MicroNutrientsModel(folate, "mg", "Folate", R.drawable.ic_fats),
+//            MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_fats),
+//            MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
+//            MicroNutrientsModel(magnesium, "mg", "Magnesium", R.drawable.ic_fats),
+            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
+            MicroNutrientsModel(fiber_mg, "mg", "Fiber", R.drawable.ic_fats),
+ //           MicroNutrientsModel(zinc, "mg", "Zinc", R.drawable.ic_fats),
+            MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
+            MicroNutrientsModel(sugar_mg, "mg", "Sugar", R.drawable.ic_fats)
         )
 
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        //  valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)
+        for (item in mealLogs){
+            if (item.nutrientsValue != "0"){
+                valueLists.add(item)
+            }
+        }
         val mealLogDateData: MicroNutrientsModel? = null
-        microNutientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
+        microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun onBreakfastMealLogItemRefresh() {
@@ -234,92 +346,27 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
       //  macroNutientsAdapter.addAll(valueLists, -1, breakfastMealData, false)
     }
 
-    private fun onLunchMealLogItemRefresh() {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-        val lunchMealData: LunchMealModel? = null
-    //    lunchMealLogsAdapter.addAll(valueLists, -1, lunchMealData, false)
+    private fun onMacroNutrientsItemClick(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
+    }
+    private fun onMicroNutrientsItemClick(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+    }
+    private fun onBreakFastSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
     }
 
-    private fun onDinnerMealLogItemRefresh() {
-        val mealLogs = listOf(
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-        val dinnerMealData: DinnerMealModel? = null
-       // dinnerMealLogsAdapter.addAll(valueLists, -1, dinnerMealData, false)
-    }
-
-    private fun onMacroNutrientsItem(macroNutrientsModel: MacroNutrientsModel, position: Int, isRefresh: Boolean) {
-        val macroNutrients = listOf(
-            MacroNutrientsModel("1285", "kcal", "calorie", R.drawable.ic_cal),
-            MacroNutrientsModel("11", "g", "protien", R.drawable.ic_cabs),
-            MacroNutrientsModel("338", "g", "carbs", R.drawable.ic_protein),
-            MacroNutrientsModel("25", "g", "fats", R.drawable.ic_fats),
-        )
-        val valueLists : ArrayList<MacroNutrientsModel> = ArrayList()
-        valueLists.addAll(macroNutrients as Collection<MacroNutrientsModel>)
-        macroNutientsAdapter.addAll(valueLists, position, macroNutrientsModel, isRefresh)
-    }
-
-    private fun onMicroNutrientsItem(microNutrientsModel: MicroNutrientsModel, position: Int, isRefresh: Boolean) {
-
-        val microNutrients = listOf(
-            MicroNutrientsModel("0.1", "mg", "Vitamin B", R.drawable.ic_cal),
-            MicroNutrientsModel("3", "mg", "Iron", R.drawable.ic_cabs),
-            MicroNutrientsModel("25", "mg", "Magnesium", R.drawable.ic_protein),
-            MicroNutrientsModel("65", "mg", "Phasphorus", R.drawable.ic_fats),
-            MicroNutrientsModel("150", "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel("1", "mg", "Zinc", R.drawable.ic_fats)
-        )
-        val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
-        valueLists.addAll(microNutrients as Collection<MicroNutrientsModel>)
-        microNutientsAdapter.addAll(valueLists, position, microNutrientsModel, isRefresh)
-    }
-
-    private fun onBreakfastMealLogItem(mealLogDateModel: BreakfastMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            BreakfastMealModel("Breakfast", "Poha", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            BreakfastMealModel("Breakfast", "Apple", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-        )
-        val valueLists : ArrayList<BreakfastMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<BreakfastMealModel>)
-       // breakfastMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onLunchMealLogItem(mealLogDateModel: LunchMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            LunchMealModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<LunchMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<LunchMealModel>)
-      //  lunchMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun onDinnerMealLogItem(mealLogDateModel: DinnerMealModel, position: Int, isRefresh: Boolean) {
-        val mealLogs = listOf(
-            LunchMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17"),
-            DinnerMealModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian" ,"25", "1", "1,157", "8", "308", "17")
-        )
-        val valueLists : ArrayList<DinnerMealModel> = ArrayList()
-        valueLists.addAll(mealLogs as Collection<DinnerMealModel>)
-       // dinnerMealLogsAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
-
-    private fun deleteMealDialog(){
-
-        deleteBottomSheetFragment = DeleteMealBottomSheet()
-        deleteBottomSheetFragment.isCancelable = true
-        val bundle = Bundle()
-        bundle.putBoolean("test",false)
-        deleteBottomSheetFragment.arguments = bundle
-        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+    fun getDriveImageUrl(originalUrl: String): String? {
+        val regex = Regex("(?<=/d/)(.*?)(?=/|$)")
+        val matchResult = regex.find(originalUrl)
+        val fileId = matchResult?.value
+        return if (!fileId.isNullOrEmpty()) {
+            "https://drive.google.com/uc?export=view&id=$fileId"
+        } else {
+            null
+        }
     }
 }

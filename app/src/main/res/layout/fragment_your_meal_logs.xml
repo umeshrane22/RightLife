@@ -660,7 +660,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_btnAdd"
+                            android:id="@+id/addBreakfastLayout"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
                             android:layout_marginStart="10dp"
@@ -840,7 +840,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/view">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_view_food"
+                            android:id="@+id/viewBFMealInsightLayout"
                             android:layout_width="140dp"
                             android:layout_height="30dp"
                             android:layout_marginEnd="20dp"
@@ -1021,7 +1021,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/btnAddMorningSnackLayout"
+                            android:id="@+id/addMorningSnackLayout"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
                             android:layout_marginStart="10dp"
@@ -1202,7 +1202,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/viewMorningSnack">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layoutViewFoodMorningSnack"
+                            android:id="@+id/viewMSMealInsightLayout"
                             android:layout_width="140dp"
                             android:layout_height="30dp"
                             android:layout_marginEnd="20dp"
@@ -1383,7 +1383,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_lunchAdd"
+                            android:id="@+id/addLunchLayout"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
                             android:layout_marginStart="10dp"
@@ -1560,7 +1560,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/view2">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_lunch_view_food"
+                            android:id="@+id/viewLunchMealInsightLayout"
                             android:layout_width="140dp"
                             android:layout_height="30dp"
                             android:layout_marginEnd="20dp"
@@ -1741,7 +1741,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_btnAddeveningSnacks"
+                            android:id="@+id/addEveningSnacksLayout"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
                             android:layout_marginStart="10dp"
@@ -1922,7 +1922,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/vieweveningSnacks">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_view_foodeveningSnacks"
+                            android:id="@+id/viewESMealInsightLayout"
                             android:layout_width="140dp"
                             android:layout_height="30dp"
                             android:layout_marginEnd="20dp"
@@ -2103,7 +2103,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_dinnerAdd"
+                            android:id="@+id/addDinnerLayout"
                             android:layout_width="70dp"
                             android:layout_height="30dp"
                             android:layout_marginStart="10dp"
@@ -2280,7 +2280,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/view3">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_dinner_view_food"
+                            android:id="@+id/viewDinnerMealInsightLayout"
                             android:layout_width="140dp"
                             android:layout_height="30dp"
                             android:layout_marginEnd="20dp"
