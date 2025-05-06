@@ -7,6 +7,7 @@
     android:paddingBottom="10dp"
     android:paddingStart="9dp"
     android:paddingEnd="9dp"
+    android:background="@drawable/white_meal_date_bg"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,10 +23,11 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="5dp"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:background="@color/view_border"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/view_border"></View>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_meal_name"
@@ -134,15 +136,40 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <ImageView
-                android:id="@+id/imageUpDown"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:visibility="visible"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_up_down_arrow" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/imageUpDown"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_up_down_arrow" />
+
+                <ImageView
+                    android:id="@+id/image_delete"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/delete_icon_green" />
+
+                <ImageView
+                    android:id="@+id/image_edit"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:scaleType="fitXY"
+                    android:layout_marginStart="10dp"
+                    android:src="@drawable/edit_green_icon" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -158,6 +185,7 @@
             app:layout_constraintTop_toBottomOf="@+id/layout_meal_name">
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/servesLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"

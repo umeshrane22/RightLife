@@ -4,12 +4,16 @@ import com.google.gson.annotations.SerializedName
 
 data class SleepPercentages(
 
-    @SerializedName("Core"  )
-    var Core  : Double?,
-    @SerializedName("Deep"  )
-    var Deep  : Double?,
-    @SerializedName("REM"   )
-    var REM   : Double?,
-    @SerializedName("Awake" )
-    var Awake : Int?
+    @SerializedName("InBed" )
+    var    inBed     : Double? ,
+    @SerializedName("Deep"   )
+    var deep   :  Double? ,
+    @SerializedName("Light"  )
+    var light  :  Double? ,
+    @SerializedName("REM"    )
+    var rem    :  Double?,
+    @SerializedName("Awake"  )
+    var awake  :  Double? ,
+    @SerializedName("Asleep" )
+    var asleep :  Double?
 )

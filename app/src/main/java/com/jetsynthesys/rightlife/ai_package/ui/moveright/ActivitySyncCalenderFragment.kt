@@ -17,6 +17,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.databinding.FragmentActivitySyncCalenderBinding
 import com.google.android.material.snackbar.Snackbar
+import java.text.SimpleDateFormat
 import java.util.Locale
 
 
@@ -205,6 +206,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         // Add previous year days
         calendar.add(java.util.Calendar.DAY_OF_YEAR, -daysToFill)
         for (i in 0 until daysToFill) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             daysList.add(
                 CalendarDateModel(
                     date = calendar.get(java.util.Calendar.DAY_OF_MONTH),
@@ -213,6 +215,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK),
                     currentDate = currentDate,
                     currentMonth = currentMonth,
+                    fullDate = formatter.format(calendar.time),
                     surplus = (i * 50) % 500 // Random surplus example
                 )
             )
@@ -221,6 +224,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         // Now reset to actual year and start adding days
         calendar.set(year, java.util.Calendar.JANUARY, 1)
         while (calendar.get(java.util.Calendar.YEAR) == year) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             daysList.add(
                 CalendarDateModel(
                     date = calendar.get(java.util.Calendar.DAY_OF_MONTH),
@@ -229,6 +233,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     dayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK),
                     currentDate = currentDate,
                     currentMonth = currentMonth,
+                    fullDate = formatter.format(calendar.time),
                     surplus = (1 * 50) % 500 // Random surplus example
                 )
             )

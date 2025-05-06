@@ -77,6 +77,20 @@ data class Steps(
     @SerializedName("unit") val unit: String
 )
 
+// New data class for activity_factor's last_7_days items
+data class ActivityFactorDay(
+    @SerializedName("date") val date: String,
+    @SerializedName("activity_factor") val activityFactor: Float
+)
+
+// New data class for activity_factor
+data class ActivityFactor(
+    @SerializedName("last_7_days") val last7Days: List<ActivityFactorDay>,
+    @SerializedName("average_activity_factor") val averageActivityFactor: Float,
+    @SerializedName("today") val today: Float,
+    @SerializedName("unit") val unit: String
+)
+
 data class DashboardData(
     @SerializedName("calorie_balance") val calorieBalance: CalorieBalance,
     @SerializedName("heart_rate_zones") val heartRateZones: HeartRateZone,
@@ -84,7 +98,8 @@ data class DashboardData(
     @SerializedName("average_heart_rate") val averageHeartRate: AverageHeartRate,
     @SerializedName("heart_rate_variability") val heartRateVariability: HeartRateVariability,
     @SerializedName("calories_burned") val caloriesBurned: CaloriesBurned,
-    @SerializedName("steps") val steps: Steps
+    @SerializedName("steps") val steps: Steps,
+    @SerializedName("activity_factor") val activityFactor: ActivityFactor // Added new field
 )
 
 data class MoveDashboardResponse(

@@ -71,7 +71,7 @@
                     android:layout_height="200dp"
                     android:layout_marginTop="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/poha_image"
+                    android:src="@drawable/ic_view_meal_place"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>

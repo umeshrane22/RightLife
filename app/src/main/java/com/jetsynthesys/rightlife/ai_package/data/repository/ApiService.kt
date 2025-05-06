@@ -61,10 +61,12 @@ import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.CalorieAnalysisResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCholesterolResponse
@@ -90,6 +92,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
@@ -206,9 +209,9 @@ interface ApiService {
     fun getMealsLogByDate(@Query("user_id") userId: String,
                         @Query("date") startDate: String): Call<MealLogDataResponse>
 
-    @GET("eat/meals/get_log_meals_byDate/")
+    @GET("eat/meals/get_logs_history/")
     fun getMealsLogHistoryCalender(@Query("user_id") userId: String,
-                          @Query("date") startDate: String, @Query("date_range") dateRange: String): Call<MealLogDataResponse>
+                          @Query("date_range") dateRange: String): Call<MealLogsHistoryResponse>
 
     @GET("eat/meals/get_logs_history/")
     fun getMealsLogHistory(@Query("user_id") userId: String,
@@ -238,8 +241,8 @@ interface ApiService {
     @GET("move/data/new_user_workouts/")
     suspend fun getNewUserWorkouts(
         @Query("user_id") userId: String,
-        @Query("range_type") rangeType: String,
-        @Query("date") date: String,
+        @Query("start_date") start_date: String,
+        @Query("end_date") end_date: String,
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): Response<WorkoutResponse>
@@ -274,12 +277,25 @@ interface ApiService {
         @Body request: CreateWorkoutRequest
     ): Response<CalculateCaloriesResponse>
 
+    @PUT("move/data/update_calories/")
+    suspend fun updateCalories(
+        @Query("calorie_id") calorieId: String,
+        @Body request: UpdateCaloriesRequest
+    ): Response<UpdateCaloriesResponse>
+
     @GET("move/fetch_active_burned/")
     suspend fun getActiveCalories(
         @Query("user_id") userId: String,
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("move/fetch_calorie_analysis/")
+    suspend fun getCalorieAnalysis(
+        @Query("user_id") userId: String,
+        @Query("date") date: String,
+        @Query("period") period: String
+    ): Response<CalorieAnalysisResponse>
 
     @GET("eat/calories/consumed/")
       suspend fun getConsumedCalories(
@@ -386,7 +402,7 @@ interface ApiService {
         @Query("time_range") timeRange: String
     ): Response<ActivityFactorResponse>
 
-    @POST("move/data/calculate_calories/")
+    @POST("move/data/fetch_calculate_calories/")
     suspend fun calculateCalories(
         @Body request: CalculateCaloriesRequest
     ): Response<CalculateCaloriesResponse>
@@ -442,14 +458,13 @@ interface ApiService {
 
     @GET("sleep/fetch_sleep_time")
     fun fetchWakeupTime(@Query("user_id") userId: String,
-                        @Query("source") source: String,
-                        @Query("date") date: String): Call<WakeupTimeResponse>
+                        @Query("source") source: String): Call<WakeupTimeResponse>
 
-    @POST("sleep/set_nap_log")
+    @POST("sleep/set_nap_log/")
     fun logNap(@Query("user_id") userId: String,
-               @Query("source") source: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
+               @Query("source") source: String, @Query("date") date: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
 
-    @PUT("sleep/set_wakeup_time")
+    @PUT("sleep/set_wakeup_time/")
     fun updateWakeupTime(@Query("user_id") userId: String, @Query("source") source: String, @Query("record_id") record_id: String,
                          @Query("timer_value") timer_value: String): Call<WakeupTimeResponse>
 
@@ -471,7 +486,8 @@ interface ApiService {
     fun fetchSleepConsistencyDetail(
         @Query("user_id") userId: String,
         @Query("source") source: String,
-        @Query("period") period: String
+        @Query("period") period: String,
+        @Query("date") date: String
     ): Call<SleepConsistencyResponse>
 
     @GET("sleep/restorative_sleep_detail/")
@@ -530,7 +546,7 @@ interface ApiService {
     ): Response<WaterIntakeResponse>
 
 
-    @DELETE("/move/data/delete_calories/")
+    @DELETE("move/data/delete_calories/")
     suspend fun deleteCalorie(
         @Query("calorie_id") calorieId: String,
         @Query("user_id") userId: String

@@ -14,13 +14,13 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 
-class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: ArrayList<MergedLogsMealItem>,
-                                   private var clickPos: Int, private var regularRecipeEntry : RegularRecipeEntry?,
-                                   private var snapMealData : SnapMeal?, private var isClickView : Boolean,
-                                   val onBreakFastRegularRecipeDeleteItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
-                                   val onBreakFastRegularRecipeEditItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
-                                   val onBreakFastSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
-                                   val onBreakFastSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
+class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<MergedLogsMealItem>,
+                      private var clickPos: Int, private var regularRecipeEntry : RegularRecipeEntry?,
+                      private var snapMealData : SnapMeal?, private var isClickView : Boolean,
+                      val onBreakFastRegularRecipeDeleteItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
+                      val onBreakFastRegularRecipeEditItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
+                      val onBreakFastSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
+                      val onBreakFastSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLogs : Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedItem = -1
@@ -40,11 +40,11 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             TYPE_REGULAR_RECIPE -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_lunch_meal_logs_ai, parent, false)
                 RegularRecipeViewHolder(view)
             }
             TYPE_SNAP_MEAL -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_breakfast_meal_logs_ai, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_lunch_meal_logs_ai, parent, false)
                 SnapMealViewHolder(view)
             }
             else -> throw IllegalArgumentException("Unknown view type")
@@ -70,7 +70,7 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             val imageUpDown : ImageView = itemView.findViewById(R.id.imageUpDown)
             val mealImage : ImageView = itemView.findViewById(R.id.image_meal)
             val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
-            val serve: ImageView = itemView.findViewById(R.id.image_serve)
+         //   val serve: ImageView = itemView.findViewById(R.id.image_serve)
             val serves: TextView = itemView.findViewById(R.id.tv_serves)
             val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
             val cal: ImageView = itemView.findViewById(R.id.image_cal)
@@ -89,21 +89,19 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             val layoutEatTime : LinearLayoutCompat = itemView.findViewById(R.id.layout_eat_time)
             val servesLayout : LinearLayoutCompat = itemView.findViewById(R.id.servesLayout)
 
-            if (isLanding){
+            if (isLogs){
                 delete.visibility = View.GONE
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
-                servesLayout.visibility = View.GONE
+                servesLayout.visibility = View.VISIBLE
             }else {
-                delete.visibility = View.GONE
-                edit.visibility = View.GONE
+                delete.visibility = View.VISIBLE
+                edit.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.VISIBLE
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
             }
-
-
             mealName.text = data.receipe.recipe_name
             servesCount.text = data.receipe.servings.toString()
             val mealTime = data.receipe.serving_weight
@@ -119,13 +117,13 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                 .error(R.drawable.ic_breakfast)
                 .into(mealImage)
 
-            delete.setOnClickListener {
-                onBreakFastRegularRecipeDeleteItem(data, bindingAdapterPosition, true)
-            }
-
-            edit.setOnClickListener {
-                onBreakFastRegularRecipeEditItem(data, bindingAdapterPosition, true)
-            }
+//            delete.setOnClickListener {
+//                onBreakFastRegularRecipeDeleteItem(data, bindingAdapterPosition, true)
+//            }
+//
+//            edit.setOnClickListener {
+//                onBreakFastRegularRecipeEditItem(data, bindingAdapterPosition, true)
+//            }
         }
 
         fun getDriveImageUrl(originalUrl: String): String? {
@@ -167,15 +165,15 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             val layoutEatTime : LinearLayoutCompat = itemView.findViewById(R.id.layout_eat_time)
             val servesLayout : LinearLayoutCompat = itemView.findViewById(R.id.servesLayout)
 
-            if (isLanding){
+            if (isLogs){
                 delete.visibility = View.GONE
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
-                servesLayout.visibility = View.GONE
+                servesLayout.visibility = View.VISIBLE
             }else {
-                delete.visibility = View.GONE
-                edit.visibility = View.GONE
+                delete.visibility = View.VISIBLE
+                edit.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.VISIBLE
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
@@ -197,13 +195,13 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                 .error(R.drawable.ic_breakfast)
                 .into(mealImage)
 
-            delete.setOnClickListener {
-                onBreakFastSnapMealDeleteItem(data, bindingAdapterPosition, true)
-            }
-
-            edit.setOnClickListener {
-                onBreakFastSnapMealEditItem(data, bindingAdapterPosition, true)
-            }
+//            delete.setOnClickListener {
+//                onBreakFastSnapMealDeleteItem(data, bindingAdapterPosition, true)
+//            }
+//
+//            edit.setOnClickListener {
+//                onBreakFastSnapMealEditItem(data, bindingAdapterPosition, true)
+//            }
         }
 
         fun getDriveImageUrl(originalUrl: String): String? {

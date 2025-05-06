@@ -5,14 +5,31 @@ import com.google.gson.annotations.SerializedName
 data class WorkoutResponse(
     @SerializedName("message")
     val message: String,
+
     @SerializedName("range_type")
-    val range_type: String,
+    val rangeType: String? = null,
+
     @SerializedName("start_date")
-    val start_date: String,
+    val startDate: String? = null,
+
     @SerializedName("end_date")
-    val end_date: String,
+    val endDate: String? = null,
+
     @SerializedName("synced_workouts")
-    val synced_workouts: List<SyncedWorkout>,
+    val syncedWorkouts: List<SyncedWorkout>,
+
     @SerializedName("unsynced_workouts")
-    val unsynced_workouts: List<UnsyncedWorkout>
+    val unsyncedWorkouts: List<UnsyncedWorkout>,
+
+    @SerializedName("total_synced")
+    val totalSynced: Int,
+
+    @SerializedName("total_unsynced")
+    val totalUnsynced: Int,
+
+    @SerializedName("page")
+    val page: Int,
+
+    @SerializedName("limit")
+    val limit: Int
 )

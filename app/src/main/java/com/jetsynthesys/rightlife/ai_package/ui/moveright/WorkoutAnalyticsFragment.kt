@@ -36,11 +36,18 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private lateinit var transparentOverlayLight: View
     private lateinit var customProgressBarFatBurn: FatBurnStrippedProgressBar
     private lateinit var transparentOverlayFatBurn: View
+    private lateinit var light_percentage_value: TextView
+    private lateinit var light_time_value: TextView
+    private lateinit var fat_burn_time_value: TextView
+    private lateinit var fat_burn_percentage_value: TextView
+    private lateinit var cardio_text_time_value: TextView
+    private lateinit var cardio_text_percentage_value: TextView
+    private lateinit var peak_text_time_value: TextView
+    private lateinit var light_text_percentage: TextView
     private var cardItem: CardItem? = null
 
     private val dataPoints = mutableListOf<HRDataPoint>()
     private val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
-
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentWorkoutAnalyticsBinding
         get() = FragmentWorkoutAnalyticsBinding::inflate
@@ -64,41 +71,16 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         transparentOverlayFatBurn = view.findViewById(R.id.transparentOverlayFatBurn)
         workOutsAnalyticsBackButton = view.findViewById(R.id.back_button)
+        light_percentage_value = view.findViewById(R.id.light_percentage_value)
+        light_time_value = view.findViewById(R.id.light_time_value)
+        fat_burn_time_value = view.findViewById(R.id.fat_burn_time_value)
+        fat_burn_percentage_value = view.findViewById(R.id.fat_burn_percentage_value)
+        cardio_text_time_value = view.findViewById(R.id.cardio_text_time_value)
+        cardio_text_percentage_value = view.findViewById(R.id.cardio_text_percentage_value)
+        peak_text_time_value = view.findViewById(R.id.peak_text_time_value)
+        light_text_percentage = view.findViewById(R.id.light_text_percentage)
         workOutsAnalyticsBackButton.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(), "LandingFragment")
-        }
-
-        // Setup progress bars
-        customProgressBar.post {
-            val progressBarWidth = customProgressBar.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlay.layoutParams = layoutParams
-        }
-
-        customProgressBarCardio.post {
-            val progressBarWidth = customProgressBarCardio.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams = transparentOverlayCardio.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlayCardio.layoutParams = layoutParams
-        }
-
-        customProgressBarLight.post {
-            val progressBarWidth = customProgressBarLight.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams = transparentOverlayLight.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlayLight.layoutParams = layoutParams
-        }
-
-        customProgressBarFatBurn.post {
-            val progressBarWidth = customProgressBarFatBurn.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams = transparentOverlayFatBurn.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlayFatBurn.layoutParams = layoutParams
         }
 
         // Back press handling
@@ -125,6 +107,60 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             view.findViewById<TextView>(R.id.duration_text).text = item.duration
             view.findViewById<TextView>(R.id.calories_text).text = item.caloriesBurned
             view.findViewById<TextView>(R.id.avg_heart_rate_text_value).text = item.avgHeartRate
+            light_text_percentage.text = "${item.heartRateZonePercentages.lightZone.toString()} %"
+            light_percentage_value.text = "${item.heartRateZonePercentages.fatBurnZone.toString()} %"
+            fat_burn_percentage_value.text = "${item.heartRateZonePercentages.cardioZone.toString()} %"
+            cardio_text_percentage_value.text = "${item.heartRateZonePercentages.peakZone.toString()} %"
+            peak_text_time_value.text = "${item.heartRateZoneMinutes.peakZone.toString()}min"
+            cardio_text_time_value.text = "${item.heartRateZoneMinutes.cardioZone.toString()}min"
+            fat_burn_time_value.text = "${item.heartRateZoneMinutes.fatBurnZone.toString()}min"
+            light_time_value.text = "${item.heartRateZoneMinutes.lightZone.toString()}min"
+
+
+            // Set progress bar percentages and overlay widths from heartRateZonePercentages
+            customProgressBar.post {
+                customProgressBar.progress = item.heartRateZonePercentages.peakZone.toFloat()
+                val progressBarWidth = customProgressBar.width
+                val filledWidth = (progressBarWidth * (item.heartRateZonePercentages.peakZone / 100.0)).toInt()
+                val layoutParams = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = filledWidth
+                layoutParams.startToStart = customProgressBar.id
+                layoutParams.marginStart = 0
+                transparentOverlay.layoutParams = layoutParams
+            }
+
+            customProgressBarLight.post {
+                customProgressBarLight.progress = item.heartRateZonePercentages.lightZone.toFloat()
+                val progressBarWidth = customProgressBarLight.width
+                val filledWidth = (progressBarWidth * (item.heartRateZonePercentages.lightZone / 100.0)).toInt()
+                val layoutParams = transparentOverlayLight.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = filledWidth
+                layoutParams.startToStart = customProgressBarLight.id
+                layoutParams.marginStart = 0
+                transparentOverlayLight.layoutParams = layoutParams
+            }
+
+            customProgressBarFatBurn.post {
+                customProgressBarFatBurn.progress = item.heartRateZonePercentages.fatBurnZone.toFloat()
+                val progressBarWidth = customProgressBarFatBurn.width
+                val filledWidth = (progressBarWidth * (item.heartRateZonePercentages.fatBurnZone / 100.0)).toInt()
+                val layoutParams = transparentOverlayFatBurn.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = filledWidth
+                layoutParams.startToStart = customProgressBarFatBurn.id
+                layoutParams.marginStart = 0
+                transparentOverlayFatBurn.layoutParams = layoutParams
+            }
+
+            customProgressBarCardio.post {
+                customProgressBarCardio.progress = item.heartRateZonePercentages.cardioZone.toFloat()
+                val progressBarWidth = customProgressBarCardio.width
+                val filledWidth = (progressBarWidth * (item.heartRateZonePercentages.cardioZone / 100.0)).toInt()
+                val layoutParams = transparentOverlayCardio.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = filledWidth
+                layoutParams.startToStart = customProgressBarCardio.id
+                layoutParams.marginStart = 0
+                transparentOverlayCardio.layoutParams = layoutParams
+            }
 
             // Convert heartRateData to HRDataPoint and set it on the graph
             dataPoints.clear()

@@ -42,6 +42,7 @@
                         android:id="@+id/icLeftArrow"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:visibility="invisible"
                         android:src="@drawable/ic_left_arrow_circle"
                         android:contentDescription="Back" />
 
@@ -62,6 +63,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:scaleType="fitXY"
+                        android:visibility="invisible"
                         android:src="@drawable/ic_right_arrow_circle"
                         android:contentDescription="Close" />
                 </LinearLayout>
@@ -237,4 +239,10 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/loader_layout"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

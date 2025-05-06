@@ -35,6 +35,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
+import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealNutritionSummary
@@ -47,6 +48,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourDinnerMealL
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourEveningSnacksMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnackMealLogsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DinnerMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
@@ -86,7 +88,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var selectMealTypeBottomSheet: SelectMealTypeBottomSheet
     private lateinit var layoutDelete : LinearLayoutCompat
-    private lateinit var layoutViewFood : LinearLayoutCompat
+    private lateinit var viewBFMealInsightLayout : LinearLayoutCompat
+    private lateinit var viewMSMealInsightLayout : LinearLayoutCompat
+    private lateinit var viewLunchMealInsightLayout : LinearLayoutCompat
+    private lateinit var viewESMealInsightLayout : LinearLayoutCompat
+    private lateinit var viewDinnerMealInsightLayout : LinearLayoutCompat
     private lateinit var addFoodLayout : LinearLayoutCompat
     private lateinit var appPreference: AppPreference
     private lateinit var calValue : TextView
@@ -98,9 +104,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var proteinsProgressBar : ProgressBar
     private lateinit var fatsProgressBar : ProgressBar
     private lateinit var transparentOverlay : View
-    private lateinit var layoutAdd : LinearLayoutCompat
-    private lateinit var layoutLunchAdd : LinearLayoutCompat
-    private lateinit var layoutDinnerAdd : LinearLayoutCompat
+    private lateinit var addBreakfastLayout : LinearLayoutCompat
+    private lateinit var addMorningSnackLayout : LinearLayoutCompat
+    private lateinit var addLunchLayout : LinearLayoutCompat
+    private lateinit var addEveningSnacksLayout : LinearLayoutCompat
+    private lateinit var addDinnerLayout : LinearLayoutCompat
     private lateinit var selectedWeeklyDayTv : TextView
     private lateinit var nextWeekBtn : ImageView
     private lateinit var prevWeekBtn : ImageView
@@ -134,6 +142,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private val lunchMealNutritionSummary = ArrayList<MealNutritionSummary>()
     private val eveningSnacksMealNutritionSummary = ArrayList<MealNutritionSummary>()
     private val dinnerMealNutritionSummary = ArrayList<MealNutritionSummary>()
+    private var breakFastMealDetailsLog : MealDetailsLog? = null
+    private var morningSnackMealDetailsLog : MealDetailsLog? = null
+    private var lunchMealDetailsLog : MealDetailsLog? = null
+    private var eveningSnackMealDetailsLog : MealDetailsLog? = null
+    private var dinnerMealDetailsLog : MealDetailsLog? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
@@ -184,7 +197,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
         layoutMain = view.findViewById(R.id.layout_main)
         layoutDelete = view.findViewById(R.id.layout_delete)
-        layoutViewFood = view.findViewById(R.id.layout_view_food)
+        viewBFMealInsightLayout = view.findViewById(R.id.viewBFMealInsightLayout)
+        viewMSMealInsightLayout = view.findViewById(R.id.viewMSMealInsightLayout)
+        viewLunchMealInsightLayout = view.findViewById(R.id.viewLunchMealInsightLayout)
+        viewESMealInsightLayout = view.findViewById(R.id.viewESMealInsightLayout)
+        viewDinnerMealInsightLayout = view.findViewById(R.id.viewDinnerMealInsightLayout)
         calValue = view.findViewById(R.id.tv_meal_cal_value)
         carbsValue = view.findViewById(R.id.tv_subtraction_cal_value)
         proteinsValue = view.findViewById(R.id.tv_baguette_cal_value)
@@ -195,9 +212,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         fatsProgressBar = view.findViewById(R.id.fats_progressBar)
         backButton = view.findViewById(R.id.backButton)
         addFoodLayout = view.findViewById(R.id.layout_add_food)
-        layoutAdd = view.findViewById(R.id.layout_btnAdd)
-        layoutLunchAdd = view.findViewById(R.id.layout_lunchAdd)
-        layoutDinnerAdd = view.findViewById(R.id.layout_dinnerAdd)
+        addBreakfastLayout = view.findViewById(R.id.addBreakfastLayout)
+        addMorningSnackLayout = view.findViewById(R.id.addMorningSnackLayout)
+        addLunchLayout = view.findViewById(R.id.addLunchLayout)
+        addEveningSnacksLayout = view.findViewById(R.id.addEveningSnacksLayout)
+        addDinnerLayout = view.findViewById(R.id.addDinnerLayout)
         layoutToolbar = view.findViewById(R.id.layoutToolbar)
         transparentOverlay = view.findViewById(R.id.transparentOverlay)
         selectedWeeklyDayTv = view.findViewById(R.id.selectedWeeklyDayTv)
@@ -266,6 +285,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
+        val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
+        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
         getMealsLogHistory(formattedDate)
 
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
@@ -329,15 +350,64 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
             }
         }
 
-        addFoodLayout.setOnClickListener {
-//            val fragment = ViewMealInsightsFragment()
-//            val args = Bundle()
-//            fragment.arguments = args
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                replace(R.id.flFragment, fragment, "viewMeal")
-//                addToBackStack("viewMeal")
-//                commit()
-//            }
+        addBreakfastLayout.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", "breakFast")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
+
+        addMorningSnackLayout.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", "morningSnack")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
+
+        addLunchLayout.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", "lunch")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
+
+        addEveningSnacksLayout.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", "eveningSnacks")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
+
+        addDinnerLayout.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", "dinner")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
         }
 
         lunchDotMenu.setOnClickListener {
@@ -364,14 +434,73 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
             deleteMealDialog()
         }
 
-        layoutViewFood.setOnClickListener {
-            val fragment = ViewMealInsightsFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "viewMeal")
-                addToBackStack("viewMeal")
-                commit()
+        viewBFMealInsightLayout.setOnClickListener {
+            if (breakFastMealDetailsLog != null){
+                val fragment = ViewMealInsightsFragment()
+                val args = Bundle()
+                args.putParcelable("mealDetailsLog", breakFastMealDetailsLog)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "viewMeal")
+                    addToBackStack("viewMeal")
+                    commit()
+                }
+            }
+        }
+
+        viewMSMealInsightLayout.setOnClickListener {
+            if (morningSnackMealDetailsLog != null){
+                val fragment = ViewMealInsightsFragment()
+                val args = Bundle()
+                args.putParcelable("mealDetailsLog", morningSnackMealDetailsLog)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "viewMeal")
+                    addToBackStack("viewMeal")
+                    commit()
+                }
+            }
+        }
+
+        viewLunchMealInsightLayout.setOnClickListener {
+            if (lunchMealDetailsLog != null){
+                val fragment = ViewMealInsightsFragment()
+                val args = Bundle()
+                args.putParcelable("mealDetailsLog", lunchMealDetailsLog)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "viewMeal")
+                    addToBackStack("viewMeal")
+                    commit()
+                }
+            }
+        }
+
+        viewESMealInsightLayout.setOnClickListener {
+            if (eveningSnackMealDetailsLog != null){
+                val fragment = ViewMealInsightsFragment()
+                val args = Bundle()
+                args.putParcelable("mealDetailsLog", eveningSnackMealDetailsLog)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "viewMeal")
+                    addToBackStack("viewMeal")
+                    commit()
+                }
+            }
+        }
+
+        viewDinnerMealInsightLayout.setOnClickListener {
+            if (dinnerMealDetailsLog != null){
+                val fragment = ViewMealInsightsFragment()
+                val args = Bundle()
+                args.putParcelable("mealDetailsLog", dinnerMealDetailsLog)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "viewMeal")
+                    addToBackStack("viewMeal")
+                    commit()
+                }
             }
         }
     }
@@ -427,7 +556,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
             calValue.text = dailyRecipe?.calories?.toInt().toString()
             carbsValue.text = dailyRecipe?.carbs?.toInt().toString()
             proteinsValue.text = dailyRecipe?.protein?.toInt().toString()
-            fatsValue.text = dailyRecipe?.fat?.toInt().toString()
+            fatsValue.text = dailyRecipe?.fats?.toInt().toString()
 
             caloriesProgressBar.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -455,7 +584,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
             // Set progress programmatically
             fatsProgressBar.max = 65  // Set maximum value
-            fatsProgressBar.progress = dailyRecipe?.fat!!.toInt()
+            fatsProgressBar.progress = dailyRecipe?.fats!!.toInt()
         }
     }
 
@@ -696,7 +825,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-      //  val userId = "64763fe2fa0e40d9c0bc8264"
         val startDate = "2025-03-22"
         val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
         call.enqueue(object : Callback<MealsResponse> {
@@ -746,6 +874,26 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                         val lunchMealNutrition = response.body()?.data!!.meal_detail["lunch"]?.meal_nutrition_summary
                         val eveningSnacksMealNutrition = response.body()?.data!!.meal_detail["eveningSnacks"]?.meal_nutrition_summary
                         val dinnerMealNutrition = response.body()?.data!!.meal_detail["dinner"]?.meal_nutrition_summary
+                        val breakFastViewItem = response.body()?.data!!.meal_detail["breakFast"]
+                        val morningSnackViewItem = response.body()?.data!!.meal_detail["morningSnack"]
+                        val lunchViewItem = response.body()?.data!!.meal_detail["lunch"]
+                        val eveningSnackViewItem = response.body()?.data!!.meal_detail["eveningSnacks"]
+                        val dinnerViewItem = response.body()?.data!!.meal_detail["dinner"]
+                        if (breakFastViewItem != null){
+                            breakFastMealDetailsLog = breakFastViewItem
+                        }
+                        if (morningSnackViewItem != null){
+                            morningSnackMealDetailsLog = morningSnackViewItem
+                        }
+                        if (lunchViewItem != null){
+                            lunchMealDetailsLog = lunchViewItem
+                        }
+                        if (eveningSnackViewItem != null){
+                            eveningSnackMealDetailsLog = eveningSnackViewItem
+                        }
+                        if (dinnerViewItem != null){
+                            dinnerMealDetailsLog = dinnerViewItem
+                        }
 
                         if (breakfastMealNutrition != null) {
                             if (breakfastMealNutrition.size > 0) {

@@ -82,7 +82,23 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             -1,
             null,
             false,
-            ::onWorkoutItemClick
+            ::onWorkoutItemClick,
+            onCirclePlusClick = { activityModel, position ->
+                val fragment = AddWorkoutSearchFragment()
+                val args = Bundle().apply {
+                    putParcelable("ACTIVITY_MODEL", activityModel)
+                   putString("edit","edit")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "workoutDetails")
+                    addToBackStack("workoutDetails")
+                    commit()
+                }
+                //showActivityDetailsDialog(activityModel, position)
+//                println(activityModel)
+//                println(position)
+            }
         )
     }
 
@@ -193,6 +209,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
                             val activity = ActivityModel(
                                 activityType = workout.activity_name,
+                                activity_id = workout.activityId,
                                 duration = "${workout.duration_min.toInt()} min",
                                 caloriesBurned = workout.calories_burned.toInt().toString(),
                                 intensity = workout.intensity,
@@ -267,18 +284,21 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
                     val activityList = ArrayList<ActivityModel>()
+                    activityList.clear()
 
                     caloriesResponse?.data?.forEachIndexed { index, workout ->
                         Log.d("FetchCalories", "Workout $index - ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}")
 
                         val activity = ActivityModel(
                             activityType = workout.workoutType,
+                            activity_id = workout.activity_id,
                             duration = "${workout.duration} min",
                             caloriesBurned = "${workout.caloriesBurned.toInt()} kcal",
-                            intensity = "",
+                            intensity = workout.intensity,
                             calorieId = workout.id,
                             userId = userId
                         )
+
                         activityList.add(activity)
                     }
 

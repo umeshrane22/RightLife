@@ -8,7 +8,6 @@ import android.view.View
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
 class CustomHeartRateGraph @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -52,7 +51,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
     private val minBpm = 70f
     private val maxBpm = 200f
     private val bpmRange = maxBpm - minBpm
-    private val labelCountY = 5
+    private val bpmLabels = listOf(70f, 100f, 120f, 140f, 160f, 180f, 200f) // Specific Y-axis labels
     private val granularityX = 10f
     private val labelCountX = 6
     private val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
@@ -101,7 +100,7 @@ class CustomHeartRateGraph @JvmOverloads constructor(
 
         if (dataPoints.isEmpty()) return
 
-        val paddingLeft = 120f
+        val paddingLeft = 70f
         val paddingBottom = 80f
         val paddingTop = 20f
         val paddingRight = 20f
@@ -113,10 +112,8 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         canvas.drawLine(paddingLeft, paddingTop, paddingLeft, height - paddingBottom, axisPaint)
         canvas.drawLine(paddingLeft, height - paddingBottom, width - paddingRight, height - paddingBottom, axisPaint)
 
-        // Draw Y-axis labels and grid lines
-        val bpmStep = bpmRange / (labelCountY - 1)
-        for (i in 0 until labelCountY) {
-            val bpm = minBpm + i * bpmStep
+        // Draw Y-axis labels and grid lines using specific BPM values
+        bpmLabels.forEach { bpm ->
             val y = height - paddingBottom - (bpm - minBpm) / bpmRange * graphHeight
             canvas.drawLine(paddingLeft, y, width - paddingRight, y, gridPaint)
             val label = bpm.toInt().toString()

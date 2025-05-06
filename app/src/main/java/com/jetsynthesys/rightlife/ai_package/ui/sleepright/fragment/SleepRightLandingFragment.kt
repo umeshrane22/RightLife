@@ -66,7 +66,6 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
-import com.jetsynthesys.rightlife.ai_package.model.SleepStages
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -92,13 +91,15 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>(), WakeUpTimeDialogFragment.BottomSheetListener {
+class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSleepRightLandingBinding
         get() = FragmentSleepRightLandingBinding::inflate
 
     private lateinit var restoChart : BarChart
-    private lateinit var wakeTime: TextView
+    private lateinit var todaysSleepRequirement: TextView
+    private lateinit var todaysSleepStartTime: TextView
+    private lateinit var todaysWakeupTime: TextView
     private lateinit var landingPageResponse: SleepLandingResponse
     private lateinit var sleepLandingData: SleepLandingData
     private lateinit var lineChart:LineChart
@@ -124,6 +125,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var downloadView: ImageView
     private lateinit var sleepArrowView: ImageView
     private lateinit var sleepPerformView: ImageView
+    private var mWakeupTime = ""
+    private var mRecordId = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -153,14 +156,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         performCardView = view.findViewById(R.id.sleep_perform_layout)
          stageNoDataCardView = view.findViewById(R.id.lyt_sleep_stage_no_data)
         consistencyNoDataCardView = view.findViewById(R.id.consistency_nodata_layout)
-        wakeTime = view.findViewById<TextView>(R.id.tv_wakeup_time)
+        todaysWakeupTime = view.findViewById(R.id.tv_todays_wakeup_time)
+        todaysSleepRequirement = view.findViewById(R.id.tv_todays_sleep_time_requirement)
+        todaysSleepStartTime = view.findViewById(R.id.tv_todays_sleep_start_time)
 
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
-            val bottomSheet = LogYourNapDialogFragment()
+            val bottomSheet = LogYourNapDialogFragment(requireContext())
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
@@ -180,7 +185,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         logYourNap.setOnClickListener {
-            val bottomSheet = LogYourNapDialogFragment()
+            val bottomSheet = LogYourNapDialogFragment(requireContext())
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
@@ -353,7 +358,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
         val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source, date)
+        val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
@@ -372,7 +377,25 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     fun setWakeupData(wakeupData: WakeupData?){
+        todaysSleepRequirement.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
+        todaysSleepStartTime.setText(formatIsoTo12Hour(wakeupData.sleepDatetime!!))
+        todaysWakeupTime.setText(formatIsoTo12Hour(wakeupData.wakeupDatetime!!))
+        mWakeupTime = wakeupData.wakeupDatetime!!
+        mRecordId = wakeupData.Id!!
+    }
 
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        val totalMinutes = (hoursDecimal * 60).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return String.format("%02dhr %02dmins", hours, minutes)
+    }
+
+    fun formatIsoTo12Hour(timeStr: String): String {
+        val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        val outputFormatter = DateTimeFormatter.ofPattern("h:mm a")
+        val dateTime = LocalDateTime.parse(timeStr, inputFormatter)
+        return dateTime.format(outputFormatter)
     }
 
     fun getCurrentDate(): String {
@@ -381,12 +404,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun openBottomSheet() {
-        val bottomSheet = WakeUpTimeDialogFragment()
-        bottomSheet.show(parentFragmentManager, "WakeUpTimeDialog")
-    }
+        val dialog = WakeUpTimeDialogFragment(
+            context = requireContext(),
+            wakeupTime = mWakeupTime,
+            recordId = mRecordId,
+            listener = object : OnWakeUpTimeSelectedListener {
+                override fun onWakeUpTimeSelected(time: String) {
+                    // Handle returned time here
+                    Log.d("WakeUpTime", "Selected time: $time")
+                }
+            }
+        )
 
-    override fun onDataReceived(data: String) {
-        wakeTime.text = data
+        dialog.show(parentFragmentManager, "WakeUpTimeDialog")
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
@@ -523,7 +553,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         if (idealActualResponse.data?.sleepTimeDetail?.size!! > 0) {
                             actualNoDataCardView.visibility = View.GONE
                             lineChart.visibility = View.VISIBLE
-                            val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
+                            /*val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
                                     val formattedDate = detail.sleepDuration.first().startDatetime?.let {
                                             formatDate(it)
                                         }
@@ -536,11 +566,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                                     }
                                             }
                                     }!!
-                                }
+                                }*/
 
-                            if (sleepDataList != null) {
+                            /*if (sleepDataList != null) {
                                 setupIdealActualChart(lineChart, sleepDataList)
-                            }
+                            }*/
                         }else{
                             actualNoDataCardView.visibility = View.VISIBLE
                             lineChart.visibility = View.GONE
@@ -628,18 +658,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 val duration = Duration.between(startDateTime, endDateTime).toMinutes()
                     .toFloat() / 60f // Convert to hours
 
-                when (sleepStageResponse[i].entryValue) {
-                    "REM" -> {
+                when (sleepStageResponse[i].value) {
+                    "REM Sleep" -> {
                         remData.add(duration)
                         totalRemDuration += duration
                     }
 
-                    "Deep" -> {
+                    "Deep Sleep" -> {
                         deepData.add(duration)
                         totalDeepDuration += duration
                     }
 
-                    "Core" -> {
+                    "In Bed" -> {
                         coreData.add(duration)
                         totalCoreDuration += duration
                     }
@@ -718,7 +748,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val duration = Duration.between(startDateTime, endDateTime).toMinutes().toFloat()
             val start = currentPosition / totalDuration
             val end = (currentPosition + duration) / totalDuration
-            val color = when (stage.entryValue) {
+            val color = when (stage.value) {
                 "REM" -> Color.parseColor("#66CCFF") // Light blue
                 "Deep" -> Color.parseColor("#4444DD") // Dark blue
                 "Core" -> Color.parseColor("#B0D8FF") // Medium blue
@@ -787,14 +817,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
        // val userId = "user_test_1"
         val period = "weekly"
         val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period)
+        val date = "2025-05-05"
+        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period,date)
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    if (response.body() != null) {
+                    /*if (response.body() != null) {
                         sleepConsistencyResponse = response.body()!!
-                        if (sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.size!! > 0) {
+                        if (sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.isNotEmpty() == true) {
                             sleepConsistencyChart.visibility = View.VISIBLE
                             consistencyNoDataCardView.visibility = View.GONE
                             sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
@@ -804,7 +835,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             sleepConsistencyChart.visibility = View.GONE
                             consistencyNoDataCardView.visibility = View.VISIBLE
                         }
-                    }
+                    }*/
 
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -835,9 +866,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
-            val startTime = sleepEntry.startDatetime ?: ""
-            val endTime = sleepEntry.endDatetime ?: ""
-            val duration = sleepEntry.value?.toFloat()!!
+            val startTime = sleepEntry.sleepStartTime ?: ""
+            val endTime = sleepEntry.sleepEndTime ?: ""
+            val duration = sleepEntry.sleepDurationHours?.toFloat()!!
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
@@ -998,6 +1029,10 @@ class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : M
     override fun getOffset(): MPPointF {
         return MPPointF(-(width / 2).toFloat(), -height.toFloat())
     }
+}
+
+interface OnWakeUpTimeSelectedListener {
+    fun onWakeUpTimeSelected(time: String)
 }
 
 class SleepMarkerView(context: Context, private val data: List<SleepGraphData>) : MarkerView(context, R.layout.marker_view) {

@@ -15,8 +15,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.WorkoutAdapter
@@ -37,7 +37,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private val workoutViewModel: WorkoutViewModel by activityViewModels()
     private lateinit var searchResultTextView: TextView
     private lateinit var searchResultView: View
-    private var workoutList : ArrayList<WorkoutList> = ArrayList()
+    private var workoutList: ArrayList<WorkoutList> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
         get() = FragmentAllWorkoutBinding::inflate
@@ -48,7 +48,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
+                // Optionally navigate to a previous fragment or do nothing
             }
         })
     }
@@ -87,14 +87,18 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     }
 
     private fun openAddWorkoutFragment(workout: WorkoutList) {
+        if (workout == null) {
+            Toast.makeText(requireContext(), "Workout is null, cannot proceed", Toast.LENGTH_SHORT).show()
+            return
+        }
         val fragment = AddWorkoutSearchFragment()
         val args = Bundle().apply {
             putParcelable("workout", workout)
         }
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, fragment, "addWorkoutFragment")
-            addToBackStack("addWorkoutFragment")
+            replace(R.id.flFragment, fragment, "AddWorkoutSearchFragment")
+            addToBackStack("AddWorkoutSearchFragment")
             commit()
         }
     }
@@ -103,15 +107,19 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         val userId = appPreference.getUserId().toString()
         val accessToken = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjc4NTFmZTQ3MTZkOGQ0ZmQyZDhkNzEzIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVFAxQS4yMjA5MDUuMDAxIiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzM3MDE1Nzk5LCJleHAiOjE3NTI3NDA1OTl9.kNSe36d1dnlPrho7rxs7wKpAR6wwa9ToTguSJtifkmU"
-        val call = ApiClient.apiService.getWorkoutList(accessToken)
+        val call = ApiClient.apiService.getWorkoutList(accessToken ?: token)
         call.enqueue(object : Callback<WorkoutResponseModel> {
             override fun onResponse(call: Call<WorkoutResponseModel>, response: Response<WorkoutResponseModel>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     val workoutLists = response.body()?.data ?: emptyList()
+                    workoutList.clear() // Clear existing data before adding new items
                     workoutList.addAll(workoutLists)
+                    if (workoutList.isEmpty()) {
+                        Toast.makeText(requireContext(), "No workouts found", Toast.LENGTH_SHORT).show()
+                    }
                     // Pass click listener to adapter
-                    adapter = WorkoutAdapter(context!!, workoutList) { selectedWorkout ->
+                    adapter = WorkoutAdapter(requireContext(), workoutList) { selectedWorkout ->
                         openAddWorkoutFragment(selectedWorkout)
                     }
                     recyclerView.adapter = adapter
@@ -120,14 +128,15 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
                         filterWorkouts(query)
                     }
                 } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Log.e("AllWorkoutFragment", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
+
             override fun onFailure(call: Call<WorkoutResponseModel>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                Log.e("AllWorkoutFragment", "API call failed: ${t.message}", t)
+                Toast.makeText(activity, "Failed to fetch workouts", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }
         })
