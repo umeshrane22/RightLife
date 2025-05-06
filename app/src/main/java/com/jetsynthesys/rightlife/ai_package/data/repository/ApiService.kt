@@ -442,14 +442,13 @@ interface ApiService {
 
     @GET("sleep/fetch_sleep_time")
     fun fetchWakeupTime(@Query("user_id") userId: String,
-                        @Query("source") source: String,
-                        @Query("date") date: String): Call<WakeupTimeResponse>
+                        @Query("source") source: String): Call<WakeupTimeResponse>
 
-    @POST("sleep/set_nap_log")
+    @POST("sleep/set_nap_log/")
     fun logNap(@Query("user_id") userId: String,
-               @Query("source") source: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
+               @Query("source") source: String, @Query("date") date: String, @Body logNapRequest: LogNapRequest): Call<BaseResponse>
 
-    @PUT("sleep/set_wakeup_time")
+    @PUT("sleep/set_wakeup_time/")
     fun updateWakeupTime(@Query("user_id") userId: String, @Query("source") source: String, @Query("record_id") record_id: String,
                          @Query("timer_value") timer_value: String): Call<WakeupTimeResponse>
 
@@ -471,7 +470,8 @@ interface ApiService {
     fun fetchSleepConsistencyDetail(
         @Query("user_id") userId: String,
         @Query("source") source: String,
-        @Query("period") period: String
+        @Query("period") period: String,
+        @Query("date") date: String
     ): Call<SleepConsistencyResponse>
 
     @GET("sleep/restorative_sleep_detail/")

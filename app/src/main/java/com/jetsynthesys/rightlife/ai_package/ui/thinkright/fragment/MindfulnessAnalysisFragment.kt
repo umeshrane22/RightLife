@@ -402,7 +402,8 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 in 8..14 -> "8–14"
                 in 15..21 -> "15–21"
                 in 22..28 -> "22–28"
-                else -> "29–${endDate.dayOfMonth}"
+                in 29..30 -> "29–30"
+                else -> "31–${endDate.dayOfMonth}"
             }
 
             // Show label only once per 7-day group
