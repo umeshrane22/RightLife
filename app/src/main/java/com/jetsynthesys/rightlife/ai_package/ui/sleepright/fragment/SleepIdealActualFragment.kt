@@ -272,7 +272,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                         progressDialog.dismiss()
                         idealActualResponse = response.body()!!
                        // setSleepRightLandingData(idealActualResponse)
-                        val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
+                        /*val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
                             val formattedDate = detail.sleepDuration.first().startDatetime?.let {
                                 formatDate(
                                     it
@@ -289,11 +289,11 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                     }
                                 }
                             }!!
-                        }
+                        }*/
 
-                        if (sleepDataList != null) {
+                       /* if (sleepDataList != null) {
                             setupChart(lineChart, sleepDataList)
-                        }
+                        }*/
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

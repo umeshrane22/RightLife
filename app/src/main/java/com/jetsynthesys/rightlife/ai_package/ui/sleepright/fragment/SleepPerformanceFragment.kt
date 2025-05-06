@@ -3,7 +3,6 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
@@ -18,7 +17,6 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -41,9 +39,10 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceAllData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
-import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -246,17 +245,17 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
     private fun fetchSleepData() {
         progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+            ?: "68010b615a508d0cfd6ac9ca"
         val period = "weekly"
         val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userId, source, period)
+        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period)
         call.enqueue(object : Callback<SleepPerformanceResponse> {
             override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepPerformanceResponse = response.body()!!
-                    setSleepRightPerformanceData(sleepPerformanceResponse)
+                    setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -271,7 +270,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         })
     }
 
-    private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceResponse) {
+    private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceAllData?) {
 
     }
 

@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -23,6 +24,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.databinding.FragmentSleepStagesBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.model.SleepStageAllData
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.AwakeProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.customprogressbar.CoreProgressBar
@@ -52,6 +54,17 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     private lateinit var transparentOverlayFatBurn: View
     private lateinit var sleepChart: SleepChartView
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var corePercent: TextView
+    private lateinit var coreMinute: TextView
+    private lateinit var deepPercent: TextView
+    private lateinit var deepMinute: TextView
+    private lateinit var awakePercent: TextView
+    private lateinit var awakeMinute: TextView
+    private lateinit var remPercent: TextView
+    private lateinit var remMinute: TextView
+    private lateinit var totalTime: TextView
+    private lateinit var startTime: TextView
+    private lateinit var endTime: TextView
     val remData: ArrayList<Float> = arrayListOf()
     val awakeData: ArrayList<Float> = arrayListOf()
     val coreData: ArrayList<Float> = arrayListOf()
@@ -84,40 +97,19 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         transparentOverlayFatBurn = view.findViewById(R.id.transparentOverlayFatBurn)
 
+        awakeMinute = view.findViewById(R.id.tv_sleep_awake_minute)
+        awakePercent = view.findViewById(R.id.tv_sleep_awake_percent)
+        coreMinute = view.findViewById(R.id.tv_sleep_core_minute)
+        corePercent = view.findViewById(R.id.tv_sleep_core_percent)
+        deepMinute = view.findViewById(R.id.tv_sleep_deep_minute)
+        deepPercent = view.findViewById(R.id.tv_sleep_deep_percent)
+        remMinute = view.findViewById(R.id.tv_sleep_rem_minute)
+        remPercent = view.findViewById(R.id.tv_sleep_rem_percent)
+        startTime = view.findViewById(R.id.tv_stage_start_time)
+        endTime = view.findViewById(R.id.tv_stage_end_time)
+        totalTime = view.findViewById(R.id.tv_stage_total_sleep)
+
         // Setup progress bars
-        customProgressBar.post {
-            val progressBarWidth = customProgressBar.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlay.layoutParams = layoutParams
-        }
-
-        customProgressBarCardio.post {
-            val progressBarWidth = customProgressBarCardio.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams =
-                transparentOverlayCardio.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlayCardio.layoutParams = layoutParams
-        }
-
-        customProgressBarLight.post {
-            val progressBarWidth = customProgressBarLight.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams = transparentOverlayLight.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlayLight.layoutParams = layoutParams
-        }
-
-        customProgressBarFatBurn.post {
-            val progressBarWidth = customProgressBarFatBurn.width
-            val overlayWidth = (progressBarWidth * 0.5).toInt()
-            val layoutParams =
-                transparentOverlayFatBurn.layoutParams as ConstraintLayout.LayoutParams
-            layoutParams.width = overlayWidth
-            transparentOverlayFatBurn.layoutParams = layoutParams
-        }
 
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
@@ -151,6 +143,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                     sleepStageResponse = response.body()!!
                     if (sleepStageResponse.sleepStageAllData?.sleepStageData != null) {
                         sleepChart.setSleepData(sleepStageResponse.sleepStageAllData?.sleepStageData!!)
+                        setProgressBarData(sleepStageResponse.sleepStageAllData)
                     }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -165,6 +158,78 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                 progressDialog.dismiss()
             }
         })
+    }
+
+    private fun setProgressBarData(data: SleepStageAllData?) {
+        awakePercent.setText(""+ data?.sleepPercentages?.awake + "%")
+        awakeMinute.setText(convertMinutesToHHMMSS(data?.sleepSummary?.awake!!))
+        corePercent.setText(""+ data?.sleepPercentages?.light + "%")
+        coreMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.light!!))
+        deepPercent.setText(""+ data?.sleepPercentages?.deep + "%")
+        deepMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.deep!!))
+        remPercent.setText(""+ data?.sleepPercentages?.rem + "%")
+        remMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.rem!!))
+        totalTime.setText(convertDecimalHoursToHrMinFormat(data?.total_sleep_hours!!))
+        startTime.setText(convertTo12HourFormat(data?.start_time!!))
+        endTime.setText(convertTo12HourFormat(data?.end_time!!))
+
+        customProgressBar.post {
+            val progressBarWidth = customProgressBar.width
+            val overlayWidth = (progressBarWidth*0.5).toInt()
+            val layoutParams = transparentOverlay.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.width = overlayWidth
+            transparentOverlay.layoutParams = layoutParams
+        }
+
+        customProgressBarCardio.post {
+            val progressBarWidth = customProgressBarCardio.width
+            val overlayWidth = (progressBarWidth*0.5).toInt()
+            val layoutParams = transparentOverlayCardio.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.width = overlayWidth
+            transparentOverlayCardio.layoutParams = layoutParams
+        }
+
+        customProgressBarLight.post {
+            val progressBarWidth = customProgressBarLight.width
+            val overlayWidth = (progressBarWidth*0.5).toInt()
+            val layoutParams = transparentOverlayLight.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.width = overlayWidth
+            transparentOverlayLight.layoutParams = layoutParams
+        }
+
+        customProgressBarFatBurn.post {
+            val progressBarWidth = customProgressBarFatBurn.width
+            val overlayWidth = (progressBarWidth*0.5).toInt()
+            val layoutParams = transparentOverlayFatBurn.layoutParams as ConstraintLayout.LayoutParams
+            layoutParams.width = overlayWidth
+            transparentOverlayFatBurn.layoutParams = layoutParams
+        }
+        customProgressBar.progress = data?.sleepPercentages?.awake!!.toFloat()
+        customProgressBarLight.progress = data?.sleepPercentages?.deep!!.toFloat()
+        customProgressBarFatBurn.progress = data?.sleepPercentages?.light!!.toFloat()
+        customProgressBarCardio.progress = data?.sleepPercentages?.rem!!.toFloat()
+    }
+
+    fun convertTo12HourFormat(datetimeStr: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val outputFormatter = DateTimeFormatter.ofPattern("h:mm a")
+        val dateTime = LocalDateTime.parse(datetimeStr, inputFormatter)
+        return dateTime.format(outputFormatter)
+    }
+
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        val totalMinutes = (hoursDecimal * 60).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return String.format("%02dhr %02dmins", hours, minutes)
+    }
+
+    private fun convertMinutesToHHMMSS(minutes: Double): String {
+        val totalSeconds = (minutes * 60).toInt()
+        val hours = totalSeconds / 3600
+        val minutesPart = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutesPart, seconds)
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
@@ -248,19 +313,19 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
     private fun getPositionForRecordType(type: String): Position {
         return when (type) {
             "Awake" -> Position.UPPER
-            "Asleep" -> Position.MIDDLE1
-            "In Bed" -> Position.MIDDLE2
-            "Light Sleep" -> Position.LOWER
+            "Rem Sleep" -> Position.MIDDLE1
+            "Light Sleep" -> Position.MIDDLE2
+            "Deep Sleep" -> Position.LOWER
             else -> error("Unknown record type: $type")
         }
     }
 
     private fun getColorForRecordType(type: String): Int {
         return when (type) {
-            "Awake" -> Color.RED
-            "Asleep" -> Color.CYAN
-            "In Bed" -> Color.BLUE
-            "Light Sleep" -> Color.DKGRAY
+            "Awake" -> resources.getColor(R.color.red_orange_bar)
+            "Rem Sleep" -> resources.getColor(R.color.light_blue_bar)
+            "Light Sleep" -> resources.getColor(R.color.blue_bar)
+            "Deep Sleep" -> resources.getColor(R.color.purple_bar)
             else -> error("Unknown record type: $type")
         }
     }

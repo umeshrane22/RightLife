@@ -14,6 +14,12 @@ data class SleepStageResponse(
 data class SleepStageAllData (
     @SerializedName("date")
     var date             : String?,
+    @SerializedName("start_time")
+    var start_time             : String?,
+    @SerializedName("end_time")
+    var end_time             : String?,
+    @SerializedName("total_sleep_hours")
+    var total_sleep_hours    : Double?,
     @SerializedName("sleep_stage_data")
     var sleepStageData   : ArrayList<SleepStageData> = arrayListOf(),
     @SerializedName("sleep_summary")

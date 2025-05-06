@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
@@ -19,12 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -34,10 +28,10 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.DataPoints
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
-import com.jetsynthesys.rightlife.ai_package.model.SleepDurationData
 import com.jetsynthesys.rightlife.ai_package.model.SleepJson
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepConsistencyBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import retrofit2.Call
@@ -66,7 +60,10 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
-    private var currentDate: LocalDate = LocalDate.now() // today
+    private var currentDateWeek: LocalDate = LocalDate.now() // today
+    private var currentDateMonth: LocalDate = LocalDate.now() // today
+    private var mStartDate = ""
+    private var mEndDate = ""
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,9 +80,17 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
 
-        // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        mStartDate = getOneWeekEarlierDate().format(dateFormatter)
+        mEndDate = getTodayDate().format(dateFormatter)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
         setupListeners()
+        fetchSleepData(mEndDate)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -98,13 +103,20 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         backBtn.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
+    }
 
-        val jsonData : SleepJson = loadStepData()
-        val fullList = jsonData.dataPoints
-        val firstSeven = ArrayList(fullList.take(7))
-        setJsonData(firstSeven)
+    fun getTodayDate(): LocalDate {
+        return LocalDate.now()
+    }
 
-        fetchSleepData()
+    fun getOneWeekEarlierDate(): LocalDate {
+        return LocalDate.now().minusWeeks(1)
+    }
+    fun getOneMonthEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(1)
+    }
+    fun getSixMonthsEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(6)
     }
 
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
@@ -113,26 +125,30 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             when (checkedId) {
                 R.id.rbWeek -> {
                     currentTab = 0
-                    val jsonData : SleepJson = loadStepData()
-                    val fullList = jsonData.dataPoints
-                    val firstSeven = ArrayList(fullList.take(7))
-                    setJsonData(firstSeven)
-                    loadWeekData()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate)
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
-                    val jsonData : SleepJson = loadStepData()
-                    val fullList = jsonData.dataPoints
-                    val firstSeven = ArrayList(fullList.take(30))
-                    setJsonData(firstSeven)
-                    loadMonthData()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate)
                 }
                 R.id.rbSixMonths -> {
                     currentTab = 2
-                    val jsonData : SleepJson = loadStepData()
-                    val fullList = jsonData.dataPoints
-                    setJsonData(fullList)
-                    loadSixMonthsData()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate)
                 }
             }
         }
@@ -140,15 +156,15 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         btnPrevious.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.minusWeeks(1)
+                    currentDateWeek = currentDateWeek.minusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.minusMonths(1)
+                    currentDateMonth = currentDateMonth.minusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.minusMonths(6)
+                    currentDateMonth = currentDateMonth.minusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -157,15 +173,15 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.plusWeeks(1)
+                    currentDateWeek = currentDateWeek.plusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.plusMonths(1)
+                    currentDateMonth = currentDateMonth.plusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.plusMonths(6)
+                    currentDateMonth = currentDateMonth.plusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -173,60 +189,39 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     }
 
     private fun loadWeekData() {
-        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
-        val endOfWeek = startOfWeek.plusDays(6)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
 
-        val entries = mutableListOf<BarEntry>()
-        for (i in 0..6) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-     //   updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+        fetchSleepData(endOfWeek.format(formatter1))
 
     }
 
     private fun loadMonthData() {
-        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
-        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
-
+        val endOfMonth = currentDateMonth
+        val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
 
-        val entries = mutableListOf<BarEntry>()
-        val daysInMonth = endOfMonth.dayOfMonth
-        for (i in 0 until daysInMonth) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
-
-      //  updateChart(entries, weekRanges)
+        fetchSleepData(endOfMonth.format(formatter1))
     }
 
     private fun loadSixMonthsData() {
-        val startOfPeriod = currentDate.minusMonths(5).with(TemporalAdjusters.firstDayOfMonth())
-        val endOfPeriod = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+        val startDate = getSixMonthsEarlierDate()
+        val endDate = getTodayDate()
 
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
-        dateRangeText.text = "${startOfPeriod.format(formatter)} - ${endOfPeriod.format(formatter)}"
+        dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
 
-        val entries = mutableListOf<BarEntry>()
-        for (i in 0..5) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val months = listOf(
-            startOfPeriod.month.name.take(3),
-            startOfPeriod.plusMonths(1).month.name.take(3),
-            startOfPeriod.plusMonths(2).month.name.take(3),
-            startOfPeriod.plusMonths(3).month.name.take(3),
-            startOfPeriod.plusMonths(4).month.name.take(3),
-            startOfPeriod.plusMonths(5).month.name.take(3)
-        )
-      //  updateChart(entries, months)
+        fetchSleepData(endDate.format(formatter1))
     }
 
     private fun loadStepData(): SleepJson {
@@ -244,26 +239,26 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 //
     }
 
-    private fun fetchSleepData() {
+    private fun fetchSleepData(mEndDate: String) {
         progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val userId = "67f6698fa213d14e22a47c2a"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val period = "weekly"
         val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period)
+        val date = mEndDate
+        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,date)
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
-                if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                progressDialog.dismiss()
+                if (response.body() != null) {
                     sleepConsistencyResponse = response.body()!!
-                    sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
-                       // setData(it)
+                    if (sleepConsistencyResponse.statusCode == 200) {
+                        sleepConsistencyResponse.data?.sleepDetails?.let {
+                            setData(it)
+                        }
+                    } else {
+                        Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
-
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
                 }
             }
 
@@ -275,14 +270,6 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         })
     }
 
-    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    fun setJsonData(parseSleepData: ArrayList<DataPoints>) = runBlocking {
-        val result = async {
-            parseSleepJsonData(parseSleepData)
-        }.await()
-        barChart.setSleepData(result)
-    }
-
     fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
         val result = async {
             parseSleepData(parseSleepData)
@@ -290,124 +277,15 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         barChart.setSleepData(result)
     }
 
-    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    private fun parseSleepJsonData(sleepDetails: List<DataPoints>): List<SleepEntry> {
-        val sleepSegments = mutableListOf<SleepEntry>()
-        for (sleepEntry in sleepDetails) {
-            val startTime = sleepEntry.startTimeNanos!!
-            val endTime = sleepEntry.endTimeNanos!!
-            val duration = sleepEntry.fitValue.getOrNull(0)?.value?.intVal?.toFloat()!!
-            sleepSegments.add(SleepEntry(convertNanoToFormattedDate(startTime), convertNanoToFormattedDate(endTime), duration))
-        }
-        return sleepSegments
-    }
-
-    fun convertNanoToFormattedDate(nanoTime: Long): String {
-        val millis = nanoTime / 1_000_000
-        val date = Date(millis)
-
-        // Format the date
-        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        formatter.timeZone = TimeZone.getTimeZone("UTC")
-        return formatter.format(date)
-    }
-
     private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
-            val startTime = sleepEntry.startDatetime ?: ""
-            val endTime = sleepEntry.endDatetime ?: ""
-            val duration = sleepEntry.value?.toFloat()!!
+            val startTime = sleepEntry.sleepStartTime ?: ""
+            val endTime = sleepEntry.sleepEndTime ?: ""
+            val duration = sleepEntry.sleepDurationHours?.toFloat()!!
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
-    }
-
-/*
-private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
-        val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = resources.getColor(R.color.sleep_duration_blue)
-        dataSet.valueTextColor = Color.BLACK
-        dataSet.valueTextSize = 12f
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.4f // Set bar width
-
-        barChart.data = barData
-        barChart.setFitBars(true)
-
-        // Customize X-Axis
-        val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
-
-        // Customize Y-Axis
-        val leftYAxis: YAxis = barChart.axisLeft
-        leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
-        leftYAxis.setDrawGridLines(true)
-
-        // Disable right Y-axis
-        barChart.axisRight.isEnabled = false
-        barChart.description.isEnabled = false
-        barChart.animateY(1000) // Smooth animation
-        barChart.invalidate()
-    }
-*/
-
-    private fun getWeekData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 200f),
-            BarEntry(1f, 350f),
-            BarEntry(2f, 270f),
-            BarEntry(3f, 400f),
-            BarEntry(4f, 320f),
-            BarEntry(5f, 500f),
-            BarEntry(6f, 450f)
-        )
-    }
-
-    /** X-Axis Labels for Week */
-    private fun getWeekLabels(): List<String> {
-        return listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-    }
-
-    /** Sample Data for Month (4 weeks) */
-    private fun getMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 1500f), // 1-7 Jan
-            BarEntry(1f, 1700f), // 8-14 Jan
-            BarEntry(2f, 1400f), // 15-21 Jan
-            BarEntry(3f, 1800f), // 22-28 Jan
-            BarEntry(4f, 1200f)  // 29-31 Jan
-        )
-    }
-
-    /** X-Axis Labels for Month */
-    private fun getMonthLabels(): List<String> {
-        return listOf("1-7 Jan", "8-14 Jan", "15-21 Jan", "22-28 Jan", "29-31 Jan")
-    }
-
-    /** Sample Data for 6 Months */
-    private fun getSixMonthData(): List<BarEntry> {
-        return listOf(
-            BarEntry(0f, 9000f), // Jan
-            BarEntry(1f, 8500f), // Feb
-            BarEntry(2f, 8700f), // Mar
-            BarEntry(3f, 9100f), // Apr
-            BarEntry(4f, 9400f), // May
-            BarEntry(5f, 8800f)  // Jun
-        )
-    }
-
-    /** X-Axis Labels for 6 Months */
-    private fun getSixMonthLabels(): List<String> {
-        return listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun")
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
