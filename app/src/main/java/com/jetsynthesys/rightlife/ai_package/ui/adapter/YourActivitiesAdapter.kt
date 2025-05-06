@@ -19,7 +19,8 @@ class YourActivitiesAdapter(
     private var clickPos: Int,
     private var workoutData: ActivityModel?,
     private var isClickView: Boolean,
-    val onWorkoutItemClick: (ActivityModel, Int, Boolean) -> Unit
+    val onWorkoutItemClick: (ActivityModel, Int, Boolean) -> Unit,
+    private val onCirclePlusClick: (ActivityModel, Int) -> Unit
 ) : RecyclerView.Adapter<YourActivitiesAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -53,11 +54,14 @@ class YourActivitiesAdapter(
             }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
+        holder.circlePlus.setOnClickListener {
+            onCirclePlusClick(item, position)
+        }
 
         // Set up item click listener
-        holder.itemView.setOnClickListener {
+       /* holder.itemView.setOnClickListener {
             onWorkoutItemClick(item, position, true)
-        }
+        }*/
     }
 
     override fun getItemCount(): Int {

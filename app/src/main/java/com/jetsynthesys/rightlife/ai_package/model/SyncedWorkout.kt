@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class SyncedWorkout(
     @SerializedName("creation_datetime")
-    val creationDatetime: String,
+    val creationDatetime: String? = null,
 
     @SerializedName("start_datetime")
     val startDatetime: String,
@@ -14,7 +14,13 @@ data class SyncedWorkout(
     val endDatetime: String,
 
     @SerializedName("source_version")
-    val sourceVersion: String,
+    val sourceVersion: String? = null,
+
+    @SerializedName("source")
+    val source: String,
+
+    @SerializedName("source_name")
+    val sourceName: String,
 
     @SerializedName("record_type")
     val recordType: String,
@@ -40,8 +46,11 @@ data class SyncedWorkout(
     @SerializedName("distance_unit")
     val distanceUnit: String,
 
+    @SerializedName("workout_id")
+    val workoutId: String,
+
     @SerializedName("heart_rate_data")
-    private val rawHeartRateData: List<Any>, // Accept Any to handle [""]
+    private val rawHeartRateData: List<Map<String, String>>,
 
     @SerializedName("_id")
     val id: String,
@@ -58,21 +67,17 @@ data class SyncedWorkout(
     @SerializedName("heart_rate_zone_percentages")
     val heartRateZonePercentages: HeartRateZonePercentages
 ) : Serializable {
-    // Filter out invalid heart rate data entries and map valid ones to HeartRateData
     val heartRateData: List<HeartRateDataWorkout>
-        get() = rawHeartRateData
-            .filterIsInstance<Map<String, String>>() // Keep only valid objects
-            .mapNotNull { entry ->
-                try {
-                    HeartRateDataWorkout(
-                        heartRate = entry["heart_rate"]?.toIntOrNull() ?: return@mapNotNull null,
-                        date = entry["timestamp"] ?: "",
-                        unit = entry["unit"] ?: "",
-                        trendData = ArrayList() // Default empty; populate later if needed
-                    )
-                } catch (e: Exception) {
-                    null // Skip entries that can't be parsed
-                }
+        get() = rawHeartRateData.mapNotNull { entry ->
+            try {
+                HeartRateDataWorkout(
+                    heartRate = entry["heart_rate"]?.toDoubleOrNull()?.toInt() ?: return@mapNotNull null,
+                    date = entry["timestamp"] ?: return@mapNotNull null,
+                    unit = entry["unit"] ?: return@mapNotNull null,
+                    trendData = ArrayList()
+                )
+            } catch (e: Exception) {
+                null
             }
-            .filter { it.date.isNotEmpty() && it.unit.isNotEmpty() } // Ensure required fields are non-empty
+        }.filter { it.date.isNotEmpty() && it.unit.isNotEmpty() }
 }
