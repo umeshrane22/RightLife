@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ActivityModel(
-    val activityType: String,    // Changed from workoutType
+    val activityType: String,
     val duration: String,
     val caloriesBurned: String,
     val intensity: String,

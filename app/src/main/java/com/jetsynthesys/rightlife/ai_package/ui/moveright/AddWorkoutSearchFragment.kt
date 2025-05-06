@@ -22,6 +22,7 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.model.CalculateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
@@ -51,7 +52,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private lateinit var addLog: LinearLayoutCompat
     private var selectedTime: String = "1 hr 0 min"
     private var selectedIntensity: String = "Low" // Default to lowercase
+    private var edit: String = "" // Default to lowercase
     private var workout: WorkoutList? = null
+    private var activityModel: ActivityModel? = null
     private var lastWorkoutRecord: WorkoutSessionRecord? = null // Store all session data
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -59,6 +62,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         super.onViewCreated(view, savedInstanceState)
 
         // Retrieve workout from arguments
+        activityModel = arguments?.getParcelable("ACTIVITY_MODEL")
+        edit = arguments?.getString("edit").toString()
         workout = arguments?.getParcelable("workout")
         if (workout == null) {
             Toast.makeText(requireContext(), "No workout selected", Toast.LENGTH_SHORT).show()
@@ -86,6 +91,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         }
 
         addLog.setOnClickListener {
+          /*  if (edit.equals("edit")){
+
+            }else{
+
+            }*/
             workout?.let { workout ->
                 val hours = hourPicker.value
                 val minutes = minutePicker.value

@@ -65,6 +65,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.CalorieAnalysisResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCholesterolResponse
@@ -238,8 +239,8 @@ interface ApiService {
     @GET("move/data/new_user_workouts/")
     suspend fun getNewUserWorkouts(
         @Query("user_id") userId: String,
-        @Query("range_type") rangeType: String,
-        @Query("date") date: String,
+        @Query("start_date") start_date: String,
+        @Query("end_date") end_date: String,
         @Query("page") page: Int,
         @Query("limit") limit: Int
     ): Response<WorkoutResponse>
@@ -280,6 +281,13 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ActiveCaloriesResponse>
+
+    @GET("move/fetch_calorie_analysis/")
+    suspend fun getCalorieAnalysis(
+        @Query("user_id") userId: String,
+        @Query("date") date: String,
+        @Query("period") period: String
+    ): Response<CalorieAnalysisResponse>
 
     @GET("eat/calories/consumed/")
       suspend fun getConsumedCalories(

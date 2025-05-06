@@ -84,6 +84,17 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             false,
             ::onWorkoutItemClick,
             onCirclePlusClick = { activityModel, position ->
+                val fragment = AddWorkoutSearchFragment()
+                val args = Bundle().apply {
+                    putParcelable("ACTIVITY_MODEL", activityModel)
+                   putString("edit","edit")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "workoutDetails")
+                    addToBackStack("workoutDetails")
+                    commit()
+                }
                 //showActivityDetailsDialog(activityModel, position)
                 println(activityModel)
                 println(position)

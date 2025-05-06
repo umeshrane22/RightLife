@@ -703,9 +703,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
-                    userId = userid ?: "64763fe2fa0e40d9c0bc8264",
-                    rangeType = "daily",
-                    date = "2025-04-07",
+                    userId = /*userid ?: "64763fe2fa0e40d9c0bc8264"*/"67f6698fa213d14e22a47c2a",
+                    start_date = "2025-04-04",
+                    end_date = "2025-04-04",
                     page = 1,
                     limit = 10
                 )
