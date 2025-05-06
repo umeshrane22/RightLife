@@ -161,7 +161,8 @@
                 android:text="Yoga"
                 android:fontFamily="@font/dmsans_regular"
                 android:textSize="@dimen/textsize_small"
-
+                android:maxLength="15"
+                android:ellipsize="end"
                 android:gravity="center"
                 android:textColor="@color/txt_color_header" />
 

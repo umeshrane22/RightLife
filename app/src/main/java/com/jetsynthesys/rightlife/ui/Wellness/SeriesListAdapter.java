@@ -19,19 +19,21 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel;
-import com.jetsynthesys.rightlife.apimodel.morelikecontent.Artist;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Artist;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteRequest;
 import com.jetsynthesys.rightlife.ui.therledit.OnFavouriteClickListener;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.ViewHolder> {
     private LayoutInflater inflater;
     private Context ctx;
-    List<EpisodeModel> contentList;
-    public SeriesListAdapter(Context context,List<EpisodeModel> contentList) {
+    ArrayList<Episode> contentList;
+    public SeriesListAdapter(Context context,ArrayList<Episode> contentList) {
         this.ctx = context;
         this.contentList = contentList;
         this.inflater = LayoutInflater.from(context);
@@ -61,7 +63,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
         String result = formatTimeInMinSec(contentList.get(position).getMeta().getDuration()); // Output: "2.19 min"
         holder.tv_time.setText(result);
         holder.tv_time.setVisibility(View.VISIBLE);
-
+        holder.category.setText(contentList.get(position).getTags().get(0).getName());
         //holder.tv_author_name.setText(contentList.get(position).getArtist().get(0).getFirstName()+" "+contentList.get(position).getArtist().get(0).getLastName());
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
             //Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl()).transform(new RoundedCorners(15)).into(holder.imageView);
@@ -113,7 +115,9 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
                 public void onSuccess(boolean isSuccess, String message) {
                     Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
                     if (isSuccess) {
-                        contentList.get(position).setFavourited(!contentList.get(position).isFavourited());
+                        //contentList.get(position).isFavourited() = (!contentList.get(position).isFavourited());
+                        boolean fav = contentList.get(position).isFavourited();
+                        contentList.get(position).setFavourited(!fav); // use setter
                         notifyItemChanged(position);
                     }
                 }
@@ -133,7 +137,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView,favorite_image,img_iconview;
-        TextView textView,tv_author_name,tv_time;
+        TextView textView,tv_author_name,tv_time,category;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -141,6 +145,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
             textView = itemView.findViewById(R.id.item_text);
             tv_author_name = itemView.findViewById(R.id.tv_author_name);
             tv_time = itemView.findViewById(R.id.tv_time);
+            category = itemView.findViewById(R.id.category);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
             favorite_image.setOnClickListener(new View.OnClickListener() {

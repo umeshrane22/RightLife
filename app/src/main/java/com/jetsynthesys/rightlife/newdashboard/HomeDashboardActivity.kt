@@ -897,6 +897,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         promotionResponse2, ChecklistResponse::class.java
                     )
                     handleChecklistResponse(checklistResponse)
+                    checkListCount = 0
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
