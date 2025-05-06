@@ -1,5 +1,7 @@
 package com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail;
 
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Tag;
+
 import java.util.List;
 
 public class NextEpisode {
@@ -9,6 +11,7 @@ public class NextEpisode {
     public String title;
     public int episodeNumber;
     public String desc;
+    public List<Tag> tags;
     public List<Artist> artist;
     public Thumbnail thumbnail;
     public String pricingTier;

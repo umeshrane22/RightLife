@@ -26,6 +26,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -129,6 +130,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
     private fun setcontentDetails(contentResponseObj: EpisodeDetailContentResponse) {
         binding.tvContentTitle.setText(contentResponseObj?.data?.title ?: "")
         binding.tvContentDesc.setText(contentResponseObj?.data?.desc)
+        binding.category.text = contentResponseObj?.data?.tags?.get(0)?.name ?: ""
         binding.tvTime.setText(contentResponseObj?.data?.meta?.let { formatTimeInMinSec(it.duration) })
         if (contentResponseObj != null) {
             //binding.authorName.setText(contentResponseObj.data.artist.get(0).firstName + " " + contentResponseObj.data.artist.get(0).lastName)
@@ -142,7 +144,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 .circleCrop()
                 .into(binding.profileImage)
             setModuleColor(contentResponseObj.data.moduleId)
-            binding.category.setText(contentResponseObj.data.seriesTitle)
+            binding.category.setText(contentResponseObj.data.tags.get(0).name)
 
             if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
                 val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
@@ -192,6 +194,9 @@ class NewSeriesDetailsActivity : BaseActivity() {
             binding.cardviewEpisodeSingle.visibility = View.VISIBLE
             //binding.txtEpisodesSection.setText("Next Episode" + contentResponseObj.data.episodeNumber)
             binding.itemText.setText(nextEpisode.title) // Use the same TextView for the title
+            binding.category2.setText(nextEpisode.tags.get(0).name)
+            setAuthorname(nextEpisode)
+
             Glide.with(this)
                 .load(ApiClient.CDN_URL_QA + nextEpisode.thumbnail.url)
                 .into(binding.itemImage) // Use the same ImageView for the thumbnail
@@ -587,6 +592,24 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
             binding.tvArtistname.setText(name)
         } else if (binding != null && binding.tvAuthorName != null) {
             binding.tvArtistname.setText("") // or set some default value
+        }
+    }
+
+    private fun setAuthorname(nextEpisode: NextEpisode) {
+        //if (binding != null && binding.tvAuthorName != null && contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist != null && !contentResponseObj.data.artist.isEmpty())
+        if (nextEpisode != null && nextEpisode.artist != null )
+        {
+            var name = ""
+            if (nextEpisode.artist[0].firstName != null) {
+                name = nextEpisode.artist[0].firstName
+            }
+            if (nextEpisode.artist[0].lastName != null) {
+                name += (if (name.isEmpty()) "" else " ") + nextEpisode.artist[0].lastName
+            }
+
+            binding.tvArtistname.setText(name)
+        } else if (binding != null && binding.tvAuthorName != null) {
+            binding.tvAuthorName.setText("") // or set some default value
         }
     }
 }

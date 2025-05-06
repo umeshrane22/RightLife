@@ -15,7 +15,6 @@ import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeModel
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel
 import com.jetsynthesys.rightlife.apimodel.modulecontentdetails.ModuleContentDetail
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
@@ -23,6 +22,7 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentRespon
 import com.jetsynthesys.rightlife.databinding.ActivitySeriesListBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.Wellness.SeriesListAdapter
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.SeriesResponse
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
@@ -140,7 +140,7 @@ class SeriesListActivity : BaseActivity() {
                 .circleCrop()
                 .into(binding.profileImage)
             setModuleColor(contentResponseObj.getData().getModuleId())
-            binding.category.setText(contentResponseObj.getData().categoryName)
+            binding.category.setText(contentResponseObj.getData().tags.get(0).name)
 
             setReadMoreView(contentResponseObj.getData().getDesc())
 
@@ -295,7 +295,7 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
                     val seriesResponseModel = gson.fromJson(jsonResponse, SeriesResponse::class.java)
                     //Log.d("API Response body", "Episode:SeriesList " + episodeResponseModel.getData().getEpisodes().get(0).getTitle());
                     //setupWellnessContent(wellnessApiResponse.getData().getContentList());
-                    setupEpisodeListData(episodeResponseModel.data.episodes)
+                    setupEpisodeListData(seriesResponseModel.data.episodes)
                     setupArtistList(seriesResponseModel)
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -317,7 +317,7 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
         binding.recyclerArtists.adapter = adapter
     }
 
-    private fun setupEpisodeListData(contentList: List<EpisodeModel>) {
+    private fun setupEpisodeListData(contentList:ArrayList<Episode>) {
         val adapter = SeriesListAdapter(this,contentList)
         val horizontalLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewSerieslist.setLayoutManager(horizontalLayoutManager)

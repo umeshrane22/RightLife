@@ -11,12 +11,12 @@ data class SeriesData(
     val contentType: String,
     val moduleId: String,
     val categoryId: String,
-    val subCategories: ArrayList<String>,
-    val artist: ArrayList<Artist>,
+    val subCategories: List<String>,
+    val artist: List<Artist>,
     val title: String,
     val thumbnail: Thumbnail,
     val desc: String,
-    val tags: ArrayList<String>,
+    val tags: List<Tag>,
     val episodeCount: Int,
     val isPromoted: Boolean,
     val isDeleted: Boolean,
@@ -25,18 +25,18 @@ data class SeriesData(
     val viewCount: Int,
     val createdAt: String,
     val updatedAt: String,
-    val __v: Int,
     val shareUrl: String,
     val promotedAt: String,
     val pricing: String,
     val isActive: Boolean,
     val order: Int,
-    val article: ArrayList<Any>,
+    val article: List<Any>, // or define Article class if needed
     val categoryName: String,
     val isFavourited: Boolean,
     val episodes: ArrayList<Episode>,
     val recommended: Recommended
 )
+
 
 data class Artist(
     val _id: String,
@@ -56,6 +56,11 @@ data class Meta(
     val sizeBytes: Long
 )
 
+data class Tag(
+    val name: String,
+    val _id: String
+)
+
 data class Episode(
     val _id: String,
     val contentId: String,
@@ -63,6 +68,7 @@ data class Episode(
     val title: String,
     val episodeNumber: Int,
     val desc: String,
+    val tags: List<Tag>,
     val artist: List<Artist>,
     val thumbnail: Thumbnail,
     val pricingTier: String,
@@ -73,7 +79,7 @@ data class Episode(
     val viewCount: Int,
     val meta: Meta,
     val isWatched: Boolean,
-    val isFavourited: Boolean
+    var isFavourited: Boolean
 )
 
 data class Recommended(

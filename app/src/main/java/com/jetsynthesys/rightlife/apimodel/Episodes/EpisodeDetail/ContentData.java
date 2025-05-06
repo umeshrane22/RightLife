@@ -1,5 +1,7 @@
 package com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail;
 
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Tag;
+
 import java.util.List;
 
 public class ContentData {
@@ -9,6 +11,7 @@ public class ContentData {
     public String title;
     public int episodeNumber;
     public String desc;
+    public List<Tag> tags;
     public List<Artist> artist;
     public Thumbnail thumbnail;
     public String pricingTier;
@@ -26,6 +29,6 @@ public class ContentData {
     public String seriesTitle;
     public String moduleId;
     public String moduleName;
-    public Object recommended; // This is null in your example
+    public Object recommended; // This is null in response thats why its object
     public NextEpisode nextEpisode;
 }
