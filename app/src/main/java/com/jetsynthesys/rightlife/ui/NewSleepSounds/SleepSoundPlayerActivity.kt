@@ -8,7 +8,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
@@ -306,7 +305,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
     private fun shareIntent() {
         val intent = Intent(Intent.ACTION_SEND).apply {
             //type = "image/*"
-            type = "text/plain";
+            type = "text/plain"
             //putExtra(Intent.EXTRA_STREAM, getImageToShare(bitmap))
             putExtra(
                 Intent.EXTRA_TEXT,

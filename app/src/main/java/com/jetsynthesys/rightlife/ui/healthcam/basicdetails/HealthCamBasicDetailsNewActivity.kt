@@ -52,12 +52,11 @@ import retrofit2.Response
 import java.text.DecimalFormat
 import kotlin.math.floor
 
+
 class HealthCamBasicDetailsNewActivity : BaseActivity() {
     private lateinit var binding: ActivityHealthcamBasicDetailsNewBinding
-    private var selectedHeight = "5 Ft 10 In"
     private val numbers = mutableListOf<Float>()
     private lateinit var adapterHeight: RulerAdapterVertical
-    private var selectedLabel: String = " feet"
     private lateinit var adapterWeight: RulerAdapter
 
     private val smokeOptions = ArrayList<Option>()
@@ -73,6 +72,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         setChildContentView(binding.root)
 
         getQuestionerList()
+
+        binding.iconBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         binding.edtAge.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -380,15 +383,22 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             "119 years",
             "120 years"
         )
+        val selectedAgeFromUi = binding.edtAge.text.toString()
+        val value1 = if (selectedAgeFromUi.isNotEmpty())
+            years.indexOf(selectedAgeFromUi) + 1
+        else 15
 
         dialogBinding.numberPicker.apply {
             minValue = 1
             maxValue = years.size
             displayedValues = years
-            value = 13
+            value = value1
             wheelItemCount = 7
         }
-        var selectedAge = years[12]
+
+        var selectedAge = if (selectedAgeFromUi.isNotEmpty())
+            years[years.indexOf(selectedAgeFromUi)]
+        else years[14]
 
         dialogBinding.numberPicker.setOnScrollListener { view, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
@@ -408,10 +418,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     private fun showWeightSelectionBottomSheet() {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
-        var selectedLabel = " kg"
+        var selectedLabel = " KGS"
         var selectedWeight = binding.edtWeight.text.toString()
         if (selectedWeight.isEmpty()) {
-            selectedWeight = "50 kg"
+            selectedWeight = "50 KGS"
         } else {
             val w = selectedWeight.split(" ")
             selectedLabel = " ${w[1]}"
@@ -445,7 +455,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
                 setLbsValue()
             } else {
-                selectedLabel = " kgs"
+                selectedLabel = " KGS"
                 selectedWeight = ConversionUtils.convertKgToLbs(w[0])
                 setKgsValue()
             }
@@ -520,6 +530,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
 
+        dialogBinding.rulerView.post {
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.split(" ")[0].toDouble() * 10).toInt())
+        }
+
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
@@ -530,6 +544,8 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
     private fun showHeightSelectionBottomSheet() {
+        var selectedHeight = "5 Ft 10 In"
+        var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
         val decimalFormat = DecimalFormat("###.##")
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -554,15 +570,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             selectedHeight = "5 Ft 10 In"
         } else {
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1] == "cms")
+            selectedLabel = if (h[1].equals("cms", ignoreCase = true))
                 " cms"
             else
                 " feet"
         }
 
-        if (selectedLabel == " cms") {
-            dialogBinding.switchHeightMetric.isChecked = true
-        }
+        dialogBinding.switchHeightMetric.isChecked = selectedLabel == " cms"
 
         dialogBinding.selectedNumberText.text = selectedHeight
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
@@ -572,7 +586,6 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         dialogBinding.switchHeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 selectedLabel = " cms"
-                //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
                 val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
 
                 selectedHeight = result.cmText
@@ -582,7 +595,6 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
             } else {
                 selectedLabel = " feet"
-                //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
                 val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
 
                 selectedHeight = result.feetInchText
@@ -627,10 +639,6 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                                 val remainingInches = snappedNumber.toInt() % 12
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
-                                var inch = "0"
-                                if (h.size > 1) {
-                                    inch = h[1]
-                                }
                                 dialogBinding.selectedNumberText.text =
                                     "$ft Ft $remainingInches In"
                             }
@@ -654,8 +662,38 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             )
         }
 
+        dialogBinding.rulerView.post {
+
+            selectedHeight = binding.edtHeight.text.toString()
+            if (selectedHeight.isEmpty()) {
+                selectedHeight = "5 Ft 10 In"
+            } else {
+                val h = selectedHeight.split(" ")
+                selectedLabel = if (h[1].equals("cms", ignoreCase = true))
+                    " cms"
+                else
+                    " feet"
+            }
+
+            dialogBinding.switchHeightMetric.isChecked = selectedLabel == " cms"
+
+            if (selectedLabel == " feet") {
+                val regex = Regex("(\\d+)\\s*Ft\\s*(\\d+)\\s*In", RegexOption.IGNORE_CASE)
+                val matchResult = regex.find(selectedHeight)
+
+                if (matchResult != null && matchResult.groupValues.size == 3) {
+                    val feet = matchResult.groupValues[1].toInt()
+                    val inches = matchResult.groupValues[2].toInt()
+                    val index = (feet * 12) + inches
+                    dialogBinding.rulerView.scrollToPosition(index + 8)
+                }
+            } else {
+                dialogBinding.rulerView.scrollToPosition(floor(selectedHeight.split(" ")[0].toDouble()).toInt() + 8)
+            }
+        }
+
         dialogBinding.btnConfirm.setOnClickListener {
-            if (validateInput()) {
+            if (validateInput(selectedLabel, selectedHeight)) {
                 bottomSheetDialog.dismiss()
                 dialogBinding.rulerView.adapter = null
                 binding.edtHeight.setText(selectedHeight)
@@ -665,7 +703,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun validateInput(): Boolean {
+    private fun validateInput(selectedLabel: String, selectedHeight: String): Boolean {
         var returnValue: Boolean
         if (selectedLabel == " feet") {
             val h = selectedHeight.split(" ")
@@ -818,7 +856,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
 
                 "age" -> {
-                    binding.edtAge.setText(userdata.age.toString())
+                    binding.edtAge.setText(userdata.age.toString() + " years")
                 }
 
                 "gender" -> {
