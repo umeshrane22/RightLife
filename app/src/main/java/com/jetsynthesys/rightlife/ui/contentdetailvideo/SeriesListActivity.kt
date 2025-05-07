@@ -20,6 +20,7 @@ import com.jetsynthesys.rightlife.apimodel.modulecontentdetails.ModuleContentDet
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse
 import com.jetsynthesys.rightlife.databinding.ActivitySeriesListBinding
+import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.Wellness.SeriesListAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode
@@ -145,18 +146,39 @@ class SeriesListActivity : BaseActivity() {
             setReadMoreView(contentResponseObj.getData().getDesc())
 
             binding.imageLikeArticle.setOnClickListener { v ->
-                binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                 if (contentResponseObj.data.like) {
-                    binding.imageLikeArticle.setImageResource(R.drawable.like)
+                    binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive)
                     contentResponseObj.data.like = false
                     postContentLike(contentResponseObj.data.id, false)
                 } else {
-                    binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
+                    binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
                     contentResponseObj.data.like = true
                     postContentLike(contentResponseObj.data.id, true)
                 }
             }
+            if (contentResponseObj.data.like) {
+                binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
+            }
             binding.imageShareArticle.setOnClickListener { shareIntent() }
+            binding.txtLikeCount.text = contentResponseObj.data.likeCount.toString()
+
+
+            binding.icBookmark.setOnClickListener {
+                if (contentResponseObj != null) {
+                    if (contentResponseObj.data.bookmarked) {
+                        contentResponseObj.data.bookmarked = false
+                        binding.icBookmark.setImageResource(R.drawable.ic_save_article)
+                        postArticleBookMark(contentResponseObj.data.id, false)
+                    }else{
+                        contentResponseObj.data.bookmarked = true
+                        binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
+                        postArticleBookMark(contentResponseObj.data.id, true)
+                    }
+                }
+            }
+            if (contentResponseObj?.data?.bookmarked == true) {
+                binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
+            }
         }
 
     }
@@ -233,6 +255,32 @@ class SeriesListActivity : BaseActivity() {
 
 
 
+    // post Bookmark api
+    private fun postArticleBookMark(contentId: String, isBookmark: Boolean) {
+        val request = ArticleBookmarkRequest(contentId, isBookmark)
+        // Make the API call
+        val call = apiService.ArticleBookmarkRequest(sharedPreferenceManager.accessToken, request)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val articleLikeResponse = response.body()
+                    Log.d(
+                        "API Response",
+                        "Article Bookmark response: $articleLikeResponse"
+                    )
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                    Utils.showCustomToast(this@SeriesListActivity, response.message())
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
 
 // post like api
 private fun postContentLike(contentId: String, isLike: Boolean) {

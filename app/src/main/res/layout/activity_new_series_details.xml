@@ -47,6 +47,7 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_video_bookmark"
+            android:visibility="invisible"
             app:tint="@color/text_color_app" />
     </RelativeLayout>
 

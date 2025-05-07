@@ -40,9 +40,9 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
@@ -69,6 +69,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -522,6 +523,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             .into(binding.profileImage)
                     }
                     binding.userName.text = ResponseObj.userdata.firstName
+                    val tvGreetingText = findViewById<TextView>(R.id.greetingText)
+                    tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
 
                     val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
                     if (countDown <= 7) {
