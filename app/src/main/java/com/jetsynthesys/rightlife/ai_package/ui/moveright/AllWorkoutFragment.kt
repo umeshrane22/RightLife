@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -41,8 +42,8 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private lateinit var searchResultTextView: TextView
     private lateinit var searchResultView: View
     private var workoutList: ArrayList<WorkoutList> = ArrayList()
-    private  var routine:String = ""
-    private  var routineName:String = ""
+    private var routine: String = ""
+    private var routineName: String = ""
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
@@ -63,8 +64,8 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.TRANSPARENT)
-         routine = arguments?.getString("routine").toString()
-         routineName = arguments?.getString("routineName").toString()
+        routine = arguments?.getString("routine").toString()
+        routineName = arguments?.getString("routineName").toString()
         workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
@@ -75,6 +76,14 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         searchResultTextView = view.findViewById(R.id.search_result_allWorkouts)
         searchResultView = view.findViewById(R.id.view_search_result)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Listen for updated workoutListRoutine from AddWorkoutSearchFragment or CreateRoutineFragment
+        setFragmentResultListener("workoutListUpdate") { _, bundle ->
+            val updatedList = bundle.getParcelableArrayList<WorkoutSessionRecord>("workoutList") ?: ArrayList()
+            workoutListRoutine.clear()
+            workoutListRoutine.addAll(updatedList)
+            Log.d("AllWorkoutFragment", "Updated workoutListRoutine: $workoutListRoutine")
+        }
 
         progressDialog.show()
         getWorkoutList()
@@ -112,18 +121,38 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             commit()
         }
     }
+
     private fun openAddWorkoutFragmentRoutine(workout: WorkoutList) {
         if (workout == null) {
             Toast.makeText(requireContext(), "Workout is null, cannot proceed", Toast.LENGTH_SHORT).show()
             return
         }
 
+        // Create a new WorkoutSessionRecord with default values
+        val newWorkoutRecord = WorkoutSessionRecord(
+            userId = appPreference.getUserId() ?: "64763fe2fa0e40d9c0bc8264",
+            activityId = workout._id,
+            durationMin = 60, // Default to 60 minutes (1 hour)
+            intensity = "Low", // Default intensity
+            sessions = 1,
+            message = null,
+            caloriesBurned = null, // Will be calculated in AddWorkoutSearchFragment
+            activityFactor = null,
+            moduleName = workout.title.toString()
+        )
+
+        // Append the new WorkoutSessionRecord to workoutListRoutine
+        workoutListRoutine.add(newWorkoutRecord)
+        Log.d("AllWorkoutFragment", "Added new workout record: $newWorkoutRecord")
+        Log.d("AllWorkoutFragment", "Updated workoutListRoutine: $workoutListRoutine")
+
+        // Pass the updated workoutListRoutine to AddWorkoutSearchFragment
         val fragment = AddWorkoutSearchFragment()
         val args = Bundle().apply {
             putParcelable("workout", workout)
-            putString("routine",routine)
-            putString("routineName",routineName)
-            putParcelableArrayList("workoutList",workoutListRoutine)
+            putString("routine", routine)
+            putString("routineName", routineName)
+            putParcelableArrayList("workoutList", workoutListRoutine)
         }
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -150,12 +179,11 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
                     }
                     // Pass click listener to adapter
                     adapter = WorkoutAdapter(requireContext(), workoutList) { selectedWorkout ->
-                      if(routine.equals("routine")){
-                          openAddWorkoutFragmentRoutine(selectedWorkout)
-                      }else{
-                          openAddWorkoutFragment(selectedWorkout)
-                      }
-
+                        if (routine.equals("routine")) {
+                            openAddWorkoutFragmentRoutine(selectedWorkout)
+                        } else {
+                            openAddWorkoutFragment(selectedWorkout)
+                        }
                     }
                     recyclerView.adapter = adapter
 

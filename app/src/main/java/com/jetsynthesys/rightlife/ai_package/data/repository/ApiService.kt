@@ -87,6 +87,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryRespo
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MoveRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
@@ -563,7 +564,7 @@ interface ApiService {
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
        // @Query("provided_date") providedDate: String
-    ): Response<WorkoutResponseRoutine>
+    ): Response<MoveRoutineResponse>
 
     @GET("move/routine/")
     suspend fun getRoutines(
