@@ -142,7 +142,7 @@ class PlaylistBottomSheetDialogFragment(
 
                     deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
 
-                    deleteIcon.draw(c)
+                    //deleteIcon.draw(c)
 
 
 

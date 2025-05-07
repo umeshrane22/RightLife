@@ -21,6 +21,7 @@ class FeelAfterWakingFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var question: Question? = null
+    private var mSelectedMood: Mood = Mood("Refreshed", R.drawable.ic_happy)
 
     companion object {
         fun newInstance(question: Question): FeelAfterWakingFragment {
@@ -54,7 +55,7 @@ class FeelAfterWakingFragment : Fragment() {
 
         binding.btnContinue.setOnClickListener {
             //QuestionnaireThinkRightActivity.navigateToNextPage()
-            submit("")
+            submit(mSelectedMood.name)
         }
     }
 
@@ -75,14 +76,15 @@ class FeelAfterWakingFragment : Fragment() {
 
     private fun setUpMoodList() {
         val moodList = listOf(
-            Mood("Refreshed", R.drawable.ic_happy),
+            Mood("Refreshed", R.drawable.ic_happy, isSelected = true),
             Mood("Rested", R.drawable.ic_relaxed),
             Mood("Neutral", R.drawable.ic_unsure),
             Mood("Exhausted", R.drawable.ic_stressed),
             Mood("Drained", R.drawable.ic_sad)
         )
 
-        val adapter = JournalMoodAdapter(moodList, -1) { selectedMood ->
+        val adapter = JournalMoodAdapter(moodList, 0) { selectedMood ->
+            mSelectedMood = selectedMood
             when (selectedMood.name) {
                 "Refreshed" -> {
                     binding.ivSelectedImage.setImageResource(R.drawable.ic_happy)

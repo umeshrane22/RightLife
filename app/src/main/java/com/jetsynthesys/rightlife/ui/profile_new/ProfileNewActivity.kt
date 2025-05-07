@@ -18,6 +18,7 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -26,7 +27,6 @@ import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -39,7 +39,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.apimodel.UploadImage
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
@@ -58,7 +57,6 @@ import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.shawnlin.numberpicker.NumberPicker
 import okhttp3.ResponseBody
@@ -79,10 +77,8 @@ class ProfileNewActivity : BaseActivity() {
     private val CAMERA_REQUEST: Int = 100
     private val PICK_IMAGE_REQUEST: Int = 101
     private var cameraImageUri: Uri? = null
-    private var selectedHeight = "5 Ft 10 In"
     private val numbers = mutableListOf<Float>()
     private lateinit var adapterHeight: RulerAdapterVertical
-    private var selectedLabel: String = " feet"
     private lateinit var adapterWeight: RulerAdapter
     private var dialogOtp: Dialog? = null
     private lateinit var userData: Userdata
@@ -197,7 +193,7 @@ class ProfileNewActivity : BaseActivity() {
         if (userData.phoneNumber != null)
             binding.etMobile.setText(userData.phoneNumber)
         if (userData.age != null)
-            binding.tvAge.text = userData.age.toString()
+            binding.tvAge.text = userData.age.toString() + " years"
         if (userData.gender == "M")
             binding.tvGender.text = "Male"
         else
@@ -407,18 +403,27 @@ class ProfileNewActivity : BaseActivity() {
             "120 years"
         )
 
+        val selectedAgeFromUi = binding.tvAge.text.toString()
+        val value1 = if (selectedAgeFromUi.isNotEmpty())
+            years.indexOf(selectedAgeFromUi) + 1
+        else 15
+
         dialogBinding.numberPicker.apply {
             minValue = 1
             maxValue = years.size
             displayedValues = years
-            value = 13
+            value = value1
             wheelItemCount = 7
         }
-        var selectedAge = years[12]
+
+        var selectedAge = if (selectedAgeFromUi.isNotEmpty())
+            years[years.indexOf(selectedAgeFromUi)]
+        else years[14]
 
         dialogBinding.numberPicker.setOnScrollListener { view, scrollState ->
             if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
                 selectedAge = years[view.value - 1]
+                binding.tvAge.text = selectedAge
             }
         }
 
@@ -433,10 +438,10 @@ class ProfileNewActivity : BaseActivity() {
     private fun showWeightSelectionBottomSheet() {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
-        var selectedLabel = " kg"
+        var selectedLabel = " KGS"
         var selectedWeight = binding.tvWeight.text.toString()
         if (selectedWeight.isEmpty()) {
-            selectedWeight = "50 kg"
+            selectedWeight = "50 KGS"
         } else {
             val w = selectedWeight.split(" ")
             selectedLabel = " ${w[1]}"
@@ -458,9 +463,7 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         dialogBinding.selectedNumberText.text = selectedWeight
-        if (selectedLabel == " lbs") {
-            dialogBinding.switchWeightMetric.isChecked = true
-        }
+        dialogBinding.switchWeightMetric.isChecked = selectedLabel == " lbs"
 
         dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
             val w = selectedWeight.split(" ")
@@ -469,13 +472,14 @@ class ProfileNewActivity : BaseActivity() {
                 selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
                 setLbsValue()
             } else {
-                selectedLabel = " kgs"
+                selectedLabel = " KGS"
                 selectedWeight = ConversionUtils.convertKgToLbs(w[0])
                 setKgsValue()
             }
             dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
             selectedWeight += selectedLabel
             dialogBinding.selectedNumberText.text = selectedWeight
+            Log.d("AAAA", "Selected Label in checkChanged = " + selectedLabel)
         }
 
         val layoutManager =
@@ -510,6 +514,7 @@ class ProfileNewActivity : BaseActivity() {
                         val position = recyclerView.layoutManager!!.getPosition(snappedView)
                         val snappedNumber = numbers[position]
                         //selected_number_text.setText("$snappedNumber Kg")
+                        Log.d("AAAA", "Selected Label in onScroll = " + selectedLabel)
                         dialogBinding.selectedNumberText.text = "$snappedNumber $selectedLabel"
                         selectedWeight = dialogBinding.selectedNumberText.text.toString()
                     }
@@ -544,6 +549,10 @@ class ProfileNewActivity : BaseActivity() {
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
 
+        dialogBinding.rulerView.post {
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.split(" ")[0].toDouble() * 10).toInt())
+        }
+
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
@@ -554,6 +563,8 @@ class ProfileNewActivity : BaseActivity() {
     }
 
     private fun showHeightSelectionBottomSheet() {
+        var selectedHeight = "5 Ft 10 In"
+        var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
         val decimalFormat = DecimalFormat("###.##")
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -565,7 +576,8 @@ class ProfileNewActivity : BaseActivity() {
         bottomSheetDialog.setContentView(bottomSheetView)
 
         // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
+        val bottomSheetLayout =
+            bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
@@ -577,15 +589,13 @@ class ProfileNewActivity : BaseActivity() {
             selectedHeight = "5 Ft 10 In"
         } else {
             val h = selectedHeight.split(" ")
-            selectedLabel = if (h[1] == "cms")
+            selectedLabel = if (h[1].equals("cms", ignoreCase = true))
                 " cms"
             else
                 " feet"
         }
 
-        if (selectedLabel == " cms") {
-            dialogBinding.switchHeightMetric.isChecked = true
-        }
+        dialogBinding.switchHeightMetric.isChecked = selectedLabel == " cms"
 
         dialogBinding.selectedNumberText.text = selectedHeight
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
@@ -595,7 +605,6 @@ class ProfileNewActivity : BaseActivity() {
         dialogBinding.switchHeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 selectedLabel = " cms"
-                //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
                 val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
 
                 selectedHeight = result.cmText
@@ -605,7 +614,6 @@ class ProfileNewActivity : BaseActivity() {
 
             } else {
                 selectedLabel = " feet"
-                //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
                 val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
 
                 selectedHeight = result.feetInchText
@@ -650,13 +658,10 @@ class ProfileNewActivity : BaseActivity() {
                                 val remainingInches = snappedNumber.toInt() % 12
                                 val h = (feet).toString().split(".")
                                 val ft = h[0]
-                                var inch = "0"
-                                if (h.size > 1) {
-                                    inch = h[1]
-                                }
-                                dialogBinding.selectedNumberText.text = "$ft Ft $remainingInches In"
+                                dialogBinding.selectedNumberText.text =
+                                    "$ft Ft $remainingInches In"
                             }
-                            selectedHeight = dialogBinding.selectedNumberText?.text.toString()
+                            selectedHeight = dialogBinding.selectedNumberText.text.toString()
                         }
 
                     }
@@ -676,8 +681,38 @@ class ProfileNewActivity : BaseActivity() {
             )
         }
 
+        dialogBinding.rulerView.post {
+
+            selectedHeight = binding.tvHeight.text.toString()
+            if (selectedHeight.isEmpty()) {
+                selectedHeight = "5 Ft 10 In"
+            } else {
+                val h = selectedHeight.split(" ")
+                selectedLabel = if (h[1].equals("cms", ignoreCase = true))
+                    " cms"
+                else
+                    " feet"
+            }
+
+            dialogBinding.switchHeightMetric.isChecked = selectedLabel == " cms"
+
+            if (selectedLabel == " feet") {
+                val regex = Regex("(\\d+)\\s*Ft\\s*(\\d+)\\s*In", RegexOption.IGNORE_CASE)
+                val matchResult = regex.find(selectedHeight)
+
+                if (matchResult != null && matchResult.groupValues.size == 3) {
+                    val feet = matchResult.groupValues[1].toInt()
+                    val inches = matchResult.groupValues[2].toInt()
+                    val index = (feet * 12) + inches
+                    dialogBinding.rulerView.scrollToPosition(index + 8)
+                }
+            } else {
+                dialogBinding.rulerView.scrollToPosition(floor(selectedHeight.split(" ")[0].toDouble()).toInt() + 8)
+            }
+        }
+
         dialogBinding.btnConfirm.setOnClickListener {
-            if (validateInput()) {
+            if (validateInput(selectedLabel, selectedHeight)) {
                 bottomSheetDialog.dismiss()
                 dialogBinding.rulerView.adapter = null
                 binding.tvHeight.text = selectedHeight
@@ -754,7 +789,7 @@ class ProfileNewActivity : BaseActivity() {
         adapterWeight.notifyDataSetChanged()
     }
 
-    private fun validateInput(): Boolean {
+    private fun validateInput(selectedLabel: String, selectedHeight: String): Boolean {
         var returnValue: Boolean
         if (selectedLabel == " feet") {
             val h = selectedHeight.split(" ")

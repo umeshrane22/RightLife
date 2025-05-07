@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentEnergyLevelBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.EnergyAnswer
@@ -69,13 +67,12 @@ class EnergyLevelFragment : Fragment() {
         )
 
 
-
         val colorMap = hashMapOf(
             0 to Color.parseColor("#FB9900"),
             1000 to Color.parseColor("#FB9900"),
             2000 to Color.parseColor("#66B12D"),
             3000 to Color.parseColor("#1292E5")
-            )
+        )
 
         binding.morningSliderView.setStepColorMap(colorMap)
 
@@ -89,8 +86,8 @@ class EnergyLevelFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 1000 - 1
             if (index >= 0 && index < energyCountTexts.size) {
-                energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
-                morningEneryValue = energyValues.get(index)
+                energyCountTexts[index].setTypeface(null, Typeface.BOLD)
+                morningEneryValue = energyValues[index]
             }
         }
 
@@ -106,8 +103,8 @@ class EnergyLevelFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 1000 - 1
             if (index >= 0 && index < energyCountTexts.size) {
-                energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
-                afternoonEneryValue = energyValues.get(index)
+                energyCountTexts[index].setTypeface(null, Typeface.BOLD)
+                afternoonEneryValue = energyValues[index]
             }
         }
 
@@ -122,8 +119,8 @@ class EnergyLevelFragment : Fragment() {
             // Determine which TextView to bold based on stepCount
             val index = stepCount / 1000 - 1
             if (index >= 0 && index < energyCountTexts.size) {
-                energyCountTexts.get(index).setTypeface(null, Typeface.BOLD)
-                eveningEneryValue = energyValues.get(index)
+                energyCountTexts[index].setTypeface(null, Typeface.BOLD)
+                eveningEneryValue = energyValues[index]
             }
         }
 

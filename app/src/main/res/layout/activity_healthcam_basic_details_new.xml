@@ -28,11 +28,8 @@
             android:textSize="18sp"
             android:gravity="center"
             android:fontFamily="@font/dmsans_bold"
-            android:textColor="@color/txt_color_mind"
-            android:layout_marginStart="4dp" />
+            android:textColor="@color/txt_color_mind" />
     </LinearLayout>
-
-    <include layout="@layout/loader_layout" />
 
     <ScrollView
         android:layout_below="@id/llTopBar"
@@ -292,10 +289,12 @@
                 android:drawableEnd="@drawable/arrow_drop_down_50"
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"
-                android:layout_marginBottom="80dp"/>
+                android:layout_marginBottom="80dp" />
 
         </LinearLayout>
     </ScrollView>
+
+    <include layout="@layout/loader_layout" />
 
     <!-- Bottom Buttons -->
     <LinearLayout
