@@ -57,6 +57,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var workout: WorkoutList? = null
     private var activityModel: ActivityModel? = null
     private var lastWorkoutRecord: WorkoutSessionRecord? = null
+    private var routine: String = ""
+    private var routineName: String = ""
+    private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     // Normalize intensity to match API's expected values
     private fun normalizeIntensity(intensity: String): String {
@@ -74,6 +77,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         super.onViewCreated(view, savedInstanceState)
 
         // Retrieve workout from arguments
+        routine = arguments?.getString("routine").toString()
+        routineName = arguments?.getString("routineName").toString()
+        workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         activityModel = arguments?.getParcelable("ACTIVITY_MODEL")
         edit = arguments?.getString("edit") ?: ""
         workout = arguments?.getParcelable("workout")
@@ -109,12 +115,18 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         addLog.isEnabled = false
 
         addSearchFragmentBackButton.setOnClickListener {
-            if (edit.equals("edit")){
+            if (edit.equals("edit")) {
                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
-            }else{
-                navigateToFragment(AllWorkoutFragment(), "AllWorkoutFragment")
+            } else {
+                val fragment = CreateRoutineFragment()
+                val args = Bundle().apply {
+                    putParcelableArrayList("workoutList", workoutListRoutine)
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                }
+                fragment.arguments = args
+                navigateToFragment(fragment, "CreateRoutineFragment")
             }
-
         }
 
         addLog.setOnClickListener {
@@ -127,6 +139,41 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     updateCalories(calorieId, durationMinutes, normalizedIntensity)
                 } ?: run {
                     Toast.makeText(requireContext(), "Calorie ID is missing", Toast.LENGTH_SHORT).show()
+                }
+            } else if (routine.equals("routine")) {
+                workout?.let { workout ->
+                    if (durationMinutes > 0) {
+                        val normalizedIntensity = normalizeIntensity(selectedIntensity)
+                        val newWorkoutRecord = WorkoutSessionRecord(
+                            userId = "64763fe2fa0e40d9c0bc8264",
+                            activityId = workout._id,
+                            durationMin = durationMinutes,
+                            intensity = normalizedIntensity,
+                            sessions = 1,
+                            message = lastWorkoutRecord?.message,
+                            caloriesBurned = lastWorkoutRecord?.caloriesBurned,
+                            activityFactor = lastWorkoutRecord?.activityFactor,
+                            moduleName = workout.title.toString()
+                        )
+
+                        lastWorkoutRecord = newWorkoutRecord
+                        if (lastWorkoutRecord?.caloriesBurned == null) {
+                            Toast.makeText(requireContext(), "Calculating calories...", Toast.LENGTH_SHORT).show()
+                            val activityId = workout._id ?: activityModel?.activity_id
+                            if (activityId != null) {
+                                // Pass a flag to indicate navigation to CreateRoutineFragment after calculation
+                                calculateUserCalories(durationMinutes, normalizedIntensity, activityId, navigateToRoutine = true)
+                            } else {
+                                Toast.makeText(requireContext(), "Activity ID is missing", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            navigateToCreateRoutineFragment()
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                    }
+                } ?: run {
+                    Toast.makeText(requireContext(), "Please select a workout", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 workout?.let { workout ->
@@ -168,10 +215,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             override fun handleOnBackPressed() {
                 if (edit != "edit") {
                     navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
-                }else{
+                } else {
                     navigateToFragment(AllWorkoutFragment(), "AllWorkoutFragment")
                 }
-
             }
         })
 
@@ -280,6 +326,24 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         }
     }
 
+    private fun navigateToCreateRoutineFragment() {
+        // Append the new workout session to the existing workoutListRoutine
+        lastWorkoutRecord?.let { workoutListRoutine.add(it) }
+
+        // Log the data being sent
+        Log.d("AddWorkoutSearchFragment", "Sending workoutList to CreateRoutineFragment: $workoutListRoutine")
+
+        // Navigate to CreateRoutineFragment and pass the updated ArrayList
+        val createRoutineFragment = CreateRoutineFragment()
+        val args = Bundle().apply {
+            putParcelableArrayList("workoutList", workoutListRoutine)
+            putString("routine", routine)
+            putString("routineName", routineName)
+        }
+        createRoutineFragment.arguments = args
+        navigateToFragment(createRoutineFragment, "CreateRoutineFragment")
+    }
+
     private fun getCurrentDate(): String {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(Date())
@@ -348,7 +412,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         }
     }
 
-    private fun calculateUserCalories(durationMinutes: Int, selectedIntensity: String, activityId: String) {
+    private fun calculateUserCalories(durationMinutes: Int, selectedIntensity: String, activityId: String, navigateToRoutine: Boolean = false) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
@@ -391,6 +455,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                 "Calories Burned: ${String.format("%.2f", caloriesResponse.caloriesBurned)} kcal",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            // Navigate to CreateRoutineFragment if required
+                            if (navigateToRoutine) {
+                                navigateToCreateRoutineFragment()
+                            }
                         }
                     } else {
                         lastWorkoutRecord = workout?.let {
@@ -405,6 +473,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         }
                         withContext(Dispatchers.Main) {
                             Toast.makeText(requireContext(), "No calories data received", Toast.LENGTH_SHORT).show()
+                            // Navigate even if API response is empty, as lastWorkoutRecord is set
+                            if (navigateToRoutine) {
+                                navigateToCreateRoutineFragment()
+                            }
                         }
                     }
                 } else {
@@ -426,6 +498,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             "Error: ${response.code()} - ${response.message()}\nDetails: $errorBody",
                             Toast.LENGTH_LONG
                         ).show()
+                        // Navigate even if API fails, as lastWorkoutRecord is set
+                        if (navigateToRoutine) {
+                            navigateToCreateRoutineFragment()
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -441,6 +517,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 }
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    // Navigate even if an exception occurs, as lastWorkoutRecord is set
+                    if (navigateToRoutine) {
+                        navigateToCreateRoutineFragment()
+                    }
                 }
                 Log.e("CalculateCalories", "Exception: ${e.stackTraceToString()}")
             }

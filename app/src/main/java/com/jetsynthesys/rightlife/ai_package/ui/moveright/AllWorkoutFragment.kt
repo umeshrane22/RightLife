@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.app.ProgressDialog
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,7 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.WorkoutAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
@@ -38,6 +41,9 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private lateinit var searchResultTextView: TextView
     private lateinit var searchResultView: View
     private var workoutList: ArrayList<WorkoutList> = ArrayList()
+    private  var routine:String = ""
+    private  var routineName:String = ""
+    private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
         get() = FragmentAllWorkoutBinding::inflate
@@ -53,11 +59,13 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.TRANSPARENT)
-        val routine = arguments?.getString("routine")
-        val routineName = arguments?.getString("routineName")
+         routine = arguments?.getString("routine").toString()
+         routineName = arguments?.getString("routineName").toString()
+        workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -104,6 +112,26 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             commit()
         }
     }
+    private fun openAddWorkoutFragmentRoutine(workout: WorkoutList) {
+        if (workout == null) {
+            Toast.makeText(requireContext(), "Workout is null, cannot proceed", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val fragment = AddWorkoutSearchFragment()
+        val args = Bundle().apply {
+            putParcelable("workout", workout)
+            putString("routine",routine)
+            putString("routineName",routineName)
+            putParcelableArrayList("workoutList",workoutListRoutine)
+        }
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, "AddWorkoutSearchFragment")
+            addToBackStack("AddWorkoutSearchFragment")
+            commit()
+        }
+    }
 
     private fun getWorkoutList() {
         val userId = appPreference.getUserId().toString()
@@ -122,7 +150,12 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
                     }
                     // Pass click listener to adapter
                     adapter = WorkoutAdapter(requireContext(), workoutList) { selectedWorkout ->
-                        openAddWorkoutFragment(selectedWorkout)
+                      if(routine.equals("routine")){
+                          openAddWorkoutFragmentRoutine(selectedWorkout)
+                      }else{
+                          openAddWorkoutFragment(selectedWorkout)
+                      }
+
                     }
                     recyclerView.adapter = adapter
 

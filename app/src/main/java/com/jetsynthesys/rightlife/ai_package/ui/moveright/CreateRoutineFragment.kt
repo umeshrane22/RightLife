@@ -57,6 +57,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private var workout: WorkoutList? = null
     private var workoutRecord: WorkoutSessionRecord? = null
     private  var myroutine:String = ""
+    private  var routine:String = ""
+    private  var routineName:String = ""
+    private  var  workoutList = ArrayList<WorkoutSessionRecord>()
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
@@ -81,7 +84,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
        // myroutine = arguments?.getString("myRoutine").toString()
-
+        routine = arguments?.getString("routine").toString()
+        routineName = arguments?.getString("routineName").toString()
+        workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
@@ -90,12 +95,22 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         addNameLayout = view.findViewById(R.id.add_name_layout)
         add_btn_log = view.findViewById(R.id.add_btn_log)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
+        if(routine.equals("routine")){
+            if(workoutList.isNotEmpty()){
+                addNameLayout.visibility = View.GONE
+                createListRoutineLayout.visibility = View.VISIBLE
+                textViewRoutine.text = routineName
+            }
+        }
+
+
         add_btn_log.setOnClickListener {
             //navigateToFragment(SearchWorkoutFragment(),"SearchWorkoutFragments")
             val fragment = SearchWorkoutFragment()
             val args = Bundle()
             args.putString("routine","routine")
             args.putString("routineName",textViewRoutine.text.toString())
+            args.putParcelableArrayList("workoutList", workoutList)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, tag)
