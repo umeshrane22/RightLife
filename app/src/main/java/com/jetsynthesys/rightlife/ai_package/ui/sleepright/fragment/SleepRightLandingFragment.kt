@@ -541,7 +541,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val userId = "68010b615a508d0cfd6ac9ca"
         val period = "daily"
         val source = "health_connect"
-        val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
+        val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period,"2025-05-06")
         call.enqueue(object : Callback<SleepIdealActualResponse> {
             override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                 if (response.isSuccessful) {
@@ -549,7 +549,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     if (response.body() != null) {
                         idealActualResponse = response.body()!!
                         // setSleepRightLandingData(idealActualResponse)
-                        if (idealActualResponse.data?.sleepTimeDetail?.size!! > 0) {
+                        if (idealActualResponse.data?.timeDataBreakdown?.size!! > 0) {
                             actualNoDataCardView.visibility = View.GONE
                             lineChart.visibility = View.VISIBLE
                             /*val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->

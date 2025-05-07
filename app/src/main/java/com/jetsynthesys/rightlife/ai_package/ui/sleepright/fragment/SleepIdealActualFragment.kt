@@ -32,6 +32,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.github.mikephil.charting.data.Entry
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,10 +54,15 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var progressDialog: ProgressDialog
     private lateinit var idealActualResponse: SleepIdealActualResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
-    private var currentDate: LocalDate = LocalDate.now() // today
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
+    private lateinit var tvAverageSleep: TextView
+    private lateinit var tvAverageNeeded: TextView
+    private var currentDateWeek: LocalDate = LocalDate.now() // today
+    private var currentDateMonth: LocalDate = LocalDate.now() // today
+    private var mStartDate = ""
+    private var mEndDate = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,20 +75,27 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         sixMonthGraph = view.findViewById(R.id.sixMonthGraph)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
+        tvAverageSleep = view.findViewById(R.id.tv_average_sleep_time)
+        tvAverageNeeded = view.findViewById(R.id.tv_average_needed_time)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
+        radioGroup.check(R.id.rbWeek)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        mStartDate = getOneWeekEarlierDate().format(dateFormatter)
+        mEndDate = getTodayDate().format(dateFormatter)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
+        setupListeners()
+        fetchSleepData(mEndDate,"weekly")
 
         backBtn.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
-
-        fetchSleepData()
-
-        radioGroup.check(R.id.rbWeek)
-
-        setupListeners()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -90,8 +103,20 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
             }
         })
+    }
 
-        loadWeekGraph()
+    fun getTodayDate(): LocalDate {
+        return LocalDate.now()
+    }
+
+    fun getOneWeekEarlierDate(): LocalDate {
+        return LocalDate.now().minusWeeks(1)
+    }
+    fun getOneMonthEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(1)
+    }
+    fun getSixMonthsEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(6)
     }
 
     private fun setupListeners() {
@@ -99,21 +124,30 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
             when (checkedId) {
                 R.id.rbWeek -> {
                     currentTab = 0
-                    lineChart.visibility = View.VISIBLE
-                    sixMonthGraph.visibility = View.GONE
-                    loadWeekGraph()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate, "weekly")
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
-                    lineChart.visibility = View.VISIBLE
-                    sixMonthGraph.visibility = View.GONE
-                    loadMonthGraph()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
                 }
                 R.id.rbSixMonths -> {
                     currentTab = 2
-                    lineChart.visibility = View.GONE
-                    sixMonthGraph.visibility = View.VISIBLE
-                    loadSixMonthGraph()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
                 }
             }
         }
@@ -121,16 +155,16 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         btnPrevious.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.minusWeeks(1)
-                    loadWeekGraph()
+                    currentDateWeek = currentDateWeek.minusWeeks(1)
+                    loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.minusMonths(1)
-                    loadMonthGraph()
+                    currentDateMonth = currentDateMonth.minusMonths(1)
+                    loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.minusMonths(6)
-                    loadSixMonthGraph()
+                    currentDateMonth = currentDateMonth.minusMonths(6)
+                    loadSixMonthsData()
                 }
             }
         }
@@ -138,79 +172,73 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.plusWeeks(1)
-                    loadWeekGraph()
+                    currentDateWeek = currentDateWeek.plusWeeks(1)
+                    loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.plusMonths(1)
-                    loadMonthGraph()
+                    currentDateMonth = currentDateMonth.plusMonths(1)
+                    loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.plusMonths(6)
-                    loadSixMonthGraph()
+                    currentDateMonth = currentDateMonth.plusMonths(6)
+                    loadSixMonthsData()
                 }
             }
         }
     }
 
-    private fun loadSixMonthGraph() {
-        val sleepSummaries = listOf(
-            SleepSummary("Jan", 8.13f, 5.52f, 7.9f to 8.4f, 5.3f to 5.7f, -0.96f),
-            SleepSummary("Feb", 7.21f, 5.03f, 7.0f to 7.4f, 4.8f to 5.2f, 0.11f),
-            SleepSummary("March", 8.11f, 4.57f, 7.9f to 8.3f, 4.3f to 4.7f, -0.05f),
-            SleepSummary("April", 7.88f, 4.54f, 7.6f to 8.0f, 4.3f to 4.7f, -0.03f),
-            SleepSummary("May", 8.20f, 5.52f, 8.1f to 8.3f, 5.3f to 5.7f, 1.27f),
-            SleepSummary("June", 8.20f, 5.52f, 8.1f to 8.3f, 5.3f to 5.7f, 1.27f)
-        )
-        sixMonthGraph.data = sleepSummaries
-        sixMonthGraph.invalidate()
+    private fun loadSixMonthsData() {
+        val startDate = getSixMonthsEarlierDate()
+        val endDate = getTodayDate()
+
+        val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
+        dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
+
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        fetchSleepData(endDate.format(formatter1), "monthly")
     }
 
 
 
-    private fun loadMonthGraph() {
-        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
-        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+    private fun loadMonthData() {
+        val endOfMonth = currentDateMonth
+        val startOfMonth = endOfMonth.minusMonths(1)
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
+
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        fetchSleepData(endOfMonth.format(formatter1), "monthly")
+
+     //   val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+
+   //     setGraphDataFromSleepList(monthList,weekRanges)
+    }
+
+    private fun loadWeekData() {
+
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
 
-        val monthList = mutableListOf<SleepGraphData>()
-        val daysInMonth = endOfMonth.dayOfMonth
-        for (i in 0 until daysInMonth) {
-            monthList.add(SleepGraphData("${startOfMonth.format(formatter)}", (5..10).random().toFloat(),(5..10).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+        fetchSleepData(endOfWeek.format(formatter1), "weekly")
 
-        setGraphDataFromSleepList(monthList,weekRanges)
+      //  val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+      //  setGraphDataFromSleepList(weekList, weekRanges)
     }
 
-    private fun loadWeekGraph() {
-
-        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
-        val endOfWeek = startOfWeek.plusDays(6)
-
-        val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
-
-
-        val weekList = mutableListOf<SleepGraphData>()
-        for (i in 0..6) {
-            weekList.add(SleepGraphData("${startOfWeek.format(formatter)}", (5..10).random().toFloat(),(5..10).random().toFloat()))
-        }
-
-        val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-
-        setGraphDataFromSleepList(weekList, weekRanges)
-    }
-
-    private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>, weekRanges: List<String>) {
+    private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
         val labels = weekRanges
 
-        sleepData.forEachIndexed { index, data ->
+        sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
         }
@@ -240,8 +268,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
         lineChart.axisLeft.apply {
             axisMinimum = 0f
-            axisMaximum = 14f
-            granularity = 2f
+            axisMaximum = 20f
+            granularity = 1f
             textSize = 12f
         }
 
@@ -259,41 +287,19 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         lineChart.invalidate()
     }
 
-        private fun fetchSleepData() {
+        private fun fetchSleepData(endDate: String,period: String) {
             progressDialog.show()
-            val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-            val userId = "user_test_1"
-            val period = "daily"
+            val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
             val source = "apple"
-            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userId, source, period)
+            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, endDate)
             call.enqueue(object : Callback<SleepIdealActualResponse> {
                 override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                     if (response.isSuccessful) {
                         progressDialog.dismiss()
-                        idealActualResponse = response.body()!!
-                       // setSleepRightLandingData(idealActualResponse)
-                        /*val sleepDataList: List<SleepGraphData>? = idealActualResponse.data?.sleepTimeDetail?.map { detail ->
-                            val formattedDate = detail.sleepDuration.first().startDatetime?.let {
-                                formatDate(
-                                    it
-                                )
-                            }
-                            return@map formattedDate?.let {
-                                detail.sleepTimeData?.idealSleepData?.toFloat()?.let { it1 ->
-                                    detail.sleepTimeData!!.actualSleepData?.toFloat()?.let { it2 ->
-                                        SleepGraphData(
-                                            date = it,
-                                            idealSleep = it1,
-                                            actualSleep = it2
-                                        )
-                                    }
-                                }
-                            }!!
-                        }*/
-
-                       /* if (sleepDataList != null) {
-                            setupChart(lineChart, sleepDataList)
-                        }*/
+                        if (response.body()!=null) {
+                            idealActualResponse = response.body()!!
+                            setSleepRightData()
+                        }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -343,13 +349,45 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     }
 
     private fun formatDate(dateTime: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val outputFormat = SimpleDateFormat("EEE dd MMM", Locale.getDefault())
         return outputFormat.format(inputFormat.parse(dateTime)!!)
     }
 
-    private fun setSleepRightLandingData(sleepLandingResponse: SleepIdealActualResponse) {
+    private fun setSleepRightData() {
+        if (idealActualResponse.data?.averageSleep!=null && idealActualResponse.data?.averageNeeded!=null) {
+            tvAverageSleep.setText(convertDecimalHoursToHrMinFormat(idealActualResponse.data?.averageSleep!!))
+            tvAverageNeeded.setText(convertDecimalHoursToHrMinFormat(idealActualResponse.data?.averageNeeded!!))
+        }
+        var sleepDataList: List<SleepGraphData>? = arrayListOf()
+        if (idealActualResponse.data?.timeDataBreakdown?.isNotEmpty() == true) {
+            sleepDataList = idealActualResponse.data?.timeDataBreakdown?.map { detail ->
+                val formattedDate = detail.date?.let { formatDate(it) }
+                return@map formattedDate?.let {
+                    detail.idealSleepHours?.toFloat()?.let { it1 ->
+                        detail.actualSleepHours?.toFloat()?.let { it2 ->
+                            SleepGraphData(date = it, idealSleep = it1, actualSleep = it2)
+                        }
+                    }
+                }!!
+            }
+        }
+        if (sleepDataList?.isNotEmpty() == true) {
+            if (sleepDataList.size < 9 == true) {
+                val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                setGraphDataFromSleepList(sleepDataList, weekRanges)
+            }else{
+                val monthlyRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+                setGraphDataFromSleepList(sleepDataList, monthlyRanges)
+            }
+        }
+    }
 
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        val totalMinutes = (hoursDecimal * 60).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return String.format("%02dhr %02dmins", hours, minutes)
     }
 
 

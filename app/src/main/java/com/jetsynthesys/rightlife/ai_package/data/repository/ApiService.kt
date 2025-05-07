@@ -480,7 +480,8 @@ interface ApiService {
     fun fetchSleepIdealActual(
         @Query("user_id") userId: String,
         @Query("source") source: String,
-        @Query("period") period: String
+        @Query("period") period: String,
+        @Query("date") date: String
     ): Call<SleepIdealActualResponse>
 
     @GET("sleep/sleep_consistency_details/")

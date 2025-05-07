@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
 import android.graphics.RectF
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,13 +16,13 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.databinding.FragmentRestorativeSleepBinding
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
@@ -29,23 +30,27 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.BarChartRenderer
-import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepAllData
+import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepData
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepDetail
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
-import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
+import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
 import com.jetsynthesys.rightlife.ai_package.model.SleepStages
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.time.Duration
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
+import java.util.Calendar
+import java.util.Locale
+import kotlin.time.Duration
 
 class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
 
@@ -59,8 +64,13 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
+    private lateinit var tvRestoAverage: TextView
+    private lateinit var restorativeSleepResponse: RestorativeSleepResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
-    private var currentDate: LocalDate = LocalDate.now() // today
+    private var currentDateWeek: LocalDate = LocalDate.now() // today
+    private var currentDateMonth: LocalDate = LocalDate.now() // today
+    private var mStartDate = ""
+    private var mEndDate = ""
 
     private val stageColorMap = mapOf(
         "Light" to Color.parseColor("#AEE2FF"),
@@ -68,7 +78,6 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         "REM" to Color.parseColor("#8ECAE6"),
         "Awake" to Color.parseColor("#6A4C93")
     )
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,22 +88,25 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         radioGroup = view.findViewById(R.id.tabGroup)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
+        tvRestoAverage = view.findViewById(R.id.tv_resto_average)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
-        // Show Week data by default
-      //  updateChart(getWeekData(), getWeekLabels())
-        fetchSleepData()
-        setupListeners()
-
-        // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
-        val weekData = getDummyWeekSleepData()
-        val monthData = getDummyMonthSleepData()
-        renderStackedChart(weekData)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        mStartDate = getOneWeekEarlierDate().format(dateFormatter)
+        mEndDate = getTodayDate().format(dateFormatter)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
 
-        // Handle Radio Button Selection
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
+        setupListeners()
+        fetchSleepData(mEndDate,"weekly")
+      //  val weekData = getDummyWeekSleepData()
+     //   val monthData = getDummyMonthSleepData()
+    //    renderStackedChart(weekData)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -118,22 +130,49 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
     }
 
+    fun getTodayDate(): LocalDate {
+        return LocalDate.now()
+    }
+
+    fun getOneWeekEarlierDate(): LocalDate {
+        return LocalDate.now().minusWeeks(1)
+    }
+    fun getOneMonthEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(1)
+    }
+    fun getSixMonthsEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(6)
+    }
+
     private fun setupListeners() {
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek -> {
                     currentTab = 0
-                    loadWeekData()
-                    renderStackedChart(getDummyWeekSleepData())
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate, "weekly")
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
-                    loadMonthData()
-                    renderMonthChart(barChart,getDummyMonthSleepData())
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
                 }
                 R.id.rbSixMonths -> {
                     currentTab = 2
-                    loadSixMonthsData()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
                 }
             }
         }
@@ -141,15 +180,15 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         btnPrevious.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.minusWeeks(1)
+                    currentDateWeek = currentDateWeek.minusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.minusMonths(1)
+                    currentDateMonth = currentDateMonth.minusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.minusMonths(6)
+                    currentDateMonth = currentDateMonth.minusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -158,15 +197,15 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.plusWeeks(1)
+                    currentDateWeek = currentDateWeek.plusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.plusMonths(1)
+                    currentDateMonth = currentDateMonth.plusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.plusMonths(6)
+                    currentDateMonth = currentDateMonth.plusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -174,33 +213,29 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     }
 
     private fun loadWeekData() {
-        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
-        val endOfWeek = startOfWeek.plusDays(6)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
 
-        val entries = mutableListOf<BarEntry>()
-        for (i in 0..6) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        fetchSleepData(endOfWeek.format(formatter1), "weekly")
 
     //    updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
 
     }
 
     private fun loadMonthData() {
-        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
-        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
-
+        val endOfMonth = currentDateMonth
+        val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
 
-        val entries = mutableListOf<BarEntry>()
-        val daysInMonth = endOfMonth.dayOfMonth
-        for (i in 0 until daysInMonth) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        fetchSleepData(endOfMonth.format(formatter1), "monthly")
 
         val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
 
@@ -208,122 +243,71 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     }
 
     private fun loadSixMonthsData() {
-        val startOfPeriod = currentDate.minusMonths(5).with(TemporalAdjusters.firstDayOfMonth())
-        val endOfPeriod = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+        val startDate = getSixMonthsEarlierDate()
+        val endDate = getTodayDate()
 
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
-        dateRangeText.text = "${startOfPeriod.format(formatter)} - ${endOfPeriod.format(formatter)}"
+        dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
 
-        val entries = mutableListOf<BarEntry>()
-        for (i in 0..5) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val months = listOf(
-            startOfPeriod.month.name.take(3),
-            startOfPeriod.plusMonths(1).month.name.take(3),
-            startOfPeriod.plusMonths(2).month.name.take(3),
-            startOfPeriod.plusMonths(3).month.name.take(3),
-            startOfPeriod.plusMonths(4).month.name.take(3),
-            startOfPeriod.plusMonths(5).month.name.take(3)
-        )
+        fetchSleepData(endDate.format(formatter1), "monthly")
        // updateChart(entries, months)
     }
 
-    fun renderMonthChart(chart: BarChart, data: List<Pair<String, RestorativeSleepDetail>>) {
-        val entries = ArrayList<BarEntry>()
-        val xLabels = ArrayList<String>()
+    fun mapToMonthlySleepChartData(startDate: String, endDate: String, restorativeSleepDetails: List<RestorativeSleepData>): List<Pair<String, SleepStageDurations>> {
 
-        data.forEachIndexed { index, (dateLabel, detail) ->
-            val stageDurations = mutableMapOf(
-                "Light" to 0f,
-                "Deep" to 0f,
-                "REM" to 0f,
-                "Awake" to 0f
-            )
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val startCal = Calendar.getInstance()
+        val endCal = Calendar.getInstance()
+        startCal.time = inputFormat.parse(startDate) ?: return emptyList()
+        endCal.time = inputFormat.parse(endDate) ?: return emptyList()
 
-            detail.sleepStages.forEach {
-                val start = LocalTime.parse(it.startDatetime)
-                val end = LocalTime.parse(it.endDatetime)
-                val duration = Duration.between(start, end).toMinutes().toFloat() / 60f
-                stageDurations[it.stage] = stageDurations.getOrDefault(it.stage, 0f) + duration
-            }
+        val sleepDataMap = restorativeSleepDetails.associateBy { it.date }
+        val chartData = mutableListOf<Pair<String, SleepStageDurations>>()
 
-            val stackedValues = arrayOf(
-                stageDurations["Light"] ?: 0f,
-                stageDurations["Deep"] ?: 0f,
-                stageDurations["REM"] ?: 0f,
-                stageDurations["Awake"] ?: 0f
-            )
+        var dayCounter = 1
 
-            entries.add(BarEntry(index.toFloat(), stackedValues.toFloatArray()))
-            xLabels.add(dateLabel) // Use "1", "2", ..., or full dates if needed
+        while (!startCal.after(endCal)) {
+            val dateKey = inputFormat.format(startCal.time)
+            val detail = sleepDataMap[dateKey]
+            val stages = detail?.sleepStages
+
+            val rem = stages?.remSleep?.toFloat() ?: 0f
+            val deep = stages?.deepSleep?.toFloat() ?: 0f
+            val light = stages?.lightSleep?.toFloat() ?: 0f
+            val awake = stages?.awake?.toFloat() ?: 0f
+
+            chartData.add(dayCounter.toString() to SleepStageDurations(rem, deep, light, awake))
+
+            startCal.add(Calendar.DATE, 1)
+            dayCounter++
         }
 
-        val dataSet = BarDataSet(entries, "Sleep Stages").apply {
-            setDrawValues(false)
-            colors = listOf(
-                Color.parseColor("#B2E0FE"), // Light
-                Color.parseColor("#A3B4F8"), // Deep
-                Color.parseColor("#9287F9"), // REM
-                Color.parseColor("#4D3DF8")  // Awake
-            )
-            stackLabels = arrayOf("Light", "Deep", "REM", "Awake")
-        }
-
-        val barData = BarData(dataSet).apply {
-            barWidth = 0.4f // ✅ Thin
-            chart.setVisibleXRangeMaximum(31f)
-            chart.setRenderer(RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler,stageColorMap))
-        }
-
-        chart.apply {
-            this.data = barData
-            description.isEnabled = false
-            legend.isEnabled = false
-            setScaleEnabled(false)
-            setPinchZoom(false)
-            setDrawGridBackground(false)
-
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = IndexAxisValueFormatter(xLabels)
-                granularity = 1f
-                labelCount = 6
-                setDrawGridLines(false)
-            }
-
-            axisLeft.apply {
-                axisMinimum = 0f
-                axisMaximum = 5f
-                granularity = 1f
-            }
-
-            axisRight.isEnabled = false
-
-            invalidate()
-        }
+        return chartData
     }
 
-    private fun fetchSleepData() {
+    private fun fetchSleepData(endDate: String,period: String) {
         progressDialog.show()
-         val userId = "67f6698fa213d14e22a47c2a"
-        val date = "2025-03-18"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val source = "apple"
-        val period = "weekly"
-        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userId, source,period, date)
+        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, endDate)
         call.enqueue(object : Callback<RestorativeSleepResponse> {
             override fun onResponse(call: Call<RestorativeSleepResponse>, response: Response<RestorativeSleepResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                 //   sleepStageResponse = response.body()!!
-              //      setSleepRightStageData(sleepStageResponse)
+                    if (response?.body()!=null) {
+                        restorativeSleepResponse = response.body()!!
+                        setRestorativeSleepData(restorativeSleepResponse?.data)
+                    }
+
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     progressDialog.dismiss()
                 }
             }
+
             override fun onFailure(call: Call<RestorativeSleepResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -332,33 +316,55 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         })
     }
 
-    private fun renderStackedChart(weekData: List<Pair<String, RestorativeSleepDetail>>) {
+    private fun setRestorativeSleepData(restorativeSleepResponse: RestorativeSleepAllData?) {
+        if (restorativeSleepResponse?.restorativeSleepDetails!=null) {
+          //  tvRestoAverage.setText()
+            if (restorativeSleepResponse.restorativeSleepDetails.size > 8){
+                val formattedData = mapToMonthlySleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
+                renderStackedChart(formattedData)
+            }else {
+                val formattedData = mapToSleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
+                renderStackedChart(formattedData)
+            }
+        }
+    }
+
+    fun mapToSleepChartData(startDate: String, endDate: String, restorativeSleepDetails: List<RestorativeSleepData>): List<Pair<String, SleepStageDurations>> {
+
+        val outputFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
+
+        return restorativeSleepDetails.mapNotNull { detail ->
+            try {
+                val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(detail.date)
+                val formattedDate = parsedDate?.let { outputFormat.format(it) } ?: return@mapNotNull null
+
+                val stages = detail.sleepStages
+
+                val rem = stages?.remSleep?.toFloat() ?: 0f
+                val deep = stages?.deepSleep?.toFloat() ?: 0f
+                val light = stages?.lightSleep?.toFloat() ?: 0f
+                val awake = stages?.awake?.toFloat() ?: 0f
+
+                formattedDate to SleepStageDurations(rem, deep, light, awake)
+
+            } catch (e: Exception) {
+                null // skip this entry on parse failure or nulls
+            }
+        }
+    }
+
+    private fun renderStackedChart(mappedData: List<Pair<String, SleepStageDurations>>) {
         val entries = mutableListOf<BarEntry>()
         val xLabels = mutableListOf<String>()
 
-        weekData.forEachIndexed { index, (label, detail) ->
-            val stageDurations = mutableMapOf(
-                "Light" to 0f,
-                "Deep" to 0f,
-                "REM" to 0f,
-                "Awake" to 0f
+        mappedData.forEachIndexed { index, (label, durations) ->
+            val stackedValues = floatArrayOf(
+                durations.light / 60f,
+                durations.deep / 60f,
+                durations.rem / 60f,
+                durations.awake / 60f
             )
-
-            detail.sleepStages.forEach {
-                val start = LocalTime.parse(it.startDatetime)
-                val end = LocalTime.parse(it.endDatetime)
-                val duration = Duration.between(start, end).toMinutes().toFloat() / 60f
-                stageDurations[it.stage] = stageDurations.getOrDefault(it.stage, 0f) + duration
-            }
-
-            val stackedValues = arrayOf(
-                stageDurations["Light"] ?: 0f,
-                stageDurations["Deep"] ?: 0f,
-                stageDurations["REM"] ?: 0f,
-                stageDurations["Awake"] ?: 0f
-            )
-
-            entries.add(BarEntry(index.toFloat(), stackedValues.toFloatArray()))
+            entries.add(BarEntry(index.toFloat(), stackedValues))
             xLabels.add(label)
         }
 
@@ -370,98 +376,30 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
                 stageColorMap["Awake"]!!
             )
             stackLabels = arrayOf("Light", "Deep", "REM", "Awake")
-            valueTextColor = Color.BLACK
+            valueTextColor = Color.TRANSPARENT
             valueTextSize = 10f
         }
-        barChart.setRenderer(RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler,stageColorMap))
+
+        barChart.setRenderer(
+            RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler, stageColorMap)
+        )
+
         barChart.apply {
             data = BarData(dataSet)
             description.isEnabled = false
             axisLeft.axisMinimum = 0f
             axisRight.isEnabled = false
-
             xAxis.apply {
                 valueFormatter = IndexAxisValueFormatter(xLabels)
-                granularity = 1f
                 position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
                 setDrawGridLines(false)
-                labelRotationAngle = -25f
             }
-
             legend.isEnabled = false
             animateY(1000)
             invalidate()
         }
-
     }
-
-    private fun getDummyWeekSleepData(): List<Pair<String, RestorativeSleepDetail>> {
-        return listOf(
-            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
-            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
-            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
-            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
-            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f)
-        )
-    }
-    private fun getDummyMonthSleepData(): List<Pair<String, RestorativeSleepDetail>> {
-        return listOf(
-            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
-            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
-            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
-            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
-            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
-            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
-            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
-            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
-            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
-            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
-            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
-            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
-            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
-            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
-            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
-            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
-            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
-            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
-            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
-            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
-            "Mon\n3 Feb" to mockDetail(3f, 1f, 0.5f, 0.5f),
-            "Tue\n4 Feb" to mockDetail(2.5f, 1f, 0.5f, 0.2f),
-            "Wed\n5 Feb" to mockDetail(3f, 1f, 0.7f, 0.3f),
-            "Thu\n6 Feb" to mockDetail(3.2f, 1.2f, 0.4f, 0.2f),
-            "Fri\n7 Feb" to mockDetail(1.5f, 0.7f, 0.3f, 0.1f),
-            "Sat\n8 Feb" to mockDetail(3.5f, 0.8f, 0.4f, 0.3f),
-        )
-    }
-
-    private fun mockDetail(light: Float, deep: Float, rem: Float, awake: Float): RestorativeSleepDetail {
-        fun genStage(stage: String, hours: Float, offset: Float): SleepStages {
-            val start = LocalTime.of(22, 0).plusMinutes((offset * 60).toLong())
-            val end = start.plusMinutes((hours * 60).toLong())
-            return SleepStages(stage, start.toString(), end.toString(),45)
-        }
-
-        return RestorativeSleepDetail(
-            totalSleepDurationMinutes = ((light + deep + rem + awake) * 60).toDouble(),
-            sleepStartTime = "22:00",
-            sleepEndTime = "06:00",
-            sleepStages = arrayListOf(
-                genStage("Light", light, 0f),
-                genStage("Deep", deep, light),
-                genStage("REM", rem, light + deep),
-                genStage("Awake", awake, light + deep + rem)
-            ),
-            calculatedRestorativeSleep = null
-        )
-    }
-
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -472,10 +410,7 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     }
 }
 
-class RestorativeBarChartRenderer(
-    private val chart: BarDataProvider,
-    animator: ChartAnimator,
-    viewPortHandler: ViewPortHandler,
+class RestorativeBarChartRenderer(private val chart: BarDataProvider, animator: ChartAnimator, viewPortHandler: ViewPortHandler,
     private val stageColorMap: Map<String, Int>
 ) : BarChartRenderer(chart, animator, viewPortHandler) {
 
@@ -576,6 +511,13 @@ class RestorativeBarChartRenderer(
         }
     }
 }
+
+data class SleepStageDurations(
+    val rem: Float,
+    val deep: Float,
+    val light: Float,
+    val awake: Float
+)
 
 
 
