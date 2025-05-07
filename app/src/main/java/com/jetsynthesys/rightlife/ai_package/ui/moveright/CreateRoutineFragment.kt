@@ -51,6 +51,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var createRoutineBackButton: ImageView
     private lateinit var createRoutineRecyclerView: RecyclerView
     private lateinit var layoutBtnLog: LinearLayoutCompat
+    private lateinit var add_btn_log: LinearLayoutCompat
     private lateinit var addNameLayout: ConstraintLayout
     private lateinit var createListRoutineLayout: ConstraintLayout
     private var workout: WorkoutList? = null
@@ -79,7 +80,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-        myroutine = arguments?.getString("myRoutine").toString()
+       // myroutine = arguments?.getString("myRoutine").toString()
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
@@ -87,10 +88,22 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         layoutBtnLog = view.findViewById(R.id.layout_btn_log)
         createRoutineBackButton = view.findViewById(R.id.back_button)
         addNameLayout = view.findViewById(R.id.add_name_layout)
+        add_btn_log = view.findViewById(R.id.add_btn_log)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
-        workout = arguments?.getParcelable("workout")
-         workoutRecord =
-            arguments?.let { BundleCompat.getParcelable(it, "workoutRecord", WorkoutSessionRecord::class.java) }
+        add_btn_log.setOnClickListener {
+            //navigateToFragment(SearchWorkoutFragment(),"SearchWorkoutFragments")
+            val fragment = SearchWorkoutFragment()
+            val args = Bundle()
+            args.putString("routine","routine")
+            args.putString("routineName",textViewRoutine.text.toString())
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, tag)
+                addToBackStack(null)
+                commit()
+            }
+        }
+
 
         addNameLayout.visibility = View.VISIBLE
         createListRoutineLayout.visibility = View.GONE
@@ -105,33 +118,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         createRoutineRecyclerView.adapter = myRoutineListAdapter
 
         createRoutineBackButton.setOnClickListener {
-            if(myroutine.equals("myRoutine")){
-                val fragment = SearchWorkoutFragment()
-                /*val args = Bundle().apply {
 
-                    putParcelable("workout", workout)
-                    putParcelable("workoutRecord", workoutRecord)// Pass the full record
-                }
-                fragment.arguments = args*/
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
-                    addToBackStack("YourworkOutsFragment")
-                    commit()
-                }
-            }else{
-                val fragment = YourworkOutsFragment()
-                val args = Bundle().apply {
-
-                    putParcelable("workout", workout)
-                    putParcelable("workoutRecord", workoutRecord)// Pass the full record
-                }
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
-                    addToBackStack("YourworkOutsFragment")
-                    commit()
-                }
-            }
            // navigateToFragment(YourworkOutsFragment(), "LandingFragment")
 
         }
@@ -155,33 +142,14 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                // navigateToFragment(YourworkOutsFragment(), "LandingFragment")
-                val fragment = YourworkOutsFragment()
-                val args = Bundle().apply {
 
-                    putParcelable("workout", workout)
-                    putParcelable("workoutRecord", workoutRecord)// Pass the full record
-                }
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "YourworkOutsFragment")
-                    addToBackStack("YourworkOutsFragment")
-                    commit()
-                }
             }
         })
 
         layoutBtnLog.setOnClickListener {
-            if(myroutine.equals("myRoutine")){
-                addNameLayout.visibility = View.GONE
-                createListRoutineLayout.visibility = View.VISIBLE
-                textViewRoutine.text = editText.text
-            }else{
-                addNameLayout.visibility = View.GONE
-                createListRoutineLayout.visibility = View.VISIBLE
-                textViewRoutine.text = editText.text
-                //createRoutine(editText.text.toString())
-                createWorkout(editText.text.toString())
-            }
+            addNameLayout.visibility = View.GONE
+            createListRoutineLayout.visibility = View.VISIBLE
+            textViewRoutine.text = editText.text
 
             // assignWorkoutRoutine() // Assign the routine first
             //fetchMoveRoutine()     // Then fetch the updated routine data

@@ -30,7 +30,8 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-
+        val routine = arguments?.getString("routine")
+        val routineName = arguments?.getString("routineName")
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
@@ -50,8 +51,13 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
         // Initial fragment
         if (savedInstanceState == null) {
-            replaceFragment(AllWorkoutFragment())
-        }
+            val allWorkoutFragment = AllWorkoutFragment().apply {
+                arguments = Bundle().apply {
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                }
+            }
+            replaceFragment(allWorkoutFragment)        }
 
         // Handle back press
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -62,7 +68,16 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
-                    0 -> replaceFragment(AllWorkoutFragment())
+                    0 -> {
+                        val allWorkoutFragment = AllWorkoutFragment().apply {
+                            arguments = Bundle().apply {
+                                putString("routine", routine)
+                                putString("routineName", routineName)
+                            }
+                        }
+                        replaceFragment(allWorkoutFragment)
+                    }
+                       // replaceFragment(allWorkoutFragment)} replaceFragment(AllWorkoutFragment())
                     1 -> replaceFragment(MyRoutineFragment())
                     2 -> replaceFragment(FrequentlyLoggedSearchFragment())
                 }

@@ -59,6 +59,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var myActivityRecyclerView: RecyclerView
     private lateinit var imageCalender: ImageView
     private lateinit var btnLogMeal: LinearLayoutCompat
+    private lateinit var layout_btn_addWorkout: LinearLayoutCompat
     private lateinit var healthConnectSyncButton: LinearLayoutCompat
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
@@ -115,6 +116,17 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         activitySync = view.findViewById(R.id.activities_sync)
         healthConnectSyncButton = view.findViewById(R.id.health_connect_sync_button)
         yourActivityBackButton = view.findViewById(R.id.back_button)
+        layout_btn_addWorkout = view.findViewById(R.id.layout_btn_addWorkout)
+        layout_btn_addWorkout.setOnClickListener {
+            val fragment = SearchWorkoutFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "searchWorkoutFragment")
+                addToBackStack("searchWorkoutFragment")
+                commit()
+            }
+        }
         yourActivityBackButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
             val args = Bundle()
@@ -175,12 +187,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         btnLogMeal.setOnClickListener {
-            val fragment = SearchWorkoutFragment()
+            val fragment = CreateRoutineFragment()
             val args = Bundle()
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "searchWorkoutFragment")
-                addToBackStack("searchWorkoutFragment")
+                replace(R.id.flFragment, fragment, "CreateRoutineFragment")
+                addToBackStack("CreateRoutineFragment")
                 commit()
             }
         }

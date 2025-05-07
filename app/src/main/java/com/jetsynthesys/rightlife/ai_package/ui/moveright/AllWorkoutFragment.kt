@@ -56,6 +56,8 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.TRANSPARENT)
+        val routine = arguments?.getString("routine")
+        val routineName = arguments?.getString("routineName")
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
