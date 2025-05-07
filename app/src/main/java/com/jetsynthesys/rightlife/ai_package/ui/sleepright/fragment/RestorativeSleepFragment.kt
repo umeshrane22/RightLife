@@ -50,6 +50,8 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.pow
+import kotlin.math.round
 import kotlin.time.Duration
 
 class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
@@ -64,7 +66,8 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
-    private lateinit var tvRestoAverage: TextView
+    private lateinit var tvAveragePercentage: TextView
+    private lateinit var tvAverageSleep: TextView
     private lateinit var restorativeSleepResponse: RestorativeSleepResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
@@ -88,7 +91,8 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
         radioGroup = view.findViewById(R.id.tabGroup)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
-        tvRestoAverage = view.findViewById(R.id.tv_resto_average)
+        tvAveragePercentage = view.findViewById(R.id.tv_average_sleep_percentage)
+        tvAverageSleep = view.findViewById(R.id.tv_average_sleep_duration)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -318,7 +322,8 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
     private fun setRestorativeSleepData(restorativeSleepResponse: RestorativeSleepAllData?) {
         if (restorativeSleepResponse?.restorativeSleepDetails!=null) {
-          //  tvRestoAverage.setText()
+            tvAverageSleep.setText(convertDecimalHoursToHrMinFormat(restorativeSleepResponse.averageSleepDuration!!))
+            tvAveragePercentage.setText(""+restorativeSleepResponse?.averageRestorativeSleepPercentage?.roundToDecimals(2)+"%")
             if (restorativeSleepResponse.restorativeSleepDetails.size > 8){
                 val formattedData = mapToMonthlySleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
                 renderStackedChart(formattedData)
@@ -327,6 +332,18 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
                 renderStackedChart(formattedData)
             }
         }
+    }
+
+    fun Double.roundToDecimals(decimals: Int): Double {
+        val factor = 10.0.pow(decimals)
+        return round(this * factor) / factor
+    }
+
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        val totalMinutes = (hoursDecimal * 60).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return String.format("%02dhr %02dmins", hours, minutes)
     }
 
     fun mapToSleepChartData(startDate: String, endDate: String, restorativeSleepDetails: List<RestorativeSleepData>): List<Pair<String, SleepStageDurations>> {
