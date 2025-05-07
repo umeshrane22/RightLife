@@ -166,14 +166,22 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
             binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);
             binding.tvLastReportDate.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(facialReportResponseNew.data.createdAt));
+            allHealthCamItems.clear();
+            if (facialReportResponseNew.data.healthCamReportByCategory != null) {
 
-            List<HealthCamItem> healthCamGoodItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamGood;
-            List<HealthCamItem> healthCamPayAttentionItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamPayAttention;
+                if (facialReportResponseNew.data.healthCamReportByCategory.healthCamGood != null) {
+                    List<HealthCamItem> healthCamGoodItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamGood;
+                    allHealthCamItems.addAll(healthCamGoodItems);
+                }
+                if (facialReportResponseNew.data.healthCamReportByCategory.healthCamPayAttention != null) {
+                    List<HealthCamItem> healthCamPayAttentionItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamPayAttention;
+                    allHealthCamItems.addAll(healthCamPayAttentionItems);
+                }
 
             // Combine the lists if you want to display them together
-            allHealthCamItems.clear();
-            allHealthCamItems.addAll(healthCamGoodItems);
-            allHealthCamItems.addAll(healthCamPayAttentionItems);
+
+
+
 
             HealthCamVitalsAdapter adapter = new HealthCamVitalsAdapter(this, allHealthCamItems);
 
@@ -182,6 +190,9 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
             setupScanTracker(scanBinding, facialReportResponseNew.data.usedCount, facialReportResponseNew.data.limit);
             setupBoosterTracker(facialReportResponseNew.data.boosterUsed, facialReportResponseNew.data.boosterLimit);
+        }else {
+
+            }
         }
     }
 

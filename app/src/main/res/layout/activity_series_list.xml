@@ -40,15 +40,14 @@
             android:textSize="@dimen/textsize_medium" />
 
         <ImageView
-            android:id="@+id/ic_close_dialog"
+            android:id="@+id/ic_bookmark"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_video_bookmark"
-            android:visibility="invisible"
-            app:tint="@color/text_color_app" />
+            android:visibility="visible"/>
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -309,7 +308,7 @@
         android:background="@drawable/roundedcornershape"
         android:gravity="center"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/image_like_article"
@@ -319,13 +318,13 @@
             android:src="@drawable/like_article_inactive" />
 
         <TextView
-            android:id="@+id/txt_topic2"
+            android:id="@+id/txt_like_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/dmsans_medium"
-            android:text="233 Likes"
+            android:text=" Likes"
             android:textColor="@android:color/black"
             android:textSize="@dimen/textsize_small" />
 

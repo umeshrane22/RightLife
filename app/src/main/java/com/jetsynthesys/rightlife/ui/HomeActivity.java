@@ -700,7 +700,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     PromotionResponse promotionResponse = gson.fromJson(jsonResponse, PromotionResponse.class);
                     Log.d("API Response body", "Success: promotion " + jsonResponse);
                     if (promotionResponse.getSuccess()) {
-                        Toast.makeText(HomeActivity.this, "Success: " + promotionResponse.getStatusCode(), Toast.LENGTH_SHORT).show();
+
                         Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
                         //  adapter.updateData(cardItems);
                         handlePromotionResponse(promotionResponse);
