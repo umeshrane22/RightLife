@@ -472,7 +472,8 @@ interface ApiService {
     fun fetchSleepPerformance(
         @Query("user_id") userId: String,
         @Query("source") source: String,
-        @Query("period") period: String
+        @Query("period") period: String,
+        @Query("date") date: String
     ): Call<SleepPerformanceResponse>
 
     @GET("sleep/ideal_vs_actual_sleepTime_detail/")

@@ -410,8 +410,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             recordId = mRecordId,
             listener = object : OnWakeUpTimeSelectedListener {
                 override fun onWakeUpTimeSelected(time: String) {
-                    // Handle returned time here
-                    Log.d("WakeUpTime", "Selected time: $time")
+                    todaysWakeupTime.setText(time)
                 }
             }
         )
@@ -823,6 +822,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
+                    sleepConsistencyChart.visibility = View.GONE
+                    consistencyNoDataCardView.visibility = View.VISIBLE
                     /*if (response.body() != null) {
                         sleepConsistencyResponse = response.body()!!
                         if (sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.isNotEmpty() == true) {
