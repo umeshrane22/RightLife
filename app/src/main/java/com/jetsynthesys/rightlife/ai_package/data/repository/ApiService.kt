@@ -64,6 +64,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogReques
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.UpdateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
@@ -90,15 +91,20 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryRespo
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealsLogResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MoveRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyMealsSaveResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SetStepsGoalResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
+import com.jetsynthesys.rightlife.ai_package.model.response.StepTrackerResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.UpdateRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MoveDashboardResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
@@ -319,6 +325,25 @@ interface ApiService {
         @Query("date") date: String,
         @Query("period") period: String
     ): Response<CalorieAnalysisResponse>
+
+    @GET("move/steps_detail_view/")
+    suspend fun getStepsDetail(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<StepTrackerResponse>
+
+    @POST("move/set_steps_goal/")
+    suspend fun setStepsGoal(
+        @Query("user_id") userId: String,
+        @Query("source") source: String,
+        @Query("steps_goal") stepsGoal: Int
+    ): Response<SetStepsGoalResponse>
+
+    @PUT("move/routine/update/")
+    suspend fun updateRoutine(
+        @Body request: UpdateRoutineRequest
+    ): Response<UpdateRoutineResponse>
 
     @GET("eat/calories/consumed/")
       suspend fun getConsumedCalories(
@@ -586,12 +611,12 @@ interface ApiService {
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
        // @Query("provided_date") providedDate: String
-    ): Response<WorkoutResponseRoutine>
+    ): Response<WorkoutPlanResponse>
 
     @GET("move/routine/")
     suspend fun getRoutines(
         @Query("user_id") userId: String
-    ): Response<RoutineResponse>
+    ): Response<WorkoutPlanResponse>
 
     @GET("move/landing_page/")
     suspend fun getLandingPageData(
