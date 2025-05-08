@@ -42,6 +42,7 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRoutineBinding
         get() = FragmentMyRoutineBinding::inflate
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.TRANSPARENT)

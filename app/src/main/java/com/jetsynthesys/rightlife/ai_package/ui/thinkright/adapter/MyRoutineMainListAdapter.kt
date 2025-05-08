@@ -15,7 +15,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteRoutineBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 
 class MyRoutineMainListAdapter(
     private val context: Context,

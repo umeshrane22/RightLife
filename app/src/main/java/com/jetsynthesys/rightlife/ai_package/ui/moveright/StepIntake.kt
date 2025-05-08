@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import kotlin.math.max
@@ -19,18 +20,11 @@ class StepIntake : View {
     private var backgroundPaint: Paint? = null
     private var capillaryRect: RectF? = null
     private var fillPercentage = 0f
-    private var intervalColors = intArrayOf(
-        Color.RED,  // 0-2k
-        Color.RED,  // 2-4k
-        Color.RED,  // 4-6k
-        Color.RED,  // 6-8k
-        Color.RED,  // 8-10k
-        Color.RED,  // 10-12k
-    )
+    private var intervalColors = IntArray(10) { Color.RED } // 10 intervals for 0-20k (0-2k, 2-4k, ..., 18-20k)
     private var backgroundColor = Color.LTGRAY
 
     private var minSteps = 0
-    private var maxSteps = 12000
+    private var maxSteps = 20000
     private val stepInterval = 2000
     private var listener: OnStepCountChangeListener? = null
 
@@ -76,7 +70,7 @@ class StepIntake : View {
         val density = resources.displayMetrics.density
         lineThickness = 2 * density // 2dp thick
         lineGap = 4 * density // 4dp gap between lines
-        touchAreaHeight = (lineThickness * 2 + lineGap) * 2 // Expanded touch area
+        touchAreaHeight = (lineThickness * 2 + lineGap) * 1.5f // Reduced multiplier for better touch sensitivity
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -169,19 +163,18 @@ class StepIntake : View {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                if (isThumbTouched(event.x, event.y) || event.action == MotionEvent.ACTION_MOVE) {
-                    val newY = max(
-                        (capillaryRect!!.top + touchAreaHeight / 2).toDouble(),
-                        min((capillaryRect!!.bottom - touchAreaHeight / 2).toDouble(), event.y.toDouble())
-                    ).toFloat()
-                    val steps = calculateStepsFromY(newY)
-                    fillPercentage = (steps - minSteps).toFloat() / (maxSteps - minSteps)
-                    invalidate()
-                    updateStepCount(steps)
-                    return true
-                }
+                // Allow dragging anywhere on the slider, not just the thumb
+                val newY = max(
+                    capillaryRect!!.top.toDouble(),
+                    min(capillaryRect!!.bottom.toDouble(), event.y.toDouble())
+                ).toFloat()
+                val steps = calculateStepsFromY(newY)
+                fillPercentage = (steps - minSteps).toFloat() / (maxSteps - minSteps)
+                invalidate()
+                updateStepCount(steps)
+                return true
             }
-            MotionEvent.ACTION_UP -> return isThumbTouched(event.x, event.y)
+            MotionEvent.ACTION_UP -> return true
         }
         return super.onTouchEvent(event)
     }
@@ -198,7 +191,7 @@ class StepIntake : View {
     }
 
     fun setIntervalColors(color: Int) {
-        intervalColors = intArrayOf(color, color, color, color, color, color)
+        intervalColors = IntArray((maxSteps - minSteps) / stepInterval) { color }
         createGradientShader()
         invalidate()
     }
@@ -216,11 +209,14 @@ class StepIntake : View {
 
     fun setMinSteps(minSteps: Int) {
         this.minSteps = minSteps
+        intervalColors = IntArray((maxSteps - minSteps) / stepInterval) { Color.RED }
+        createGradientShader()
         invalidate()
     }
 
     fun setMaxSteps(maxSteps: Int) {
         this.maxSteps = maxSteps
+        intervalColors = IntArray((maxSteps - minSteps) / stepInterval) { Color.RED }
         createGradientShader()
         invalidate()
     }
@@ -230,6 +226,7 @@ class StepIntake : View {
     }
 
     private fun updateStepCount(stepCount: Int) {
+        Log.d("StepIntake", "Step count updated: $stepCount")
         listener?.onStepCountChanged(stepCount)
     }
 
