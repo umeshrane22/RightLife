@@ -35,10 +35,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepAllData
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepData
-import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepDetail
 import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepResponse
-import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
-import com.jetsynthesys.rightlife.ai_package.model.SleepStages
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call

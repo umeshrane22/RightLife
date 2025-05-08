@@ -515,7 +515,7 @@ interface ApiService {
     @POST("app/api/journalNew")
     fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest): Call<BaseResponse>
 
-    @GET("sleep/landing_page/")
+    @GET("sleep/landing-page/")
     fun fetchSleepLandingPage(
         @Query("user_id") userId: String,
         @Query("source") source: String,

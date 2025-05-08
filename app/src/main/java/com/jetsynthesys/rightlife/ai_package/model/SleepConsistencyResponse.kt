@@ -37,7 +37,6 @@ data class SleepConsistencyDetail (
     var consistencyMessage        : String?,
     @SerializedName("action_step")
     var actionStep                : String?
-
 )
 
 data class SleepDetails (
