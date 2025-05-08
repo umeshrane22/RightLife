@@ -37,7 +37,7 @@ class GoogleLoginTokenResponse {
 
     @SerializedName("devices")
     @Expose
-    var devices: List<String>? = null
+    var devices: List<DeviceInfo>? = null
 }
 
 

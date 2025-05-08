@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -249,12 +250,13 @@ class ImageSliderActivity : BaseActivity() {
     }
 
     private fun fetchApiData(accessTokenGoogle: String) {
+        val deviceName = "${Build.MANUFACTURER} ${Build.MODEL}"
         val deviceId = Utils.getDeviceId(this)
         println("Device ID: $deviceId")
         val googleSignInRequest = GoogleSignInRequest(
             accessTokenGoogle,
             deviceId,
-            "androidDevice",
+            deviceName,
             "dummytokenfortest"
         )
         submitAnswer(googleSignInRequest)
