@@ -96,6 +96,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MoveDashboardResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
@@ -564,12 +565,12 @@ interface ApiService {
     suspend fun getMoveRoutine(
         @Query("user_id") userId: String,
        // @Query("provided_date") providedDate: String
-    ): Response<MoveRoutineResponse>
+    ): Response<WorkoutPlanResponse>
 
     @GET("move/routine/")
     suspend fun getRoutines(
         @Query("user_id") userId: String
-    ): Response<RoutineResponse>
+    ): Response<WorkoutPlanResponse>
 
     @GET("move/landing_page/")
     suspend fun getLandingPageData(
