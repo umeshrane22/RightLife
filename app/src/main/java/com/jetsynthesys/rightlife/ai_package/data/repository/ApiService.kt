@@ -76,6 +76,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedIronResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.DeleteCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
 import com.jetsynthesys.rightlife.ai_package.model.response.FrequentRecipesResponse
@@ -589,6 +590,12 @@ interface ApiService {
         @Query("user_id") userId: String,
        // @Query("provided_date") providedDate: String
     ): Response<WorkoutPlanResponse>
+
+    @DELETE("move/routine/delete/")
+    fun deleteRoutines(
+        @Query("routine_id") routineId: String,
+        @Query("user_id") userId: String
+    ): Call<DeleteCaloriesResponse>
 
     @GET("move/routine/")
     suspend fun getRoutines(

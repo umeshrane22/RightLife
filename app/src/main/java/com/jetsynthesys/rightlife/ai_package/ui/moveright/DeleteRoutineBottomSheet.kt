@@ -24,8 +24,8 @@ class DeleteRoutineBottomSheet: BottomSheetDialogFragment() {
         const val ARG_CALORIE_ID = "calorie_id"
         const val ARG_USER_ID = "user_id"
 
-        fun newInstance(calorieId: String, userId: String): DeleteWorkoutBottomSheet {
-            return DeleteWorkoutBottomSheet().apply {
+        fun newInstance(calorieId: String, userId: String): DeleteRoutineBottomSheet {
+            return DeleteRoutineBottomSheet().apply {
                 arguments = Bundle().apply {
                     putString(ARG_CALORIE_ID, calorieId)
                     putString(ARG_USER_ID, userId)
@@ -81,32 +81,26 @@ class DeleteRoutineBottomSheet: BottomSheetDialogFragment() {
     private fun deleteCalorieRecord(calorieId: String, userId: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val response = ApiClient.apiServiceFastApi.deleteCalorie(
-                    calorieId = calorieId,
+                // Call the suspend function directly
+                val deleteResponse = ApiClient.apiServiceFastApi.deleteRoutines(
+                    routineId = calorieId,
                     userId = userId
                 )
 
-                if (response.isSuccessful) {
-                    val deleteResponse = response.body()
-                    withContext(Dispatchers.Main) {
-                        if (deleteResponse != null) {
-                            Toast.makeText(context, "Workout deleted: ${deleteResponse.message}", Toast.LENGTH_SHORT).show()
-                            onDeleteSuccess?.invoke()
-                        } else {
-                            Toast.makeText(context, "Deletion failed: Empty response", Toast.LENGTH_SHORT).show()
-                        }
-                        dismiss()
+                // Since deleteRoutines directly returns the response body (not retrofit2.Response),
+                // we assume the call is successful if no exception is thrown
+                withContext(Dispatchers.Main) {
+                    if (deleteResponse != null) {
+                        Toast.makeText(requireContext(), "Workout deleted: ", Toast.LENGTH_SHORT).show()
+                        onDeleteSuccess?.invoke()
+                    } else {
+                        Toast.makeText(requireContext(), "Deletion failed: Empty response", Toast.LENGTH_SHORT).show()
                     }
-                } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error details"
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Error: ${response.code()} - $errorBody", Toast.LENGTH_SHORT).show()
-                        dismiss()
-                    }
+                    dismiss()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     dismiss()
                 }
             }

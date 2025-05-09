@@ -15,6 +15,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteRoutineBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 
 class MyRoutineMainListAdapter(
     private val context: Context,
@@ -54,11 +55,15 @@ class MyRoutineMainListAdapter(
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
         holder.deleteLayout.setOnClickListener {
-            val bottomSheet = DeleteRoutineBottomSheet()
+            val bottomSheet = DeleteRoutineBottomSheet.newInstance(
+                calorieId = item.routineId,
+                userId = item.userId // Replace with dynamic userId if available
+            )
+            bottomSheet.setOnDeleteSuccessListener {
+                dataLists.removeAt(position)
+                notifyDataSetChanged()
+            }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
-            holder.editDeleteLayout.visibility = View.GONE
-            selectedItem = -1
-            notifyItemChanged(position)
         }
 
         holder.threedots.setOnClickListener {
