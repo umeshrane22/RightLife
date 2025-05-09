@@ -104,6 +104,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.UpdateCaloriesRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.UpdateRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.ActivityFactorResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MoveDashboardResponse
@@ -257,6 +258,16 @@ interface ApiService {
 
     @POST("eat/meal-plans/log/")
     fun createMealPlanLog(@Query("user_id") userId: String,@Query("meal_plan_id") mealPlanId: String,@Body request: MealPlanLogRequest): Call<MealPlanResponse>
+
+    @GET("move/calendar_view_activity_details/")
+    fun getActivityLogHistoryCalender(@Query("user_id") userId: String,
+                                      @Query("source") source: String,
+                                   @Query("date_range") dateRange: String): Call<WorkoutHistoryResponse>
+
+    @GET("move/calendar_view_activity_details/")
+    fun getActivityLogHistory(@Query("user_id") userId: String,
+                              @Query("source") source: String,
+                           @Query("date") startDate: String): Call<WorkoutHistoryResponse>
 
     @GET("move/data/user_workouts/")
     suspend fun getUserWorkouts(
