@@ -2,11 +2,15 @@ package com.jetsynthesys.rightlife.ui.new_design
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -32,6 +36,15 @@ class UserInterestActivity : BaseActivity() {
     private lateinit var isFrom: String
     private lateinit var colorStateListSelected: ColorStateList
     private lateinit var colorStateListNonSelected: ColorStateList
+
+    val iconList = listOf(
+        R.drawable.ic_interest_physical,
+        R.drawable.ic_interest_nutrition,
+        R.drawable.ic_interest_sleep,
+        R.drawable.ic_interest_mind
+    )
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserInterestBinding.inflate(layoutInflater)
@@ -90,7 +103,36 @@ class UserInterestActivity : BaseActivity() {
     }
 
     private fun handleUserInterestResponse(userInterests: UserInterestData) {
-        userInterests.data?.forEach { userInterest ->
+        userInterests.data?.forEachIndexed { index, userInterest ->
+
+            // Section Layout
+            val titleLayout = LinearLayout(this@UserInterestActivity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding(0, 16, 0, 8)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            val iconRes = iconList.getOrElse(index) { R.drawable.ic_interest_mind }
+            //section Image
+            val iconView = ImageView(this@UserInterestActivity).apply {
+                val sizeInDp = 20
+                val sizeInPx = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    sizeInDp.toFloat(),
+                    resources.displayMetrics
+                ).toInt()
+
+                layoutParams = LinearLayout.LayoutParams(sizeInPx, sizeInPx).apply {
+                    marginEnd = 8.dpToPx()
+                }
+
+                setImageResource(iconRes) // Replace with your actual icon
+                scaleType = ImageView.ScaleType.FIT_XY
+            }
+
             // Section title
             val titleView = TextView(this@UserInterestActivity).apply {
                 text = userInterest.title
@@ -99,6 +141,10 @@ class UserInterestActivity : BaseActivity() {
                 setTypeface(typeface, Typeface.BOLD)
                 textSize = 18F
             }
+
+            // Add views to layout
+            titleLayout.addView(iconView)
+            titleLayout.addView(titleView)
 
             // ChipGroup
             val chipGroup = ChipGroup(this@UserInterestActivity).apply {
@@ -181,7 +227,7 @@ class UserInterestActivity : BaseActivity() {
                 chipGroup.addView(chip)
             }
 
-            binding.llInterestContainer.addView(titleView)
+            binding.llInterestContainer.addView(titleLayout)
             binding.llInterestContainer.addView(chipGroup)
         }
     }
@@ -236,5 +282,7 @@ class UserInterestActivity : BaseActivity() {
 
         })
     }
-
+    fun Int.dpToPx(): Int = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), Resources.getSystem().displayMetrics
+    ).toInt()
 }

@@ -25,7 +25,7 @@ class WellnessFocusListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WellnessFocusViewHolder {
         val view = LayoutInflater.from(context)
-            .inflate(R.layout.row_wellness_focus_list, parent, false)
+            .inflate(R.layout.row_wellness_focus_list_new_design, parent, false)
         return WellnessFocusViewHolder(view)
     }
 
