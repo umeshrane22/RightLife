@@ -12,9 +12,11 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteRoutineBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 
 class MyRoutineMainListAdapter(
     private val context: Context,
@@ -22,6 +24,7 @@ class MyRoutineMainListAdapter(
     private var clickPos: Int,
     private var workoutItem: WorkoutRoutineItem?,
     private var isClickView: Boolean,
+    private val onCirclePlusClick: (WorkoutRoutineItem, Int) -> Unit,
     private val onWorkoutItemClick: (WorkoutRoutineItem, Int, Boolean) -> Unit
 ) : RecyclerView.Adapter<MyRoutineMainListAdapter.ViewHolder>() {
 
@@ -53,12 +56,19 @@ class MyRoutineMainListAdapter(
             val bottomSheet = LoggedBottomSheet()
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
         }
+        holder.layout_edit.setOnClickListener {
+            onCirclePlusClick(item, position)
+        }
         holder.deleteLayout.setOnClickListener {
-            val bottomSheet = DeleteRoutineBottomSheet()
+            val bottomSheet = DeleteRoutineBottomSheet.newInstance(
+                calorieId = item.routineId,
+                userId = item.userId // Replace with dynamic userId if available
+            )
+            bottomSheet.setOnDeleteSuccessListener {
+                dataLists.removeAt(position)
+                notifyDataSetChanged()
+            }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
-            holder.editDeleteLayout.visibility = View.GONE
-            selectedItem = -1
-            notifyItemChanged(position)
         }
 
         holder.threedots.setOnClickListener {
@@ -84,6 +94,7 @@ class MyRoutineMainListAdapter(
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val deleteLayout: LinearLayoutCompat = itemView.findViewById(R.id.layout_delete)
+        val layout_edit: LinearLayoutCompat = itemView.findViewById(R.id.layout_edit)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
         val editDeleteLayout: CardView = itemView.findViewById(R.id.btn_edit_delete)
         val addToWorkout: LinearLayoutCompat = itemView.findViewById(R.id.layout_btn_log)
