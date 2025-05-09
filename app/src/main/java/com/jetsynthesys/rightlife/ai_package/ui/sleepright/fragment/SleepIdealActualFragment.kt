@@ -300,7 +300,10 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                             idealActualResponse = response.body()!!
                             setSleepRightData()
                         }
-                    } else {
+                    }else if(response.code() == 400){
+                        progressDialog.dismiss()
+                        Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
+                    }else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                         progressDialog.dismiss()

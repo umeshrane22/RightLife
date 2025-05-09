@@ -267,8 +267,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
     private fun fetchSleepData(endDate: String, period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-            ?: "68010b615a508d0cfd6ac9ca"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,endDate)
         call.enqueue(object : Callback<SleepPerformanceResponse> {
@@ -277,6 +276,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                     progressDialog.dismiss()
                     sleepPerformanceResponse = response.body()!!
                     setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

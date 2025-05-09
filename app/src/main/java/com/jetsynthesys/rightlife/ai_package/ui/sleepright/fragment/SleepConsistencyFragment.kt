@@ -256,7 +256,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 progressDialog.dismiss()
-                if (response.body() != null) {
+                if (response.isSuccessful) {
                     sleepConsistencyResponse = response.body()!!
                     if (sleepConsistencyResponse.statusCode == 200) {
                         if (sleepConsistencyResponse.data?.sleepDetails?.isNotEmpty() == true) {
@@ -265,14 +265,15 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                             }
                         }
                         setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
-
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<SleepConsistencyResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -356,6 +357,11 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
         textSize = 36f
     }
 
+    private val paintLabelText = Paint().apply {
+        color = Color.BLACK
+        textSize = 28f
+    }
+
     fun setSleepData(data: List<SleepEntry>) {
         sleepData.clear()
         sleepData.addAll(data)
@@ -395,8 +401,8 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
                 canvas.drawRoundRect(x, endY, x + widthPerDay * 0.8f, startY, 20f, 20f, paint)
 
                 // Draw date labels
-                val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d"))
-                canvas.drawText(dateLabel, x, height - 30f, paintText)
+                val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
+                canvas.drawText(dateLabel, x, height - 30f, paintLabelText)
             }
         }catch (e: DateTimeParseException) {
             Log.e("SleepParse", "Failed to parse", e)
@@ -405,12 +411,7 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
     }
 }
 
-
-data class SleepEntry(
-    val startDatetime: String,
-    val endDatetime: String,
-    val value: Float
-) {
+data class SleepEntry(val startDatetime: String, val endDatetime: String, val value: Float) {
     fun getStartLocalDateTime(): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         return LocalDateTime.parse(startDatetime, formatter)

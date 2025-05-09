@@ -37,29 +37,22 @@ import androidx.core.app.NotificationManagerCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.RestorativeSleepDetail
-import com.jetsynthesys.rightlife.ai_package.model.SleepIdealActualResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepRightLandingBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
-import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.utils.MPPointF
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepJson
@@ -67,7 +60,6 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingAllData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceDetail
 import com.jetsynthesys.rightlife.ai_package.model.SleepRestorativeDetail
-import com.jetsynthesys.rightlife.ai_package.model.SleepStageData
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
@@ -122,6 +114,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var tvRestoDeepTime: TextView
     private lateinit var tvRestoStartTime: TextView
     private lateinit var tvRestoEndTime: TextView
+    private lateinit var tvConsistencyDate: TextView
+    private lateinit var tvConsistencyTime: TextView
     private lateinit var landingPageResponse: SleepLandingResponse
     private lateinit var landingAllData: SleepLandingAllData
     private lateinit var lineChart:LineChart
@@ -139,6 +133,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var actualNoDataCardView : CardView
     private lateinit var stageNoDataCardView : CardView
     private lateinit var performCardView : CardView
+    private lateinit var sleepTimeRequirementCardView : CardView
     private lateinit var performNoDataCardView : CardView
     private lateinit var restroNoDataCardView : CardView
     private lateinit var consistencyNoDataCardView : CardView
@@ -163,6 +158,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         downloadView = view.findViewById(R.id.sleep_download_icon)
         mainView = view.findViewById(R.id.lyt_main_view)
         logYourNap = view.findViewById(R.id.btn_log_nap)
+        sleepTimeRequirementCardView = view.findViewById(R.id.card_sleep_time_requirement)
         val sleepInfo = view.findViewById<ImageView>(R.id.img_sleep_right)
         val editWakeup = view.findViewById<ImageView>(R.id.img_edit_wakeup_time)
         val sleepPerform = view.findViewById<ImageView>(R.id.img_sleep_perform_right)
@@ -194,6 +190,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvIdealTime = view.findViewById(R.id.tv_ideal_time)
         tvRestoStartTime = view.findViewById(R.id.tv_resto_start_time)
         tvRestoEndTime = view.findViewById(R.id.tv_resto_end_time)
+        tvRestoRemTime = view.findViewById(R.id.tv_resto_rem_time)
+        tvRestoDeepTime = view.findViewById(R.id.tv_resto_deep_time)
+        tvConsistencyDate = view.findViewById(R.id.tv_consistency_date)
+        tvConsistencyTime = view.findViewById(R.id.tv_consistency_time)
+
 
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -286,11 +287,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
+                    sleepTimeRequirementCardView.visibility = View.VISIBLE
                     wakeupTimeResponse = response.body()!!
                     setWakeupData(wakeupTimeResponse.data.getOrNull(0))
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    sleepTimeRequirementCardView.visibility = View.GONE
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
+                    sleepTimeRequirementCardView.visibility = View.GONE
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                   // Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
 
                 }
             }
@@ -363,6 +370,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     Utils.dismissLoader(requireActivity())
                     landingPageResponse = response.body()!!
                     setSleepRightLandingData(landingPageResponse)
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -447,7 +457,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
 
         // Set Restorative Sleep Data
-        val sleepRestorativeDetail: ArrayList<SleepStagesData> = arrayListOf()
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
                 restroNoDataCardView.visibility = View.GONE
                 restorativeChart.visibility = View.VISIBLE
@@ -456,6 +465,21 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 restroNoDataCardView.visibility = View.VISIBLE
                 restorativeChart.visibility = View.GONE
             }
+
+        //Set Consistency Sleep Data
+        if (sleepLandingResponse.sleepLandingAllData?.sleepConsistency != null) {
+            consistencyNoDataCardView.visibility = View.GONE
+            sleepConsistencyChart.visibility = View.VISIBLE
+
+            tvConsistencyTime.text = convertDecimalHoursToHrMinFormat(landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours!!)
+            tvConsistencyDate.text = convertDateToNormalDate(landingAllData.sleepConsistency?.sleepDetails?.getOrNull(
+                landingAllData.sleepConsistency?.sleepDetails?.size?.minus(1) ?:0)?.date!!)
+
+            setConsistencySleepData(sleepLandingResponse.sleepLandingAllData?.sleepConsistency)
+        } else{
+            consistencyNoDataCardView.visibility = View.VISIBLE
+            sleepConsistencyChart.visibility = View.GONE
+        }
 
         // Set Recommended Sound
         view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Recommended Sound"
@@ -657,18 +681,57 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             tvPerformSleepPercent.text = sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toInt().toString()
             tvPerformSleepDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
             tvPerformIdealDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
-            tvPerformAction.text = sleepPerformanceDetail.sleepPerformanceData?.actionStep
-            tvPerformMessage.text = sleepPerformanceDetail.sleepPerformanceData?.message
+            tvPerformAction.text = "Under"
+            tvPerformMessage.text = sleepPerformanceDetail.sleepPerformanceData?.actionStep + " " + sleepPerformanceDetail.sleepPerformanceData?.message
             imgPerformAction.setImageResource(R.drawable.yellow_info)
     }
 
     private fun setRestorativeSleepData(sleepRestorativeDetail: SleepRestorativeDetail?) {
-       // tvRestoRemTime.text = convertDecimalHoursToHrMinFormat(sleepRestorativeDetail.actualSleepData?.actualSleepDurationHours!!)
-      //  tvRestoDeepTime.text = convertDecimalHoursToHrMinFormat(sleepRestorativeDetail.actualSleepData?.actualSleepDurationHours!!)
+        tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
+        tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
         tvRestoStartTime.text = formatIsoTo12Hour(sleepRestorativeDetail?.sleepStartTime!!)
         tvRestoEndTime.text = formatIsoTo12Hour(sleepRestorativeDetail.sleepEndTime!!)
         restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData)
         }
+
+    private fun addDeepStageData(sleepStagesData: ArrayList<SleepStagesData>?): String {
+        var totalDeepDuration = 0.0
+
+        for (i in 0 until sleepStagesData?.size!!) {
+            val startDateTime = LocalDateTime.parse(sleepStagesData[i].startDatetime, formatters)
+            val endDateTime = LocalDateTime.parse(sleepStagesData[i].endDatetime, formatters)
+            val duration = Duration.between(startDateTime, endDateTime).toMinutes()
+                .toFloat() / 60 // Convert to hours
+
+            when (sleepStagesData[i].stage) {
+                "Deep Sleep" -> {
+                    deepData.add(duration)
+                    totalDeepDuration += duration
+                }
+            }
+        }
+        return convertDecimalHoursToHrMinFormat(totalDeepDuration)
+    }
+
+    private fun addRemStageData(sleepStagesData: ArrayList<SleepStagesData>?): String {
+        var totalRemDuration = 0.0
+
+        for (i in 0 until sleepStagesData?.size!!) {
+            val startDateTime =
+                LocalDateTime.parse(sleepStagesData[i].startDatetime, formatters)
+            val endDateTime = LocalDateTime.parse(sleepStagesData[i].endDatetime, formatters)
+            val duration = Duration.between(startDateTime, endDateTime).toMinutes()
+                .toFloat() / 60 // Convert to hours
+
+            when (sleepStagesData[i].stage) {
+                "REM Sleep" -> {
+                    remData.add(duration)
+                    totalRemDuration += duration
+                }
+            }
+        }
+        return convertDecimalHoursToHrMinFormat(totalRemDuration)
+    }
 
     private fun fetchSleepConsistencyData() {
         progressDialog.show()
@@ -718,7 +781,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         })
     }
 
-    fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
+    fun setConsistencySleepData(consistencyData: SleepConsistency?) = runBlocking {
+        val parseSleepData: ArrayList<SleepDetails> = arrayListOf()
+        if (consistencyData?.sleepDetails!=null) {
+            for (sleepEntry in consistencyData.sleepDetails) {
+                parseSleepData.add(sleepEntry)
+            }
+        }
         val result = async {
             parseSleepData(parseSleepData)
         }.await()
@@ -1031,16 +1100,19 @@ class SleepRestoChartView(context: Context, attrs: AttributeSet? = null) : View(
         val w = width.toFloat()
         val h = height.toFloat()
 
-        val barHeight = h * 0.15f
-        val cornerRadius = barHeight / 2
+        // Set the background color (replace with desired color)
+        canvas.drawColor(Color.parseColor("#F5F9FF")) // Example: light gray
+
+        val barHeight = h * 0.25f
+        val cornerRadius = barHeight / 4
         var currentX = 0f
 
         sleepSegments.forEach { segment ->
             paint.color = segment.color
 
             val top = when (segment.position) {
-                Position1.UPPER -> h * 0.05f
-                Position1.LOWER -> h * 0.25f
+                Position1.UPPER -> h * 0.1f
+                Position1.LOWER -> h * 0.35f
             }
             val bottom = top + barHeight
             val right = currentX + (segment.widthFraction * w)

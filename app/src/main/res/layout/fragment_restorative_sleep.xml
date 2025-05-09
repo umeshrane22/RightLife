@@ -52,9 +52,10 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/calorie_balance_layout"
                 android:layout_width="match_parent"
-                android:layout_height="550dp"
+                android:layout_height="wrap_content"
                 android:elevation="4dp"
                 android:background="@color/white"
+                app:contentPadding="5dp"
                 app:cardCornerRadius="10dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
@@ -166,7 +167,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:layout_marginStart="21dp"
+                        android:layout_marginStart="20dp"
                         android:text="Average"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_bold"
@@ -227,6 +228,114 @@
                         app:layout_constraintStart_toStartOf="@+id/average_needed_text"
                         app:layout_constraintEnd_toEndOf="@+id/average_needed_text"
                         app:layout_constraintTop_toBottomOf="@+id/average_needed_text"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:id="@+id/lyt_sleep_detail"
+                        android:background="@drawable/grey_border_bg"
+                        android:weightSum="2"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_average_sleep_duration"
+                        android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tv_restorative_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sunday 30 Mar, 2025"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="14sp"
+                        android:textColor="#002C5F"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:weightSum="2"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="10dp"
+                                android:src="@drawable/rem_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Rem"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@color/black"
+                                android:layout_marginStart="5dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2 hr 10 mins"
+                                android:id="@+id/tv_rem_time"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="13sp"
+                                android:textColor="@color/black"
+                                android:layout_marginStart="5dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="45dp"
+                            android:gravity="center_vertical"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="10dp"
+                                android:src="@drawable/deep_icon" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Deep"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:textColor="@color/black"
+                                android:layout_marginStart="5dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="5 hr 20 mins"
+                                android:textSize="13sp"
+                                android:id="@+id/tv_deep_time"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textColor="@color/black"
+                                android:layout_marginStart="5dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    </LinearLayout>
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/restorativeBarChart"
@@ -234,7 +343,7 @@
                         android:layout_height="350dp"
                         android:layout_marginTop="10dp"
                         android:background="@color/white"
-                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                        app:layout_constraintTop_toBottomOf="@+id/lyt_sleep_detail"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 

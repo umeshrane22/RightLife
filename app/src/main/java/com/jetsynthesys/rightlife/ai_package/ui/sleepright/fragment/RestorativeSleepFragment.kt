@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.databinding.FragmentRestorativeSleepBinding
@@ -51,7 +52,7 @@ import kotlin.math.pow
 import kotlin.math.round
 import kotlin.time.Duration
 
-class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() {
+class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRestorativeSleepBinding
         get() = FragmentRestorativeSleepBinding::inflate
@@ -65,24 +66,23 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
     private lateinit var dateRangeText: TextView
     private lateinit var tvAveragePercentage: TextView
     private lateinit var tvAverageSleep: TextView
+    private lateinit var tvRemSleep: TextView
+    private lateinit var tvDeepSleep: TextView
     private lateinit var restorativeSleepResponse: RestorativeSleepResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
     private var mStartDate = ""
     private var mEndDate = ""
-
-    private val stageColorMap = mapOf(
-        "Light" to Color.parseColor("#AEE2FF"),
-        "Deep" to Color.parseColor("#BDB2FF"),
-        "REM" to Color.parseColor("#8ECAE6"),
-        "Awake" to Color.parseColor("#6A4C93")
-    )
+    private lateinit var stageColorMap: Map<String, Int>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         view.setBackgroundResource(R.drawable.sleep_stages_bg)
+        stageColorMap = mapOf(
+            "REM Sleep" to ContextCompat.getColor(requireContext(), R.color.light_blue_bar),
+            "Deep Sleep" to ContextCompat.getColor(requireContext(), R.color.purple_bar)
+        )
 
         barChart = view.findViewById(R.id.restorativeBarChart)
         radioGroup = view.findViewById(R.id.tabGroup)
@@ -273,13 +273,10 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             val dateKey = inputFormat.format(startCal.time)
             val detail = sleepDataMap[dateKey]
             val stages = detail?.sleepStages
-
             val rem = stages?.remSleep?.toFloat() ?: 0f
             val deep = stages?.deepSleep?.toFloat() ?: 0f
-            val light = stages?.lightSleep?.toFloat() ?: 0f
-            val awake = stages?.awake?.toFloat() ?: 0f
 
-            chartData.add(dayCounter.toString() to SleepStageDurations(rem, deep, light, awake))
+            chartData.add(dayCounter.toString() to SleepStageDurations(rem,deep))
 
             startCal.add(Calendar.DATE, 1)
             dayCounter++
@@ -302,6 +299,9 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
                         setRestorativeSleepData(restorativeSleepResponse?.data)
                     }
 
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -356,10 +356,8 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
                 val rem = stages?.remSleep?.toFloat() ?: 0f
                 val deep = stages?.deepSleep?.toFloat() ?: 0f
-                val light = stages?.lightSleep?.toFloat() ?: 0f
-                val awake = stages?.awake?.toFloat() ?: 0f
 
-                formattedDate to SleepStageDurations(rem, deep, light, awake)
+                formattedDate to SleepStageDurations(rem,deep)
 
             } catch (e: Exception) {
                 null // skip this entry on parse failure or nulls
@@ -373,10 +371,8 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
         mappedData.forEachIndexed { index, (label, durations) ->
             val stackedValues = floatArrayOf(
-                durations.light / 60f,
-                durations.deep / 60f,
                 durations.rem / 60f,
-                durations.awake / 60f
+                durations.deep / 60f
             )
             entries.add(BarEntry(index.toFloat(), stackedValues))
             xLabels.add(label)
@@ -384,12 +380,10 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
 
         val dataSet = BarDataSet(entries, "Sleep Stages").apply {
             setColors(
-                stageColorMap["Light"]!!,
-                stageColorMap["Deep"]!!,
-                stageColorMap["REM"]!!,
-                stageColorMap["Awake"]!!
+                stageColorMap["REM Sleep"]!!,
+                stageColorMap["Deep Sleep"]!!
             )
-            stackLabels = arrayOf("Light", "Deep", "REM", "Awake")
+            stackLabels = arrayOf("REM Sleep", "Deep Sleep")
             valueTextColor = Color.TRANSPARENT
             valueTextSize = 10f
         }
@@ -403,6 +397,11 @@ class RestorativeSleepFragment: BaseFragment<FragmentRestorativeSleepBinding>() 
             description.isEnabled = false
             axisLeft.axisMinimum = 0f
             axisRight.isEnabled = false
+            description.isEnabled = false
+            isHighlightPerTapEnabled = false
+            isHighlightPerDragEnabled = false
+            legend.isEnabled = false
+            setScaleEnabled(false)
             xAxis.apply {
                 valueFormatter = IndexAxisValueFormatter(xLabels)
                 position = XAxis.XAxisPosition.BOTTOM
@@ -429,7 +428,7 @@ class RestorativeBarChartRenderer(private val chart: BarDataProvider, animator: 
 ) : BarChartRenderer(chart, animator, viewPortHandler) {
 
     private val radius = 20f
-    private val stageNames = arrayOf("Light", "Deep", "REM", "Awake")
+    private val stageNames = arrayOf("REM Sleep", "Deep Sleep")
 
     override fun drawDataSet(c: Canvas, dataSet: IBarDataSet, index: Int) {
         val trans = chart.getTransformer(dataSet.axisDependency)
@@ -528,9 +527,8 @@ class RestorativeBarChartRenderer(private val chart: BarDataProvider, animator: 
 
 data class SleepStageDurations(
     val rem: Float,
-    val deep: Float,
-    val light: Float,
-    val awake: Float
+    val deep: Float
+
 )
 
 
