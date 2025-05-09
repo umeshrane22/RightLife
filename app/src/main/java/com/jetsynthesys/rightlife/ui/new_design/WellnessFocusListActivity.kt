@@ -86,7 +86,7 @@ class WellnessFocusListActivity : BaseActivity() {
                 module = header!!
             )
 
-        val gridLayoutManager = GridLayoutManager(this, 2)
+        val gridLayoutManager = GridLayoutManager(this, 1)
         rvWellnessFocusList.setLayoutManager(gridLayoutManager)
 
         rvWellnessFocusList.adapter = wellnessFocusListAdapter

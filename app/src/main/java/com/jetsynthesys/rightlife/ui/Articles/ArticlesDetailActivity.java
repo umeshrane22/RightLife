@@ -120,11 +120,11 @@ public class ArticlesDetailActivity extends BaseActivity {
         binding.imageLikeArticle.setOnClickListener(v -> {
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
             if (articleDetailsResponse.getData().getIsLike()) {
-                binding.imageLikeArticle.setImageResource(R.drawable.like);
+                binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive);
                 articleDetailsResponse.getData().setIsLike(false);
                 postArticleLike(articleDetailsResponse.getData().getId(), false);
             } else {
-                binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe);
+                binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
                 articleDetailsResponse.getData().setIsLike(true);
                 postArticleLike(articleDetailsResponse.getData().getId(), true);
             }

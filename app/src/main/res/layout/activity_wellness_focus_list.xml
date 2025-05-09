@@ -50,7 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/ll_header"
         android:layout_margin="20dp"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:text="@string/your_journey_your_way"
         android:textColor="@color/txt_color_header"
         android:textSize="26sp" />
