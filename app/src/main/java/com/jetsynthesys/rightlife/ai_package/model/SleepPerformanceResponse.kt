@@ -17,7 +17,9 @@ data class SleepPerformanceAllData (
     @SerializedName("end_datetime")
     var endDatetime          : String?,
     @SerializedName("sleep_performance_data")
-    var sleepPerformanceList : ArrayList<SleepPerformanceList> = arrayListOf()
+    var sleepPerformanceList : ArrayList<SleepPerformanceList> = arrayListOf(),
+    @SerializedName("sleep_performance_average" )
+    var sleepPerformanceAverage : Double?
 )
 
 data class SleepPerformanceList(

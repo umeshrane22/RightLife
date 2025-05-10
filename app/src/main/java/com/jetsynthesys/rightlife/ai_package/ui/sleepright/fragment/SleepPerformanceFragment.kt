@@ -39,15 +39,21 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.FormattedData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceAllData
+import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceList
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MindfullChartRenderer
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import kotlin.math.pow
+import kotlin.math.round
 
 class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>() {
 
@@ -114,7 +120,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
-        setupChart()
+    //    setupChart()
 
     }
 
@@ -261,8 +267,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
     private fun fetchSleepData(endDate: String, period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-            ?: "68010b615a508d0cfd6ac9ca"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,endDate)
         call.enqueue(object : Callback<SleepPerformanceResponse> {
@@ -271,6 +276,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                     progressDialog.dismiss()
                     sleepPerformanceResponse = response.body()!!
                     setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -286,7 +294,135 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceAllData?) {
+        tvSleepAverage.setText(""+sleepPerformanceResponse?.sleepPerformanceAverage?.roundToDecimals(2)+"%")
+      //  updateChart()
+        if (sleepPerformanceResponse?.sleepPerformanceList?.isNotEmpty() == true) {
+            if (sleepPerformanceResponse.sleepPerformanceList.size < 9 ) {
+                setupWeeklyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.endDatetime!!)
+            }else{
+                setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
+            }
+        }
+    }
+    fun Double.roundToDecimals(decimals: Int): Double {
+        val factor = 10.0.pow(decimals)
+        return round(this * factor) / factor
+    }
 
+    fun setupMonthlyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, startDateStr:String, endDateStr:String) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val trimmedEndDate = endDateStr.substring(0, 10)  // "2025-05-01"
+        val trimmedStartDate = startDateStr.substring(0, 10)  // "2025-05-01"
+        val startDate = LocalDate.parse(trimmedStartDate, formatter)
+        val endDate = LocalDate.parse(trimmedEndDate, formatter)
+
+        val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt()
+        val entries = ArrayList<BarEntry>()
+        val labels = ArrayList<String>()
+
+        for (i in 0..daysBetween) {
+            val currentDate = startDate.plusDays(i.toLong())
+            val dayOfMonth = currentDate.dayOfMonth
+            val lastDay = endDate.lengthOfMonth()
+
+            val labelGroup = when (dayOfMonth) {
+                in 1..7 -> "1–7"
+                in 8..14 -> "8–14"
+                in 15..21 -> "15–21"
+                in 22..28 -> "22–28"
+                in 29..lastDay -> "29–$lastDay"
+                else -> ""
+            }
+
+            // Only label the first day in each fixed group
+            val shouldLabel = dayOfMonth == 1 || dayOfMonth == 8 || dayOfMonth == 15 || dayOfMonth == 22 || dayOfMonth == 29
+            labels.add(if (shouldLabel) labelGroup else "")
+        }
+        data?.forEachIndexed { index, item ->
+            entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
+        }
+
+        val dataSet = BarDataSet(entries, "Sleep Performance")
+        dataSet.setColors(Color.parseColor("#4593FB"))
+        dataSet.valueTextSize = 9f
+
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.4f
+
+        chart.data = barData
+        val customRenderer = MindfullChartRenderer(chart, chart.animator, chart.viewPortHandler)
+        customRenderer.initBuffers()
+        chart.renderer = customRenderer
+
+        chart.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            granularity = 1f
+            labelCount = labels.size
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            labelRotationAngle = -30f
+            textSize = 8f
+        }
+
+        chart.axisLeft.axisMinimum = 0f
+        chart.axisRight.isEnabled = false
+        chart.description.isEnabled = false
+        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerDragEnabled = false
+        chart.legend.isEnabled = false
+
+        chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
+        chart.setFitBars(true)
+        chart.invalidate()
+    }
+
+    fun getWeekDayNames(endOfWeek: LocalDate): List<String> {
+        val startOfWeek = endOfWeek.minusDays(6)
+        val formatter = DateTimeFormatter.ofPattern("EEE") // "Mon", "Tue", etc.
+
+        return (0..6).map { dayOffset ->
+            startOfWeek.plusDays(dayOffset.toLong()).format(formatter)
+        }
+    }
+
+    fun setupWeeklyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, endDate: String) {
+        val entries = ArrayList<BarEntry>()
+        val trimmedDate = endDate.substring(0, 10)  // "2025-05-01"
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val localDate = LocalDate.parse(trimmedDate, formatter)
+        val labels = getWeekDayNames(localDate)
+
+        data?.forEachIndexed { index, item ->
+            entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
+        }
+
+        val dataSet = BarDataSet(entries, "SleepPerformance")
+        dataSet.setColors(Color.parseColor("#4593FB"))
+        dataSet.valueTextSize = 12f
+
+        val barData = BarData(dataSet)
+        chart.data = barData
+        val customRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        customRenderer.initBuffers()
+        chart.renderer = customRenderer
+
+        chart.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            granularity = 1f
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            labelRotationAngle = -30f
+            textSize = 10f
+        }
+
+        chart.axisLeft.axisMinimum = 0f
+        chart.axisRight.isEnabled = false
+        chart.description.isEnabled = false
+        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerDragEnabled = false
+        chart.legend.isEnabled = false
+        chart.setScaleEnabled(false)
+        chart.invalidate()
     }
 
     private fun lineChartForSixMonths(){

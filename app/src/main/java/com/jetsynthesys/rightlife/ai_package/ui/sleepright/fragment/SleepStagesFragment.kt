@@ -145,6 +145,9 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                         sleepChart.setSleepData(sleepStageResponse.sleepStageAllData?.sleepStageData!!)
                         setProgressBarData(sleepStageResponse.sleepStageAllData)
                     }
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -170,8 +173,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         remPercent.setText(""+ data?.sleepPercentages?.rem + "%")
         remMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.rem!!))
         totalTime.setText(convertDecimalHoursToHrMinFormat(data?.total_sleep_hours!!))
-        startTime.setText(convertTo12HourFormat(data?.start_time!!))
-        endTime.setText(convertTo12HourFormat(data?.end_time!!))
+        startTime.setText(convertTo12HourFormat(data.start_time!!))
+        endTime.setText(convertTo12HourFormat(data.end_time!!))
 
         customProgressBar.post {
             val progressBarWidth = customProgressBar.width
@@ -313,7 +316,7 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
     private fun getPositionForRecordType(type: String): Position {
         return when (type) {
             "Awake" -> Position.UPPER
-            "Rem Sleep" -> Position.MIDDLE1
+            "REM Sleep" -> Position.MIDDLE1
             "Light Sleep" -> Position.MIDDLE2
             "Deep Sleep" -> Position.LOWER
             else -> error("Unknown record type: $type")
@@ -323,7 +326,7 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
     private fun getColorForRecordType(type: String): Int {
         return when (type) {
             "Awake" -> resources.getColor(R.color.red_orange_bar)
-            "Rem Sleep" -> resources.getColor(R.color.light_blue_bar)
+            "REM Sleep" -> resources.getColor(R.color.light_blue_bar)
             "Light Sleep" -> resources.getColor(R.color.blue_bar)
             "Deep Sleep" -> resources.getColor(R.color.purple_bar)
             else -> error("Unknown record type: $type")
