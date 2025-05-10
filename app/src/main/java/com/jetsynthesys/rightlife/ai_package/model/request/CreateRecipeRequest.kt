@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.model.request
 data class CreateRecipeRequest(
     val recipe_name: String,
     val ingredients: List<IngredientEntry>,
+    val servings : Double,
     val total_time: String,
     val course_one_or_more: String,
     val tags_optional: String,

@@ -48,6 +48,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private lateinit var tvContinue : TextView
     private lateinit var editRecipe : ImageView
     private lateinit var addedNameTv : TextView
+    private lateinit var servingTv : TextView
     private lateinit var btnAddLayout : LinearLayoutCompat
     private lateinit var addedRecipeListLayout : LinearLayoutCompat
     private lateinit var saveRecipeLayout : LinearLayoutCompat
@@ -58,6 +59,8 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private var recipeId : String = ""
     private var recipeName : String = ""
+    private var serving : Double = 0.0
+    private var quantity = 1
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRecipeBinding
         get() = FragmentCreateRecipeBinding::inflate
@@ -84,6 +87,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         btnAddLayout = view.findViewById(R.id.layout_btnAdd)
         addedNameTv = view.findViewById(R.id.addedNameTv)
         backButton = view.findViewById(R.id.backButton)
+        servingTv = view.findViewById(R.id.servingTv)
         continueLayout.isEnabled = false
         continueLayout.setBackgroundResource(R.drawable.light_green_bg)
 
@@ -92,6 +96,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
 
         recipeId = arguments?.getString("recipeId").toString()
         recipeName = arguments?.getString("recipeName").toString()
+        serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
 
         val ingredientLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("ingredientLocalListModel", IngredientLocalListModel::class.java)
@@ -136,6 +141,18 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             }
         })
 
+        view.findViewById<ImageView>(R.id.ivDecrease).setOnClickListener {
+            if (quantity > 1) {
+                quantity--
+                servingTv.text = quantity.toString()
+            }
+        }
+
+        view.findViewById<ImageView>(R.id.ivIncrease).setOnClickListener {
+            quantity++
+            servingTv.text = quantity.toString()
+        }
+
         onIngredientList()
 
         saveRecipeLayout.setOnClickListener {
@@ -174,6 +191,9 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             }else{
                 addedNameTv.text = etAddName.text
             }
+            if (serving > 0.0){
+                servingTv.text = serving.toString()
+            }
             if (layoutNoIngredients.isGone){
                 saveRecipeLayout.isEnabled = true
                 saveRecipeLayout.setBackgroundResource(R.drawable.green_meal_bg)
@@ -190,6 +210,9 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                 addedNameTv.text = recipeName
             }else{
                 addedNameTv.text = etAddName.text
+            }
+            if (serving > 0.0){
+                servingTv.text = serving.toString()
             }
             if (layoutNoIngredients.isGone){
                 saveRecipeLayout.isEnabled = true
@@ -227,6 +250,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val args = Bundle()
             args.putString("searchType", "createRecipe")
             args.putString("recipeId", recipeId)
+            args.putDouble("serving", servingTv.text.toString().toDouble())
             args.putString("recipeName", addedNameTv.text.toString())
             args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
             fragment.arguments = args
@@ -290,6 +314,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val args = Bundle()
             args.putString("searchType", "createMeal")
             args.putString("recipeId", recipeId)
+            args.putDouble("serving", servingTv.text.toString().toDouble())
             args.putString("recipeName", addedNameTv.text.toString())
             args.putString("ingredientName", mealItem.ingredient_name)
             args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
@@ -306,6 +331,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         val args = Bundle()
         args.putBoolean("test",false)
         args.putString("recipeId", recipeId)
+        args.putDouble("serving", servingTv.text.toString().toDouble())
         args.putString("recipeName", addedNameTv.text.toString())
         args.putString("ingredientName", ingredientItem.ingredient_name)
         args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
@@ -324,13 +350,14 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val ingredientData = IngredientEntry(
                 ingredient_id = ingredient.id,
                 quantity = ingredient.quantity?.toInt(),
-                measure = ingredient.unit
+                measure = ingredient.measure
             )
             ingredientLists.add(ingredientData)
         }
         val recipeRequest = CreateRecipeRequest(
             recipe_name = addedNameTv.text.toString(),
             ingredients = ingredientLists,
+            servings = servingTv.text.toString().toDouble(),
             total_time = "",
             course_one_or_more = "",
             tags_optional = "",
@@ -377,13 +404,14 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val ingredientData = IngredientEntry(
                 ingredient_id = ingredient.id,
                 quantity = ingredient.quantity?.toInt(),
-                measure = ingredient.unit
+                measure = ingredient.measure
             )
             ingredientLists.add(ingredientData)
         }
         val updateRecipeRequest = CreateRecipeRequest(
             recipe_name = addedNameTv.text.toString(),
             ingredients = ingredientLists,
+            servings = servingTv.text.toString().toDouble(),
             total_time = "",
             course_one_or_more = "",
             tags_optional = "",

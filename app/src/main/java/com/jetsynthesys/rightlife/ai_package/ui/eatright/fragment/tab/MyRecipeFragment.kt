@@ -160,7 +160,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
                     potassium = foodData.potassium,
                     zinc = foodData.zinc,
                     quantity =  foodData.quantity,
-                    unit = foodData.measure
+                    measure = foodData.measure
                 )
                 ingredientLists.add(ingredientData)
             }
@@ -169,6 +169,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             val args = Bundle()
             args.putString("recipeId", myRecipe._id)
             args.putString("recipeName", myRecipe.recipe_name)
+            args.putDouble("serving", myRecipe.servings)
             args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {

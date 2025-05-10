@@ -15,7 +15,7 @@ data class MyRecipe(
     val author: String,
     val total_time: String,
     val time_in_seconds: Int,
-    val servings: Int,
+    val servings : Double,
     val course_one_or_more: String,
     val tags_optional: String,
     val cuisine_optional: String,

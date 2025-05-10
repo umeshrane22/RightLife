@@ -185,7 +185,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:background="@drawable/white_bg"
                         android:layout_marginStart="15dp"
                         android:layout_marginEnd="15dp"
@@ -220,7 +220,7 @@
                                />
 
                             <TextView
-                                android:id="@+id/tvQuantity"
+                                android:id="@+id/servingTv"
                                 android:layout_width="48dp"
                                 android:layout_height="wrap_content"
                                 android:text="1"

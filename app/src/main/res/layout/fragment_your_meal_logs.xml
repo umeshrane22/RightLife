@@ -197,7 +197,7 @@
                 app:layout_constraintTop_toBottomOf="@id/layout_calender_view">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/layout_no_meals"
+                    android:id="@+id/noMealLogsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -2391,7 +2391,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_log_meal"
+            android:id="@+id/logMealTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"

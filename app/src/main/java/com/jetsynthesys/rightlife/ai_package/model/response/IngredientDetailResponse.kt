@@ -37,7 +37,7 @@ data class IngredientDetail(
     val zinc: Double?,
 //    val other: OtherNutrients?,
     val quantity : Double,
-    val unit : String
+    val measure : String
 ):Parcelable
 
 //@Parcelize

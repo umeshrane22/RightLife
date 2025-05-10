@@ -29,6 +29,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientSearchAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealScanResultFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
@@ -56,6 +57,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var recipeId : String = ""
     private var ingredientName : String = ""
     private var recipeName : String = ""
+    private var serving : Double = 0.0
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -85,6 +87,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
 
         searchType = arguments?.getString("searchType").toString()
         recipeId = arguments?.getString("recipeId").toString()
+        serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
         ingredientName = arguments?.getString("ingredientName").toString()
         recipeName = arguments?.getString("recipeName").toString()
 
@@ -110,21 +113,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (searchType.contentEquals("mealScanResult")){
-                        val fragment = MealScanResultFragment()
+                    if (searchType.contentEquals("createRecipe")){
+                        val fragment = CreateRecipeFragment()
                         val args = Bundle()
                         args.putString("recipeId", recipeId)
                         args.putString("recipeName", recipeName)
+                        args.putDouble("serving", serving)
                         args.putString("ingredientName", ingredientName)
-                        fragment.arguments = args
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flFragment, fragment, "landing")
-                            addToBackStack("landing")
-                            commit()
-                        }
-                    }else{
-                        val fragment = YourMealLogsFragment()
-                        val args = Bundle()
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "landing")
@@ -136,21 +131,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             })
 
         backButton.setOnClickListener {
-            if (searchType.contentEquals("mealScanResult")){
+            if (searchType.contentEquals("createRecipe")){
                 val fragment = MealScanResultFragment()
                 val args = Bundle()
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
+                args.putDouble("serving", serving)
                 args.putString("ingredientName", ingredientName)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
-            }else{
-                val fragment = YourMealLogsFragment()
-                val args = Bundle()
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -201,34 +188,6 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private fun onSearchIngredientItem(recipesModel: IngredientLists, position: Int, isRefresh: Boolean) {
 
         getRecipesDetails(recipesModel.id)
-//        if (searchType.contentEquals("mealScanResult")){
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                val snapMealFragment = SnapDishFragment()
-//                val args = Bundle()
-//                args.putString("mealId", mealId)
-//                args.putString("mealName", mealName)
-//                args.putString("searchType", "SearchDish")
-//                args.putParcelable("searchResultItem", recipesModel)
-//                args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-//                snapMealFragment.arguments = args
-//                replace(R.id.flFragment, snapMealFragment, "Steps")
-//                addToBackStack(null)
-//                commit()
-//            }
-//        }else{
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                val snapMealFragment = IngredientDishFragment()
-//                val args = Bundle()
-//                args.putString("searchType", "SearchDish")
-//                args.putString("mealId", mealId)
-//                args.putParcelable("searchResultItem", recipesModel)
-//                args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
-//                snapMealFragment.arguments = args
-//                replace(R.id.flFragment, snapMealFragment, "Steps")
-//                addToBackStack(null)
-//                commit()
-//            }
-//        }
     }
 
     private fun filterDishes(query: String) {
@@ -290,6 +249,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                             val args = Bundle()
                             args.putString("searchType", "searchIngredient")
                             args.putString("recipeId", recipeId)
+                            args.putDouble("serving", serving)
                             args.putString("ingredientName", ingredientName)
                             args.putString("recipeName", recipeName)
                             args.putParcelable("ingredientDetailResponse", response.body())

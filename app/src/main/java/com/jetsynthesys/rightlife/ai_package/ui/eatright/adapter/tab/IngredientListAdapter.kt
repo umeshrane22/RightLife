@@ -39,8 +39,8 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
             holder.servesCount.text = item.quantity.toInt().toString()
         }
 
-        if (item.unit.isNotEmpty()){
-            holder.serves.text = item.unit
+        if (item.measure.isNotEmpty()){
+            holder.serves.text = item.measure
         }
 //        if (item.cooking_time_in_seconds != null){
 //            val mealTime = item.cooking_time_in_seconds.toString()

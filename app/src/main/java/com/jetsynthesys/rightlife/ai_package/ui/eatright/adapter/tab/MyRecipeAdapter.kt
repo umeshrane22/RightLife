@@ -17,7 +17,6 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
                       val onLogRecipeItem: (MyRecipe, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<MyRecipeAdapter.ViewHolder>() {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_meal_ai, parent, false)
         return ViewHolder(view)

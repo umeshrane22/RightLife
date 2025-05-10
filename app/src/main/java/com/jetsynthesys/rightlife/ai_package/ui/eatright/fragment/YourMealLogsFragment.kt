@@ -123,6 +123,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private lateinit var calValueLunchTv : TextView
     private lateinit var calValueEveningSnacksTv : TextView
     private lateinit var calValueDinnerTv : TextView
+    private lateinit var noMealLogsLayout : LinearLayoutCompat
+    private lateinit var logMealTv : TextView
 
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
@@ -233,6 +235,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         calValueLunchTv = view.findViewById(R.id.tv_lunch_cal_value)
         calValueEveningSnacksTv = view.findViewById(R.id.tv_cal_valueeveningSnacks)
         calValueDinnerTv = view.findViewById(R.id.tv_dinner_cal_value)
+        noMealLogsLayout = view.findViewById(R.id.noMealLogsLayout)
+        logMealTv = view.findViewById(R.id.logMealTv)
 
         if (moduleName.contentEquals("HomeDashboard")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
@@ -979,12 +983,15 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 
                         activity?.runOnUiThread {
                             if (fullDaySummary.calories!! > 0){
+                                noMealLogsLayout.visibility = View.GONE
                                 dailyCalorieGraphLayout.visibility = View.VISIBLE
                                 setGraphValue(fullDaySummary)
                             }else{
+                                noMealLogsLayout.visibility = View.VISIBLE
                                 dailyCalorieGraphLayout.visibility = View.GONE
                             }
-                            if (response.body()?.data!!.meal_detail.size > 0){
+                            if (response.body()?.data!!.meal_detail.isNotEmpty()){
+                                logMealTv.text = "Log New Meal"
                                 setDayLogsList()
                             }
                         }
@@ -999,6 +1006,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                         lunchListLayout.visibility = View.GONE
                         eveningSnacksListLayout.visibility = View.GONE
                         dinnerListLayout.visibility = View.GONE
+                        noMealLogsLayout.visibility = View.VISIBLE
+                        logMealTv.text = "Log Your Meal"
                         LoaderUtil.dismissLoader(requireActivity())
                     }
                 }

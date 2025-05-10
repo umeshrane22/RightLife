@@ -47,10 +47,12 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvChange: TextView
     private lateinit var ivEdit : ImageView
     private lateinit var tvMeasure :TextView
+    private lateinit var backButton : ImageView
     private var ingredientLists : ArrayList<IngredientDetail> = ArrayList()
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private var recipeId : String = ""
     private var recipeName : String = ""
+    private var serving : Double = 0.0
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -84,9 +86,11 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         quantityEdit = view.findViewById(R.id.quantityEdit)
         ivEdit = view.findViewById(R.id.ivEdit)
+        backButton = view.findViewById(R.id.back_button)
 
         searchType = arguments?.getString("searchType").toString()
         recipeId = arguments?.getString("recipeId").toString()
+        serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
         val ingredientName = arguments?.getString("ingredientName").toString()
         recipeName = arguments?.getString("recipeName").toString()
         val ingredientDetailResponse = if (Build.VERSION.SDK_INT >= 33) {
@@ -155,10 +159,13 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
                 if (searchType.contentEquals("searchIngredient")){
                     val fragment = SearchIngredientFragment()
                     val args = Bundle()
+                    args.putString("recipeId", recipeId)
+                    args.putString("recipeName", recipeName)
+                    args.putDouble("serving", serving)
+                    args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -166,8 +173,12 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                         commit()
                     }
                 }else{
-                    val fragment = SearchIngredientFragment()
+                    val fragment = CreateRecipeFragment()
                     val args = Bundle()
+                    args.putString("recipeId", recipeId)
+                    args.putString("recipeName", recipeName)
+                    args.putDouble("serving", serving)
+                    args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -177,6 +188,36 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                 }
             }
         })
+
+        backButton.setOnClickListener {
+            if (searchType.contentEquals("searchIngredient")){
+                val fragment = SearchIngredientFragment()
+                val args = Bundle()
+                args.putString("recipeId", recipeId)
+                args.putString("recipeName", recipeName)
+                args.putDouble("serving", serving)
+                args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else{
+                val fragment = CreateRecipeFragment()
+                val args = Bundle()
+                args.putString("recipeId", recipeId)
+                args.putString("recipeName", recipeName)
+                args.putDouble("serving", serving)
+                args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }
+        }
 
         ivEdit.setOnClickListener {
             val value =  quantityEdit.text.toString().toInt()
@@ -245,7 +286,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                         potassium = foodData.potassium,
                         zinc = foodData.zinc,
                         quantity =  quantityEdit.text.toString().toDouble(),
-                        unit = tvMeasure.text.toString()
+                        measure = tvMeasure.text.toString()
                     )
                     ingredientLists.add(ingredientData)
                     ingredientLocalListModel = IngredientLocalListModel(ingredientLists)
@@ -255,6 +296,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                 val args = Bundle()
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
+                args.putDouble("serving", serving)
                 args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -294,7 +336,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                     potassium = foodData.potassium,
                                     zinc = foodData.zinc,
                                     quantity =  quantityEdit.text.toString().toDouble(),
-                                    unit = tvMeasure.text.toString()
+                                    measure = tvMeasure.text.toString()
                                 )
                                 if (index != -1) {
                                     ingredientLists[index] = ingredientData
@@ -306,6 +348,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                 val args = Bundle()
                                 args.putString("recipeId", recipeId)
                                 args.putString("recipeName", recipeName)
+                                args.putDouble("serving", serving)
                                 args.putParcelable("ingredientLocalListModel", ingredientLocalListModel)
                                 fragment.arguments = args
                                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -326,8 +369,8 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         addToTheMealTV.text = "Add To The Recipe"
         val capitalized = snapRecipeData.ingredient_name.toString().replaceFirstChar { it.uppercase() }
         tvMealName.text = capitalized
-        if (snapRecipeData.unit != null){
-            tvMeasure.text = snapRecipeData.unit
+        if (snapRecipeData.measure != null){
+            tvMeasure.text = snapRecipeData.measure
         }
         if (snapRecipeData.quantity != null ){
             quantityEdit.setText(snapRecipeData.quantity?.toInt().toString())
