@@ -326,6 +326,7 @@ class HealthCamRecorderActivity : BaseActivity() {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                     }
                     startActivity(intent)
+                    finish()
                     Toast.makeText(
                         this@HealthCamRecorderActivity,
                         "Success: $jsonResponse",

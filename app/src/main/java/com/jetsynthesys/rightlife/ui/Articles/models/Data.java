@@ -94,7 +94,9 @@ public class Data {
     @SerializedName("isLike")
     @Expose
     private Boolean isLike;
-
+    @SerializedName("likeCount")
+    @Expose
+    private Integer likeCount;
     @SerializedName("isBookmarked")
     @Expose
     private Boolean isBookmarked;
@@ -345,6 +347,14 @@ public class Data {
 
     public void setBookmarked(Boolean bookmarked) {
         isBookmarked = bookmarked;
+    }
+
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
     }
 }
 
