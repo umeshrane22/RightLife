@@ -36,7 +36,7 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
             null,
             false,
             onCirclePlusClick = { workoutRoutineModel, position ->
-                /*val fragment = AddWorkoutSearchFragment()
+                val fragment = AddWorkoutSearchFragment()
                 val args = Bundle().apply {
                     putParcelable("WORKOUT_MODEL", workoutRoutineModel)
                     putString("edit_routine","edit_routine")
@@ -46,7 +46,7 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
                     replace(R.id.flFragment, fragment, "workoutDetails")
                     addToBackStack("workoutDetails")
                     commit()
-                }*/
+                }
                 //showActivityDetailsDialog(activityModel, position)
 //                println(activityModel)
 //                println(position)
