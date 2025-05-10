@@ -24,7 +24,6 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/dmsans_bold"
             android:text="What interests you?"
-            android:gravity="center"
             android:textColor="@color/txt_color_header"
             android:textSize="22sp" />
 
@@ -32,7 +31,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:gravity="center"
             android:fontFamily="@font/dmsans_regular"
             android:text="Select at least 2 to continue"
             android:textColor="@color/txt_color_header"

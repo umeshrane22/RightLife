@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/bottomcardview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_card_16dp"
+        android:visibility="visible">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp">
+
+            <RelativeLayout
+                android:id="@+id/rl_img_container"
+                android:layout_width="120dp"
+                android:layout_margin="@dimen/text_margin"
+                android:layout_height="90dp">
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    app:cardCornerRadius="@dimen/margin_card_16dp"
+                    android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/img_content"
+                    android:layout_width="120dp"
+                    android:layout_height="90dp"
+                    android:layout_alignParentStart="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/image5_rlpage_edit" />
+                </androidx.cardview.widget.CardView>
+
+                <ImageView
+                    android:id="@+id/img_content_type"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="7dp"
+                    android:visibility="visible"
+                    android:elevation="5dp"
+                    android:src="@drawable/ic_series_content" />
+
+            </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_item_title"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/textsize_extrasmall"
+                    android:layout_toEndOf="@id/rl_img_container"
+                    android:fontFamily="@font/merriweather_bold"
+                    android:text="5 best exercises to strengthen arthriticknees with physical therapy physics"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="@dimen/textsize_medium" />
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/rl_img_container"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/tv_artist_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text="Aishwarya Narayanan"
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_small" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="|" />
+
+                    <TextView
+                        android:id="@+id/tv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:text="10 Aug, 2024"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/textsize_small" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:id="@+id/separator2"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="|" />
+
+                    <TextView
+                        android:id="@+id/txt_readtime1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:fontFamily="@font/dmsans_medium"
+                        android:text="5 min read"
+                        android:textColor="@android:color/black"
+                        android:visibility="invisible"
+                        android:textSize="@dimen/textsize_small" />
+
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

@@ -32,6 +32,8 @@ import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
+import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityArticledetailBinding;
 import com.jetsynthesys.rightlife.ui.Articles.models.Article;
 import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse;
@@ -141,6 +143,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         contentId = getIntent().getStringExtra("contentId");
         //setVideoPlayerView();
         getArticleDetails(contentId);
+        getRecommendedContent(contentId);
     }
 
 
@@ -219,6 +222,9 @@ public class ArticlesDetailActivity extends BaseActivity {
         } else {
             binding.imageLikeArticle.setImageResource(R.drawable.like);
         }
+        if (articleDetailsResponse.getData().getLikeCount()!=null) {
+            binding.txtLikeCount.setText(articleDetailsResponse.getData().getLikeCount().toString());
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary(), Html.FROM_HTML_MODE_COMPACT));
@@ -243,7 +249,7 @@ public class ArticlesDetailActivity extends BaseActivity {
                 @Override
                 public void onClick(View widget) {
                     // Handle the click event and get the position
-                    Toast.makeText(ArticlesDetailActivity.this, "Clicked: " + tocItems.get(position) + " at position: " + position, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ArticlesDetailActivity.this, "Clicked: " + tocItems.get(position) + " at position: " + position, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -411,4 +417,62 @@ public class ArticlesDetailActivity extends BaseActivity {
         startActivity(Intent.createChooser(intent, "Share"));
     }
 
+    private void getRecommendedContent(String contentId) {
+        // Make the API call
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId,0,5);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        String jsonString = response.body().string();
+                        Gson gson = new Gson();
+                        MoreLikeContentResponse responseObj = gson.fromJson(jsonString, MoreLikeContentResponse.class);
+
+                        if (responseObj != null &&
+                                responseObj.getData() != null &&
+                                responseObj.getData().getLikeList() != null) {
+
+                            List<Like> likeList = responseObj.getData().getLikeList();
+
+                            if (!likeList.isEmpty()) {
+                                setupListData(likeList);
+
+                               /* if (likeList.size() < 5) {
+                                    binding.tvViewAll.setVisibility(View.GONE);
+                                } else {
+                                    binding.tvViewAll.setVisibility(View.VISIBLE);
+                                }*/
+                            } else {
+                                binding.txtAlsolikeHeader.setVisibility(View.GONE);
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("JSON_PARSE_ERROR", "Error parsing response: " + e.getMessage());
+                    }
+
+
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                handleNoInternetView(t);
+            }
+        });
+
+    }
+
+    private void setupListData(List<Like> contentList) {
+        binding.txtAlsolikeHeader.setVisibility(View.VISIBLE);
+
+        ArticleDetailMoreLikeAdapter adapter = new ArticleDetailMoreLikeAdapter(this, contentList);
+        LinearLayoutManager horizontalLayoutManager =
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        binding.recyclerViewAlsolike.setLayoutManager(horizontalLayoutManager);
+        binding.recyclerViewAlsolike.setAdapter(adapter);
+    }
 }
