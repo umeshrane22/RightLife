@@ -125,7 +125,7 @@
                         android:textColor="@color/sleep_text_color"
                         android:text="Sleep Stages"
                         android:fontFamily="@font/dmsans_bold"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:layout_marginStart="6dp"
                         app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
                         app:layout_constraintStart_toEndOf="@+id/balance_icon" />
@@ -146,7 +146,8 @@
                         android:textColor="@color/sleep_text_color"
                         android:id="@+id/total_sleep_title"
                         android:text="Total Sleep:"
-                        android:textSize="16dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="16sp"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_right"
@@ -157,8 +158,8 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
                         android:text="8hr 30 mins"
-                        android:textStyle="bold"
-                        android:textSize="16dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="16sp"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_right"
@@ -190,10 +191,11 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
                         android:text="9:00 pm"
-                        android:id="@+id/tv_start_sleep_time"
+                        android:id="@+id/tv_stage_start_sleep_time"
                         android:textSize="12sp"
+                        android:fontFamily="@font/dmsans_regular"
                         android:layout_marginStart="6dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         app:layout_constraintTop_toBottomOf="@+id/sleepStagesView"
                         app:layout_constraintStart_toEndOf="@+id/img_bed_icon" />
 
@@ -213,9 +215,10 @@
                         android:textColor="@color/sleep_text_color"
                         android:text="5:30 am"
                         android:textSize="12sp"
-                        android:id="@+id/tv_alarm_time"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginTop="10dp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:id="@+id/tv_stage_end_sleep_time"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginTop="8dp"
                         app:layout_constraintTop_toBottomOf="@+id/sleepStagesView"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -226,7 +229,7 @@
                         android:id="@+id/img_mini_clock_icon"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="6dp"
-                        app:layout_constraintEnd_toStartOf="@id/tv_alarm_time"
+                        app:layout_constraintEnd_toStartOf="@id/tv_stage_end_sleep_time"
                         app:layout_constraintTop_toBottomOf="@id/sleepStagesView" />
 
                     <LinearLayout
@@ -253,13 +256,14 @@
                             <ImageView
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:layout_marginStart="15dp"
+                                android:layout_marginStart="10dp"
                                 android:src="@drawable/rem_icon" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Rem"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textSize="12sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
@@ -268,6 +272,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="2 hr 10 mins"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textSize="14sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
@@ -295,6 +300,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Core"
                                 android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -306,6 +312,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="5 hr 20 mins"
                                 android:textSize="14sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -339,13 +346,14 @@
                             <ImageView
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:layout_marginStart="15dp"
+                                android:layout_marginStart="10dp"
                                 android:src="@drawable/deep_icon" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Deep"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textSize="12sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
@@ -354,6 +362,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="40 mins"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textSize="14sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
@@ -382,6 +391,7 @@
                                 android:text="Awake"
                                 android:textSize="12sp"
                                 android:textColor="@color/black"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent"
@@ -392,6 +402,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="20 mins"
                                 android:textSize="14sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -708,8 +719,8 @@
 
                     <ImageView
                         android:id="@+id/timer_icon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
                         android:src="@drawable/sleep_timer_icon"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="13dp"
@@ -744,9 +755,9 @@
                         android:id="@+id/last_night_title"
                         android:fontFamily="@font/dmsans_regular"
                         android:text="Last Night:"
-                        android:textSize="16dp"
+                        android:textSize="14sp"
                         android:layout_marginStart="15dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_perform_right"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -755,20 +766,20 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
                         android:text="11:00 pm"
-                        android:id="@+id/tv_night_time"
-                        android:textSize="16sp"
+                        android:id="@+id/tv_perform_start_time"
+                        android:textSize="14sp"
                         android:fontFamily="@font/dmsans_bold"
                         android:layout_marginStart="5dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_perform_right"
                         app:layout_constraintStart_toEndOf="@+id/img_bed_icon1" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/sleep_bed_mini_icon"
                         android:id="@+id/img_bed_icon1"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="22dp"
                         android:layout_marginStart="5dp"
                         app:layout_constraintStart_toEndOf="@id/last_night_title"
                         app:layout_constraintTop_toBottomOf="@id/img_sleep_perform_right" />
@@ -778,22 +789,22 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
                         android:text="5:30 am"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:fontFamily="@font/dmsans_bold"
-                        android:id="@+id/tv_alarm_time1"
+                        android:id="@+id/tv_perform_wake_time"
                         android:layout_marginStart="6dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_perform_right"
                         app:layout_constraintStart_toEndOf="@id/img_mini_clock_icon1" />
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@drawable/sleep_clock_mini_icon"
                         android:id="@+id/img_mini_clock_icon1"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="22dp"
                         android:layout_marginStart="10dp"
-                        app:layout_constraintStart_toEndOf="@id/tv_night_time"
+                        app:layout_constraintStart_toEndOf="@id/tv_perform_start_time"
                         app:layout_constraintTop_toBottomOf="@id/img_sleep_perform_right" />
 
                     <LinearLayout
@@ -821,8 +832,9 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:text="80"
+                            android:fontFamily="@font/dmsans_bold"
                             android:textSize="34sp"
-                            android:id="@+id/tv_sleep_percent"
+                            android:id="@+id/tv_perform_sleep_percent"
                             android:layout_marginStart="10dp" />
 
                         <TextView
@@ -866,10 +878,10 @@
                             android:textColor="@color/sleep_duration_blue"
                             android:layout_weight="1"
                             android:textAlignment="center"
+                            android:fontFamily="@font/dmsans_bold"
                             android:text="6 hr 24 mins"
-                            android:textStyle="bold"
-                            android:textSize="18sp"
-                            android:id="@+id/tv_sleep_duration" />
+                            android:textSize="16sp"
+                            android:id="@+id/tv_perform_sleep_duration" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -878,9 +890,9 @@
                             android:textAlignment="center"
                             android:textColor="@color/dotted_green"
                             android:text="8 hr"
-                            android:textStyle="bold"
-                            android:textSize="18sp"
-                            android:id="@+id/tv_ideal_duration" />
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="16sp"
+                            android:id="@+id/tv_perform_ideal_duration" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -892,7 +904,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:weightSum="10"
                         android:gravity="center"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
                         <TextView
@@ -901,6 +913,7 @@
                             android:textColor="@color/sleep_duration_blue"
                             android:layout_weight="4"
                             android:padding="5dp"
+                            android:fontFamily="@font/dmsans_bold"
                             android:background="@drawable/blue_btn_bg"
                             android:textAlignment="center"
                             android:layout_marginStart="15dp"
@@ -911,7 +924,7 @@
                         <View
                             android:layout_width="0dp"
                             android:layout_height="1dp"
-                            android:layout_weight="2" />
+                            android:layout_weight="1" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -921,6 +934,7 @@
                             android:background="@drawable/green_btn_bg"
                             android:padding="5dp"
                             android:textAlignment="center"
+                            android:fontFamily="@font/dmsans_bold"
                             android:textColor="@color/dotted_green"
                             android:text="IDEAL DURATION"
                             android:textSize="13sp"
@@ -931,9 +945,9 @@
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:src="@drawable/yellow_info"
-                        android:id="@+id/img_yellow_info"
+                        android:id="@+id/img_perform_action"
                         android:layout_marginTop="20dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:layout_marginStart="15dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/lyt_sleep_time_title" />
@@ -943,30 +957,30 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:padding="5dp"
-                        android:visibility="gone"
-                        android:textAlignment="center"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:visibility="visible"
                         android:textColor="@color/black"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="18dp"
                         android:text="Under"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@id/img_yellow_info"
+                        app:layout_constraintStart_toEndOf="@id/img_perform_action"
                         app:layout_constraintTop_toBottomOf="@+id/lyt_sleep_time_title"
-                        android:id="@+id/tv_under" />
+                        android:id="@+id/tv_perform_action" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="15dp"
                         android:layout_marginStart="15dp"
-                        android:layout_marginTop="10dp"
-                        android:visibility="gone"
+                        android:layout_marginTop="2dp"
+                        android:visibility="visible"
+                        android:fontFamily="@font/dmsans_regular"
                         android:padding="5dp"
                         android:textColor="@color/black"
-                        app:layout_constraintTop_toBottomOf="@id/tv_under"
-                        android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500 when an unknown printer took a galley"
+                        app:layout_constraintTop_toBottomOf="@id/tv_perform_action"
+                        android:text="Lorem Ipsum took a galley"
                         android:textSize="14sp"
-                        android:id="@+id/tv_under_desc" />
+                        android:id="@+id/tv_perform_message" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
@@ -1138,18 +1152,20 @@
                     </LinearLayout>
                     <!-- Date -->
                     <TextView
-                        android:id="@+id/dateText"
+                        android:id="@+id/tv_ideal_actual_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sunday 30 Mar, 2025"
+                        android:fontFamily="@font/dmsans_regular"
                         android:textSize="14sp"
-                        android:textColor="#777777"
-                        android:layout_marginTop="4dp" />
+                        android:textColor="#002C5F"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:background="@drawable/grey_border_bg"
                         android:weightSum="2"
                         android:gravity="center_vertical"
@@ -1174,6 +1190,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Ideal"
                                 android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
 
@@ -1181,7 +1198,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="2 hr 10 mins"
-                                android:textSize="14sp"
+                                android:id="@+id/tv_ideal_time"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="12sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
@@ -1205,6 +1224,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Actual"
                                 android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -1215,7 +1235,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="5 hr 20 mins"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
+                                android:id="@+id/tv_actual_time"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp"
                                 app:layout_constraintStart_toStartOf="parent"
@@ -1368,7 +1390,7 @@
                         android:layout_height="wrap_content"
                         android:weightSum="2"
                         android:gravity="center"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="12dp"
                         android:orientation="horizontal">
 
                         <LinearLayout
@@ -1379,7 +1401,6 @@
                             android:paddingBottom="5dp"
                             android:gravity="center_vertical"
                             android:background="@drawable/white_grey_meal_bg"
-                            android:layout_marginTop="10dp"
                             android:orientation="horizontal">
 
                             <ImageView
@@ -1393,6 +1414,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Rem"
                                 android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
 
@@ -1400,7 +1422,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="2 hr 10 mins"
-                                android:textSize="14sp"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:id="@+id/tv_resto_rem_time"
+                                android:textSize="13sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
@@ -1414,7 +1438,6 @@
                             android:gravity="center_vertical"
                             android:background="@drawable/white_grey_meal_bg"
                             android:layout_marginStart="15dp"
-                            android:layout_marginTop="10dp"
                             android:orientation="horizontal">
 
                             <ImageView
@@ -1427,6 +1450,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Deep"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textSize="12sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
@@ -1435,7 +1459,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="40 mins"
-                                android:textSize="14sp"
+                                android:id="@+id/tv_resto_deep_time"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:textSize="13sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
@@ -1444,23 +1470,47 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:paddingBottom="5dp"
                         android:background="#FFFFFF">
 
-                        <!-- Chart View -->
-                        <com.github.mikephil.charting.charts.BarChart
-                            android:id="@+id/barChart"
-                            android:layout_width="match_parent"
-                            android:layout_height="250dp"
-                            app:layout_constraintTop_toTopOf="parent"
+                        <ImageView
+                            android:layout_width="2dp"
+                            android:layout_height="180dp"
+                            android:id="@+id/img_start_resto_graph"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:src="@drawable/resto_line2"
+                            android:layout_marginStart="50dp"
+                            android:layout_marginTop="15dp"/>
+
+                        <!-- Chart View -->
+                        <com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepRestoChartView
+                            android:id="@+id/restorativeChart"
+                            android:layout_width="0dp"
+                            android:layout_height="150dp"
+                            app:layout_constraintTop_toTopOf="@id/img_start_resto_graph"
+                            app:layout_constraintStart_toEndOf="@id/img_start_resto_graph"
+                            app:layout_constraintEnd_toStartOf="@id/img_end_resto_graph"/>
+
+                        <ImageView
+                            android:layout_width="2dp"
+                            android:layout_height="180dp"
+                            android:src="@drawable/resto_line1"
+                            android:id="@+id/img_end_resto_graph"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginEnd="50dp"
+                            android:layout_marginTop="15dp"/>
 
                         <!-- Sleep Icon + Time -->
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginStart="10dp"
                             android:orientation="horizontal"
-                            app:layout_constraintTop_toBottomOf="@id/barChart"
+                            app:layout_constraintTop_toBottomOf="@id/img_start_resto_graph"
                             app:layout_constraintStart_toStartOf="parent">
 
                             <ImageView
@@ -1472,7 +1522,9 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="9:00 pm"
+                                android:id="@+id/tv_resto_start_time"
                                 android:textSize="12sp"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textColor="#000000"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
@@ -1482,7 +1534,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            app:layout_constraintTop_toBottomOf="@id/barChart"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="10dp"
+                            app:layout_constraintTop_toBottomOf="@id/img_start_resto_graph"
                             app:layout_constraintEnd_toEndOf="parent">
 
                             <ImageView
@@ -1494,6 +1548,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="5:30 am"
+                                android:id="@+id/tv_resto_end_time"
+                                android:fontFamily="@font/dmsans_regular"
                                 android:textSize="12sp"
                                 android:textColor="#000000"
                                 android:layout_marginStart="5dp" />
@@ -1588,6 +1644,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:visibility="gone"
+                android:id="@+id/card_sleep_time_requirement"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
@@ -1724,6 +1782,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:fontFamily="@font/dmsans_regular"
                                     android:text=" Sleep Time"
                                     android:textSize="12sp"
                                     android:textColor="#555555" />
@@ -1775,6 +1834,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text=" Wakeup Time"
+                                    android:fontFamily="@font/dmsans_regular"
                                     android:textSize="12sp"
                                     android:textColor="#555555" />
                             </LinearLayout>
@@ -1818,9 +1878,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Sleep Consistency"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textColor="#082654"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_bold"
                             android:layout_weight="1"
                             android:paddingStart="8dp" />
 
@@ -1833,11 +1893,12 @@
 
                     <!-- Subtitle -->
                     <TextView
-                        android:id="@+id/tv_time"
+                        android:id="@+id/tv_consistency_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sunday 30 Mar, 2025"
-                        android:textSize="16sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="14sp"
                         android:textColor="#082654"
                         app:layout_constraintTop_toBottomOf="@id/sleepHeader"
                         app:layout_constraintStart_toStartOf="parent"
@@ -1850,19 +1911,20 @@
                         android:weightSum="2"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tv_time"
+                        app:layout_constraintTop_toBottomOf="@id/tv_consistency_date"
                         android:id="@+id/lyt_average_sleep_time"
                         android:gravity="center_vertical"
                         android:paddingTop="7dp"
                         android:paddingBottom="7dp"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="10dp"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Average Sleep Time In Bed:"
-                            android:textSize="14sp"
+                            android:textSize="13sp"
+                            android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/black"
                             android:layout_marginStart="5dp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -1873,9 +1935,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="5 hr 20 mins"
-                            android:textSize="18sp"
+                            android:id="@+id/tv_consistency_time"
+                            android:textSize="16sp"
                             android:textColor="@color/black"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_bold"
                             android:layout_marginStart="5dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -1886,7 +1949,7 @@
                         android:id="@+id/sleepConsistencyChart"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
-                        android:layout_marginTop="15dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/lyt_average_sleep_time"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />

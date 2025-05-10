@@ -8,15 +8,14 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
+import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipe
 
-class RecipeAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                    private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                    private var isClickView : Boolean, val onMealDeleteItem: (MyMealModel, Int, Boolean) -> Unit,
-                    val onMealLogItem: (MyMealModel, Int, Boolean) -> Unit) :
-    RecyclerView.Adapter<RecipeAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
+class MyRecipeAdapter(private val context: Context, private var dataLists: ArrayList<MyRecipe>,
+                      private var clickPos: Int, private var mealLogListData : MyRecipe?,
+                      private var isClickView : Boolean, val onDeleteRecipeItem: (MyRecipe, Int, Boolean) -> Unit,
+                      val onEditRecipeItem: (MyRecipe, Int, Boolean) -> Unit,
+                      val onLogRecipeItem: (MyRecipe, Int, Boolean) -> Unit) :
+    RecyclerView.Adapter<MyRecipeAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_my_meal_ai, parent, false)
@@ -26,13 +25,13 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.mealTitle.text = item.mealType
-        holder.mealName.text = item.mealName
-        holder.servesCount.text = item.serve
-        holder.calValue.text = item.cal
-        holder.subtractionValue.text = item.subtraction
-        holder.baguetteValue.text = item.baguette
-        holder.dewpointValue.text = item.dewpoint
+        holder.mealTitle.text = item.recipe_name
+        holder.mealName.text = ""//item.mealName
+        holder.servesCount.text = item.servings.toString()
+        holder.calValue.text = item.calories.toInt().toString()
+        holder.subtractionValue.text = item.protein.toInt().toString()
+        holder.baguetteValue.text = item.carbs.toInt().toString()
+        holder.dewpointValue.text = item.fat.toInt().toString()
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
@@ -56,13 +55,16 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
 //                }
 //            }
    //     }
-
         holder.delete.setOnClickListener {
-            onMealDeleteItem(item, position, true)
+            onDeleteRecipeItem(item, position, true)
         }
 
         holder.circlePlus.setOnClickListener {
-            onMealLogItem(item, position, true)
+            onLogRecipeItem(item, position, true)
+        }
+
+        holder.edit.setOnClickListener {
+            onEditRecipeItem(item, position, true)
         }
     }
 
@@ -94,7 +96,7 @@ class RecipeAdapter(private val context: Context, private var dataLists: ArrayLi
          val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
      }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<MyRecipe>?, pos: Int, mealLogItem : MyRecipe?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

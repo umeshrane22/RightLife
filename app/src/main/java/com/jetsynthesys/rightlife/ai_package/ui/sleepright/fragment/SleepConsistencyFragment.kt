@@ -26,6 +26,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.DataPoints
+import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyDetail
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepJson
@@ -41,6 +42,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.Locale
@@ -59,6 +61,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
+    private lateinit var averageBedTime: TextView
+    private lateinit var averageSleepTime: TextView
+    private lateinit var averageWakeupTime: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -76,6 +81,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
+        averageBedTime = view.findViewById(R.id.tv_average_bed_time)
+        averageSleepTime = view.findViewById(R.id.tv_average_sleep_time)
+        averageWakeupTime = view.findViewById(R.id.tv_average_wakeup_time)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -90,7 +98,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
         setupListeners()
-        fetchSleepData(mEndDate)
+        fetchSleepData(mEndDate,"weekly")
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -130,7 +138,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
                     dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
-                    fetchSleepData(endDate)
+                    fetchSleepData(endDate,"weekly")
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
@@ -139,7 +147,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
                     dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate)
+                    fetchSleepData(endDate,"monthly")
                 }
                 R.id.rbSixMonths -> {
                     currentTab = 2
@@ -148,7 +156,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                     val endDate = getTodayDate().format(dateFormatter)
                     val formatter = DateTimeFormatter.ofPattern("d MMM")
                     dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate)
+                    fetchSleepData(endDate,"monthly")
                 }
             }
         }
@@ -197,7 +205,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        fetchSleepData(endOfWeek.format(formatter1))
+        fetchSleepData(endOfWeek.format(formatter1),"weekly")
 
     }
 
@@ -209,7 +217,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        fetchSleepData(endOfMonth.format(formatter1))
+        fetchSleepData(endOfMonth.format(formatter1),"monthly")
     }
 
     private fun loadSixMonthsData() {
@@ -221,7 +229,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        fetchSleepData(endDate.format(formatter1))
+        fetchSleepData(endDate.format(formatter1),"monthly")
     }
 
     private fun loadStepData(): SleepJson {
@@ -239,35 +247,62 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 //
     }
 
-    private fun fetchSleepData(mEndDate: String) {
+    private fun fetchSleepData(mEndDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val period = "weekly"
         val source = "apple"
         val date = mEndDate
         val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,date)
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 progressDialog.dismiss()
-                if (response.body() != null) {
+                if (response.isSuccessful) {
                     sleepConsistencyResponse = response.body()!!
                     if (sleepConsistencyResponse.statusCode == 200) {
-                        sleepConsistencyResponse.data?.sleepDetails?.let {
-                            setData(it)
+                        if (sleepConsistencyResponse.data?.sleepDetails?.isNotEmpty() == true) {
+                            sleepConsistencyResponse.data?.sleepDetails?.let {
+                                setData(it)
+                            }
                         }
+                        setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<SleepConsistencyResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
             }
         })
+    }
+
+    private fun setSleepAverageData(detail: SleepConsistencyDetail?) {
+        if (detail?.averageSleepDurationHours != 0.0 && detail?.averageSleepDurationHours != null) {
+            averageBedTime.setText(convertDecimalHoursToHrMinFormat(detail.averageSleepDurationHours!!))
+        }
+        if (detail?.averageSleepStartTime?.isNotEmpty() == true && detail.averageWakeTime?.isNotEmpty() == true) {
+            averageSleepTime.setText(convertTo12HourFormat(detail.averageSleepStartTime!!))
+            averageWakeupTime.setText(convertTo12HourFormat(detail.averageWakeTime!!))
+        }
+    }
+    fun convertTo12HourFormat(datetimeStr: String): String {
+        val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val outputFormatter = DateTimeFormatter.ofPattern("h:mm a")
+        val dateTime = LocalDateTime.parse(datetimeStr, inputFormatter)
+        return dateTime.format(outputFormatter)
+    }
+
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        val totalMinutes = (hoursDecimal * 60).toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return String.format("%02dhr %02dmins", hours, minutes)
     }
 
     fun setData(parseSleepData: ArrayList<SleepDetails>) = runBlocking {
@@ -322,6 +357,11 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
         textSize = 36f
     }
 
+    private val paintLabelText = Paint().apply {
+        color = Color.BLACK
+        textSize = 28f
+    }
+
     fun setSleepData(data: List<SleepEntry>) {
         sleepData.clear()
         sleepData.addAll(data)
@@ -346,31 +386,32 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
         }
 
         // Draw sleep bars
-        sleepData.forEachIndexed { index, entry ->
-            val x = padding + index * widthPerDay
-            val startHour = entry.getStartLocalDateTime().hour + entry.getStartLocalDateTime().minute / 60f
-            val duration = entry.value
+        try {
+            sleepData.forEachIndexed { index, entry ->
+                val x = padding + index * widthPerDay
 
-            // Convert start hour to Y position (adjusting for 24-hour format)
-            val startY = height - padding - ((startHour - 18).coerceIn(0f, 12f) * heightPerHour)
-            val endY = (startY - (duration * heightPerHour)).coerceAtLeast(padding)
+                val startHour = entry.getStartLocalDateTime().hour + entry.getStartLocalDateTime().minute / 60f
+                val duration = entry.value
 
-            val paint = if (index == sleepData.size - 1) paintSleepHighlight else paintSleep
-            canvas.drawRoundRect(x, endY, x + widthPerDay * 0.8f, startY, 20f, 20f, paint)
+                // Convert start hour to Y position (adjusting for 24-hour format)
+                val startY = height - padding - ((startHour - 18).coerceIn(0f, 12f) * heightPerHour)
+                val endY = (startY - (duration * heightPerHour)).coerceAtLeast(padding)
 
-            // Draw date labels
-            val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
-            canvas.drawText(dateLabel, x, height - 30f, paintText)
+                val paint = if (index == sleepData.size - 1) paintSleepHighlight else paintSleep
+                canvas.drawRoundRect(x, endY, x + widthPerDay * 0.8f, startY, 20f, 20f, paint)
+
+                // Draw date labels
+                val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
+                canvas.drawText(dateLabel, x, height - 30f, paintLabelText)
+            }
+        }catch (e: DateTimeParseException) {
+            Log.e("SleepParse", "Failed to parse", e)
         }
+
     }
 }
 
-
-data class SleepEntry(
-    val startDatetime: String,
-    val endDatetime: String,
-    val value: Float
-) {
+data class SleepEntry(val startDatetime: String, val endDatetime: String, val value: Float) {
     fun getStartLocalDateTime(): LocalDateTime {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         return LocalDateTime.parse(startDatetime, formatter)

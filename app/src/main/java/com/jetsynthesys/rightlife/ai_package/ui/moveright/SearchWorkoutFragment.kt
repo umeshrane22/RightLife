@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +19,13 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewModel
 import com.jetsynthesys.rightlife.databinding.FragmentSearchWorkoutBinding
 import com.google.android.material.tabs.TabLayout
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 
 class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
     private val workoutViewModel: WorkoutViewModel by activityViewModels()
     private lateinit var searchWorkoutBackButton: ImageView
+    private  var  workoutList = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchWorkoutBinding
         get() = FragmentSearchWorkoutBinding::inflate
@@ -30,7 +33,9 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-
+        val routine = arguments?.getString("routine")
+        val routineName = arguments?.getString("routineName")
+        workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
@@ -50,7 +55,14 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
         // Initial fragment
         if (savedInstanceState == null) {
-            replaceFragment(AllWorkoutFragment())
+            val allWorkoutFragment = AllWorkoutFragment().apply {
+                arguments = Bundle().apply {
+                    putString("routine", routine)
+                    putString("routineName", routineName)
+                    putParcelableArrayList("workoutList",workoutList)
+                }
+            }
+            replaceFragment(allWorkoutFragment)
         }
 
         // Handle back press
@@ -62,7 +74,16 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
-                    0 -> replaceFragment(AllWorkoutFragment())
+                    0 -> {
+                        val allWorkoutFragment = AllWorkoutFragment().apply {
+                            arguments = Bundle().apply {
+                                putString("routine", routine)
+                                putString("routineName", routineName)
+                                putParcelableArrayList("workoutList",workoutList)
+                            }
+                        }
+                        replaceFragment(allWorkoutFragment)
+                    }
                     1 -> replaceFragment(MyRoutineFragment())
                     2 -> replaceFragment(FrequentlyLoggedSearchFragment())
                 }
@@ -76,7 +97,9 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                workoutViewModel.setSearchQuery(s.toString())
+                val query = s.toString()
+                workoutViewModel.setSearchQuery(query)
+                Log.d("SearchWorkoutFragment", "Search query set in ViewModel: $query")
             }
             override fun afterTextChanged(s: Editable?) {}
         })

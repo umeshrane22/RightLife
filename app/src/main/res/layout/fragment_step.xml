@@ -15,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
         <ImageView
+
             android:id="@+id/step_back"
             android:layout_width="25dp"
             android:layout_height="25dp"
@@ -64,6 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/gradient_color_background_workout">
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/calorie_balance_layout"
                 android:layout_width="match_parent"
@@ -77,9 +79,11 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
+
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <RadioGroup
                         android:id="@+id/tabGroup"
                         android:layout_width="match_parent"
@@ -94,6 +98,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         >
+
                         <RadioButton
                             android:id="@+id/rbWeek"
                             android:layout_width="0dp"
@@ -106,6 +111,7 @@
                             android:gravity="center"
                             android:button="@null"
                             android:checked="true"/>
+
                         <RadioButton
                             android:id="@+id/rbMonth"
                             android:layout_width="0dp"
@@ -129,94 +135,116 @@
                             android:background="@drawable/tab_background_heart_rate"                            android:gravity="center"
                             android:button="@null"/>
                     </RadioGroup>
-                    <ImageView
-                        android:id="@+id/backward_image_heart_rate"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="21dp"
-                        android:src="@drawable/backward_create_heart_rate"
-                        android:layout_marginTop="14dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tabGroup"/>
-                    <ImageView
-                        android:id="@+id/forward_image_heart_rate"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginEnd="21dp"
-                        android:src="@drawable/forward_image_create_heartrate"
-                        android:layout_marginTop="14dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tabGroup"/>
-                    <TextView
-                        android:id="@+id/selectedDate"
-                        android:layout_width="wrap_content"
+
+                    <RelativeLayout
+                        android:id="@+id/dateSectionLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="3 Feb -9 Feb, 2O25"
-                        android:fontFamily="@font/dmsans_bold"
-                        android:textSize="14sp"
-                        android:textColor="@color/black"
-                        app:layout_constraintBottom_toBottomOf="@+id/backward_image_heart_rate"
-                        app:layout_constraintStart_toEndOf="@+id/backward_image_heart_rate"
-                        app:layout_constraintEnd_toStartOf="@+id/forward_image_heart_rate"/>
+                        android:orientation="horizontal"
+                        android:layout_marginTop="14dp"
+                        android:layout_marginStart="21dp"
+                        android:layout_marginEnd="21dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tabGroup">
+
+                        <ImageView
+                            android:id="@+id/backwardImage"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/backward_create_heart_rate"
+                            android:layout_gravity="start"
+                            android:layout_alignParentStart="true"
+                            />
+
+                        <TextView
+                            android:id="@+id/selectedDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2O25"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:textSize="14sp"
+                            android:layout_centerHorizontal="true"
+                            android:textColor="@color/black_no_meals" />
+
+                        <ImageView
+                            android:id="@+id/forwardImage"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="end"
+                            android:src="@drawable/forward_image_create_heartrate"
+                            android:layout_alignParentEnd="true"/>
+
+                    </RelativeLayout>
+
                     <View
+                        android:id="@+id/view"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
                         android:background="@color/border_line"
-                        android:layout_marginTop="18dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/backward_image_heart_rate"/>
+                        app:layout_constraintTop_toBottomOf="@+id/dateSectionLayout"/>
+
                     <TextView
-                        android:id="@+id/average_text_heading"
+                        android:id="@+id/averageHeading"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="108dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginStart="21dp"
                         android:text="Average"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_bold"
-                        android:textColor="@color/black"
+                        android:textColor="@color/black_no_meals"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toBottomOf="@+id/view"/>
+
                     <TextView
-                        android:id="@+id/average_number"
+                        android:id="@+id/averageBurnCalorie"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="78.5"
-                        android:textColor="@color/black"
-                        android:textSize="20dp"
+                        android:textColor="@color/black_no_meals"
+                        android:textSize="20sp"
                         android:fontFamily="@font/dmsans_bold"
                         android:layout_marginStart="21dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/average_text_heading"/>
+                        app:layout_constraintTop_toBottomOf="@+id/averageHeading"/>
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ms"
+                        android:text="kCal"
                         android:textSize="12sp"
-                        android:fontFamily="@font/dmsans_bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/average_number"
-                        app:layout_constraintStart_toEndOf="@+id/average_number"/>
+                        android:textColor="@color/black_no_meals"
+                        android:fontFamily="@font/dmsans_regular"
+                        app:layout_constraintBottom_toBottomOf="@+id/averageBurnCalorie"
+                        app:layout_constraintStart_toEndOf="@+id/averageBurnCalorie"/>
+
                     <ImageView
-                        android:id="@+id/percentage_icon"
+                        android:id="@+id/percentageIc"
                         android:layout_width="12dp"
                         android:layout_height="12dp"
-                        android:src="@drawable/forward_image_create_heartrate"
+                        android:src="@drawable/ic_up"
                         android:layout_marginStart="21dp"
-                        app:layout_constraintTop_toBottomOf="@+id/average_number"
+                        app:layout_constraintTop_toBottomOf="@+id/averageBurnCalorie"
                         app:layout_constraintStart_toStartOf="parent"/>
+
                     <TextView
-                        android:id="@+id/percentage_text"
+                        android:id="@+id/percentageTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="50% past week"
                         android:textSize="10sp"
+                        android:fontFamily="@font/dmsans_regular"
                         android:layout_marginStart="4dp"
                         android:textColor="@color/green_text"
-                        app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
-                        app:layout_constraintStart_toEndOf="@+id/percentage_icon"/>
+                        app:layout_constraintBottom_toBottomOf="@+id/percentageIc"
+                        app:layout_constraintStart_toEndOf="@+id/percentageIc"/>
+
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/selectStepRateLayout"
+                        android:id="@+id/selectHeartRateLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="62dp"
                         android:elevation="4dp"
@@ -226,7 +254,7 @@
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
                         android:layout_marginTop="10dp"
-                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                        app:layout_constraintTop_toBottomOf="@+id/percentageTv"
                         app:layout_constraintEnd_toEndOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
@@ -298,39 +326,12 @@
                         android:id="@+id/heartRateChart"
                         android:layout_width="match_parent"
                         android:layout_height="300dp"
-                        android:layout_marginTop="20dp"
-                        android:visibility="visible"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="70dp"
                         app:layout_constraintBottom_toTopOf="@+id/layout_btn_log_meal"
-                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
+                        app:layout_constraintTop_toBottomOf="@+id/selectHeartRateLayout"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"/>
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/lyt_line_chart"
-                        android:visibility="gone"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="40dp"
-                        app:layout_constraintBottom_toTopOf="@+id/layout_btn_log_meal"
-                        app:layout_constraintTop_toBottomOf="@+id/percentage_text"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:padding="16dp">
-                        <com.github.mikephil.charting.charts.LineChart
-                            android:id="@+id/heartLineChart"
-                            android:layout_width="match_parent"
-                            android:layout_height="350dp"
-                            android:background="@android:color/white" />
-                        <FrameLayout
-                            android:id="@+id/stripsContainer"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
-                        </FrameLayout>
-
-                    </FrameLayout>
-
-
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/layout_btn_log_meal"
                         android:layout_width="300dp"
@@ -373,9 +374,32 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+
+                    <FrameLayout
+                        android:id="@+id/lyt_line_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_marginTop="2dp"
+                        app:layout_constraintTop_toBottomOf="@+id/selectHeartRateLayout"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <com.github.mikephil.charting.charts.LineChart
+                            android:id="@+id/heartLineChart"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            />
+
+                        <FrameLayout
+                            android:id="@+id/stripsContainer"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </FrameLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
+
             <TextView
                 android:id="@+id/heart_rate_description_heading"
                 android:layout_width="339dp"
@@ -383,29 +407,139 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
-                android:text="Active Burn – Your Energy Output in Motion"
+                android:text=""
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <TextView
+                android:id="@+id/step_discreption"
                 android:layout_width="339dp"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
-                android:text="Active Calories refer to the energy you burn through movement and physical activity. Unlike Basal Metabolic Rate (BMR), which accounts for the calories your body uses at rest, Active Calories are the additional calories expended during activities like exercise, walking, and other forms of movement.
-The more intense your activity, the higher your Active Burn. Factors such as workout type, duration, and heart rate influence the number of Active Calories burned.
-While wearable devices are popular for estimating calorie burn, [studies have shown](https://lifehacker.com/you-cant-trust-your-fitness-tracker-on-calorie-burn#:~:text=What studies say about fitness,overestimated 39%25 of the time.) that they may not always provide accurate measurements. For instance, research indicates that these devices can have varying degrees of accuracy when measuring energy expenditure.
-At RightLife, we recognize that these tools serve as motivational aids to encourage an active lifestyle. For precise tracking, we focus on monitoring calorie intake and logging changes in weight over time, ensuring a more accurate and personalized approach to your fitness journey. You can do both of these right here, on the app."
+                android:text=""
                 app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
                 app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintEnd_toEndOf="parent" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/step_progress_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:background="@color/white"
+            app:cardCornerRadius="10dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/step_discreption"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/description_progressbar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="You’ve been walking less on average this week compared to your steps last week."
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <TextView
+                android:id="@+id/total_steps_progress_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="7,665"
+                app:layout_constraintTop_toBottomOf="@+id/description_progressbar_layout"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <TextView
+                android:id="@+id/steps_day_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="steps/day"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/total_steps_progress_layout"
+                app:layout_constraintBottom_toBottomOf="@+id/total_steps_progress_layout"/>
+            <TextView
+                android:id="@+id/current_week_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:text="Current Week"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/steps_day_text"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.SimpleProgressBar
+                android:id="@+id/customProgressBarFatBurn"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/current_week_text"
+                 />
+            <TextView
+                android:id="@+id/value_previous_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_bold"
+                android:text="10,665"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurn"
+                app:layout_constraintStart_toStartOf="parent"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="steps/day"
+                android:layout_marginStart="5dp"
+                app:layout_constraintStart_toEndOf="@+id/value_previous_week"
+                app:layout_constraintBottom_toBottomOf="@+id/value_previous_week"/>
+            <TextView
+                android:id="@+id/previous_week_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:layout_marginTop="10dp"
+                android:text="Previous Week"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/customProgressBarFatBurn"
+                app:layout_constraintEnd_toEndOf="parent"/>
+            <com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.BasicProgressBar
+                android:id="@+id/customProgressPreviousWeek"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/value_previous_week"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

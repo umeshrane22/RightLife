@@ -39,16 +39,21 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.FormattedData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceAllData
+import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceList
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MindfullChartRenderer
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
+import java.time.temporal.ChronoUnit
+import kotlin.math.pow
+import kotlin.math.round
 
 class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>() {
 
@@ -59,6 +64,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
+    private lateinit var tvSleepAverage: TextView
     private lateinit var barChart: BarChart
     private lateinit var lineChart: LineChart
     private lateinit var radioGroup: RadioGroup
@@ -67,7 +73,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
-    private var currentDate: LocalDate = LocalDate.now() // today
+    private var currentDateWeek: LocalDate = LocalDate.now() // today
+    private var currentDateMonth: LocalDate = LocalDate.now() // today
+    private var mStartDate = ""
+    private var mEndDate = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,16 +91,21 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
+        tvSleepAverage = view.findViewById(R.id.tv_sleep_perform_average)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
-
-        setupListeners()
-        setupChart()
-        loadWeekData()
-        fetchSleepData()
-
         radioGroup.check(R.id.rbWeek)
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        mStartDate = getOneWeekEarlierDate().format(dateFormatter)
+        mEndDate = getTodayDate().format(dateFormatter)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
+
+        val formatter = DateTimeFormatter.ofPattern("d MMM")
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
+        setupListeners()
+        fetchSleepData(mEndDate,"weekly")
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -106,6 +120,22 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
+    //    setupChart()
+
+    }
+
+    fun getTodayDate(): LocalDate {
+        return LocalDate.now()
+    }
+
+    fun getOneWeekEarlierDate(): LocalDate {
+        return LocalDate.now().minusWeeks(1)
+    }
+    fun getOneMonthEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(1)
+    }
+    fun getSixMonthsEarlierDate(): LocalDate {
+        return LocalDate.now().minusMonths(6)
     }
 
     private fun setupListeners() {
@@ -113,21 +143,30 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             when (checkedId) {
                 R.id.rbWeek -> {
                     currentTab = 0
-                    barChart.visibility = View.VISIBLE
-                    layoutLineChart.visibility = View.GONE
-                    loadWeekData()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate, "weekly")
                 }
                 R.id.rbMonth -> {
                     currentTab = 1
-                    barChart.visibility = View.VISIBLE
-                    layoutLineChart.visibility = View.GONE
-                    loadMonthData()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
                 }
                 R.id.rbSixMonths -> {
                     currentTab = 2
-                    barChart.visibility = View.GONE
-                    layoutLineChart.visibility = View.VISIBLE
-                    lineChartForSixMonths()
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
                 }
             }
         }
@@ -135,15 +174,15 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         btnPrevious.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.minusWeeks(1)
+                    currentDateWeek = currentDateWeek.minusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.minusMonths(1)
+                    currentDateMonth = currentDateMonth.minusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.minusMonths(6)
+                    currentDateMonth = currentDateMonth.minusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -152,15 +191,15 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDate = currentDate.plusWeeks(1)
+                    currentDateWeek = currentDateWeek.plusWeeks(1)
                     loadWeekData()
                 }
                 1 -> {
-                    currentDate = currentDate.plusMonths(1)
+                    currentDateMonth = currentDateMonth.plusMonths(1)
                     loadMonthData()
                 }
                 2 -> {
-                    currentDate = currentDate.plusMonths(6)
+                    currentDateMonth = currentDateMonth.plusMonths(6)
                     loadSixMonthsData()
                 }
             }
@@ -168,60 +207,43 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun loadWeekData() {
-        val startOfWeek = currentDate.with(java.time.DayOfWeek.MONDAY)
-        val endOfWeek = startOfWeek.plusDays(6)
+        val endOfWeek = currentDateWeek
+        val startOfWeek = endOfWeek.minusDays(6)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
 
-        val entries = mutableListOf<BarEntry>()
-        for (i in 0..6) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        updateChart(entries, listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+        fetchSleepData(endOfWeek.format(formatter1), "weekly")
 
     }
 
     private fun loadMonthData() {
-        val startOfMonth = currentDate.with(TemporalAdjusters.firstDayOfMonth())
-        val endOfMonth = currentDate.with(TemporalAdjusters.lastDayOfMonth())
-
+        val endOfMonth = currentDateMonth
+        val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
-        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDate.year}"
+        dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
 
-        val entries = mutableListOf<BarEntry>()
-        val daysInMonth = endOfMonth.dayOfMonth
-        for (i in 0 until daysInMonth) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+        fetchSleepData(endOfMonth.format(formatter1), "monthly")
 
-        updateChart(entries, weekRanges)
+      //  val weekRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
+
+     //   updateChart(entries, weekRanges)
     }
 
     private fun loadSixMonthsData() {
-        val startOfPeriod = currentDate.minusMonths(5).with(TemporalAdjusters.firstDayOfMonth())
-        val endOfPeriod = currentDate.with(TemporalAdjusters.lastDayOfMonth())
+        val startDate = getSixMonthsEarlierDate()
+        val endDate = getTodayDate()
 
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
-        dateRangeText.text = "${startOfPeriod.format(formatter)} - ${endOfPeriod.format(formatter)}"
+        dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
 
-        val entries = mutableListOf<BarEntry>()
-        for (i in 0..5) {
-            entries.add(BarEntry(i.toFloat(), (50..100).random().toFloat()))
-        }
+        val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-        val months = listOf(
-            startOfPeriod.month.name.take(3),
-            startOfPeriod.plusMonths(1).month.name.take(3),
-            startOfPeriod.plusMonths(2).month.name.take(3),
-            startOfPeriod.plusMonths(3).month.name.take(3),
-            startOfPeriod.plusMonths(4).month.name.take(3),
-            startOfPeriod.plusMonths(5).month.name.take(3)
-        )
-        updateChart(entries, months)
+        fetchSleepData(endDate.format(formatter1), "monthly")
     }
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>) {
@@ -243,19 +265,20 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         barChart.invalidate()
     }
 
-    private fun fetchSleepData() {
+    private fun fetchSleepData(endDate: String, period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-            ?: "68010b615a508d0cfd6ac9ca"
-        val period = "weekly"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period)
+        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,endDate)
         call.enqueue(object : Callback<SleepPerformanceResponse> {
             override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepPerformanceResponse = response.body()!!
                     setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
+                }else if(response.code() == 400){
+                    progressDialog.dismiss()
+                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -271,7 +294,135 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceAllData?) {
+        tvSleepAverage.setText(""+sleepPerformanceResponse?.sleepPerformanceAverage?.roundToDecimals(2)+"%")
+      //  updateChart()
+        if (sleepPerformanceResponse?.sleepPerformanceList?.isNotEmpty() == true) {
+            if (sleepPerformanceResponse.sleepPerformanceList.size < 9 ) {
+                setupWeeklyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.endDatetime!!)
+            }else{
+                setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
+            }
+        }
+    }
+    fun Double.roundToDecimals(decimals: Int): Double {
+        val factor = 10.0.pow(decimals)
+        return round(this * factor) / factor
+    }
 
+    fun setupMonthlyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, startDateStr:String, endDateStr:String) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val trimmedEndDate = endDateStr.substring(0, 10)  // "2025-05-01"
+        val trimmedStartDate = startDateStr.substring(0, 10)  // "2025-05-01"
+        val startDate = LocalDate.parse(trimmedStartDate, formatter)
+        val endDate = LocalDate.parse(trimmedEndDate, formatter)
+
+        val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt()
+        val entries = ArrayList<BarEntry>()
+        val labels = ArrayList<String>()
+
+        for (i in 0..daysBetween) {
+            val currentDate = startDate.plusDays(i.toLong())
+            val dayOfMonth = currentDate.dayOfMonth
+            val lastDay = endDate.lengthOfMonth()
+
+            val labelGroup = when (dayOfMonth) {
+                in 1..7 -> "1–7"
+                in 8..14 -> "8–14"
+                in 15..21 -> "15–21"
+                in 22..28 -> "22–28"
+                in 29..lastDay -> "29–$lastDay"
+                else -> ""
+            }
+
+            // Only label the first day in each fixed group
+            val shouldLabel = dayOfMonth == 1 || dayOfMonth == 8 || dayOfMonth == 15 || dayOfMonth == 22 || dayOfMonth == 29
+            labels.add(if (shouldLabel) labelGroup else "")
+        }
+        data?.forEachIndexed { index, item ->
+            entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
+        }
+
+        val dataSet = BarDataSet(entries, "Sleep Performance")
+        dataSet.setColors(Color.parseColor("#4593FB"))
+        dataSet.valueTextSize = 9f
+
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.4f
+
+        chart.data = barData
+        val customRenderer = MindfullChartRenderer(chart, chart.animator, chart.viewPortHandler)
+        customRenderer.initBuffers()
+        chart.renderer = customRenderer
+
+        chart.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            granularity = 1f
+            labelCount = labels.size
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            labelRotationAngle = -30f
+            textSize = 8f
+        }
+
+        chart.axisLeft.axisMinimum = 0f
+        chart.axisRight.isEnabled = false
+        chart.description.isEnabled = false
+        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerDragEnabled = false
+        chart.legend.isEnabled = false
+
+        chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
+        chart.setFitBars(true)
+        chart.invalidate()
+    }
+
+    fun getWeekDayNames(endOfWeek: LocalDate): List<String> {
+        val startOfWeek = endOfWeek.minusDays(6)
+        val formatter = DateTimeFormatter.ofPattern("EEE") // "Mon", "Tue", etc.
+
+        return (0..6).map { dayOffset ->
+            startOfWeek.plusDays(dayOffset.toLong()).format(formatter)
+        }
+    }
+
+    fun setupWeeklyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, endDate: String) {
+        val entries = ArrayList<BarEntry>()
+        val trimmedDate = endDate.substring(0, 10)  // "2025-05-01"
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val localDate = LocalDate.parse(trimmedDate, formatter)
+        val labels = getWeekDayNames(localDate)
+
+        data?.forEachIndexed { index, item ->
+            entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
+        }
+
+        val dataSet = BarDataSet(entries, "SleepPerformance")
+        dataSet.setColors(Color.parseColor("#4593FB"))
+        dataSet.valueTextSize = 12f
+
+        val barData = BarData(dataSet)
+        chart.data = barData
+        val customRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        customRenderer.initBuffers()
+        chart.renderer = customRenderer
+
+        chart.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            granularity = 1f
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            labelRotationAngle = -30f
+            textSize = 10f
+        }
+
+        chart.axisLeft.axisMinimum = 0f
+        chart.axisRight.isEnabled = false
+        chart.description.isEnabled = false
+        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerDragEnabled = false
+        chart.legend.isEnabled = false
+        chart.setScaleEnabled(false)
+        chart.invalidate()
     }
 
     private fun lineChartForSixMonths(){

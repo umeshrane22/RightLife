@@ -23,7 +23,7 @@ data class SleepConsistencyAllData (
     @SerializedName("sleep_details")
     var sleepDetails           : ArrayList<SleepDetails>       = arrayListOf(),
     @SerializedName("sleep_consistency_detail" )
-    var sleepConsistencyDetail : ArrayList<SleepConsistencyDetail> = arrayListOf()
+    var sleepConsistencyDetail : SleepConsistencyDetail?
 )
 
 data class SleepConsistencyDetail (
@@ -37,7 +37,6 @@ data class SleepConsistencyDetail (
     var consistencyMessage        : String?,
     @SerializedName("action_step")
     var actionStep                : String?
-
 )
 
 data class SleepDetails (
