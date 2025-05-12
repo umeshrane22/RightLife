@@ -195,7 +195,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvConsistencyDate = view.findViewById(R.id.tv_consistency_date)
         tvConsistencyTime = view.findViewById(R.id.tv_consistency_time)
 
-
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -277,6 +276,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 putExtra("PlayList", "PlayList")
             })
         }
+      //  storeData()
     }
 
     private fun fetchWakeupData() {
@@ -906,15 +906,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val fullList = jsonData.dataPoints
         val sleepJsonRequest = SleepJsonRequest(
             user_id = "68010b615a508d0cfd6ac9ca",
-            source = "android",
+            source = "google",
             sleep_stage = fullList.map {
                 SleepStageJson(
                     value = it.fitValue[0].value?.intVal.toString(),
-                    record_type = it.originDataSourceId.toString(),
+                    record_type = it.fitValue[0].value?.intVal.toString(),
                     end_datetime = convertNanoToFormattedDate(it.endTimeNanos!!),
                     unit = it.dataTypeName.toString(),
                     start_datetime = convertNanoToFormattedDate(it.startTimeNanos!!),
-                    source_name = "android"
+                    source_name = "google"
                 )
             } as ArrayList<SleepStageJson>
         )
@@ -935,8 +935,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun storeHealthData(sleepJsonRequest: SleepJsonRequest) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "68010b615a508d0cfd6ac9ca"
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
 
                 val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
 

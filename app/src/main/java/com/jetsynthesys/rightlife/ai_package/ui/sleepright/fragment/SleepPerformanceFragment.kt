@@ -365,6 +365,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
@@ -416,6 +417,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false

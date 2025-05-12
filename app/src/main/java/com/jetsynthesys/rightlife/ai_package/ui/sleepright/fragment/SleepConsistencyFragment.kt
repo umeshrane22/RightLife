@@ -292,7 +292,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         }
     }
     fun convertTo12HourFormat(datetimeStr: String): String {
-        val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         val outputFormatter = DateTimeFormatter.ofPattern("h:mm a")
         val dateTime = LocalDateTime.parse(datetimeStr, inputFormatter)
         return dateTime.format(outputFormatter)
@@ -359,7 +359,7 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
 
     private val paintLabelText = Paint().apply {
         color = Color.BLACK
-        textSize = 28f
+        textSize = 24f
     }
 
     fun setSleepData(data: List<SleepEntry>) {
@@ -373,7 +373,7 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        val padding = 100f
+        val padding = 50f
         val widthPerDay = (width - 2 * padding) / sleepData.size
         val heightPerHour = (height - 2 * padding) / 12f // Assuming 12-hour range (from 6 PM to 6 AM)
 
@@ -401,7 +401,7 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
                 canvas.drawRoundRect(x, endY, x + widthPerDay * 0.8f, startY, 20f, 20f, paint)
 
                 // Draw date labels
-                val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
+                val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d"))
                 canvas.drawText(dateLabel, x, height - 30f, paintLabelText)
             }
         }catch (e: DateTimeParseException) {

@@ -255,8 +255,9 @@
                         <com.github.mikephil.charting.charts.BarChart
                             android:id="@+id/heartRateChart"
                             android:layout_width="match_parent"
-                            android:layout_height="300dp"
+                            android:layout_height="350dp"
                             android:layout_marginTop="10dp"
+                            android:padding="3dp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

@@ -331,9 +331,14 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
                 var dataSize = restorativeSleepResponse.restorativeSleepDetails.size -1
                 for (i in 0 until restorativeSleepResponse.restorativeSleepDetails.size) {
-                    val startDateTime = LocalDateTime.parse(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime, formatters)
-                    val endDateTime =
-                        LocalDateTime.parse(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime, formatters)
+                    var startDateTime = LocalDateTime.now()
+                    var endDateTime = LocalDateTime.now()
+                    if(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime != null) {
+                        startDateTime = LocalDateTime.parse(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime, formatters)
+                    }
+                    if (restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepEndTime != null) {
+                         endDateTime = LocalDateTime.parse(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime, formatters)
+                    }
                     val duration =
                         java.time.Duration.between(startDateTime, endDateTime).toMinutes()
                             .toFloat() / 60f // Convert to hours
