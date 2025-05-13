@@ -727,19 +727,19 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
                         binding.tvSubtractionCalValue.text = proteinValue
                         binding.tvSubtractionCalUnit.text = "/" + proteinTotal + " g"
-                        binding.carbsProgressBar.max = proteinTotal.toInt()
-                        binding.carbsProgressBar.progress = proteinValue.toInt()
+                        binding.carbsProgressBar.max = proteinTotal.toDouble().toInt()
+                        binding.carbsProgressBar.progress = proteinValue.toDouble().toInt()
 
 
                         binding.tvSubtractionCarbsValue.text = carbsValue
                         binding.tvSubtractionCarbsUnit.text = "/" + carbsTotal + " g"
-                        binding.protienProgressBar.max = carbsTotal.toInt()
-                        binding.protienProgressBar.progress = carbsValue.toInt()
+                        binding.protienProgressBar.max = carbsTotal.toDouble().toInt()
+                        binding.protienProgressBar.progress = carbsValue.toDouble().toInt()
 
                         binding.tvSubtractionFatsValue.text = fatsValue
                         binding.tvSubtractionFatsUnit.text = "/" + fatsTotal + " g"
-                        binding.fatsProgressBar.max = fatsTotal.toInt()
-                        binding.fatsProgressBar.progress = fatsValue.toInt()
+                        binding.fatsProgressBar.max = fatsTotal.toDouble().toInt()
+                        binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
 
 
                         binding.halfCurveProgressBar.setProgress(60f)
