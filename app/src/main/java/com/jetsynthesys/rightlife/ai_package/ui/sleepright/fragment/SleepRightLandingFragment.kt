@@ -34,6 +34,22 @@ import androidx.annotation.RequiresPermission
 import androidx.cardview.widget.CardView
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.RespiratoryRateRecord
+import androidx.health.connect.client.records.SleepSessionRecord
+import androidx.health.connect.client.records.SpeedRecord
+import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import androidx.health.connect.client.records.WeightRecord
+import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.lifecycle.lifecycleScope
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -52,6 +68,15 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
+import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
+import com.jetsynthesys.rightlife.ai_package.model.BodyMass
+import com.jetsynthesys.rightlife.ai_package.model.Distance
+import com.jetsynthesys.rightlife.ai_package.model.EnergyBurnedRequest
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateRequest
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityRequest
+import com.jetsynthesys.rightlife.ai_package.model.OxygenSaturation
+import com.jetsynthesys.rightlife.ai_package.model.RespiratoryRate
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
@@ -60,10 +85,14 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingAllData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceDetail
 import com.jetsynthesys.rightlife.ai_package.model.SleepRestorativeDetail
+import com.jetsynthesys.rightlife.ai_package.model.SleepStage
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
+import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
+import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.CoroutineScope
@@ -80,13 +109,18 @@ import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 import kotlin.math.max
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
@@ -98,6 +132,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var todaysSleepStartTime: TextView
     private lateinit var tvStageSleepStartTime: TextView
     private lateinit var tvStageSleepEndTime: TextView
+    private lateinit var tvStageSleepTotalTime: TextView
+    private lateinit var tvStageCoreTime: TextView
+    private lateinit var tvStageDeepTime: TextView
+    private lateinit var tvStageRemTime: TextView
+    private lateinit var tvStageAwakeTime: TextView
     private lateinit var todaysWakeupTime: TextView
     private lateinit var tvPerformStartTime: TextView
     private lateinit var tvPerformWakeTime: TextView
@@ -142,9 +181,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var sleepArrowView: ImageView
     private lateinit var sleepPerformView: ImageView
     private lateinit var restorativeChart: SleepRestoChartView
+    private var sleepSessionRecord: List<SleepSessionRecord>? = null
+    private lateinit var healthConnectClient: HealthConnectClient
     private var mWakeupTime = ""
     private var mRecordId = ""
 
+    private val allReadPermissions = setOf(
+        HealthPermission.getReadPermission(SleepSessionRecord::class)
+    )
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
@@ -194,6 +240,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvRestoDeepTime = view.findViewById(R.id.tv_resto_deep_time)
         tvConsistencyDate = view.findViewById(R.id.tv_consistency_date)
         tvConsistencyTime = view.findViewById(R.id.tv_consistency_time)
+        tvStageSleepTotalTime = view.findViewById(R.id.tv_stage_total_time)
+        tvStageRemTime = view.findViewById(R.id.tv_stage_rem_time)
+        tvStageCoreTime = view.findViewById(R.id.tv_stage_core_time)
+        tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
+        tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
 
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -202,6 +253,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val bottomSheet = LogYourNapDialogFragment(requireContext())
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+        }
+        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+            lifecycleScope.launch {
+                requestPermissionsAndReadAllData()
+            }
+        } else {
+            Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
         }
 
         sleepInfo.setOnClickListener {
@@ -279,6 +339,117 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
       //  storeData()
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun requestPermissionsAndReadAllData() {
+        try {
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+            if (allReadPermissions.all { it in granted }) {
+                fetchAllHealthData()
+                storeHealthData()
+            } else {
+                requestPermissionsLauncher.launch(allReadPermissions)
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private val requestPermissionsLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
+        lifecycleScope.launch {
+            if (granted.containsAll(allReadPermissions)) {
+                fetchAllHealthData()
+                storeHealthData()
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
+                }
+                fetchAllHealthData()
+                storeHealthData()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private suspend fun fetchAllHealthData() {
+        val endTime = Instant.now()
+        val startTime = endTime.minusSeconds(7 * 24 * 60 * 60)
+        try {
+            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
+                val sleepResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = SleepSessionRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                sleepSessionRecord = sleepResponse.records
+                sleepSessionRecord?.forEach { record ->
+                    android.util.Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+                }
+            } else {
+                sleepSessionRecord = emptyList()
+                android.util.Log.d("HealthData", "Sleep session permission denied")
+            }
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun storeHealthData() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
+                val sleepStage = sleepSessionRecord?.flatMap { record ->
+                    record.stages.mapNotNull { stage ->
+                        val stageValue = when (stage.stage) {
+                            SleepSessionRecord.STAGE_TYPE_DEEP -> "5"
+                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "4"
+                            SleepSessionRecord.STAGE_TYPE_REM -> "6"
+                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "1"
+                            else -> null
+                        }
+                        stageValue?.let {
+                            SleepStageJson(
+                                start_datetime = convertToTargetFormat(stage.startTime.toString()),
+                                end_datetime = convertToTargetFormat(stage.endTime.toString()),
+                                record_type = it,
+                                unit = "stage",
+                                value = it,
+                                source_name = "samsung"
+                            )
+                        }
+                    }
+                } ?: emptyList()
+                val sleepJsonRequest = SleepJsonRequest(user_id = userid, source = "samsung", sleep_stage = sleepStage)
+                val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
+                withContext(Dispatchers.Main) {
+                    /*if (response.isSuccessful) {
+                        Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }*/
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
@@ -293,7 +464,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }else if(response.code() == 400){
                     progressDialog.dismiss()
                     sleepTimeRequirementCardView.visibility = View.GONE
-                    Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     sleepTimeRequirementCardView.visibility = View.GONE
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -320,6 +491,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
         return String.format("%02dhr %02dmins", hours, minutes)
+    }
+
+    fun convertDecimalMinutesToHrMinFormat(decimalMinutes: Double): String {
+        val totalMinutes = decimalMinutes.toInt()
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+
+        return when {
+            hours > 0 && minutes > 0 -> "${hours} hr ${minutes} min"
+            hours > 0 -> "${hours} hr"
+            else -> "${minutes} min"
+        }
     }
 
     fun formatIsoTo12Hour(timeStr: String): String {
@@ -419,6 +602,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             setSleepRightStageData(sleepStageData)
             tvStageSleepStartTime.setText(convertTo12HourFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepStartTime!!))
             tvStageSleepEndTime.setText(convertTo12HourFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepEndTime!!))
+            tvStageSleepTotalTime.text = convertDecimalMinutesToHrMinFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.totalSleepDurationMinutes!!)
         }
 
         // Set Sleep Performance Data
@@ -548,12 +732,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         return formatted
     }
 
-    fun convertTo12HourFormat(datetimeStr: String): String {
-        val inputFormatter =  DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        val outputFormatter = DateTimeFormatter.ofPattern("h:mm a")
-        val dateTime = LocalDateTime.parse(datetimeStr, inputFormatter)
-        return dateTime.format(outputFormatter)
+    fun convertTo12HourFormat(input: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
+        val dateTime = LocalDateTime.parse(input, inputFormatter)
+        return outputFormatter.format(dateTime)
     }
+
 
     private fun formatIdealDate(dateTime: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -610,24 +795,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
             }
-
-            val totalSleepDuration = totalRemDuration + totalDeepDuration + totalCoreDuration + totalAwakeDuration
-            val totalSleepHours = totalSleepDuration.toInt()
-            val totalSleepMinutes = ((totalSleepDuration - totalSleepHours) * 60).toInt()
-            view?.findViewById<TextView>(R.id.total_sleep_title)?.text = "Total Sleep:"
-            view?.findViewById<TextView>(R.id.total_sleep_title)?.nextFocusRightId?.let {
-                view?.findViewById<TextView>(it)?.text = "${totalSleepHours}hr ${totalSleepMinutes}mins"
-            }
-
-            view?.findViewById<LinearLayout>(R.id.lyt_top_rem)?.let { layout ->
-                layout.findViewWithTag<TextView>("Rem")?.text = formatDuration(totalRemDuration)
-                layout.findViewWithTag<TextView>("Core")?.text = formatDuration(totalCoreDuration)
-            }
-            view?.findViewById<LinearLayout>(R.id.lyt_bottom_rem)?.let { layout ->
-                layout.findViewWithTag<TextView>("Deep")?.text = formatDuration(totalDeepDuration)
-                layout.findViewWithTag<TextView>("Awake")?.text = formatDuration(totalAwakeDuration)
-            }
-
+            tvStageCoreTime.text = formatDuration(totalCoreDuration)
+            tvStageAwakeTime.text = formatDuration(totalAwakeDuration)
+            tvStageDeepTime.text = formatDuration(totalDeepDuration)
+            tvStageRemTime.text = formatDuration(totalRemDuration)
             setStageGraph(sleepStageResponse)
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
@@ -733,54 +904,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         return convertDecimalHoursToHrMinFormat(totalRemDuration)
     }
 
-    private fun fetchSleepConsistencyData() {
-        progressDialog.show()
-        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-       // val userId = "user_test_1"
-        val period = "weekly"
-        val source = "apple"
-        val date = "2025-05-05"
-        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userId, source, period,date)
-        call.enqueue(object : Callback<SleepConsistencyResponse> {
-            override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
-                if (response.isSuccessful) {
-                    progressDialog.dismiss()
-                    sleepConsistencyChart.visibility = View.GONE
-                    consistencyNoDataCardView.visibility = View.VISIBLE
-                    /*if (response.body() != null) {
-                        sleepConsistencyResponse = response.body()!!
-                        if (sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.isNotEmpty() == true) {
-                            sleepConsistencyChart.visibility = View.VISIBLE
-                            consistencyNoDataCardView.visibility = View.GONE
-                            sleepConsistencyResponse.sleepConsistencyEntry?.sleepDetails?.let {
-                                setData(it)
-                            }
-                        }else{
-                            sleepConsistencyChart.visibility = View.GONE
-                            consistencyNoDataCardView.visibility = View.VISIBLE
-                        }
-                    }*/
-
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-           //         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
-                    sleepConsistencyChart.visibility = View.GONE
-                    consistencyNoDataCardView.visibility = View.VISIBLE
-                }
-            }
-
-            override fun onFailure(call: Call<SleepConsistencyResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-        //        Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
-                sleepConsistencyChart.visibility = View.GONE
-                consistencyNoDataCardView.visibility = View.VISIBLE
-            }
-        })
-    }
-
     fun setConsistencySleepData(consistencyData: SleepConsistency?) = runBlocking {
         val parseSleepData: ArrayList<SleepDetails> = arrayListOf()
         if (consistencyData?.sleepDetails!=null) {
@@ -803,6 +926,49 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
+    }
+
+    fun convertToTargetFormat(input: String): String {
+        val possibleFormats = listOf(
+            "yyyy-MM-dd'T'HH:mm:ssX",        // ISO with timezone
+            "yyyy-MM-dd'T'HH:mm:ss.SSSX",    // ISO with milliseconds
+            "yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSSX", // ISO with nanoseconds
+            "yyyy-MM-dd HH:mm:ss",           // Common DB format
+            "yyyy/MM/dd HH:mm:ss",           // Slash format
+            "dd-MM-yyyy HH:mm:ss",           // Day-Month-Year
+            "MM/dd/yyyy HH:mm:ss"            // US format
+        )
+
+        // Check if it's a nanosecond timestamp (very large number)
+        if (input.matches(Regex("^\\d{18,}$"))) {
+            return try {
+                val nanos = input.toLong()
+                val seconds = nanos / 1_000_000_000
+                val nanoAdjustment = (nanos % 1_000_000_000).toInt()
+                val instant = Instant.ofEpochSecond(seconds, nanoAdjustment.toLong())
+                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    .withZone(ZoneOffset.UTC)
+                return targetFormatter.format(instant)
+            } catch (e: Exception) {
+                ""
+            }
+        }
+
+        // Try known patterns
+        for (pattern in possibleFormats) {
+            try {
+                val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneOffset.UTC)
+                val temporal = formatter.parse(input)
+                val instant = Instant.from(temporal)
+                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    .withZone(ZoneOffset.UTC)
+                return targetFormatter.format(instant)
+            } catch (e: DateTimeParseException) {
+                // Try next format
+            }
+        }
+
+        return "" // Unable to parse
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -911,14 +1077,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 SleepStageJson(
                     value = it.fitValue[0].value?.intVal.toString(),
                     record_type = it.fitValue[0].value?.intVal.toString(),
-                    end_datetime = convertNanoToFormattedDate(it.endTimeNanos!!),
+                    end_datetime = convertToTargetFormat(it.endTimeNanos.toString()),
                     unit = it.dataTypeName.toString(),
-                    start_datetime = convertNanoToFormattedDate(it.startTimeNanos!!),
+                    start_datetime = convertToTargetFormat(it.startTimeNanos.toString()),
                     source_name = "google"
                 )
             } as ArrayList<SleepStageJson>
         )
-        storeHealthData(sleepJsonRequest)
+        storeJsonHealthData(sleepJsonRequest)
     }
 
     fun convertNanoToFormattedDate(nanoTime: Long): String {
@@ -926,13 +1092,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val date = Date(millis)
 
         // Format the date
-        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
         formatter.timeZone = TimeZone.getTimeZone("UTC")
         return formatter.format(date)
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun storeHealthData(sleepJsonRequest: SleepJsonRequest) {
+    private fun storeJsonHealthData(sleepJsonRequest: SleepJsonRequest) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
@@ -956,7 +1122,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun loadStepData(): SleepJson {
-        val json = context?.assets?.open("assets/fit/alldata/derived_com.google.sleep.segment_com.google.an.json")
+        val json = context?.assets?.open("sleep_raw_data.json")
             ?.bufferedReader().use { it?.readText() }
         return Gson().fromJson(json, object : TypeToken<SleepJson>() {}.type)
     }

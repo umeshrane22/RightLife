@@ -215,7 +215,8 @@
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/black"
-                        app:layout_constraintStart_toEndOf="@id/tv_average_sleep"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/border_line"/>
                     <TextView
                         android:id="@+id/tv_average_sleep_duration"
