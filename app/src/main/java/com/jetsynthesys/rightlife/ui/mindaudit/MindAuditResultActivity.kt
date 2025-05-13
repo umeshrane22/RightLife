@@ -54,7 +54,14 @@ class MindAuditResultActivity : BaseActivity() {
             startActivity(intent)
         }
 
-        getSuggestedAssessment(sharedPreferenceManager.userEmotions)
+        if (sharedPreferenceManager.userEmotions != null) {
+            var userEmotions = sharedPreferenceManager.userEmotions
+            getSuggestedAssessment(userEmotions)
+        }else{
+            var userEmotions = UserEmotions(userEmotionsString)
+            getSuggestedAssessment(userEmotions)
+        }
+
         val assessmentHeader = intent.getStringExtra("Assessment") ?: "CAS"
         getAssessmentResult(assessmentHeader)
         binding.tvAssessmentTaken.text = assessmentHeader + " " + "Score"
@@ -459,14 +466,15 @@ class MindAuditResultActivity : BaseActivity() {
         binding.recyclerViewEmotions.setLayoutManager(gridLayoutManager)
 
         var emotionsList = ArrayList<Emotions>()
-        for (s in sharedPreferenceManager.userEmotions.emotions) {
-            emotionsList.add(Emotions(Utils.toTitleCase(s), false))
+        if (sharedPreferenceManager.userEmotions != null) {
+            for (s in sharedPreferenceManager.userEmotions.emotions) {
+                emotionsList.add(Emotions(Utils.toTitleCase(s), false))
+            }
+            emotionsAdapter = EmotionsAdapter(
+                this, emotionsList, "2"
+            ) {
+            }
         }
-        emotionsAdapter = EmotionsAdapter(
-            this, emotionsList, "2"
-        ) {
-        }
-
         binding.recyclerViewEmotions.setAdapter(emotionsAdapter)
     }
 
