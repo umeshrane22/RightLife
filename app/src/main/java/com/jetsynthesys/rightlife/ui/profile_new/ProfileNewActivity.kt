@@ -479,7 +479,6 @@ class ProfileNewActivity : BaseActivity() {
             dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
             selectedWeight += selectedLabel
             dialogBinding.selectedNumberText.text = selectedWeight
-            Log.d("AAAA", "Selected Label in checkChanged = " + selectedLabel)
         }
 
         val layoutManager =
@@ -488,7 +487,7 @@ class ProfileNewActivity : BaseActivity() {
 
         // Generate numbers with increments of 0.1
 
-        for (i in 0..1000) {
+        for (i in 0..3000) {
             numbers.add(i / 10f) // Increment by 0.1
         }
 

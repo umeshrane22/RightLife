@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -32,6 +33,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
 import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
@@ -59,6 +61,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
     List<HealthCamItem> allHealthCamItems = new ArrayList<>();
     private FacialReportResponseNew facialReportResponseNew;
     private String reportId;
+    private String isFrom = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,8 +71,18 @@ public class NewHealthCamReportActivity extends BaseActivity {
         setContentView(binding.getRoot());
         scanBinding = LayoutScanProgressBinding.bind(binding.scanProgressLayout.getRoot());
         reportId = getIntent().getStringExtra("REPORT_ID");
+        isFrom = getIntent().getStringExtra("FROM");
 
-        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> finish());
+        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> onBackPressHandle());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackPressHandle();
+            }
+        });
+
+
         binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
         binding.cardviewLastCheckin.setOnClickListener(v -> {
             startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
@@ -103,6 +116,16 @@ public class NewHealthCamReportActivity extends BaseActivity {
         }
 
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
+    }
+
+    private void onBackPressHandle(){
+        finish();
+        if (isFrom != null && !isFrom.isEmpty()) {
+            Intent intent = new Intent(this, HomeDashboardActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            intent.putExtra("finish_healthCam", true);
+            startActivity(intent);
+        }
     }
 
     @Override
