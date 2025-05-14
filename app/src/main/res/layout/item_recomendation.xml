@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:orientation="horizontal"
+    android:padding="12dp">
+    <FrameLayout
+        android:layout_width="82dp"
+        android:layout_height="82dp">
+        <androidx.cardview.widget.CardView
+            android:layout_width="82dp"
+            android:layout_height="82dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp"
+            app:cardPreventCornerOverlap="true">
+            <ImageView
+                android:id="@+id/thumbnailImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_gallry"
+                android:background="@drawable/rounded_white_image_bg"
+                android:contentDescription="Thumbnail" />
+        </androidx.cardview.widget.CardView>
+
+        <ImageView
+            android:id="@+id/overlayIcon"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="4dp"
+            android:src="@drawable/music_mini_icon"
+            android:contentDescription="Overlay Icon" />
+    </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/think_eye_with_bg" />
+            <TextView
+                android:id="@+id/topicTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="ThinkRight   |   "
+                android:textColor="@color/black"
+                android:fontFamily="@font/dmsans_regular"
+                android:textSize="12sp" />
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/think_tag" />
+                <TextView
+                    android:id="@+id/topicTag2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:text="Meditation"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="The Personal Nature of Meaning"
+                android:fontFamily="@font/dmsans_medium"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:paddingTop="4dp"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/authorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AshmithaVishnu   |   30"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:paddingTop="6dp" />
+        </LinearLayout>
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/view_line"
+        android:background="@color/light_grey"/>
+</LinearLayout>
