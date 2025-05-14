@@ -20,7 +20,8 @@ class WellnessFocusListAdapter(
     private val context: Context,
     private val wellnessFocusList: ArrayList<ModuleTopic>,
     private val onItemClickListener: OnItemClickListener,
-    private val module: String
+    private val module: String,
+    private var selectedPosition: Int = -1
 ) : RecyclerView.Adapter<WellnessFocusListAdapter.WellnessFocusViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WellnessFocusViewHolder {
@@ -57,9 +58,10 @@ class WellnessFocusListAdapter(
         )
 
         holder.llWellnessFocus.background =
-            if (wellnessFocus.isSelected) wrappedDrawable else bgDrawable
+            if (selectedPosition == position) wrappedDrawable else bgDrawable
 
         holder.itemView.setOnClickListener {
+            selectedPosition = position
             onItemClickListener.onItemClick(wellnessFocus)
             wellnessFocus.isSelected = !wellnessFocus.isSelected
             notifyDataSetChanged()
