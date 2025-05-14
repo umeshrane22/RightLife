@@ -324,6 +324,7 @@ class HealthCamRecorderActivity : BaseActivity() {
                         NewHealthCamReportActivity::class.java
                     ).apply {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        putExtra("FROM","RECORDER")
                     }
                     startActivity(intent)
                     finish()

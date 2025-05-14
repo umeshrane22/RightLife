@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/loader_layout"/>
+    <include layout="@layout/loader_layout" />
 
     <LinearLayout
         android:id="@+id/ll_header"
@@ -45,15 +45,20 @@
         android:textColor="@color/color_think_right"
         android:textSize="18sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_unlock_power"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_unlock_power"
         android:layout_above="@id/btn_continue"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:background="@drawable/bg_gray_border"/>
+        android:layout_centerHorizontal="true">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_unlock_power"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_gray_border" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_continue"
@@ -67,6 +72,6 @@
         android:fontFamily="@font/dmsans_bold"
         android:backgroundTint="@color/menuselected"
         android:textColor="@color/white"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
