@@ -25,8 +25,16 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
+        val data = item.ingredients_per_serving
+        if (data.isNotEmpty()){
+            val ingredientsNames  = data!!.map { it.ingredient_name }
+            val name = ingredientsNames.joinToString(", ")
+            val capitalized = name.replaceFirstChar { it.uppercase() }
+            holder.mealName.text = capitalized
+        }else{
+            holder.mealName.text = item.recipe_name
+        }
         holder.mealTitle.text = item.recipe_name
-        holder.mealName.text = ""//item.mealName
         holder.servesCount.text = item.servings.toString()
         holder.calValue.text = item.calories.toInt().toString()
         holder.subtractionValue.text = item.protein.toInt().toString()

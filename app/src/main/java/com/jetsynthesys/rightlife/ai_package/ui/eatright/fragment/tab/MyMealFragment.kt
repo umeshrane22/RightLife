@@ -25,6 +25,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetails
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
@@ -48,6 +49,7 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -108,6 +110,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         addLayout.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -119,6 +122,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         layoutCreateMeal.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -130,6 +134,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         layoutBottomCreateMeal.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -165,6 +170,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
         bundle.putString("mealId",mealDetails._id)
+        bundle.putString("mealName", mealDetails.meal_name)
         bundle.putString("deleteType", "MyMeal")
         deleteBottomSheetFragment.arguments = bundle
         parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteMealBottomSheet") }
@@ -180,7 +186,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         dishList?.forEach { selectedDish ->
             val mealLogData = MealLogItems(
                 meal_id = selectedDish.receipe._id,
-                recipe_name = "My Meal " + mealDetails.meal_name,
+                recipe_name = selectedDish.receipe.recipe_name,
                 meal_quantity = 1,
                 unit = "g",
                 measure = "Bowl"
@@ -188,12 +194,12 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             mealLogList.add(mealLogData)
         }
         val mealLogRequest = SelectedMealLogList(
-            meal_name = "",
-            meal_type = mealType,
+            meal_name =  mealDetails.meal_name,
+            meal_type = mealDetails.meal_name,
             meal_log = mealLogList
         )
         val parent = parentFragment as? HomeTabMealFragment
-        parent?.setSelectedFrequentlyLog(null, false, mealLogRequest)
+        parent?.setSelectedFrequentlyLog(null, false, mealLogRequest, null)
     }
 
     private fun onEditMealLogItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean){
@@ -268,6 +274,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             val fragment = CreateMealFragment()
             val args = Bundle()
             args.putString("mealId", mealDetails._id)
+            args.putString("mealName", mealDetails.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -289,19 +296,78 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     }
 
     private fun onAddSnapMealLogItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean) {
-        val valueLists : ArrayList<MergedMealItem> = ArrayList()
+        val valueLists: ArrayList<MergedMealItem> = ArrayList()
         valueLists.addAll(mergedList as Collection<MergedMealItem>)
         val mealDetails: MealDetails? = null
-        myMealListAdapter.addAll(valueLists, position,mealDetails, snapMealDetail, isRefresh)
+        myMealListAdapter.addAll(valueLists, position, mealDetails, snapMealDetail, isRefresh)
         val mealLogData = MealLogItems(
             meal_id = snapMealDetail._id,
-            recipe_name = "My Meal " + snapMealDetail.meal_name,
+            recipe_name = snapMealDetail.meal_name,
             meal_quantity = 1,
             unit = "g",
             measure = "Bowl"
         )
-        val parent = parentFragment as? HomeTabMealFragment
-        parent?.setSelectedFrequentlyLog(mealLogData, true, null)
+        val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        val snapDishList: ArrayList<SnapDish> = ArrayList()
+        if (snapMealDetail.dish.isNotEmpty()) {
+            val items = snapMealDetail.dish
+            items?.forEach { snapDish ->
+                val snapDishRequest = SnapDish(
+                    name = snapDish.name,
+                    b12_mcg = snapDish.b12_mcg,
+                    b1_mg = snapDish.b1_mg,
+                    b2_mg = snapDish.b2_mg,
+                    b3_mg = snapDish.b3_mg,
+                    b6_mg = snapDish.b6_mg,
+                    calcium_mg = snapDish.calcium_mg,
+                    calories_kcal = snapDish.calories_kcal,
+                    carb_g = snapDish.carb_g,
+                    cholesterol_mg = snapDish.cholesterol_mg,
+                    copper_mg = snapDish.copper_mg,
+                    fat_g = snapDish.fat_g,
+                    folate_mcg = snapDish.folate_mcg,
+                    fiber_g = snapDish.fiber_g,
+                    iron_mg = snapDish.iron_mg,
+                    is_beverage = false,
+                    magnesium_mg = snapDish.magnesium_mg,
+                    mass_g = snapDish.mass_g,
+                    monounsaturated_g = snapDish.monounsaturated_g,
+                    omega_3_fatty_acids_g = snapDish.omega_3_fatty_acids_g,
+                    omega_6_fatty_acids_g = snapDish.omega_6_fatty_acids_g,
+                    percent_fruit = snapDish.percent_fruit,
+                    percent_legume_or_nuts = snapDish.percent_legume_or_nuts,
+                    percent_vegetable = snapDish.percent_vegetable,
+                    phosphorus_mg = snapDish.phosphorus_mg,
+                    polyunsaturated_g = snapDish.polyunsaturated_g,
+                    potassium_mg = snapDish.potassium_mg,
+                    protein_g = snapDish.protein_g,
+                    saturated_fats_g = snapDish.saturated_fats_g,
+                    selenium_mcg = snapDish.selenium_mcg,
+                    sodium_mg = snapDish.sodium_mg,
+                    source_urls = snapDish.source_urls,
+                    sugar_g = snapDish.sugar_g,
+                    vitamin_a_mcg = snapDish.vitamin_a_mcg,
+                    vitamin_c_mg = snapDish.vitamin_c_mg,
+                    vitamin_d_iu = snapDish.vitamin_d_iu,
+                    vitamin_e_mg = snapDish.vitamin_e_mg,
+                    vitamin_k_mcg = snapDish.vitamin_k_mcg,
+                    zinc_mg = snapDish.zinc_mg,
+                    mealQuantity = 1.0
+                )
+                snapDishList.add(snapDishRequest)
+            }
+            val snapMealLogRequest = SnapMealLogRequest(
+                user_id = snapMealDetail.user_id,
+                meal_type = mealType,
+                meal_name = snapMealDetail.meal_name,
+                is_save = false,
+                is_snapped = true,
+                date = currentDateUtc,
+                dish = snapDishList
+            )
+            val parent = parentFragment as? HomeTabMealFragment
+            parent?.setSelectedFrequentlyLog(mealLogData, true, null, snapMealLogRequest)
+        }
     }
 
     private fun onEditSnapMealLogItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean){
@@ -508,7 +574,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         snapRecipeList?.forEach { snapRecipe ->
             val mealLogData = DishLog(
                 receipe_id = snapRecipe.id,
-                meal_quantity = 1,
+                meal_quantity = 1.0,
                 unit = "g",
                 measure = "Bowl"
             )

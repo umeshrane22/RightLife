@@ -153,7 +153,7 @@ data class AltUnit(
 @Parcelize
 data class Portion(
     @SerializedName("quantity")
-    val quantity: Int,
+    val quantity: Double?,
     @SerializedName("unit")
     val unit: String
 ): Parcelable

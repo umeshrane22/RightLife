@@ -20,6 +20,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalList
 class DeleteDishBottomSheet : BottomSheetDialogFragment() {
 
     private var mealId : String = ""
+    private lateinit var mealType : String
+    private var mealName : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +47,8 @@ class DeleteDishBottomSheet : BottomSheetDialogFragment() {
 
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         mealId = arguments?.getString("mealId").toString()
+        mealType = arguments?.getString("mealType").toString()
+        mealName = arguments?.getString("mealName").toString()
 
         val snapDishLocalListModel = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -63,6 +67,8 @@ class DeleteDishBottomSheet : BottomSheetDialogFragment() {
                             val fragment = CreateMealFragment()
                             val args = Bundle()
                             args.putString("mealId", mealId)
+                            args.putString("mealName", mealName)
+                            args.putString("mealType", mealType)
                             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {

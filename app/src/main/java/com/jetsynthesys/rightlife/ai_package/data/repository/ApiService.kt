@@ -98,6 +98,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SetStepsGoalResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.StepTrackerResponse
@@ -210,6 +211,9 @@ interface ApiService {
                              @Query("date") startDate: String,@Body request: SaveDishLogRequest
     ): Call<MealUpdateResponse>
 
+    @GET("eat/meals/get_meal_byID/")
+    fun fetchMealDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<SnapMealDetailsResponse>
+
     @PUT("eat/meals/update_meal/")
     fun updateSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateMealRequest
     ): Call<MealUpdateResponse>
@@ -225,6 +229,12 @@ interface ApiService {
 
     @DELETE("eat/meals/delete_meal/")
     fun deleteMyMeal(@Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealUpdateResponse>
+
+    @DELETE("eat/meals/delete_logged_meal/")
+    fun deleteLogDish(@Query("meal_id") mealId: String, @Query("user_id") userId: String, @Query("receipe_id") recipeId: String): Call<MealUpdateResponse>
+
+    @DELETE("eat/meals/delete_logged_snap_meal/")
+    fun deleteSnapLogMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String): Call<MealUpdateResponse>
 
     @DELETE("eat/recipes/delete/")
     fun deleteMyRecipe(@Query("recipe_id") mealId: String, @Query("user_id") userId: String): Call<MealUpdateResponse>

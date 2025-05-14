@@ -662,6 +662,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             args.putString("mealId", mealId)
             args.putString("mealName", mealName)
             args.putString("searchType", "MealScanResult")
+            args.putString("mealQuantity", snapRecipeData.mealQuantity.toString())
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
             args.putString("snapRecipeName", snapRecipeData.name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
@@ -888,7 +889,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                     vitamin_d_iu = snapDish.nutrients.micros.Vitamin_D,
                     vitamin_e_mg = snapDish.nutrients.micros.vitamin_e_mg,
                     vitamin_k_mcg = snapDish.nutrients.micros.Vitamin_K,
-                    zinc_mg = snapDish.nutrients.micros.Zinc
+                    zinc_mg = snapDish.nutrients.micros.Zinc,
+                    mealQuantity = snapDish.mealQuantity
                 )
                 snapDishList.add(snapDishRequest)
             }
@@ -987,7 +989,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 vitamin_d_iu = snapRecipe.nutrients.micros.Vitamin_D,
                 vitamin_e_mg = snapRecipe.nutrients.micros.vitamin_e_mg,
                 vitamin_k_mcg = 0.0,
-                zinc_mg = snapRecipe.nutrients.micros.Zinc
+                zinc_mg = snapRecipe.nutrients.micros.Zinc,
+                mealQuantity = snapRecipe.mealQuantity
             )
             snapMealLogList.add(mealLogData)
         }

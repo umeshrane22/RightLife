@@ -95,7 +95,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 
     inner class SnapMealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: SnapMealDetail) {
-            itemView.findViewById<TextView>(R.id.tv_meal_name).text = item.meal_name
+            val mealName : TextView = itemView.findViewById(R.id.tv_meal_name)
             val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
             val delete: ImageView = itemView.findViewById(R.id.image_delete)
             val edit: ImageView = itemView.findViewById(R.id.image_edit)
@@ -106,7 +106,16 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
 
-            mealTitle.text = item.meal_type
+            val data = item.dish
+            if (data.isNotEmpty()){
+                val mealNames  = data!!.map { it.name }
+                val name = mealNames.joinToString(", ")
+                val capitalized = name.replaceFirstChar { it.uppercase() }
+                mealName.text = capitalized
+            }else{
+                mealName.text = item.meal_name
+            }
+            mealTitle.text = item.meal_name
             servesCount.text = item.total_servings.toString()
             calValue.text = item.total_calories.toInt().toString()
             subtractionValue.text = item.total_protein.toInt().toString()
@@ -129,7 +138,7 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
 
     inner class SavedMealViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(item: MealDetails) {
-            itemView.findViewById<TextView>(R.id.tv_meal_name).text = item.meal_name
+            val mealName : TextView = itemView.findViewById(R.id.tv_meal_name)
             val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
             val delete: ImageView = itemView.findViewById(R.id.image_delete)
             val edit: ImageView = itemView.findViewById(R.id.image_edit)
@@ -140,7 +149,16 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
 
-            mealTitle.text = item.meal_type
+            val data = item.receipe_data
+            if (data.isNotEmpty()){
+                val mealNames  = data!!.map { it.receipe.recipe_name }
+                val name = mealNames.joinToString(", ")
+                val capitalized = name.replaceFirstChar { it.uppercase() }
+                mealName.text = capitalized
+            }else{
+                mealName.text = item.meal_name
+            }
+            mealTitle.text = item.meal_name
             servesCount.text = item.total_servings.toString()
             calValue.text = item.total_calories.toInt().toString()
             subtractionValue.text = item.total_protein.toInt().toString()
@@ -164,30 +182,6 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             }
         }
     }
-
-//     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//
-//         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
-//         val delete: ImageView = itemView.findViewById(R.id.image_delete)
-//         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-//         val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
-//         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
-//         val serve: ImageView = itemView.findViewById(R.id.image_serve)
-//         val serves: TextView = itemView.findViewById(R.id.tv_serves)
-//         val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
-//         val cal: ImageView = itemView.findViewById(R.id.image_cal)
-//         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
-//         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
-//         val subtraction: ImageView = itemView.findViewById(R.id.image_subtraction)
-//         val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
-//         val subtractionUnit: TextView = itemView.findViewById(R.id.tv_subtraction_unit)
-//         val baguette: ImageView = itemView.findViewById(R.id.image_baguette)
-//         val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
-//         val baguetteUnit: TextView = itemView.findViewById(R.id.tv_baguette_unit)
-//         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
-//         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
-//         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
-//     }
 
     fun addAll(item : ArrayList<MergedMealItem>?, pos: Int, mealLogItem : MealDetails?, snapMealLogItem : SnapMealDetail?,
                isClick : Boolean) {

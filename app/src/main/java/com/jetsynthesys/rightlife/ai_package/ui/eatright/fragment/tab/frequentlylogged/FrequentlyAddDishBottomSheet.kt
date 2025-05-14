@@ -145,7 +145,7 @@ class FrequentlyAddDishBottomSheet : BottomSheetDialogFragment() {
         snapRecipeList?.forEach { snapRecipe ->
             val mealLogData = DishLog(
                 receipe_id = snapRecipe.id,
-                meal_quantity = 1,
+                meal_quantity = 1.0,
                 unit = "g",
                 measure = "Bowl"
             )

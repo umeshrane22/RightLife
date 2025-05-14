@@ -1,5 +1,9 @@
 package com.jetsynthesys.rightlife.ai_package.model.request
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class SnapMealLogRequest(
     val user_id: String?,
     val meal_type: String?,
@@ -8,8 +12,9 @@ data class SnapMealLogRequest(
     val is_snapped: Boolean?,
     val date: String?,
     val dish: List<SnapDish>
-)
+):Parcelable
 
+@Parcelize
 data class SnapDish(
     val name: String?,
     val b12_mcg: Double?,
@@ -49,5 +54,6 @@ data class SnapDish(
     val vitamin_d_iu: Double?,
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
-    val zinc_mg: Double?
-)
+    val zinc_mg: Double?,
+    val mealQuantity: Double?,
+):Parcelable

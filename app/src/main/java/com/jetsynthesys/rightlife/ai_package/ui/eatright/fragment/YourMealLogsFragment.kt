@@ -49,9 +49,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourEveningSnac
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnackMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.BreakfastMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DinnerMealModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LunchMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
@@ -66,7 +63,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
+class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), DeleteLogDishBottomSheet.OnLogDishDeletedListener {
 
     private lateinit var layoutToolbar :ConstraintLayout
     private lateinit var mealLogWeeklyDayRecyclerView : RecyclerView
@@ -149,6 +146,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     private var lunchMealDetailsLog : MealDetailsLog? = null
     private var eveningSnackMealDetailsLog : MealDetailsLog? = null
     private var dinnerMealDetailsLog : MealDetailsLog? = null
+    private var selectedDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
@@ -357,7 +355,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         addBreakfastLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
-            args.putString("mealType", "breakFast")
+            args.putString("mealType", "breakfast")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -369,7 +367,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         addMorningSnackLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
-            args.putString("mealType", "morningSnack")
+            args.putString("mealType", "morning_snack")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -393,7 +391,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
         addEveningSnacksLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
-            args.putString("mealType", "eveningSnacks")
+            args.putString("mealType", "evening_snack")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -432,10 +430,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
               //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
                 editDeleteDinner.visibility = View.GONE
             }
-        }
-
-        layoutDelete.setOnClickListener {
-            deleteMealDialog()
         }
 
         viewBFMealInsightLayout.setOnClickListener {
@@ -662,12 +656,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 //        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
 //        valueLists.addAll(breakfastCombinedList as Collection<RegularRecipeEntry>)
 //        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
-//        deleteBottomSheetFragment = DeleteMealBottomSheet()
-//        deleteBottomSheetFragment.isCancelable = true
-//        val bundle = Bundle()
-//        bundle.putBoolean("test",false)
-//        deleteBottomSheetFragment.arguments = bundle
-//        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+        deleteLogDishDialog(mealItem, "RegularRecipe")
     }
 
     private fun onBreakFastRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
@@ -677,15 +666,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
     }
 
     private fun onBreakFastSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
-//        val valueLists : ArrayList<RegularRecipeEntry> = ArrayList()
-//        valueLists.addAll(breakfastCombinedList as Collection<RegularRecipeEntry>)
-//        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
-//        deleteBottomSheetFragment = DeleteMealBottomSheet()
-//        deleteBottomSheetFragment.isCancelable = true
-//        val bundle = Bundle()
-//        bundle.putBoolean("test",false)
-//        deleteBottomSheetFragment.arguments = bundle
-//        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+        deleteSnapLogDishDialog(mealItem, "SnapMeal")
     }
 
     private fun onBreakFastSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
@@ -694,77 +675,90 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
 //        breakfastMealLogsAdapter.addAll(valueLists, position, mealItem, isRefresh)
     }
 
-    private fun onMSRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    private fun onMSRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+        deleteLogDishDialog(mealItem, "RegularRecipe")
+    }
+
+    private fun onMSRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onMSRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    private fun onMSSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+        deleteSnapLogDishDialog(mealItem, "SnapMeal")
+    }
+
+    private fun onMSSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onMSSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    private fun onLunchRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+        deleteLogDishDialog(mealItem, "RegularRecipe")
+    }
+
+    private fun onLunchRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onMSSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    private fun onLunchSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+        deleteSnapLogDishDialog(mealItem, "SnapMeal")
+    }
+
+    private fun onLunchSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onLunchRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    private fun onESRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+        deleteLogDishDialog(mealItem, "RegularRecipe")
+    }
+
+    private fun onESRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onLunchRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+    private fun onESSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+        deleteSnapLogDishDialog(mealItem, "SnapMeal")
+    }
+
+    private fun onESSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onLunchSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    private fun onDinnerRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
+        deleteLogDishDialog(mealItem, "RegularRecipe")
+    }
+
+    private fun onDinnerRegularRecipeEditItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onLunchSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
+    private fun onDinnerSnapMealDeleteItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+        deleteSnapLogDishDialog(mealItem, "SnapMeal")
+    }
+
+    private fun onDinnerSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
 
     }
 
-    private fun onESRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onESRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onESSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onESSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onDinnerRegularRecipeDeleteItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onDinnerRegularRecipeEditItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onDinnerSnapMealDeleteItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun onDinnerSnapMealEditItem(mealLogDateModel: SnapMeal, position: Int, isRefresh: Boolean) {
-
-    }
-
-    private fun deleteMealDialog(){
-        deleteBottomSheetFragment = DeleteMealBottomSheet()
+    private fun deleteLogDishDialog(mealItem: RegularRecipeEntry, deleteType: String) {
+       val deleteBottomSheetFragment = DeleteLogDishBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
         val bundle = Bundle()
-        bundle.putBoolean("test",false)
+        bundle.putString("mealId", mealItem.meal_id)
+        bundle.putString("recipeId", mealItem.receipe._id)
+        bundle.putString("deleteType", deleteType)
         deleteBottomSheetFragment.arguments = bundle
-        activity?.supportFragmentManager?.let { deleteBottomSheetFragment.show(it, "DeleteMealBottomSheet") }
+        parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteLogDishBottomSheet") }
+    }
+
+    private fun deleteSnapLogDishDialog(mealItem: SnapMeal, deleteType: String) {
+        val deleteBottomSheetFragment = DeleteLogDishBottomSheet()
+        deleteBottomSheetFragment.isCancelable = true
+        val bundle = Bundle()
+        bundle.putString("mealId", mealItem._id)
+       // bundle.putString("recipeId", mealItem.)
+        bundle.putString("deleteType", deleteType)
+        deleteBottomSheetFragment.arguments = bundle
+        parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteLogDishBottomSheet") }
     }
 
     private fun showTooltipDialog(anchorView: View) {
@@ -861,27 +855,28 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
                     if (response.body()?.data != null){
-                        val breakfastRecipes = response.body()?.data!!.meal_detail["breakFast"]?.regular_receipes
-                        val morningSnackRecipes = response.body()?.data!!.meal_detail["morningSnack"]?.regular_receipes
+                        selectedDate = response.body()?.data!!.date
+                        val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
+                        val morningSnackRecipes = response.body()?.data!!.meal_detail["morning_snack"]?.regular_receipes
                         val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
-                        val eveningSnacksRecipes = response.body()?.data!!.meal_detail["eveningSnacks"]?.regular_receipes
+                        val eveningSnacksRecipes = response.body()?.data!!.meal_detail["evening_snack"]?.regular_receipes
                         val dinnerRecipes = response.body()?.data!!.meal_detail["dinner"]?.regular_receipes
 
-                        val breakfastSnapMeals = response.body()?.data!!.meal_detail["breakFast"]?.snap_meals
-                        val morningSnackSnapMeals = response.body()?.data!!.meal_detail["morningSnack"]?.snap_meals
+                        val breakfastSnapMeals = response.body()?.data!!.meal_detail["breakfast"]?.snap_meals
+                        val morningSnackSnapMeals = response.body()?.data!!.meal_detail["morning_snack"]?.snap_meals
                         val lunchSnapSnapMeals = response.body()?.data!!.meal_detail["lunch"]?.snap_meals
-                        val eveningSnacksSnapMeals = response.body()?.data!!.meal_detail["eveningSnacks"]?.snap_meals
+                        val eveningSnacksSnapMeals = response.body()?.data!!.meal_detail["evening_snack"]?.snap_meals
                         val dinnerSnapMeals = response.body()?.data!!.meal_detail["dinner"]?.snap_meals
 
-                        val breakfastMealNutrition = response.body()?.data!!.meal_detail["breakFast"]?.meal_nutrition_summary
-                        val morningSnackMealNutrition = response.body()?.data!!.meal_detail["morningSnack"]?.meal_nutrition_summary
+                        val breakfastMealNutrition = response.body()?.data!!.meal_detail["breakfast"]?.meal_nutrition_summary
+                        val morningSnackMealNutrition = response.body()?.data!!.meal_detail["morning_snack"]?.meal_nutrition_summary
                         val lunchMealNutrition = response.body()?.data!!.meal_detail["lunch"]?.meal_nutrition_summary
-                        val eveningSnacksMealNutrition = response.body()?.data!!.meal_detail["eveningSnacks"]?.meal_nutrition_summary
+                        val eveningSnacksMealNutrition = response.body()?.data!!.meal_detail["evening_snack"]?.meal_nutrition_summary
                         val dinnerMealNutrition = response.body()?.data!!.meal_detail["dinner"]?.meal_nutrition_summary
-                        val breakFastViewItem = response.body()?.data!!.meal_detail["breakFast"]
-                        val morningSnackViewItem = response.body()?.data!!.meal_detail["morningSnack"]
+                        val breakFastViewItem = response.body()?.data!!.meal_detail["breakfast"]
+                        val morningSnackViewItem = response.body()?.data!!.meal_detail["morning_snack"]
                         val lunchViewItem = response.body()?.data!!.meal_detail["lunch"]
-                        val eveningSnackViewItem = response.body()?.data!!.meal_detail["eveningSnacks"]
+                        val eveningSnackViewItem = response.body()?.data!!.meal_detail["evening_snack"]
                         val dinnerViewItem = response.body()?.data!!.meal_detail["dinner"]
                         if (breakFastViewItem != null){
                             breakFastMealDetailsLog = breakFastViewItem
@@ -982,7 +977,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                         val fullDaySummary = response.body()?.data!!.full_day_summary
 
                         activity?.runOnUiThread {
-                            if (fullDaySummary.calories!! > 0){
+                            if (fullDaySummary.calories != null){
                                 noMealLogsLayout.visibility = View.GONE
                                 dailyCalorieGraphLayout.visibility = View.VISIBLE
                                 setGraphValue(fullDaySummary)
@@ -1058,5 +1053,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>() {
                 fullDate = date,
             )
         }
+    }
+
+    override fun onLogDishDeleted(mealData: String) {
+        getMealsLogList(selectedDate)
     }
 }

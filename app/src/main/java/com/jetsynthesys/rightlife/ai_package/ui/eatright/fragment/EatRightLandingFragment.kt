@@ -964,16 +964,16 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
-                    val breakfastRecipes = response.body()?.data!!.meal_detail["breakFast"]?.regular_receipes
-                    val morningSnackRecipes = response.body()?.data!!.meal_detail["morningSnack"]?.regular_receipes
+                    val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
+                    val morningSnackRecipes = response.body()?.data!!.meal_detail["morning_snack"]?.regular_receipes
                     val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
-                    val eveningSnacksRecipes = response.body()?.data!!.meal_detail["eveningSnacks"]?.regular_receipes
+                    val eveningSnacksRecipes = response.body()?.data!!.meal_detail["evening_snack"]?.regular_receipes
                     val dinnerRecipes = response.body()?.data!!.meal_detail["dinner"]?.regular_receipes
 
-                    val breakfastSnapMeals = response.body()?.data!!.meal_detail["breakFast"]?.snap_meals
-                    val morningSnackSnapMeals = response.body()?.data!!.meal_detail["morningSnack"]?.snap_meals
+                    val breakfastSnapMeals = response.body()?.data!!.meal_detail["breakfast"]?.snap_meals
+                    val morningSnackSnapMeals = response.body()?.data!!.meal_detail["morning_snack"]?.snap_meals
                     val lunchSnapSnapMeals = response.body()?.data!!.meal_detail["lunch"]?.snap_meals
-                    val eveningSnacksSnapMeals = response.body()?.data!!.meal_detail["eveningSnacks"]?.snap_meals
+                    val eveningSnacksSnapMeals = response.body()?.data!!.meal_detail["evening_snack"]?.snap_meals
                     val dinnerSnapMeals = response.body()?.data!!.meal_detail["dinner"]?.snap_meals
 
                     if (breakfastRecipes != null){

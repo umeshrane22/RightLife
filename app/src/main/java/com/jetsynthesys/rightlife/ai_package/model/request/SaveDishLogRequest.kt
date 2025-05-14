@@ -7,7 +7,7 @@ data class SaveDishLogRequest(
 
 data class DishLog(
     val receipe_id: String?,
-    val meal_quantity: Int?,
+    val meal_quantity: Double?,
     val unit: String?,
     val measure: String?
 )

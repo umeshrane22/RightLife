@@ -25,7 +25,6 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
         super.onCreate(savedInstanceState)
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,12 +48,12 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
         layoutBreakfast.setOnClickListener {
             dismiss()
-            callTabMealFragment("breakFast")
+            callTabMealFragment("breakfast")
         }
 
         layoutMorningSnack.setOnClickListener {
             dismiss()
-            callTabMealFragment("morningSnack")
+            callTabMealFragment("morning_snack")
         }
 
         layoutLunch.setOnClickListener {
@@ -64,7 +63,7 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
         layoutEveningSnacks.setOnClickListener {
             dismiss()
-            callTabMealFragment("eveningSnacks")
+            callTabMealFragment("evening_snack")
         }
 
         layoutDinner.setOnClickListener {
@@ -90,7 +89,6 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
         @JvmStatic
         fun newInstance() = SelectMealTypeBottomSheet().apply {
             arguments = Bundle().apply {
-                // Add any required arguments here
             }
         }
     }

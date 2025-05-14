@@ -179,7 +179,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
 //        )
       //  mealLogRequests = mealLogRequest
         val parent = parentFragment as? HomeTabMealFragment
-        parent?.setSelectedFrequentlyLog(mealLogData, false, null)
+        parent?.setSelectedFrequentlyLog(mealLogData, false, null, null)
     }
 
     // Function to update Flexbox with chips

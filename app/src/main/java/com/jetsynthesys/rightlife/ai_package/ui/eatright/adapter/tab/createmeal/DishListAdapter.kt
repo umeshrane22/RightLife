@@ -34,15 +34,21 @@ class DishListAdapter(private val context: Context, private var dataLists: Array
       //  holder.mealTitle.text = item.mealType
         val capitalized = item.name.toString().replaceFirstChar { it.uppercase() }
         holder.mealName.text = capitalized
-        holder.servesCount.text = item.servings.toString()
+        holder.servesCount.text = item.mealQuantity?.toInt().toString()
         if (item.cooking_time_in_seconds != null){
             val mealTime = item.cooking_time_in_seconds.toString()
             holder.mealTime.text = mealTime
         }
-        holder.calValue.text = item.nutrients.macros.Calories?.toInt().toString()
-        holder.subtractionValue.text = item.nutrients.macros.Carbs?.toInt().toString()
-        holder.baguetteValue.text = item.nutrients.macros.Protein?.toInt().toString()
-        holder.dewpointValue.text = item.nutrients.macros.Fats?.toInt().toString()
+        var value : Double = 0.0
+        if (item.mealQuantity != null){
+            value = 1.0
+        }else{
+            value = 1.0
+        }
+        holder.calValue.text = item.nutrients.macros.Calories?.times(value)?.toInt().toString()
+        holder.subtractionValue.text = item.nutrients.macros.Carbs?.times(value)?.toInt().toString()
+        holder.baguetteValue.text = item.nutrients.macros.Protein?.times(value)?.toInt().toString()
+        holder.dewpointValue.text = item.nutrients.macros.Fats?.times(value)?.toInt().toString()
         val imageUrl = getDriveImageUrl(item.photo_url)
         Glide.with(context)
             .load(imageUrl)

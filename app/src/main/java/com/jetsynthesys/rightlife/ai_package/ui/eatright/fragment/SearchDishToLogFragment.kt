@@ -37,6 +37,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListMode
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentSearchDishBinding
@@ -67,6 +68,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var mealType : String
     private var snapMealLogRequests : SelectedMealLogList? = null
     private var searchMealList : ArrayList<SearchResultItem> = ArrayList()
+    private var snapMealRequestLocalListModel : SnapMealRequestLocalListModel? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -129,6 +131,16 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             arguments?.getParcelable("selectedSnapMealLogList", SelectedMealLogList::class.java)
         } else {
             arguments?.getParcelable("selectedSnapMealLogList")
+        }
+
+        val snapMealRequestLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapMealRequestLocalListModel", SnapMealRequestLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("snapMealRequestLocalListModel")
+        }
+
+        if (snapMealRequestLocalListModels != null){
+            snapMealRequestLocalListModel = snapMealRequestLocalListModels
         }
 
         if (snapDishLocalListModels != null){
@@ -233,6 +245,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             args.putParcelable("selectedMealLogList", mealLogRequests)
             args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+            args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
             snapMealFragment.arguments = args
             replace(R.id.flFragment, snapMealFragment, "Steps")
             addToBackStack(null)

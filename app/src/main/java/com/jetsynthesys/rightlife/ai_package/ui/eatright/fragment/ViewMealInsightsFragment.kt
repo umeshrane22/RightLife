@@ -48,6 +48,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
     private val mealNutritionSummary = ArrayList<MealNutritionSummary>()
     private val mealCombinedList = ArrayList<MergedLogsMealItem>()
     private var mealNames = emptyList<String>()
+    private var mealSnapNames = emptyList<String>()
+    private var mealNameList = ArrayList<String>()
 
     private var mealDetailsLog : MealDetailsLog? = null
 
@@ -117,7 +119,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             if (breakfastSnapMeals != null){
                 if (breakfastSnapMeals.isNotEmpty()){
                     mealCombinedList.addAll(breakfastSnapMeals!!.map { MergedLogsMealItem.SnapMealList(it) })
-                    mealNames = breakfastSnapMeals.map { it.name }
+                    mealSnapNames = breakfastSnapMeals.map { it.meal_name!! }
                 }
             }
             setMealLogsList()
@@ -190,7 +192,9 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             if (mealCombinedList.size > 0) {
                 tvDishes.visibility = View.VISIBLE
                 dishesItemRecyclerview.visibility = View.VISIBLE
-                val name = mealNames.joinToString(", ")
+                mealNameList.addAll(mealNames)
+                mealNameList.addAll(mealSnapNames)
+                val name = mealNameList.joinToString(", ")
                 val capitalized = name.toString().replaceFirstChar { it.uppercase() }
                 tvMealName.text = capitalized
                 mealLogsAdapter.addAll(mealCombinedList, -1, regularRecipeData, snapMealData, false)
