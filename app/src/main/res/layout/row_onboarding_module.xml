@@ -30,7 +30,7 @@
             android:id="@+id/tv_onboarding_module_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/merriweather_bold"
             android:text="@string/str_think_right"
             android:textColor="@color/color_think_right"
             android:textSize="20sp" />

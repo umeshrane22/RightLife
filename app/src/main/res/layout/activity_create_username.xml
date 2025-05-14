@@ -29,9 +29,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/know_your_name"
-        android:textSize="@dimen/textsize_extralarge"
+        android:textSize="@dimen/textsize_large24sp"
         android:gravity="center"
-        android:fontFamily="@font/dmsans_bold"
+        android:fontFamily="@font/merriweather_bold"
         android:textColor="@color/txt_color_header" />
 
     <LinearLayout
