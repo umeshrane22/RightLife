@@ -4,8 +4,10 @@ package com.jetsynthesys.rightlife.ui.breathwork
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
@@ -41,6 +43,10 @@ class BreathworkSessionActivity : BaseActivity() {
         binding.tvSessionCount.text = sessionCount.toString()
         binding.tvTitle.text = breathingData?.title
         binding.tvDescription.text = breathingData?.subTitle
+
+        Glide.with(this)
+            .load(ApiClient.CDN_URL_QA + breathingData?.thumbnail)
+            .into(binding.ivBreathworkImage)
     }
 
     private fun setupListeners(breathWorData: BreathingData) {

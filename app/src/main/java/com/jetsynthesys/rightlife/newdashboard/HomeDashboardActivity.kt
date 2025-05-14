@@ -1151,9 +1151,11 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             if (DashboardChecklistManager.checklistStatus) {
                                 binding.llDashboardMainData.visibility = View.VISIBLE
                                 binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
+                                binding.llDiscoverLayout.visibility = View.GONE
                             } else {
                                 binding.llDashboardMainData.visibility = View.GONE
                                 binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
+                                binding.llDiscoverLayout.visibility = View.VISIBLE
                             }
                         } else {
                             Toast.makeText(
