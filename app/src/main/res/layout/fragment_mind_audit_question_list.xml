@@ -7,7 +7,7 @@
         android:id="@+id/txt_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="150dp"
+        android:minHeight="100dp"
         android:gravity="center"
         android:background="@color/topcolormindauditQuestionbg"
         android:padding="16dp"

@@ -66,6 +66,7 @@ class PastReportActivity : BaseActivity() {
                                             MindAuditResultActivity::class.java
                                         ).apply {
                                             putExtra("REPORT_ID", reportItem._id)
+                                            putExtra("Assessment", reportItem.assessment)
                                         })
 
                                 else -> {
