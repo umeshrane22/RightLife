@@ -148,7 +148,7 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
 
     private fun updateWakeupTime(result: String) {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = "apple"
+        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
         val call = ApiClient.apiServiceFastApi.updateWakeupTime(userId, source, record_id =  mRecordId, timer_value = result )
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {

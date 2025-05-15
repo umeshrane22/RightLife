@@ -131,7 +131,7 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
             ?: "68010b615a508d0cfd6ac9ca"
         val date = "2025-04-30"
-        val source = "apple"
+        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userid, source, date)
         call.enqueue(object : Callback<SleepStageResponse> {
             override fun onResponse(

@@ -174,6 +174,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var performCardView : CardView
     private lateinit var sleepTimeRequirementCardView : CardView
     private lateinit var performNoDataCardView : CardView
+    private lateinit var restroDataCardView : CardView
     private lateinit var restroNoDataCardView : CardView
     private lateinit var consistencyNoDataCardView : CardView
     private lateinit var mainView : LinearLayout
@@ -214,6 +215,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val openConsistency = view.findViewById<ImageView>(R.id.consistency_right_arrow)
          actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
          restroNoDataCardView = view.findViewById(R.id.restro_nodata_layout)
+        restroDataCardView = view.findViewById(R.id.lyt_restorative_card)
          performNoDataCardView = view.findViewById(R.id.perform_nodata_layout)
         performCardView = view.findViewById(R.id.sleep_perform_layout)
          stageNoDataCardView = view.findViewById(R.id.lyt_sleep_stage_no_data)
@@ -377,6 +379,28 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private suspend fun fetchAllHealthData() {
+        lifecycleScope.launch {
+            val response = healthConnectClient.readRecords(
+                ReadRecordsRequest(
+                    recordType = SleepSessionRecord::class,
+                    timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
+                )
+            )
+
+            for (record in response.records) {
+                val deviceInfo = record.metadata.device
+                if (deviceInfo != null) {
+                    SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                    Log.d("Device Info", """
+                Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model}
+                Type: ${deviceInfo.type}
+            """.trimIndent())
+                } else {
+                    Log.d("Device Info", "No device info available")
+                }
+            }
+        }
         val endTime = Instant.now()
         val startTime = endTime.minusSeconds(7 * 24 * 60 * 60)
         try {
@@ -397,12 +421,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 android.util.Log.d("HealthData", "Sleep session permission denied")
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
+               // Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -412,13 +436,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
+                val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
                     record.stages.mapNotNull { stage ->
                         val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "5"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "4"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "6"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "1"
+                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
                             else -> null
                         }
                         stageValue?.let {
@@ -428,12 +453,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 record_type = it,
                                 unit = "stage",
                                 value = it,
-                                source_name = "samsung"
+                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
                         }
                     }
                 } ?: emptyList()
-                val sleepJsonRequest = SleepJsonRequest(user_id = userid, source = "samsung", sleep_stage = sleepStage)
+                val sleepJsonRequest = SleepJsonRequest(user_id = userid, source = source, sleep_stage = sleepStage)
                 val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
                 withContext(Dispatchers.Main) {
                     /*if (response.isSuccessful) {
@@ -453,7 +478,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
-        val source = "apple"
+        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
         val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
@@ -544,7 +569,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         Utils.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = "2025-04-30"
-        val source = "apple"
+        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {
@@ -556,29 +581,47 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }else if(response.code() == 400){
                     progressDialog.dismiss()
                     Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
+                    stageNoDataCardView.visibility = View.VISIBLE
+                    sleepStagesView.visibility = View.GONE
+                    performNoDataCardView.visibility = View.VISIBLE
+                    performCardView.visibility = View.GONE
+                    restroNoDataCardView.visibility = View.VISIBLE
+                    restroDataCardView.visibility = View.GONE
+                    actualNoDataCardView.visibility = View.VISIBLE
+                    lineChart.visibility = View.GONE
+                    consistencyNoDataCardView.visibility = View.VISIBLE
+                    sleepConsistencyChart.visibility = View.GONE
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     Utils.dismissLoader(requireActivity())
                     stageNoDataCardView.visibility = View.VISIBLE
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
                     performCardView.visibility = View.GONE
                     restroNoDataCardView.visibility = View.VISIBLE
-                    restorativeChart.visibility = View.GONE
+                    restroDataCardView.visibility = View.GONE
+                    actualNoDataCardView.visibility = View.VISIBLE
+                    lineChart.visibility = View.GONE
+                    consistencyNoDataCardView.visibility = View.VISIBLE
+                    sleepConsistencyChart.visibility = View.GONE
                 }
             }
 
             override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 Utils.dismissLoader(requireActivity())
                 stageNoDataCardView.visibility = View.VISIBLE
                 sleepStagesView.visibility = View.GONE
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
                 restroNoDataCardView.visibility = View.VISIBLE
-                restorativeChart.visibility = View.GONE
+                restroDataCardView.visibility = View.GONE
+                actualNoDataCardView.visibility = View.VISIBLE
+                lineChart.visibility = View.GONE
+                consistencyNoDataCardView.visibility = View.VISIBLE
+                sleepConsistencyChart.visibility = View.GONE
             }
         })
     }
@@ -643,11 +686,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         // Set Restorative Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
                 restroNoDataCardView.visibility = View.GONE
-                restorativeChart.visibility = View.VISIBLE
+            restroDataCardView.visibility = View.VISIBLE
                 setRestorativeSleepData(sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail)
             } else{
                 restroNoDataCardView.visibility = View.VISIBLE
-                restorativeChart.visibility = View.GONE
+            restroDataCardView.visibility = View.GONE
             }
 
         //Set Consistency Sleep Data
@@ -1108,14 +1151,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val responseBody = response.body()
-                        Toast.makeText(requireContext(), responseBody?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
+                     //   Toast.makeText(requireContext(), responseBody?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                     //   Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                 //   Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
