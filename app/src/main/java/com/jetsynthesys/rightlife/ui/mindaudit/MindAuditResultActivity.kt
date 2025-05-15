@@ -63,7 +63,12 @@ class MindAuditResultActivity : BaseActivity() {
         }
 
         val assessmentHeader = intent.getStringExtra("Assessment") ?: "CAS"
-        getAssessmentResult(assessmentHeader)
+
+        if (reportId != null) {
+            getAssessmentResultWithId(assessmentHeader, reportId!!)
+        }else{
+            getAssessmentResult(assessmentHeader)
+        }
         binding.tvAssessmentTaken.text = assessmentHeader + " " + "Score"
         selectedAssessment = assessmentHeader
         binding.rvSuggestedAssessment.setLayoutManager(
@@ -148,6 +153,61 @@ class MindAuditResultActivity : BaseActivity() {
         })
     }
 
+    private fun getAssessmentResultWithId(assessment: String, reportId: String) {
+        val call =
+            apiService.getMindAuditAssessmentResultWithId(sharedPreferenceManager.accessToken, assessment, reportId)
+        call.enqueue(object : Callback<MindAuditResultResponse?> {
+            override fun onResponse(
+                call: Call<MindAuditResultResponse?>,
+                response: Response<MindAuditResultResponse?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    /*      try {
+                              if (response.body()!!.result.isNullOrEmpty()){
+
+                                  binding.rlAssessmentNotTaken.visibility = View.GONE
+                                  binding.scrollviewResult.visibility = View.VISIBLE
+                              // binding.tvMainScore.text = response.body()!!.result[0].assessmentsTaken[0].interpretations.anger.level.toString() + " " + response.body()!!.result[0].assessmentsTaken[0].interpretations.anger.score.toString()
+                                  handleAssessmentScore(response)
+                              }else{
+                                  binding.rlAssessmentNotTaken.visibility = View.VISIBLE
+                                  binding.scrollviewResult.visibility = View.GONE
+                              }
+                          } catch (e: Exception) {
+                              e.printStackTrace()
+                          }*/
+
+                    try {
+                        val resultList = response.body()?.result
+
+                        if (!resultList.isNullOrEmpty()) {
+                            // Result exists, show result layout
+                            binding.rlAssessmentNotTaken.visibility = View.GONE
+                            binding.scrollviewResult.visibility = View.VISIBLE
+
+                            handleAssessmentScore(response)
+                        } else {
+                            // No result, show "not taken" layout
+                            binding.rlAssessmentNotTaken.visibility = View.VISIBLE
+                            binding.scrollviewResult.visibility = View.GONE
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@MindAuditResultActivity,
+                        "Server Error: " + response.code(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<MindAuditResultResponse?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
 
     private fun handleAssessmentScore(response: Response<MindAuditResultResponse?>) {
         var assessmentTaken = response.body()!!.result[0].assessmentsTaken[0]

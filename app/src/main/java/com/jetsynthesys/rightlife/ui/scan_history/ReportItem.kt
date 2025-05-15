@@ -7,5 +7,6 @@ data class ReportItem(
     val type: String,
     val expired: Boolean,
     val isActive: Boolean,
-    val createdAt: String
+    val createdAt: String,
+    val assessment: String
 )
