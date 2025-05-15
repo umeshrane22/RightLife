@@ -841,14 +841,14 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     private fun getMealsLogList(formattedDate: String) {
-       // LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireActivity())
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {
                 override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                     if (response.isSuccessful) {
-                        //    LoaderUtil.dismissLoader(requireActivity())
+                            LoaderUtil.dismissLoader(requireActivity())
                         if (response.body()?.data != null){
                             selectedDate = response.body()?.data!!.date
                             val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
@@ -1015,14 +1015,14 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             dinnerListLayout.visibility = View.GONE
                             noMealLogsLayout.visibility = View.VISIBLE
                             logMealTv.text = "Log Your Meal"
-                            //   LoaderUtil.dismissLoader(requireActivity())
+                               LoaderUtil.dismissLoader(requireActivity())
                         }
                     }
                 }
                 override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    //  LoaderUtil.dismissLoader(requireActivity())
+                      LoaderUtil.dismissLoader(requireActivity())
                 }
             })
         }
