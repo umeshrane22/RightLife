@@ -44,6 +44,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
@@ -59,6 +60,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
@@ -510,6 +512,9 @@ interface ApiService {
     @GET("app/api/tools")
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
+    @GET("app/api/content/list")
+    fun fetchThinkRecomended(@Header("Authorization") authToken: String,@Query("pageType") pageType: String,@Query("moduleId") moduleId: String): Call<ThinkRecomendedResponse>
+
     @GET("app/api/tools")
     fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
@@ -525,6 +530,9 @@ interface ApiService {
     @GET("app/api/mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
+
+    @POST("app/api/mindFull")
+    fun postMindFull(@Header("Authorization") authToken: String,@Body mindfullData: MindfullRequest): Call<BaseResponse>
 
     @GET("sleep/fetch_sleep_time")
     fun fetchWakeupTime(@Query("user_id") userId: String,

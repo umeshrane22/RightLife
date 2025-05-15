@@ -268,7 +268,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private fun fetchSleepData(endDate: String, period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = "apple"
+        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
         val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,endDate)
         call.enqueue(object : Callback<SleepPerformanceResponse> {
             override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
@@ -365,6 +365,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
@@ -416,6 +417,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false

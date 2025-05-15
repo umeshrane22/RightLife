@@ -58,6 +58,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.ModuleData
 import com.jetsynthesys.rightlife.ai_package.model.ModuleResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
@@ -68,6 +69,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResul
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.Phq9Assessment
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.SeverityLevel
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MoreToolsAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.TagAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolsAdapter
@@ -117,6 +119,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var emotionCardNoData: CardView
     private lateinit var cardAffirmations: CardView
     private lateinit var journalingCard: CardView
+    private lateinit var mindfullNoDataCard: CardView
+    private lateinit var mindfullDataCard: CardView
     private lateinit var toolsRecyclerView: RecyclerView
     private lateinit var journalingRecyclerView: RecyclerView
     private lateinit var noDataMindFullnessMetric: ConstraintLayout
@@ -127,6 +131,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var data: UserProfileResponse
     private var noData: Boolean = false
     private lateinit var thinkQuoteResponse : ThinkQuoteResponse
+    private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var toolRecyclerView: RecyclerView
     private lateinit var toolAdapter: ToolAdapter
     private val toolsList: ArrayList<ModuleData> = arrayListOf()
@@ -149,6 +154,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private var mindfullData : ArrayList<MindfullData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
     private val toolsMoreAdapter by lazy { MoreToolsAdapter(requireContext(), 4) }
+    private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var recomendationAdapter: RecommendationAdapter
     var itemCount = 0
     var dotSize = 16
     var dotMargin = 8
@@ -172,6 +179,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         //Not
 
         recyclerViewTags = view.findViewById(R.id.recyclerViewTags)
+        recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
         recyclerViewTags.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         editEmotionIcon = view.findViewById(R.id.editEmotionIcon)
         emotionCardData = view.findViewById(R.id.emotionCard)
@@ -186,6 +194,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         lytAffirmation3 = view.findViewById(R.id.lyt_affirmation_3)
         journalingCard = view.findViewById(R.id.lyt_journaling_card)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
+        mindfullNoDataCard = view.findViewById(R.id.card_mindfull_no_data)
+        mindfullDataCard = view.findViewById(R.id.card_mindfull_data)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
         moodTrackBtn = view.findViewById(R.id.img_mood_tracking)
         mindfullArrowBtn = view.findViewById(R.id.img_mindfull_arrow)
@@ -214,6 +224,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchQuoteData()
         fetchAssessmentResult()
         fetchMindfulData()
+        fetchThinkRecomendedData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
         tvWellnessDays.setText(data.wellnessStreak.toString()+" days")
 
@@ -223,8 +234,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             dialog.show(parentFragmentManager, "MindfulnessReviewDialog")
             // Use parentFragmentManager for fragments
         }
-        toolsRecyclerView.layoutManager =
-            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        toolsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
        // toolsRecyclerView.adapter = toolsAdapter
         toolsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
         toolsRecyclerView.adapter = toolsMoreAdapter
@@ -234,7 +244,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         journalingRecyclerView = view.findViewById(R.id.rec_add_tools)
         journalingRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         journalingRecyclerView.adapter = toolsAdapter
-
 
         toolRecyclerView = view.findViewById(R.id.tool_list_think_right)
         toolAdapter = ToolAdapter(requireContext(),toolsList, :: onToolItem)
@@ -517,21 +526,27 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         call.enqueue(object : Callback<MindfullResponse> {
             override fun onResponse(call: Call<MindfullResponse>, response: Response<MindfullResponse>) {
                 if (response.isSuccessful) {
+                    mindfullNoDataCard.visibility = View.GONE
+                    mindfullDataCard.visibility = View.VISIBLE
                     mindfullResponse = response.body()!!
                     progressDialog.dismiss()
-                    mindfullResponse.data?.formattedData?.getOrNull(0)?.duration?.toString().let {
-                        tvMindfullMinute.setText(it+" min")
+                    if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
+                        mindfullResponse.data?.formattedData?.getOrNull(mindfullResponse.data?.formattedData?.size!! - 1)?.duration?.toString()
+                            .let { tvMindfullMinute.setText(it + " min") }
                     }
-
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
      //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    mindfullNoDataCard.visibility = View.VISIBLE
+                    mindfullDataCard.visibility = View.GONE
                     progressDialog.dismiss()
                 }
             }
             override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
   //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                mindfullNoDataCard.visibility = View.VISIBLE
+                mindfullDataCard.visibility = View.GONE
                 progressDialog.dismiss()
             }
         })
@@ -710,6 +725,33 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             override fun onFailure(call: Call<ThinkQuoteResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
       //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun fetchThinkRecomendedData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","THINK_RIGHT")
+        call.enqueue(object : Callback<ThinkRecomendedResponse> {
+            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+                if (response.isSuccessful) {
+                    // progressDialog.dismiss()
+                    thinkRecomendedResponse = response.body()!!
+                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        recomendationAdapter = RecommendationAdapter(requireContext(), thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        recomendationRecyclerView.adapter = recomendationAdapter
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 //progressDialog.dismiss()
             }
         })
