@@ -14,7 +14,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
 
-
 class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: ArrayList<MergedLogsMealItem>,
                                 private var clickPos: Int, private var regularRecipeEntry : RegularRecipeEntry?,
                                 private var snapMealData : SnapMeal?, private var isClickView : Boolean,
@@ -23,8 +22,6 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
                                 val onDinnerSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
                                 val onDinnerSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private var selectedItem = -1
 
     companion object {
         private const val TYPE_REGULAR_RECIPE = 0
@@ -231,7 +228,7 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
                isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
-            dataLists = item
+            dataLists.addAll(item)
             clickPos = pos
             regularRecipeEntry = mealLogItem
             snapMealData = snapMeal

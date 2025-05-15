@@ -85,7 +85,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private lateinit var editDeleteLunch : CardView
     private lateinit var editDeleteDinner : CardView
     private lateinit var layoutMain : ConstraintLayout
-    private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var selectMealTypeBottomSheet: SelectMealTypeBottomSheet
     private lateinit var layoutDelete : LinearLayoutCompat
     private lateinit var viewBFMealInsightLayout : LinearLayoutCompat
@@ -565,7 +564,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     val progressBarWidth = caloriesProgressBar.width.toFloat()
                     val overlayPosition = 0.7f * progressBarWidth
                     val progress = dailyRecipe?.calories?.toInt()
+                    caloriesProgressBar.progress = progress!!
                     val max = caloriesProgressBar.max
+                    caloriesProgressBar.max = 2000
                     val circlePosition = (progress!!.toFloat() / max) * progressBarWidth
 //                val circleRadius = circleIndicator.width / 2f
 //                circleIndicator.x = circlePosition - circleRadius
@@ -889,6 +890,17 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                                 dinnerMealDetailsLog = dinnerViewItem
                             }
 
+                            breakfastCombinedList.clear()
+                            morningSnackCombinedList.clear()
+                            lunchCombinedList.clear()
+                            eveningSnacksCombinedList.clear()
+                            dinnerCombinedList.clear()
+                            breakfastMealNutritionSummary.clear()
+                            morningSnackMealNutritionSummary.clear()
+                            lunchMealNutritionSummary.clear()
+                            eveningSnacksMealNutritionSummary.clear()
+                            dinnerMealNutritionSummary.clear()
+
                             if (breakfastMealNutrition != null) {
                                 if (breakfastMealNutrition.size > 0) {
                                     breakfastMealNutritionSummary.addAll(breakfastMealNutrition)
@@ -971,7 +983,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             }
                             val fullDaySummary = response.body()?.data!!.full_day_summary
 
-                            activity?.runOnUiThread {
+                            requireActivity()?.runOnUiThread {
                                 if (fullDaySummary.calories != null){
                                     noMealLogsLayout.visibility = View.GONE
                                     dailyCalorieGraphLayout.visibility = View.VISIBLE
@@ -979,18 +991,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                                     if (response.body()?.data!!.meal_detail.isNotEmpty()){
                                         logMealTv.text = "Log New Meal"
                                         setDayLogsList()
-                                        val regularRecipeData : RegularRecipeEntry? = null
-                                        val snapMealData : SnapMeal? = null
-//                                        if (breakfastCombinedList.size > 0) {
-//                                            breakfastListLayout.visibility = View.VISIBLE
-//                                            if (breakfastMealNutritionSummary.size > 0) {
-//                                                calValueTv.text =
-//                                                    breakfastMealNutritionSummary.get(0).calories.toInt().toString()
-//                                            }
-//                                            breakfastMealLogsAdapter.updateList(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
-//                                        } else {
-//                                            breakfastListLayout.visibility = View.GONE
-//                                        }
                                     }
                                 }else{
                                     noMealLogsLayout.visibility = View.VISIBLE
