@@ -494,27 +494,28 @@
 
                         <ImageView
                             android:id="@+id/green_tick_icon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:visibility="invisible"
                             android:src="@drawable/greentick"
                             android:layout_marginTop="20dp"
-                            android:layout_marginStart="20dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/layout_progress_cal_info"/>
 
                         <TextView
+                            android:id="@+id/macroTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="On Track"
                             android:textStyle="bold"
                             android:textSize="16dp"
+                            android:layout_marginStart="3dp"
                             android:textColor="@color/on_track_color"
-                            android:layout_marginStart="6dp"
                             app:layout_constraintBottom_toBottomOf="@+id/green_tick_icon"
                             app:layout_constraintStart_toEndOf="@id/green_tick_icon"/>
 
                         <TextView
-                            android:id="@+id/on_track_textLine"
+                            android:id="@+id/macroOnTrackTextLine"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
@@ -536,7 +537,7 @@
                             android:background="@color/border_line"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/on_track_textLine"/>
+                            app:layout_constraintTop_toBottomOf="@+id/macroOnTrackTextLine"/>
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/log_meal_button"
@@ -1178,6 +1179,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
                     </androidx.recyclerview.widget.RecyclerView>
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/layout_breakfast_list"
                         android:layout_width="match_parent"
@@ -2316,7 +2318,7 @@
                                     android:layout_width="25dp"
                                     android:layout_height="25dp"
                                     android:scaleType="fitXY"
-                                    android:src="@drawable/ic_breakfast"
+                                    android:src="@drawable/ic_evening_snack"
                                     android:visibility="visible"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />

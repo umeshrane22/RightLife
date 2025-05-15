@@ -29,12 +29,19 @@ class IngredientSearchAdapter(private val context: Context, private var dataList
         val item = dataLists[position]
 
         holder.dishName.text = item.ingredient_name
-        val imageUrl = getDriveImageUrl(item.photo_url)
-        Glide.with(context)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_breakfast)
-            .error(R.drawable.ic_breakfast)
-            .into(holder.dishImage)
+        var imageUrl : String? = ""
+        if (item.photo_url != null){
+            imageUrl = if (item.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(item.photo_url)
+            }else{
+                item.photo_url
+            }
+            Glide.with(context)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
+                .into(holder.dishImage)
+        }
 
         holder.layoutMain.setOnClickListener {
             onSearchIngredientItem(item, position, true)

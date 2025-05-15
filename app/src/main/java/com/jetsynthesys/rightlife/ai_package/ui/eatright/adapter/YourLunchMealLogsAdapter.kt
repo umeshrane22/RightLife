@@ -97,7 +97,7 @@ class YourLunchMealLogsAdapter(val context: Context, private var dataLists: Arra
                 layoutVegNonveg.visibility = View.GONE
                 servesLayout.visibility = View.GONE
             }else {
-                delete.visibility = View.GONE
+                delete.visibility = View.VISIBLE
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.VISIBLE
                 layoutVegNonveg.visibility = View.VISIBLE
@@ -116,8 +116,8 @@ class YourLunchMealLogsAdapter(val context: Context, private var dataLists: Arra
             val imageUrl = getDriveImageUrl(data.receipe.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_lunch)
-                .error(R.drawable.ic_lunch)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
                 .into(mealImage)
 
             delete.setOnClickListener {
@@ -175,28 +175,37 @@ class YourLunchMealLogsAdapter(val context: Context, private var dataLists: Arra
                 layoutVegNonveg.visibility = View.GONE
                 servesLayout.visibility = View.GONE
             }else {
-                delete.visibility = View.GONE
+                delete.visibility = View.VISIBLE
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.VISIBLE
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
             }
 
-
-            mealName.text = data.name
-            servesCount.text = "1"
-            val mealTime = ""
-            mealTimeTv.text = ""//mealTime.toInt().toString()
-            calValue.text = data.calories_kcal?.toInt().toString()
-            subtractionValue.text = data.carb_g?.toInt().toString()
-            baguetteValue.text = data.protein_g?.toInt().toString()
-            dewpointValue.text = data.fat_g?.toInt().toString()
-            val imageUrl = ""//getDriveImageUrl(data.photo_url)
-            Glide.with(this.itemView)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_lunch)
-                .error(R.drawable.ic_lunch)
-                .into(mealImage)
+            val snapData = data.meal_nutrition_summary
+            if (snapData != null){
+                if (data.dish!!.isNotEmpty()){
+                    val mealNames  = data.dish!!.map { it.name }
+                    val name = mealNames.joinToString(", ")
+                    val capitalized = name.replaceFirstChar { it.uppercase() }
+                    mealName.text = capitalized
+                }else{
+                    mealName.text = data.meal_name
+                }
+                servesCount.text = "1"
+                val mealTime = ""
+                mealTimeTv.text = ""//mealTime.toInt().toString()
+                calValue.text = snapData.calories_kcal?.toInt().toString()
+                subtractionValue.text = snapData.carb_g?.toInt().toString()
+                baguetteValue.text = snapData.protein_g?.toInt().toString()
+                dewpointValue.text = snapData.fat_g?.toInt().toString()
+                val imageUrl = ""//getDriveImageUrl(data.photo_url)
+                Glide.with(this.itemView)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_lunch)
+                    .error(R.drawable.ic_lunch)
+                    .into(mealImage)
+            }
 
             delete.setOnClickListener {
                 onLunchSnapMealDeleteItem(data, bindingAdapterPosition, true)

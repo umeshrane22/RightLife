@@ -59,6 +59,17 @@ public class SharedPreferenceManager {
         return sharedPreferences.getString(SharedPreferenceConstants.USER_ID, "");
     }
 
+    public void saveDeviceName(String deviceName) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.DEVICE_NAME, deviceName);
+        editor.apply();
+    }
+
+    // Method to retrieve the user ID
+    public String getDeviceName() {
+        return sharedPreferences.getString(SharedPreferenceConstants.DEVICE_NAME, "");
+    }
+
     // Clear the access token and user ID (for example, when logging out)
     public void clearData() {
         SharedPreferences.Editor editor = sharedPreferences.edit();

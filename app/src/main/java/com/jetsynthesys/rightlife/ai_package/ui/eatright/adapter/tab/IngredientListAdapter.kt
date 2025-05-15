@@ -50,12 +50,19 @@ class IngredientListAdapter(private val context: Context, private var dataLists:
         holder.subtractionValue.text = item.carbs?.toInt().toString()
         holder.baguetteValue.text = item.protein?.toInt().toString()
         holder.dewpointValue.text = item.fat?.toInt().toString()
-        val imageUrl = getDriveImageUrl(item.photo_url!!)
-        Glide.with(context)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_view_meal_place)
-            .error(R.drawable.ic_view_meal_place)
-            .into(holder.mealImage)
+        var imageUrl : String? = ""
+        if (item.photo_url != null){
+            imageUrl = if (item.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(item.photo_url)
+            }else{
+                item.photo_url
+            }
+            Glide.with(context)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
+                .into(holder.mealImage)
+        }
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))

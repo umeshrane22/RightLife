@@ -29,12 +29,16 @@ class SearchDishesAdapter(private val context: Context, private var dataLists: A
         val item = dataLists[position]
 
         holder.dishName.text = item.name
-
-        val imageUrl = getDriveImageUrl(item.photo_url)
+        var imageUrl : String? = ""
+        imageUrl = if (item.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(item.photo_url)
+        }else{
+            item.photo_url
+        }
         Glide.with(context)
             .load(imageUrl)
-            .placeholder(R.drawable.ic_breakfast)
-            .error(R.drawable.ic_breakfast)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
             .into(holder.dishImage)
 
         holder.layoutMain.setOnClickListener {

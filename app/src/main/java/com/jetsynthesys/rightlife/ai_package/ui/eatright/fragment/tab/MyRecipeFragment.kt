@@ -20,9 +20,13 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal
 import com.jetsynthesys.rightlife.databinding.FragmentMyRecipeBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
+import com.jetsynthesys.rightlife.ai_package.model.response.MergedMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetail
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,6 +41,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     private lateinit var yourRecipesLayout : ConstraintLayout
     private lateinit var mealType : String
     private var ingredientLocalListModel : IngredientLocalListModel? = null
+    private var recipeList: List<MyRecipe> = ArrayList()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRecipeBinding
         get() = FragmentMyRecipeBinding::inflate
@@ -182,9 +187,29 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
 
     private fun onLogRecipeItem(myRecipe: MyRecipe, position: Int, isRefresh: Boolean) {
 
-//        val valueLists : ArrayList<MyRecipe> = ArrayList()
-//        valueLists.addAll(mealLogs as Collection<MyRecipe>)
-//        recipeAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+        val valueLists : ArrayList<MyRecipe> = ArrayList()
+        valueLists.addAll(recipeList as Collection<MyRecipe>)
+        recipeAdapter.addAll(valueLists, position, myRecipe, isRefresh)
+
+        val ingredientsLogList : ArrayList<MealLogItems> = ArrayList()
+      //  val dishList = myRecipe.ingredients_per_serving
+       // dishList?.forEach { selectedDish ->
+            val ingredientsLogData = MealLogItems(
+                meal_id = myRecipe._id,
+                recipe_name = myRecipe.recipe_name,
+                meal_quantity = 1,
+                unit = "g",
+                measure = "Bowl"
+            )
+            ingredientsLogList.add(ingredientsLogData)
+  //      }
+        val recipeLogRequest = SelectedMealLogList(
+            meal_name =  myRecipe.recipe_name,
+            meal_type = myRecipe.recipe_name,
+            meal_log = ingredientsLogList
+        )
+        val parent = parentFragment as? HomeTabMealFragment
+        parent?.setSelectedFrequentlyLog(null, false, recipeLogRequest, null)
     }
 
     private fun getRecipeList() {
@@ -197,6 +222,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
 //                    LoaderUtil.dismissLoader(requireActivity())
                     if (response.body() != null){
                         val myRecipeList = response.body()!!.data
+                        recipeList = myRecipeList
                         onMyRecipeLists(myRecipeList)
                     }
                 } else {

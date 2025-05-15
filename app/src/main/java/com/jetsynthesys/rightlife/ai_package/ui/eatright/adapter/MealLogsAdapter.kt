@@ -178,22 +178,30 @@ class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<Mer
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
             }
-
-
-            mealName.text = data.name
-            servesCount.text = "1"
-            val mealTime = ""
-            mealTimeTv.text = ""//mealTime.toInt().toString()
-            calValue.text = data.calories_kcal?.toInt().toString()
-            subtractionValue.text = data.carb_g?.toInt().toString()
-            baguetteValue.text = data.protein_g?.toInt().toString()
-            dewpointValue.text = data.fat_g?.toInt().toString()
-            val imageUrl = ""//getDriveImageUrl(data.photo_url)
-            Glide.with(this.itemView)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_breakfast)
-                .error(R.drawable.ic_breakfast)
-                .into(mealImage)
+            val snapData = data.meal_nutrition_summary
+            if (snapData != null){
+                if (data.dish!!.isNotEmpty()){
+                    val mealNames  = data.dish!!.map { it.name }
+                    val name = mealNames.joinToString(", ")
+                    val capitalized = name.replaceFirstChar { it.uppercase() }
+                    mealName.text = capitalized
+                }else{
+                    mealName.text = data.meal_name
+                }
+                servesCount.text = "1"
+                val mealTime = ""
+                mealTimeTv.text = ""//mealTime.toInt().toString()
+                calValue.text = snapData.calories_kcal?.toInt().toString()
+                subtractionValue.text = snapData.carb_g?.toInt().toString()
+                baguetteValue.text = snapData.protein_g?.toInt().toString()
+                dewpointValue.text = snapData.fat_g?.toInt().toString()
+                val imageUrl = ""//getDriveImageUrl(data.photo_url)
+                Glide.with(this.itemView)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_breakfast)
+                    .error(R.drawable.ic_breakfast)
+                    .into(mealImage)
+            }
 
 //            delete.setOnClickListener {
 //                onBreakFastSnapMealDeleteItem(data, bindingAdapterPosition, true)

@@ -1677,7 +1677,7 @@
                                 android:layout_width="25dp"
                                 android:layout_height="25dp"
                                 android:scaleType="fitXY"
-                                android:src="@drawable/ic_breakfast"
+                                android:src="@drawable/ic_evening_snack"
                                 android:visibility="visible"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />

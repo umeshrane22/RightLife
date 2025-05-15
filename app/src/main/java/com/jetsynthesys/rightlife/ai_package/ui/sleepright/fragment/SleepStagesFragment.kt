@@ -130,8 +130,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
             ?: "68010b615a508d0cfd6ac9ca"
-        val date = "2025-03-18"
-        val source = "apple"
+        val date = "2025-04-30"
+        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userid, source, date)
         call.enqueue(object : Callback<SleepStageResponse> {
             override fun onResponse(
@@ -292,8 +292,9 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
         val w = width.toFloat()
         val h = height.toFloat()
 
-        val barHeight = h * 0.15f
-        val cornerRadius = barHeight / 2
+        canvas.drawColor(Color.parseColor("#F5F9FF"))
+        val barHeight = h * 0.19f
+        val cornerRadius = barHeight / 4
         var currentX = 0f
 
         sleepSegments.forEach { segment ->
@@ -301,9 +302,9 @@ class SleepChartView(context: Context, attrs: AttributeSet? = null) : View(conte
 
             val top = when (segment.position) {
                 Position.UPPER -> h * 0.05f
-                Position.MIDDLE1 -> h * 0.25f
-                Position.MIDDLE2 -> h * 0.5f
-                Position.LOWER -> h * 0.75f
+                Position.MIDDLE1 -> h * 0.28f
+                Position.MIDDLE2 -> h * 0.51f
+                Position.LOWER -> h * 0.74f
             }
             val bottom = top + barHeight
             val right = currentX + (segment.widthFraction * w)

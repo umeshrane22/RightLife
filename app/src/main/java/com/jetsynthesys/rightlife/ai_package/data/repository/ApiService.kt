@@ -44,6 +44,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageResponse
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
@@ -59,6 +60,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealSaveRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
@@ -98,6 +100,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SetStepsGoalResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.response.StepTrackerResponse
@@ -141,9 +144,9 @@ interface ApiService {
     fun getSnapMealRecipesList(
        ): Call<SnapMealRecipeResponseModel>
 
-    @GET("eat/recipes/{id}")
+    @GET("eat/recipes/")
     fun getSnapMealRecipeById(
-        @Path("id") recipeId: String
+        @Query("recipe_id") recipeId: String
     ): Call<RecipeResponseNew>
 
     @GET("eat/recipes/names")
@@ -210,6 +213,9 @@ interface ApiService {
                              @Query("date") startDate: String,@Body request: SaveDishLogRequest
     ): Call<MealUpdateResponse>
 
+    @GET("eat/meals/get_meal_byID/")
+    fun fetchMealDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<SnapMealDetailsResponse>
+
     @PUT("eat/meals/update_meal/")
     fun updateSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateMealRequest
     ): Call<MealUpdateResponse>
@@ -225,6 +231,12 @@ interface ApiService {
 
     @DELETE("eat/meals/delete_meal/")
     fun deleteMyMeal(@Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealUpdateResponse>
+
+    @DELETE("eat/meals/delete_logged_meal/")
+    fun deleteLogDish(@Query("meal_id") mealId: String, @Query("user_id") userId: String, @Query("receipe_id") recipeId: String): Call<MealUpdateResponse>
+
+    @DELETE("eat/meals/delete_logged_snap_meal/")
+    fun deleteSnapLogMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String): Call<MealUpdateResponse>
 
     @DELETE("eat/recipes/delete/")
     fun deleteMyRecipe(@Query("recipe_id") mealId: String, @Query("user_id") userId: String): Call<MealUpdateResponse>
@@ -500,6 +512,9 @@ interface ApiService {
     @GET("app/api/tools")
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
+    @GET("app/api/content/list")
+    fun fetchThinkRecomended(@Header("Authorization") authToken: String,@Query("pageType") pageType: String,@Query("moduleId") moduleId: String): Call<ThinkRecomendedResponse>
+
     @GET("app/api/tools")
     fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
@@ -515,6 +530,9 @@ interface ApiService {
     @GET("app/api/mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
+
+    @POST("app/api/mindFull")
+    fun postMindFull(@Header("Authorization") authToken: String,@Body mindfullData: MindfullRequest): Call<BaseResponse>
 
     @GET("sleep/fetch_sleep_time")
     fun fetchWakeupTime(@Query("user_id") userId: String,

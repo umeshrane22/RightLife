@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
+import androidx.core.view.isGone
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -49,7 +50,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private lateinit var etAddName : EditText
     private lateinit var tvContinue : TextView
     private lateinit var editMeal : ImageView
-    private lateinit var dinnerDotMenu : ImageView
+    private lateinit var backButton : ImageView
     private lateinit var btnAddLayout : LinearLayoutCompat
     private lateinit var editDeleteBreakfast : CardView
     private lateinit var editDeleteLunch : CardView
@@ -63,6 +64,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
     private var mealId : String = ""
+    private lateinit var mealType : String
+    private var mealName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
@@ -88,7 +91,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         addedMealListLayout = view.findViewById(R.id.layout_added_meal_list)
         btnAddLayout = view.findViewById(R.id.layout_btnAdd)
         addedNameTv = view.findViewById(R.id.addedNameTv)
-//        editDeleteLunch = view.findViewById(R.id.btn_edit_delete_lunch)
+        backButton = view.findViewById(R.id.back_button)
 //        editDeleteDinner = view.findViewById(R.id.btn_edit_delete_dinner)
 //        layoutMain = view.findViewById(R.id.layout_main)
 //        layoutDelete = view.findViewById(R.id.layout_delete)
@@ -102,6 +105,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         addedDishItemRecyclerview.adapter = dishListAdapter
 
         mealId = arguments?.getString("mealId").toString()
+        mealType = arguments?.getString("mealType").toString()
+        mealName = arguments?.getString("mealName").toString()
 
        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -137,6 +142,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             override fun handleOnBackPressed() {
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
+                args.putString("mealType", mealType)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -146,9 +152,21 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             }
         })
 
+        backButton.setOnClickListener {
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", mealType)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
+
         saveMealLayout.setOnClickListener {
             if (dishLists.isNotEmpty()){
-                if (mealId != "" && mealId != null){
+                if (mealId != "null" && mealId != null){
                     updateMealsSave(dishLists)
                 }else{
                     createMealsSave(dishLists)
@@ -161,11 +179,52 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             continueLayout.visibility = View.GONE
             addedMealListLayout.visibility = View.VISIBLE
             saveMealLayout.visibility = View.VISIBLE
-
-            if (layoutNoDishes.visibility == View.GONE){
+            addedNameTv.text = etAddName.text
+            if (layoutNoDishes.isGone){
                 saveMealLayout.isEnabled = true
                 saveMealLayout.setBackgroundResource(R.drawable.green_meal_bg)
+            }else{
+                saveMealLayout.isEnabled = false
+                saveMealLayout.setBackgroundResource(R.drawable.light_green_bg)
+            }
+        }
+
+        if (dishLists.isNotEmpty()){
+            addMealNameLayout.visibility = View.GONE
+            continueLayout.visibility = View.GONE
+            addedMealListLayout.visibility = View.VISIBLE
+            saveMealLayout.visibility = View.VISIBLE
+            if (mealName != "null"){
+                addedNameTv.text = mealName
+            }else{
                 addedNameTv.text = etAddName.text
+            }
+//            if (serving > 0.0){
+//                servingTv.text = serving.toString()
+//            }
+            if (layoutNoDishes.isGone){
+                saveMealLayout.isEnabled = true
+                saveMealLayout.setBackgroundResource(R.drawable.green_meal_bg)
+            }else{
+                saveMealLayout.isEnabled = false
+                saveMealLayout.setBackgroundResource(R.drawable.light_green_bg)
+            }
+        }else{
+            addMealNameLayout.visibility = View.VISIBLE
+            continueLayout.visibility = View.VISIBLE
+            addedMealListLayout.visibility = View.GONE
+            saveMealLayout.visibility = View.GONE
+            if (mealName != "null"){
+                addedNameTv.text = mealName
+            }else{
+                addedNameTv.text = etAddName.text
+            }
+//            if (serving > 0.0){
+//                servingTv.text = serving.toString()
+//            }
+            if (layoutNoDishes.isGone){
+                saveMealLayout.isEnabled = true
+                saveMealLayout.setBackgroundResource(R.drawable.green_meal_bg)
             }else{
                 saveMealLayout.isEnabled = false
                 saveMealLayout.setBackgroundResource(R.drawable.light_green_bg)
@@ -186,21 +245,13 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             }
         }
 
-//        dinnerDotMenu.setOnClickListener {
-//            if (editDeleteDinner.visibility == View.GONE){
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#0A1214"))
-//                editDeleteDinner.visibility = View.VISIBLE
-//            }else{
-//              //  layoutMain.setBackgroundColor(Color.parseColor("#F0FFFA"))
-//                editDeleteDinner.visibility = View.GONE
-//            }
-//        }
-
         btnAddLayout.setOnClickListener {
             val fragment = SearchDishFragment()
             val args = Bundle()
             args.putString("searchType", "createMeal")
             args.putString("mealId", mealId)
+            args.putString("mealType", mealType)
+            args.putString("mealName", addedNameTv.text.toString())
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -256,6 +307,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             val args = Bundle()
             args.putString("searchType", "createMeal")
             args.putString("mealId", mealId)
+            args.putString("mealType", mealType)
+            args.putString("mealName", addedNameTv.text.toString())
             args.putString("snapRecipeName", mealItem.name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -272,6 +325,8 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         val args = Bundle()
         args.putBoolean("test",false)
         args.putString("mealId", mealId)
+        args.putString("mealType", mealType)
+        args.putString("mealName", addedNameTv.text.toString())
         args.putString("snapRecipeName", mealItem.name)
         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
         deleteDishBottomSheet.arguments = args
@@ -398,6 +453,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("mealType", mealType)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -428,7 +484,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         snapRecipeList?.forEach { snapRecipe ->
             val mealLogData = DishLog(
                 receipe_id = snapRecipe.id,
-                meal_quantity = snapRecipe.mealQuantity?.toInt(),
+                meal_quantity = snapRecipe.mealQuantity,
                 unit = snapRecipe.unit,
                 measure = "Bowl"
             )

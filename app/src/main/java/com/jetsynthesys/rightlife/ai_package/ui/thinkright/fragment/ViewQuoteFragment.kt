@@ -34,12 +34,18 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.databinding.FragmentViewQuoteBinding
 import com.google.android.material.snackbar.Snackbar
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
+import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
 
@@ -49,6 +55,8 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
     private lateinit var lytQuote: ConstraintLayout
     private lateinit var progressDialog: ProgressDialog
     private lateinit var thinkQuoteResponse : ThinkQuoteResponse
+    var mStartDate = ""
+    var mEndDate = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentViewQuoteBinding
         get() = FragmentViewQuoteBinding::inflate
@@ -56,7 +64,7 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        mStartDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         tvQuote = view.findViewById(R.id.tv_quote)
         tvAuthor = view.findViewById(R.id.tv_author)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
@@ -81,12 +89,15 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
         }
 
         backButton.setOnClickListener {
-            navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+            mEndDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+            postMindfullData()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                mEndDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+                postMindfullData()
+             //   navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
             }
         })
     }
@@ -99,7 +110,7 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
     }
     private fun fetchQuoteData() {
         progressDialog.show()
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.quoteOfDay(token)
         call.enqueue(object : Callback<ThinkQuoteResponse> {
             override fun onResponse(call: Call<ThinkQuoteResponse>, response: Response<ThinkQuoteResponse>) {
@@ -118,6 +129,27 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 progressDialog.dismiss()
+            }
+        })
+    }
+
+    private fun postMindfullData() {
+        val mindfullRequest = MindfullRequest(type = "Quote", startDate = mStartDate, endDate = mEndDate)
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.postMindFull(token,mindfullRequest)
+        call.enqueue(object : Callback<BaseResponse> {
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if (response.isSuccessful) {
+                    navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                   // Toast.makeText(activity, "OK", Toast.LENGTH_SHORT).show()
+                } else {
+                    navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
             }
         })
     }

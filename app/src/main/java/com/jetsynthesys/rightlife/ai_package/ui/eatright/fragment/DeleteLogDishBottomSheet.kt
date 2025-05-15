@@ -26,25 +26,24 @@ import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class DeleteMealBottomSheet : BottomSheetDialogFragment() {
+class DeleteLogDishBottomSheet : BottomSheetDialogFragment() {
 
-    private var listener: OnMealDeletedListener? = null
-    private var mealName : String = ""
+    private var listener: OnLogDishDeletedListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    interface OnMealDeletedListener {
-        fun onMealDeleted(mealData: String)
+    interface OnLogDishDeletedListener {
+        fun onLogDishDeleted(mealData: String)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         listener = when {
-            context is OnMealDeletedListener -> context
-            parentFragment is OnMealDeletedListener -> parentFragment as OnMealDeletedListener
-            else -> throw ClassCastException("$context must implement OnMealDeletedListener")
+            context is OnLogDishDeletedListener -> context
+            parentFragment is OnLogDishDeletedListener -> parentFragment as OnLogDishDeletedListener
+            else -> throw ClassCastException("$context must implement OnLogDishDeletedListener")
         }
     }
 
@@ -66,36 +65,69 @@ class DeleteMealBottomSheet : BottomSheetDialogFragment() {
         val deleteBtnLayout = view.findViewById<ConstraintLayout>(R.id.deleteBtnLayout)
         val yesBtn = view.findViewById<LinearLayoutCompat>(R.id.yesBtn)
         val noBtn = view.findViewById<LinearLayoutCompat>(R.id.noBtn)
+        deleteTitle.text = "Delete Log"
+        deleteConfirmTv.text = "Are you sure you want to delete this log recipe entry?"
 
         val mealId = arguments?.getString("mealId").toString()
+        val recipeId = arguments?.getString("recipeId").toString()
         val deleteType = arguments?.getString("deleteType").toString()
-        mealName = arguments?.getString("mealName").toString()
 
         noBtn.setOnClickListener {
             dismiss()
         }
 
         yesBtn.setOnClickListener {
-            if (deleteType.contentEquals("MyMeal")){
-                deleteMeal(mealId, dialog, deleteType)
+            if (deleteType.contentEquals("RegularRecipe")){
+                deleteLogDish(mealId, recipeId, deleteType)
+            }else{
+                deleteSnapLogMeal(mealId, "", deleteType)
             }
         }
     }
 
-    private fun deleteMeal(mealId: String, dialog: BottomSheetDialog, deleteType: String) {
+    private fun deleteLogDish(mealId: String, recipeId: String, deleteType: String) {
         LoaderUtil.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
-        val call = ApiClient.apiServiceFastApi.deleteMyMeal(userId, mealId)
+        val call = ApiClient.apiServiceFastApi.deleteLogDish(mealId, userId, recipeId)
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {
                     LoaderUtil.dismissLoader(requireActivity())
                     val mealData = response.body()?.message
                     Toast.makeText(context, mealData, Toast.LENGTH_SHORT).show()
-                    listener?.onMealDeleted("deleted")
+                    listener?.onLogDishDeleted("deleted")
+                    dismiss()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(context, "Failure", Toast.LENGTH_SHORT).show()
+                LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun deleteSnapLogMeal(mealId: String, recipeId: String, deleteType: String) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        val call = ApiClient.apiServiceFastApi.deleteSnapLogMeal(mealId, userId)
+        call.enqueue(object : Callback<MealUpdateResponse> {
+            override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
+                if (response.isSuccessful) {
+                    LoaderUtil.dismissLoader(requireActivity())
+                    val mealData = response.body()?.message
+                    Toast.makeText(context, mealData, Toast.LENGTH_SHORT).show()
+                    listener?.onLogDishDeleted("deleted")
                     dismiss()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
@@ -114,7 +146,7 @@ class DeleteMealBottomSheet : BottomSheetDialogFragment() {
     companion object {
         const val TAG = "LoggedBottomSheet"
         @JvmStatic
-        fun newInstance() = DeleteMealBottomSheet().apply {
+        fun newInstance() = DeleteLogDishBottomSheet().apply {
             arguments = Bundle().apply {
             }
         }

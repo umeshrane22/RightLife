@@ -44,5 +44,6 @@ data class SnapMealLogItem(
     val vitamin_d_iu: Double?,
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
-    val zinc_mg: Double?
+    val zinc_mg: Double?,
+    val mealQuantity: Double?
 )

@@ -35,7 +35,11 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
             }
             holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + unit
         }else{
-            holder.mealQuantityTv.text = "1"
+            if (item.servings > 0){
+                holder.mealQuantityTv.text = item.servings?.toInt().toString()
+            }else{
+                holder.mealQuantityTv.text = "1"
+            }
         }
 
         val capitalized = item.name.toString().replaceFirstChar { it.uppercase() }
@@ -48,6 +52,16 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
         // holder.mealName.text = item.mealName
         if (item != null){
          //   holder.servesCount.text = "1"
+            var value : Double = 0.0
+            if (item.mealQuantity != null){
+                if (item.mealQuantity > 0.0){
+                    value = item.mealQuantity
+                }else{
+                    value = 1.0
+                }
+            }else{
+                value = 1.0
+            }
             holder.calValue.text = item.nutrients.macros.Calories?.toInt().toString()
             holder.proteinValue.text = item.nutrients.macros.Protein?.toInt().toString()
             holder.cabsValue.text = item.nutrients.macros.Carbs?.toInt().toString()

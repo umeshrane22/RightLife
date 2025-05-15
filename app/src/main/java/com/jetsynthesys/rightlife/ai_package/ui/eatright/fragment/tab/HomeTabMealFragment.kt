@@ -23,24 +23,30 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.databinding.FragmentHomeTabMealBinding
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveSnapMealLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
+import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SearchDishToLogFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.FrequentlyAddDishBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -65,6 +71,9 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var snapMealLogRequests : SelectedMealLogList? = null
     private var selectedSnapMealLogList : ArrayList<MealLogItems> = ArrayList()
     private var isSnaps : Boolean = false
+    private var snapMealRequestLocalListModel : SnapMealRequestLocalListModel? = null
+    private var snapMealLogRequestList : ArrayList<SnapMealLogRequest> = ArrayList()
+    private var snapMealRequestCount : Int = 0
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -105,6 +114,17 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             arguments?.getParcelable("selectedSnapMealLogList", SelectedMealLogList::class.java)
         } else {
             arguments?.getParcelable("selectedSnapMealLogList")
+        }
+
+        val snapMealRequestLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
+            arguments?.getParcelable("snapMealRequestLocalListModel", SnapMealRequestLocalListModel::class.java)
+        } else {
+            arguments?.getParcelable("snapMealRequestLocalListModel")
+        }
+
+        if (snapMealRequestLocalListModels != null){
+            snapMealRequestLocalListModel = snapMealRequestLocalListModels
+            snapMealLogRequestList.addAll(snapMealRequestLocalListModel!!.data)
         }
 
         if (selectedMealLogListModels != null){
@@ -192,6 +212,9 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
 
         searchLayout.setOnClickListener {
+            if (snapMealLogRequestList.size > 0){
+                snapMealRequestLocalListModel = SnapMealRequestLocalListModel(snapMealLogRequestList)
+            }
             val fragment = SearchDishToLogFragment()
             val args = Bundle()
             args.putString("searchType", "HomeTabMeal")
@@ -199,6 +222,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             args.putParcelable("selectedMealLogList", mealLogRequests)
             args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
+            args.putParcelable("snapMealRequestLocalListModel", snapMealRequestLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -231,7 +255,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 if (snapMealLogRequests != null){
                     if (selectedSnapMealLogList.size > 0){
                         for (mealItem in selectedSnapMealLogList){
-                            ingredientsList.add(mealItem.recipe_name)
+                            ingredientsList.add(mealItem.recipe_name!!)
                         }
                     }
                 }
@@ -263,7 +287,12 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 if (snapMealLogRequests != null){
                     if (mealType.isNotEmpty()){
                         if (selectedSnapMealLogList.size > 0){
-                            createSnapMealLog()
+                           // createSnapMealLog()
+                            if (snapMealLogRequestList.size > 0){
+                                snapMealLogRequestList?.forEach { snapDish ->
+                                    createSnapMealLog(snapDish)
+                                }
+                            }
                         }
                     }
                 }
@@ -330,7 +359,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 dishLists?.forEach { snapRecipe ->
                     val mealLogData = DishLog(
                         receipe_id = snapRecipe.id,
-                        meal_quantity = 1,
+                        meal_quantity = 1.0,
                         unit = "g",
                         measure = "Bowl"
                     )
@@ -344,7 +373,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 selectedMealLogList?.forEach { selectedDish ->
                     val mealLogData = DishLog(
                         receipe_id = selectedDish.meal_id,
-                        meal_quantity = 1,
+                        meal_quantity = 1.0,
                         unit = "g",
                         measure = "Bowl"
                     )
@@ -472,7 +501,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
     }
 
-    fun setSelectedFrequentlyLog(mealLogRequest: MealLogItems?, isSnap: Boolean, mealLogRequest1: SelectedMealLogList?) {
+    fun setSelectedFrequentlyLog(mealLogRequest: MealLogItems?, isSnap: Boolean, mealLogRequest1: SelectedMealLogList?,
+                                 snapMealLogRequest : SnapMealLogRequest?) {
 
         if (isSnap){
             isSnaps = isSnap
@@ -488,11 +518,14 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 selectedSnapMealLogList.add(mealLogRequest!!)
             }
             val selectedSnapMealList = SelectedMealLogList(
-                meal_name = "",
+                meal_name = mealLogRequest!!.recipe_name,
                 meal_type = mealType,
                 meal_log = selectedSnapMealLogList
             )
             snapMealLogRequests = selectedSnapMealList
+            if (snapMealLogRequest != null){
+                snapMealLogRequestList.add(snapMealLogRequest)
+            }
         }else{
             if (mealLogRequest != null){
                 frequentlyAddDishBottomSheetLayout.visibility = View.VISIBLE
@@ -511,7 +544,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 flexboxLayout.visibility = View.VISIBLE
                 layoutTitle.visibility = View.VISIBLE
                 btnLogMeal.visibility = View.VISIBLE
-                ingredientsList.add(mealLogRequest1.meal_type)
+                ingredientsList.add(mealLogRequest1.meal_name!!)
                 if (ingredientsList.size > 0){
                     updateIngredientChips()
                 }
@@ -531,11 +564,105 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
 
             val selectedMealList = SelectedMealLogList(
-                meal_name = "",
+                meal_name = mealLogRequest1!!.meal_name,
                 meal_type = mealType,
                 meal_log = selectedMealLogList
             )
             mealLogRequests = selectedMealList
+        }
+    }
+
+    private fun getMealDetails(selectedMealLogListModels: SelectedMealLogList?) {
+        //   LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val call = ApiClient.apiServiceFastApi.fetchMealDetails(userId, "")
+        call.enqueue(object : Callback<SnapMealDetailsResponse> {
+            override fun onResponse(call: Call<SnapMealDetailsResponse>, response: Response<SnapMealDetailsResponse>) {
+                if (response.isSuccessful) {
+                    //  LoaderUtil.dismissLoader(requireActivity())
+                    val mealDetails = response.body()?.data
+                    if (mealDetails != null){
+                       println(mealDetails)
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    //   LoaderUtil.dismissLoader(requireActivity())
+                }
+            }
+            override fun onFailure(call: Call<SnapMealDetailsResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //   LoaderUtil.dismissLoader(requireActivity())
+            }
+        })
+    }
+
+    private fun createSnapMealLog(snapRecipeList: SnapMealLogRequest) {
+        LoaderUtil.showLoader(requireActivity())
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        val snapDishList: ArrayList<SnapDish> = ArrayList()
+        if (snapRecipeList.dish.isNotEmpty()) {
+            val items = snapRecipeList.dish
+            items?.forEach { snapDish ->
+                snapDishList.add(snapDish)
+            }
+            val snapMealLogRequest = SnapMealLogRequest(
+                user_id = userId,
+                meal_type = mealType,
+                meal_name = snapRecipeList.meal_name,
+                is_save = false,
+                is_snapped = true,
+                date = currentDateUtc,
+                dish = snapDishList
+            )
+            val gson = Gson()
+            val jsonString = gson.toJson(snapMealLogRequest) // snapMealLogRequest is your model instance
+            Log.d("JSON Output", jsonString)
+            val call = ApiClient.apiServiceFastApi.createSnapMealLog(snapMealLogRequest)
+            call.enqueue(object : Callback<SnapMealLogResponse> {
+                override fun onResponse(
+                    call: Call<SnapMealLogResponse>,
+                    response: Response<SnapMealLogResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        LoaderUtil.dismissLoader(requireActivity())
+                        snapMealRequestCount++
+                        val mealData = response.body()?.message
+                        Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                        if (snapMealLogRequestList.size == snapMealRequestCount){
+                            flexboxLayout.visibility = View.GONE
+                            layoutTitle.visibility = View.GONE
+                            btnLogMeal.visibility = View.GONE
+                            checkCircle.visibility = View.VISIBLE
+                            loggedSuccess.visibility = View.VISIBLE
+                            loggedSuccess.text = mealData
+                            frequentlyAddDishBottomSheetLayout.visibility = View.GONE
+                            val fragment = YourMealLogsFragment()
+                            val args = Bundle()
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "landing")
+                                addToBackStack("landing")
+                                commit()
+                            }
+                        }
+                    } else {
+                        Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                        LoaderUtil.dismissLoader(requireActivity())
+                    }
+                }
+                override fun onFailure(call: Call<SnapMealLogResponse>, t: Throwable) {
+                    Log.e("Error", "API call failed: ${t.message}")
+                    Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                    LoaderUtil.dismissLoader(requireActivity())
+                }
+            })
         }
     }
 }

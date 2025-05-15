@@ -31,7 +31,7 @@
                 android:padding="2dp"
                 android:visibility="visible"
                 android:scaleType="fitXY"
-                android:src="@drawable/poha_image" />
+                android:src="@drawable/ic_view_meal_place" />
         </androidx.cardview.widget.CardView>
 
 

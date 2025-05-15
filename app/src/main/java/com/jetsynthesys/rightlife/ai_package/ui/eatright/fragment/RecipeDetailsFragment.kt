@@ -59,6 +59,8 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     private lateinit var tvCheckOutRecipe: TextView
     private lateinit var tvChange: TextView
     private lateinit var tvMeasure : TextView
+    private lateinit var vegTv : TextView
+    private lateinit var foodType : TextView
     private lateinit var recipeDescription : TextView
     private var mealLogRequests : SelectedMealLogList? = null
     private var snapMealLogRequests : SelectedMealLogList? = null
@@ -105,6 +107,8 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         quantityEdit = view.findViewById(R.id.quantityEdit)
         backButton = view.findViewById(R.id.backButton)
+        foodType = view.findViewById(R.id.foodType)
+        vegTv = view.findViewById(R.id.vegTv)
 
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
@@ -132,28 +136,28 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
 
         icMacroUP.setImageResource(R.drawable.ic_down)
         view.findViewById<View>(R.id.view_macro).visibility = View.GONE
-        view.findViewById<ConstraintLayout>(R.id.calorie_layout).visibility = View.GONE
-        view.findViewById<ConstraintLayout>(R.id.carbs_layout).visibility = View.GONE
-        view.findViewById<ConstraintLayout>(R.id.protein_layout).visibility = View.GONE
-        view.findViewById<ConstraintLayout>(R.id.fat_layout).visibility = View.GONE
+        view.findViewById<LinearLayoutCompat>(R.id.calorie_layout).visibility = View.GONE
+        view.findViewById<LinearLayoutCompat>(R.id.carbs_layout).visibility = View.GONE
+        view.findViewById<LinearLayoutCompat>(R.id.protein_layout).visibility = View.GONE
+        view.findViewById<LinearLayoutCompat>(R.id.fat_layout).visibility = View.GONE
 
         layoutMacroTitle.setOnClickListener {
             if (macroItemRecyclerView.isVisible){
                 macroItemRecyclerView.visibility = View.GONE
                 icMacroUP.setImageResource(R.drawable.ic_down)
                 view.findViewById<View>(R.id.view_macro).visibility = View.GONE
-                view.findViewById<ConstraintLayout>(R.id.calorie_layout).visibility = View.GONE
-                view.findViewById<ConstraintLayout>(R.id.carbs_layout).visibility = View.GONE
-                view.findViewById<ConstraintLayout>(R.id.protein_layout).visibility = View.GONE
-                view.findViewById<ConstraintLayout>(R.id.fat_layout).visibility = View.GONE
+                view.findViewById<LinearLayoutCompat>(R.id.calorie_layout).visibility = View.GONE
+                view.findViewById<LinearLayoutCompat>(R.id.carbs_layout).visibility = View.GONE
+                view.findViewById<LinearLayoutCompat>(R.id.protein_layout).visibility = View.GONE
+                view.findViewById<LinearLayoutCompat>(R.id.fat_layout).visibility = View.GONE
             }else{
                 macroItemRecyclerView.visibility = View.VISIBLE
                 icMacroUP.setImageResource(R.drawable.ic_up)
                 view.findViewById<View>(R.id.view_macro).visibility = View.VISIBLE
-                view.findViewById<ConstraintLayout>(R.id.calorie_layout).visibility = View.VISIBLE
-                view.findViewById<ConstraintLayout>(R.id.carbs_layout).visibility = View.VISIBLE
-                view.findViewById<ConstraintLayout>(R.id.protein_layout).visibility = View.VISIBLE
-                view.findViewById<ConstraintLayout>(R.id.fat_layout).visibility = View.VISIBLE
+                view.findViewById<LinearLayoutCompat>(R.id.calorie_layout).visibility = View.VISIBLE
+                view.findViewById<LinearLayoutCompat>(R.id.carbs_layout).visibility = View.VISIBLE
+                view.findViewById<LinearLayoutCompat>(R.id.protein_layout).visibility = View.VISIBLE
+                view.findViewById<LinearLayoutCompat>(R.id.fat_layout).visibility = View.VISIBLE
             }
         }
 
@@ -266,17 +270,25 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     ingredients_description.text = ingredientsFormatted
                     // Format instructions as a numbered list
                     val instructionsList = response.body()?.data?.instructions.orEmpty()
-                    val instructionsFormatted = instructionsList.mapIndexed { index, instruction ->
-                        "${index + 1}. ${instruction.replaceFirstChar { it.uppercase() }}"
-                    }.joinToString(separator = "\n")
-                    steps_description.text = instructionsFormatted
+//                    val instructionsFormatted = instructionsList.mapIndexed { index, instruction ->
+//                        "${index + 1}. ${instruction.replaceFirstChar { it.uppercase() }}"
+//                    }.joinToString(separator = "\n")
+//                    instructionsList.forEachIndexed { index, step ->
+//                        println("${index + 1}. $step")
+//                        steps_description.text = "${index + 1}. $step"
+//                    }
+                    val instructionsText = instructionsList.joinToString(separator = "\n") { "- $it" }
+                    steps_description.text = instructionsText
+
                     serves_text.text = "Serves ${response.body()?.data?.servings.toString()}"
                     tvMealName.text = response.body()?.data?.recipe_name.toString()
                     time_text.text = response.body()?.data?.total_time.toString()
-                    calorie_value.text = "${response.body()?.data?.calories} Kcal"
-                    carbs_value.text = "${response.body()?.data?.carbs} g"
-                    protein_value.text = "${response.body()?.data?.protein} g"
-                    fat_value.text = "${response.body()?.data?.fat} g"
+                    calorie_value.text = "${response.body()?.data?.calories?.toInt().toString()} Kcal"
+                    carbs_value.text = "${response.body()?.data?.carbs?.toInt()} g"
+                    protein_value.text = "${response.body()?.data?.protein?.toInt()} g"
+                    fat_value.text = "${response.body()?.data?.fat?.toInt()} g"
+                    vegTv.text = response.body()?.data?.tags?.substringBefore("_")
+                    foodType.text = response.body()?.data?.course
                     val imageUrl = response.body()?.data?.photo_url
                     loadImageFromGoogleDrive(imageUrl, imgFood)
                 } else {
