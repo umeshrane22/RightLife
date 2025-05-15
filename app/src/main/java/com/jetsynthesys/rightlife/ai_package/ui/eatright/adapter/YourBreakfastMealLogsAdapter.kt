@@ -114,8 +114,8 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
             val imageUrl = getDriveImageUrl(data.receipe.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_breakfast)
-                .error(R.drawable.ic_breakfast)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
                 .into(mealImage)
 
             delete.setOnClickListener {
@@ -200,8 +200,8 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                 val imageUrl = ""//getDriveImageUrl(data.photo_url)
                 Glide.with(this.itemView)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_breakfast)
-                    .error(R.drawable.ic_breakfast)
+                    .placeholder(R.drawable.ic_view_meal_place)
+                    .error(R.drawable.ic_view_meal_place)
                     .into(mealImage)
             }
 
@@ -226,16 +226,16 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
         }
     }
 
-    fun addAll(item : ArrayList<MergedLogsMealItem>?, pos: Int, mealLogItem : RegularRecipeEntry?, snapMeal : SnapMeal?,
+    fun updateList(newList : ArrayList<MergedLogsMealItem>?, pos: Int, mealLogItem : RegularRecipeEntry?, snapMeal : SnapMeal?,
                isClick : Boolean) {
         dataLists.clear()
-        if (item != null) {
-            dataLists = item
+        if (newList != null) {
+            dataLists = newList
             clickPos = pos
             regularRecipeEntry = mealLogItem
             snapMealData = snapMeal
             isClickView = isClick
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
 }

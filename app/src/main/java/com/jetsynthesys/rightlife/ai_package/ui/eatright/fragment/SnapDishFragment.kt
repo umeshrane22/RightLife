@@ -531,7 +531,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         }
     }
 
-
     private fun setDishData(snapRecipeData: SearchResultItem, isEdit : Boolean) {
         if (searchType.contentEquals("SearchDish")){
             addToTheMealTV.text = "Add To The Meal"
@@ -552,7 +551,12 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 }
             }
         }
-            val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
+        var imageUrl : String? = ""
+        imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
+            getDriveImageUrl(snapRecipeData.photo_url)
+        }else{
+            snapRecipeData.photo_url
+        }
             Glide.with(this)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_view_meal_place)
@@ -698,7 +702,6 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         val mealLogDateData: MicroNutrientsModel? = null
         microNutrientsAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
-
 
     private fun onFrequentlyLoggedItem(myMealModel: MyMealModel, position: Int, isRefresh: Boolean) {
 

@@ -114,8 +114,8 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
             val imageUrl = getDriveImageUrl(data.receipe.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_evening_snack)
-                .error(R.drawable.ic_evening_snack)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
                 .into(mealImage)
 
             delete.setOnClickListener {
@@ -200,8 +200,8 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                 val imageUrl = ""//getDriveImageUrl(data.photo_url)
                 Glide.with(this.itemView)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_evening_snack)
-                    .error(R.drawable.ic_evening_snack)
+                    .placeholder(R.drawable.ic_view_meal_place)
+                    .error(R.drawable.ic_view_meal_place)
                     .into(mealImage)
 
             }

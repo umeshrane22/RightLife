@@ -255,7 +255,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 if (snapMealLogRequests != null){
                     if (selectedSnapMealLogList.size > 0){
                         for (mealItem in selectedSnapMealLogList){
-                            ingredientsList.add(mealItem.recipe_name)
+                            ingredientsList.add(mealItem.recipe_name!!)
                         }
                     }
                 }
@@ -544,7 +544,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 flexboxLayout.visibility = View.VISIBLE
                 layoutTitle.visibility = View.VISIBLE
                 btnLogMeal.visibility = View.VISIBLE
-                ingredientsList.add(mealLogRequest1.meal_name)
+                ingredientsList.add(mealLogRequest1.meal_name!!)
                 if (ingredientsList.size > 0){
                     updateIngredientChips()
                 }

@@ -441,12 +441,19 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                 }
             }
         }
-        val imageUrl = getDriveImageUrl(snapRecipeData.photo_url!!)
-        Glide.with(this)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_view_meal_place)
-            .error(R.drawable.ic_view_meal_place)
-            .into(imgFood)
+        var imageUrl : String? = ""
+        if (snapRecipeData.photo_url != null){
+            imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(snapRecipeData.photo_url)
+            }else{
+                snapRecipeData.photo_url
+            }
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
+                .into(imgFood)
+        }
     }
 
     private fun calculateValue(givenValue: Double?, defaultQuantity: Double, targetQuantity: Double): Double {

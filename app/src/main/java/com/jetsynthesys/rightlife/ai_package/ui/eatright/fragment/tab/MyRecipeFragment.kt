@@ -187,29 +187,29 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
 
     private fun onLogRecipeItem(myRecipe: MyRecipe, position: Int, isRefresh: Boolean) {
 
-//        val valueLists : ArrayList<MyRecipe> = ArrayList()
-//        valueLists.addAll(recipeList as Collection<MyRecipe>)
-//        recipeAdapter.addAll(valueLists, position, myRecipe, isRefresh)
-//
-//        val mealLogList : ArrayList<MealLogItems> = ArrayList()
-//        val dishList = myRecipe.receipe_data
-//        dishList?.forEach { selectedDish ->
-//            val mealLogData = MealLogItems(
-//                meal_id = selectedDish.receipe._id,
-//                recipe_name = selectedDish.receipe.recipe_name,
-//                meal_quantity = 1,
-//                unit = "g",
-//                measure = "Bowl"
-//            )
-//            mealLogList.add(mealLogData)
-//        }
-//        val mealLogRequest = SelectedMealLogList(
-//            meal_name =  mealDetails.meal_name,
-//            meal_type = mealDetails.meal_name,
-//            meal_log = mealLogList
-//        )
-//        val parent = parentFragment as? HomeTabMealFragment
-//        parent?.setSelectedFrequentlyLog(null, false, mealLogRequest)
+        val valueLists : ArrayList<MyRecipe> = ArrayList()
+        valueLists.addAll(recipeList as Collection<MyRecipe>)
+        recipeAdapter.addAll(valueLists, position, myRecipe, isRefresh)
+
+        val ingredientsLogList : ArrayList<MealLogItems> = ArrayList()
+      //  val dishList = myRecipe.ingredients_per_serving
+       // dishList?.forEach { selectedDish ->
+            val ingredientsLogData = MealLogItems(
+                meal_id = myRecipe._id,
+                recipe_name = myRecipe.recipe_name,
+                meal_quantity = 1,
+                unit = "g",
+                measure = "Bowl"
+            )
+            ingredientsLogList.add(ingredientsLogData)
+  //      }
+        val recipeLogRequest = SelectedMealLogList(
+            meal_name =  myRecipe.recipe_name,
+            meal_type = myRecipe.recipe_name,
+            meal_log = ingredientsLogList
+        )
+        val parent = parentFragment as? HomeTabMealFragment
+        parent?.setSelectedFrequentlyLog(null, false, recipeLogRequest, null)
     }
 
     private fun getRecipeList() {

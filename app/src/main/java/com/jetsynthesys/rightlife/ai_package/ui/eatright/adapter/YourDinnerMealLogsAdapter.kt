@@ -115,8 +115,8 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
             val imageUrl = getDriveImageUrl(data.receipe.photo_url)
             Glide.with(this.itemView)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_dinner)
-                .error(R.drawable.ic_dinner)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
                 .into(mealImage)
 
             delete.setOnClickListener {
@@ -201,8 +201,8 @@ class YourDinnerMealLogsAdapter(val context: Context, private var dataLists: Arr
                 val imageUrl = ""//getDriveImageUrl(data.photo_url)
                 Glide.with(this.itemView)
                     .load(imageUrl)
-                    .placeholder(R.drawable.ic_dinner)
-                    .error(R.drawable.ic_dinner)
+                    .placeholder(R.drawable.ic_view_meal_place)
+                    .error(R.drawable.ic_view_meal_place)
                     .into(mealImage)
             }
 

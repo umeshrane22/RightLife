@@ -142,9 +142,9 @@ interface ApiService {
     fun getSnapMealRecipesList(
        ): Call<SnapMealRecipeResponseModel>
 
-    @GET("eat/recipes/{id}")
+    @GET("eat/recipes/")
     fun getSnapMealRecipeById(
-        @Path("id") recipeId: String
+        @Query("recipe_id") recipeId: String
     ): Call<RecipeResponseNew>
 
     @GET("eat/recipes/names")

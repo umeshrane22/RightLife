@@ -322,11 +322,16 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     }
                 }
             }
-            val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
+            var imageUrl : String? = ""
+            imageUrl = if (snapRecipeData.photo_url.contains("drive.google.com")) {
+                getDriveImageUrl(snapRecipeData.photo_url)
+            }else{
+                snapRecipeData.photo_url
+            }
             Glide.with(this)
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_breakfast)
-                .error(R.drawable.ic_breakfast)
+                .placeholder(R.drawable.ic_view_meal_place)
+                .error(R.drawable.ic_view_meal_place)
                 .into(imgFood)
         }
     }

@@ -11,14 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.response.OtherRecipe
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeSuggestion
 
 class OtherRecipeEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<OtherRecipe>,
                                    private var clickPos: Int, private var mealLogListData : OtherRecipe?,
                                    private var isClickView : Boolean, val onOtherRecipeItem: (OtherRecipe, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<OtherRecipeEatLandingAdapter.ViewHolder>() {
-
-    private var selectedItem = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_other_reciepie_eat_landing_ai, parent, false)
@@ -34,40 +31,13 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
         val imageUrl = getDriveImageUrl(item.image)
         Glide.with(context)
             .load(imageUrl)
-            .placeholder(R.drawable.ic_breakfast)
-            .error(R.drawable.ic_breakfast)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
             .into(holder.iamgeFood)
         holder.calValue.text = item.calories.toInt().toString()
         holder.subtractionValue.text = item.protein.toInt().toString()
         holder.baguetteValue.text = item.carbs.toInt().toString()
         holder.dewpointValue.text = item.fats.toInt().toString()
-     //   if (item.isAddDish == true) {
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-   //         holder.circlePlus.setImageResource(R.drawable.circle_check)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-  //      }else{
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-   //         holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-   //     }
-
-//        holder.circlePlus.setOnClickListener {
-//            onOtherReciepeDateItem(item, position, true)
-//        }
 
         holder.layoutMain.setOnClickListener {
             onOtherRecipeItem(item, position, true)
