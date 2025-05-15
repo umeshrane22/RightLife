@@ -28,6 +28,9 @@ class WellnessFocusListActivity : BaseActivity() {
     private lateinit var wellnessFocusListAdapter: WellnessFocusListAdapter
     val topicList = ArrayList<ModuleTopic>()
     private lateinit var isFrom: String
+    // Declare the TextViews as class-level properties
+    private lateinit var tv_ur_journey: TextView
+    private lateinit var tv_choose_str: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +45,10 @@ class WellnessFocusListActivity : BaseActivity() {
         val rvWellnessFocusList = findViewById<RecyclerView>(R.id.rv_wellness_focus_list)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
         val imgHeader = findViewById<ImageView>(R.id.img_header)
+
+        // Initialize the TextViews in onCreate
+        tv_ur_journey = findViewById(R.id.tv_ur_journey)
+        tv_choose_str = findViewById(R.id.tv_choose_str)
 
         when (header) {
             "MoveRight" -> imgHeader.setImageResource(R.drawable.header_move_right)
@@ -135,6 +142,8 @@ class WellnessFocusListActivity : BaseActivity() {
                     val data = apiResponse?.data
                     data?.data?.let { topicList.addAll(it) }
                     wellnessFocusListAdapter.notifyDataSetChanged()
+                    tv_ur_journey.text = data?.sectionTitle
+                    tv_choose_str.text = data?.sectionSubtitle
 
                 } else {
                     Toast.makeText(
