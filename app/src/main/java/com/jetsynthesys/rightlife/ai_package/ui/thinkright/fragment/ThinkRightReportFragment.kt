@@ -698,36 +698,20 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
             if (toolsData.title?.contains("Breathing") == true) {
                 startActivity(
-                    Intent(
-                        requireContext(),
-                        BreathworkActivity::class.java
-                    ).apply {
+                    Intent(requireContext(), BreathworkActivity::class.java).apply {
                         putExtra("IS_FROM_TOOLS", true)
                         putExtra("TOOLS_VALUE", toolsData._id)
                     }
                 )
-            } else if (toolsData.title.equals("Free Form")
-                || toolsData.title.equals("Bullet")
-                || toolsData.title.equals("Gratitude")
-                || toolsData.title.equals("Grief")
-            ) {
-                startActivity(
-                    Intent(
-                        requireContext(),
-                        JournalNewActivity::class.java
-                    ).apply {
+            } else if (toolsData.title.equals("Free Form") || toolsData.title.equals("Bullet") || toolsData.title.equals("Gratitude") || toolsData.title.equals("Grief")) {
+                startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
                         putExtra("IS_FROM_TOOLS", true)
                         putExtra("TOOLS_VALUE", toolsData._id)
                     }
                 )
 
             } else
-                startActivity(
-                    Intent(
-                        requireContext(),
-                        PractiseAffirmationPlaylistActivity::class.java
-                    )
-                )
+                startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
         }
     }
     private fun fetchQuoteData() {
