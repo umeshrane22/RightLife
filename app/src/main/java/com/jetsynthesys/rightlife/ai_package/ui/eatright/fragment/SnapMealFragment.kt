@@ -40,6 +40,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.util.Base64
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.MediaController
 import android.widget.VideoView
@@ -485,8 +486,20 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         private const val REQUEST_IMAGE_CAPTURE = 101
     }
 
+    private var loadingOverlay : FrameLayout? = null
+
+    fun showLoader(activity: View) {
+        loadingOverlay = activity.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(activity: View) {
+        loadingOverlay = activity.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
+    }
+
     private fun uploadFoodImagePath(imagePath: String, description: String) {
-        LoaderUtil.showLoader(requireActivity())
+       showLoader(this.requireView())
         val base64Image = encodeImageToBase64(imagePath)
         val apiKey = "HanN8X1baCEM0E49xNcN"
         val request = AnalysisRequest(apiKey, base64Image, description)
@@ -495,7 +508,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         call.enqueue(object : Callback<ScanMealNutritionResponse> {
             override fun onResponse(call: Call<ScanMealNutritionResponse>, response: Response<ScanMealNutritionResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    dismissLoader(requireView())
                     println("Success: ${response.body()}")
                     if (response.body()?.data != null){
                         if (response.body()?.data!!.isNotEmpty()){
@@ -520,13 +533,13 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     }
                 } else {
                     println("Error: ${response.errorBody()?.string()}")
-                    LoaderUtil.dismissLoader(requireActivity())
+                    dismissLoader(requireView())
                     Toast.makeText(context, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<ScanMealNutritionResponse>, t: Throwable) {
                 println("Failure: ${t.message}")
-                LoaderUtil.dismissLoader(requireActivity())
+               dismissLoader(requireView())
                 Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
             }
         })
