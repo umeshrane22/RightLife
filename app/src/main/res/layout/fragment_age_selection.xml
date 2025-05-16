@@ -97,10 +97,10 @@
             android:id="@+id/tv_selected_age"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/color_green"
             android:text="27 years"
-            android:textSize="26sp" />
+            android:textSize="24sp" />
 
     </LinearLayout>
 

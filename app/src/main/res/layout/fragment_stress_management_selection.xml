@@ -63,16 +63,16 @@
             android:id="@+id/tv_selected_stress_management_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/color_green"
             android:text="5ft 4in"
-            android:textSize="30sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/tv_selected_stress_management_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/color_green"
             android:layout_marginTop="4dp"
             android:text="5ft 4in"

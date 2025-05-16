@@ -53,6 +53,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <RelativeLayout
                 android:id="@+id/rl_switch"
                 android:layout_width="match_parent"
@@ -68,6 +69,7 @@
                     android:paddingEnd="20dp"
                     android:layout_toStartOf="@+id/switch_weight_metric"
                     android:textSize="@dimen/textsize_large" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -109,7 +111,7 @@
                         android:text="Current weight: "
                         android:textColor="@color/txt_color_header"
                         android:textSize="14sp"
-                        android:fontFamily="@font/dmsans_regular"/>
+                        android:fontFamily="@font/dmsans_regular" />
 
                     <TextView
                         android:id="@+id/tv_current_weight"
@@ -118,7 +120,7 @@
                         android:layout_marginStart="4dp"
                         android:textColor="@color/txt_color_header"
                         android:textSize="16sp"
-                        android:fontFamily="@font/dmsans_bold"/>
+                        android:fontFamily="@font/dmsans_bold" />
 
                     <TextView
                         android:id="@+id/tv_label"
@@ -128,7 +130,7 @@
                         android:layout_marginStart="4dp"
                         android:textColor="@color/txt_color_header"
                         android:textSize="14sp"
-                        android:fontFamily="@font/dmsans_regular"/>
+                        android:fontFamily="@font/dmsans_regular" />
 
                 </LinearLayout>
 
@@ -142,7 +144,7 @@
                     android:textSize="@dimen/textsize_large24sp"
                     android:textStyle="bold"
                     android:layout_marginTop="16dp"
-                    android:text="50 kg"/>
+                    android:text="50 kg" />
             </LinearLayout>
 
             <RelativeLayout
@@ -242,10 +244,10 @@
             android:id="@+id/tv_selected_weight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:text="48kg"
             android:textColor="@color/color_green"
-            android:textSize="26sp" />
+            android:textSize="24sp" />
 
     </LinearLayout>
 
