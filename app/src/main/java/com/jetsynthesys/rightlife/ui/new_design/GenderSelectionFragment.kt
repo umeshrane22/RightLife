@@ -154,6 +154,7 @@ class GenderSelectionFragment : Fragment() {
         llMale.visibility = VISIBLE
         llFemale.visibility = VISIBLE
         llSelectedGender.visibility = GONE
+        tvDescription?.visibility = VISIBLE
     }
 
 

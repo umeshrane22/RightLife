@@ -172,10 +172,10 @@
             android:id="@+id/tv_selected_body_fat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/dmsans_bold"
+            android:fontFamily="@font/dmsans_regular"
             android:text="11 fat"
             android:textColor="@color/color_green"
-            android:textSize="26sp" />
+            android:textSize="24sp" />
 
     </LinearLayout>
 
