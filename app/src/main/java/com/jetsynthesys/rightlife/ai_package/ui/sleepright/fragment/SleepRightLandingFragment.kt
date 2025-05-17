@@ -493,7 +493,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } else {
                     sleepTimeRequirementCardView.visibility = View.GONE
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+               //     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
 
                 }
             }
@@ -570,6 +570,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = "2025-04-30"
         val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+      //  val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {

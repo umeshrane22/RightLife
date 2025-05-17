@@ -19,7 +19,7 @@ data class StoreHealthDataRequest(
     val blood_pressure_diastolic: List<BloodPressure>?,
     val body_mass: List<BodyMass>?,
     val body_fat_percentage: List<BodyFatPercentage>?,
-    val sleep_stage: List<SleepStage>?,
+    val sleep_stage: List<SleepStageJson>,
     val workout: List<WorkoutRequest>?
 )
 

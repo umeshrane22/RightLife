@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
@@ -26,13 +27,14 @@ import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
 import com.jetsynthesys.rightlife.databinding.FragmentAllToolsListBinding
+import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class ToolsAdapterList(private val context1: Context, private val items: List<ToolDisplayItem>, private val onItemClick: (Int, ToolsData) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ToolsAdapterList(private val context1: Context, private val items: List<ToolDisplayItem>, private val onItemClick: (Int, ToolsData?) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val contexts = context1
 
@@ -48,7 +50,9 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
         val selectButton: ImageView = itemView.findViewById(R.id.tool_select_button)
     }
 
-    class AffirmationCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class AffirmationCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+        val createPlaylist: TextView = itemView.findViewById(R.id.createPlaylistButton)
+    }
 
     override fun getItemViewType(position: Int): Int {
         return when (items[position]) {
@@ -149,6 +153,10 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
             }
 
             is ToolDisplayItem.AffirmationCard -> {
+                val toolHolder = holder as AffirmationCardViewHolder
+                toolHolder.createPlaylist.setOnClickListener {
+                    onItemClick(position, null)
+                }
 
             }
         }
@@ -283,9 +291,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         filterRecyclerView.adapter = filterAdapter
 
         toolsAdapter = ToolsAdapterList(requireContext(),tools) { position,toolsData ->
-            moduleId = toolsData._id ?: ""
-             isSelectedModule = if(toolsData.isSelectedModule == true) false else true
-            selectTools()
+            if (toolsData!=null) {
+                moduleId = toolsData._id ?: ""
+                isSelectedModule = if (toolsData.isSelectedModule == true) false else true
+                selectTools()
+            }else{
+                startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+            }
         }
         recyclerView.adapter = toolsAdapter
     }
