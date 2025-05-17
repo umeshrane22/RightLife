@@ -273,13 +273,13 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     }
 
     private fun getMealsLogHistory(dateRange: String) {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMealsLogHistoryCalender(userId, dateRange)
         call.enqueue(object : Callback<MealLogsHistoryResponse> {
             override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
                         if (mealLogsHistoryResponse?.is_logged_meal_list!!.isNotEmpty()){
@@ -290,13 +290,13 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<MealLogsHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireView())
             }
         })
     }

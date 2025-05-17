@@ -765,7 +765,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     // progressDialog.dismiss()
                     thinkRecomendedResponse = response.body()!!
                     if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendationAdapter(requireContext(), thinkRecomendedResponse.data?.contentList!!)
+                        recomendationAdapter = RecommendationAdapter(context!!, thinkRecomendedResponse.data?.contentList!!)
                         recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }

@@ -276,7 +276,7 @@
                             android:textSize="16sp" />
 
                         <TextView
-                            android:id="@+id/tv_meal_cal_unit"
+                            android:id="@+id/maxCalUnit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
@@ -376,7 +376,7 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/tv_subtraction_cal_unit"
+                                    android:id="@+id/maxProteinUnit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
@@ -450,7 +450,7 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/tv_baguette_cal_unit"
+                                    android:id="@+id/maxCarbUnit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
@@ -522,7 +522,7 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/tv_dewpoint_cal_unit"
+                                    android:id="@+id/maxFatsUnit"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"

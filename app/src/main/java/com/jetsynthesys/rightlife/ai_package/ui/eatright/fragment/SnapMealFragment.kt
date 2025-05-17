@@ -499,7 +499,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 
     private fun uploadFoodImagePath(imagePath: String, description: String) {
-       showLoader(this.requireView())
+       LoaderUtil.showLoader(this.requireView())
         val base64Image = encodeImageToBase64(imagePath)
         val apiKey = "HanN8X1baCEM0E49xNcN"
         val request = AnalysisRequest(apiKey, base64Image, description)
@@ -508,7 +508,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         call.enqueue(object : Callback<ScanMealNutritionResponse> {
             override fun onResponse(call: Call<ScanMealNutritionResponse>, response: Response<ScanMealNutritionResponse>) {
                 if (response.isSuccessful) {
-                    dismissLoader(requireView())
+                    LoaderUtil.dismissLoader(requireView())
                     println("Success: ${response.body()}")
                     if (response.body()?.data != null){
                         if (response.body()?.data!!.isNotEmpty()){
@@ -533,13 +533,13 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     }
                 } else {
                     println("Error: ${response.errorBody()?.string()}")
-                    dismissLoader(requireView())
+                    LoaderUtil.dismissLoader(requireView())
                     Toast.makeText(context, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<ScanMealNutritionResponse>, t: Throwable) {
                 println("Failure: ${t.message}")
-               dismissLoader(requireView())
+                LoaderUtil.dismissLoader(requireView())
                 Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
             }
         })

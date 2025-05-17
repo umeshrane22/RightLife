@@ -467,13 +467,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun getWorkoutLogHistory(formattedDate: String) {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getActivityLogHistory(userId, "google", formattedDate)
         call.enqueue(object : Callback<WorkoutHistoryResponse> {
             override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                     if (response.body() != null){
                         workoutHistoryResponse = response.body()
                         if (workoutHistoryResponse?.data?.record_details!!.size > 0){
@@ -484,13 +484,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<WorkoutHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireView())
             }
         })
     }

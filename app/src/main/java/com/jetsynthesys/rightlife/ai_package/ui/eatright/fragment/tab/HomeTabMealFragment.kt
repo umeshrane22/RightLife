@@ -599,7 +599,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     }
 
     private fun createSnapMealLog(snapRecipeList: SnapMealLogRequest) {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val currentDateTime = LocalDateTime.now()
@@ -630,7 +630,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     response: Response<SnapMealLogResponse>
                 ) {
                     if (response.isSuccessful) {
-                        LoaderUtil.dismissLoader(requireActivity())
+                        LoaderUtil.dismissLoader(requireView())
                         snapMealRequestCount++
                         val mealData = response.body()?.message
                         Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
@@ -654,13 +654,13 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                        LoaderUtil.dismissLoader(requireActivity())
+                        LoaderUtil.dismissLoader(requireView())
                     }
                 }
                 override fun onFailure(call: Call<SnapMealLogResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             })
         }

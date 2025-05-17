@@ -18,17 +18,14 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.RecipeResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
@@ -61,7 +58,6 @@ import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -482,7 +478,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -491,20 +487,20 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         call.enqueue(object : Callback<EatRightLandingPageDataResponse> {
             override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                     landingPageResponse = response.body()!!
                     setMealSummaryData(landingPageResponse, halfCurveProgressBar)
                     getMealsLogList()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<EatRightLandingPageDataResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireView())
             }
         })
     }
@@ -598,6 +594,18 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         carbsUnitTv.text = " / " + landingPageResponse.max_carbs.toInt().toString() +" g"
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
+
+        SharedPreferenceManager.getInstance(requireActivity())
+            .setMaxCalories(landingPageResponse.max_calories.toInt())
+
+        SharedPreferenceManager.getInstance(requireActivity())
+            .setMaxCarbs(landingPageResponse.max_carbs.toInt())
+
+        SharedPreferenceManager.getInstance(requireActivity())
+            .setMaxProtein(landingPageResponse.max_protein.toInt())
+
+        SharedPreferenceManager.getInstance(requireActivity())
+            .setMaxFats(landingPageResponse.max_fat.toInt())
 
         cabsProgressBar.max = landingPageResponse.max_carbs.toInt()
         cabsProgressBar.progress = landingPageResponse.total_carbs.toInt()
@@ -914,7 +922,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun getMealsLogList() {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -923,7 +931,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         call.enqueue(object : Callback<MealLogDataResponse> {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                     val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
                     val morningSnackRecipes = response.body()?.data!!.meal_detail["morning_snack"]?.regular_receipes
                     val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
@@ -983,13 +991,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireView())
             }
         })
     }
@@ -997,11 +1005,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
 class MasterCalculationsViewModel  : ViewModel() {
 
-
-
     private val _userResponse = MutableStateFlow<Userdata?>(null)
     val userResponse: StateFlow<Userdata?> = _userResponse
-
 //    fun getUserDetails(callback: (Boolean, String?) -> Unit) {
 //        viewModelScope.launch {
 //            try {

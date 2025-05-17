@@ -432,5 +432,45 @@ public class SharedPreferenceManager {
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_RATING, isVideoUi);
         editor.apply();
     }
+
+    public int getMaxCalories() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CALORIES, 0);
+    }
+
+    public void setMaxCalories(int maxCalories) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CALORIES, maxCalories);
+        editor.apply();
+    }
+
+    public int getMaxCarbs() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CARBS, 0);
+    }
+
+    public void setMaxCarbs(int maxCarbs) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CARBS, maxCarbs);
+        editor.apply();
+    }
+
+    public int getMaxProtein() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_PROTEIN, 0);
+    }
+
+    public void setMaxProtein(int maxProtein) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_PROTEIN, maxProtein);
+        editor.apply();
+    }
+
+    public int getMaxFats() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_FATS, 0);
+    }
+
+    public void setMaxFats(int maxFats) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_FATS, maxFats);
+        editor.apply();
+    }
 }
 

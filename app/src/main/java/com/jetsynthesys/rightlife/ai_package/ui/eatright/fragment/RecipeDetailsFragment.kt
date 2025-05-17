@@ -67,6 +67,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     private lateinit var mealType : String
     private  var recipeList :SnapRecipeList? = null
     private lateinit var backButton: ImageView
+    private lateinit var mealTypeImage : ImageView
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRecipeDetailsBinding
         get() = FragmentRecipeDetailsBinding::inflate
@@ -109,6 +110,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         backButton = view.findViewById(R.id.backButton)
         foodType = view.findViewById(R.id.foodType)
         vegTv = view.findViewById(R.id.vegTv)
+        mealTypeImage = view.findViewById(R.id.mealTypeImage)
 
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
@@ -289,6 +291,19 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     fat_value.text = "${response.body()?.data?.fat?.toInt()} g"
                     vegTv.text = response.body()?.data?.tags?.substringBefore("_")
                     foodType.text = response.body()?.data?.course
+                    if (response.body()?.data?.course.equals("Breakfast")){
+                        mealTypeImage.setImageResource(R.drawable.ic_breakfast)
+                    }else if (response.body()?.data?.course.equals("Snack")){
+                        mealTypeImage.setImageResource(R.drawable.ic_morning_snack)
+                    }else if (response.body()?.data?.course.equals("Lunch")){
+                        mealTypeImage.setImageResource(R.drawable.ic_lunch)
+                    }else if (response.body()?.data?.course.equals("One Pot Dish")){
+                        mealTypeImage.setImageResource(R.drawable.ic_evening_snack)
+                    }else if (response.body()?.data?.course.equals("Dinner")){
+                        mealTypeImage.setImageResource(R.drawable.ic_dinner)
+                    }else{
+                        mealTypeImage.setImageResource(R.drawable.ic_view_meal_place)
+                    }
                     val imageUrl = response.body()?.data?.photo_url
                     loadImageFromGoogleDrive(imageUrl, imgFood)
                 } else {
