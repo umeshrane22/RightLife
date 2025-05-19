@@ -74,7 +74,6 @@ import com.jetsynthesys.rightlife.ai_package.model.BodyMass
 import com.jetsynthesys.rightlife.ai_package.model.Distance
 import com.jetsynthesys.rightlife.ai_package.model.EnergyBurnedRequest
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateRequest
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityRequest
 import com.jetsynthesys.rightlife.ai_package.model.OxygenSaturation
 import com.jetsynthesys.rightlife.ai_package.model.RespiratoryRate
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
@@ -341,7 +340,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
       //  storeData()
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private suspend fun requestPermissionsAndReadAllData() {
         try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
@@ -358,7 +356,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private val requestPermissionsLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
@@ -377,7 +374,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private suspend fun fetchAllHealthData() {
         lifecycleScope.launch {
             val response = healthConnectClient.readRecords(
@@ -431,12 +427,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-                val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                val source = "android"
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
                     record.stages.mapNotNull { stage ->
                         val stageValue = when (stage.stage) {
@@ -478,7 +473,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
@@ -569,7 +564,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         Utils.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = "2025-04-30"
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "android"
       //  val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
@@ -1116,7 +1111,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val fullList = jsonData.dataPoints
         val sleepJsonRequest = SleepJsonRequest(
             user_id = "68010b615a508d0cfd6ac9ca",
-            source = "google",
+            source = "android",
             sleep_stage = fullList.map {
                 SleepStageJson(
                     value = it.fitValue[0].value?.intVal.toString(),

@@ -290,7 +290,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         private fun fetchSleepData(endDate: String,period: String) {
             progressDialog.show()
             val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-            val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+            val source = "android"
             val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, endDate)
             call.enqueue(object : Callback<SleepIdealActualResponse> {
                 override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {

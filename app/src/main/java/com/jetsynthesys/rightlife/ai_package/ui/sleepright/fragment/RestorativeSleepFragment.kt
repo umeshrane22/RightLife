@@ -293,7 +293,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     private fun fetchSleepData(endDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, endDate)
         call.enqueue(object : Callback<RestorativeSleepResponse> {
             override fun onResponse(call: Call<RestorativeSleepResponse>, response: Response<RestorativeSleepResponse>) {
