@@ -20,7 +20,7 @@ import com.jetsynthesys.rightlife.ui.drawermenu.TermsAndConditionsActivity
 
 class DataControlActivity : BaseActivity() {
     private val agreeString =
-        "<html>I agree to process my personal data for providing me RightLife App Functions. See more in <a href=\"https://example.com/privacy\">Privacy Policy</a>.</html>"
+        "<html>I agree to the use of my personal data to enable RightLife features. Learn more in our <a href=\"https://example.com/privacy\">Privacy Policy</a>.</html>"
     private val policyTermsCondition =
         "I agree to the <a href=\"https://example.com/privacy\">Privacy Policy</a> and <a href=\"https://example.com/terms\">Terms and Conditions</a>"
 

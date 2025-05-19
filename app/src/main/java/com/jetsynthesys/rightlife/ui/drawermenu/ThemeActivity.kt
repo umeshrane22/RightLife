@@ -24,7 +24,7 @@ class ThemeActivity : AppCompatActivity() {
         val adapter = ThemeAdapter(this, listItems) { themeItem ->
             when (themeItem.value) {
                 "System" -> {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     SharedPreferenceManager.getInstance(this@ThemeActivity).saveAppMode("System")
                 }
 
