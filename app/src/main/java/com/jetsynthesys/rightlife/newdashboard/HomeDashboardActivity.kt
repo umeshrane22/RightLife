@@ -742,7 +742,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
 
 
-                        binding.halfCurveProgressBar.setProgress(60f)
+                        binding.halfCurveProgressBar.setProgress(0f)
+                        binding.halfCurveProgressBar.setValues(0,0)
                         // value is wrong for eatright progress let backend correct then uncomment below
                         /*val (curent, max) = extractNumericValues(module.calories.toString())
                             binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())

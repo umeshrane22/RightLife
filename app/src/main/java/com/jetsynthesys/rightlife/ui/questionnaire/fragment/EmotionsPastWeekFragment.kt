@@ -20,8 +20,8 @@ class EmotionsPastWeekFragment : Fragment() {
 
     private lateinit var emotionSelected: String
     private val EmotionsList = arrayOf(
-        "Chaotic",
-        "UnStable",
+        "Overwhelmed",
+        "Unsettled",
         "Uneven",
         "Steady",
         "Calm"

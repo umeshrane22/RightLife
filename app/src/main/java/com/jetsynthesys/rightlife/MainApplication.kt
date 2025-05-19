@@ -3,12 +3,14 @@ package com.jetsynthesys.rightlife
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import com.jetsynthesys.rightlife.ui.affirmation.ReminderReceiver
 import com.sondeservices.edge.init.SondeEdgeSdk
 
 class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         sondeSdk(this)
         ReminderReceiver.ringtone?.stop()

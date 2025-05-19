@@ -194,7 +194,11 @@ Please hold still"</string>
     <string name="dfx_id_version">"DFX Extraction Library Version: %1$s\nAnura Core Version: %2$s"</string>
 
     <string name="your_data_control">Your Data, Your Control</string>
-    <string name="data_control_desc">Your health data is safe with us and will only be utilized to customize the content and services we provide.\n\nYour health data will never be shared with any company but RightLife and its partners, and you can delete or manage the data you share with us from your profile any time.\n\nWe may use device identifiers for analytics and to personalise your experience in-app.</string>
+    <string name="data_control_desc">Your health data stays with us — safe, secure, and used only to personalize your experience on RightLife.
+
+We’ll never share your data with anyone outside RightLife and our trusted partners. You can manage or delete your data anytime from your profile.
+
+We also use device identifiers to improve analytics and tailor your in-app experience.</string>
 
     <string name="str_continue">Continue</string>
     <string name="continue_google">Continue With Google</string>
