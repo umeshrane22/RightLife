@@ -952,7 +952,7 @@
                         android:src="@drawable/yellow_info"
                         android:id="@+id/img_perform_action"
                         android:layout_marginTop="20dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:layout_marginStart="15dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/lyt_sleep_time_title" />

@@ -25,5 +25,14 @@ data class SleepStageAllData (
     @SerializedName("sleep_summary")
     var sleepSummary     : SleepSummary?,
     @SerializedName("sleep_percentages")
-    var sleepPercentages : SleepPercentages?
+    var sleepPercentages : SleepPercentages?,
+    @SerializedName("sleep_insight_detail" )
+    var sleepInsightDetail              : StageInsightDetail?
+)
+
+data class StageInsightDetail(
+    @SerializedName("message")
+    var message : String? ,
+    @SerializedName("tip")
+    var tip  : String?
 )

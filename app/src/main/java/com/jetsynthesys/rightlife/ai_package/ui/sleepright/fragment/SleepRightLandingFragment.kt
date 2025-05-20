@@ -74,7 +74,6 @@ import com.jetsynthesys.rightlife.ai_package.model.BodyMass
 import com.jetsynthesys.rightlife.ai_package.model.Distance
 import com.jetsynthesys.rightlife.ai_package.model.EnergyBurnedRequest
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateRequest
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityRequest
 import com.jetsynthesys.rightlife.ai_package.model.OxygenSaturation
 import com.jetsynthesys.rightlife.ai_package.model.RespiratoryRate
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
@@ -341,7 +340,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
       //  storeData()
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private suspend fun requestPermissionsAndReadAllData() {
         try {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
@@ -358,7 +356,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private val requestPermissionsLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
@@ -377,7 +374,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    fun convertUtcToInstant(utcString: String): Instant {
+        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+    }
+
     private suspend fun fetchAllHealthData() {
         lifecycleScope.launch {
             val response = healthConnectClient.readRecords(
@@ -401,8 +401,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
         }
-        val endTime = Instant.now()
-        val startTime = endTime.minusSeconds(7 * 24 * 60 * 60)
+        var endTime = Instant.now()
+        var startTime = Instant.now()
+        val syncTime = SharedPreferenceManager.getInstance(requireContext()).sleepRightSyncTime ?: ""
+        if (syncTime == "") {
+            endTime = Instant.now()
+            startTime = endTime.minus(Duration.ofDays(31))
+        }else{
+            endTime = Instant.now()
+            startTime = convertUtcToInstant(syncTime).plus(Duration.ofMinutes(1))
+        }
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
@@ -431,12 +439,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-                val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                val source = "android"
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
                     record.stages.mapNotNull { stage ->
                         val stageValue = when (stage.stage) {
@@ -461,11 +468,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 val sleepJsonRequest = SleepJsonRequest(user_id = userid, source = source, sleep_stage = sleepStage)
                 val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
                 withContext(Dispatchers.Main) {
-                    /*if (response.isSuccessful) {
-                        Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
+                    if (response.isSuccessful) {
+                        val todaysTime = Instant.now()
+                        val syncTime = convertToTargetFormat(todaysTime.toString())
+                        SharedPreferenceManager.getInstance(requireContext()).saveSleepRightSyncTime(syncTime)
+                       // Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
-                    }*/
+                       // Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -478,7 +488,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
@@ -569,7 +579,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         Utils.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = "2025-04-30"
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "apple"
       //  val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
@@ -891,14 +901,35 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun setSleepPerformanceData(sleepPerformanceDetail: SleepPerformanceDetail) {
-            tvPerformStartTime.text = formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
-            tvPerformWakeTime.text = formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
-            tvPerformSleepPercent.text = sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toInt().toString()
-            tvPerformSleepDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
-            tvPerformIdealDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
-            tvPerformAction.text = "Under"
-            tvPerformMessage.text = sleepPerformanceDetail.sleepPerformanceData?.actionStep + " " + sleepPerformanceDetail.sleepPerformanceData?.message
-            imgPerformAction.setImageResource(R.drawable.yellow_info)
+        if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance != null) {
+            if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance!! > 0.0) {
+                performNoDataCardView.visibility = View.GONE
+                performCardView.visibility = View.VISIBLE
+                tvPerformStartTime.text =
+                    formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
+                tvPerformWakeTime.text =
+                    formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+                tvPerformSleepPercent.text =
+                    sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toInt()
+                        .toString()
+                tvPerformSleepDuration.text =
+                    convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
+                tvPerformIdealDuration.text =
+                    convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
+                if (sleepPerformanceDetail.sleepPerformanceData?.actionStep != null && sleepPerformanceDetail.sleepPerformanceData?.message != null) {
+                    tvPerformAction.text = sleepPerformanceDetail.sleepPerformanceData?.actionStep
+                    tvPerformMessage.text = sleepPerformanceDetail.sleepPerformanceData?.message
+                   // imgPerformAction.setImageResource(R.drawable.yellow_info)
+                }else{
+                    tvPerformAction.text = ""
+                    tvPerformMessage.text = ""
+                //    imgPerformAction.setImageResource(0)
+                }
+            } else {
+                performNoDataCardView.visibility = View.VISIBLE
+                performCardView.visibility = View.GONE
+            }
+        }
     }
 
     private fun setRestorativeSleepData(sleepRestorativeDetail: SleepRestorativeDetail?) {
@@ -1116,7 +1147,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val fullList = jsonData.dataPoints
         val sleepJsonRequest = SleepJsonRequest(
             user_id = "68010b615a508d0cfd6ac9ca",
-            source = "google",
+            source = "android",
             sleep_stage = fullList.map {
                 SleepStageJson(
                     value = it.fitValue[0].value?.intVal.toString(),

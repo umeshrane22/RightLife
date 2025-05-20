@@ -102,7 +102,7 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
 
     private fun logNap() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "android"
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = selectedDate.format(dateFormatter)
           val call = ApiClient.apiServiceFastApi.logNap(userId, source, date, LogNapRequest(sleep_time = tvStartTime.text.toString(), wakeup_time = tvEndTime.text.toString(), set_reminder = 0, reminder_value = tvRemindTime.text.toString()))
