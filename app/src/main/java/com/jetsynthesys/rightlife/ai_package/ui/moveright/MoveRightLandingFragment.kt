@@ -297,7 +297,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchMoveLanding(recyclerView: RecyclerView, adapter: GridAdapter) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userId = "67f6698fa213d14e22a47c2a"//SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val selectedDate = currentDateTime.format(formatter)
@@ -1015,7 +1015,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
                     if (record.energy.inKilocalories > 0) {
                         EnergyBurnedRequest(
