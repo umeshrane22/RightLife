@@ -403,7 +403,13 @@ class ProfileNewActivity : BaseActivity() {
             "120 years"
         )
 
-        val selectedAgeFromUi = binding.tvAge.text.toString()
+        val selectedAgeArray = binding.tvAge.text.toString().split(" ")
+        val selectedAgeFromUi =
+            if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13) {
+                binding.tvAge.text.toString()
+            } else
+                ""
+
         val value1 = if (selectedAgeFromUi.isNotEmpty())
             years.indexOf(selectedAgeFromUi) + 1
         else 15
@@ -444,7 +450,7 @@ class ProfileNewActivity : BaseActivity() {
             selectedWeight = "50 KGS"
         } else {
             val w = selectedWeight.split(" ")
-            selectedLabel = " ${w[1]}"
+            selectedLabel = " ${w[1].lowercase(Locale.getDefault())}"
         }
 
 
