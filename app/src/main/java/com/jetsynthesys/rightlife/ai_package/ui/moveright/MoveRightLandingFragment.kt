@@ -370,7 +370,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             // Always set layout to VISIBLE
                             calorie_no_data_filled_layout.visibility = View.VISIBLE
 
-                            if (!allInvalid) {
+                            if (allInvalid) {
                                 // No data state
                                 calorie_no_data_filled_layout.visibility = View.VISIBLE
                                 calorie_layout_data_filled.visibility = View.GONE
