@@ -6,6 +6,10 @@ public class SharedPreferenceConstants {
     public static final String USER_ID = "user_id";
 
     public static final String DEVICE_NAME = "device_name";
+
+    public static final String SYNC_TIME = "sync_time";
+
+    public static final String SLEEP_SYNC_TIME = "sleep_sync_time";
     public static final String USER_PROFILE = "user_profile";
     public static final String VOICE_SCAN_ANSWER_ID = "VOICE_SCAN_ANSWER_ID";
     public static final String ON_BOARDING_QUESTIONS = "ON_BOARDING_QUESTIONS";

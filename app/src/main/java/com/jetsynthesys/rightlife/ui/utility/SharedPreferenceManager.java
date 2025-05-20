@@ -70,6 +70,26 @@ public class SharedPreferenceManager {
         return sharedPreferences.getString(SharedPreferenceConstants.DEVICE_NAME, "");
     }
 
+    public void saveMoveRightSyncTime(String time) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.SYNC_TIME, time);
+        editor.apply();
+    }
+
+    // Method to retrieve the user ID
+    public String getMoveRightSyncTime() {
+        return sharedPreferences.getString(SharedPreferenceConstants.SYNC_TIME, "");
+    }
+
+    public void saveSleepRightSyncTime(String time) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.SLEEP_SYNC_TIME, time);
+        editor.apply();
+    }
+    public String getSleepRightSyncTime() {
+        return sharedPreferences.getString(SharedPreferenceConstants.SLEEP_SYNC_TIME, "");
+    }
+
     // Clear the access token and user ID (for example, when logging out)
     public void clearData() {
         SharedPreferences.Editor editor = sharedPreferences.edit();

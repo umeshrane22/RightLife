@@ -58,6 +58,7 @@ import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -510,6 +511,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
+    fun convertUtcToInstant(utcString: String): Instant {
+        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+    }
+
     private suspend fun fetchAllHealthData() {
         lifecycleScope.launch {
             val response = healthConnectClient.readRecords(
@@ -530,15 +535,25 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }
         }
-        val endTime = Instant.now()
-        val startTime = endTime.minus(Duration.ofDays(31))
+        var endTime = Instant.now()
+        var startTime = Instant.now()
+        val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
+        if (syncTime == "") {
+            endTime = Instant.now()
+             startTime = endTime.minus(Duration.ofDays(31))
+        }else{
+            endTime = Instant.now()
+            startTime = convertUtcToInstant(syncTime).plus(Duration.ofMinutes(1))
+        }
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
+                val endT = Instant.now()
+                val startT = endT.minusSeconds(7 * 24 * 60 * 60)
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
                         recordType = StepsRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endT)
                     )
                 )
                 stepsRecord = stepsResponse.records
@@ -551,7 +566,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     }
                     android.util.Log.d("HealthData", "Steps: $totalSteps")
                     val dailySteps = FloatArray(7) { index ->
-                        val dayStart = endTime.minusSeconds(((6 - index) * 24 * 60 * 60).toLong())
+                        val dayStart = endT.minusSeconds(((6 - index) * 24 * 60 * 60).toLong())
                         val dayEnd = dayStart.plusSeconds(24 * 60 * 60)
                         stepsRecord?.filter { it.startTime.isAfter(dayStart) && it.endTime.isBefore(dayEnd) }
                             ?.sumOf { it.count }?.toFloat() ?: 0f
@@ -598,24 +613,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 android.util.Log.d("HealthData", "Calories permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
-                val todayStart = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()
-                val now = Instant.now()
                 val response = healthConnectClient.readRecords(
                     ReadRecordsRequest(
                         recordType = HeartRateRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(todayStart, now)
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                     )
                 )
                 heartRateRecord = response.records
-                if (heartRateRecord?.isEmpty() == true) {
-                    android.util.Log.d("HealthData", "No heart rate records found for today.")
-                } else {
-                    heartRateRecord?.forEach { record ->
-                        val bpm = record.samples.map { it.beatsPerMinute }.average().toInt()
-                        android.util.Log.d("HealthData", "Heart Rate: $bpm bpm, Start: ${record.startTime}, End: ${record.endTime}")
-                    }
-                }
-            } else {
+            }else {
                 heartRateRecord = emptyList()
                 android.util.Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1138,9 +1143,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val response = ApiClient.apiServiceFastApi.storeHealthData(request)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
-                        Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
+                        val todaysTime = Instant.now()
+                        val syncTime = convertToTargetFormat(todaysTime.toString())
+                        SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                      //  Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {

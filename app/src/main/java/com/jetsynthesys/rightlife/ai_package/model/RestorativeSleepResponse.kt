@@ -24,8 +24,17 @@ data class RestorativeSleepAllData (
     var averageRestorativeSleepPercentage : Double?,
     @SerializedName("average_sleep_duration" )
     var averageSleepDuration              : Double?,
+    @SerializedName("sleep_insight_detail" )
+    var sleepInsightDetail              : RestorativeInsightDetail?,
     @SerializedName("restorative_sleep_details")
     var restorativeSleepDetails           : ArrayList<RestorativeSleepData> = arrayListOf()
+)
+
+data class RestorativeInsightDetail(
+    @SerializedName("message")
+    var message : String? ,
+    @SerializedName("tip")
+    var tip  : String?
 )
 
 data class RestorativeSleepData (
