@@ -446,7 +446,7 @@ interface ApiService {
         @Query("date") date: String
     ): Response<HeartRateFitDataResponse>
 
-    @GET("move/fetch_heart_rate_variabililty/")
+    @GET("move/fetch_heart_rate_variability/")
     suspend fun getHeartRateVariability(
         @Query("user_id") userId: String,
         @Query("period") period: String,

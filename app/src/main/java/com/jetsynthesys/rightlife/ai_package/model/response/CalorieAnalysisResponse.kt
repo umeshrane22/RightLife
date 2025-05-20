@@ -17,6 +17,7 @@ data class CalorieAnalysisData(
     val end_date: String,
     val maintenance_calories: Float,
     val calorie_data: List<CalorieData>,
+    val messages: Messages,
     val heading: String,
     val description: String
 )
@@ -25,4 +26,11 @@ data class CalorieAnalysisData(
 data class CalorieData(
     val date: String,
     val calorie_balance: Float
+)
+
+@Serializable
+data class Messages(
+    val status: String,
+    val title: String,
+    val message : String
 )

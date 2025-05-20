@@ -119,15 +119,15 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
-        fetchStepDetails("weekly")
+        fetchStepDetails("last_weekly")
         setupLineChart()
 
         // Handle Radio Button Selection
         radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rbWeek -> fetchStepDetails("weekly")
-                R.id.rbMonth -> fetchStepDetails("monthly")
-                R.id.rbSixMonths -> fetchStepDetails("six_monthly")
+                R.id.rbWeek -> fetchStepDetails("last_weekly")
+                R.id.rbMonth -> fetchStepDetails("last_monthly")
+                R.id.rbSixMonths -> fetchStepDetails("last_six_months")
             }
         }
 
@@ -152,7 +152,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 calendar.add(Calendar.DAY_OF_YEAR, -7)
                 val dateStr = dateFormat.format(calendar.time)
                 selectedWeekDate = dateStr
-                fetchStepDetails("weekly")
+                fetchStepDetails("last_weekly")
             } else if (selectedTab.contentEquals("Month")) {
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val calendar = Calendar.getInstance()
@@ -166,7 +166,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 val dateStr = dateFormat.format(calendar.time)
                 val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
                 selectedMonthDate = firstDateOfMonth
-                fetchStepDetails("monthly")
+                fetchStepDetails("last_monthly")
             } else {
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val calendar = Calendar.getInstance()
@@ -179,7 +179,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 calendar.set(year, month - 6, day)
                 val dateStr = dateFormat.format(calendar.time)
                 selectedHalfYearlyDate = dateStr
-                fetchStepDetails("six_monthly")
+                fetchStepDetails("last_six_months")
             }
         }
 
@@ -208,7 +208,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     calendar.add(Calendar.DAY_OF_YEAR, +7)
                     val dateStr = dateFormat.format(calendar.time)
                     selectedWeekDate = dateStr
-                    fetchStepDetails("weekly")
+                    fetchStepDetails("last_weekly")
                 } else {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 }
@@ -226,7 +226,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     val dateStr = dateFormat.format(calendar.time)
                     val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
                     selectedMonthDate = firstDateOfMonth
-                    fetchStepDetails("monthly")
+                    fetchStepDetails("last_monthly")
                 } else {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 }
@@ -243,7 +243,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     calendar.set(year, month + 6, day)
                     val dateStr = dateFormat.format(calendar.time)
                     selectedHalfYearlyDate = dateStr
-                    fetchStepDetails("six_monthly")
+                    fetchStepDetails("last_six_months")
                 } else {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 }
@@ -373,12 +373,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "680790d0a8d2c1b4456e5c7d"
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 var selectedDate: String
 
-                if (period.contentEquals("weekly")) {
+                if (period.contentEquals("last_weekly")) {
                     if (selectedWeekDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
                         selectedWeekDate = selectedDate
@@ -386,7 +385,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                         selectedDate = selectedWeekDate
                     }
                     setSelectedDate(selectedWeekDate)
-                } else if (period.contentEquals("monthly")) {
+                } else if (period.contentEquals("last_monthly")) {
                     if (selectedMonthDate.contentEquals("")) {
                         selectedDate = currentDateTime.format(formatter)
                         val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
@@ -411,16 +410,16 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 }
 
                 val response = ApiClient.apiServiceFastApi.getStepsDetail(
-                    userId = "680790d0a8d2c1b4456e5c7d",
-                    period = "last_weekly",
-                    date = "2025-05-01"
+                    userId = userId,
+                    period = period,
+                    date = selectedDate
                 )
                 if (response.isSuccessful) {
                     val stepTrackerResponse = response.body()
                     if (stepTrackerResponse?.statusCode == 200 && stepTrackerResponse.data.isNotEmpty()) {
                         val stepData = stepTrackerResponse.data[0] // Assuming single data entry
                         withContext(Dispatchers.Main) {
-                            if (period == "six_monthly") {
+                            if (period == "last_six_months") {
                                 barChart.visibility = View.GONE
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths(stepData)
@@ -428,8 +427,8 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                                 barChart.visibility = View.VISIBLE
                                 layoutLineChart.visibility = View.GONE
                                 val (entries, labels, labelsDate) = when (period) {
-                                    "weekly" -> processWeeklyData(stepData, selectedDate)
-                                    "monthly" -> processMonthlyData(stepData, selectedDate)
+                                    "last_weekly" -> processWeeklyData(stepData, selectedDate)
+                                    "last_monthly" -> processMonthlyData(stepData, selectedDate)
                                     else -> processWeeklyData(stepData, selectedDate) // Fallback
                                 }
                                 updateChart(entries, labels, labelsDate, stepData)
@@ -447,7 +446,9 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Step data  ${response.message()}", Toast.LENGTH_SHORT).show()
+                        barChart.visibility = View.GONE
+                        averageBurnCalorie.text = "0"
                     }
                 }
             } catch (e: Exception) {
@@ -458,7 +459,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
     }
 
-    /** Process API data for weekly period (7 days) */
+    /** Process API data for last_weekly period (7 days) */
     private fun processWeeklyData(stepData: StepTrackerData, currentDate: String): Triple<List<BarEntry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
@@ -618,6 +619,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private fun setStepStats(stepData: StepTrackerData, period: String) {
         activity?.runOnUiThread {
             // Set average steps
+            averageBurnCalorie.visibility = View.VISIBLE
             averageBurnCalorie.text = stepData.totalStepsAvg.toInt().toString()
 
             // Set comparison percentage
@@ -625,9 +627,9 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             val previousAverage = stepData.comparison.previousAverageStepsPerDay
             val percentage = if (previousAverage != 0.0) ((currentAverage - previousAverage) / previousAverage * 100).toInt() else 0
             val periodLabel = when (period) {
-                "weekly" -> "% Past Week"
-                "monthly" -> "% Past Month"
-                "six_monthly" -> "% Past 6 Months"
+                "last_weekly" -> "% Past Week"
+                "last_monthly" -> "% Past Month"
+                "last_six_months" -> "% Past 6 Months"
                 else -> "%"
             }
             if (percentage > 0) {

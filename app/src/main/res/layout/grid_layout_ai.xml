@@ -48,6 +48,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/lastSevenDayTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Last 7 days"
@@ -92,6 +93,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <View
+            android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/border_line"
@@ -126,6 +128,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/rating" />
 
         <TextView
+            android:id="@+id/todayTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"

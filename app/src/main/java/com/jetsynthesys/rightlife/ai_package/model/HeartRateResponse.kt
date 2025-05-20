@@ -7,7 +7,12 @@ data class HeartRateResponse(
     @SerializedName("message") val message: String,
     @SerializedName("start_date") val startDate: String,
     @SerializedName("end_date") val endDate: String,
-    @SerializedName("active_heart_rate_totals") val activeHeartRateTotals: List<HeartRate>?
+    @SerializedName("active_heart_rate_totals") val activeHeartRateTotals: List<HeartRate>,
+    @SerializedName("current_avg_heart_rate") val currentAvgHeartRate: Double,
+    @SerializedName("progress_percentage") val progressPercentage: Double,
+    @SerializedName("progress_sign") val progressSign: String,
+    @SerializedName("heading") val heading: String,
+    @SerializedName("description") val description: String
 )
 
 data class HeartRate(

@@ -76,6 +76,8 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : ImageView
+    private lateinit var heartRateDescriptionHeading : TextView
+    private lateinit var heartRateDescription : TextView
     private lateinit var burn_back_button_image : ImageView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
@@ -102,13 +104,14 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
         burn_back_button_image = view.findViewById(R.id.burn_back_button_image)
+        heartRateDescriptionHeading = view.findViewById(R.id.heartRateDescriptionHeading)
+        heartRateDescription = view.findViewById(R.id.heartRateDescription)
         burn_back_button_image.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
         }
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -582,6 +585,8 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
 
     private fun setLastAverageValue(activeCaloriesResponse: ActiveCaloriesResponse, type: String) {
         activity?.runOnUiThread {
+            heartRateDescriptionHeading.text = activeCaloriesResponse.heading
+            heartRateDescription.text = activeCaloriesResponse.description
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgCalories.toInt().toString()
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)

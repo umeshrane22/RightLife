@@ -43,6 +43,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.CardItem
 import com.jetsynthesys.rightlife.ai_package.model.response.CalorieAnalysisResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.CalorieData
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
@@ -84,7 +85,11 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
     private lateinit var back_button_calorie_balance: ImageView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var heartRateDescriptionHeading : TextView
+    private lateinit var heartRateDescription : TextView
     private lateinit var lineChart: LineChart
+    private var calorieBalanceGoal : String = ""
+    private var calorieBalanceBurnTarget : String = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -108,10 +113,16 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        heartRateDescriptionHeading = view.findViewById(R.id.heartRateDescriptionHeading)
+        heartRateDescription = view.findViewById(R.id.heartRateDescription)
         back_button_calorie_balance = view.findViewById(R.id.back_button_calorie_balance)
+
         back_button_calorie_balance.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
+
+        calorieBalanceGoal = arguments?.getString("calorieBalanceGoal")?: ""
+        calorieBalanceBurnTarget = arguments?.getString("calorieBalanceBurnTarget")?: ""
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -609,6 +620,8 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
     private fun setLastAverageValue(calorieAnalysisResponse: CalorieAnalysisResponse, type: String) {
         activity?.runOnUiThread {
+            heartRateDescriptionHeading.text = calorieAnalysisResponse.data.messages.title
+            heartRateDescription.text = calorieAnalysisResponse.data.messages.message
             val averageCalories = calorieAnalysisResponse.data.calorie_data.map { it.calorie_balance }.average().toFloat()
             averageBurnCalorie.text = averageCalories.toInt().toString()
             val previousAverage = 0f // Replace with actual logic if API provides previous period data

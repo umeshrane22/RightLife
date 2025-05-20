@@ -360,7 +360,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
-                android:id="@+id/heart_rate_description_heading"
+                android:id="@+id/heartRateDescriptionHeading"
                 android:layout_width="339dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -375,13 +375,14 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
+                android:id="@+id/heartRateDescription"
                 android:layout_width="339dp"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
                 android:text="Caloric Balance shows the relationship between how many calories you consume and how many you burn—giving you a real-time view of whether you're in a deficit, surplus, or maintenance zone. A calorie deficit supports fat loss, a surplus supports muscle gain, and balance helps with weight maintenance and steady energy. But it’s not just numbers—it’s about making smart, sustainable choices that align with your goals. At RightLife, we calculate Caloric Balance using your logged food intake, activity data, and changes in weight over time—so the feedback gets more precise the more consistent you are. Whether you’re trying to lose fat, build muscle, or just eat more mindfully, Caloric Balance gives you the daily clarity you need to make informed decisions."
-                app:layout_constraintTop_toBottomOf="@+id/heart_rate_description_heading"
+                app:layout_constraintTop_toBottomOf="@+id/heartRateDescriptionHeading"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
