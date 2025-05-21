@@ -927,69 +927,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-
-                    <TextView
-                        android:id="@+id/steps_no_data_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="No Data Yet"
-                        android:textSize="24dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:visibility="gone"
-                        android:layout_marginTop="73dp"
-                        android:layout_marginStart="20dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/stes_no_data_text_description"
-                        android:layout_width="299dp"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/black"
-                        android:textSize="16dp"
-                        android:layout_marginTop="10dp"
-                        android:visibility="gone"
-                        android:text="Get to know your cardio fitness index, based on your phsyical &amp; cardiovascular health"
-                        app:layout_constraintStart_toStartOf="@+id/steps_no_data_text"
-                        app:layout_constraintTop_toBottomOf="@+id/steps_no_data_text" />
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/sync_with_apple_button"
-                        android:layout_width="270dp"
-                        android:layout_height="48dp"
-                        android:visibility="gone"
-                        android:layout_marginTop="217dp"
-                        android:background="@drawable/sync_button_background"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:id="@+id/sync_with_apple_icon"
-                            android:layout_width="27dp"
-                            android:layout_height="27dp"
-                            android:src="@drawable/sync_with_apple_icon"
-                            android:layout_marginStart="28dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="16dp"
-                            android:textColor="@color/white"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:text="Sync With Apple Health"
-                            android:layout_marginStart="63dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="20dp">
 
                     <ImageView
                         android:id="@+id/step_icon"
@@ -1022,163 +961,245 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/step_text_heading"
-                        android:layout_width="269dp"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/stepNoDataLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="You’re walking less than you do on a typical day"
-                        android:textColor="@color/workout_textcolor"
-                        android:textSize="16dp"
-                        android:textStyle="normal"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="65dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
-                        android:id="@+id/line_graph_steps"
-                        android:layout_width="310dp"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="135dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="20dp"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="visible"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <ImageView
-                        android:id="@+id/step_today_line"
-                        android:layout_width="11dp"
-                        android:layout_height="2dp"
-                        android:src="@drawable/today_line"
-                        app:layout_constraintEnd_toStartOf="@+id/step_today"
-                        app:layout_constraintTop_toTopOf="@+id/step_today"
-                        app:layout_constraintBottom_toBottomOf="@+id/step_today" />
+                        <TextView
+                            android:id="@+id/steps_no_data_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Your Steps Aren’t Stepping"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:visibility="visible"
+                            android:layout_marginTop="60dp"
+                            android:layout_marginStart="20dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/step_today"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/stes_no_data_text_description"
+                            android:layout_width="299dp"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:layout_marginTop="10dp"
+                            android:visibility="visible"
+                            android:text="Your movement isn’t being tracked yet. Sync your device’s pedometer now and see your progress!"
+                            app:layout_constraintStart_toStartOf="@+id/steps_no_data_text"
+                            app:layout_constraintTop_toBottomOf="@+id/steps_no_data_text" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/syncWithHealthConnectButton"
+                            android:layout_width="270dp"
+                            android:layout_height="48dp"
+                            android:visibility="visible"
+                            android:layout_marginTop="190dp"
+                            android:layout_marginBottom="40dp"
+                            android:background="@drawable/sync_button_background"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:id="@+id/sync_with_icon"
+                                android:layout_width="27dp"
+                                android:layout_height="27dp"
+                                android:src="@drawable/health_connect_sync_button_icon"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginStart="10dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/dmsans_bold"
+                                android:text="Sync With Health Connect"
+                                android:layout_marginStart="40dp"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/stepWithDataCardLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Today"
-                        android:textSize="12sp"
-                        android:layout_marginStart="38dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/step_today"
-                        android:layout_marginTop="291dp"
+                        android:visibility="gone"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        app:layout_constraintStart_toStartOf="parent">
 
-                    <TextView
-                        android:id="@+id/todayStepsTv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/step_today"
-                        android:text="0"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="20dp"
-                        app:layout_constraintTop_toBottomOf="@+id/step_today"
-                        app:layout_constraintStart_toStartOf="@+id/step_today_line"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        <TextView
+                            android:id="@+id/step_text_heading"
+                            android:layout_width="269dp"
+                            android:layout_height="wrap_content"
+                            android:text="You’re walking less than you do on a typical day"
+                            android:textColor="@color/workout_textcolor"
+                            android:textSize="16dp"
+                            android:textStyle="normal"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="65dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Steps"
-                        android:textSize="12sp"
-                        android:textColor="@color/step_today"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@+id/todayStepsTv"
-                        app:layout_constraintBottom_toBottomOf="@+id/todayStepsTv" />
+                        <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
+                            android:id="@+id/line_graph_steps"
+                            android:layout_width="310dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="135dp"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
+                            android:layout_marginBottom="20dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
 
-                    <ImageView
-                        android:id="@+id/active_line"
-                        android:layout_width="11dp"
-                        android:layout_height="2dp"
-                        android:src="@drawable/activeline"
-                        app:layout_constraintEnd_toStartOf="@+id/active_today"
-                        app:layout_constraintTop_toTopOf="@+id/active_today"
-                        app:layout_constraintBottom_toBottomOf="@+id/active_today" />
+                        <ImageView
+                            android:id="@+id/step_today_line"
+                            android:layout_width="11dp"
+                            android:layout_height="2dp"
+                            android:src="@drawable/today_line"
+                            app:layout_constraintEnd_toStartOf="@+id/step_today"
+                            app:layout_constraintTop_toTopOf="@+id/step_today"
+                            app:layout_constraintBottom_toBottomOf="@+id/step_today" />
 
-                    <TextView
-                        android:id="@+id/active_today"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Average"
-                        android:textSize="12sp"
-                        android:layout_marginStart="149dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/active_text_color"
-                        android:layout_marginTop="291dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                        <TextView
+                            android:id="@+id/step_today"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Today"
+                            android:textSize="12sp"
+                            android:layout_marginStart="38dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/step_today"
+                            android:layout_marginTop="291dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
 
-                    <TextView
-                        android:id="@+id/averageStepsTv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="100"
-                        android:textColor="@color/active_text_color"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toBottomOf="@+id/active_today"
-                        app:layout_constraintStart_toStartOf="@+id/active_line" />
+                        <TextView
+                            android:id="@+id/todayStepsTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/step_today"
+                            android:text="0"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginBottom="20dp"
+                            app:layout_constraintTop_toBottomOf="@+id/step_today"
+                            app:layout_constraintStart_toStartOf="@+id/step_today_line"
+                            app:layout_constraintBottom_toBottomOf="parent" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" Steps"
-                        android:textSize="12sp"
-                        android:textColor="@color/active_text_color"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@+id/averageStepsTv"
-                        app:layout_constraintBottom_toBottomOf="@+id/averageStepsTv" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" Steps"
+                            android:textSize="12sp"
+                            android:textColor="@color/step_today"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@+id/todayStepsTv"
+                            app:layout_constraintBottom_toBottomOf="@+id/todayStepsTv" />
 
-                    <ImageView
-                        android:id="@+id/goal_line"
-                        android:layout_width="11dp"
-                        android:layout_height="2dp"
-                        android:src="@drawable/goalline"
-                        app:layout_constraintEnd_toStartOf="@+id/goal_today"
-                        app:layout_constraintTop_toTopOf="@+id/goal_today"
-                        app:layout_constraintBottom_toBottomOf="@+id/goal_today" />
+                        <ImageView
+                            android:id="@+id/active_line"
+                            android:layout_width="11dp"
+                            android:layout_height="2dp"
+                            android:src="@drawable/activeline"
+                            app:layout_constraintEnd_toStartOf="@+id/active_today"
+                            app:layout_constraintTop_toTopOf="@+id/active_today"
+                            app:layout_constraintBottom_toBottomOf="@+id/active_today" />
 
-                    <TextView
-                        android:id="@+id/goal_today"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Goal"
-                        android:textSize="12sp"
-                        android:layout_marginEnd="46dp"
-                        android:textStyle="bold"
-                        android:textColor="@color/goal_text_color"
-                        android:layout_marginTop="291dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        <TextView
+                            android:id="@+id/active_today"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Average"
+                            android:textSize="12sp"
+                            android:layout_marginStart="149dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/active_text_color"
+                            android:layout_marginTop="291dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
 
-                    <TextView
-                        android:id="@+id/goal_tex"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="12500"
-                        android:textColor="@color/goal_text_color"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        app:layout_constraintTop_toBottomOf="@+id/goal_today"
-                        app:layout_constraintStart_toStartOf="@+id/goal_line" />
+                        <TextView
+                            android:id="@+id/averageStepsTv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="100"
+                            android:textColor="@color/active_text_color"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintTop_toBottomOf="@+id/active_today"
+                            app:layout_constraintStart_toStartOf="@+id/active_line" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:text=" Steps"
-                        android:textSize="12sp"
-                        android:textColor="@color/goal_text_color"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@+id/goal_tex"
-                        app:layout_constraintBottom_toBottomOf="@+id/goal_tex" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" Steps"
+                            android:textSize="12sp"
+                            android:textColor="@color/active_text_color"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@+id/averageStepsTv"
+                            app:layout_constraintBottom_toBottomOf="@+id/averageStepsTv" />
 
+                        <ImageView
+                            android:id="@+id/goal_line"
+                            android:layout_width="11dp"
+                            android:layout_height="2dp"
+                            android:src="@drawable/goalline"
+                            app:layout_constraintEnd_toStartOf="@+id/goal_today"
+                            app:layout_constraintTop_toTopOf="@+id/goal_today"
+                            app:layout_constraintBottom_toBottomOf="@+id/goal_today" />
+
+                        <TextView
+                            android:id="@+id/goal_today"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Goal"
+                            android:textSize="12sp"
+                            android:layout_marginEnd="60dp"
+                            android:textStyle="bold"
+                            android:textColor="@color/goal_text_color"
+                            android:layout_marginTop="291dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/goal_tex"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="12500"
+                            android:textColor="@color/goal_text_color"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintTop_toBottomOf="@+id/goal_today"
+                            app:layout_constraintStart_toStartOf="@+id/goal_line" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="20dp"
+                            android:text=" Steps"
+                            android:textSize="12sp"
+                            android:textColor="@color/goal_text_color"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toEndOf="@+id/goal_tex"
+                            app:layout_constraintBottom_toBottomOf="@+id/goal_tex" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -1239,7 +1260,7 @@
                         android:layout_height="wrap_content"
                         android:text="Active Heart Rate Zones"
                         android:textStyle="bold"
-                        android:textSize="16dp"
+                        android:textSize="16sp"
                         android:layout_marginStart="6dp"
                         app:layout_constraintBottom_toBottomOf="@+id/active_heartrate_icon"
                         app:layout_constraintStart_toEndOf="@+id/active_heartrate_icon" />
@@ -1254,11 +1275,26 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
+                        android:id="@+id/heartRateZoneNoDataTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="24sp"
+                        android:text="No Data Yet"
+                        android:layout_marginTop="73dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
                         android:id="@+id/lightZoneBelow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="113"
-                        android:textSize="20dp"
+                        android:visibility="gone"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light_bgmtext"
@@ -1270,7 +1306,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="bpm"
-                        android:textSize="12dp"
+                        android:visibility="gone"
+                        android:textSize="12sp"
                         android:textColor="@color/text_color_kcal"
                         android:layout_marginBottom="5dp"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_start_light"
@@ -1300,7 +1337,7 @@
                             android:layout_height="wrap_content"
                             android:text="Light"
                             android:textColor="@color/white"
-                            android:textSize="10dp"
+                            android:textSize="10sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -1313,7 +1350,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="124"
-                        android:textSize="20dp"
+                        android:textSize="20sp"
+                        android:visibility="gone"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button_bgmtext"
@@ -1325,25 +1363,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="bpm"
-                        android:textSize="12dp"
+                        android:visibility="gone"
+                        android:textSize="12sp"
                         android:textColor="@color/text_color_kcal"
                         android:layout_marginBottom="5dp"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_fatloss_button"
                         app:layout_constraintEnd_toEndOf="@+id/vertical_line_fatloss_button"
                         app:layout_constraintStart_toStartOf="@+id/vertical_line_fatloss_button" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:textSize="24dp"
-                        android:text="No Data Yet"
-                        android:layout_marginTop="73dp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
 
                     <View
                         android:id="@+id/vertical_line_fatloss_button"
@@ -1367,7 +1393,7 @@
                             android:layout_height="wrap_content"
                             android:text="Fat Loss"
                             android:textColor="@color/white"
-                            android:textSize="10dp"
+                            android:textSize="10sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -1380,7 +1406,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="139"
-                        android:textSize="20dp"
+                        android:textSize="20sp"
+                        android:visibility="gone"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button_bgmtext"
@@ -1392,7 +1419,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="bpm"
-                        android:textSize="12dp"
+                        android:visibility="gone"
+                        android:textSize="12sp"
                         android:textColor="@color/text_color_kcal"
                         android:layout_marginBottom="5dp"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_cardio_button"
@@ -1421,7 +1449,7 @@
                             android:layout_height="wrap_content"
                             android:text="Cardio"
                             android:textColor="@color/black"
-                            android:textSize="10dp"
+                            android:textSize="10sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -1434,7 +1462,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="152"
-                        android:textSize="20dp"
+                        android:visibility="gone"
+                        android:textSize="20sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_bgmtext"
@@ -1446,7 +1475,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="bpm"
-                        android:textSize="12dp"
+                        android:visibility="gone"
+                        android:textSize="12sp"
                         android:textColor="@color/text_color_kcal"
                         android:layout_marginBottom="5dp"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button"
@@ -1475,7 +1505,7 @@
                             android:layout_height="wrap_content"
                             android:text="Peak"
                             android:textColor="@color/white"
-                            android:textSize="10dp"
+                            android:textSize="10sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -1488,7 +1518,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="188"
-                        android:textSize="20dp"
+                        android:textSize="20sp"
+                        android:visibility="gone"
                         android:textStyle="bold"
                         android:textColor="@color/black"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end_bgmtext"
@@ -1500,7 +1531,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="bpm"
-                        android:textSize="12dp"
+                        android:visibility="gone"
+                        android:textSize="12sp"
                         android:textColor="@color/text_color_kcal"
                         android:layout_marginBottom="5dp"
                         app:layout_constraintBottom_toTopOf="@+id/vertical_line_peak_button_end"
@@ -1541,10 +1573,8 @@
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

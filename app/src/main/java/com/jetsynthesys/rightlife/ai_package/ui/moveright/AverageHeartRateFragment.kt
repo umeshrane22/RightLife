@@ -228,6 +228,7 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         val dataSet = LineDataSet(entries, "Average Heart Rate (bpm)")
         dataSet.color = ContextCompat.getColor(requireContext(),R.color.moveright)
         dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextSize = 12f
         dataSet.setCircleColor(Color.RED)
         if (entries.size > 7){
             dataSet.setDrawValues(false)
@@ -237,10 +238,11 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         dataSet.circleRadius = 5f
         dataSet.lineWidth = 2f
         dataSet.setDrawValues(false) // Hide values on points
-
         val lineData = LineData(dataSet)
         lineChart.data = lineData
-
+//        lineData.li = 0.4f
+//        lineData.data = barData
+//        lineData.setFitBars(true)
         // Customize X-Axis
         val xAxis = lineChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
@@ -250,13 +252,11 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         xAxis.setDrawGridLines(false)
         xAxis.textColor = Color.BLACK
         xAxis.yOffset = 15f // Move labels down
-
         // Customize Y-Axis
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = Color.BLACK
         leftYAxis.setDrawGridLines(true)
-
         // Disable right Y-axis
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
@@ -483,6 +483,7 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         calendar.add(Calendar.DAY_OF_YEAR, -29)
         val dateStrLabel = dateFormat.format(calendar.time)
         val hrvMap = mutableMapOf<String, Float>()
+        val dateList = mutableListOf<String>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
@@ -490,27 +491,33 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             hrvMap[dateStr] = 0f
+            dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until 30) {
+        for (item in dateList) {
+            val dateItem = LocalDate.parse(item)
+            val yearItem = dateItem.year       // 2025
+            val monthItem = dateItem.monthValue // 4
+            val dayItem = dateItem.dayOfMonth   // 22
             weeklyLabels.add(
-                when (i) {
+                when (dayItem) {
                     2 -> "1-7"
-                    9 -> "8-14"
+                    8 -> "8-14"
                     15 -> "15-21"
                     22 -> "22-28"
                     29 -> "29-31"
                     else -> "" // empty string hides the label
                 }
             )
-            val dateLabel = (convertMonth(dateStrLabel.toString()) + "," + year)
-            if (i < 7){
+           // val dateLabel = (convertMonth(dateStrLabel.toString()) + "," + year)
+            val dateLabel = (monthItem.toString() + "," + yearItem.toString())
+            if (dayItem < 7){
                 labelsDate.add("1-7 $dateLabel")
-            }else if (i < 14){
+            }else if (dayItem < 14){
                 labelsDate.add("8-14 $dateLabel")
-            }else if (i < 21){
+            }else if (dayItem < 21){
                 labelsDate.add("15-21 $dateLabel")
-            }else if (i < 28){
+            }else if (dayItem < 28){
                 labelsDate.add("22-28 $dateLabel")
             }else{
                 labelsDate.add("29-31 $dateLabel")

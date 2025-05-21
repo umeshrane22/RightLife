@@ -97,6 +97,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var lightZoneHighl: TextView
     private lateinit var fatLossHighl: TextView
     private lateinit var cardioHighl: TextView
+    private lateinit var heartRateZoneNoDataTv : TextView
     private lateinit var text_no_data_activity_factor: TextView
     private lateinit var peakHighl: TextView
     private lateinit var line_graph: LineGraphView
@@ -108,7 +109,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var averageStepsTv: TextView
     private lateinit var steps_no_data_text: TextView
     private lateinit var stes_no_data_text_description: TextView
-    private lateinit var sync_with_apple_button: ConstraintLayout
+    private lateinit var syncWithHealthConnectButton: ConstraintLayout
     private lateinit var goalStepsTv: TextView
     private lateinit var calorieCountText: TextView
     private lateinit var totalIntakeCalorieText: TextView
@@ -122,9 +123,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var progressBarCalorieBalance : ProgressBar
     private lateinit var belowTransparent : ImageView
     private lateinit var progressBarLayout : ConstraintLayout
+    private lateinit var stepWithDataCardLayout : ConstraintLayout
+    private lateinit var stepNoDataLayout : ConstraintLayout
+    private lateinit var verticalLineStartLightBpmTv : TextView
+    private lateinit var verticalLineFatLossBpmTv : TextView
+    private lateinit var verticalLineCardioBpmTv : TextView
+    private lateinit var verticalLinePeakBpmTv : TextView
+    private lateinit var verticalLinePeakEndBpmTv : TextView
     private var totalIntakeCaloriesSum: Int = 0
-    private var calorieBalanceGoal : String = ""
-    private var calorieBalanceBurnTarget : String = ""
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -179,7 +185,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         calorieCountText = view.findViewById(R.id.calorie_count)
         steps_no_data_text = view.findViewById(R.id.steps_no_data_text)
         stes_no_data_text_description = view.findViewById(R.id.stes_no_data_text_description)
-        sync_with_apple_button = view.findViewById(R.id.sync_with_apple_button)
+        syncWithHealthConnectButton = view.findViewById(R.id.syncWithHealthConnectButton)
         calorieBalanceIcon = view.findViewById(R.id.calorie_balance_icon)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         moveRightImageBack = view.findViewById(R.id.moveright_image_back)
@@ -196,6 +202,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         belowTransparent = view.findViewById(R.id.imageViewBelowOverlay)
         progressBarLayout = view.findViewById(R.id.progressBarLayout)
         workoutImageIcon = view.findViewById(R.id.workout_forward_icon)
+        stepNoDataLayout = view.findViewById(R.id.stepNoDataLayout)
+        stepWithDataCardLayout = view.findViewById(R.id.stepWithDataCardLayout)
+        verticalLineStartLightBpmTv = view.findViewById(R.id.vertical_line_start_light_bgmtext)
+        verticalLineFatLossBpmTv = view.findViewById(R.id.vertical_line_fatloss_button_bgmtext)
+        verticalLineCardioBpmTv = view.findViewById(R.id.vertical_line_cardio_button_bgmtext)
+        verticalLinePeakBpmTv = view.findViewById(R.id.vertical_line_peak_button_bgmtext)
+        verticalLinePeakEndBpmTv = view.findViewById(R.id.vertical_line_peak_button_end_bgmtext)
+        heartRateZoneNoDataTv = view.findViewById(R.id.heartRateZoneNoDataTv)
         setupRecyclerView(view)
         fetchUserWorkouts()
         moveRightImageBack.setOnClickListener {
@@ -213,12 +227,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val lyt_snap_meal_no_data = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal_no_data)
 
         calorieBalanceIcon.setOnClickListener {
-            val fragment = CalorieBalance().apply {
-                arguments = Bundle().apply {
-                    putString("calorieBalanceGoal", calorieBalanceGoal)
-                    putString("calorieBalanceBurnTarget", calorieBalanceBurnTarget)
-                }
-            }
+            val fragment = CalorieBalance()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "CalorieBalance")
                 .addToBackStack(null)
@@ -251,7 +260,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 requestPermissionsAndReadAllData()
             }
         } else {
-            Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
         }
 
         progressBarCalorieBalance.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
@@ -277,6 +286,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         })
         loadStepData()
       //  storeHealthData()
+
+        syncWithHealthConnectButton.setOnClickListener {
+            storeHealthData()
+        }
     }
 
     private fun setupRecyclerView(view: View) {
@@ -297,7 +310,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchMoveLanding(recyclerView: RecyclerView, adapter: GridAdapter) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userId = "67f6698fa213d14e22a47c2a"//SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val selectedDate = currentDateTime.format(formatter)
@@ -370,7 +383,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             // Always set layout to VISIBLE
                             calorie_no_data_filled_layout.visibility = View.VISIBLE
 
-                            if (allInvalid) {
+                            if (!allInvalid) {
                                 // No data state
                                 calorie_no_data_filled_layout.visibility = View.VISIBLE
                                 calorie_layout_data_filled.visibility = View.GONE
@@ -401,8 +414,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
                                         constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
                                         constraintSet.applyTo(progressBarLayout)
-                                        calorieBalanceGoal = it.data.calorieBalance.goal
-                                        calorieBalanceBurnTarget = it.data.calorieBalance.calorieBurnTarget.toInt().toString()
                                     }
                                 })
                             }
@@ -419,17 +430,35 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             }
                            // line_graph.setDataPoints(activityFactorData)
                             withContext(Dispatchers.Main) {
-                                stepLineGraphView.clear()
-                                stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
-                                stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
-                                stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
-                                stepLineGraphView.invalidate()
-                                todayStepsTv.text = todayStepCount.toString()
-                                averageStepsTv.text = averageStepCount.toString()
-                                goalStepsTv.text = goalStepCount.toString()
+                                if (it.data.steps.goalSteps > 0){
+                                    stepNoDataLayout.visibility = View.GONE
+                                    stepWithDataCardLayout.visibility = View.VISIBLE
+                                    stepLineGraphView.clear()
+                                    stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
+                                    stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
+                                    stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                    stepLineGraphView.invalidate()
+                                    todayStepsTv.text = todayStepCount.toString()
+                                    averageStepsTv.text = averageStepCount.toString()
+                                    goalStepsTv.text = goalStepCount.toString()
+                                }else{
+                                    stepNoDataLayout.visibility = View.VISIBLE
+                                    stepWithDataCardLayout.visibility = View.GONE
+                                }
                             }
                             if (heartRateZones != null) {
                                 // Check Light Zone
+                                heartRateZoneNoDataTv.visibility = View.GONE
+                                lightZoneBelow.visibility = View.VISIBLE
+                                lightZoneHighl.visibility = View.VISIBLE
+                                fatLossHighl.visibility = View.VISIBLE
+                                cardioHighl.visibility = View.VISIBLE
+                                peakHighl.visibility = View.VISIBLE
+                                verticalLineStartLightBpmTv.visibility = View.VISIBLE
+                                verticalLineFatLossBpmTv.visibility = View.VISIBLE
+                                verticalLineCardioBpmTv.visibility = View.VISIBLE
+                                verticalLinePeakBpmTv.visibility = View.VISIBLE
+                                verticalLinePeakEndBpmTv.visibility = View.VISIBLE
                                 if (heartRateZones.heartRateZones.lightZone?.size?.let { it >= 2 } == true) {
                                     lightZoneBelow.text = heartRateZones.heartRateZones.lightZone[0].toString()
                                     lightZoneHighl.text = heartRateZones.heartRateZones.lightZone[1].toString()
@@ -469,6 +498,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                                 }
                             } else {
+                                heartRateZoneNoDataTv.visibility = View.VISIBLE
+                                lightZoneBelow.visibility = View.GONE
+                                lightZoneHighl.visibility = View.GONE
+                                fatLossHighl.visibility = View.GONE
+                                cardioHighl.visibility = View.GONE
+                                peakHighl.visibility = View.GONE
+                                verticalLineStartLightBpmTv.visibility = View.GONE
+                                verticalLineFatLossBpmTv.visibility = View.GONE
+                                verticalLineCardioBpmTv.visibility = View.GONE
+                                verticalLinePeakBpmTv.visibility = View.GONE
+                                verticalLinePeakEndBpmTv.visibility = View.GONE
                                 lightZoneBelow.text = "N/A"
                                 lightZoneHighl.text = "N/A"
                                 fatLossHighl.text = "N/A"
@@ -888,12 +928,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userid = "67f6698fa213d14e22a47c2a"//SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
-                    start_date = currentDate,
-                    end_date = currentDate,
+                    start_date = "2025-05-16",
+                    end_date = "2025-05-16",
                     page = 1,
                     limit = 10
                 )
