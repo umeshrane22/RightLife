@@ -310,7 +310,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchMoveLanding(recyclerView: RecyclerView, adapter: GridAdapter) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userId = "67f6698fa213d14e22a47c2a"//SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val selectedDate = currentDateTime.format(formatter)
@@ -383,7 +383,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             // Always set layout to VISIBLE
                             calorie_no_data_filled_layout.visibility = View.VISIBLE
 
-                            if (!allInvalid) {
+                            if (allInvalid) {
                                 // No data state
                                 calorie_no_data_filled_layout.visibility = View.VISIBLE
                                 calorie_layout_data_filled.visibility = View.GONE
@@ -928,12 +928,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchUserWorkouts() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = "67f6698fa213d14e22a47c2a"//SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
                     userId = userid,
-                    start_date = "2025-05-16",
-                    end_date = "2025-05-16",
+                    start_date = currentDate,
+                    end_date = currentDate,
                     page = 1,
                     limit = 10
                 )

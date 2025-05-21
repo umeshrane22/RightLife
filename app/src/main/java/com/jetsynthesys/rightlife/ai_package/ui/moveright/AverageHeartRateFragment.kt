@@ -35,6 +35,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -325,7 +326,7 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
     private fun fetchHeartRate(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val userId = "67f6698fa213d14e22a47c2a"//SharedPreferenceManager.getInstance(requireActivity()).userId
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 var selectedDate : String
