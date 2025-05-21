@@ -178,8 +178,8 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
         Glide.with(this)
             .load(imageUrl)
-            .placeholder(R.drawable.ic_breakfast)
-            .error(R.drawable.ic_breakfast)
+            .placeholder(R.drawable.ic_view_meal_place)
+            .error(R.drawable.ic_view_meal_place)
             .into(imgFood)
 
     }

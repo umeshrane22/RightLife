@@ -31,10 +31,10 @@
             app:layout_constraintStart_toEndOf="@id/workout_function_icon" />
 
         <ImageView
-            android:id="@+id/apple_icon"
+            android:id="@+id/sourceIcon"
             android:layout_width="26dp"
             android:layout_height="26dp"
-            android:src="@drawable/apple_icon"
+            android:src="@drawable/health_connect_sync_button_icon"
             android:layout_marginEnd="13dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -237,7 +237,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/apple_icon" />
+            app:layout_constraintTop_toBottomOf="@+id/sourceIcon" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/timeline_layout"

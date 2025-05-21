@@ -10,7 +10,9 @@ data class ActiveCaloriesResponse(
     @SerializedName("active_calorie_totals") val activeCaloriesTotals: List<ActiveCalorieTotals>,
     @SerializedName("current_avg_calories") val currentAvgCalories: Double,
     @SerializedName("progress_percentage") val progressPercentage : Double,
-    @SerializedName("progress_sign") val progressSign: String
+    @SerializedName("progress_sign") val progressSign: String,
+    @SerializedName("heading") val heading: String,
+    @SerializedName("description") val description: String
 )
 data class ActiveCalorieTotals(
     @SerializedName("calories_burned") val caloriesBurned : Double,

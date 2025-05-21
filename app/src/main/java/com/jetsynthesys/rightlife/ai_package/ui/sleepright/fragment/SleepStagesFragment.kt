@@ -65,6 +65,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     private lateinit var totalTime: TextView
     private lateinit var startTime: TextView
     private lateinit var endTime: TextView
+    private lateinit var stageTitle: TextView
+    private lateinit var stageMessage: TextView
     val remData: ArrayList<Float> = arrayListOf()
     val awakeData: ArrayList<Float> = arrayListOf()
     val coreData: ArrayList<Float> = arrayListOf()
@@ -108,6 +110,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         startTime = view.findViewById(R.id.tv_stage_start_time)
         endTime = view.findViewById(R.id.tv_stage_end_time)
         totalTime = view.findViewById(R.id.tv_stage_total_sleep)
+        stageTitle = view.findViewById(R.id.tv_sleep_stage_title)
+        stageMessage = view.findViewById(R.id.tv_sleep_stage_message)
 
         // Setup progress bars
 
@@ -128,10 +132,9 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
 
     private fun fetchSleepData() {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-            ?: "68010b615a508d0cfd6ac9ca"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
         val date = "2025-04-30"
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+        val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userid, source, date)
         call.enqueue(object : Callback<SleepStageResponse> {
             override fun onResponse(
@@ -141,9 +144,12 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepStageResponse = response.body()!!
-                    if (sleepStageResponse.sleepStageAllData?.sleepStageData != null) {
+                    if (sleepStageResponse.sleepStageAllData?.sleepStageData?.isNotEmpty() == true) {
                         sleepChart.setSleepData(sleepStageResponse.sleepStageAllData?.sleepStageData!!)
                         setProgressBarData(sleepStageResponse.sleepStageAllData)
+                    }else{
+                        progressDialog.dismiss()
+                        Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                     }
                 }else if(response.code() == 400){
                     progressDialog.dismiss()
@@ -164,14 +170,16 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     }
 
     private fun setProgressBarData(data: SleepStageAllData?) {
+        stageTitle.setText(data?.sleepInsightDetail?.title)
+        stageMessage.setText(data?.sleepInsightDetail?.message)
         awakePercent.setText(""+ data?.sleepPercentages?.awake + "%")
-        awakeMinute.setText(convertMinutesToHHMMSS(data?.sleepSummary?.awake!!))
+        awakeMinute.setText(convertHoursToHHMMSS(data?.sleepSummary?.awake!!))
         corePercent.setText(""+ data?.sleepPercentages?.light + "%")
-        coreMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.light!!))
+        coreMinute.setText(convertHoursToHHMMSS(data.sleepSummary?.light!!))
         deepPercent.setText(""+ data?.sleepPercentages?.deep + "%")
-        deepMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.deep!!))
+        deepMinute.setText(convertHoursToHHMMSS(data.sleepSummary?.deep!!))
         remPercent.setText(""+ data?.sleepPercentages?.rem + "%")
-        remMinute.setText(convertMinutesToHHMMSS(data.sleepSummary?.rem!!))
+        remMinute.setText(convertHoursToHHMMSS(data.sleepSummary?.rem!!))
         totalTime.setText(convertDecimalHoursToHrMinFormat(data?.total_sleep_hours!!))
         startTime.setText(convertTo12HourFormat(data.start_time!!))
         endTime.setText(convertTo12HourFormat(data.end_time!!))
@@ -229,6 +237,13 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
 
     private fun convertMinutesToHHMMSS(minutes: Double): String {
         val totalSeconds = (minutes * 60).toInt()
+        val hours = totalSeconds / 3600
+        val minutesPart = (totalSeconds % 3600) / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d:%02d", hours, minutesPart, seconds)
+    }
+    private fun convertHoursToHHMMSS(hoursInput: Double): String {
+        val totalSeconds = (hoursInput * 3600).toInt()
         val hours = totalSeconds / 3600
         val minutesPart = (totalSeconds % 3600) / 60
         val seconds = totalSeconds % 60

@@ -24,8 +24,17 @@ data class SleepData(
     var averageSleep      : Double?,
     @SerializedName("average_needed")
     var averageNeeded     : Double?,
+    @SerializedName("sleep_insight_detail" )
+    var sleepInsightDetail              : IdealActualInsightDetail?,
     @SerializedName("time_data_breakdown" )
     var timeDataBreakdown : ArrayList<TimeDataBreakdown> = arrayListOf()
+)
+
+data class IdealActualInsightDetail(
+    @SerializedName("message")
+    var message : String? ,
+    @SerializedName("title")
+    var title  : String?
 )
 
 data class TimeDataBreakdown (

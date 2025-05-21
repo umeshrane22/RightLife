@@ -82,10 +82,10 @@
                     app:layout_constraintEnd_toEndOf="parent">
 
                     <ImageView
-                        android:id="@+id/breakfast_image"
+                        android:id="@+id/mealTypeImage"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_breakfast"
+                        android:src="@drawable/ic_view_meal_place"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -98,15 +98,16 @@
                         android:text="Breakfast"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_regular"
-                        app:layout_constraintStart_toEndOf="@+id/breakfast_image"
-                        app:layout_constraintTop_toTopOf="@+id/breakfast_image"
-                        app:layout_constraintBottom_toBottomOf="@+id/breakfast_image"/>
+                        app:layout_constraintStart_toEndOf="@+id/mealTypeImage"
+                        app:layout_constraintTop_toTopOf="@+id/mealTypeImage"
+                        app:layout_constraintBottom_toBottomOf="@+id/mealTypeImage"/>
 
                     <ImageView
                         android:id="@+id/veg_image"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:src="@drawable/veg"
+                        android:visibility="invisible"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toEndOf="@+id/foodType"
                         app:layout_constraintTop_toTopOf="parent"

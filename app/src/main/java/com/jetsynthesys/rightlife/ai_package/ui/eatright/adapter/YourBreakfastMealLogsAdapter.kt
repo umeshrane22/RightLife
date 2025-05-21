@@ -230,7 +230,7 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                isClick : Boolean) {
         dataLists.clear()
         if (newList != null) {
-            dataLists = newList
+            dataLists.addAll(newList)
             clickPos = pos
             regularRecipeEntry = mealLogItem
             snapMealData = snapMeal

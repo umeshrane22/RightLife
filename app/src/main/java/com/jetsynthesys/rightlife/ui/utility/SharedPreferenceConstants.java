@@ -6,6 +6,10 @@ public class SharedPreferenceConstants {
     public static final String USER_ID = "user_id";
 
     public static final String DEVICE_NAME = "device_name";
+
+    public static final String SYNC_TIME = "sync_time";
+
+    public static final String SLEEP_SYNC_TIME = "sleep_sync_time";
     public static final String USER_PROFILE = "user_profile";
     public static final String VOICE_SCAN_ANSWER_ID = "VOICE_SCAN_ANSWER_ID";
     public static final String ON_BOARDING_QUESTIONS = "ON_BOARDING_QUESTIONS";
@@ -33,6 +37,10 @@ public class SharedPreferenceConstants {
     public static final String FIRST_TIME_SNAP_MEAL_VIDEO = "FIRST_TIME_SNAP_MEAL_VIDEO";
     public static final String FIRST_TIME_SNAP_MEAL_RATING = "FIRST_TIME_SNAP_MEAL_RATING";
     public static final String ENABLE_NOTIFICATION = "ENABLE_NOTIFICATION";
+    public static final String EAT_RIGHT_MAX_CALORIES = "EAT_RIGHT_MAX_CALORIES";
+    public static final String EAT_RIGHT_MAX_CARBS = "EAT_RIGHT_MAX_CARBS";
+    public static final String EAT_RIGHT_MAX_PROTEIN = "EAT_RIGHT_MAX_PROTEIN";
+    public static final String EAT_RIGHT_MAX_FATS = "EAT_RIGHT_MAX_FATS";
 }
 
 

@@ -70,6 +70,26 @@ public class SharedPreferenceManager {
         return sharedPreferences.getString(SharedPreferenceConstants.DEVICE_NAME, "");
     }
 
+    public void saveMoveRightSyncTime(String time) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.SYNC_TIME, time);
+        editor.apply();
+    }
+
+    // Method to retrieve the user ID
+    public String getMoveRightSyncTime() {
+        return sharedPreferences.getString(SharedPreferenceConstants.SYNC_TIME, "");
+    }
+
+    public void saveSleepRightSyncTime(String time) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.SLEEP_SYNC_TIME, time);
+        editor.apply();
+    }
+    public String getSleepRightSyncTime() {
+        return sharedPreferences.getString(SharedPreferenceConstants.SLEEP_SYNC_TIME, "");
+    }
+
     // Clear the access token and user ID (for example, when logging out)
     public void clearData() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -430,6 +450,46 @@ public class SharedPreferenceManager {
     public void setFirstTimeUserForSnapMealRating(boolean isVideoUi) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(SharedPreferenceConstants.FIRST_TIME_SNAP_MEAL_RATING, isVideoUi);
+        editor.apply();
+    }
+
+    public int getMaxCalories() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CALORIES, 0);
+    }
+
+    public void setMaxCalories(int maxCalories) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CALORIES, maxCalories);
+        editor.apply();
+    }
+
+    public int getMaxCarbs() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CARBS, 0);
+    }
+
+    public void setMaxCarbs(int maxCarbs) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_CARBS, maxCarbs);
+        editor.apply();
+    }
+
+    public int getMaxProtein() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_PROTEIN, 0);
+    }
+
+    public void setMaxProtein(int maxProtein) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_PROTEIN, maxProtein);
+        editor.apply();
+    }
+
+    public int getMaxFats() {
+        return sharedPreferences.getInt(SharedPreferenceConstants.EAT_RIGHT_MAX_FATS, 0);
+    }
+
+    public void setMaxFats(int maxFats) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_FATS, maxFats);
         editor.apply();
     }
 }

@@ -23,8 +23,6 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                                       val onMSSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var selectedItem = -1
-
     companion object {
         private const val TYPE_REGULAR_RECIPE = 0
         private const val TYPE_SNAP_MEAL = 1
@@ -230,7 +228,7 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
-            dataLists = item
+            dataLists.addAll(item)
             clickPos = pos
             regularRecipeEntry = mealLogItem
             snapMealData = snapMeal

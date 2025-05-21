@@ -85,7 +85,7 @@ class DeleteRecipeBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun deleteRecipe(recipeId: String) {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -94,7 +94,7 @@ class DeleteRecipeBottomSheet : BottomSheetDialogFragment() {
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                     val mealData = response.body()?.message
                     Toast.makeText(context, mealData, Toast.LENGTH_SHORT).show()
                     listener?.onRecipeDeleted("")
@@ -102,13 +102,13 @@ class DeleteRecipeBottomSheet : BottomSheetDialogFragment() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(context, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireView())
             }
         })
     }

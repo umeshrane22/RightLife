@@ -9,13 +9,13 @@ class LoaderUtil {
     companion object {
         private var loadingOverlay : FrameLayout? = null
 
-        fun showLoader(activity: Activity) {
-            loadingOverlay = activity.findViewById(R.id.loading_overlay)
+        fun showLoader(view: View) {
+            loadingOverlay = view.findViewById(R.id.loading_overlay)
             loadingOverlay?.visibility = View.VISIBLE
         }
 
-        fun dismissLoader(activity: Activity) {
-            loadingOverlay = activity.findViewById(R.id.loading_overlay)
+        fun dismissLoader(view: View) {
+            loadingOverlay = view.findViewById(R.id.loading_overlay)
             loadingOverlay?.visibility = View.GONE
         }
     }

@@ -192,6 +192,10 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             }
         }
 
+        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+            filterDishes(query)
+        }
+
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -268,10 +272,6 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         valueLists.addAll(snapRecipesList as Collection<SnapRecipeList>)
         val mealLogDateData: SnapRecipeList? = null
         recipeSearchAdapter.addAll(valueLists, -1, mealLogDateData, false)
-
-        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
-            filterDishes(query)
-        }
     }
 
     private fun onSnapSearchDishItem(recipesModel: SnapRecipeList, position: Int, isRefresh: Boolean) {

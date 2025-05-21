@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.Window
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -85,7 +87,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private lateinit var editDeleteLunch : CardView
     private lateinit var editDeleteDinner : CardView
     private lateinit var layoutMain : ConstraintLayout
-    private lateinit var deleteBottomSheetFragment: DeleteMealBottomSheet
     private lateinit var selectMealTypeBottomSheet: SelectMealTypeBottomSheet
     private lateinit var layoutDelete : LinearLayoutCompat
     private lateinit var viewBFMealInsightLayout : LinearLayoutCompat
@@ -125,6 +126,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private lateinit var calValueDinnerTv : TextView
     private lateinit var noMealLogsLayout : LinearLayoutCompat
     private lateinit var logMealTv : TextView
+    private lateinit var maxCalUnit : TextView
+    private lateinit var maxCarbUnit : TextView
+    private lateinit var maxProteinUnit : TextView
+    private lateinit var maxFatsUnit : TextView
 
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
@@ -177,7 +182,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         appPreference = AppPreference(requireContext())
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         appPreference = AppPreference(requireContext())
@@ -238,6 +242,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         calValueDinnerTv = view.findViewById(R.id.tv_dinner_cal_value)
         noMealLogsLayout = view.findViewById(R.id.noMealLogsLayout)
         logMealTv = view.findViewById(R.id.logMealTv)
+        maxCalUnit = view.findViewById(R.id.maxCalUnit)
+        maxCarbUnit = view.findViewById(R.id.maxCarbUnit)
+        maxProteinUnit = view.findViewById(R.id.maxProteinUnit)
+        maxFatsUnit = view.findViewById(R.id.maxFatsUnit)
 
         if (moduleName.contentEquals("HomeDashboard")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
@@ -554,10 +562,18 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun setGraphValue(dailyRecipe: FullDaySummary?){
         activity?.runOnUiThread {
+            val maxCalorie = SharedPreferenceManager.getInstance(requireActivity()).maxCalories
+            val maxCarbs = SharedPreferenceManager.getInstance(requireActivity()).maxCarbs
+            val maxProtein = SharedPreferenceManager.getInstance(requireActivity()).maxProtein
+            val maxFats = SharedPreferenceManager.getInstance(requireActivity()).maxFats
             calValue.text = dailyRecipe?.calories?.toInt().toString()
             carbsValue.text = dailyRecipe?.carbs?.toInt().toString()
             proteinsValue.text = dailyRecipe?.protein?.toInt().toString()
             fatsValue.text = dailyRecipe?.fats?.toInt().toString()
+            maxCalUnit.text = " / " + maxCalorie.toString()
+            maxCarbUnit.text = " / " + maxCarbs.toString()
+            maxProteinUnit.text = " / " + maxProtein.toString()
+            maxFatsUnit.text = " / " + maxFats.toString()
 
             caloriesProgressBar.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -565,7 +581,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     val progressBarWidth = caloriesProgressBar.width.toFloat()
                     val overlayPosition = 0.7f * progressBarWidth
                     val progress = dailyRecipe?.calories?.toInt()
+                    caloriesProgressBar.progress = progress!!
                     val max = caloriesProgressBar.max
+                    caloriesProgressBar.max = maxCalorie
                     val circlePosition = (progress!!.toFloat() / max) * progressBarWidth
 //                val circleRadius = circleIndicator.width / 2f
 //                circleIndicator.x = circlePosition - circleRadius
@@ -576,15 +594,15 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 }
             })
             // Set progress programmatically
-            carbsProgressBar.max = 84  // Set maximum value
+            carbsProgressBar.max = maxCarbs  // Set maximum value
             carbsProgressBar.progress = dailyRecipe?.carbs!!.toInt()
 
             // Set progress programmatically
-            proteinsProgressBar.max = 500  // Set maximum value
+            proteinsProgressBar.max = maxProtein  // Set maximum value
             proteinsProgressBar.progress = dailyRecipe?.protein!!.toInt()
 
             // Set progress programmatically
-            fatsProgressBar.max = 65  // Set maximum value
+            fatsProgressBar.max = maxFats  // Set maximum value
             fatsProgressBar.progress = dailyRecipe?.fats!!.toInt()
         }
     }
@@ -788,7 +806,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     private fun getMealPlanList() {
-        LoaderUtil.showLoader(requireActivity())
+        LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         println(userId)
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
@@ -802,53 +820,38 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                 //   LoaderUtil.dismissLoader(requireActivity())
+                    LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-              //  LoaderUtil.dismissLoader(requireActivity())
+                LoaderUtil.dismissLoader(requireView())
             }
         })
     }
 
-    private fun getMealList() {
-        LoaderUtil.showLoader(requireActivity())
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val startDate = "2025-03-22"
-        val call = ApiClient.apiServiceFastApi.getMealList(userId, startDate)
-        call.enqueue(object : Callback<MealsResponse> {
-            override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
-                if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
-                    val mealPlanLists = response.body()?.meals ?: emptyList()
-                    mealList.addAll(mealPlanLists)
-                  //  onMealLogDateItemRefresh()
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
-                }
-            }
-            override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
-            }
-        })
+    private var loadingOverlay : FrameLayout? = null
+
+    fun showLoader(activity: View) {
+        loadingOverlay = activity.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(activity: View) {
+        loadingOverlay = activity.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     private fun getMealsLogList(formattedDate: String) {
-        LoaderUtil.showLoader(requireActivity())
+ //       showLoader(requireView())
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {
                 override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                     if (response.isSuccessful) {
-                            LoaderUtil.dismissLoader(requireActivity())
+//                            dismissLoader(requireView())
                         if (response.body()?.data != null){
                             selectedDate = response.body()?.data!!.date
                             val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
@@ -888,6 +891,17 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             if (dinnerViewItem != null){
                                 dinnerMealDetailsLog = dinnerViewItem
                             }
+
+                            breakfastCombinedList.clear()
+                            morningSnackCombinedList.clear()
+                            lunchCombinedList.clear()
+                            eveningSnacksCombinedList.clear()
+                            dinnerCombinedList.clear()
+                            breakfastMealNutritionSummary.clear()
+                            morningSnackMealNutritionSummary.clear()
+                            lunchMealNutritionSummary.clear()
+                            eveningSnacksMealNutritionSummary.clear()
+                            dinnerMealNutritionSummary.clear()
 
                             if (breakfastMealNutrition != null) {
                                 if (breakfastMealNutrition.size > 0) {
@@ -971,7 +985,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             }
                             val fullDaySummary = response.body()?.data!!.full_day_summary
 
-                            activity?.runOnUiThread {
+                            requireActivity()?.runOnUiThread {
                                 if (fullDaySummary.calories != null){
                                     noMealLogsLayout.visibility = View.GONE
                                     dailyCalorieGraphLayout.visibility = View.VISIBLE
@@ -979,18 +993,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                                     if (response.body()?.data!!.meal_detail.isNotEmpty()){
                                         logMealTv.text = "Log New Meal"
                                         setDayLogsList()
-                                        val regularRecipeData : RegularRecipeEntry? = null
-                                        val snapMealData : SnapMeal? = null
-//                                        if (breakfastCombinedList.size > 0) {
-//                                            breakfastListLayout.visibility = View.VISIBLE
-//                                            if (breakfastMealNutritionSummary.size > 0) {
-//                                                calValueTv.text =
-//                                                    breakfastMealNutritionSummary.get(0).calories.toInt().toString()
-//                                            }
-//                                            breakfastMealLogsAdapter.updateList(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
-//                                        } else {
-//                                            breakfastListLayout.visibility = View.GONE
-//                                        }
                                     }
                                 }else{
                                     noMealLogsLayout.visibility = View.VISIBLE
@@ -1015,27 +1017,27 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             dinnerListLayout.visibility = View.GONE
                             noMealLogsLayout.visibility = View.VISIBLE
                             logMealTv.text = "Log Your Meal"
-                               LoaderUtil.dismissLoader(requireActivity())
+                        //    dismissLoader(requireView())
                         }
                     }
                 }
                 override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                      LoaderUtil.dismissLoader(requireActivity())
+                  //   dismissLoader(requireView())
                 }
             })
         }
     }
 
     private fun getMealsLogHistory(formattedDate: String) {
-        LoaderUtil.showLoader(requireActivity())
+     //   showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMealsLogHistory(userId, formattedDate)
         call.enqueue(object : Callback<MealLogsHistoryResponse> {
             override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireActivity())
+//                    dismissLoader(requireView())
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
                         if (mealLogsHistoryResponse?.is_logged_meal_list!!.size > 0){
@@ -1046,13 +1048,13 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireActivity())
+                 //   dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<MealLogsHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireActivity())
+               // dismissLoader(requireView())
             }
         })
     }

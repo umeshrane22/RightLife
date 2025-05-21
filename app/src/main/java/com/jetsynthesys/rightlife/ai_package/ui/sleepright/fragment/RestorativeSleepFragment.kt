@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -70,6 +71,10 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     private lateinit var tvRemSleep: TextView
     private lateinit var tvDeepSleep: TextView
     private lateinit var tvRestoDate: TextView
+    private lateinit var tvRestoTitle: TextView
+    private lateinit var tvRestoMessage: TextView
+    private lateinit var lytRestoDataCard: CardView
+    private lateinit var lytRestoNoDataCard: CardView
     private lateinit var restorativeSleepResponse: RestorativeSleepResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
@@ -96,6 +101,10 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         tvAveragePercentage = view.findViewById(R.id.tv_average_sleep_percentage)
         tvAverageSleep = view.findViewById(R.id.tv_average_sleep_duration)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
+        tvRestoTitle = view.findViewById(R.id.resto_title)
+        tvRestoMessage = view.findViewById(R.id.resto_message)
+        lytRestoDataCard = view.findViewById(R.id.lyt_resto_card)
+        lytRestoNoDataCard = view.findViewById(R.id.lyt_resto_nocard)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -293,8 +302,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     private fun fetchSleepData(endDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, endDate)
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, "2025-04-30")
         call.enqueue(object : Callback<RestorativeSleepResponse> {
             override fun onResponse(call: Call<RestorativeSleepResponse>, response: Response<RestorativeSleepResponse>) {
                 if (response.isSuccessful) {
@@ -326,6 +335,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         var totalRemDuration = 0.0
         var totalDeepDuration = 0.0
         val formatters = DateTimeFormatter.ISO_DATE_TIME
+        tvRestoTitle.setText(restorativeSleepResponse?.sleepInsightDetail?.title)
+        tvRestoMessage.setText(restorativeSleepResponse?.sleepInsightDetail?.message)
         if (restorativeSleepResponse?.restorativeSleepDetails!=null) {
             if (restorativeSleepResponse.restorativeSleepDetails.getOrNull(0)?.sleepStages!=null) {
 

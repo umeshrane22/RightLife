@@ -2,12 +2,57 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.model
 
 import com.google.gson.annotations.SerializedName
 
+data class MoveDashboardResponse(
+    @SerializedName("status_code") val statusCode: Int,
+    @SerializedName("message") val message: String,
+    @SerializedName("data") val data: DashboardData
+)
+
+data class DashboardData(
+    @SerializedName("calorie_balance") val calorieBalance: CalorieBalance,
+    @SerializedName("activity_factor") val activityFactor: ActivityFactor,
+    @SerializedName("heart_rate_zones") val heartRateZones: HeartRateZones,
+    @SerializedName("resting_heart_rate") val restingHeartRate: RestingHeartRate,
+    @SerializedName("average_heart_rate") val averageHeartRate: AverageHeartRate,
+    @SerializedName("heart_rate_variability") val heartRateVariability: HeartRateVariability,
+    @SerializedName("calories_burned") val caloriesBurned: CaloriesBurned,
+    @SerializedName("steps") val steps: Steps
+)
+
 data class CalorieBalance(
-    @SerializedName("calorie_intake") val calorieIntake: Float,
-    @SerializedName("calorie_burn_target") val calorieBurnTarget: Float,
-    @SerializedName("goal") val goal: String,
-    @SerializedName("difference") val difference: Float,
-    @SerializedName("message") val message: String
+    @SerializedName("calorie_intake")
+    val calorieIntake: Double,
+    @SerializedName("calorie_burn_target")
+    val calorieBurnTarget: Double,
+    @SerializedName("calorie_range")
+    val calorieRange: List<Double>,
+    @SerializedName("goal")
+    val goal: String,
+    @SerializedName("difference")
+    val difference: Double,
+    @SerializedName("heading")
+    val heading: String,
+    @SerializedName("message")
+    val message: String
+)
+
+data class ActivityFactor(
+    @SerializedName("last_7_days") val last7Days: List<ActivityFactorDay>,
+    @SerializedName("average_activity_factor") val averageActivityFactor: Float,
+    @SerializedName("today") val today: Float,
+    @SerializedName("unit") val unit: String
+)
+
+data class ActivityFactorDay(
+    @SerializedName("date") val date: String,
+    @SerializedName("activity_factor") val activityFactor: Float
+)
+
+data class HeartRateZones(
+    @SerializedName("heart_rate_zones")
+    val heartRateZones: HeartRateZone,
+    @SerializedName("previous_day")
+    val previousDay: PreviousDayHeartRate
 )
 
 data class HeartRateZone(
@@ -17,9 +62,13 @@ data class HeartRateZone(
     @SerializedName("Peak Zone") val peakZone: List<Int>
 )
 
-data class RestingHeartRateDay(
-    @SerializedName("bpm") val bpm: Float,
-    @SerializedName("date") val date: String
+data class PreviousDayHeartRate(
+    @SerializedName("average_heart_rate")
+    val averageHeartRate: Double,
+    @SerializedName("max_heart_rate")
+    val maxHeartRate: Double,
+    @SerializedName("unit")
+    val unit: String
 )
 
 data class RestingHeartRate(
@@ -28,8 +77,8 @@ data class RestingHeartRate(
     @SerializedName("unit") val unit: String
 )
 
-data class AverageHeartRateDay(
-    @SerializedName("heart_rate") val heartRate: Float,
+data class RestingHeartRateDay(
+    @SerializedName("bpm") val bpm: Float,
     @SerializedName("date") val date: String
 )
 
@@ -39,8 +88,8 @@ data class AverageHeartRate(
     @SerializedName("unit") val unit: String
 )
 
-data class HeartRateVariabilityDay(
-    @SerializedName("hrv") val hrv: Float,
+data class AverageHeartRateDay(
+    @SerializedName("heart_rate") val heartRate: Float,
     @SerializedName("date") val date: String
 )
 
@@ -50,8 +99,8 @@ data class HeartRateVariability(
     @SerializedName("unit") val unit: String
 )
 
-data class CaloriesBurnedDay(
-    @SerializedName("calories_burned") val caloriesBurned: Float,
+data class HeartRateVariabilityDay(
+    @SerializedName("hrv") val hrv: Float,
     @SerializedName("date") val date: String
 )
 
@@ -61,10 +110,9 @@ data class CaloriesBurned(
     @SerializedName("unit") val unit: String
 )
 
-data class CumulativeSteps(
-    @SerializedName("hour") val hour: Int,
-    @SerializedName("cumulative_steps") val cumulativeSteps: Int,
-    @SerializedName("interval") val interval: String
+data class CaloriesBurnedDay(
+    @SerializedName("calories_burned") val caloriesBurned: Float,
+    @SerializedName("date") val date: String
 )
 
 data class Steps(
@@ -77,33 +125,8 @@ data class Steps(
     @SerializedName("unit") val unit: String
 )
 
-// New data class for activity_factor's last_7_days items
-data class ActivityFactorDay(
-    @SerializedName("date") val date: String,
-    @SerializedName("activity_factor") val activityFactor: Float
-)
-
-// New data class for activity_factor
-data class ActivityFactor(
-    @SerializedName("last_7_days") val last7Days: List<ActivityFactorDay>,
-    @SerializedName("average_activity_factor") val averageActivityFactor: Float,
-    @SerializedName("today") val today: Float,
-    @SerializedName("unit") val unit: String
-)
-
-data class DashboardData(
-    @SerializedName("calorie_balance") val calorieBalance: CalorieBalance,
-    @SerializedName("heart_rate_zones") val heartRateZones: HeartRateZone,
-    @SerializedName("resting_heart_rate") val restingHeartRate: RestingHeartRate,
-    @SerializedName("average_heart_rate") val averageHeartRate: AverageHeartRate,
-    @SerializedName("heart_rate_variability") val heartRateVariability: HeartRateVariability,
-    @SerializedName("calories_burned") val caloriesBurned: CaloriesBurned,
-    @SerializedName("steps") val steps: Steps,
-    @SerializedName("activity_factor") val activityFactor: ActivityFactor // Added new field
-)
-
-data class MoveDashboardResponse(
-    @SerializedName("status_code") val statusCode: Int,
-    @SerializedName("message") val message: String,
-    @SerializedName("data") val data: DashboardData
+data class CumulativeSteps(
+    @SerializedName("hour") val hour: Int,
+    @SerializedName("cumulative_steps") val cumulativeSteps: Int,
+    @SerializedName("interval") val interval: String
 )

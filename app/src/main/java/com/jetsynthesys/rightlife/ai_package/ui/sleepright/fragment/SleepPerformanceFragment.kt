@@ -65,6 +65,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
     private lateinit var tvSleepAverage: TextView
+    private lateinit var performTitle: TextView
+    private lateinit var performMessage: TextView
+    private lateinit var performSubtitle: TextView
     private lateinit var barChart: BarChart
     private lateinit var lineChart: LineChart
     private lateinit var radioGroup: RadioGroup
@@ -92,6 +95,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         btnNext = view.findViewById(R.id.btn_next)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
         tvSleepAverage = view.findViewById(R.id.tv_sleep_perform_average)
+        performTitle = view.findViewById(R.id.perform_title)
+        performMessage = view.findViewById(R.id.perform_message)
+        performSubtitle = view.findViewById(R.id.perform_subTitle)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -268,8 +274,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private fun fetchSleepData(endDate: String, period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,endDate)
+        val source = "apple"
+        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,"2025-04-30")
         call.enqueue(object : Callback<SleepPerformanceResponse> {
             override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
                 if (response.isSuccessful) {
@@ -295,6 +301,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
     private fun setSleepRightPerformanceData(sleepPerformanceResponse: SleepPerformanceAllData?) {
         tvSleepAverage.setText(""+sleepPerformanceResponse?.sleepPerformanceAverage?.roundToDecimals(2)+"%")
+        performTitle.setText(sleepPerformanceResponse?.sleepInsightDetail?.title)
+        performSubtitle.setText(sleepPerformanceResponse?.sleepInsightDetail?.subtitle)
+        performMessage.setText(sleepPerformanceResponse?.sleepInsightDetail?.message)
       //  updateChart()
         if (sleepPerformanceResponse?.sleepPerformanceList?.isNotEmpty() == true) {
             if (sleepPerformanceResponse.sleepPerformanceList.size < 9 ) {
