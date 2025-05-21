@@ -64,6 +64,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var averageBedTime: TextView
     private lateinit var averageSleepTime: TextView
     private lateinit var averageWakeupTime: TextView
+    private lateinit var consistencyTitle: TextView
+    private lateinit var consistencyMessage: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -84,6 +86,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         averageBedTime = view.findViewById(R.id.tv_average_bed_time)
         averageSleepTime = view.findViewById(R.id.tv_average_sleep_time)
         averageWakeupTime = view.findViewById(R.id.tv_average_wakeup_time)
+        consistencyTitle = view.findViewById(R.id.consistency_title)
+        consistencyMessage = view.findViewById(R.id.consistency_message)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -250,9 +254,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private fun fetchSleepData(mEndDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = "android"
+        val source = "apple"
         val date = mEndDate
-        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,date)
+        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,"2025-04-30")
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 progressDialog.dismiss()
@@ -265,6 +269,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                             }
                         }
                         setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
+                        consistencyTitle.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.title)
+                        consistencyMessage.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.message)
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

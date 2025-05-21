@@ -33,6 +33,6 @@ data class SleepStageAllData (
 data class StageInsightDetail(
     @SerializedName("message")
     var message : String? ,
-    @SerializedName("tip")
-    var tip  : String?
+    @SerializedName("title")
+    var title  : String?
 )

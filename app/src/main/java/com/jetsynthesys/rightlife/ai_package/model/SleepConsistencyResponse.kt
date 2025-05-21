@@ -31,8 +31,8 @@ data class SleepConsistencyAllData (
 data class ConsistencyInsightDetail(
     @SerializedName("message")
     var message : String? ,
-    @SerializedName("tip")
-    var tip  : String?
+    @SerializedName("title")
+    var title  : String?
 )
 
 data class SleepConsistencyDetail (

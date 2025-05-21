@@ -27,8 +27,10 @@ data class SleepPerformanceAllData (
 data class PerformanceInsightDetail(
     @SerializedName("message")
     var message : String? ,
-    @SerializedName("tip")
-    var tip  : String?
+    @SerializedName("title")
+    var title  : String?,
+    @SerializedName("subtitle")
+    var subtitle  : String?
 )
 
 data class SleepPerformanceList(

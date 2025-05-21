@@ -65,6 +65,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     private lateinit var totalTime: TextView
     private lateinit var startTime: TextView
     private lateinit var endTime: TextView
+    private lateinit var stageTitle: TextView
+    private lateinit var stageMessage: TextView
     val remData: ArrayList<Float> = arrayListOf()
     val awakeData: ArrayList<Float> = arrayListOf()
     val coreData: ArrayList<Float> = arrayListOf()
@@ -108,6 +110,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         startTime = view.findViewById(R.id.tv_stage_start_time)
         endTime = view.findViewById(R.id.tv_stage_end_time)
         totalTime = view.findViewById(R.id.tv_stage_total_sleep)
+        stageTitle = view.findViewById(R.id.tv_sleep_stage_title)
+        stageMessage = view.findViewById(R.id.tv_sleep_stage_message)
 
         // Setup progress bars
 
@@ -129,8 +133,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     private fun fetchSleepData() {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val date = "2025-05-01"
-        val source = "android"
+        val date = "2025-04-30"
+        val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userid, source, date)
         call.enqueue(object : Callback<SleepStageResponse> {
             override fun onResponse(
@@ -166,6 +170,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     }
 
     private fun setProgressBarData(data: SleepStageAllData?) {
+        stageTitle.setText(data?.sleepInsightDetail?.title)
+        stageMessage.setText(data?.sleepInsightDetail?.message)
         awakePercent.setText(""+ data?.sleepPercentages?.awake + "%")
         awakeMinute.setText(convertHoursToHHMMSS(data?.sleepSummary?.awake!!))
         corePercent.setText(""+ data?.sleepPercentages?.light + "%")
