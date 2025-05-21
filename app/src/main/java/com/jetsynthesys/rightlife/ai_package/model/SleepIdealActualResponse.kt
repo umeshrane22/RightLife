@@ -33,8 +33,8 @@ data class SleepData(
 data class IdealActualInsightDetail(
     @SerializedName("message")
     var message : String? ,
-    @SerializedName("tip")
-    var tip  : String?
+    @SerializedName("title")
+    var title  : String?
 )
 
 data class TimeDataBreakdown (

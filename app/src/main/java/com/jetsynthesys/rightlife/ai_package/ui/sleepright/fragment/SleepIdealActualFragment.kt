@@ -59,6 +59,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var dateRangeText: TextView
     private lateinit var tvAverageSleep: TextView
     private lateinit var tvAverageNeeded: TextView
+    private lateinit var tvIdealTitle: TextView
+    private lateinit var tvIdealMessage: TextView
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
     private var mStartDate = ""
@@ -77,6 +79,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         btnNext = view.findViewById(R.id.btn_next)
         tvAverageSleep = view.findViewById(R.id.tv_average_sleep_time)
         tvAverageNeeded = view.findViewById(R.id.tv_average_needed_time)
+        tvIdealTitle = view.findViewById(R.id.ideal_title)
+        tvIdealMessage = view.findViewById(R.id.ideal_message)
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -290,8 +294,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         private fun fetchSleepData(endDate: String,period: String) {
             progressDialog.show()
             val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-            val source = "android"
-            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, endDate)
+            val source = "apple"
+            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, "2025-04-30")
             call.enqueue(object : Callback<SleepIdealActualResponse> {
                 override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                     if (response.isSuccessful) {
@@ -358,6 +362,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     }
 
     private fun setSleepRightData() {
+        tvIdealTitle.setText(idealActualResponse.data?.sleepInsightDetail?.title)
+        tvIdealMessage.setText(idealActualResponse.data?.sleepInsightDetail?.message)
         if (idealActualResponse.data?.averageSleep!=null && idealActualResponse.data?.averageNeeded!=null) {
             tvAverageSleep.setText(convertDecimalHoursToHrMinFormat(idealActualResponse.data?.averageSleep!!))
             tvAverageNeeded.setText(convertDecimalHoursToHrMinFormat(idealActualResponse.data?.averageNeeded!!))

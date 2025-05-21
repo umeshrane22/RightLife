@@ -616,24 +616,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:visibility="gone"
+                android:layout_marginTop="25dp"
+                android:id="@+id/tv_sleep_stage_title"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:visibility="visible"
                 android:textColor="@color/on_track_color"
-                android:text="Lorem Ipsum Has Been The Industry’s Standard Dummy Text Ever Since Thee"
-                android:textSize="18sp" />
+                android:text=""
+                android:textSize="16sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginTop="10dp"
-                android:visibility="gone"
+                android:id="@+id/tv_sleep_stage_message"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="15dp"
+                android:visibility="visible"
                 android:textColor="@color/black_no_meals"
                 android:fontFamily="@font/dmsans_regular"
-                android:text="Lorem Ipsum has been the industry’s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged."
+                android:text=""
                 android:textSize="16sp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

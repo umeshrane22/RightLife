@@ -37,16 +37,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.DistanceRecord
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.HeartRateRecord
-import androidx.health.connect.client.records.OxygenSaturationRecord
-import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.SpeedRecord
-import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
-import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
@@ -68,14 +59,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
-import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
-import com.jetsynthesys.rightlife.ai_package.model.BodyMass
-import com.jetsynthesys.rightlife.ai_package.model.Distance
-import com.jetsynthesys.rightlife.ai_package.model.EnergyBurnedRequest
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateRequest
-import com.jetsynthesys.rightlife.ai_package.model.OxygenSaturation
-import com.jetsynthesys.rightlife.ai_package.model.RespiratoryRate
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
@@ -84,14 +67,10 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingAllData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceDetail
 import com.jetsynthesys.rightlife.ai_package.model.SleepRestorativeDetail
-import com.jetsynthesys.rightlife.ai_package.model.SleepStage
 import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
-import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
-import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
-import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.CoroutineScope
@@ -111,7 +90,6 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -119,7 +97,6 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
-import kotlin.math.abs
 import kotlin.math.max
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
@@ -210,6 +187,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val sleepPerform = view.findViewById<ImageView>(R.id.img_sleep_perform_right)
         val sleepIdeal = view.findViewById<ImageView>(R.id.img_sleep_ideal_actual)
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
+        val restoSleepNoData = view.findViewById<ImageView>(R.id.img_resto_sleep_nodata)
         val consistencySleep = view.findViewById<ImageView>(R.id.img_consistency_right)
         val openConsistency = view.findViewById<ImageView>(R.id.consistency_right_arrow)
          actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
@@ -287,12 +265,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "Home")
+                navigateToFragment(HomeBottomTabFragment(), "HomeFragment")
             }
         })
 
         backButton.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "Home")
+            navigateToFragment(HomeBottomTabFragment(), "HomeFragment")
         }
 
         sleepArrowView.setOnClickListener {
@@ -308,11 +286,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         sleepIdeal.setOnClickListener {
-            navigateToFragment(SleepIdealActualFragment(), "IdealActual")
+            navigateToFragment(SleepIdealActualFragment(), "IdealActualFragment")
         }
 
         restoSleep.setOnClickListener {
-            navigateToFragment(RestorativeSleepFragment(), "Restorative")
+            navigateToFragment(RestorativeSleepFragment(), "RestorativeFragment")
+        }
+
+        restoSleepNoData.setOnClickListener {
+            navigateToFragment(RestorativeSleepFragment(), "RestorativeFragment")
         }
 
         consistencySleep.setOnClickListener {
@@ -458,7 +440,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                                 start_datetime = convertToTargetFormat(stage.startTime.toString()),
                                 end_datetime = convertToTargetFormat(stage.endTime.toString()),
                                 record_type = it,
-                                unit = "stage",
+                                unit = "sleep_stage",
                                 value = it,
                                 source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
@@ -578,8 +560,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun fetchSleepLandingData() {
         Utils.showLoader(requireActivity())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-        val date = "2025-04-30"
-        val source = "apple"
+        val date = getCurrentDate()
+        val source = "android"
       //  val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
@@ -671,28 +653,35 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         //IdealActualResponse
         if (landingAllData.idealVsActualSleepTime.isNotEmpty()) {
-            tvActualTime.text = convertDecimalHoursToHrMinFormat(landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours!!)
-            tvIdealTime.text = convertDecimalHoursToHrMinFormat(landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours!!)
-            tvIdealActualDate.text = convertDateToNormalDate(landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.date!!)
-            var sleepDataList: List<SleepGraphData>? = arrayListOf()
-                actualNoDataCardView.visibility = View.GONE
-                lineChart.visibility = View.VISIBLE
-                sleepDataList = landingAllData.idealVsActualSleepTime.map { detail ->
-                    val formattedDate = detail.date?.let { formatIdealDate(it) }
-                    return@map formattedDate?.let {
-                        detail.idealSleepHours?.toFloat()?.let { it1 ->
-                            detail.actualSleepHours?.toFloat()?.let { it2 ->
-                                SleepGraphData(date = it, idealSleep = it1, actualSleep = it2)
+            if (landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours!=null && landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours!=null){
+                if (landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours!=0.0 && landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours!=0.0){
+                    actualNoDataCardView.visibility = View.GONE
+                    lineChart.visibility = View.VISIBLE
+                    tvActualTime.text = convertDecimalHoursToHrMinFormat(landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours!!)
+                    tvIdealTime.text = convertDecimalHoursToHrMinFormat(landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours!!)
+                    tvIdealActualDate.text = convertDateToNormalDate(landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.date!!)
+                    var sleepDataList: List<SleepGraphData>? = arrayListOf()
+                    actualNoDataCardView.visibility = View.GONE
+                    lineChart.visibility = View.VISIBLE
+                    sleepDataList = landingAllData.idealVsActualSleepTime.map { detail ->
+                        val formattedDate = detail.date?.let { formatIdealDate(it) }
+                        return@map formattedDate?.let {
+                            detail.idealSleepHours?.toFloat()?.let { it1 ->
+                                detail.actualSleepHours?.toFloat()?.let { it2 ->
+                                    SleepGraphData(date = it, idealSleep = it1, actualSleep = it2)
+                                }
                             }
-                        }
-                    }!!
+                        }!!
+                    }
+                    val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                    setIdealGraphDataFromSleepList(sleepDataList, weekRanges)
+                } else {
+                    actualNoDataCardView.visibility = View.VISIBLE
+                    lineChart.visibility = View.GONE
                 }
-                val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                setIdealGraphDataFromSleepList(sleepDataList, weekRanges)
-            } else {
-                actualNoDataCardView.visibility = View.VISIBLE
-                lineChart.visibility = View.GONE
+                }
             }
+
 
         // Set Restorative Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
@@ -706,17 +695,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         //Set Consistency Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepConsistency != null) {
-            consistencyNoDataCardView.visibility = View.GONE
-            sleepConsistencyChart.visibility = View.VISIBLE
+            if (landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours != null) {
+                if (landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours != 0.0) {
+                    consistencyNoDataCardView.visibility = View.GONE
+                    sleepConsistencyChart.visibility = View.VISIBLE
+                    tvConsistencyTime.text = convertDecimalHoursToHrMinFormat(landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours!!)
+                    tvConsistencyDate.text = convertDateToNormalDate(landingAllData.sleepConsistency?.sleepDetails?.getOrNull(landingAllData.sleepConsistency?.sleepDetails?.size?.minus(1) ?: 0)?.date!!)
+                    setConsistencySleepData(sleepLandingResponse.sleepLandingAllData?.sleepConsistency)
+                }else{
+                    consistencyNoDataCardView.visibility = View.VISIBLE
+                    sleepConsistencyChart.visibility = View.GONE
+                }
+            }
 
-            tvConsistencyTime.text = convertDecimalHoursToHrMinFormat(landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours!!)
-            tvConsistencyDate.text = convertDateToNormalDate(landingAllData.sleepConsistency?.sleepDetails?.getOrNull(
-                landingAllData.sleepConsistency?.sleepDetails?.size?.minus(1) ?:0)?.date!!)
-
-            setConsistencySleepData(sleepLandingResponse.sleepLandingAllData?.sleepConsistency)
-        } else{
-            consistencyNoDataCardView.visibility = View.VISIBLE
-            sleepConsistencyChart.visibility = View.GONE
         }
 
         // Set Recommended Sound
@@ -905,17 +896,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance!! > 0.0) {
                 performNoDataCardView.visibility = View.GONE
                 performCardView.visibility = View.VISIBLE
-                tvPerformStartTime.text =
-                    formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
-                tvPerformWakeTime.text =
-                    formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
-                tvPerformSleepPercent.text =
-                    sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toInt()
-                        .toString()
-                tvPerformSleepDuration.text =
-                    convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
-                tvPerformIdealDuration.text =
-                    convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
+                tvPerformStartTime.text = formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
+                tvPerformWakeTime.text = formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+                tvPerformSleepPercent.text = sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toInt().toString()
+                tvPerformSleepDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
+                tvPerformIdealDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
                 if (sleepPerformanceDetail.sleepPerformanceData?.actionStep != null && sleepPerformanceDetail.sleepPerformanceData?.message != null) {
                     tvPerformAction.text = sleepPerformanceDetail.sleepPerformanceData?.actionStep
                     tvPerformMessage.text = sleepPerformanceDetail.sleepPerformanceData?.message
@@ -933,11 +918,20 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun setRestorativeSleepData(sleepRestorativeDetail: SleepRestorativeDetail?) {
-        tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
-        tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
-        tvRestoStartTime.text = formatIsoTo12Hour(sleepRestorativeDetail?.sleepStartTime!!)
-        tvRestoEndTime.text = formatIsoTo12Hour(sleepRestorativeDetail.sleepEndTime!!)
-        restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData)
+        val remTime = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
+        val deepTime = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
+        if (remTime != "00hr 00mins" && deepTime != "00hr 00mins") {
+            restroNoDataCardView.visibility = View.GONE
+            restroDataCardView.visibility = View.VISIBLE
+            tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
+            tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
+            tvRestoStartTime.text = formatIsoTo12Hour(sleepRestorativeDetail?.sleepStartTime!!)
+            tvRestoEndTime.text = formatIsoTo12Hour(sleepRestorativeDetail.sleepEndTime!!)
+            restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData)
+        }else{
+            restroNoDataCardView.visibility = View.VISIBLE
+            restroDataCardView.visibility = View.GONE
+        }
         }
 
     private fun addDeepStageData(sleepStagesData: ArrayList<SleepStagesData>?): String {
