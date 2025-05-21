@@ -32,6 +32,8 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentRespon
 import com.jetsynthesys.rightlife.databinding.ActivityContentDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
+import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
@@ -51,7 +53,7 @@ class ContentDetailsActivity : BaseActivity() {
     private var isExpanded = false
     private lateinit var player: ExoPlayer
     private lateinit var binding: ActivityContentDetailsBinding
-
+    private var contentTypeForTrack: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -124,6 +126,7 @@ class ContentDetailsActivity : BaseActivity() {
     }
 
     private fun setcontentDetails(contentResponseObj: ModuleContentDetail?) {
+
         binding.tvContentTitle.setText(contentResponseObj?.getData()?.getTitle())
         binding.tvContentDesc.setText(contentResponseObj?.getData()?.getDesc())
         if (contentResponseObj != null) {
@@ -147,12 +150,14 @@ class ContentDetailsActivity : BaseActivity() {
                 binding.rlPlayerMusicMain.visibility = View.VISIBLE
                 binding.rlVideoPlayerMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Audio"
+                contentTypeForTrack = "AUDIO"
             }else {
                 // For video Player
                 initializePlayer(contentResponseObj.getData().getPreviewUrl())
                 binding.rlVideoPlayerMain.visibility = View.VISIBLE
                 binding.rlPlayerMusicMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Video"
+                contentTypeForTrack = "VIDEO"
             }
             setReadMoreView(contentResponseObj.getData().getDesc())
 
@@ -189,9 +194,19 @@ class ContentDetailsActivity : BaseActivity() {
         if (contentResponseObj?.data?.bookmarked == true) {
             binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
         }
+
+        callContentTracking(contentResponseObj,"1.0","1.0")
+
     }
 
+   private fun callContentTracking(contentResponseObj: ModuleContentDetail?, duration: String, watchDuration: String) {
+// article consumed
+       val episodeTrackRequest = EpisodeTrackRequest(
+           sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
+           contentResponseObj?.data?.id ?: "", duration, watchDuration, contentTypeForTrack)
 
+       trackEpisodeOrContent(this, episodeTrackRequest)
+   }
 
     private fun setReadMoreView(desc: String?) {
         if (desc.isNullOrEmpty()) {

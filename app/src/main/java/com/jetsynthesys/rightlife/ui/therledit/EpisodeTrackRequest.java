@@ -4,11 +4,11 @@ public class EpisodeTrackRequest {
     private String userId;
     private String moduleId;
     private String contentId;
-    private int duration;
-    private int watchDuration;
+    private String duration;
+    private String watchDuration;
     private String contentType;
 
-    public EpisodeTrackRequest(String userId, String moduleId, String contentId, int duration, int watchDuration, String contentType) {
+    public EpisodeTrackRequest(String userId, String moduleId, String contentId, String duration, String watchDuration, String contentType) {
         this.userId = userId;
         this.moduleId = moduleId;
         this.contentId = contentId;

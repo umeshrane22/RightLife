@@ -29,6 +29,8 @@ import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailC
 import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
+import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
@@ -50,7 +52,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
     private var isExpanded = false
     private lateinit var player: ExoPlayer
     private lateinit var binding: ActivityNewSeriesDetailsBinding
-
+    private var contentTypeForTrack: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -158,18 +160,21 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     Log.e("YouTube", "Invalid video ID")
                     //Provide user feedback
                 }
+                contentTypeForTrack = "VIDEO"
             }else if (contentResponseObj.data.type.equals("AUDIO", ignoreCase = true)) {
                 // For Audio Player
                 setupMusicPlayer(contentResponseObj)
                 binding.rlPlayerMusicMain.visibility = View.VISIBLE
                 binding.rlVideoPlayerMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Audio"
+                contentTypeForTrack = "AUDIO"
             }else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
                 // For video Player
                 initializePlayer(contentResponseObj.data.previewUrl)
                 binding.rlVideoPlayerMain.visibility = View.VISIBLE
                 binding.rlPlayerMusicMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Video"
+                contentTypeForTrack = "VIDEO"
             }
             setReadMoreView(contentResponseObj.data.desc)
 
@@ -214,9 +219,16 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         }
-
+        callContentTracking(contentResponseObj,"1.0","1.0")
     }
+    private fun callContentTracking(contentResponseObj: EpisodeDetailContentResponse, duration: String, watchDuration: String) {
+// article consumed
+        val episodeTrackRequest = EpisodeTrackRequest(
+            sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
+            contentResponseObj?.data?._id ?: "", duration, watchDuration, contentTypeForTrack)
 
+        trackEpisodeOrContent(this, episodeTrackRequest)
+    }
 
 
     private fun setReadMoreView(desc: String?) {
