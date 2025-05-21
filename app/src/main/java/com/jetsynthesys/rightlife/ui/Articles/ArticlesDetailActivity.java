@@ -40,6 +40,8 @@ import com.jetsynthesys.rightlife.ui.Articles.models.ArticleDetailsResponse;
 import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
+import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
@@ -218,9 +220,9 @@ public class ArticlesDetailActivity extends BaseActivity {
         }
 
         if (articleDetailsResponse.getData().getIsLike()) {
-            binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe);
+            binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
         } else {
-            binding.imageLikeArticle.setImageResource(R.drawable.like);
+            binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive);
         }
         if (articleDetailsResponse.getData().getLikeCount()!=null) {
             binding.txtLikeCount.setText(articleDetailsResponse.getData().getLikeCount().toString());
@@ -231,6 +233,11 @@ public class ArticlesDetailActivity extends BaseActivity {
         } else {
             binding.txtKeytakeawayDesc.setText(Html.fromHtml(articleDetailsResponse.getData().getSummary()));
         }
+
+        // article consumed
+        EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(sharedPreferenceManager.getUserId(),articleDetailsResponse.getData().getModuleId(),
+                articleDetailsResponse.getData().getId(),"1.0","1.0","TEXT");
+        CommonAPICall.INSTANCE.trackEpisodeOrContent(this,episodeTrackRequest);
     }
 
     private void handleInThisArticle(List<String> tocItems) {

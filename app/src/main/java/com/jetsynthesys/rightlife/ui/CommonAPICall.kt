@@ -250,7 +250,7 @@ object CommonAPICall {
         }
     }
 
-    private fun trackEpisodeOrContent(context: Context,episodeTrackRequest: EpisodeTrackRequest) {
+     fun trackEpisodeOrContent(context: Context,episodeTrackRequest: EpisodeTrackRequest) {
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
@@ -267,9 +267,11 @@ object CommonAPICall {
 
                 if (response.isSuccessful && response.body() != null)
                 {
+                    Log.d("AAAA", "status = " + response.body().toString())
                 }
                 else
                 {
+                    Log.d("AAAA", "status = " + response.body().toString())
                 }
             }
 

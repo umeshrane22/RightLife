@@ -15,21 +15,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
-import com.jetsynthesys.rightlife.BaseActivity;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse;
-import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode;
-import com.jetsynthesys.rightlife.databinding.ActivitySeriesepisodeDetailLayoutBinding;
-import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
-import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
@@ -39,6 +27,17 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
+import com.jetsynthesys.rightlife.BaseActivity;
+import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.EpisodeDetailContentResponse;
+import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode;
+import com.jetsynthesys.rightlife.databinding.ActivitySeriesepisodeDetailLayoutBinding;
+import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
+import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
+import com.jetsynthesys.rightlife.ui.utility.Utils;
+import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
@@ -58,12 +57,13 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
     private MediaPlayer mediaPlayer;
     private boolean isPlaying = false; // To track the current state of the player
     private Handler handler = new Handler();
-
+    private String contentTypeForTrack = "";
     private ExoPlayer player;
     private PlayerView playerView;
     String seriesId = "";
     String episodeId = "";
     private EpisodeDetailContentResponse ContentResponseObj;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +76,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
         seriesId = getIntent().getStringExtra("seriesId");
         episodeId = getIntent().getStringExtra("episodeId");
-        getSeriesDetails(seriesId,episodeId);
-
+        getSeriesDetails(seriesId, episodeId);
 
 
         // Handle play/pause button click
@@ -101,6 +100,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         isPlaying = false;
         binding.playButton.setImageResource(R.drawable.ic_play); // Change to play icon
     }
+
     private void getSeriesDetails(String seriesId, String episodeId) {
 
         Utils.showLoader(this);
@@ -129,6 +129,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
                             setContentDetails(ContentResponseObj);
                             setupVideoContent(ContentResponseObj);
                             //getSeriesWithEpisodes(ContentResponseObj.getData().getId());
+                            callContentTracking(ContentResponseObj,"1.0","1.0");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -177,14 +178,13 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         });
 
 
-
         if (contentResponseObj.data.nextEpisode != null) {
 
             NextEpisode nextEpisode = contentResponseObj.data.nextEpisode;
-            binding.txtEpisodesSection.setText("Next Episode"+contentResponseObj.data.episodeNumber);
+            binding.txtEpisodesSection.setText("Next Episode" + contentResponseObj.data.episodeNumber);
             binding.itemText.setText(nextEpisode.title); // Use the same TextView for the title
             Glide.with(this)
-                    .load(ApiClient.CDN_URL_QA +nextEpisode.thumbnail.url)
+                    .load(ApiClient.CDN_URL_QA + nextEpisode.thumbnail.url)
                     .into(binding.itemImage); // Use the same ImageView for the thumbnail
             // ... (set other views for the next episode using the same IDs)
         } else {
@@ -234,31 +234,31 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         return null;
     }
 
-    private void setupVideoContent(EpisodeDetailContentResponse contentResponseObj){
+    private void setupVideoContent(EpisodeDetailContentResponse contentResponseObj) {
         //binding.exoPlayerView.setVisibility(View.VISIBLE);
         binding.imgContentview.setVisibility(View.GONE);
         //initializePlayer();
         //player.setPlayWhenReady(true);
         if (contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
-        String videoId = extractVideoId(contentResponseObj.data.youtubeUrl);
+            String videoId = extractVideoId(contentResponseObj.data.youtubeUrl);
 
-        if (videoId != null) {
-            Log.e("YouTube", "video ID - call player"+videoId);
-            setupYouTubePlayer(videoId);
-            //getLifecycle().addObserver(binding.youtubevideoPlayer);
+            if (videoId != null) {
+                Log.e("YouTube", "video ID - call player" + videoId);
+                setupYouTubePlayer(videoId);
+                //getLifecycle().addObserver(binding.youtubevideoPlayer);
 
-        } else {
-            Log.e("YouTube", "Invalid video ID");
-            //Provide user feedback
-        }
-    } else  if (contentResponseObj.data.type.equalsIgnoreCase("AUDIO")) {
+            } else {
+                Log.e("YouTube", "Invalid video ID");
+                //Provide user feedback
+            }
+        } else if (contentResponseObj.data.type.equalsIgnoreCase("AUDIO")) {
             setupAudioContent(contentResponseObj);
             binding.imgContentview.setVisibility(View.GONE);
             binding.exoPlayerView.setVisibility(View.GONE);
         } else {
             Log.d("Received Content type", "Received category type: " + contentResponseObj.data.type);
 
-            if (ContentResponseObj.data.previewUrl.isEmpty()){
+            if (ContentResponseObj.data.previewUrl.isEmpty()) {
                 finish();
             }
             binding.exoPlayerView.setVisibility(View.VISIBLE);
@@ -269,6 +269,27 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
 
     }
+
+    private void callContentTracking(EpisodeDetailContentResponse contentResponseObj, String duration, String watchDuration) {
+        // article consumed
+        String userId = sharedPreferenceManager.getUserId();
+        String moduleId = contentResponseObj != null && contentResponseObj.data != null ?
+                contentResponseObj.data.moduleId : "";
+        String contentId = contentResponseObj != null && contentResponseObj.data != null ?
+                contentResponseObj.data._id : "";
+
+        EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(
+                userId,
+                moduleId,
+                contentId,
+                duration,
+                watchDuration,
+                ContentResponseObj.data.type.toUpperCase()
+        );
+
+        CommonAPICall.INSTANCE.trackEpisodeOrContent(this, episodeTrackRequest);
+    }
+
 
     private void setupYouTubePlayer(String videoId) {
         binding.youtubevideoPlayer.setVisibility(View.VISIBLE);
@@ -336,20 +357,19 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
     }
 
 
-
     // Audio content in series // note  -  need to ask why cant we make details response common for all type of content
     private void setupAudioContent(EpisodeDetailContentResponse responseObj) {
-        setupMusicPlayer("");
+        setupMusicPlayer(responseObj);
     }
 
-    private void setupMusicPlayer(String S) {
+    private void setupMusicPlayer(EpisodeDetailContentResponse responseObj) {
 
 
         // Set progress to 50%
 
         ImageView backgroundImage = findViewById(R.id.backgroundImage);
         binding.rlPlayer.setVisibility(View.VISIBLE);
-        String imageUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/e9c5598c82c85de5903195f549a26210.jpg";
+        String imageUrl = responseObj.data.thumbnail.url;   // "media/cms/content/series/64cb6d97aa443ed535ecc6ad/e9c5598c82c85de5903195f549a26210.jpg";
 
         GlideApp.with(SeriesEpisodeDetailActivity.this)
                 .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
@@ -357,7 +377,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
                 .into(backgroundImage);
 
 
-        String previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";
+        String previewUrl = responseObj.data.previewUrl;//"media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";
         String url = ApiClient.CDN_URL_QA + previewUrl; //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: " + url);
         mediaPlayer = new MediaPlayer();
