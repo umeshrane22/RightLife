@@ -286,7 +286,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="180 cm"
+                android:text=""
                 android:textSize="16sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
@@ -323,7 +323,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="79.0 kg"
+                android:text=""
                 android:textSize="16sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/txt_color_mind" />
@@ -345,6 +345,7 @@
             android:layout_marginTop="12dp"
             android:gravity="center_vertical"
             android:padding="14dp"
+            android:visibility="gone"
             android:foreground="?attr/selectableItemBackground">
 
             <TextView

@@ -11,7 +11,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentBeforeGoingToBedBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
-import com.jetsynthesys.rightlife.ui.questionnaire.adapter.RelaxAndWindAdapter
+import com.jetsynthesys.rightlife.ui.questionnaire.adapter.BeforeGoingToBedAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionSix
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.StressReason
@@ -23,7 +23,7 @@ class BeforeGoingToBedFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val selectedList: ArrayList<StressReason> = ArrayList()
-    private lateinit var adapter: RelaxAndWindAdapter
+    private lateinit var adapter: BeforeGoingToBedAdapter
     private val reasonList = listOf(
         StressReason("Reading a book", R.drawable.ic_before_g_b_1),
         StressReason("Scrolling through social media", R.drawable.ic_before_g_b_2),
@@ -65,13 +65,10 @@ class BeforeGoingToBedFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        adapter = RelaxAndWindAdapter(reasonList, "SleepRight") { selectedItem ->
+        adapter = BeforeGoingToBedAdapter(reasonList, "SleepRight") { selectedItem ->
             // Handle selected items here
-            if (selectedItem.isSelected)
-                selectedList.add(selectedItem)
-            else
-                selectedList.remove(selectedItem)
-
+            selectedList.clear()
+            selectedList.add(selectedItem)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter

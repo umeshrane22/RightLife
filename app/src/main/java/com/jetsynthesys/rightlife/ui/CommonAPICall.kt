@@ -8,13 +8,17 @@ import android.widget.Toast
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ui.affirmation.pojo.CreateAffirmationPlaylistRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
+import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -244,6 +248,38 @@ object CommonAPICall {
         } else {
             throw IllegalArgumentException("Invalid height format. Expected format: '182 cms'")
         }
+    }
+
+     fun trackEpisodeOrContent(context: Context,episodeTrackRequest: EpisodeTrackRequest) {
+        val authToken = SharedPreferenceManager.getInstance(context).accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+
+        //val episodeTrackRequest = EpisodeTrackRequest()
+
+
+        val call = apiService.trackEpisode(
+            authToken,
+            episodeTrackRequest
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+
+                if (response.isSuccessful && response.body() != null)
+                {
+                    Log.d("AAAA", "status = " + response.body().toString())
+                }
+                else
+                {
+                    Log.d("AAAA", "status = " + response.body().toString())
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Toast.makeText(context, "Network Error: " + t.message, Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
 }

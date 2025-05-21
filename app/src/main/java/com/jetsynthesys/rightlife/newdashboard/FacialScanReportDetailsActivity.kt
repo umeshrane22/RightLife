@@ -166,12 +166,12 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         selectedRange = "week"
         dateRange = getWeekRange()
         binding.tvDateRange.text = dateRange
-      /*  fetchPastFacialScanReport(
-            convertVitalNameToKey(binding.tvWitale.text.toString()),
-            startDateAPI,
-            endDateAPI
+        /*  fetchPastFacialScanReport(
+              convertVitalNameToKey(binding.tvWitale.text.toString()),
+              startDateAPI,
+              endDateAPI
 
-        )*/
+          )*/
         if (unifiedList != null) {
             selectDefaultVital(unifiedList)
         }
@@ -195,9 +195,9 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     binding.reportDate.text = date.toString()
                     binding.reportDate.visibility = View.GONE
                     binding.reportNameAverageValue.text = value.toString()
-                    binding.reportUnit.text =graphData.data?.get(0)?.unit
-                  //  showToast("date = $date  and value = $value")
-                    binding.llSelectedGraphItem.setVisibility(View.VISIBLE)
+                    binding.reportUnit.text = graphData.data?.get(0)?.unit
+                    //  showToast("date = $date  and value = $value")
+                    binding.llSelectedGraphItem.visibility = View.VISIBLE
                 }
             }
 
@@ -207,13 +207,13 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
         })
 
-        binding.rlRangesButton.setOnClickListener(){
-            if (binding.llRangeExpand.getVisibility() == View.VISIBLE) {
+        binding.rlRangesButton.setOnClickListener {
+            if (binding.llRangeExpand.visibility == View.VISIBLE) {
                 binding.llRangeExpand.visibility = View.GONE
-                binding.iconArrowRanges.setRotation(360f) // Rotate by 180 degrees
+                binding.iconArrowRanges.rotation = 360f // Rotate by 180 degrees
             } else {
-                binding.llRangeExpand.setVisibility(View.VISIBLE)
-                binding.iconArrowRanges.setRotation(180f) // Rotate by 180 degrees
+                binding.llRangeExpand.visibility = View.VISIBLE
+                binding.iconArrowRanges.rotation = 180f // Rotate by 180 degrees
             }
         }
     }
@@ -221,7 +221,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     private fun selectDefaultVital(healthCamItems: ArrayList<ParameterModel>?) {
         if (healthCamItems != null) {
             if (healthCamItems.isNotEmpty()) {
-                val firstItem = healthCamItems[defaultPosition]!!
+                val firstItem = healthCamItems[defaultPosition]
                 binding.tvWitale.text = firstItem.name
                 vitalKey = firstItem.key
                 fetchPastFacialScanReport(
@@ -264,9 +264,10 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     val responseBody = response.body()
-                     graphData =
-                         responseBody?.data?.result!! // ✅ now getting `result` object from `data`
-                    val reportList = graphData?.data           // ✅ this is your ArrayList<FacialScanReport>
+                    graphData =
+                        responseBody?.data?.result!! // ✅ now getting `result` object from `data`
+                    val reportList =
+                        graphData.data           // ✅ this is your ArrayList<FacialScanReport>
 
                     if (reportList.isNullOrEmpty()) {
                         return
@@ -286,9 +287,10 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
                     if (reportList.isNotEmpty() && reportList.size >= 1) {
                         // Set bottom card data
-                        val firstReport = reportList[reportList.size-1]
+                        val firstReport = reportList[reportList.size - 1]
                         binding.indicator.text = firstReport.indicator
-                        binding.tvIndicatorExplain.text = Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_COMPACT)
+                        binding.tvIndicatorExplain.text =
+                            Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_COMPACT)
                         binding.tvIndicatorValue.text = "${firstReport.value} ${firstReport.unit}"
                         binding.tvIndicatorValueBg.text =
                             "${firstReport.lowerRange}-${firstReport.upperRange} ${firstReport.unit}"
@@ -299,12 +301,13 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                         val colorStateList = ColorStateList.valueOf(colorInt)
                         binding.tvIndicatorValueBg.backgroundTintList = colorStateList
                     }
-                    SetupBottomCard(responseBody?.data?.range)
-                    HandleContinueWatchUI(responseBody?.data)
+                    SetupBottomCard(responseBody.data?.range)
+                    HandleContinueWatchUI(responseBody.data)
                 } else {
                     showToast("Server Error: ${response.code()}")
                 }
             }
+
             override fun onFailure(call: Call<FacialScanReportResponse>, t: Throwable) {
                 handleNoInternetView(t)
             }
@@ -313,10 +316,11 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     }
 
     private fun SetupBottomCard(rangeList: List<FacialScanRange>?) {
-        if (rangeList!=null && rangeList.isNotEmpty()){
-            val secondReport = rangeList?.get(0)
-            binding.indicatorRange2.text = secondReport!!.indicator
-            binding.tvIndicatorExplainRange2.text = Html.fromHtml(secondReport.implication, Html.FROM_HTML_MODE_COMPACT)
+        if (rangeList != null && rangeList.isNotEmpty()) {
+            val secondReport = rangeList.get(0)
+            binding.indicatorRange2.text = secondReport.indicator
+            binding.tvIndicatorExplainRange2.text =
+                Html.fromHtml(secondReport.implication, Html.FROM_HTML_MODE_COMPACT)
 
             binding.tvIndicatorValueBgRange2.text =
                 "${secondReport.lowerRange}-${secondReport.upperRange} ${secondReport.unit}"
@@ -326,9 +330,10 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             val colorStateList1 = ColorStateList.valueOf(colorInt1)
             binding.tvIndicatorValueBgRange2.backgroundTintList = colorStateList1
 
-            val thirdReport = rangeList?.get(1)
-            binding.indicatorRange3.text = thirdReport!!.indicator
-            binding.tvIndicatorExplainRange3.text = Html.fromHtml(thirdReport.implication, Html.FROM_HTML_MODE_COMPACT)
+            val thirdReport = rangeList.get(1)
+            binding.indicatorRange3.text = thirdReport.indicator
+            binding.tvIndicatorExplainRange3.text =
+                Html.fromHtml(thirdReport.implication, Html.FROM_HTML_MODE_COMPACT)
             binding.tvIndicatorValueBgRange3.text =
                 "${thirdReport.lowerRange}-${thirdReport.upperRange} ${thirdReport.unit}"
 
@@ -358,7 +363,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             val selectedItem = healthCamItems!![menuItem.itemId]
             binding.tvWitale.text = selectedItem.name
 
-             vitalKey = selectedItem.key
+            vitalKey = selectedItem.key
             fetchPastFacialScanReport(
                 vitalKey,
                 startDateAPI,
@@ -540,7 +545,10 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
                 val calendar = Calendar.getInstance().apply {
                     time = today.time
-                    add(Calendar.DAY_OF_MONTH, -6) // Go back 6 days to get 7 days total (including today)
+                    add(
+                        Calendar.DAY_OF_MONTH,
+                        -6
+                    ) // Go back 6 days to get 7 days total (including today)
                     set(Calendar.HOUR_OF_DAY, 0)
                     set(Calendar.MINUTE, 0)
                     set(Calendar.SECOND, 0)
@@ -553,7 +561,8 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     Pair(cal.get(Calendar.YEAR), cal.get(Calendar.DAY_OF_YEAR))
                 }
 
-                val dayFormat = SimpleDateFormat("EEE", Locale.getDefault()) // More informative format
+                val dayFormat =
+                    SimpleDateFormat("EEE", Locale.getDefault()) // More informative format
                 val xAxisPositions = mutableListOf<Float>()
                 var currentDayIndex = 0
 
@@ -615,12 +624,15 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     val dayValue = dateValueMap[currentDay] ?: 0f
 
                     // 7. Add to chart (x-position = day-1, e.g., April 1 = 0, April 2 = 1)
-                    entries.add(Entry((day-1).toFloat(), dayValue))
+                    entries.add(Entry((day - 1).toFloat(), dayValue))
                     xAxisLabels.add(dayFormat.format(currentDay))
                 }
 
                 // DEBUG: Verify April 19 is included
-                Log.d("MonthView", "All dates in map: ${dateValueMap.keys.map { dayFormat.format(it) }}")
+                Log.d(
+                    "MonthView",
+                    "All dates in map: ${dateValueMap.keys.map { dayFormat.format(it) }}"
+                )
             }
             // --- 6 Months: Group by month and average values ---
             "6months" -> {
@@ -643,9 +655,24 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             }
         }
 
+        val colorRange1 = if (graphData.data?.size!! > 0) graphData.data?.get(0) else null
+        val colorRange2 = if (graphData.data?.size!! > 1) graphData.data?.get(1) else null
+        val colorRange3 = if (graphData.data?.size!! > 2) graphData.data?.get(2) else null
+
+
         // Chart setup
         val circleColors = entries.map { entry ->
-            if (entry.y == 0f) Color.TRANSPARENT else Color.parseColor("#05AB26")
+            var color = Color.parseColor("#05AB26")
+            if (colorRange1 != null && entry.y >= colorRange1.lowerRange!! && entry.y <= colorRange1.upperRange!!)
+                color =
+                    runCatching { Color.parseColor("#${colorRange1.colour}") }.getOrElse { Color.GREEN }
+            else if (colorRange2 != null && entry.y >= colorRange2.lowerRange!! && entry.y <= colorRange2.upperRange!!)
+                color =
+                    runCatching { Color.parseColor("#${colorRange2.colour}") }.getOrElse { Color.GREEN }
+            else if (colorRange3 != null && entry.y >= colorRange3.lowerRange!! && entry.y <= colorRange3.upperRange!!)
+                color =
+                    runCatching { Color.parseColor("#${colorRange3.colour}") }.getOrElse { Color.GREEN }
+            if (entry.y == 0f) Color.TRANSPARENT else color
         }
 
         val modifiedEntries = entries.map {
@@ -707,6 +734,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         val date = inputFormat.parse(input)
         return outputFormat.format(date!!)
     }
+
     private fun getReportIconByType(type: String): Int {
         return when (type) {
             "BMI_CALC" -> R.drawable.ic_db_report_bmi
@@ -723,7 +751,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     private fun HandleContinueWatchUI(facialReportResponseNew: FacialScanReportDataWrapper?) {
         if (facialReportResponseNew?.recommendation?.isNotEmpty() == true) {
             val adapter =
-                HealthCamRecommendationAdapter(this, facialReportResponseNew?.recommendation)
+                HealthCamRecommendationAdapter(this, facialReportResponseNew.recommendation)
             val horizontalLayoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager)

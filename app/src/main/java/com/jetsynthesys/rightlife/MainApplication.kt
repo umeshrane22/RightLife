@@ -11,6 +11,10 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
+
+
+
         sondeSdk(this)
         ReminderReceiver.ringtone?.stop()
     }

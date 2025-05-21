@@ -250,9 +250,7 @@ class NewSleepSoundActivity : BaseActivity() {
             )
             this.adapter = adapter
         }
-        if (adapter != null) {
-            adapter.notifyDataSetChanged()
-        }
+        adapter?.notifyDataSetChanged()
         binding.tvYourPlayList.visibility = View.VISIBLE
     }
 
