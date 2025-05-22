@@ -26,6 +26,15 @@ data class SleepConsistencyAllData (
     var sleepConsistencyDetail : SleepConsistencyDetail?,
     @SerializedName("sleep_insight_detail" )
     var sleepInsightDetail              : ConsistencyInsightDetail?,
+    @SerializedName("progress_detail")
+    var progress_detail : ConsistencyProgressDetail?
+)
+
+data class ConsistencyProgressDetail(
+    @SerializedName("progress_percentage")
+    var progress_percentage              : Double?  ,
+    @SerializedName("progress_sign")
+    var progress_sign                : String? ,
 )
 
 data class ConsistencyInsightDetail(

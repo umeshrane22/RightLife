@@ -66,6 +66,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var averageWakeupTime: TextView
     private lateinit var consistencyTitle: TextView
     private lateinit var consistencyMessage: TextView
+    private lateinit var percentageIcon: ImageView
+    private lateinit var percentageText: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -88,6 +90,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         averageWakeupTime = view.findViewById(R.id.tv_average_wakeup_time)
         consistencyTitle = view.findViewById(R.id.consistency_title)
         consistencyMessage = view.findViewById(R.id.consistency_message)
+        percentageIcon = view.findViewById(R.id.percentage_icon)
+        percentageText = view.findViewById(R.id.percentage_text)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -254,9 +258,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private fun fetchSleepData(mEndDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = "apple"
+        val source = "android"
         val date = mEndDate
-        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,"2025-04-30")
+        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,mEndDate)
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 progressDialog.dismiss()
@@ -271,6 +275,18 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                         setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
                         consistencyTitle.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.title)
                         consistencyMessage.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.message)
+                        if (sleepConsistencyResponse.data?.progress_detail?.progress_sign == "plus"){
+                            percentageIcon.visibility = View.VISIBLE
+                            percentageIcon.setImageResource(R.drawable.ic_up)
+                            percentageText.visibility = View.VISIBLE
+                            percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
+                        }else{
+                            percentageIcon.visibility = View.VISIBLE
+                            percentageText.visibility = View.VISIBLE
+                            percentageIcon.setImageResource(R.drawable.ic_down)
+                            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
+                            percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
+                        }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -360,12 +376,12 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
 
     private val paintText = Paint().apply {
         color = Color.BLACK
-        textSize = 36f
+        textSize = 24f
     }
 
     private val paintLabelText = Paint().apply {
         color = Color.BLACK
-        textSize = 24f
+        textSize = 18f
     }
 
     fun setSleepData(data: List<SleepEntry>) {

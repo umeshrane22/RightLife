@@ -17,6 +17,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.cardview.widget.CardView
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -73,8 +74,12 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var radioGroup: RadioGroup
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var lytPerformCard: CardView
+    private lateinit var lytPerformNoCard: CardView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
+    private lateinit var percentageIcon: ImageView
+    private lateinit var percentageText: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -98,6 +103,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         performTitle = view.findViewById(R.id.perform_title)
         performMessage = view.findViewById(R.id.perform_message)
         performSubtitle = view.findViewById(R.id.perform_subTitle)
+        lytPerformCard = view.findViewById(R.id.sleep_perform_card)
+        lytPerformNoCard = view.findViewById(R.id.sleep_perform_nocard)
+        percentageIcon = view.findViewById(R.id.percentage_icon)
+        percentageText = view.findViewById(R.id.percentage_text)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -273,15 +282,28 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
     private fun fetchSleepData(endDate: String, period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,"2025-04-30")
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val source = "android"
+        val call = ApiClient.apiServiceFastApi.fetchSleepPerformance(userid, source, period,endDate)
         call.enqueue(object : Callback<SleepPerformanceResponse> {
             override fun onResponse(call: Call<SleepPerformanceResponse>, response: Response<SleepPerformanceResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
                     sleepPerformanceResponse = response.body()!!
-                    setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
+                    if (sleepPerformanceResponse.message!="No sleep performance data found.") {
+                        lytPerformNoCard.visibility = View.GONE
+                        lytPerformCard.visibility = View.VISIBLE
+                        performTitle.visibility = View.VISIBLE
+                        performSubtitle.visibility = View.VISIBLE
+                        performMessage.visibility = View.VISIBLE
+                        setSleepRightPerformanceData(sleepPerformanceResponse.sleepPerformanceAllData)
+                    }else{
+                        lytPerformNoCard.visibility = View.VISIBLE
+                        lytPerformCard.visibility = View.GONE
+                        performTitle.visibility = View.GONE
+                        performSubtitle.visibility = View.GONE
+                        performMessage.visibility = View.GONE
+                    }
                 }else if(response.code() == 400){
                     progressDialog.dismiss()
                     Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
