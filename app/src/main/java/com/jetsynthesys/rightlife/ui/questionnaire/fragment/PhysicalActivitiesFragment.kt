@@ -137,6 +137,10 @@ class PhysicalActivitiesFragment : Fragment() {
             addChip(physicalActivity.title)
         }
 
+        val noOfSelectedActivities = QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer
+        val headerText = if (noOfSelectedActivities?.toInt() == 1) "Select Top $noOfSelectedActivities activity" else "Select Top $noOfSelectedActivities activities"
+        binding.tvNoOfActivities.text = headerText
+
         binding.btnContinue.setOnClickListener {
             if (selectedActivities.size > 0) {
                 binding.btnContinue.isEnabled = false
@@ -290,7 +294,7 @@ class PhysicalActivitiesFragment : Fragment() {
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Please set correct activity frequency",
+                    "The total activity frequency should match the workout frequency in a week",
                     Toast.LENGTH_SHORT
                 ).show()
             }

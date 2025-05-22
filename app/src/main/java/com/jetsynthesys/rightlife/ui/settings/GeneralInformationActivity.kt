@@ -83,7 +83,7 @@ class GeneralInformationActivity : BaseActivity() {
 
     private fun getGeneralInfo() {
         Utils.showLoader(this)
-        val call = apiService.getGeneralInformation(sharedPreferenceManager.accessToken)
+        val call = apiService.getGeneralInformation()
 
         call.enqueue(object : Callback<GeneralInformationResponse> {
             override fun onResponse(

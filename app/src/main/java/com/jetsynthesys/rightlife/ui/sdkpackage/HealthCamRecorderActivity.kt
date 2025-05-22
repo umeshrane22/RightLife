@@ -328,11 +328,6 @@ class HealthCamRecorderActivity : BaseActivity() {
                     }
                     startActivity(intent)
                     finish()
-                    Toast.makeText(
-                        this@HealthCamRecorderActivity,
-                        "Success: $jsonResponse",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 } else {
                     Utils.dismissLoader(this@HealthCamRecorderActivity)
                     Toast.makeText(

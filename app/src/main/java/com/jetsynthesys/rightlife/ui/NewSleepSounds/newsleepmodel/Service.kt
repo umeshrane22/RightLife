@@ -11,7 +11,7 @@ data class Service(
     val image: String,
     val tags: ArrayList<Tag>,
     val meta: Meta,
-    val isActive: Boolean,
+    var isActive: Boolean,
     val createdAt: String,
     val updatedAt: String,
     val __v: Int

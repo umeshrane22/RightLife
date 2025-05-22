@@ -21,11 +21,22 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp">
 
+        <TextView
+            android:id="@+id/tvNoOfActivities"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_alignParentTop="true"
+            android:fontFamily="@font/dmsans_regular"
+            android:textColor="@color/txt_color_header"
+            android:textAlignment="center"
+            android:layout_margin="16dp" />
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_above="@id/btnContinue">
+            android:layout_above="@id/btnContinue"
+            android:layout_below="@id/tvNoOfActivities">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroup"

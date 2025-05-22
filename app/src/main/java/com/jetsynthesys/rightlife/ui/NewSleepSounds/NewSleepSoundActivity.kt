@@ -199,7 +199,10 @@ class NewSleepSoundActivity : BaseActivity() {
                 },
                 onAddToPlaylistClick = { service, position ->
                     // Handle add to playlist click here
-                    addToPlaylist(service._id, position)
+                    if (service.isActive)
+                        addToPlaylist(service._id, position)
+                    else
+                        removeFromPlaylist(service._id, position)
                     //Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
                 }
             )
@@ -236,7 +239,10 @@ class NewSleepSoundActivity : BaseActivity() {
                     })
                 },
                 onAddToPlaylistClick = { service, position ->
-                    addToPlaylist(service._id, position)
+                    if (service.isActive)
+                        addToPlaylist(service._id, position)
+                    else
+                        removeFromPlaylist(service._id, position)
                 }
             )
 
@@ -268,8 +274,10 @@ class NewSleepSoundActivity : BaseActivity() {
                 },
                 onAddToPlaylistClick = { service, position ->
                     // Handle add to playlist click here
-                    addToPlaylist(service._id, position)
-                    // Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                    if (service.isActive)
+                        addToPlaylist(service._id, position)
+                    else
+                        removeFromPlaylist(service._id, position)
                 }
             )
 
@@ -300,8 +308,10 @@ class NewSleepSoundActivity : BaseActivity() {
                 },
                 onAddToPlaylistClick = { service, position ->
                     // Handle add to playlist click here
-                    addToPlaylist(service._id, position)
-                    //  Toast.makeText(this, "Added to playlist in Activity", Toast.LENGTH_SHORT).show()
+                    if (service.isActive)
+                        addToPlaylist(service._id, position)
+                    else
+                        removeFromPlaylist(service._id, position)
                 }
             )
 
@@ -380,6 +390,31 @@ class NewSleepSoundActivity : BaseActivity() {
         })
     }
 
+    private fun removeFromPlaylist(songId: String, position: Int) {
+        Utils.showLoader(this)
+        val call = apiService.removeFromPlaylist(sharedPreferenceManager.accessToken, songId)
+
+        call.enqueue(object : Callback<AddPlaylistResponse> {
+            override fun onResponse(
+                call: Call<AddPlaylistResponse>,
+                response: Response<AddPlaylistResponse>
+            ) {
+                getUserCreatedPlaylist()
+                Utils.dismissLoader(this@NewSleepSoundActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
+                } else {
+                    showToast("try again!: ${response.code()}")
+                }
+
+            }
+
+            override fun onFailure(call: Call<AddPlaylistResponse>, t: Throwable) {
+                //Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: ${t.message}")
+            }
+        })
+    }
 
     // get user play list from api
     private fun getUserCreatedPlaylist() {
@@ -397,12 +432,16 @@ class NewSleepSoundActivity : BaseActivity() {
                     sleepSoundPlaylistResponse = response.body()
                     useplaylistdata = sleepSoundPlaylistResponse?.data as ArrayList<Service>
                     if (sleepSoundPlaylistResponse?.data?.isNotEmpty() == true) {
-                        if (isForPlayList == "ForPlayList"){
-                            startActivity(Intent(this@NewSleepSoundActivity, SleepSoundPlayerActivity::class.java).apply {
-                                putExtra("SOUND_LIST", useplaylistdata)
-                                putExtra("SELECTED_POSITION", 0)
-                                putExtra("ISUSERPLAYLIST", true)
-                            })
+                        if (isForPlayList == "ForPlayList") {
+                            startActivity(
+                                Intent(
+                                    this@NewSleepSoundActivity,
+                                    SleepSoundPlayerActivity::class.java
+                                ).apply {
+                                    putExtra("SOUND_LIST", useplaylistdata)
+                                    putExtra("SELECTED_POSITION", 0)
+                                    putExtra("ISUSERPLAYLIST", true)
+                                })
                             finish()
                         }
                         setupYourPlayListRecyclerView(useplaylistdata)
@@ -491,7 +530,10 @@ class NewSleepSoundActivity : BaseActivity() {
                 })
             },
             onAddToPlaylistClick = { service, position ->
-                addToPlaylist(service._id, position)
+                if (service.isActive)
+                    addToPlaylist(service._id, position)
+                else
+                    removeFromPlaylist(service._id, position)
             }
         )
         recyclerView.adapter = adapter

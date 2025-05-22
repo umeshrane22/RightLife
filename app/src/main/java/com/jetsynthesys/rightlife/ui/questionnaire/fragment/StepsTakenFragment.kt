@@ -68,8 +68,8 @@ class StepsTakenFragment : Fragment() {
 
 
         binding.stepsSliderView.setBackgroundColorInt(Color.parseColor("#F0ECEC"))
-        binding.stepsSliderView.setFillColorInt(Color.parseColor("#6C4C3F"))
-        binding.stepsSliderView.setupDefaultStepColors("#6C4C3F")
+        binding.stepsSliderView.setFillColorInt(Color.parseColor("#FF4836"))
+        binding.stepsSliderView.setupDefaultStepColors("#FF4836")
 
 
         val colorMap = hashMapOf(
@@ -103,7 +103,7 @@ class StepsTakenFragment : Fragment() {
                 stepsCountTexts[index].setTypeface(null, Typeface.BOLD)
                 selectedSteps = stepsCountTexts[index].text.toString()
             }
-            binding.tvStepsQuantity.text = stepCount.toString()+ "Steps"
+            binding.tvStepsQuantity.text = "$stepCount\nSteps"
         }
 
         binding.btnContinue.setOnClickListener {
