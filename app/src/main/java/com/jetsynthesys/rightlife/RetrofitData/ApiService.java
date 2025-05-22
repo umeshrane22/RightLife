@@ -1026,9 +1026,7 @@ public interface ApiService {
 
     @Headers("Content-Type: application/json")
     @GET("termsPrivacy")
-    Call<GeneralInformationResponse> getGeneralInformation(
-            @Header("Authorization") String authToken
-    );
+    Call<GeneralInformationResponse> getGeneralInformation();
 
     @Headers("Content-Type: application/json")
     @GET("sleepCatagory")

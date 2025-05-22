@@ -29,19 +29,18 @@
         android:layout_height="wrap_content">
 
 
-
         <com.jetsynthesys.rightlife.quiestionscustomviews.CoffeWaterIntakeView
             android:id="@+id/steps_slider_view1"
             android:layout_width="80dp"
             android:layout_centerInParent="true"
             android:visibility="gone"
             android:layout_height="350dp" />
-        <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryCoffeWaterView
+
+        <com.jetsynthesys.rightlife.quiestionscustomviews.TempCapillaryStepsTakenView
             android:id="@+id/steps_slider_view"
             android:layout_width="80dp"
             android:layout_centerInParent="true"
             android:layout_height="350dp" />
-
 
 
         <LinearLayout
@@ -108,18 +107,28 @@
         </LinearLayout>
 
 
-<!--         recomended steps view -->
+        <!--         recomended steps view -->
+
+        <TextView
+            android:id="@+id/tv_steps_quantity"
+            android:layout_width="match_parent"
+            android:text="2000 Steps"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_alignTop="@+id/steps_slider_view"
+            android:layout_toEndOf="@id/steps_slider_view"
+            android:gravity="center"
+            android:layout_marginTop="80dp"
+            android:layout_height="wrap_content" />
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="350dp"
             android:layout_alignTop="@+id/steps_slider_view"
-
             android:layout_toEndOf="@id/steps_slider_view"
             android:orientation="vertical">
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -128,7 +137,6 @@
                 android:text="" />
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -137,7 +145,6 @@
                 android:text="8k -10k\n\nRecomended Steps" />
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -146,7 +153,6 @@
                 android:text="" />
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -155,7 +161,6 @@
                 android:text="" />
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -164,7 +169,6 @@
                 android:text="" />
 
             <TextView
-
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_weight="1"
@@ -174,17 +178,6 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/tv_steps_quantity"
-        android:layout_width="match_parent"
-        android:text="0 Steps"
-
-
-        android:fontFamily="@font/dmsans_bold"
-        android:layout_below="@+id/steps_slider_view"
-
-        android:gravity="center"
-        android:layout_height="wrap_content"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

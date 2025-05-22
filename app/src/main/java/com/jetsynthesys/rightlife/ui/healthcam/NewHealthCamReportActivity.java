@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,7 +39,6 @@ import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
-import com.jetsynthesys.rightlife.ui.settings.SubscriptionPlansActivity;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
@@ -118,7 +118,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
     }
 
-    private void onBackPressHandle(){
+    private void onBackPressHandle() {
         finish();
         if (isFrom != null && !isFrom.isEmpty()) {
             Intent intent = new Intent(this, HomeDashboardActivity.class);
@@ -184,7 +184,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
                 Log.d("FormattedValue", formatted);
                 binding.txtWellnessScore1.setText(formatted);
                 setTextAccordingToWellnessScore(facialReportResponseNew.data.overallWellnessScore.value);
-                binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue());
+                binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue(), Color.parseColor("#" + facialReportResponseNew.data.overallWellnessScore.colour));
             }
 
             binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);
@@ -201,22 +201,20 @@ public class NewHealthCamReportActivity extends BaseActivity {
                     allHealthCamItems.addAll(healthCamPayAttentionItems);
                 }
 
-            // Combine the lists if you want to display them together
+                // Combine the lists if you want to display them together
 
 
+                HealthCamVitalsAdapter adapter = new HealthCamVitalsAdapter(this, allHealthCamItems);
 
-
-            HealthCamVitalsAdapter adapter = new HealthCamVitalsAdapter(this, allHealthCamItems);
-
-            binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
-            binding.recyclerViewVitalCards.setAdapter(adapter);
+                binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
+                binding.recyclerViewVitalCards.setAdapter(adapter);
                 if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
                     setupScanTracker(scanBinding, facialReportResponseNew.data.usedCount, facialReportResponseNew.data.limit);
-                }else{
+                } else {
                     binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
                 }
-            setupBoosterTracker(facialReportResponseNew.data.boosterUsed, facialReportResponseNew.data.boosterLimit);
-        }else {
+                setupBoosterTracker(facialReportResponseNew.data.boosterUsed, facialReportResponseNew.data.boosterLimit);
+            } else {
 
             }
         }
@@ -320,7 +318,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
             layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
         } else {
             layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
-           // layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
+            // layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
         }
         if (usedCount == limit) {
             layout.buttonText.setText("Scan Again @ 99");

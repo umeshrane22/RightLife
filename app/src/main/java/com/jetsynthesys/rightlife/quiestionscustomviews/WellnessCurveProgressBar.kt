@@ -1,7 +1,11 @@
 package com.jetsynthesys.rightlife.quiestionscustomviews
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
 import com.jetsynthesys.rightlife.R
@@ -56,14 +60,22 @@ class WellnessCurveProgressBar @JvmOverloads constructor(
     private val arcRadiusDp = 130f
 
     init {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.HalfCurveProgressBar, defStyleAttr, 0)
+        val typedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.HalfCurveProgressBar, defStyleAttr, 0)
         currentValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_currentValue, 2285)
         maxValue = typedArray.getInt(R.styleable.HalfCurveProgressBar_maxValue, 2000)
-        backgroundPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_backgroundColor, Color.LTGRAY)
-        progressPaint.color = typedArray.getColor(R.styleable.HalfCurveProgressBar_progressColor, resources.getColor(R.color.border_green))
-        backgroundPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
-        progressPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
-        textPaintMain.textSize = typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 70f)
+        backgroundPaint.color =
+            typedArray.getColor(R.styleable.HalfCurveProgressBar_backgroundColor, Color.LTGRAY)
+        progressPaint.color = typedArray.getColor(
+            R.styleable.HalfCurveProgressBar_progressColor,
+            resources.getColor(R.color.border_green)
+        )
+        backgroundPaint.strokeWidth =
+            typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
+        progressPaint.strokeWidth =
+            typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 40f)
+        textPaintMain.textSize =
+            typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 70f)
         typedArray.recycle()
 
         updateProgress()
@@ -76,8 +88,9 @@ class WellnessCurveProgressBar @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setProgress(progress: Float) {
+    fun setProgress(progress: Float, color: Int) {
         animatedProgress = progress.coerceIn(0f, this.progress)
+        progressPaint.color = color
         invalidate()
     }
 
@@ -110,7 +123,8 @@ class WellnessCurveProgressBar @JvmOverloads constructor(
         val density = resources.displayMetrics.density
         val radius = arcRadiusDp * density
         val paddingTop = 20f // Padding from the top
-        val centerY = radius + paddingTop + backgroundPaint.strokeWidth / 2 // Center the arc vertically
+        val centerY =
+            radius + paddingTop + backgroundPaint.strokeWidth / 2 // Center the arc vertically
 
         // Set the RectF for the arc
         rectF.set(
@@ -127,9 +141,35 @@ class WellnessCurveProgressBar @JvmOverloads constructor(
         val sweepAngle = (animatedProgress / 100f) * sweepAngleMax
         canvas.drawArc(rectF, startAngle, sweepAngle, false, progressPaint)
 
-        // Draw the text (adjust positions based on the new centerY)
-       // drawMainText(canvas, centerX, centerY)
-       // drawLabel(canvas, centerX, centerY + radius / 2 + 40f + 30f)
+        // Draw endpoint circle
+        if (animatedProgress > 0f) {
+            val angleInDegrees = startAngle + sweepAngle
+            val angleInRadians = Math.toRadians(angleInDegrees.toDouble())
+
+            val endX = rectF.centerX() + rectF.width() / 2 * Math.cos(angleInRadians).toFloat()
+            val endY = rectF.centerY() + rectF.height() / 2 * Math.sin(angleInRadians).toFloat()
+
+            // Circle fill
+            val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.FILL
+                color = Color.WHITE
+            }
+
+            // Circle border
+            val circleBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                style = Paint.Style.STROKE
+                strokeWidth = 4f
+                color = Color.parseColor("#4D000000")
+            }
+
+            val circleRadius = 16f
+            canvas.drawCircle(endX, endY, circleRadius, circlePaint)
+            canvas.drawCircle(endX, endY, circleRadius, circleBorderPaint)
+        }
+
+        // Optionally enable if you want text inside
+        // drawMainText(canvas, centerX, centerY)
+        // drawLabel(canvas, centerX, centerY + radius / 2 + 40f + 30f)
     }
 
     private fun drawMainText(canvas: Canvas, centerX: Float, centerY: Float) {

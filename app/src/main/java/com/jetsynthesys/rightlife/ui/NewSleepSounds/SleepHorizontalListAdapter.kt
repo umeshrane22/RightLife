@@ -43,11 +43,15 @@ class SleepHorizontalListAdapter(
                 onItemClick(soundList, adapterPosition)
             }
 
+            binding.ivAddPlaylist.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+
             binding.ivAddPlaylist.setOnClickListener {
                 // 🔥 Handle add to playlist here
                 //   Toast.makeText(binding.root.context, "Added to playlist", Toast.LENGTH_SHORT).show()
-                binding.ivAddPlaylist.setImageResource(R.drawable.ic_added_to_playlist)
+                //binding.ivAddPlaylist.setImageResource(R.drawable.ic_added_to_playlist)
+                service.isActive = !service.isActive
                 onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
+                notifyDataSetChanged()
             }
         }
     }
