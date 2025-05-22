@@ -175,10 +175,11 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                calendar.set(year, month - 1, day)
+                calendar.set(year, month, day)
+                calendar.add(Calendar.DAY_OF_YEAR, -30)
                 val dateStr = dateFormat.format(calendar.time)
-                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                selectedMonthDate = firstDateOfMonth
+                // val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                selectedMonthDate = dateStr
                 fetchActiveCalories("last_monthly")
             } else {
                 Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
@@ -226,10 +227,11 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.set(year, month + 1, day)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, +30)
                     val dateStr = dateFormat.format(calendar.time)
-                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                    selectedMonthDate = firstDateOfMonth
+                    //  val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = dateStr
                     fetchActiveCalories("last_monthly")
                 } else {
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
@@ -337,9 +339,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
                 var selectedDate = currentDateTime.format(formatter)
-
                 // Run date selection + UI-safe calls on the Main thread
                 withContext(Dispatchers.Main) {
                     when (period) {
@@ -351,25 +351,23 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                             }
                             setSelectedDate(selectedWeekDate)
                         }
-
                         "last_monthly" -> {
                             if (selectedMonthDate.isEmpty()) {
-                                val firstDate = getFirstDateOfMonth(selectedDate, 1)
-                                selectedMonthDate = firstDate
-                                selectedDate = firstDate
+                              //  val firstDate = getFirstDateOfMonth(selectedDate, 1)
+                                selectedMonthDate = selectedDate
+                              //  selectedDate = firstDate
                             } else {
-                                selectedDate = getFirstDateOfMonth(selectedMonthDate, 1)
+                                selectedDate = selectedMonthDate//getFirstDateOfMonth(selectedMonthDate, 1)
                             }
                             setSelectedDateMonth(selectedMonthDate, "Month")
                         }
-
                         else -> { // last_six_months or default
                             if (selectedHalfYearlyDate.isEmpty()) {
-                                val firstDate = getFirstDateOfMonth(selectedDate, 1)
-                                selectedHalfYearlyDate = firstDate
-                                selectedDate = firstDate
+                                //val firstDate = getFirstDateOfMonth(selectedDate, 1)
+                                selectedHalfYearlyDate = selectedDate
+                                //selectedDate = firstDate
                             } else {
-                                selectedDate = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
+                                selectedDate = selectedHalfYearlyDate//getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                             }
                             setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                         }
@@ -604,15 +602,21 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             calendar.time = date!!
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
-            if (dateViewType == "Month") {
-                val lastDayOfMonth = getDaysInMonth(month + 1, year)
-                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-                val dateView: String = "${convertDate(selectedMonthDate)}-${convertDate(lastDateOfMonth)}, $year"
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
+            val dateStr = dateFormat.format(calendar.time)
+            if (dateViewType.contentEquals("Month")){
+//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
                 selectedDate.text = dateView
-            } else {
+                selectedDate.gravity = Gravity.CENTER
+            }else{
                 selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
             }
-            selectedDate.gravity = Gravity.CENTER
         }
     }
 

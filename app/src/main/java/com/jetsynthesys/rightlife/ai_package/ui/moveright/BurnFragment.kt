@@ -359,7 +359,6 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-
                 val response = ApiClient.apiServiceFastApi.getActiveCalories(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {

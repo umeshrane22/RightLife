@@ -158,10 +158,11 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                calendar.set(year, month-1, day)
+                calendar.set(year, month, day)
+                calendar.add(Calendar.DAY_OF_YEAR, -30)
                 val dateStr = dateFormat.format(calendar.time)
-                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                selectedMonthDate = firstDateOfMonth
+                // val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                selectedMonthDate = dateStr
                 fetchActiveCalories("last_monthly")
             }else{
                 Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
@@ -209,10 +210,11 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.set(year, month+1, day)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, +30)
                     val dateStr = dateFormat.format(calendar.time)
-                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                    selectedMonthDate = firstDateOfMonth
+                    //  val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = dateStr
                     fetchActiveCalories("last_monthly")
                 }else{
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
@@ -340,38 +342,34 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                             }
                             setSelectedDate(selectedWeekDate)
                         }
-
                         "last_monthly" -> {
                             if (selectedMonthDate.isEmpty()) {
-                                val firstDate = getFirstDateOfMonth(selectedDate, 1)
-                                selectedMonthDate = firstDate
-                                selectedDate = firstDate
+                              //  val firstDate = getFirstDateOfMonth(selectedDate, 1)
+                                selectedMonthDate = selectedDate
+                              //  selectedDate = firstDate
                             } else {
-                                selectedDate = getFirstDateOfMonth(selectedMonthDate, 1)
+                                selectedDate = selectedMonthDate//getFirstDateOfMonth(selectedMonthDate, 1)
                             }
                             setSelectedDateMonth(selectedMonthDate, "Month")
                         }
-
                         else -> { // last_six_months or default
                             if (selectedHalfYearlyDate.isEmpty()) {
-                                val firstDate = getFirstDateOfMonth(selectedDate, 1)
-                                selectedHalfYearlyDate = firstDate
-                                selectedDate = firstDate
+                              //  val firstDate = getFirstDateOfMonth(selectedDate, 1)
+                                selectedHalfYearlyDate = selectedDate
+                              //  selectedDate = firstDate
                             } else {
-                                selectedDate = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
+                                selectedDate = selectedHalfYearlyDate//getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                             }
                             setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                         }
                     }
                 }
-
                 // Proceed with API call
                 val response = ApiClient.apiServiceFastApi.getConsumedCarbs(
                     userId = userId,
                     period = period,
                     date = selectedDate
                 )
-
                 if (response.isSuccessful) {
                     val data = response.body()
                     if (data?.statusCode == 200) {
@@ -381,7 +379,6 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                             "last_six_months" -> processSixMonthsData(data, selectedDate)
                             else -> Triple(getWeekData(), getWeekLabels(), getWeekLabelsDate())
                         }
-
                         // Ensure all UI updates are on the main thread
                         withContext(Dispatchers.Main) {
                             carbs_description_heading.text = data.heading
@@ -589,10 +586,15 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             calendar.time = date!!
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
+            val dateStr = dateFormat.format(calendar.time)
             if (dateViewType.contentEquals("Month")){
-                val lastDayOfMonth = getDaysInMonth(month+1 , year)
-                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-                val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
                 selectedDate.text = dateView
                 selectedDate.gravity = Gravity.CENTER
             }else{
