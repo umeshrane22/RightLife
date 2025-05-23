@@ -98,6 +98,8 @@ import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.AssessmentReviewDialog
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDialogFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.CoroutineScope
@@ -184,6 +186,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var downloadView: ImageView
     private lateinit var sleepArrowView: ImageView
     private lateinit var sleepPerformView: ImageView
+    private lateinit var imgSleepInfo: ImageView
+    private lateinit var imgIdealInfo: ImageView
     private lateinit var restorativeChart: SleepRestoChartView
     private var sleepSessionRecord: List<SleepSessionRecord>? = null
     private var totalCaloriesBurnedRecord: List<TotalCaloriesBurnedRecord>? = null
@@ -207,7 +211,22 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var mRecordId = ""
 
     private val allReadPermissions = setOf(
-        HealthPermission.getReadPermission(SleepSessionRecord::class)
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(SleepSessionRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(SpeedRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class),
+        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
+        HealthPermission.getReadPermission(RespiratoryRateRecord::class),
+        HealthPermission.getReadPermission(BodyFatRecord::class),
+        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
+        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
+        HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class),
+        HealthPermission.getReadPermission(BloodPressureRecord::class)
     )
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -220,6 +239,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         btnSync = view.findViewById(R.id.lyt_sync_with_health)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
+        imgIdealInfo = view.findViewById(R.id.img_ideal_info)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
         downloadView = view.findViewById(R.id.sleep_download_icon)
@@ -268,6 +288,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageCoreTime = view.findViewById(R.id.tv_stage_core_time)
         tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
+        imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
 
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -301,6 +322,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }
 
+        imgIdealInfo.setOnClickListener {
+            val dialog = IdealInfoDialogFragment.newInstance()
+            dialog.show(parentFragmentManager, "IdealInfoDialogFragment")
+        }
+
         downloadView.setOnClickListener {
             saveViewAsPdf(requireContext(),mainView,"SleepRight")
         }
@@ -308,6 +334,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         logYourNap.setOnClickListener {
             val bottomSheet = LogYourNapDialogFragment(requireContext())
             bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+        }
+
+        imgSleepInfo.setOnClickListener {
+            val dialog = SleepInfoDialogFragment.newInstance()
+            dialog.show(parentFragmentManager, "SleepInfoDialogFragment")
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -967,7 +998,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepTimeRequirementCardView.visibility = View.GONE
                   //  Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
-                    sleepTimeRequirementCardView.visibility = View.GONE
+                    sleepTimeRequirementCardView.visibility = View.VISIBLE
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                //     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
 

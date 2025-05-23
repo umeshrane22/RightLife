@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:background="@drawable/record_emotion_bg">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Ideal Sleep"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="16dp" />
+            <ImageView
+                android:id="@+id/btn_close"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/close"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Subtitle -->
+        <TextView
+            android:text="What is Dynamic Ideal Sleep and how does RightLife compute it?"
+            android:textSize="16sp"
+            android:textStyle="italic"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <ImageView
+            android:id="@+id/img_ideal_sleep"
+            android:layout_width="250dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ideal_sleep_icon"
+            />
+
+        <TextView
+            android:text="Why Ideal Sleep Matters"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="Sleep is a cornerstone of health, influencing cognitive function, metabolic regulation, immune strength, and overall recovery. Achieving the right amount of sleep isn’t just about getting a standard 7–9 hours—it’s about ensuring the body fully recovers from daily exertion, maintains optimal energy levels, and prevents long-term health issues."
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- How RightLife Determines Your Ideal Sleep Time -->
+        <TextView
+            android:text="How RightLife Determines Your Ideal Sleep Time"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <!-- 1. Baseline Sleep Needs -->
+        <TextView
+            android:text="1. Baseline Sleep Needs"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="4dp" />
+
+        <!-- 2. Sleep Debt and Recovery -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:text="RightLife starts by defining a default sleep duration for users. This is based on extensive sleep research and reflects the average healthy sleep requirement according to your demographic data. If long-term sleep debt accumulates, this baseline can be adjusted slightly to encourage recovery."
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:text="2. Sleep Debt and Recovery"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+        <TextView
+            android:text="If a user has consistently underslept, RightLife factors in the deficit. Instead of replacing sleep hour-for-hour, it prioritizes deep and REM sleep cycles to enhance recuperation efficiently."
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 3. Impact of Exertion -->
+        <TextView
+            android:text="3. Impact of Exertion on Sleep Requirements"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+        <TextView
+            android:text="Physical activity affects sleep needs:\n• Wearable Users: Tracks heart rate zones to adjust sleep needs.\n• Non-Wearable Users: Uses workout type, duration, and effort estimation to adjust recovery time."
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="12dp" />
+
+        <!-- 4. Naps -->
+        <TextView
+            android:text="4. Naps and Their Effect on Nightly Sleep"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="4dp" />
+        <TextView
+            android:text="Daytime naps are integrated into your sleep calculation. Long naps reduce the recommended nightly sleep, while short naps improve alertness without affecting bedtime."
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- How to Use Ideal Sleep -->
+        <TextView
+            android:text="How to Use the Ideal Sleep Duration in RightLife"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp" />
+        <TextView
+            android:text="RightLife updates your sleep goal each night based on your history and activity. This helps you:\n• Recover from workouts\n• Pay off sleep debt gradually\n• Optimize energy and brain performance"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- What RightLife Does -->
+        <TextView
+            android:text="What RightLife Does for You"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp" />
+        <TextView
+            android:text="• Calculates your ideal sleep time daily\n• Adjusts based on past sleep, naps, and effort\n• Offers sleep consistency and improvement tips"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- What You Need to Do -->
+        <TextView
+            android:text="What You Need to Do"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="8dp" />
+        <TextView
+            android:text="• Log sleep daily if you're a non-wearable user\n• Record naps so they count toward your sleep\n• Enter workout effort accurately\n• Follow your nightly sleep goal"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Conclusion -->
+        <TextView
+            android:text="Conclusion"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+        <TextView
+            android:text="RightLife moves beyond generic sleep advice. It delivers personalized sleep goals that reflect your body’s true needs, helping you wake up refreshed and ready."
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginBottom="32dp" />
+    </LinearLayout>
+</ScrollView>

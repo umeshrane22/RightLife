@@ -268,5 +268,57 @@ We also use device identifiers to improve analytics and tailor your in-app exper
     <string name="underlined_change"><u>Change</u></string>
     <string name="title_activity_content_details">ContentDetailsActivity</string>
 
+    <string name="sleep_intro">
+        Understanding your sleep is essential to optimizing recovery and overall well-being.
+        Your Sleep Analysis in <b>RightLife</b> provides a detailed breakdown of your sleep performance, consistency, and recovery.
+    </string>
+
+    <string name="sleep_performance">
+        Your sleep performance measures how much sleep you got versus how much you needed based on your body’s demands.\n
+        • <b>Sleep Needed</b> – Adjusts dynamically based on recent activity levels, strain, and recovery needs.\n
+        • <b>Sleep Obtained</b> – The total time you slept during the night.\n
+        RightLife calculates your sleep performance score as a percentage of your actual sleep relative to your goal.
+        <b>Aim for 85% or higher</b> to optimize recovery and energy levels.
+    </string>
+
+    <string name="sleep_consistency">
+        Sleep consistency measures how regularly you go to bed and wake up within a set window.\n
+        • <b>Higher consistency</b> helps regulate your circadian rhythm.\n
+        • <b>Lower consistency</b> contributes to fatigue, poor recovery, and cognitive decline.\n
+        RightLife tracks a <b>4-day rolling sleep consistency</b> to provide insights.
+    </string>
+
+    <string name="sleep_stages">
+        Your sleep is divided into four stages:\n
+        • <b>Awake</b> – Time awake during the night.\n
+        • <b>Light Sleep</b> – Supports memory consolidation.\n
+        • <b>Deep Sleep</b> – Vital for recovery and immunity.\n
+        • <b>REM Sleep</b> – Important for cognition and emotion.
+    </string>
+
+    <string name="restorative_sleep">
+        <b>Restorative sleep</b> includes Deep Sleep + REM Sleep.\n
+        • <b>Deep Sleep</b> supports muscle repair and hormone regulation.\n
+        • <b>REM Sleep</b> improves memory and emotional processing.\n
+        A high percentage of restorative sleep means <b>efficient recovery</b>.
+    </string>
+
+    <string name="rightlife_does">
+        🔹 <b>Calculates Sleep Need</b> – Adjusted dynamically.\n
+        🔹 <b>Evaluates Sleep Performance</b> – Measures your actual sleep vs. need.\n
+        🔹 <b>Analyzes Consistency</b> – Tracks sleep/wake regularity.\n
+        🔹 <b>Tracks Sleep Stages</b> – Light, Deep, REM (Wearable only).\n
+        🔹 <b>Monitors Restorative Sleep</b> – Deep + REM Sleep impact.
+    </string>
+
+    <string name="what_to_do">
+        ✅ <b>Maintain a Regular Sleep Schedule</b> – Bedtime/wake within 30–60 minutes.\n
+        ✅ <b>Track Sleep</b> – Enable wearable or log manually.\n
+        ✅ <b>Aim for 85%+ Sleep Performance</b> – Hit your sleep target.\n
+        ✅ <b>Improve Restorative Sleep</b> – Create a good sleep environment.\n
+        ✅ <b>Monitor Trends</b> – Use consistency scores and trend arrows.\n\n
+        Better sleep = <b>better recovery, sharper focus, improved performance</b>.
+    </string>
+
 
 </resources>

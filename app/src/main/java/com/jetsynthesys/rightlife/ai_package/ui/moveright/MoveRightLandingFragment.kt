@@ -1328,8 +1328,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val seconds = nanos / 1_000_000_000
                 val nanoAdjustment = (nanos % 1_000_000_000).toInt()
                 val instant = Instant.ofEpochSecond(seconds, nanoAdjustment.toLong())
-                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    .withZone(ZoneOffset.UTC)
+                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC)
                 return targetFormatter.format(instant)
             } catch (e: Exception) {
                 ""
@@ -1342,8 +1341,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneOffset.UTC)
                 val temporal = formatter.parse(input)
                 val instant = Instant.from(temporal)
-                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    .withZone(ZoneOffset.UTC)
+                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC)
                 return targetFormatter.format(instant)
             } catch (e: DateTimeParseException) {
                 // Try next format

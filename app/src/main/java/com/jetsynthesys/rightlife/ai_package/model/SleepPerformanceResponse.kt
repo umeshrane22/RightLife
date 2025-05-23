@@ -21,7 +21,16 @@ data class SleepPerformanceAllData (
     @SerializedName("sleep_insight_detail" )
     var sleepInsightDetail              : PerformanceInsightDetail?,
     @SerializedName("sleep_performance_average" )
-    var sleepPerformanceAverage : Double?
+    var sleepPerformanceAverage : Double?,
+    @SerializedName("progress_detail")
+    var progress_detail : PerformanceProgressDetail?
+)
+
+data class PerformanceProgressDetail(
+    @SerializedName("progress_percentage")
+    var progress_percentage              : Double?,
+    @SerializedName("progress_sign")
+    var progress_sign                : String?,
 )
 
 data class PerformanceInsightDetail(

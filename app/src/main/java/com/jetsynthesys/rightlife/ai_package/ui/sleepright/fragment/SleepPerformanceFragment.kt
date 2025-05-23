@@ -334,7 +334,20 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
                 setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
             }
         }
+        if (sleepPerformanceResponse?.progress_detail?.progress_sign == "plus"){
+            percentageIcon.visibility = View.VISIBLE
+            percentageIcon.setImageResource(R.drawable.ic_up)
+            percentageText.visibility = View.VISIBLE
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + " past week"
+        }else{
+            percentageIcon.visibility = View.VISIBLE
+            percentageText.visibility = View.VISIBLE
+            percentageIcon.setImageResource(R.drawable.ic_down)
+            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + " past week"
+        }
     }
+
     fun Double.roundToDecimals(decimals: Int): Double {
         val factor = 10.0.pow(decimals)
         return round(this * factor) / factor
