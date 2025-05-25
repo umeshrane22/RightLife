@@ -47,6 +47,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
     private var maxY = 0f
     private var waterIntake = 0
     private val maxIntake = 3000
+    private var loadingOverlay : FrameLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,8 +98,6 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             logUserWaterIntake(userId = userId, source = "apple", waterMl = waterIntake.toInt(), date = currentDate)
 
         }
-
-
         updateUI()
 
         ivCupIcon.setOnTouchListener { v, event ->
@@ -120,7 +119,6 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             }
             true
         }
-
         closeIV.setOnClickListener {
             dismiss()
         }
@@ -143,13 +141,17 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         waterMl: Int,
         date: String
     ) {
+         if (isAdded  && view != null){
+             requireActivity().runOnUiThread {
+                 showLoader(requireView())
+             }
+         }
         val request = WaterIntakeRequest(
             userId = userId,
             source = source,
             waterMl = waterMl,
             date = date
         )
-
         val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWaterIntake(request)
         call.enqueue(object : Callback<LogWaterResponse> {
             override fun onResponse(
@@ -157,6 +159,11 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
                 response: Response<LogWaterResponse>
             ) {
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val responseBody = response.body()
                     response.body()?.waterMl?.let { listener?.onWaterIntakeConfirmed(it.toInt()) }
                     dismiss()
@@ -167,15 +174,32 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
                         "LogWaterAPI",
                         "Error: ${response.code()} - ${response.errorBody()?.string()}"
                     )
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
-
             override fun onFailure(call: Call<LogWaterResponse>, t: Throwable) {
                 Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
 
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
+    }
 
     private fun updateValueBasedOnPosition(positionY: Float) {
         val containerHeight = progressBarContainer.height

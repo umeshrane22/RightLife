@@ -155,6 +155,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private var eveningSnackMealDetailsLog : MealDetailsLog? = null
     private var dinnerMealDetailsLog : MealDetailsLog? = null
     private var selectedDate : String = ""
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
@@ -805,53 +806,32 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         }, 3000)
     }
 
-    private fun getMealPlanList() {
-        LoaderUtil.showLoader(requireView())
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        println(userId)
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        val call = ApiClient.apiService.getMealLogLists(token)
-        call.enqueue(object : Callback<MealLogsResponseModel> {
-            override fun onResponse(call: Call<MealLogsResponseModel>, response: Response<MealLogsResponseModel>) {
-                if (response.isSuccessful) {
-                  //  LoaderUtil.dismissLoader(requireActivity())
-                    val mealPlanLists = response.body()?.data ?: emptyList()
-                    mealPlanData.addAll(mealPlanLists)
-                } else {
-                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                    Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
-                }
-            }
-            override fun onFailure(call: Call<MealLogsResponseModel>, t: Throwable) {
-                Log.e("Error", "API call failed: ${t.message}")
-                Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
-            }
-        })
-    }
-
-    private var loadingOverlay : FrameLayout? = null
-
-    fun showLoader(activity: View) {
-        loadingOverlay = activity.findViewById(R.id.loading_overlay)
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE
     }
-
-    fun dismissLoader(activity: View) {
-        loadingOverlay = activity.findViewById(R.id.loading_overlay)
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
     }
 
     private fun getMealsLogList(formattedDate: String) {
- //       showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {
                 override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                     if (response.isSuccessful) {
-//                            dismissLoader(requireView())
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                         if (response.body()?.data != null){
                             selectedDate = response.body()?.data!!.date
                             val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
@@ -1017,27 +997,43 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                             dinnerListLayout.visibility = View.GONE
                             noMealLogsLayout.visibility = View.VISIBLE
                             logMealTv.text = "Log Your Meal"
-                        //    dismissLoader(requireView())
+                            if (isAdded  && view != null){
+                                requireActivity().runOnUiThread {
+                                    dismissLoader(requireView())
+                                }
+                            }
                         }
                     }
                 }
                 override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                  //   dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             })
         }
     }
 
     private fun getMealsLogHistory(formattedDate: String) {
-     //   showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMealsLogHistory(userId, formattedDate)
         call.enqueue(object : Callback<MealLogsHistoryResponse> {
             override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
                 if (response.isSuccessful) {
-//                    dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
                         if (mealLogsHistoryResponse?.is_logged_meal_list!!.size > 0){
@@ -1048,13 +1044,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                 //   dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MealLogsHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-               // dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }

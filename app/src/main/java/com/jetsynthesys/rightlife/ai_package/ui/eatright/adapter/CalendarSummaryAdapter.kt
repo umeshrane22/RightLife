@@ -34,7 +34,7 @@ class CalendarSummaryAdapter(private val context: Context, private var dataLists
             holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
         }else{
             holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
-            holder.layoutValue.setBackgroundResource(R.drawable.circle_background)
+            holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
         }
 
 //        holder.txtValue.setBackgroundResource(

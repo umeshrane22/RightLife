@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:background="@drawable/record_emotion_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:text="Your Sleep Analysis"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+            <ImageView
+                android:id="@+id/btn_close"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/close"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:background="@color/light_blue"
+            android:padding="10dp">
+        <ImageView
+            android:id="@+id/img_sleep_stage"
+            android:layout_width="250dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@drawable/sleep_info_image"
+            />
+        <ImageView
+            android:id="@+id/img_sleep_perform"
+            android:layout_width="250dp"
+            android:layout_height="260dp"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/sleep_perfomnce"
+            />
+        </LinearLayout>
+        <TextView
+            android:text="@string/sleep_intro"
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:text="Sleep Performance"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="@string/sleep_performance"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:text="Sleep Consistency"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="@string/sleep_consistency"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:text="Sleep Stages (Wearable Users Only)"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="@string/sleep_stages"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:text="Restorative Sleep (Wearable Users Only)"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="@string/restorative_sleep"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:text="What RightLife Does for You"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="@string/rightlife_does"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:text="What You Need to Do"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:text="@string/what_to_do"
+            android:textSize="14sp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp" />
+    </LinearLayout>
+</ScrollView>

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
@@ -68,6 +69,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private var selectedMealType: String? = null
     private var selectedFoodType: String? = null
     private var selectedCuisine: String? = null
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRecipeSearchBinding
         get() = FragmentRecipeSearchBinding::inflate
@@ -310,6 +312,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         foodType: String? = selectedFoodType,
         cuisine: String? = selectedCuisine
     ) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val call = ApiClient.apiServiceFastApi.getRecipesList(
             mealType = mealType,
             foodType = foodType,
@@ -318,6 +325,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     snapRecipesList.clear()
                     snapRecipesList.addAll(mealPlanLists)
@@ -328,20 +340,40 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
 
     private fun getSnapMealRecipesList() {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val call = ApiClient.apiServiceFastApi.getSnapMealRecipesList()
         call.enqueue(object : Callback<SnapMealRecipeResponseModel> {
             override fun onResponse(call: Call<SnapMealRecipeResponseModel>, response: Response<SnapMealRecipeResponseModel>) {
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val mealPlanLists = response.body()?.data ?: emptyList()
                     snapRecipesList.clear()
                     snapRecipesList.addAll(mealPlanLists)
@@ -358,11 +390,21 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<SnapMealRecipeResponseModel>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
@@ -382,5 +424,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             selectedFoodType = it.getString("selectedFoodType")
             selectedCuisine = it.getString("selectedCuisine")
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

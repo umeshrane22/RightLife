@@ -132,6 +132,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:text="6 Months"
+                            android:visibility="gone"
                             android:textSize="14sp"
                             android:textColor="@color/black"
                             android:background="@drawable/tab_background_heart_rate"

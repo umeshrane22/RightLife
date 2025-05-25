@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -67,6 +68,7 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
     private var selectedWeekDate : String = ""
     private var selectedMonthDate : String = ""
     private var selectedHalfYearlyDate : String = ""
+    private var loadingOverlay : FrameLayout? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -324,6 +326,11 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
     private fun fetchRestingHeartRate(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -366,6 +373,11 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
                     date = selectedDate
                 )
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val restingHeartRate = response.body()
                     restingHeartRate?.let { data ->
                         if (restingHeartRate?.restingHeartRate != null){
@@ -396,11 +408,21 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
                             "Error: ${response.code()} - ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -628,6 +650,15 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         } catch (e: Exception) {
             "Invalid Date"
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     private fun convertMonth(inputDate: String): String {

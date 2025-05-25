@@ -100,6 +100,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private var isProceedResult : Boolean = false
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var backButton : ImageView
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSnapMealBinding
         get() = FragmentSnapMealBinding::inflate
@@ -486,8 +487,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         private const val REQUEST_IMAGE_CAPTURE = 101
     }
 
-    private var loadingOverlay : FrameLayout? = null
-
     fun showLoader(activity: View) {
         loadingOverlay = activity.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE
@@ -499,7 +498,11 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 
     private fun uploadFoodImagePath(imagePath: String, description: String) {
-       LoaderUtil.showLoader(this.requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val base64Image = encodeImageToBase64(imagePath)
         val apiKey = "HanN8X1baCEM0E49xNcN"
         val request = AnalysisRequest(apiKey, base64Image, description)
@@ -508,7 +511,11 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         call.enqueue(object : Callback<ScanMealNutritionResponse> {
             override fun onResponse(call: Call<ScanMealNutritionResponse>, response: Response<ScanMealNutritionResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     println("Success: ${response.body()}")
                     if (response.body()?.data != null){
                         if (response.body()?.data!!.isNotEmpty()){
@@ -533,13 +540,21 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                     }
                 } else {
                     println("Error: ${response.errorBody()?.string()}")
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     Toast.makeText(context, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<ScanMealNutritionResponse>, t: Throwable) {
                 println("Failure: ${t.message}")
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
                 Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
             }
         })

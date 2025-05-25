@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -42,6 +43,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     private lateinit var mealType : String
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private var recipeList: List<MyRecipe> = ArrayList()
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRecipeBinding
         get() = FragmentMyRecipeBinding::inflate
@@ -213,13 +215,21 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     }
 
     private fun getRecipeList() {
-        // LoaderUtil.showLoader(requireActivity())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMyRecipeList("0", userId)
         call.enqueue(object : Callback<MyRecipeResponse> {
             override fun onResponse(call: Call<MyRecipeResponse>, response: Response<MyRecipeResponse>) {
                 if (response.isSuccessful) {
-//                    LoaderUtil.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     if (response.body() != null){
                         val myRecipeList = response.body()!!.data
                         recipeList = myRecipeList
@@ -228,15 +238,32 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    //  LoaderUtil.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MyRecipeResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                //  LoaderUtil.dismissLoader(requireActivity())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     override fun onRecipeDeleted(recipeData: String) {

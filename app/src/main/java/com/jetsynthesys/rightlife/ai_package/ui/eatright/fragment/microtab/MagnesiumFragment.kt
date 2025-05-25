@@ -85,6 +85,7 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
     private val viewModel: ActiveBurnViewModelMagnesium by viewModels()
+    private var loadingOverlay : FrameLayout? = null
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMagnesiumBinding
@@ -170,10 +171,11 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                calendar.set(year, month-1, day)
+                calendar.set(year, month, day)
+                calendar.add(Calendar.DAY_OF_YEAR, -30)
                 val dateStr = dateFormat.format(calendar.time)
-                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                selectedMonthDate = firstDateOfMonth
+                // val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                selectedMonthDate = dateStr
                 fetchActiveCalories("last_monthly")
             }else{
                 Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
@@ -221,10 +223,11 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.set(year, month+1, day)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, +30)
                     val dateStr = dateFormat.format(calendar.time)
-                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                    selectedMonthDate = firstDateOfMonth
+                    //  val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = dateStr
                     fetchActiveCalories("last_monthly")
                 }else{
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
@@ -335,6 +338,11 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
     private fun fetchActiveCalories(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -351,23 +359,23 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                 }else if (period.contentEquals("last_monthly")){
                     if (selectedMonthDate.contentEquals("")){
                         selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedMonthDate = firstDateOfMonth
+//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                        selectedDate = firstDateOfMonth
+                        selectedMonthDate = selectedDate
                     }else{
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
+                       // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
                 }else{
                     if (selectedHalfYearlyDate.contentEquals("")){
                         selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedHalfYearlyDate = firstDateOfMonth
+//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                        selectedDate = firstDateOfMonth
+                        selectedHalfYearlyDate = selectedDate
                     }else{
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
+                       // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
@@ -375,6 +383,11 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                 val response = ApiClient.apiServiceFastApi.getConsumedMagnesium(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val activeCaloriesResponse = response.body()
                     if (activeCaloriesResponse?.statusCode == 200){
                         activeCaloriesResponse.let { data ->
@@ -403,14 +416,33 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     /** Process API data for last_weekly (7 days) */
@@ -470,17 +502,18 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         calendar.set(year, month, day)
+        calendar.add(Calendar.DAY_OF_YEAR, -29)
         val calorieMap = mutableMapOf<String, Float>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
         val days = getDaysInMonth(month+1, year)
-        repeat(days) {
+        repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             calorieMap[dateStr] = 0f
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until days) {
+        for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -592,10 +625,15 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
             calendar.time = date!!
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
+            val dateStr = dateFormat.format(calendar.time)
             if (dateViewType.contentEquals("Month")){
-                val lastDayOfMonth = getDaysInMonth(month+1 , year)
-                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-                val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
                 selectedDate.text = dateView
                 selectedDate.gravity = Gravity.CENTER
             }else{
@@ -603,7 +641,6 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                 selectedDate.gravity = Gravity.CENTER
             }
         }
-
     }
 
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedMagnesiumResponse, type: String) {
@@ -619,7 +656,6 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
 
             }
         }
-
     }
 
     private fun convertDate(inputDate: String): String {

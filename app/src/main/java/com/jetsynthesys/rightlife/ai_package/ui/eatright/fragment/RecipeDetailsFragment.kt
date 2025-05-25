@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -68,6 +69,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     private  var recipeList :SnapRecipeList? = null
     private lateinit var backButton: ImageView
     private lateinit var mealTypeImage : ImageView
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentRecipeDetailsBinding
         get() = FragmentRecipeDetailsBinding::inflate
@@ -263,10 +265,20 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     }
 
     private fun getSnapMealRecipesList() {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val call = ApiClient.apiServiceFastApi.getSnapMealRecipeById(recipeId = recipeList?.id.toString())
         call.enqueue(object : Callback<RecipeResponseNew> {
             override fun onResponse(call: Call<RecipeResponseNew>, response: Response<RecipeResponseNew>) {
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val ingredientsList = response.body()?.data?.ingredients.orEmpty()
                     val ingredientsFormatted = ingredientsList.joinToString(separator = "\n") { "• $it" }
                     ingredients_description.text = ingredientsFormatted
@@ -309,11 +321,21 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<RecipeResponseNew>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
@@ -331,5 +353,14 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         } else {
             null
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

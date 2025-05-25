@@ -510,10 +510,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                     val ResponseObj = gson.fromJson(
                         jsonResponse, UserProfileResponse::class.java
                     )
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .saveUserId(ResponseObj.userdata.id)
-                    SharedPreferenceManager.getInstance(applicationContext)
-                        .saveUserProfile(ResponseObj)
+                    SharedPreferenceManager.getInstance(applicationContext).saveUserId(ResponseObj.userdata.id)
+                    SharedPreferenceManager.getInstance(applicationContext).saveUserProfile(ResponseObj)
 
 
                     if (ResponseObj.userdata.profilePicture != null) {

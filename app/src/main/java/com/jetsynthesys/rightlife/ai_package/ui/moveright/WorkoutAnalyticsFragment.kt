@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -55,6 +56,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private lateinit var peak_text_time_value: TextView
     private lateinit var light_text_percentage: TextView
     private var cardItem: CardItem? = null
+    private var loadingOverlay : FrameLayout? = null
 
     private val dataPoints = mutableListOf<HRDataPoint>()
     private val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
@@ -241,6 +243,11 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private fun fetchUserWorkouts(view: View) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                 val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
@@ -251,6 +258,11 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                     limit = 10
                 )
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val workouts = response.body()
                     workouts?.let {
                         val hasHeartRateData = it.syncedWorkouts.any { workout -> workout.heartRateData.isNotEmpty() }
@@ -380,14 +392,33 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

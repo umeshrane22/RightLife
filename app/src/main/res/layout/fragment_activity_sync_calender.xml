@@ -240,4 +240,11 @@ android:background="@drawable/gradient_color_background_workout">
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
+
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/loader_layout"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

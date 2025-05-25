@@ -18,6 +18,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.cardview.widget.CardView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -61,6 +62,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var tvAverageNeeded: TextView
     private lateinit var tvIdealTitle: TextView
     private lateinit var tvIdealMessage: TextView
+    private lateinit var sleepCard: CardView
+    private lateinit var sleepNoCard: CardView
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
     private var mStartDate = ""
@@ -73,6 +76,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
         lineChart = view.findViewById(R.id.idealActualChart)
         radioGroup = view.findViewById(R.id.tabGroup)
+        sleepCard = view.findViewById(R.id.sleep_ideal_card)
+        sleepNoCard = view.findViewById(R.id.sleep_ideal_nocard)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
         sixMonthGraph = view.findViewById(R.id.sixMonthGraph)
         btnPrevious = view.findViewById(R.id.btn_prev)
@@ -293,19 +298,34 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
         private fun fetchSleepData(endDate: String,period: String) {
             progressDialog.show()
-            val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-            val source = "apple"
-            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, "2025-04-30")
+            val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+            val source = "android"
+            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, endDate)
             call.enqueue(object : Callback<SleepIdealActualResponse> {
                 override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                     if (response.isSuccessful) {
                         progressDialog.dismiss()
                         if (response.body()!=null) {
                             idealActualResponse = response.body()!!
-                            setSleepRightData()
+                            if (idealActualResponse.message != "No sleep time data retrieved successfully") {
+                                tvIdealTitle.visibility = View.VISIBLE
+                                tvIdealMessage.visibility = View.VISIBLE
+                                sleepCard.visibility = View.VISIBLE
+                                sleepNoCard.visibility = View.GONE
+                                setSleepRightData()
+                            }else{
+                                sleepCard.visibility = View.GONE
+                                sleepNoCard.visibility = View.VISIBLE
+                                tvIdealTitle.visibility = View.GONE
+                                tvIdealMessage.visibility = View.GONE
+                            }
                         }
                     }else if(response.code() == 400){
                         progressDialog.dismiss()
+                        sleepCard.visibility = View.GONE
+                        sleepNoCard.visibility = View.VISIBLE
+                        tvIdealTitle.visibility = View.GONE
+                        tvIdealMessage.visibility = View.GONE
                         Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                     }else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")

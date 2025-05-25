@@ -80,6 +80,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:text="6 Months"
+                            android:visibility="gone"
                             android:textSize="14sp"
                             android:textColor="@color/black"
                             android:background="@drawable/tab_background_calorie"
@@ -164,7 +165,7 @@
                             android:id="@+id/percentageIc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="kCal"
+                            android:text="mg"
                             android:textSize="12sp"
                             android:textColor="@color/black_no_meals"
                             android:fontFamily="@font/dmsans_regular"
@@ -226,12 +227,12 @@
                             app:layout_constraintTop_toBottomOf="@+id/total_text_heading" />
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="kCal"
-                            android:textSize="12sp"
-                            android:textColor="@color/black_no_meals"
+                            android:layout_width="5dp"
+                            android:layout_height="5dp"
                             android:fontFamily="@font/dmsans_regular"
+                            android:text="mg"
+                            android:textColor="@color/black_no_meals"
+                            android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="@+id/total_number"
                             app:layout_constraintStart_toEndOf="@+id/total_number" />
 
@@ -281,16 +282,15 @@
 
                             <TextView
                                 android:id="@+id/selectedDate"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="9 Feb, 2O25"
+                                android:layout_width="52dp"
+                                android:layout_height="10dp"
                                 android:fontFamily="@font/dmsans_regular"
-                                android:textSize="10sp"
+                                android:text="9 Feb, 2O25"
                                 android:textColor="@color/black_no_meals"
-                                app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
+                                android:textSize="10sp"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                />
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
 
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="wrap_content"
@@ -316,7 +316,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="3dp"
-                                    android:text="kCal"
+                                    android:text="mg"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:textSize="10sp"
                                     android:textColor="@color/black_no_meals"
@@ -401,5 +401,11 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/loader_layout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

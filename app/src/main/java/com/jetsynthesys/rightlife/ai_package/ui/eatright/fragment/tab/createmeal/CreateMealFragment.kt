@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -66,6 +67,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private var mealId : String = ""
     private lateinit var mealType : String
     private var mealName : String = ""
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
@@ -334,7 +336,11 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     }
 
     private fun getMealList() {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
          val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
        // val userId = "64763fe2fa0e40d9c0bc8264"
@@ -343,25 +349,41 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         call.enqueue(object : Callback<MealsResponse> {
             override fun onResponse(call: Call<MealsResponse>, response: Response<MealsResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val mealPlanLists = response.body()?.meals ?: emptyList()
                   //  mealLogLists.addAll(mealPlanLists)
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MealsResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
 
     private fun createMeal(mealDetails: ArrayList<SnapRecipeData>) {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
          val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
        // val userId = "64763fe2fa0e40d9c0bc8264"
@@ -397,7 +419,11 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         call.enqueue(object : Callback<MealPlanResponse> {
             override fun onResponse(call: Call<MealPlanResponse>, response: Response<MealPlanResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val mealData = response.body()?.message
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = CreateMealFragment()
@@ -412,19 +438,31 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MealPlanResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
 
     private fun createMealsSave(snapRecipeList : ArrayList<SearchResultItem>) {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -448,7 +486,11 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val mealData = response.body()?.message
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
@@ -463,19 +505,31 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
 
     private fun updateMealsSave(snapRecipeList : ArrayList<SearchResultItem>) {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -498,7 +552,11 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         call.enqueue(object : Callback<MealUpdateResponse> {
             override fun onResponse(call: Call<MealUpdateResponse>, response: Response<MealUpdateResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val mealData = response.body()?.message
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
@@ -512,14 +570,31 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

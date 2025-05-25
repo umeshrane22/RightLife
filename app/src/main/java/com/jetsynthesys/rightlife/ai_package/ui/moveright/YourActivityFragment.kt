@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -77,6 +78,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     private var workoutHistoryResponse : WorkoutHistoryResponse? = null
     private var  workoutLogHistory :  ArrayList<WorkoutRecord> = ArrayList()
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -233,13 +235,25 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
     }
 
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
+    }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun fetchCalories(formattedDate: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
                // Log.d("FetchCalories", "Fetching calories for userId: $userId, startDate: $startDate, endDate: $endDate")
                 val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                 val response = ApiClient.apiServiceFastApi.getCalories(
@@ -252,6 +266,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 )
 
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val caloriesResponse = response.body()
                     Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
@@ -297,6 +316,10 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 "Failed to fetch calories: ${response.code()}",
                                 Toast.LENGTH_LONG
                             ).show()
+
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
                         }
                     }
                 }
@@ -310,6 +333,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             "Error fetching calories: ${e.message}",
                             Toast.LENGTH_LONG
                         ).show()
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
                     }
                 }
             }
@@ -386,6 +412,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun updateCalorieRecord() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val calorieId: String = "67e0f84505b80d8823623e27"
                 val request = UpdateCalorieRequest(
                     userId = "64763fe2fa0e40d9c0bc8264",
@@ -402,6 +433,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 )
 
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val updateResponse: UpdateCalorieResponse? = response.body()
                     if (updateResponse != null) {
                         withContext(Dispatchers.Main) {
@@ -416,11 +452,21 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
                         Log.e("UpdateCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e("UpdateCalorie", "Exception: ${e.message}", e)
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -429,6 +475,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun deleteCalorieRecord() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val calorieId: String = "67e1122a3051bc4fbd9c42aa"
                 val userId: String = "64763fe2fa0e40d9c0bc8264"
 
@@ -438,6 +489,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 )
 
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val deleteResponse: DeleteCalorieResponse? = response.body()
                     if (deleteResponse != null) {
                         withContext(Dispatchers.Main) {
@@ -452,11 +508,21 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
                         Log.e("DeleteCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e("DeleteCalorie", "Exception: ${e.message}", e)
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -467,13 +533,21 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun getWorkoutLogHistory(formattedDate: String) {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getActivityLogHistory(userId, "google", formattedDate)
         call.enqueue(object : Callback<WorkoutHistoryResponse> {
             override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     if (response.body() != null){
                         workoutHistoryResponse = response.body()
                         if (workoutHistoryResponse?.data?.record_details!!.size > 0){
@@ -484,13 +558,21 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<WorkoutHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }

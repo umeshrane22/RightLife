@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -132,12 +133,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private lateinit var greenTickIcon : ImageView
     private lateinit var macroTitle : TextView
     private lateinit var macroOnTrackTextLine : TextView
+    private lateinit var eatRightInfo : ImageView
     private  var regularRecipesList : ArrayList<RegularRecipeEntry> = ArrayList()
     private val breakfastCombinedList = ArrayList<MergedLogsMealItem>()
     private val morningSnackCombinedList = ArrayList<MergedLogsMealItem>()
     private val lunchCombinedList = ArrayList<MergedLogsMealItem>()
     private val eveningSnacksCombinedList = ArrayList<MergedLogsMealItem>()
     private val dinnerCombinedList = ArrayList<MergedLogsMealItem>()
+    private var loadingOverlay : FrameLayout? = null
 
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
@@ -236,6 +239,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         greenTickIcon = view.findViewById(R.id.green_tick_icon)
         macroOnTrackTextLine = view.findViewById(R.id.macroOnTrackTextLine)
         macroTitle = view.findViewById(R.id.macroTitle)
+        eatRightInfo = view.findViewById(R.id.eatRightInfo)
 
         loggedNextMealSuggestionRecyclerView = view.findViewById(R.id.loggedNextMealSuggestionRecyclerView)
         otherRecipeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
@@ -271,6 +275,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
         logYourWaterIntakeFilled.setOnClickListener {
             showWaterIntakeBottomSheet()
+        }
+
+        eatRightInfo.setOnClickListener {
+            val mealSummaryInfoBottomSheet = MealSummaryInfoBottomSheet()
+            mealSummaryInfoBottomSheet.isCancelable = true
+            parentFragment.let { mealSummaryInfoBottomSheet.show(childFragmentManager, "MealSummaryInfoBottomSheet") }
         }
 
         getMealLandingSummary(halfCurveProgressBar)
@@ -478,7 +488,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -487,20 +501,32 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         call.enqueue(object : Callback<EatRightLandingPageDataResponse> {
             override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     landingPageResponse = response.body()!!
                     setMealSummaryData(landingPageResponse, halfCurveProgressBar)
                     getMealsLogList()
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<EatRightLandingPageDataResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
@@ -922,7 +948,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     }
 
     private fun getMealsLogList() {
-        LoaderUtil.showLoader(requireView())
+       // LoaderUtil.showLoader(requireView())
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -931,7 +957,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         call.enqueue(object : Callback<MealLogDataResponse> {
             override fun onResponse(call: Call<MealLogDataResponse>, response: Response<MealLogDataResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+               //     LoaderUtil.dismissLoader(requireView())
                     val breakfastRecipes = response.body()?.data!!.meal_detail["breakfast"]?.regular_receipes
                     val morningSnackRecipes = response.body()?.data!!.meal_detail["morning_snack"]?.regular_receipes
                     val lunchSnapRecipes = response.body()?.data!!.meal_detail["lunch"]?.regular_receipes
@@ -991,15 +1017,25 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, response.errorBody()?.string(), Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                   // LoaderUtil.dismissLoader(requireView())
                 }
             }
             override fun onFailure(call: Call<MealLogDataResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+              //  LoaderUtil.dismissLoader(requireView())
             }
         })
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
 

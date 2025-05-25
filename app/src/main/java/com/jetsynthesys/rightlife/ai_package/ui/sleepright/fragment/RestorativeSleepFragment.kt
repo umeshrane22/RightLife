@@ -75,6 +75,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     private lateinit var tvRestoMessage: TextView
     private lateinit var lytRestoDataCard: CardView
     private lateinit var lytRestoNoDataCard: CardView
+    private lateinit var percentageIcon: ImageView
+    private lateinit var percentageText: TextView
     private lateinit var restorativeSleepResponse: RestorativeSleepResponse
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
@@ -105,6 +107,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         tvRestoMessage = view.findViewById(R.id.resto_message)
         lytRestoDataCard = view.findViewById(R.id.lyt_resto_card)
         lytRestoNoDataCard = view.findViewById(R.id.lyt_resto_nocard)
+        percentageIcon = view.findViewById(R.id.percentage_icon)
+        percentageText = view.findViewById(R.id.percentage_text)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -332,6 +336,18 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     }
 
     private fun setRestorativeSleepData(restorativeSleepResponse: RestorativeSleepAllData?) {
+        if (restorativeSleepResponse?.progress_detail?.progress_sign == "plus"){
+            percentageIcon.visibility = View.VISIBLE
+            percentageIcon.setImageResource(R.drawable.ic_up)
+            percentageText.visibility = View.VISIBLE
+            percentageText.text = " "+ restorativeSleepResponse?.progress_detail?.progress_percentage + " past week"
+        }else{
+            percentageIcon.visibility = View.VISIBLE
+            percentageText.visibility = View.VISIBLE
+            percentageIcon.setImageResource(R.drawable.ic_down)
+            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
+            percentageText.text = " "+ restorativeSleepResponse?.progress_detail?.progress_percentage + " past week"
+        }
         var totalRemDuration = 0.0
         var totalDeepDuration = 0.0
         val formatters = DateTimeFormatter.ISO_DATE_TIME
