@@ -98,6 +98,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCalorieBinding
         get() = FragmentCalorieBinding::inflate
@@ -336,6 +337,11 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private fun fetchActiveCalories(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -382,6 +388,11 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                 )
 
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val data = response.body()
                     if (data?.statusCode == 200) {
                         val (entries, labels, labelsDate) = when (period) {
@@ -408,11 +419,21 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -477,17 +498,18 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         calendar.set(year, month, day)
+        calendar.add(Calendar.DAY_OF_YEAR, -29)
         val calorieMap = mutableMapOf<String, Float>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
         val days = getDaysInMonth(month + 1, year)
-        repeat(days) {
+        repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             calorieMap[dateStr] = 0f
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until days) {
+        for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -677,4 +699,12 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         // dateRangeLabel.text = "${sdf.format(viewModel.startDate)} - ${sdf.format(viewModel.endDate)}"
     }
 
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
+    }
 }

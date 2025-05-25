@@ -28,6 +28,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -99,7 +100,6 @@ import kotlin.math.abs
 class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>() {
 
     private lateinit var viewPager: ViewPager2
-   // private lateinit var tabLayout: TabLayout
     private lateinit var dotsLayout: LinearLayout
     private lateinit var adapter : AssessmentPagerAdapter
     private lateinit var add_tools_think_right: ImageView
@@ -137,8 +137,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private val toolsList: ArrayList<ModuleData> = arrayListOf()
     private var assessmentList: MutableList<AssessmentResultData> = mutableListOf()
  //   private val toolsAdapter by lazy { ToolsAdapter(requireContext(), 3) }
-
-    private lateinit var progressDialog: ProgressDialog
     private lateinit var toolsResponse : ToolsResponse
     private lateinit var mainView : LinearLayout
     private lateinit var lytAffirmation1 : LinearLayout
@@ -167,6 +165,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var editEmotionIcon: ImageView
     private lateinit var tagFlexbox: FlexboxLayout
     private lateinit var recyclerViewTags : RecyclerView
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -209,9 +208,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         emotionDescription = view.findViewById<TextView>(R.id.emotionDescription)
         emotionIcon = view.findViewById<ImageView>(R.id.emotionIcon)
         tagFlexbox = view.findViewById<FlexboxLayout>(R.id.emotionTags)
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Loading")
-        progressDialog.setCancelable(false)
         toolsRecyclerView = view.findViewById(R.id.rec_journaling_tools)
         tvAuthor = view.findViewById(R.id.tv_quote_author)
         noDataMindFullnessMetric = view.findViewById(R.id.noDataMindFullnessMetric)
@@ -370,8 +366,6 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchToolGridData()
         fetchJournalAnswerData()
         fetchAffirmationsList()
-
-
     }
 
     fun getEmojiFromString(emoji:String) : Int{
@@ -517,7 +511,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchMindfulData() {
-        progressDialog.show()
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val startDate = getYesterdayDate()
         val endDate = getCurrentDate()
@@ -529,7 +527,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                     mindfullNoDataCard.visibility = View.GONE
                     mindfullDataCard.visibility = View.VISIBLE
                     mindfullResponse = response.body()!!
-                    progressDialog.dismiss()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
                         mindfullResponse.data?.formattedData?.getOrNull(mindfullResponse.data?.formattedData?.size!! - 1)?.duration?.toString()
                             .let { tvMindfullMinute.setText(it + " min") }
@@ -539,7 +541,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
      //               Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     mindfullNoDataCard.visibility = View.VISIBLE
                     mindfullDataCard.visibility = View.GONE
-                    progressDialog.dismiss()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MindfullResponse>, t: Throwable) {
@@ -547,7 +553,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
   //              Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 mindfullNoDataCard.visibility = View.VISIBLE
                 mindfullDataCard.visibility = View.GONE
-                progressDialog.dismiss()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
@@ -563,14 +573,22 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     }
 
     private fun fetchToolGridData() {
-        progressDialog.show()
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
       //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.thinkTools(token)
         call.enqueue(object : Callback<ToolsGridResponse> {
             override fun onResponse(call: Call<ToolsGridResponse>, response: Response<ToolsGridResponse>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     toolGridResponse = response.body()!!
                     for (i in 0 until toolGridResponse.data.size) {
                         toolGridResponse.data.getOrNull(i)?.let {
@@ -580,13 +598,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
     //                Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
       //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
@@ -1030,6 +1056,16 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             .build()
 
         NotificationManagerCompat.from(context).notify(1, notification)
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
 

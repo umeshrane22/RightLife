@@ -1,9 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
-import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.Path
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -19,10 +16,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
-import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -31,25 +25,17 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.github.mikephil.charting.renderer.BarChartRenderer
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentProteinBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,10 +70,10 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentProteinBinding
         get() = FragmentProteinBinding::inflate
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -118,8 +104,6 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-
-
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
@@ -336,6 +320,11 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
     private fun fetchActiveCalories(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -375,6 +364,11 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
                 val response = ApiClient.apiServiceFastApi.getConsumedProtiens(
                     userId = userId, period = period, date = selectedDate)
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val activeCaloriesResponse = response.body()
                     if (activeCaloriesResponse?.statusCode == 200){
                         activeCaloriesResponse.let { data ->
@@ -402,11 +396,21 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -469,17 +473,18 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         calendar.set(year, month, day)
+        calendar.add(Calendar.DAY_OF_YEAR, -29)
         val calorieMap = mutableMapOf<String, Float>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
         val days = getDaysInMonth(month+1, year)
-        repeat(days) {
+        repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             calorieMap[dateStr] = 0f
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until days) {
+        for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -666,5 +671,14 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
     private fun updateDateRangeLabel() {
         val sdf = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
         //   dateRangeLabel.text = "${sdf.format(viewModel.startDate)} - ${sdf.format(viewModel.endDate)}"
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

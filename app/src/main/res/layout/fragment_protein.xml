@@ -79,6 +79,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:visibility="gone"
                             android:text="6 Months"
                             android:textSize="14sp"
                             android:textColor="@color/black"
@@ -164,7 +165,7 @@
                             android:id="@+id/percentageIc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="kCal"
+                            android:text="g"
                             android:textSize="12sp"
                             android:textColor="@color/black_no_meals"
                             android:fontFamily="@font/dmsans_regular"
@@ -228,7 +229,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="kCal"
+                            android:text="g"
                             android:textSize="12sp"
                             android:textColor="@color/black_no_meals"
                             android:fontFamily="@font/dmsans_regular"
@@ -316,7 +317,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="3dp"
-                                    android:text="kCal"
+                                    android:text="g"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:textSize="10sp"
                                     android:textColor="@color/black_no_meals"
@@ -327,7 +328,7 @@
                                     android:layout_width="15dp"
                                     android:layout_height="15dp"
                                     android:layout_marginStart="3dp"
-                                    android:src="@drawable/ic_cal"
+                                    android:src="@drawable/ic_proteins"
                                     />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -402,5 +403,10 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/loader_layout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

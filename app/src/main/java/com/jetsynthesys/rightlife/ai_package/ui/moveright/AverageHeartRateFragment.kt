@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -69,6 +70,7 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
     private var selectedWeekDate : String = ""
     private var selectedMonthDate : String = ""
     private var selectedHalfYearlyDate : String = ""
+    private var loadingOverlay : FrameLayout? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -326,6 +328,11 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
     private fun fetchHeartRate(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -369,6 +376,11 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
                 )
 
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val hrResponse = response.body()
                     hrResponse?.let { data ->
                         val (entries, labels, labelsDate) = when (period) {
@@ -404,6 +416,11 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
                         }
                     } ?: withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "No heart rate data received", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -412,14 +429,33 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
                             "Error: ${response.code()} - ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     /** Process API data for last_weekly (7 days) */

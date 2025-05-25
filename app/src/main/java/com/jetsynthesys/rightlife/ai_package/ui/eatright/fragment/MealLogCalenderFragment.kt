@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -19,12 +20,10 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.CalendarSummary
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.databinding.FragmentMealLogCalenderBinding
-import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +33,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 
 class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
@@ -48,10 +46,10 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
     private var  mealLogHistory :  ArrayList<LoggedMeal> = ArrayList()
     private var mealLogYearlyList : List<CalendarDateModel> = ArrayList()
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealLogCalenderBinding
         get() = FragmentMealLogCalenderBinding::inflate
-    var snackbar: Snackbar? = null
 
     private val calendarAdapter by lazy { CalendarAdapter(requireContext(), arrayListOf(), -1, null,
         false, :: onMealLogCalenderItem) }
@@ -273,13 +271,21 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     }
 
     private fun getMealsLogHistory(dateRange: String) {
-        LoaderUtil.showLoader(requireView())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val call = ApiClient.apiServiceFastApi.getMealsLogHistoryCalender(userId, dateRange)
         call.enqueue(object : Callback<MealLogsHistoryResponse> {
             override fun onResponse(call: Call<MealLogsHistoryResponse>, response: Response<MealLogsHistoryResponse>) {
                 if (response.isSuccessful) {
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
                         if (mealLogsHistoryResponse?.is_logged_meal_list!!.isNotEmpty()){
@@ -290,14 +296,32 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    LoaderUtil.dismissLoader(requireView())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<MealLogsHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                LoaderUtil.dismissLoader(requireView())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

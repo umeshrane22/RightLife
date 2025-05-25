@@ -1,11 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -14,6 +17,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.Window
+import android.view.WindowManager
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
@@ -44,6 +50,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.*
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.GridAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealSummaryInfoBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphView
@@ -115,7 +122,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var totalIntakeCalorieText: TextView
     private lateinit var calorieBalanceDescription: TextView
     private lateinit var calorieBalanceMessageTitle : TextView
-    private lateinit var progressDialog: ProgressDialog
+
     private lateinit var appPreference: AppPreference
     private lateinit var transparentOverlay : View
     private lateinit var circleIndicator : View
@@ -130,7 +137,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var verticalLineCardioBpmTv : TextView
     private lateinit var verticalLinePeakBpmTv : TextView
     private lateinit var verticalLinePeakEndBpmTv : TextView
+    private lateinit var caloricInfo : ImageView
+    private lateinit var yourMovementSummary : ImageView
+    private lateinit var yourVitals : ImageView
+    private lateinit var yourHeartRateZone : ImageView
     private var totalIntakeCaloriesSum: Int = 0
+    private var loadingOverlay : FrameLayout? = null
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -163,10 +175,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
-        appPreference = AppPreference(requireContext())
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Loading")
-        progressDialog.setCancelable(false)
         carouselViewPager = view.findViewById(R.id.carouselViewPager)
         calorie_no_data_filled_layout = view.findViewById(R.id.calorie_no_data_filled_layout)
         calorie_layout_data_filled = view.findViewById(R.id.calorie_layout_data_filled)
@@ -210,8 +218,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         verticalLinePeakBpmTv = view.findViewById(R.id.vertical_line_peak_button_bgmtext)
         verticalLinePeakEndBpmTv = view.findViewById(R.id.vertical_line_peak_button_end_bgmtext)
         heartRateZoneNoDataTv = view.findViewById(R.id.heartRateZoneNoDataTv)
+        caloricInfo = view.findViewById(R.id.caloricInfo)
+        yourMovementSummary = view.findViewById(R.id.yourMovementSummary)
+        yourVitals = view.findViewById(R.id.yourVitals)
+        yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
+
         setupRecyclerView(view)
         fetchUserWorkouts()
+
         moveRightImageBack.setOnClickListener {
             activity?.finish()
         }
@@ -224,7 +238,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val activityFactorImageIcon = view.findViewById<ImageView>(R.id.activity_forward_icon)
         val logMealButton = view.findViewById<ConstraintLayout>(R.id.log_meal_button)
         val layoutAddWorkout = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
-        val lyt_snap_meal_no_data = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal_no_data)
+        val lytNoDataAddWorkoutBtn = view.findViewById<ConstraintLayout>(R.id.lytNoDataAddWorkoutBtn)
+        val logMealNoDataBtn = view.findViewById<ConstraintLayout>(R.id.logMealNoDataBtn)
 
         calorieBalanceIcon.setOnClickListener {
             val fragment = CalorieBalance()
@@ -241,7 +256,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 .addToBackStack(null)
                 .commit()
         }
-        lyt_snap_meal_no_data.setOnClickListener{
+        lytNoDataAddWorkoutBtn.setOnClickListener{
             navigateToFragment(YourActivityFragment(), "YourActivityFragment")
         }
         layoutAddWorkout.setOnClickListener {
@@ -250,9 +265,36 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         activityFactorImageIcon.setOnClickListener {
             navigateToFragment(ActivityFactorFragment(), "ActivityFactorFragment")
         }
+        logMealNoDataBtn.setOnClickListener {
+            navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
+        }
         logMealButton.setOnClickListener {
             navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
         }
+        caloricInfo.setOnClickListener {
+            val yourCaloricSummaryInfoBottomSheet = YourCaloricSummaryInfoBottomSheet()
+            yourCaloricSummaryInfoBottomSheet.isCancelable = true
+            parentFragment.let { yourCaloricSummaryInfoBottomSheet.show(childFragmentManager, "YourCaloricSummaryInfoBottomSheet") }
+        }
+
+        yourMovementSummary.setOnClickListener {
+            val yourMovementSummaryInfoBottomSheet = YourMovementSummaryInfoBottomSheet()
+            yourMovementSummaryInfoBottomSheet.isCancelable = true
+            parentFragment.let { yourMovementSummaryInfoBottomSheet.show(childFragmentManager, "YourMovementSummaryInfoBottomSheet") }
+        }
+
+        yourVitals.setOnClickListener {
+            val yourVitalsInfoBottomSheet = YourVitalsInfoBottomSheet()
+            yourVitalsInfoBottomSheet.isCancelable = true
+            parentFragment.let { yourVitalsInfoBottomSheet.show(childFragmentManager, "YourVitalsInfoBottomSheet") }
+        }
+
+        yourHeartRateZone.setOnClickListener {
+            val yourHeartRateZonesInfoBottomSheet = YourHeartRateZonesInfoBottomSheet()
+            yourHeartRateZonesInfoBottomSheet.isCancelable = true
+            parentFragment.let { yourHeartRateZonesInfoBottomSheet.show(childFragmentManager, "YourHeartRateZonesInfoBottomSheet") }
+        }
+
         val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
             healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
@@ -310,6 +352,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private fun fetchMoveLanding(recyclerView: RecyclerView, adapter: GridAdapter) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -319,6 +366,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     date = selectedDate
                 )
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val fitnessData = response.body()
                     fitnessData?.let {
                         val rhrData = padData(it.data.restingHeartRate.last7Days.map { day -> day.bpm }, 7)
@@ -498,6 +550,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
                                 }
                             } else {
+                                if (isAdded  && view != null){
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
                                 heartRateZoneNoDataTv.visibility = View.VISIBLE
                                 lightZoneBelow.visibility = View.GONE
                                 lightZoneHighl.visibility = View.GONE
@@ -521,15 +578,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             recyclerView.adapter = adapter
                         }
                     } ?: withContext(Dispatchers.Main) {
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                         Toast.makeText(requireContext(), "No data received from API", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                         Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -996,7 +1068,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 //                                    heartRateZonePercentages = heartRateZonePercentages!!
 //                                )
 //                            }
-
                             withContext(Dispatchers.Main) {
                                 workoutImageIcon.visibility = View.VISIBLE
                                 dataFilledworkout.visibility = View.VISIBLE
@@ -1408,5 +1479,15 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
     fun loadStepData() {
         // Placeholder for loading step data from assets if needed
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }

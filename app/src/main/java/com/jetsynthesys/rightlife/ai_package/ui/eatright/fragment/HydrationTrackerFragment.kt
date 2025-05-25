@@ -71,6 +71,7 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     private lateinit var selectedItemDate : TextView
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
+    private var loadingOverlay : FrameLayout? = null
 
     private val viewModel: HydrationViewModel by viewModels()
 
@@ -99,20 +100,14 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
         today_water_intake_layout = view.findViewById(R.id.today_water_intake_layout)
         backwardImageHydration = view.findViewById(R.id.backIc)
+
         backwardImageHydration.setOnClickListener {
             navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
 
         }
-
-
-
-
-
         // Show Week data by default
         radioGroup.check(R.id.rbWeek)
         fetchWaterIntakeData("last_weekly")
-
-
         //today_water_intake_layout.visibility = View.VISIBLE
 
         // setupLineChart()
@@ -132,13 +127,11 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                     layoutLineChart.visibility =View.VISIBLE
                     fetchWaterIntakeData("last_monthly")
                     today_water_intake_layout.visibility = View.GONE
-
                 }
                 R.id.rbSixMonths -> {
                     Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
                     layoutLineChart.visibility =View.GONE
                     today_water_intake_layout.visibility = View.GONE
-
                     //fetchWaterIntakeData("last_six_months")
                 }
             }
@@ -151,7 +144,6 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                 val selectedRadioButton = view.findViewById<RadioButton>(selectedId)
                 selectedTab = selectedRadioButton.text.toString()
             }
-
             if (selectedTab.contentEquals("Week")) {
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val calendar = Calendar.getInstance()
@@ -175,10 +167,11 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                calendar.set(year, month - 1, day)
+                calendar.set(year, month, day)
+                calendar.add(Calendar.DAY_OF_YEAR, -30)
                 val dateStr = dateFormat.format(calendar.time)
-                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                selectedMonthDate = firstDateOfMonth
+                // val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                selectedMonthDate = dateStr
                 fetchWaterIntakeData("last_monthly")
             } else {
                 Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
@@ -225,10 +218,11 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.set(year, month + 1, day)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, +30)
                     val dateStr = dateFormat.format(calendar.time)
-                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                    selectedMonthDate = firstDateOfMonth
+                    //  val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = dateStr
                     fetchWaterIntakeData("last_monthly")
                 } else {
                     Toast.makeText(context, "Cannot select future date", Toast.LENGTH_SHORT).show()
@@ -253,6 +247,11 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     private fun fetchWaterIntakeData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireContext()).userId // Replace with dynamic user ID if needed
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -269,34 +268,37 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                 } else if (period.contentEquals("last_monthly")) {
                     if (selectedMonthDate.isEmpty()) {
                         selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedMonthDate = firstDateOfMonth
+//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                        selectedDate = firstDateOfMonth
+                        selectedMonthDate = selectedDate
                     } else {
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
+                        //val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
                 } else {
                     if (selectedHalfYearlyDate.isEmpty()) {
                         selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedHalfYearlyDate = firstDateOfMonth
+//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                        selectedDate = firstDateOfMonth
+                        selectedHalfYearlyDate = selectedDate
                     } else {
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
+                      //  val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-
                 val response = ApiClient.apiServiceFastApi.getWaterIntake(
                     userId = userId,
                     period = period,
                     date = selectedDate
                 )
-
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val waterData = response.body()
                     waterData?.let { data ->
                         val (entries, labels) = when (period) {
@@ -305,7 +307,6 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                             "last_six_months" -> processSixMonthsData(data, selectedDate)
                             else -> Pair(emptyList(), emptyList())
                         }
-
                         withContext(Dispatchers.Main) {
                             tv_water_quantity.text =data.todaysWaterLog.totalWater.toString()
                             val waterIntake = data.todaysWaterLog.totalWater.toFloat()
@@ -323,6 +324,11 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                         }
                     } ?: withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "No water intake data received", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -331,11 +337,21 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                             "Error: ${response.code()} - ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -526,8 +542,6 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         return formatter.format(date)
     }
 
-
-
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
         val dataSet = LineDataSet(entries, "Water Intake (ml)")
         dataSet.color = context?.let { ContextCompat.getColor(it, R.color.border_green) }!!
@@ -569,10 +583,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
-
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
-
         lineChart.invalidate()
     }
 
@@ -616,13 +628,15 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
             calendar.time = date!!
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
-            calendar.set(year, month, 1)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
 
             val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             val waterMap = mutableMapOf<String, Float>()
 
             // Initialize water map for all days in the month
-            repeat(daysInMonth) {
+            repeat(30) {
                 val dateStr = dateFormat.format(calendar.time)
                 waterMap[dateStr] = 0f
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
@@ -677,9 +691,9 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                         dayCount = 0
                         weekIndex++
                     }
-                    daysInMonth -> {
+                    30 -> {
                         weeklyWater.add(weeklySum / dayCount)
-                        labels.add("29-$daysInMonth")
+                        labels.add("29-$30")
                     }
                 }
             }
@@ -758,22 +772,29 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedMonthDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        if (dateViewType.contentEquals("Month")) {
-            val lastDayOfMonth = getDaysInMonth(month + 1, year)
-            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-            val dateView: String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth) + "," + year.toString()
-            selectedDate.text = dateView
-            selectedDate.gravity = Gravity.CENTER
-        } else {
-            selectedDate.text = year.toString()
-            selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedMonthDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
+            val dateStr = dateFormat.format(calendar.time)
+            if (dateViewType.contentEquals("Month")){
+//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
+                selectedDate.text = dateView
+                selectedDate.gravity = Gravity.CENTER
+            }else{
+                selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
+            }
         }
     }
 
@@ -799,6 +820,15 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         val parsedDate = LocalDate.parse(inputDate, formatter)
         val firstDayOfMonth = parsedDate.withDayOfMonth(value)
         return firstDayOfMonth.format(formatter)
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
 

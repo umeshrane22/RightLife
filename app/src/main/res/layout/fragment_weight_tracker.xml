@@ -120,6 +120,7 @@
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:text="6 Months"
+                            android:visibility="gone"
                             android:textSize="14sp"
                             android:textColor="@color/black"
                             android:background="@drawable/tab_background_calorie"
@@ -280,7 +281,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="3dp"
-                                    android:text="cal"
+                                    android:text="kg"
                                     android:fontFamily="@font/dmsans_regular"
                                     android:textSize="10sp"
                                     android:textColor="@color/black_no_meals"
@@ -547,5 +548,11 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+
+    <include
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/loader_layout"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

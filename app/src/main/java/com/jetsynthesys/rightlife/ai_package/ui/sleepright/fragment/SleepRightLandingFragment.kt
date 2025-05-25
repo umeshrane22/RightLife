@@ -24,6 +24,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -142,7 +143,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var wakeupTimeResponse: WakeupTimeResponse
     private lateinit var sleepStagesView: SleepChartViewLanding
     private lateinit var sleepConsistencyChart: SleepGraphView
-    private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
     private lateinit var logYourNap : LinearLayout
     private lateinit var actualNoDataCardView : CardView
@@ -162,6 +162,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var healthConnectClient: HealthConnectClient
     private var mWakeupTime = ""
     private var mRecordId = ""
+    private var loadingOverlay : FrameLayout? = null
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(SleepSessionRecord::class)
@@ -224,10 +225,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageCoreTime = view.findViewById(R.id.tv_stage_core_time)
         tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
-
-        progressDialog = ProgressDialog(activity)
-        progressDialog.setTitle("Loading")
-        progressDialog.setCancelable(false)
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val bottomSheet = LogYourNapDialogFragment(requireContext())
@@ -479,7 +476,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     wakeupTimeResponse = response.body()!!
                     setWakeupData(wakeupTimeResponse.data.getOrNull(0))
                 }else if(response.code() == 400){
-                    progressDialog.dismiss()
                     sleepTimeRequirementCardView.visibility = View.GONE
                   //  Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
@@ -558,7 +554,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchSleepLandingData() {
-        Utils.showLoader(requireActivity())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = getCurrentDate()
         val source = "android"
@@ -568,11 +568,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<SleepLandingResponse> {
             override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
                 if (response.isSuccessful) {
-                    Utils.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     landingPageResponse = response.body()!!
                     setSleepRightLandingData(landingPageResponse)
                 }else if(response.code() == 400){
-                    progressDialog.dismiss()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                     stageNoDataCardView.visibility = View.VISIBLE
                     sleepStagesView.visibility = View.GONE
@@ -586,8 +594,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepConsistencyChart.visibility = View.GONE
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                  //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    Utils.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     stageNoDataCardView.visibility = View.VISIBLE
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
@@ -603,8 +614,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
             override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
-              //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                Utils.dismissLoader(requireActivity())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
                 stageNoDataCardView.visibility = View.VISIBLE
                 sleepStagesView.visibility = View.GONE
                 performNoDataCardView.visibility = View.VISIBLE
@@ -1194,6 +1208,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val json = context?.assets?.open("sleep_raw_data.json")
             ?.bufferedReader().use { it?.readText() }
         return Gson().fromJson(json, object : TypeToken<SleepJson>() {}.type)
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
 

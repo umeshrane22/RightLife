@@ -80,6 +80,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
+    private var loadingOverlay : FrameLayout? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -374,6 +375,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private fun fetchStepDetails(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -417,6 +423,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     date = selectedDate
                 )
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val stepTrackerResponse = response.body()
                     if (stepTrackerResponse?.statusCode == 200 && stepTrackerResponse.data.isNotEmpty()) {
                         val stepData = stepTrackerResponse.data[0] // Assuming single data entry
@@ -444,6 +455,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     } else {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(requireContext(), "No step data available", Toast.LENGTH_SHORT).show()
+                            if (isAdded  && view != null){
+                                requireActivity().runOnUiThread {
+                                    dismissLoader(requireView())
+                                }
+                            }
                         }
                     }
                 } else {
@@ -451,11 +467,21 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                         Toast.makeText(requireContext(), "Step data  ${response.message()}", Toast.LENGTH_SHORT).show()
                         barChart.visibility = View.GONE
                         averageBurnCalorie.text = "0"
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -510,13 +536,14 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         calendar.set(year, month, day)
+        calendar.add(Calendar.DAY_OF_YEAR, -29)
         val stepMap = mutableMapOf<String, Float>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
         val days = getDaysInMonth(month + 1, year)
         calendar.set(year, month, 1) // Start from the first day of the month
-        repeat(days) {
+        repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             stepMap[dateStr] = 0f
             calendar.add(Calendar.DAY_OF_YEAR, 1)
@@ -725,6 +752,15 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         val parsedDate = LocalDate.parse(inputDate, formatter)
         val firstDayOfMonth = parsedDate.withDayOfMonth(value)
         return firstDayOfMonth.format(formatter)
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     private fun setupLineChart() {

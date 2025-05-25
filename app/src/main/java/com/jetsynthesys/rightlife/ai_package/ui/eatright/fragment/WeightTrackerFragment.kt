@@ -87,8 +87,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private val numbers = mutableListOf<Float>()
     private lateinit var weightIntake: TextView
     private lateinit var weightIntakeUnit: TextView
-
-
+    private var loadingOverlay : FrameLayout? = null
     private val viewModel: HydrationViewModelNew by viewModels()
 
 
@@ -122,10 +121,6 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         weightIntake = view.findViewById(R.id.weightIntake)
         weightIntakeUnit = view.findViewById(R.id.weightIntakeUnit)
 
-
-
-
-
         // Show Week data by default
         radioGroup.check(R.id.rbMonth)
         fetchWeightData("last_monthly")
@@ -141,12 +136,10 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             when (checkedId) {
                 R.id.rbWeek ->{
                     layoutLineChart.visibility =View.VISIBLE
-
                     fetchWeightData("last_weekly")
                 }
                 R.id.rbMonth ->{
                     layoutLineChart.visibility =View.VISIBLE
-
                     fetchWeightData("last_monthly")
                 }
                 R.id.rbSixMonths -> {
@@ -188,17 +181,18 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                calendar.set(year, month - 1, day)
-                val dateStr = dateFormat.format(calendar.time)
-                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                selectedMonthDate = firstDateOfMonth
-                fetchWeightData("last_monthly")
-            } else {
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -30)
+            val dateStr = dateFormat.format(calendar.time)
+            // val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+            selectedMonthDate = dateStr
+            fetchWeightData("last_monthly")
+        } else {
             Toast.makeText(requireContext(),"Comming Soon",Toast.LENGTH_SHORT).show()
             layoutLineChart.visibility =View.GONE
-                /*selectedHalfYearlyDate = ""
-                fetchWeightData("last_six_months")*/
-            }
+            /*selectedHalfYearlyDate = ""
+            fetchWeightData("last_six_months")*/
+        }
         }
 
         forwardImage.setOnClickListener {
@@ -240,10 +234,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.set(year, month + 1, day)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, +30)
                     val dateStr = dateFormat.format(calendar.time)
-                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                    selectedMonthDate = firstDateOfMonth
+                    //  val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = dateStr
                     fetchWeightData("last_monthly")
                 } else {
                     Toast.makeText(context, "Cannot select future date", Toast.LENGTH_SHORT).show()
@@ -540,6 +535,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private fun fetchWeightData(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireContext()).userId // Replace with dynamic user ID if needed
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -556,34 +556,37 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 } else if (period.contentEquals("last_monthly")) {
                     if (selectedMonthDate.isEmpty()) {
                         selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedMonthDate = firstDateOfMonth
+//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                        selectedDate = firstDateOfMonth
+                        selectedMonthDate = selectedDate
                     } else {
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
+                        //val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
                 } else {
                     if (selectedHalfYearlyDate.isEmpty()) {
                         selectedDate = currentDateTime.format(formatter)
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                        selectedDate = firstDateOfMonth
-                        selectedHalfYearlyDate = firstDateOfMonth
+//                        val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                        selectedDate = firstDateOfMonth
+                        selectedHalfYearlyDate = selectedDate
                     } else {
-                        val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                        selectedDate = firstDateOfMonth
+                      //  val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                 }
-
                 val response = ApiClient.apiServiceFastApi.getLogWeight(
                     userId = userId,
                     period = period,
                     date = selectedDate
                 )
-
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val waterData = response.body()
                     waterData?.let { data ->
                         val (entries, labels) = when (period) {
@@ -592,13 +595,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             "last_six_months" -> processSixMonthsData(data, selectedDate)
                             else -> Pair(emptyList(), emptyList())
                         }
-
                         withContext(Dispatchers.Main) {
                             weight_description_heading.text = data.heading
                             weight_description_text.text = data.description
                             weightIntake.text = data.lastWeightLog.totalWeight.toString()
                            // weightIntakeUnit.text = data.lastWeightLog.
-
                             if (data.weightTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
@@ -609,6 +610,11 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         }
                     } ?: withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "No water intake data received", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -617,11 +623,21 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             "Error: ${response.code()} - ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -807,15 +823,12 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 }
             }
         }
-
     }
 
     private fun formatDate(date: Date, format: String): String {
         val formatter = SimpleDateFormat(format, Locale.getDefault())
         return formatter.format(date)
     }
-
-
 
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
         activity?.runOnUiThread {
@@ -908,13 +921,15 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             calendar.time = date!!
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
-            calendar.set(year, month, 1)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
 
             val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             val waterMap = mutableMapOf<String, Float>()
 
             // Initialize water map for all days in the month
-            repeat(daysInMonth) {
+            repeat(30) {
                 val dateStr = dateFormat.format(calendar.time)
                 waterMap[dateStr] = 0f
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
@@ -969,9 +984,9 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         dayCount = 0
                         weekIndex++
                     }
-                    daysInMonth -> {
+                    30 -> {
                         weeklyWeight.add(weeklySum / dayCount)
-                        labels.add("29-$daysInMonth")
+                        labels.add("29-$30")
                     }
                 }
             }
@@ -1034,22 +1049,29 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     }
 
     private fun setSelectedDateMonth(selectedMonthDate: String, dateViewType: String) {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val calendar = Calendar.getInstance()
-        val dateString = selectedMonthDate
-        val date = dateFormat.parse(dateString)
-        calendar.time = date!!
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        if (dateViewType.contentEquals("Month")) {
-            val lastDayOfMonth = getDaysInMonth(month + 1, year)
-            val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-            val dateView: String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth) + "," + year.toString()
-            selectedDate.text = dateView
-            selectedDate.gravity = Gravity.CENTER
-        } else {
-            selectedDate.text = year.toString()
-            selectedDate.gravity = Gravity.CENTER
+        activity?.runOnUiThread {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val calendar = Calendar.getInstance()
+            val dateString = selectedMonthDate
+            val date = dateFormat.parse(dateString)
+            calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
+            val dateStr = dateFormat.format(calendar.time)
+            if (dateViewType.contentEquals("Month")){
+//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
+                selectedDate.text = dateView
+                selectedDate.gravity = Gravity.CENTER
+            }else{
+                selectedDate.text = year.toString()
+                selectedDate.gravity = Gravity.CENTER
+            }
         }
     }
 
@@ -1075,6 +1097,15 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         val parsedDate = LocalDate.parse(inputDate, formatter)
         val firstDayOfMonth = parsedDate.withDayOfMonth(value)
         return firstDayOfMonth.format(formatter)
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
 

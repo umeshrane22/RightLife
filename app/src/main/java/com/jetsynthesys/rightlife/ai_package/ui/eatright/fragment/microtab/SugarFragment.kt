@@ -87,6 +87,7 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
     private val viewModel: ActiveBurnViewModelSugar by viewModels()
+    private var loadingOverlay : FrameLayout? = null
 
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSugarBinding
@@ -123,8 +124,6 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-
-
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
@@ -174,10 +173,11 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                 val year = calendar.get(Calendar.YEAR)
                 val month = calendar.get(Calendar.MONTH)
                 val day = calendar.get(Calendar.DAY_OF_MONTH)
-                calendar.set(year, month-1, day)
+                calendar.set(year, month, day)
+                calendar.add(Calendar.DAY_OF_YEAR, -30)
                 val dateStr = dateFormat.format(calendar.time)
-                val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                selectedMonthDate = firstDateOfMonth
+                // val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                selectedMonthDate = dateStr
                 fetchActiveCalories("last_monthly")
             }else{
                 Toast.makeText(requireContext(),"Coming Soon",Toast.LENGTH_SHORT).show()
@@ -225,10 +225,11 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
-                    calendar.set(year, month+1, day)
+                    calendar.set(year, month, day)
+                    calendar.add(Calendar.DAY_OF_YEAR, +30)
                     val dateStr = dateFormat.format(calendar.time)
-                    val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
-                    selectedMonthDate = firstDateOfMonth
+                    //  val firstDateOfMonth = getFirstDateOfMonth(dateStr, 1)
+                    selectedMonthDate = dateStr
                     fetchActiveCalories("last_monthly")
                 }else{
                     Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
@@ -340,6 +341,11 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
     private fun fetchActiveCalories(period: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        showLoader(requireView())
+                    }
+                }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -358,24 +364,24 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                     "last_monthly" -> {
                         if (selectedMonthDate.isEmpty()) {
                             selectedDate = currentDateTime.format(formatter)
-                            val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                            selectedDate = firstDateOfMonth
-                            selectedMonthDate = firstDateOfMonth
+//                            val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                            selectedDate = firstDateOfMonth
+                            selectedMonthDate = selectedDate
                         } else {
-                            val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
-                            selectedDate = firstDateOfMonth
+                           // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                            selectedDate = selectedMonthDate
                         }
                         setSelectedDateMonth(selectedMonthDate, "Month")
                     }
                     "last_six_months" -> {
                         if (selectedHalfYearlyDate.isEmpty()) {
                             selectedDate = currentDateTime.format(formatter)
-                            val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
-                            selectedDate = firstDateOfMonth
-                            selectedHalfYearlyDate = firstDateOfMonth
+//                            val firstDateOfMonth = getFirstDateOfMonth(selectedDate, 1)
+//                            selectedDate = firstDateOfMonth
+                            selectedHalfYearlyDate = selectedDate
                         } else {
-                            val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1) // Fixed to use selectedHalfYearlyDate
-                            selectedDate = firstDateOfMonth
+                          //  val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1) // Fixed to use selectedHalfYearlyDate
+                            selectedDate = selectedHalfYearlyDate
                         }
                         setSelectedDateMonth(selectedHalfYearlyDate, "Year")
                     }
@@ -385,14 +391,17 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                         setSelectedDate(selectedWeekDate)
                     }
                 }
-
                 val response = ApiClient.apiServiceFastApi.getConsumedSugar(
                     userId = userId,
                     period = period,
                     date = selectedDate
                 )
-
                 if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val activeCaloriesResponse = response.body()
                     if (activeCaloriesResponse?.statusCode == 200) {
                         activeCaloriesResponse?.let { data ->
@@ -419,22 +428,42 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                         } ?: run {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(requireContext(), "No data received from API", Toast.LENGTH_SHORT).show()
+                                if (isAdded  && view != null){
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
                             }
                         }
                     } else {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(requireContext(), "Invalid response status: ${activeCaloriesResponse?.statusCode}", Toast.LENGTH_SHORT).show()
+                            if (isAdded  && view != null){
+                                requireActivity().runOnUiThread {
+                                    dismissLoader(requireView())
+                                }
+                            }
                         }
                     }
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     Log.e("FetchActiveCalories", "Exception: ${e.message}", e)
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -497,17 +526,18 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         calendar.set(year, month, day)
+        calendar.add(Calendar.DAY_OF_YEAR, -29)
         val calorieMap = mutableMapOf<String, Float>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
         val days = getDaysInMonth(month+1, year)
-        repeat(days) {
+        repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             calorieMap[dateStr] = 0f
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until days) {
+        for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -619,10 +649,15 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
             calendar.time = date!!
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
+            calendar.add(Calendar.DAY_OF_YEAR, -29)
+            val dateStr = dateFormat.format(calendar.time)
             if (dateViewType.contentEquals("Month")){
-                val lastDayOfMonth = getDaysInMonth(month+1 , year)
-                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
-                val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+//                val lastDayOfMonth = getDaysInMonth(month+1 , year)
+//                val lastDateOfMonth = getFirstDateOfMonth(selectedMonthDate, lastDayOfMonth)
+                //               val dateView : String = convertDate(selectedMonthDate) + "-" + convertDate(lastDateOfMonth)+","+ year.toString()
+                val dateView : String = convertDate(dateStr.toString()) + "-" + convertDate(selectedMonthDate)+","+ year.toString()
                 selectedDate.text = dateView
                 selectedDate.gravity = Gravity.CENTER
             }else{
@@ -630,7 +665,6 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                 selectedDate.gravity = Gravity.CENTER
             }
         }
-
     }
 
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedSugarResponse, type: String) {
@@ -643,10 +677,17 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 // percentageIc.setImageResource(R.drawable.ic_down)
             }else{
-
             }
         }
+    }
 
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 
     private fun convertDate(inputDate: String): String {

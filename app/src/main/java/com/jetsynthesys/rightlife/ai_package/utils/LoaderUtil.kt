@@ -1,6 +1,5 @@
 package com.jetsynthesys.rightlife.ai_package.utils
 
-import android.app.Activity
 import android.view.View
 import android.widget.FrameLayout
 import com.jetsynthesys.rightlife.R

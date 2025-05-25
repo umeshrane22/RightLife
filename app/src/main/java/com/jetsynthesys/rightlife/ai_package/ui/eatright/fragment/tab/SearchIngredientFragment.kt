@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -58,6 +59,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var ingredientName : String = ""
     private var recipeName : String = ""
     private var serving : Double = 0.0
+    private var loadingOverlay : FrameLayout? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -157,6 +159,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             if (searchEditText.text.toString().isNotEmpty()){
                 dishesViewModel.setSearchQuery("")
                 searchEditText.setText("")
+                searchIngredientList.clear()
             }
         }
 
@@ -207,16 +210,25 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     }
 
     private fun getRecipesList(limit : String) {
-     //   LoaderUtil.showLoader(requireActivity())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val call = ApiClient.apiServiceFastApi.getSearchIngredientList(limit)
         call.enqueue(object : Callback<IngredientResponse> {
             override fun onResponse(call: Call<IngredientResponse>, response: Response<IngredientResponse>) {
                 if (response.isSuccessful) {
-                  //  LoaderUtil.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     val searchData = response.body()?.data
                     if (searchData != null){
                         if (searchData.size > 0){
                             //snapRecipesList.addAll(mealPlanLists)
+                            searchIngredientList.clear()
                             tvSearchResult.text = "Search Result: ${searchData.size}"
                             searchIngredientList.addAll(searchData)
                             onSnapSearchDishItemRefresh()
@@ -225,24 +237,40 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                 //   LoaderUtil.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<IngredientResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-             //   LoaderUtil.dismissLoader(requireActivity())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
     }
 
     private fun getRecipesDetails(ingredientId : String) {
-     //   LoaderUtil.showLoader(requireActivity())
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
         val call = ApiClient.apiServiceFastApi.getRecipesDetails(ingredientId)
         call.enqueue(object : Callback<IngredientDetailResponse> {
             override fun onResponse(call: Call<IngredientDetailResponse>, response: Response<IngredientDetailResponse>) {
                 if (response.isSuccessful) {
-          //          LoaderUtil.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     if (response.body()?.data != null){
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             val snapMealFragment = IngredientDishFragment()
@@ -263,14 +291,31 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-              //      LoaderUtil.dismissLoader(requireActivity())
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
             override fun onFailure(call: Call<IngredientDetailResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-          //      LoaderUtil.dismissLoader(requireActivity())
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         })
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
