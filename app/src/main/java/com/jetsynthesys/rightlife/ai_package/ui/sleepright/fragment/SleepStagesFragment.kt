@@ -13,9 +13,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -67,6 +69,10 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     private lateinit var endTime: TextView
     private lateinit var stageTitle: TextView
     private lateinit var stageMessage: TextView
+    private lateinit var stageDataCard: CardView
+    private lateinit var stageNoDataCard: CardView
+    private lateinit var lytStageTitle: LinearLayout
+    private lateinit var lytStagesList: ConstraintLayout
     val remData: ArrayList<Float> = arrayListOf()
     val awakeData: ArrayList<Float> = arrayListOf()
     val coreData: ArrayList<Float> = arrayListOf()
@@ -98,6 +104,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         transparentOverlayLight = view.findViewById(R.id.transparentOverlayLight)
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         transparentOverlayFatBurn = view.findViewById(R.id.transparentOverlayFatBurn)
+        lytStageTitle = view.findViewById(R.id.lyt_sleep_stage_title)
+        lytStagesList = view.findViewById(R.id.lyt_sleep_stage_list)
 
         awakeMinute = view.findViewById(R.id.tv_sleep_awake_minute)
         awakePercent = view.findViewById(R.id.tv_sleep_awake_percent)
@@ -112,6 +120,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         totalTime = view.findViewById(R.id.tv_stage_total_sleep)
         stageTitle = view.findViewById(R.id.tv_sleep_stage_title)
         stageMessage = view.findViewById(R.id.tv_sleep_stage_message)
+        stageDataCard = view.findViewById(R.id.lyt_stage_card)
+        stageNoDataCard = view.findViewById(R.id.lyt_stage_nocard)
 
         // Setup progress bars
 
@@ -145,9 +155,17 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
                     progressDialog.dismiss()
                     sleepStageResponse = response.body()!!
                     if (sleepStageResponse.sleepStageAllData?.sleepStageData?.isNotEmpty() == true) {
+                        stageDataCard.visibility = View.VISIBLE
+                        stageNoDataCard.visibility = View.GONE
+                        lytStagesList.visibility = View.VISIBLE
+                        lytStageTitle.visibility = View.VISIBLE
                         sleepChart.setSleepData(sleepStageResponse.sleepStageAllData?.sleepStageData!!)
                         setProgressBarData(sleepStageResponse.sleepStageAllData)
                     }else{
+                        stageDataCard.visibility = View.GONE
+                        stageNoDataCard.visibility = View.VISIBLE
+                        lytStagesList.visibility = View.GONE
+                        lytStageTitle.visibility = View.GONE
                         progressDialog.dismiss()
                         Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                     }

@@ -104,6 +104,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var adapter : AssessmentPagerAdapter
     private lateinit var add_tools_think_right: ImageView
     private lateinit var instruction_your_mindfullness_review: ImageView
+    private lateinit var instruction_your_assessment_review: ImageView
     private lateinit var dots: Array<ImageView?>
     private lateinit var tvQuote: TextView
     private lateinit var tvMindfullMinute: TextView
@@ -213,6 +214,8 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         noDataMindFullnessMetric = view.findViewById(R.id.noDataMindFullnessMetric)
         instruction_your_mindfullness_review =
             view.findViewById(R.id.instruction_your_mindfullness_review)
+        instruction_your_assessment_review =
+            view.findViewById(R.id.clinical_assessments_info)
         viewPager = view.findViewById<ViewPager2>(R.id.assessmentViewPager)
     //    tabLayout = view.findViewById<TabLayout>(R.id.tabDots)
         dotsLayout = view.findViewById(R.id.customDotsContainer)
@@ -228,6 +231,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         instruction_your_mindfullness_review.setOnClickListener {
             val dialog = MindfulnessReviewDialog.newInstance()
             dialog.show(parentFragmentManager, "MindfulnessReviewDialog")
+            // Use parentFragmentManager for fragments
+        }
+        instruction_your_assessment_review.setOnClickListener {
+            val dialog = AssessmentReviewDialog.newInstance()
+            dialog.show(parentFragmentManager, "AssessmentReviewDialog")
             // Use parentFragmentManager for fragments
         }
         toolsRecyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)

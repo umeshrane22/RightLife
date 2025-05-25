@@ -27,7 +27,16 @@ data class RestorativeSleepAllData (
     @SerializedName("sleep_insight_detail" )
     var sleepInsightDetail              : RestorativeInsightDetail?,
     @SerializedName("restorative_sleep_details")
-    var restorativeSleepDetails           : ArrayList<RestorativeSleepData> = arrayListOf()
+    var restorativeSleepDetails           : ArrayList<RestorativeSleepData> = arrayListOf(),
+    @SerializedName("progress_detail")
+    var progress_detail : RestorativeProgressDetail?
+)
+
+data class RestorativeProgressDetail(
+    @SerializedName("progress_percentage")
+    var progress_percentage              : Double?  ,
+    @SerializedName("progress_sign")
+    var progress_sign                : String? ,
 )
 
 data class RestorativeInsightDetail(
