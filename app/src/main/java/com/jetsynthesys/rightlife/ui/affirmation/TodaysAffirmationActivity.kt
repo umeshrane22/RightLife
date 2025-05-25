@@ -28,6 +28,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityTodaysAffirmationBinding
+import com.jetsynthesys.rightlife.databinding.LayoutDiscardBottomsheetBinding
+import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationCategoryData
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationCategoryListResponse
@@ -105,7 +107,24 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         binding.addAffirmation.setOnClickListener {
-            addCardToPlaylist()
+            val position = binding.cardViewPager.currentItem
+            if (checkAffirmationIsAlreadyAdded(position)) {
+                if (affirmationPlaylist.size == 3)
+                    showDeleteAffirmationPlaylistDialog()
+                else {
+                    if (checkAffirmationAddedLocally(position)) {
+                        removeAffirmationLocally(position)
+                    } else {
+                        affirmationList[binding.cardViewPager.currentItem].id?.let { it1 ->
+                            removeFromPlaylist(
+                                it1, position
+                            )
+                        }
+                    }
+                }
+            } else {
+                addCardToPlaylist()
+            }
         }
 
         binding.btnCreateAffirmation.setOnClickListener {
@@ -143,6 +162,41 @@ class TodaysAffirmationActivity : BaseActivity() {
             false
         }
 
+    }
+
+    private fun checkAffirmationIsAlreadyAdded(position: Int): Boolean {
+        for (playlist in affirmationPlaylist) {
+            if (playlist.id == affirmationList[position].id) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun checkAffirmationAddedLocally(position: Int): Boolean {
+        for (playlist in affirmationPlaylistRequest) {
+            if (playlist == affirmationList[position].id) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun removeAffirmationLocally(position: Int) {
+        for (playlist in affirmationPlaylistRequest) {
+            if (playlist == affirmationList[position].id) {
+                affirmationPlaylistRequest.remove(playlist)
+                binding.addAffirmation.setImageResource(R.drawable.add_affirmation)
+                break
+            }
+        }
+        for (playlist in affirmationPlaylist) {
+            if (playlist.id == affirmationList[position].id) {
+                affirmationPlaylist.remove(playlist)
+                binding.addAffirmation.setImageResource(R.drawable.add_affirmation)
+                break
+            }
+        }
     }
 
     private fun onSwipeUp() {
@@ -194,7 +248,6 @@ class TodaysAffirmationActivity : BaseActivity() {
     private fun addCardToPlaylist() {
         val yOff = -200
         val xOff = 10
-        binding.addAffirmation.isEnabled = false
         affirmationPlaylist.add(affirmationList[binding.cardViewPager.currentItem])
         binding.addAffirmation.setImageResource(R.drawable.playlist_added)
         affirmationList[binding.cardViewPager.currentItem].id?.let {
@@ -297,12 +350,9 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
         if (flag) {
             binding.addAffirmation.setImageResource(R.drawable.playlist_added)
-            binding.addAffirmation.isEnabled = false
         } else {
             binding.addAffirmation.setImageResource(R.drawable.add_affirmation)
-            binding.addAffirmation.isEnabled = true
         }
-
     }
 
     private fun setupCategoryBottomSheet() {
@@ -332,6 +382,33 @@ class TodaysAffirmationActivity : BaseActivity() {
             categoryBottomSheetDialog.dismiss()
         }
 
+    }
+
+    private fun showDeleteAffirmationPlaylistDialog() {
+        // Create and configure BottomSheetDialog
+        val bottomSheetDialog = BottomSheetDialog(this)
+
+        // Inflate using ViewBinding
+        val binding = LayoutDiscardBottomsheetBinding.inflate(layoutInflater)
+        bottomSheetDialog.setContentView(binding.root)
+
+        // Optional animation on root layout (you may need to use another ID if this isn't correct)
+        val slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
+        binding.root.startAnimation(slideUpAnimation)
+
+        binding.tvHeader.text = "Delete Playlist?"
+        binding.tvDescription.text = "Do you want to delete Affirmation Playlist?"
+
+        // Set up button listeners
+        binding.btnNo.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+        binding.btnYes.setOnClickListener {
+            affirmationPlaylist[0].id?.let { removeFromPlaylist(it) }
+            bottomSheetDialog.dismiss()
+            finish()
+        }
+        bottomSheetDialog.show()
     }
 
     private fun setupDiscardBottomSheet() {
@@ -495,6 +572,47 @@ class TodaysAffirmationActivity : BaseActivity() {
             }
 
         })
+    }
+
+    private fun removeFromPlaylist(songId: String, position: Int = -1) {
+        Utils.showLoader(this)
+        val call =
+            apiService.removeFromAffirmationPlaylist(sharedPreferenceManager.accessToken, songId)
+
+        call.enqueue(object : Callback<CommonResponse> {
+            override fun onResponse(
+                call: Call<CommonResponse>,
+                response: Response<CommonResponse>
+            ) {
+                Utils.dismissLoader(this@TodaysAffirmationActivity)
+                if (response.isSuccessful && response.body() != null) {
+                    if (position != -1)
+                        removeAffirmationLocally(position)
+                    else {
+                        if (affirmationPlaylist.isNotEmpty()) {
+                            affirmationPlaylist.removeAt(0)
+                            if (affirmationPlaylist.size >= 1)
+                                affirmationPlaylist[0].id?.let { removeFromPlaylist(it) }
+                        }
+                    }
+                    showToast(
+                        response.body()?.successMessage ?: "Affirmation removed from Playlist!"
+                    )
+                } else {
+                    showToast("try again!: ${response.code()}")
+                }
+
+            }
+
+            override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                //Utils.dismissLoader(this@NewSleepSoundActivity)
+                showToast("Network Error: ${t.message}")
+            }
+        })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun createAffirmationPlaylist() {
