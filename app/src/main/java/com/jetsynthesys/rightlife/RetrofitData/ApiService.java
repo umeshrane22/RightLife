@@ -197,6 +197,12 @@ public interface ApiService {
             @Header("Authorization") String authToken, // Dynamic Authorization Header
             @Body AffirmationRequest affirmationRequest);
 
+    @DELETE("affirmationPlaylist/{playlistId}")
+    Call<CommonResponse> removeFromAffirmationPlaylist(
+            @Header("Authorization") String authToken,
+            @Path("playlistId") String playlistId
+    );
+
 
     /*Call<JsonElement> UpdateAffirmationList(
             @Header("Authorization") String authToken, // Dynamic Authorization Header
