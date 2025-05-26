@@ -21,6 +21,9 @@ import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQu
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse;
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest;
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse;
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
@@ -1212,6 +1215,18 @@ public interface ApiService {
     Call<SubscriptionPlansResponse> getSubscriptionPlanList(
             @Header("Authorization") String authToken,
             @Query("planName") String planName
+    );
+
+    @POST("payment/intent")
+    Call<PaymentSuccessResponse> savePaymentSuccess(
+            @Header("Authorization") String authToken,
+            @Body PaymentSuccessRequest paymentSuccessRequest
+    );
+
+    @GET("app/api/payment/intent/{id}")
+    Call<PaymentIntentResponse> getPaymentIntent(
+            @Header("Authorization") String authToken,
+            @Path("id") String paymentId
     );
 }
 
