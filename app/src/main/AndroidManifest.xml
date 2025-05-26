@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -61,152 +62,451 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".subsciptions.BillingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.contentdetailvideo.ContentDetailsActivity"
             android:exported="false"
             android:label="@string/title_activity_content_details"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.NewSleepSounds.SleepSoundPlayerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".apimodel.exploremodules.affirmations.ExploreAffirmationsListActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.exploremodule.ExploreSleepSoundsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.voicescan.VoiceScanFromActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.rlpagemain.RLPageActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_rlpage"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.HomeActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_homepage"
             android:launchMode="singleTop" />
         <activity
             android:name=".ui.new_design.SplashScreenActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.new_design.DataControlActivity" />
-        <activity android:name=".ui.new_design.ImageSliderActivity" />
-        <activity android:name=".ui.new_design.CreateUsernameActivity" />
-        <activity android:name=".ui.new_design.WellnessFocusActivity" />
-        <activity android:name=".ui.new_design.WellnessFocusListActivity" />
-        <activity android:name=".ui.new_design.UnlockPowerOfYourMindActivity" />
-        <activity android:name=".ui.new_design.ThirdFillerScreenActivity" />
-        <activity android:name=".ui.new_design.PersonalisationActivity" />
-        <activity android:name=".ui.new_design.SyncNowActivity" />
-        <activity android:name=".ui.new_design.OnboardingQuestionnaireActivity" />
-        <activity android:name=".ui.new_design.UserInterestActivity" />
-        <activity android:name=".ui.new_design.AwesomeScreenActivity" />
-        <activity android:name=".ui.new_design.EnableNotificationActivity" />
-        <activity android:name=".ui.new_design.OnboardingFinalActivity" />
-        <activity android:name=".ui.new_design.FreeTrialServiceActivity" />
-        <activity android:name=".ui.new_design.WelcomeActivity" />
-        <activity android:name=".ui.voicescan.VoiceScanActivity" />
-        <activity android:name=".ui.voicescan.AfterVoiceScanActivity" />
-        <activity android:name=".ui.healthaudit.HealthAuditActivity" />
-        <activity android:name=".ui.mindaudit.MindAuditActivity" />
-        <activity android:name=".ui.mindaudit.MindAuditResultActivity" />
-        <activity android:name=".ui.healthcam.HealthCamActivity" />
-        <activity android:name=".ui.voicescan.VoiceScanWaitingActivity" />
-        <activity android:name=".ui.healthcam.HealthCamBasicDetailsActivity" />
-        <activity android:name=".ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity" />
-        <activity android:name=".ui.CategoryListActivity" />
-        <activity android:name=".ui.healthaudit.HealthAuditFormActivity" />
-        <activity android:name=".ui.healthpagemain.HealthPageMainActivity" />
-        <activity android:name=".ui.payment.AccessPaymentActivity" />
-        <activity android:name=".ui.Articles.ArticlesDetailActivity" />
-        <activity android:name=".ui.mindaudit.MindAuditFromActivity" />
-        <activity android:name=".ui.mindaudit.MindAuditBasicScreeningQuestionsActivity" />
-        <activity android:name=".ui.mindaudit.MASuggestedAssessmentActivity" />
-        <activity android:name=".ui.mindaudit.MAAssessmentQuestionaireActivity" />
-        <activity android:name=".ui.therledit.RLEditDetailViewActivity" />
-        <activity android:name=".ui.Articles.ReceipeDetailActivity" />
-        <activity android:name=".ui.Wellness.WellnessDetailViewActivity" />
-        <activity android:name=".ui.Wellness.MoreContentDetailViewActivity" />
-        <activity android:name=".ui.moduledetail.ModuleContentDetailViewActivity" />
-        <activity android:name=".ui.exploremodule.ExploreModuleListActivity" />
-        <activity android:name=".ui.drawermenu.TermsAndConditionsActivity" />
-        <activity android:name=".ui.drawermenu.PrivacyPolicyActivity" />
-        <activity android:name=".ui.search.SearchActivity" />
-        <activity android:name=".ui.therledit.ViewAllActivity" />
-        <activity android:name=".ui.therledit.ArtistsDetailsActivity" />
-        <activity android:name=".ui.therledit.ViewAllByArtistActivity" />
-        <activity android:name=".ui.sdkpackage.HealthCamRecorderActivity" />
-        <activity android:name=".ui.sdkpackage.VoiceRecorderActivity" />
+        <activity
+            android:name=".ui.new_design.DataControlActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.ImageSliderActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.CreateUsernameActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.WellnessFocusActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.WellnessFocusListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.UnlockPowerOfYourMindActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.ThirdFillerScreenActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.PersonalisationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.SyncNowActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.OnboardingQuestionnaireActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.UserInterestActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.AwesomeScreenActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.EnableNotificationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.OnboardingFinalActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.FreeTrialServiceActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.WelcomeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.voicescan.VoiceScanActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.voicescan.AfterVoiceScanActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.healthaudit.HealthAuditActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.mindaudit.MindAuditActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.mindaudit.MindAuditResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.healthcam.HealthCamActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.voicescan.VoiceScanWaitingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.healthcam.HealthCamBasicDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.CategoryListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.healthaudit.HealthAuditFormActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.healthpagemain.HealthPageMainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.payment.AccessPaymentActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.Articles.ArticlesDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.mindaudit.MindAuditFromActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.mindaudit.MindAuditBasicScreeningQuestionsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.mindaudit.MASuggestedAssessmentActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.mindaudit.MAAssessmentQuestionaireActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.therledit.RLEditDetailViewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.Articles.ReceipeDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.Wellness.WellnessDetailViewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.Wellness.MoreContentDetailViewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.moduledetail.ModuleContentDetailViewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.exploremodule.ExploreModuleListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.drawermenu.TermsAndConditionsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.drawermenu.PrivacyPolicyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.search.SearchActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.therledit.ViewAllActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.therledit.ArtistsDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.therledit.ViewAllByArtistActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.sdkpackage.HealthCamRecorderActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.sdkpackage.VoiceRecorderActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity android:name=".ui.sdkpackage.RlAnuraMeasurementActivity" />
-        <activity android:name=".ui.jounal.JournalingActivity" />
-        <activity android:name=".ui.jounal.JournalingListActivity" />
+        <activity
+            android:name=".ui.jounal.JournalingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.JournalingListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.healthcam.NewHealthCamReportActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
             android:launchMode="singleTop" />
-        <activity android:name=".ui.jounal.MyJournalActivity" />
-        <activity android:name=".ui.jounal.EditJournalActivity" />
-        <activity android:name=".ui.thoughtoftheday.ThoughtOfTheDayDetailActivity" />
-        <activity android:name=".ui.Wellness.SeriesEpisodeDetailActivity" />
-        <activity android:name=".ui.jounal.new_journal.JournalNewActivity" />
-        <activity android:name=".ui.jounal.new_journal.JournalPromptActivity" />
-        <activity android:name=".ui.jounal.new_journal.Journal4QuestionsActivity" />
-        <activity android:name=".ui.jounal.new_journal.FreeFormJournalActivity" />
-        <activity android:name=".ui.jounal.new_journal.BulletJournalActivity" />
-        <activity android:name=".ui.jounal.new_journal.GriefJournalActivity" />
-        <activity android:name=".ui.jounal.new_journal.JournalListActivity" />
-        <activity android:name=".ui.affirmation.TodaysAffirmationActivity" />
-        <activity android:name=".ui.affirmation.PractiseAffirmationPlaylistActivity" />
-        <activity android:name=".newdashboard.HomeDashboardActivity" />
-        <activity android:name=".newdashboard.FacialScanReportDetailsActivity" />
-        <activity android:name=".ui.breathwork.BreathworkActivity" />
-        <activity android:name=".ui.breathwork.BreathworkSessionActivity" />
-        <activity android:name=".ui.breathwork.BreathworkPracticeActivity" />
-        <activity android:name=".ui.settings.SettingsNewActivity" />
-        <activity android:name=".ui.settings.AppSettingsActivity" />
-        <activity android:name=".ui.settings.ExportHealthDataActivity" />
-        <activity android:name=".ui.settings.PreparingExportHealthDataActivity" />
-        <activity android:name=".ui.settings.NotificationsNewActivity" />
-        <activity android:name=".ui.settings.EmailNotificationsNewActivity" />
-        <activity android:name=".ui.settings.SupportActivity" />
-        <activity android:name=".ui.settings.FAQNewActivity" />
-        <activity android:name=".ui.settings.FAQDetailsActivity" />
-        <activity android:name=".ui.settings.GeneralInformationActivity" />
-        <activity android:name=".ui.settings.HtmlTextActivity" />
-        <activity android:name=".ui.settings.SubscriptionPlansActivity" />
-        <activity android:name=".ui.profile_new.ProfileNewActivity" />
-        <activity android:name=".ui.profile_new.ProfileSettingsActivity" />
-        <activity android:name=".ui.profile_new.DeleteAccountSelectionActivity" />
-        <activity android:name=".ui.profile_new.DeleteAccountReasonActivity" />
-        <activity android:name=".ui.profile_new.DeleteAccountEmailDataActivity" />
-        <activity android:name=".ui.NewSleepSounds.NewSleepSoundActivity" />
-        <activity android:name=".ui.questionnaire.QuestionnaireEatRightActivity" />
-        <activity android:name=".ui.questionnaire.QuestionnaireThinkRightActivity" />
+        <activity
+            android:name=".ui.jounal.MyJournalActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.EditJournalActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.thoughtoftheday.ThoughtOfTheDayDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.Wellness.SeriesEpisodeDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.JournalNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.JournalPromptActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.Journal4QuestionsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.FreeFormJournalActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.BulletJournalActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.GriefJournalActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.jounal.new_journal.JournalListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.affirmation.TodaysAffirmationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.affirmation.PractiseAffirmationPlaylistActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".newdashboard.HomeDashboardActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".newdashboard.FacialScanReportDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.breathwork.BreathworkActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.breathwork.BreathworkSessionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.breathwork.BreathworkPracticeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.SettingsNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.AppSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.ExportHealthDataActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.PreparingExportHealthDataActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.NotificationsNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.EmailNotificationsNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.SupportActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.FAQNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.FAQDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.GeneralInformationActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.HtmlTextActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.SubscriptionPlansActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.profile_new.ProfileNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.profile_new.ProfileSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.profile_new.DeleteAccountSelectionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.profile_new.DeleteAccountReasonActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.profile_new.DeleteAccountEmailDataActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.NewSleepSounds.NewSleepSoundActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.questionnaire.QuestionnaireEatRightActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.questionnaire.QuestionnaireThinkRightActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ai_package.ui.MainAIActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.scan_history.PastReportActivity" />
-        <activity android:name=".ui.new_design.HappyToHaveYouActivity" />
-        <activity android:name=".ui.settings.IntegrationsNewActivity" />
-        <activity android:name=".ui.settings.AccountPrivacyNewActivity" />
-        <activity android:name=".ui.settings.SubscriptionHistoryActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity" />
-        <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity" />
+        <activity
+            android:name=".ui.scan_history.PastReportActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.new_design.HappyToHaveYouActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.IntegrationsNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.AccountPrivacyNewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.settings.SubscriptionHistoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.contentdetailvideo.SeriesListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.contentdetailvideo.NewSeriesDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -107,13 +107,13 @@ public class NewHealthCamReportActivity extends BaseActivity {
             binding.txtuserName.setText("Hi " + userdata.getFirstName());
         }*/
         updateChecklistStatus();
-        if (DashboardChecklistManager.INSTANCE.getPaymentStatus()) {
+       /* if (DashboardChecklistManager.INSTANCE.getPaymentStatus()) {
             binding.cardFacescanBooster.setVisibility(View.GONE);
             binding.scanProgressLayout.scanContainer.setVisibility(View.VISIBLE);
         } else {
             binding.cardFacescanBooster.setVisibility(View.VISIBLE);
             binding.scanProgressLayout.scanContainer.setVisibility(View.GONE);
-        }
+        }*/
 
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
     }
@@ -210,8 +210,13 @@ public class NewHealthCamReportActivity extends BaseActivity {
                 binding.recyclerViewVitalCards.setAdapter(adapter);
                 if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
                     setupScanTracker(scanBinding, facialReportResponseNew.data.usedCount, facialReportResponseNew.data.limit);
+                    binding.cardFacescanBooster.setVisibility(View.VISIBLE);
+                    binding.scanProgressLayout.scanContainer.setVisibility(View.VISIBLE);
+                    binding.cardviewLastCheckin.setVisibility(View.GONE);
                 } else {
                     binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
+                    binding.cardFacescanBooster.setVisibility(View.VISIBLE);
+                    binding.scanProgressLayout.scanContainer.setVisibility(View.GONE);
                 }
                 setupBoosterTracker(facialReportResponseNew.data.boosterUsed, facialReportResponseNew.data.boosterLimit);
             } else {
@@ -321,7 +326,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
             // layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
         }
         if (usedCount == limit) {
-            layout.buttonText.setText("Scan Again @ 99");
+            layout.buttonText.setText("Scan Again");
             layout.btnScanAgain.setVisibility(View.GONE);
             layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
             binding.cardFacescanBooster.setVisibility(View.VISIBLE);
