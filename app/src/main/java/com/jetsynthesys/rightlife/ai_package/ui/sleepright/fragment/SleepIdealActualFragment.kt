@@ -71,7 +71,6 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         view.setBackgroundResource(R.drawable.sleep_stages_bg)
 
         lineChart = view.findViewById(R.id.idealActualChart)
