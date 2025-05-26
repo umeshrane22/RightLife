@@ -6,9 +6,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionPlanListBinding
 import com.jetsynthesys.rightlife.subscriptions.adapter.SubscriptionPlanAdapter
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentIntentResponse
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
+import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +37,30 @@ class SubscriptionPlanListActivity : BaseActivity() {
         adapter = SubscriptionPlanAdapter(planList) { plan ->
             showToast("Plan Clicked" + plan.price?.inr)
 
+
+            val paymentSuccessRequest = PaymentSuccessRequest()
+            paymentSuccessRequest.planId = plan.id
+            paymentSuccessRequest.planName = plan.purchase?.planName
+            paymentSuccessRequest.paymentGateway = "googlePlay"
+            paymentSuccessRequest.orderId = ""//may be getting from payment response
+            paymentSuccessRequest.environment = "test"
+            paymentSuccessRequest.notifyType = "SDK"
+            paymentSuccessRequest.couponId = ""//may be getting from payment response
+            paymentSuccessRequest.obfuscatedExternalAccountId =
+                ""//may be getting from payment response
+
+            val sdkDetail = SdkDetail()
+            sdkDetail.price = plan.price?.inr.toString()
+            sdkDetail.orderId = ""//may be getting from payment response
+            sdkDetail.title = ""
+            sdkDetail.environment = "payment"
+            sdkDetail.description = ""
+            sdkDetail.currencyCode = "INR"
+            sdkDetail.currencySymbol = "₹"
+
+            paymentSuccessRequest.sdkDetail = sdkDetail
+            saveSubscriptionSuccess(paymentSuccessRequest)
+
         }
 
         binding.plansRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -42,7 +69,7 @@ class SubscriptionPlanListActivity : BaseActivity() {
 
     private fun getSubscriptionList(type: String) {
         val call = apiService.getSubscriptionPlanList(
-            SharedPreferenceManager.getInstance(this).accessToken,
+            sharedPreferenceManager.accessToken,
             type
         )
         call.enqueue(object : Callback<SubscriptionPlansResponse> {
@@ -59,6 +86,51 @@ class SubscriptionPlanListActivity : BaseActivity() {
             }
 
             override fun onFailure(call: Call<SubscriptionPlansResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+
+        })
+    }
+
+    private fun saveSubscriptionSuccess(paymentSuccessRequest: PaymentSuccessRequest) {
+        val call = apiService.savePaymentSuccess(
+            sharedPreferenceManager.accessToken,
+            paymentSuccessRequest
+        )
+        call.enqueue(object : Callback<PaymentSuccessResponse> {
+            override fun onResponse(
+                call: Call<PaymentSuccessResponse>,
+                response: Response<PaymentSuccessResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.id?.let { updatePaymentId(it) }
+                } else {
+                    showToast(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentSuccessResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+
+        })
+    }
+
+    private fun updatePaymentId(paymentId: String) {
+        val call = apiService.getPaymentIntent(sharedPreferenceManager.accessToken, paymentId)
+        call.enqueue(object : Callback<PaymentIntentResponse> {
+            override fun onResponse(
+                call: Call<PaymentIntentResponse>,
+                response: Response<PaymentIntentResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast("Subscribed Successfully!!")
+                } else {
+                    showToast(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentIntentResponse>, t: Throwable) {
                 handleNoInternetView(t)
             }
 
