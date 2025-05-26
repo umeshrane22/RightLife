@@ -21,6 +21,7 @@ import com.jetsynthesys.rightlife.apimodel.newquestionrequestfacescan.FaceScanQu
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse;
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse;
+import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.CommonResponse;
@@ -1205,6 +1206,12 @@ public interface ApiService {
     Call<PurchaseHistoryResponse> getSubscriptionHistory(
             @Header("Authorization") String authToken,
             @Query("type") String type
+    );
+
+    @GET("payment/plan/FACIAL_SCAN")
+    Call<SubscriptionPlansResponse> getSubscriptionPlanList(
+            @Header("Authorization") String authToken,
+            @Query("planName") String planName
     );
 }
 
