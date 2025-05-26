@@ -19,7 +19,7 @@ public class ReportData implements Serializable {
     @SerializedName("snr")
     @Expose
     private Double snr;
-    @SerializedName("msi")
+    @SerializedName("MSI")
     @Expose
     private Double msi;
     @SerializedName("systolic")
@@ -34,7 +34,7 @@ public class ReportData implements Serializable {
     @SerializedName("breathing")
     @Expose
     private Object breathing;
-    @SerializedName("healthScore")
+    @SerializedName("HEALTH_SCORE")
     @Expose
     private Double healthScore;
     @SerializedName("waistToHeight")
@@ -151,6 +151,28 @@ public class ReportData implements Serializable {
     @SerializedName("BP_HEART_ATTACK")
     @Expose
     private Object bpHeartAttack;
+    @SerializedName("BR_BPM")
+    @Expose
+    private Object brBPM;
+    @SerializedName("HR_BPM")
+    @Expose
+    private Object hrBPM;
+
+    public Object getBrBPM() {
+        return brBPM;
+    }
+
+    public void setBrBPM(Object brBPM) {
+        this.brBPM = brBPM;
+    }
+
+    public Object getHrBPM() {
+        return hrBPM;
+    }
+
+    public void setHrBPM(Object hrBPM) {
+        this.hrBPM = hrBPM;
+    }
 
     public Object getIdentifier() {
         return identifier;

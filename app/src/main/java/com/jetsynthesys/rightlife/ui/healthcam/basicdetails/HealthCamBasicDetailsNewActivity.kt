@@ -918,11 +918,22 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                             ignoreCase = true
                         )
                     ) {
-                        val intent = Intent(
+                        /*val intent = Intent(
                             this@HealthCamBasicDetailsNewActivity,
                             AccessPaymentActivity::class.java
                         )
                         intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN")
+                        startActivity(intent)
+                        finish()*/
+                        val intent = Intent(
+                            this@HealthCamBasicDetailsNewActivity,
+                            HealthCamRecorderActivity::class.java
+                        )
+                        intent.putExtra("reportID", healthCamSubmitResponse.data.answerId)
+                        intent.putExtra("USER_PROFILE_HEIGHT", heightInCms)
+                        intent.putExtra("USER_PROFILE_WEIGHT", weightInKg)
+                        intent.putExtra("USER_PROFILE_AGE", age)
+                        intent.putExtra("USER_PROFILE_GENDER", binding.edtGender.text.toString())
                         startActivity(intent)
                         finish()
                     } else {
