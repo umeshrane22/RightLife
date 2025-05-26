@@ -160,7 +160,9 @@ dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar','sonde_edge_sdk_v1.1.0_prod.aar'])
     //implementation(name: 'anura-core-sdk-2.4.6.90', ext: 'aar')
     //implementation(name: 'anura-opencv-4.5.1', ext: 'aar')
-    implementation files('libs/anura-core-sdk-2.4.6.90.aar')
+    implementation files('libs/anura-core-sdk-2.4.8.304.aar')
+    implementation files('libs/dfxextras-0.1.8.aar')
+    implementation files('libs/dfxsdk-4.13.4.aar')
     implementation files('libs/anura-opencv-4.5.1.aar')
     implementation files('libs/sonde_edge_sdk_v1.1.0_prod.aar')
 

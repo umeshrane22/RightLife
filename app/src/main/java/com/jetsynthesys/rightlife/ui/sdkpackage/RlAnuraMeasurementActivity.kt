@@ -1175,7 +1175,7 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
         Log.d(TAG, "Measurement screen destroyed")
         measurementStartCountdown.stop()
         DeepFXClient.getInstance().disconnect()
-        DeepFXClient.getInstance().setListener(null)
+        //DeepFXClient.getInstance().setListener(null)
         if (this::core.isInitialized) {
             try {
                 measurementPipeline.close()
