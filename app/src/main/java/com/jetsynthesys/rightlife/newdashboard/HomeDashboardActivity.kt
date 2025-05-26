@@ -55,6 +55,7 @@ import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
 import com.jetsynthesys.rightlife.subsciptions.BillingActivity
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.HomeActivity
@@ -233,7 +234,6 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
             Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, BillingActivity::class.java))
         }
 
 

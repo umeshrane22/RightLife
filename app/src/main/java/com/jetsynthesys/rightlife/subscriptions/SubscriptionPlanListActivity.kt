@@ -33,6 +33,7 @@ class SubscriptionPlanListActivity : BaseActivity() {
 
         adapter = SubscriptionPlanAdapter(planList) { plan ->
             showToast("Plan Clicked" + plan.price?.inr)
+
         }
 
         binding.plansRecyclerView.layoutManager = LinearLayoutManager(this)
