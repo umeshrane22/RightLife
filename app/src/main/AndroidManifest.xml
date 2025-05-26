@@ -208,6 +208,8 @@
         <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity" />
         <activity android:name="com.jetsynthesys.rightlife.ui.contentdetailvideo.NewSeriesDetailsActivity" />
 
+        <activity android:name=".subscriptions.SubscriptionPlanListActivity" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
