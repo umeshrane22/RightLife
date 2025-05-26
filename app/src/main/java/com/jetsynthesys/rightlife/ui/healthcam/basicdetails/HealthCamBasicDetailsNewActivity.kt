@@ -31,13 +31,13 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetAgeSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamSubmitResponse
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
-import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -918,22 +918,11 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                             ignoreCase = true
                         )
                     ) {
-                        /*val intent = Intent(
-                            this@HealthCamBasicDetailsNewActivity,
-                            AccessPaymentActivity::class.java
-                        )
-                        intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN")
-                        startActivity(intent)
-                        finish()*/
                         val intent = Intent(
                             this@HealthCamBasicDetailsNewActivity,
-                            HealthCamRecorderActivity::class.java
+                            SubscriptionPlanListActivity::class.java
                         )
-                        intent.putExtra("reportID", healthCamSubmitResponse.data.answerId)
-                        intent.putExtra("USER_PROFILE_HEIGHT", heightInCms)
-                        intent.putExtra("USER_PROFILE_WEIGHT", weightInKg)
-                        intent.putExtra("USER_PROFILE_AGE", age)
-                        intent.putExtra("USER_PROFILE_GENDER", binding.edtGender.text.toString())
+                        intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
                         startActivity(intent)
                         finish()
                     } else {
