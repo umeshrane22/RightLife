@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "271466259719",
+    "project_id": "newrightlifepackageqa",
+    "storage_bucket": "newrightlifepackageqa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271466259719:android:98e9d4e615866ba81b91a2",
+        "android_client_info": {
+          "package_name": "com.jetsynthesys.rightlife.qa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271466259719-s9r8egsqiqt9rqqr9ko24ug3t45ini88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "35af4d5827684e2ea957e8a99904576c3bdcbe90"
+          }
+        },
+        {
+          "client_id": "271466259719-2mkh0kqpm6a65pbqhl4qo7i6uju0u7ck.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbh-dqll-vAY_O0t2iVhWstKm_WzFoDPM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271466259719-2mkh0kqpm6a65pbqhl4qo7i6uju0u7ck.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

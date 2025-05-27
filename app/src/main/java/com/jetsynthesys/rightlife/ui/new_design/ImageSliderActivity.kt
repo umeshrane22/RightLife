@@ -23,6 +23,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
@@ -150,8 +151,12 @@ class ImageSliderActivity : BaseActivity() {
             //.requestIdToken("376715991698-8lavu418dl8lgr5on0o0dg3au47gg36c.apps.googleusercontent.com")
 //            .requestIdToken("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
 //            .requestServerAuthCode("376715991698-1o4qmabjng7lp9umkcjkb8i6fsu8he5l.apps.googleusercontent.com")
-            .requestIdToken("341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com")
-            .requestServerAuthCode("341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com")
+            //production
+            //.requestIdToken("341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com")
+            //.requestServerAuthCode("341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com")
+
+            .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID) // Use your actual client ID from build config
+            .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
             .requestEmail()
             .requestProfile()
             .requestScopes(
