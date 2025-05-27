@@ -14,6 +14,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
+import com.jetsynthesys.rightlife.ui.settings.PurchasePlansActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
 import com.jetsynthesys.rightlife.ui.settings.SupportActivity
@@ -57,7 +58,7 @@ class ProfileSettingsActivity : BaseActivity() {
     private fun setupUserRecyclerView() {
         val items = listOf(
             SettingItem("Subscription History"),
-            //SettingItem("Payment Modes")
+            SettingItem("Purchase Plans")
         )
 
         val userAdapter = SettingsAdapter(items) { item ->
@@ -65,8 +66,8 @@ class ProfileSettingsActivity : BaseActivity() {
                 "Subscription History" ->
                     startActivity(Intent(this, SubscriptionHistoryActivity::class.java))
 
-                "Payment Modes" ->
-                    startActivity(Intent(this, SupportActivity::class.java))
+                "Purchase Plans" ->
+                    startActivity(Intent(this, PurchasePlansActivity::class.java))
             }
         }
 
