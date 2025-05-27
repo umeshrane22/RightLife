@@ -85,14 +85,18 @@ android {
     flavorDimensions 'environment'
 
     productFlavors {
-        create("development") {
+        create("qa") {
             dimension = "environment"
-            // applicationIdSuffix = ".qa"
-            // versionNameSuffix = "-qa"
+             applicationIdSuffix = ".qa"
+             versionNameSuffix = "-qa"
+            buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"271466259719-2mkh0kqpm6a65pbqhl4qo7i6uju0u7ck.apps.googleusercontent.com\""
+
             // buildConfigField("String", "BASE_URL", "\"https://"")
         }
         create("production") {
             dimension = "environment"
+            buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com\""
+
             // buildConfigField("String", "BASE_URL", "\"https://\"")
         }
     }

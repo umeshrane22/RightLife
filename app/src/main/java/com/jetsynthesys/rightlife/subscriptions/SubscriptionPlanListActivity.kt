@@ -1,10 +1,12 @@
 package com.jetsynthesys.rightlife.subscriptions
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionPlanListBinding
+import com.jetsynthesys.rightlife.subsciptions.BillingActivity
 import com.jetsynthesys.rightlife.subscriptions.adapter.SubscriptionPlanAdapter
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
@@ -24,7 +26,7 @@ class SubscriptionPlanListActivity : BaseActivity() {
         binding = ActivitySubscriptionPlanListBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
         val type = intent.getStringExtra("SUBSCRIPTION_TYPE")
-
+        //val type = "FACIAL_SCAN"
         getSubscriptionList(type ?: "FACIAL_SCAN")
 
         binding.iconBack.setOnClickListener {
@@ -32,7 +34,15 @@ class SubscriptionPlanListActivity : BaseActivity() {
         }
 
         adapter = SubscriptionPlanAdapter(planList) { plan ->
-            showToast("Plan Clicked" + plan.price?.inr)
+            showToast("Plan Clicked - " + plan.googlePlay)
+            val intent = Intent(this, BillingActivity::class.java)
+            intent.putExtra("PRODUCT_ID", plan.googlePlay) // Replace "your_specific_product_id"
+            if (type == "FACIAL_SCAN") {
+                intent.putExtra("PRODUCT_TYPE", "BOOSTER") // Replace "your_specific_product_id"
+            } else {
+                intent.putExtra("PRODUCT_TYPE", "SUBSCRIPTION") // Replace "your_specific_product_id"
+            }
+            startActivity(intent)
 
         }
 

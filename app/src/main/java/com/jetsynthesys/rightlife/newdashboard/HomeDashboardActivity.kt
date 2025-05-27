@@ -132,6 +132,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         //handle bottom menu
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this,"Why Checklist?")
+            /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
+                //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                //putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
+            })*/
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)
@@ -234,6 +238,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
             Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
+                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+            })
         }
 
 
