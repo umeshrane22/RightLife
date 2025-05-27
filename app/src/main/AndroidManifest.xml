@@ -443,6 +443,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.settings.PurchasePlansActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.profile_new.DeleteAccountSelectionActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
@@ -508,7 +512,8 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".subscriptions.SubscriptionPlanListActivity"
+        <activity
+            android:name=".subscriptions.SubscriptionPlanListActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
 
