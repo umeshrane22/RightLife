@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.ui.utility;
 
 public class SharedPreferenceConstants {
     public static final String ACCESS_TOKEN = "access_token";
+
+    public static final String FIRST_VISIT = "first_visit";
     public static final String IS_LOGGED_IN = "is_logged_in";
     public static final String USER_ID = "user_id";
 

@@ -1,15 +1,21 @@
 package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
+import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -150,6 +156,15 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                 toolHolder.selectButton.setOnClickListener {
                     onItemClick(position, tool)
                 }
+
+                val getVisit = SharedPreferenceManager.getInstance(contexts).userFirstVisit
+
+                if (position == 0 && getVisit == "1") {
+                   // holder.tooltipLayout.visibility = View.VISIBLE
+                    showTooltipDialogSync( toolHolder.selectButton,"Quickly add it to your tools")
+                } else {
+                   // holder.tooltipLayout.visibility = View.GONE
+                }
             }
 
             is ToolDisplayItem.AffirmationCard -> {
@@ -160,9 +175,38 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
 
             }
         }
+
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun showTooltipDialogSync(anchorView: View, tooltipText: String) {
+        val dialog = Dialog(contexts)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.tooltip_sync_layout)
+        val tvTooltip = dialog.findViewById<TextView>(R.id.tvTooltipText)
+        tvTooltip.text = tooltipText
+
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val displayMetrics = contexts.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val location = IntArray(2)
+        anchorView.getLocationOnScreen(location)
+        val tooltipWidth = 250
+
+        val params = dialog.window?.attributes
+        params?.x = (location[0] + anchorView.width) + tooltipWidth
+        params?.y = location[1] - anchorView.height + 15
+        dialog.window?.attributes = params
+        dialog.window?.setGravity(Gravity.TOP)
+
+        dialog.show()
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            dialog.dismiss()
+        }, 3000)
+    }
 }
 
 fun transformTools(tools: List<ToolsData>): List<ToolDisplayItem> {
@@ -266,6 +310,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         backBtn.setOnClickListener {
             navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
+        }
+
+        val getVisit = SharedPreferenceManager.getInstance(requireContext()).userFirstVisit
+        if (getVisit == ""){
+            SharedPreferenceManager.getInstance(requireContext()).saveUserFirstVisit("1")
+        }else{
+            SharedPreferenceManager.getInstance(requireContext()).saveUserFirstVisit("2")
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
