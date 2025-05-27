@@ -58,7 +58,7 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
         }
 
         adapter = SubscriptionPlanAdapter(planList) { plan ->
-            showToast("Plan Clicked - " + plan.googlePlay)
+           // showToast("Plan Clicked - " + plan.googlePlay)
             selectedPlan = plan // Save plan for later
             val intent = Intent(this, BillingActivity::class.java)
             intent.putExtra("PRODUCT_ID", plan.googlePlay) // Replace "your_specific_product_id"
