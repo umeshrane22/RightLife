@@ -36,6 +36,10 @@ class SubscriptionPlanListActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        binding.iconInfo.setOnClickListener {
+            startActivity(Intent(this,PlanInfoActivity::class.java))
+        }
+
         adapter = SubscriptionPlanAdapter(planList) { plan ->
             showToast("Plan Clicked - " + plan.googlePlay)
             val intent = Intent(this, BillingActivity::class.java)
