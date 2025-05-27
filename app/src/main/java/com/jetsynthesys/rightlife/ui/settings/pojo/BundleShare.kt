@@ -6,9 +6,9 @@ import com.google.gson.annotations.SerializedName
 class BundleShare {
     @SerializedName("INR")
     @Expose
-    var inr: Int? = null
+    var inr: Double? = null
 
     @SerializedName("USD")
     @Expose
-    var usd: Int? = null
+    var usd: Double? = null
 }

@@ -36,6 +36,7 @@ import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
@@ -85,7 +86,9 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
         binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
         binding.cardviewLastCheckin.setOnClickListener(v -> {
-            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
+            Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
+            intent.putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN");
+            startActivity(intent);
         });
 
         binding.btnBuyFacescan.setOnClickListener(v -> {
@@ -93,7 +96,10 @@ public class NewHealthCamReportActivity extends BaseActivity {
             if (facialReportResponseNew.data.boosterLimit > 0 && facialReportResponseNew.data.boosterUsed < facialReportResponseNew.data.boosterLimit) {
                 startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
             } else {
-                Toast.makeText(NewHealthCamReportActivity.this, "Buy New Process here...", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
+                intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN");
+                startActivity(intent);
+
             }
 
         });

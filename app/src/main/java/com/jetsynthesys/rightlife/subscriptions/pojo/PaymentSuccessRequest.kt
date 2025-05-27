@@ -39,4 +39,7 @@ class PaymentSuccessRequest {
     @SerializedName("sdkDetail")
     @Expose
     var sdkDetail: SdkDetail? = null
+    @SerializedName("price")
+    @Expose
+    var price: String? = null
 }
