@@ -540,7 +540,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                     } else {
                         binding.llCountDown.visibility = View.GONE
-                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                        if(!DashboardChecklistManager.paymentStatus){
+                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                        }
                     }
 
                 } else {

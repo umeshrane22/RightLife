@@ -55,13 +55,14 @@
 
             <Button
                 android:id="@+id/continueButton"
-                android:text="Continue"
+                android:text="Switch Plan"
                 android:layout_marginTop="12dp"
                 android:layout_marginHorizontal="50dp"
                 android:backgroundTint="@color/menuselected"
                 android:textColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:fontFamily="@font/dmsans_regular" />
 
             <Button
@@ -73,6 +74,7 @@
                 android:textColor="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:fontFamily="@font/dmsans_regular" />
         </LinearLayout>
 

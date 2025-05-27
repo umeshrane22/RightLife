@@ -19,9 +19,11 @@ class SubscriptionPlanAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(plan: PlanList, position: Int) {
-            binding.planName.text = plan.purchase?.planName
+            binding.planTitle.text = plan.title?: ""
+            binding.planName.text = plan.desc?: ""
             binding.tvPlanAmmount.text = "₹" + plan.price?.inr.toString()
-            binding.planOffer.text = "₹" + plan.discountPrice?.inr.toString()
+            binding.planOffer.text = "₹" + plan.discountPrice?.inr.toString()+
+                    " (${plan.discountPercent ?: 0}% OFF)"
             if (plan.status != null && plan.status!!.isNotEmpty()) {
                 binding.tvCurrentPlan.visibility = View.VISIBLE
                 binding.tvCurrentPlan.text = plan.status

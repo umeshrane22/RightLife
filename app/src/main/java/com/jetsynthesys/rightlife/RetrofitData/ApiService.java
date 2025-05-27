@@ -1223,7 +1223,7 @@ public interface ApiService {
             @Body PaymentSuccessRequest paymentSuccessRequest
     );
 
-    @GET("app/api/payment/intent/{id}")
+    @GET("payment/intent/{id}")
     Call<PaymentIntentResponse> getPaymentIntent(
             @Header("Authorization") String authToken,
             @Path("id") String paymentId

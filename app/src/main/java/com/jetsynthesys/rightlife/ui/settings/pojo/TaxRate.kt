@@ -6,45 +6,45 @@ import com.google.gson.annotations.SerializedName
 class TaxRate {
     @SerializedName("taxableAmount")
     @Expose
-    var taxableAmount: Int? = null
+    var taxableAmount: Double? = null
 
     @SerializedName("cGst")
     @Expose
-    private var cGst: Int? = null
+    private var cGst: Double? = null
 
     @SerializedName("sGst")
     @Expose
-    private var sGst: Int? = null
+    private var sGst: Double? = null
 
     @SerializedName("iGst")
     @Expose
-    private var iGst: Int? = null
+    private var iGst: Double? = null
 
     @SerializedName("gst")
     @Expose
-    var gst: Int? = null
+    var gst: Double? = null
 
-    fun getcGst(): Int? {
+    fun getcGst(): Double? {
         return cGst
     }
 
-    fun setcGst(cGst: Int?) {
+    fun setcGst(cGst: Double?) {
         this.cGst = cGst
     }
 
-    fun getsGst(): Int? {
+    fun getsGst(): Double? {
         return sGst
     }
 
-    fun setsGst(sGst: Int?) {
+    fun setsGst(sGst: Double?) {
         this.sGst = sGst
     }
 
-    fun getiGst(): Int? {
+    fun getiGst(): Double? {
         return iGst
     }
 
-    fun setiGst(iGst: Int?) {
+    fun setiGst(iGst: Double?) {
         this.iGst = iGst
     }
 }

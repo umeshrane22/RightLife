@@ -77,6 +77,7 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
                     if (receivedProductType == "BOOSTER") {
                         if (receivedProductId != null) {
                             queryProductDetails(receivedProductId!!, BillingClient.ProductType.INAPP)
+                            //queryProductDetails("product_test_2", BillingClient.ProductType.INAPP)
                         }
                     }else if (receivedProductType == "SUBSCRIPTION") {
                         if (receivedProductId != null) {

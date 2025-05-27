@@ -6,35 +6,35 @@ import com.google.gson.annotations.SerializedName
 class Pricing {
     @SerializedName("basePrice")
     @Expose
-    var basePrice: Int? = null
+    var basePrice: Double? = null
 
     @SerializedName("promoPrice")
     @Expose
-    var promoPrice: Int? = null
+    var promoPrice: Double? = null
 
     @SerializedName("totalPrice")
     @Expose
-    var totalPrice: Int? = null
+    var totalPrice: Double? = null
 
     @SerializedName("gatewayPrice")
     @Expose
-    var gatewayPrice: Int? = null
+    var gatewayPrice: Double? = null
 
     @SerializedName("commissionPercentage")
     @Expose
-    var commissionPercentage: Int? = null
+    var commissionPercentage: Double? = null
 
     @SerializedName("commissionPrice")
     @Expose
-    var commissionPrice: Int? = null
+    var commissionPrice: Double? = null
 
     @SerializedName("grandTotal")
     @Expose
-    var grandTotal: Int? = null
+    var grandTotal: Double? = null
 
     @SerializedName("hostTotal")
     @Expose
-    var hostTotal: Int? = null
+    var hostTotal: Double? = null
 
     @SerializedName("taxRate")
     @Expose
