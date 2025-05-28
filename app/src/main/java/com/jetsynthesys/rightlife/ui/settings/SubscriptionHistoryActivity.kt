@@ -3,16 +3,14 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionHistoryBinding
 import com.jetsynthesys.rightlife.ui.settings.adapter.SubscriptionHistoryAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.PurchaseHistoryResponse
 import com.jetsynthesys.rightlife.ui.settings.pojo.Subscription
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -50,31 +48,39 @@ class SubscriptionHistoryActivity : BaseActivity() {
     }
 
     private fun getSubscriptionHistory() {
+        Utils.showLoader(this)
         val call = apiService.getSubscriptionHistory(
             SharedPreferenceManager.getInstance(this).accessToken,
             "PURCHASES"
         )
-        call.enqueue(object : Callback<PurchaseHistoryResponse>{
+        call.enqueue(object : Callback<PurchaseHistoryResponse> {
             override fun onResponse(
                 call: Call<PurchaseHistoryResponse>,
                 response: Response<PurchaseHistoryResponse>
             ) {
+                Utils.dismissLoader(this@SubscriptionHistoryActivity)
                 if (response.isSuccessful && response.body() != null) {
-                    response.body()?.data?.subscriptions?.forEach {  subscription ->
+                    response.body()?.data?.subscriptions?.forEach { subscription ->
                         if (subscription.status == "ACTIVE")
                             activeSubscriptions.add(subscription)
                         else
                             pastSubscriptions.add(subscription)
 
-                        if (pastSubscriptions.isEmpty()){
+                        if (pastSubscriptions.isEmpty()) {
                             binding.rvPastSubscription.visibility = View.GONE
                             binding.cardViewNoPastSubscription.visibility = View.VISIBLE
+                        }
+
+                        if (activeSubscriptions.isEmpty()) {
+                            binding.rvActiveSubscription.visibility = View.GONE
+                            binding.cardViewNoActiveSubscription.visibility = View.VISIBLE
                         }
 
                         activeSubscriptionAdapter.notifyDataSetChanged()
                         pastSubscriptionAdapter.notifyDataSetChanged()
                     }
-                }else{
+                } else {
+                    Utils.dismissLoader(this@SubscriptionHistoryActivity)
                     showToast(response.message())
                 }
             }
@@ -85,6 +91,7 @@ class SubscriptionHistoryActivity : BaseActivity() {
 
         })
     }
+
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }

@@ -32,6 +32,8 @@
             android:textSize="18sp" />
     </LinearLayout>
 
+    <include layout="@layout/loader_layout" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollview"
         android:layout_width="match_parent"
@@ -55,6 +57,35 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/txt_color_journal_date"
                 android:fontFamily="@font/dmsans_bold" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewNoActiveSubscription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:visibility="gone"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="12dp"
+                android:foreground="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/text_color_char_left"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="14sp"
+                        android:text="No Data available in Active Subscription" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvActiveSubscription"

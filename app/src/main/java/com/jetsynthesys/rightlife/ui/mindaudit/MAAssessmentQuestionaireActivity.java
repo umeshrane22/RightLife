@@ -246,14 +246,12 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
-                        Log.d("AAAAA", "Result  = " + jsonString);
-
                         Toast.makeText(MAAssessmentQuestionaireActivity.this, "Submitted successfully", Toast.LENGTH_SHORT).show();
                         finish();
-                        //getAssessmentResult(header);
-                        //SharedPreferenceManager.getInstance(MAAssessmentQuestionaireActivity.this).clearMindAuditRequest();
                         Intent intent = new Intent(MAAssessmentQuestionaireActivity.this, MindAuditResultActivity.class);
+                        intent.putExtra("FROM", "MAAssessment");
                         intent.putExtra("Assessment", header); // pass your string or data
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
 
                     } catch (IOException e) {

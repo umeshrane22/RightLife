@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityMindAuditResultBinding
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -33,16 +35,24 @@ class MindAuditResultActivity : BaseActivity() {
     private var selectedAssessment = "CAS"
     private var emotionsAdapter: EmotionsAdapter? = null
     private var reportId: String? = null
+    private var isFrom: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMindAuditResultBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
 
-        binding.iconBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
         reportId = intent.getStringExtra("REPORT_ID")
+        isFrom = intent.getStringExtra("FROM")
+
+        binding.iconBack.setOnClickListener {
+            onBackPressHandle()
+        }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackPressHandle()
+            }
+        })
 
         binding.btnTakeAssessment.setOnClickListener {
             //startActivity(Intent(this, MindAuditFromActivity::class.java))
@@ -57,7 +67,7 @@ class MindAuditResultActivity : BaseActivity() {
         if (sharedPreferenceManager.userEmotions != null) {
             var userEmotions = sharedPreferenceManager.userEmotions
             getSuggestedAssessment(userEmotions)
-        }else{
+        } else {
             var userEmotions = UserEmotions(userEmotionsString)
             getSuggestedAssessment(userEmotions)
         }
@@ -66,7 +76,7 @@ class MindAuditResultActivity : BaseActivity() {
 
         if (reportId != null) {
             getAssessmentResultWithId(assessmentHeader, reportId!!)
-        }else{
+        } else {
             getAssessmentResult(assessmentHeader)
         }
         binding.tvAssessmentTaken.text = assessmentHeader + " " + "Score"
@@ -85,6 +95,16 @@ class MindAuditResultActivity : BaseActivity() {
         ) { header: String? -> this.showDisclaimerDialog(header) }
         binding.rvSuggestedAssessment.setAdapter(suggestedAssessmentAdapter)
         //binding.rvSuggestedAssessment.scrollToPosition(0)
+    }
+
+    private fun onBackPressHandle() {
+        finish()
+        if (isFrom != null && isFrom?.isNotEmpty() == true) {
+            val intent = Intent(this, HomeDashboardActivity::class.java)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtra("finish_MindAudit", true)
+            startActivity(intent)
+        }
     }
 
     private fun showDisclaimerDialog(header: String?) {
@@ -155,7 +175,11 @@ class MindAuditResultActivity : BaseActivity() {
 
     private fun getAssessmentResultWithId(assessment: String, reportId: String) {
         val call =
-            apiService.getMindAuditAssessmentResultWithId(sharedPreferenceManager.accessToken, assessment, reportId)
+            apiService.getMindAuditAssessmentResultWithId(
+                sharedPreferenceManager.accessToken,
+                assessment,
+                reportId
+            )
         call.enqueue(object : Callback<MindAuditResultResponse?> {
             override fun onResponse(
                 call: Call<MindAuditResultResponse?>,
@@ -508,13 +532,11 @@ class MindAuditResultActivity : BaseActivity() {
         }
 
         for (assessment in suggestedAssessments) {
-            addChip(assessment, false)
+            addChip(assessment, assessment == selectedAssessment)
         }
         if (allAssessments.isNotEmpty()) {
-            addChip("Other", false)
+            addChip("Other")
         }
-
-
 
         suggestedAssessmentString = allAssessments
         suggestedAssessmentAdapter = OtherAssessmentsAdapter(
