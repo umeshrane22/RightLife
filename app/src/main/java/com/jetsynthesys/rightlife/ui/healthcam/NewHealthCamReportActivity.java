@@ -124,6 +124,12 @@ public class NewHealthCamReportActivity extends BaseActivity {
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getMyRLHealthCamResult();
+    }
+
     private void onBackPressHandle() {
         finish();
         if (isFrom != null && !isFrom.isEmpty()) {
