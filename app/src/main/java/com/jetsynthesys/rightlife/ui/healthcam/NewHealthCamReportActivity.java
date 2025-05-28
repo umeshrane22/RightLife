@@ -220,7 +220,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
                 binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
                 binding.recyclerViewVitalCards.setAdapter(adapter);
-                if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
+                if (facialReportResponseNew.data.limit > 0) {  //if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
                     setupScanTracker(scanBinding, facialReportResponseNew.data.usedCount, facialReportResponseNew.data.limit);
                     binding.cardFacescanBooster.setVisibility(View.VISIBLE);
                     binding.scanProgressLayout.scanContainer.setVisibility(View.VISIBLE);
