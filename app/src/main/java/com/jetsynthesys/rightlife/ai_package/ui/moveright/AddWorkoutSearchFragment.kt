@@ -138,7 +138,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             } else if(edit_routine.equals("edit_routine")){
                 navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
             }
-            else {
+            else if (routine.equals("routine"))  {
                 // Send updated workoutListRoutine to AllWorkoutFragment
                 setFragmentResult("workoutListUpdate", Bundle().apply {
                     putParcelableArrayList("workoutList", workoutListRoutine)
@@ -152,6 +152,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 }
                 fragment.arguments = args
                 navigateToFragment(fragment, "CreateRoutineFragment")
+            }
+            else{
+                navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
             }
         }
 
@@ -186,7 +189,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     if (durationMinutes > 0) {
                         val normalizedIntensity = normalizeIntensity(selectedIntensity)
                         val newWorkoutRecord = WorkoutSessionRecord(
-                            userId = "64763fe2fa0e40d9c0bc8264",
+                            userId =  SharedPreferenceManager.getInstance(requireActivity()).userId,
                             activityId = workout._id,
                             durationMin = durationMinutes,
                             intensity = normalizedIntensity,
@@ -601,11 +604,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             }
                             calorieBurnedNew = caloriesResponse.caloriesBurned
                             caloriesText.text = caloriesResponse.caloriesBurned.toInt().toString()
-                            Toast.makeText(
+                           /* Toast.makeText(
                                 requireContext(),
                                 "Calories Burned: ${String.format("%.2f", caloriesResponse.caloriesBurned)} kcal",
                                 Toast.LENGTH_SHORT
-                            ).show()
+                            ).show()*/
                             // Navigate to CreateRoutineFragment if required
                             if (navigateToRoutine) {
                                 navigateToCreateRoutineFragment()
@@ -622,7 +625,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                 )
                             }
                             caloriesText.text = "N/A"
-                            Toast.makeText(requireContext(), "No calories data received", Toast.LENGTH_SHORT).show()
+                           // Toast.makeText(requireContext(), "No calories data received", Toast.LENGTH_SHORT).show()
                             // Navigate even if API response is empty, as lastWorkoutRecord is set
                             if (navigateToRoutine) {
                                 navigateToCreateRoutineFragment()

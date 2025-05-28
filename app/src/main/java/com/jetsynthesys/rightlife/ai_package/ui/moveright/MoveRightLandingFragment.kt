@@ -122,7 +122,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var totalIntakeCalorieText: TextView
     private lateinit var calorieBalanceDescription: TextView
     private lateinit var calorieBalanceMessageTitle : TextView
-
     private lateinit var appPreference: AppPreference
     private lateinit var transparentOverlay : View
     private lateinit var circleIndicator : View
@@ -224,7 +223,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
 
         setupRecyclerView(view)
-        fetchUserWorkouts()
+
 
         moveRightImageBack.setOnClickListener {
             activity?.finish()
@@ -327,6 +326,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         })
         loadStepData()
+        fetchUserWorkouts()
       //  storeHealthData()
 
         syncWithHealthConnectButton.setOnClickListener {
@@ -998,7 +998,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     private fun fetchUserWorkouts() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
@@ -1012,67 +1012,87 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
-                        val hasHeartRateData = it.syncedWorkouts.any { workout -> workout.heartRateData.isNotEmpty() }
-                        if (hasHeartRateData) {
-                            val totalSyncedCalories = it.syncedWorkouts.sumOf { workout -> workout.caloriesBurned.toDoubleOrNull() ?: 0.0 }
-                            val cardItems = it.syncedWorkouts.map { workout ->
-                                val durationMinutes = workout.duration.toIntOrNull() ?: 0
-                                val hours = durationMinutes / 60
-                                val minutes = durationMinutes % 60
-                                val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
-                                val caloriesText = "${workout.caloriesBurned} cal"
-                                val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
-                                    val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
-                                    val count = workout.heartRateData.size
-                                    "${(totalHeartRate / count).toInt()} bpm"
-                                } else "N/A"
-                                workout.heartRateData.forEach { heartRateData ->
-                                    heartRateData.trendData.addAll(listOf(listOf(110, 112, 115, 118, 120, 122, 125).toString()))
-                                }
-                                CardItem(
-                                    title = workout.workoutType,
-                                    duration = durationText,
-                                    caloriesBurned = caloriesText,
-                                    avgHeartRate = avgHeartRate,
-                                    heartRateData = workout.heartRateData,
-                                    heartRateZones = workout.heartRateZones,
-                                    heartRateZoneMinutes = workout.heartRateZoneMinutes,
-                                    heartRateZonePercentages = workout.heartRateZonePercentages
-                                )
+                        // Define default instances for heart rate data
+                        val defaultHeartRateZones = HeartRateZones(
+                            lightZone = emptyList(),
+                            fatBurnZone = emptyList(),
+                            cardioZone = emptyList(),
+                            peakZone = emptyList()
+                        )
+                        val defaultHeartRateZoneMinutes = HeartRateZoneMinutes(
+                            belowLight = 0,
+                            lightZone = 0,
+                            fatBurnZone = 0,
+                            cardioZone = 0,
+                            peakZone = 0
+                        )
+                        val defaultHeartRateZonePercentages = HeartRateZonePercentages(
+                            belowLight = 0f,
+                            lightZone = 0f,
+                            fatBurnZone = 0f,
+                            cardioZone = 0f,
+                            peakZone = 0f
+                        )
+
+
+                        // Map syncedWorkouts to CardItem objects
+                        val syncedCardItems = it.syncedWorkouts.map { workout ->
+                            val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
+                            val durationMinutes = durationDouble.toInt()
+                            val hours = durationMinutes / 60
+                            val minutes = durationMinutes % 60
+                            val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
+                            val caloriesText = "${workout.caloriesBurned} cal"
+                            val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
+                                val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
+                                val count = workout.heartRateData.size
+                                "${(totalHeartRate / count).toInt()} bpm"
+                            } else "N/A"
+                            workout.heartRateData.forEach { heartRateData ->
+                                heartRateData.trendData.addAll(listOf(listOf(110, 112, 115, 118, 120, 122, 125).toString()))
                             }
-//                            val cardItemUnSync = it.unsyncedWorkouts.map { workout ->
-//                                val durationMinutes = workout.duration
-//                                val hours = durationMinutes / 60
-//                                val minutes = durationMinutes % 60
-//                                val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
-//                                val caloriesText = "${workout.calories_burned.toInt()} cal"
-////                                val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
-////                                    val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
-////                                    val count = workout.heartRateData.size
-////                                    "${(totalHeartRate / count).toInt()} bpm"
-////                                } else "N/A"
-////                                workout.heartRateData.forEach { heartRateData ->
-////                                    heartRateData.trendData.addAll(listOf(listOf(110, 112, 115, 118, 120, 122, 125).toString()))
-////                                }
-//                                val heartRateZones: HeartRateZones? = null
-//                                val heartRateZoneMinutes: HeartRateZoneMinutes? = null
-//                                val heartRateZonePercentages: HeartRateZonePercentages? = null
-//                                CardItem(
-//                                    title = workout.workout_type,
-//                                    duration = durationText,
-//                                    caloriesBurned = caloriesText,
-//                                    avgHeartRate = "",
-//                                    heartRateData = emptyList(),
-//                                    heartRateZones = heartRateZones!!,
-//                                    heartRateZoneMinutes = heartRateZoneMinutes!!,
-//                                    heartRateZonePercentages = heartRateZonePercentages!!
-//                                )
-//                            }
-                            withContext(Dispatchers.Main) {
+                            CardItem(
+                                title = workout.workoutType,
+                                duration = durationText,
+                                caloriesBurned = caloriesText,
+                                avgHeartRate = avgHeartRate,
+                                heartRateData = workout.heartRateData,
+                                heartRateZones = workout.heartRateZones ?: defaultHeartRateZones,
+                                heartRateZoneMinutes = workout.heartRateZoneMinutes ?: defaultHeartRateZoneMinutes,
+                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages
+                            )
+                        }
+
+                        // Map unsyncedWorkouts to CardItem objects
+                        val unsyncedCardItems = it.unsyncedWorkouts.map { workout ->
+                            val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
+                            val durationMinutes = durationDouble.toInt()
+                            val hours = durationMinutes / 60
+                            val minutes = durationMinutes % 60
+                            val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
+                            val caloriesDouble = workout.caloriesBurned.toDoubleOrNull() ?: 0.0
+                            val caloriesText = "${caloriesDouble.toInt()} cal"
+                            CardItem(
+                                title = workout.workoutType,
+                                duration = durationText,
+                                caloriesBurned = caloriesText,
+                                avgHeartRate = "N/A",
+                                heartRateData = emptyList(),
+                                heartRateZones = workout.heartRateZones ?: defaultHeartRateZones,
+                                heartRateZoneMinutes = workout.heartRateZoneMinutes ?: defaultHeartRateZoneMinutes,
+                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages
+                            )
+                        }
+
+                        // Combine synced and unsynced CardItems
+                        val allCardItems = syncedCardItems + unsyncedCardItems
+
+                        withContext(Dispatchers.Main) {
+                            if (allCardItems.isNotEmpty()) {
                                 workoutImageIcon.visibility = View.VISIBLE
                                 dataFilledworkout.visibility = View.VISIBLE
                                 nodataWorkout.visibility = View.GONE
-                                val adapter = CarouselAdapter(cardItems) { cardItem, position ->
+                                val adapter = CarouselAdapter(allCardItems) { cardItem, position ->
                                     val fragment = WorkoutAnalyticsFragment().apply {
                                         arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
                                     }
@@ -1082,7 +1102,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         .commit()
                                 }
                                 carouselViewPager.adapter = adapter
-                                addDotsIndicator(cardItems.size)
+                                addDotsIndicator(allCardItems.size)
                                 carouselViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                                     override fun onPageSelected(position: Int) {
                                         updateDots(position)
@@ -1092,18 +1112,16 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     val offset = abs(position)
                                     page.scaleY = 1 - (offset * 0.1f)
                                 }
-                            }
-                        } else {
-                            withContext(Dispatchers.Main) {
+                            } else {
                                 nodataWorkout.visibility = View.VISIBLE
                                 dataFilledworkout.visibility = View.GONE
-                              //  Toast.makeText(requireContext(), "No heart rate data available", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), "No workout data available", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } ?: withContext(Dispatchers.Main) {
                         nodataWorkout.visibility = View.VISIBLE
                         dataFilledworkout.visibility = View.GONE
-                      //  Toast.makeText(requireContext(), "No workout data received", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "No workout data received", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
