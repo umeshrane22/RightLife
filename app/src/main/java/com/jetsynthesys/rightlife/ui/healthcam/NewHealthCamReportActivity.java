@@ -164,7 +164,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
                         Gson gson = new Gson();
                         facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
                         HandleNewReportUI(facialReportResponseNew);
-                        HandleContinueWatchUI(facialReportResponseNew);
+                      //  HandleContinueWatchUI(facialReportResponseNew);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -251,14 +251,14 @@ public class NewHealthCamReportActivity extends BaseActivity {
         binding.txtWellStreak.setText(message);
     }
 
-    private void HandleContinueWatchUI(FacialReportResponseNew facialReportResponseNew) {
+    /*private void HandleContinueWatchUI(FacialReportResponseNew facialReportResponseNew) {
         if (!facialReportResponseNew.data.recommendation.isEmpty()) {
             HealthCamRecommendationAdapter adapter = new HealthCamRecommendationAdapter(this, facialReportResponseNew.data.recommendation);
             LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
             binding.recyclerViewContinue.setAdapter(adapter);
         }
-    }
+    }*/
 
     private void showDisclaimerDialog() {
         // Create the dialog

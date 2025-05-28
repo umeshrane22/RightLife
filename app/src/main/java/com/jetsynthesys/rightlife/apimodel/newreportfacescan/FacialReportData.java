@@ -20,7 +20,7 @@ public class FacialReportData {
     public HealthCamReportByCategory healthCamReportByCategory;
     public UserAnswers userAnswers;
     public List<ScoreComponent> scoreComponents;
-    public List<Recommendation> recommendation;
+    //public List<Recommendation> recommendation;
     public boolean lastCheckin;
     public OverallWellnessScore overallWellnessScore;
     public String summary;

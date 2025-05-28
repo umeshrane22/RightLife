@@ -306,6 +306,7 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
                     billingClient.consumeAsync(consumeParams) { billingResult, _ ->
                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                             Toast.makeText(this, "Consumable purchase successful", Toast.LENGTH_SHORT).show()
+                            Log.d("Billing--", "Consumable purchase successful")
                             //call your method to update UI or backend
                         } else {
                             Toast.makeText(this, "Consume failed: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
