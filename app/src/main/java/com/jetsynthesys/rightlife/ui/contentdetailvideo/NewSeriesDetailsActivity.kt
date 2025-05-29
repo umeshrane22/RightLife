@@ -158,7 +158,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
             setModuleColor(contentResponseObj.data.moduleId)
             binding.category.text = contentResponseObj.data.tags.get(0).name
 
-            if (contentResponseObj.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
+            /*if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
                 val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
 
                 if (videoId != null) {
@@ -171,7 +171,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     //Provide user feedback
                 }
                 contentTypeForTrack = "VIDEO"
-            } else if (contentResponseObj.data.type.equals("AUDIO", ignoreCase = true)) {
+            }else */
+            if (contentResponseObj.data.type.equals("AUDIO", ignoreCase = true)) {
                 // For Audio Player
                 setupMusicPlayer(contentResponseObj)
                 binding.rlPlayerMusicMain.visibility = View.VISIBLE
@@ -185,6 +186,28 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 binding.rlPlayerMusicMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Video"
                 contentTypeForTrack = "VIDEO"
+            }else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
+                if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
+                    val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
+
+                    if (videoId != null) {
+                        Log.e("YouTube", "video ID - call player$videoId")
+                        setupYouTubePlayer(videoId)
+
+                        //getLifecycle().addObserver(binding.youtubevideoPlayer);
+                    } else {
+                        Log.e("YouTube", "Invalid video ID")
+                        //Provide user feedback
+                    }
+                    contentTypeForTrack = "VIDEO"
+                }else {
+                    // For video Player
+                    initializePlayer(contentResponseObj.data.previewUrl)
+                    binding.rlVideoPlayerMain.visibility = View.VISIBLE
+                    binding.rlPlayerMusicMain.visibility = View.GONE
+                    binding.tvHeaderHtw.text = "Video"
+                    contentTypeForTrack = "VIDEO"
+                }
             }
             setReadMoreView(contentResponseObj.data.desc)
 
