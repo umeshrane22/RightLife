@@ -56,6 +56,8 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         // Circular scrolling logic
+        if (items.isEmpty())
+            return;
         CardItem item = items.get(position % items.size());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,9 +65,10 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                 // Start new activity here
 
-                if (item.getCategory().equalsIgnoreCase("daily")) {
+                if (item.getCategory().equalsIgnoreCase("daily") ||
+                        item.getCategory().equalsIgnoreCase("CONTENT")) {
                     Intent intent = new Intent(mContext, ContentDetailsActivity.class);
-                    intent.putExtra("contentId", item.getId());
+                    intent.putExtra("contentId", item.getSeriesId());
                     mContext.startActivity(intent);
                 } else if (item.getCategory().equalsIgnoreCase("live")) {
                     Toast.makeText(mContext, "Live Content", Toast.LENGTH_SHORT).show();
