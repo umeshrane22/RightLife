@@ -8,12 +8,11 @@ import android.widget.Toast
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
-import com.jetsynthesys.rightlife.ui.affirmation.pojo.CreateAffirmationPlaylistRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
+import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -219,7 +218,6 @@ object CommonAPICall {
     }
 
 
-
     data class HeightConversionResult(
         val feetInchText: String,
         val inchIndex: Int,
@@ -250,7 +248,7 @@ object CommonAPICall {
         }
     }
 
-     fun trackEpisodeOrContent(context: Context,episodeTrackRequest: EpisodeTrackRequest) {
+    fun trackEpisodeOrContent(context: Context, episodeTrackRequest: EpisodeTrackRequest) {
         val authToken = SharedPreferenceManager.getInstance(context).accessToken
         val apiService = ApiClient.getClient(context).create(ApiService::class.java)
 
@@ -265,12 +263,9 @@ object CommonAPICall {
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
 
-                if (response.isSuccessful && response.body() != null)
-                {
+                if (response.isSuccessful && response.body() != null) {
                     Log.d("AAAA", "status = " + response.body().toString())
-                }
-                else
-                {
+                } else {
                     Log.d("AAAA", "status = " + response.body().toString())
                 }
             }
@@ -279,6 +274,31 @@ object CommonAPICall {
                 Toast.makeText(context, "Network Error: " + t.message, Toast.LENGTH_SHORT).show()
             }
 
+        })
+    }
+
+    fun updateViewCount(context: Context, viewCountRequest: ViewCountRequest) {
+        val authToken = SharedPreferenceManager.getInstance(context).accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val call = apiService.updateViewCount(authToken, viewCountRequest)
+
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    try {
+                        val jsonString = response.body()!!.string()
+                        Log.d("API_RESPONSE", "View Count content: $jsonString")
+                    } catch (e: IOException) {
+                        throw RuntimeException(e)
+                    }
+                } else {
+                    Log.e("API_ERROR", "Error: " + response.errorBody())
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                Log.e("Failuer", "Error: " + t.message)
+            }
         })
     }
 

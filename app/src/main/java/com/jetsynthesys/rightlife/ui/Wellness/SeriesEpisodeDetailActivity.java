@@ -36,6 +36,7 @@ import com.jetsynthesys.rightlife.databinding.ActivitySeriesepisodeDetailLayoutB
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
+import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
@@ -54,14 +55,40 @@ import retrofit2.Response;
 
 public class SeriesEpisodeDetailActivity extends BaseActivity {
     ActivitySeriesepisodeDetailLayoutBinding binding;
-    private MediaPlayer mediaPlayer;
-    private boolean isPlaying = false; // To track the current state of the player
-    private Handler handler = new Handler();
-    private String contentTypeForTrack = "";
-    private ExoPlayer player;
-    private PlayerView playerView;
     String seriesId = "";
     String episodeId = "";
+    private MediaPlayer mediaPlayer;
+    private boolean isPlaying = false; // To track the current state of the player
+    private final Handler handler = new Handler();
+    // Update progress in SeekBar and Circular Progress Bar
+    private final Runnable updateProgress = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                int totalDuration = mediaPlayer.getDuration();
+
+                // Update seek bar and progress bar
+                binding.seekBar.setProgress(currentPosition);
+                // Update Circular ProgressBar
+                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
+                binding.circularProgressBar.setProgress(progressPercent);
+
+
+                // Update time display
+                String timeFormatted = String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
+                binding.currentTime.setText(timeFormatted);
+
+                // Update every second
+                handler.postDelayed(this, 1000);
+            }
+        }
+    };
+    private final String contentTypeForTrack = "";
+    private ExoPlayer player;
+    private PlayerView playerView;
     private EpisodeDetailContentResponse ContentResponseObj;
 
     @Override
@@ -78,6 +105,10 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         episodeId = getIntent().getStringExtra("episodeId");
         getSeriesDetails(seriesId, episodeId);
 
+        ViewCountRequest viewCountRequest = new ViewCountRequest();
+        viewCountRequest.setId(seriesId);
+        viewCountRequest.setUserId(sharedPreferenceManager.getUserId());
+        CommonAPICall.INSTANCE.updateViewCount(this, viewCountRequest);
 
         // Handle play/pause button click
         binding.playButton.setOnClickListener(v -> {
@@ -129,7 +160,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
                             setContentDetails(ContentResponseObj);
                             setupVideoContent(ContentResponseObj);
                             //getSeriesWithEpisodes(ContentResponseObj.getData().getId());
-                            callContentTracking(ContentResponseObj,"1.0","1.0");
+                            callContentTracking(ContentResponseObj, "1.0", "1.0");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -213,7 +244,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         }
     }
 
-
     private String extractVideoId(String youtubeUrl) {
         try {
             URI uri = new URI(youtubeUrl);
@@ -290,7 +320,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         CommonAPICall.INSTANCE.trackEpisodeOrContent(this, episodeTrackRequest);
     }
 
-
     private void setupYouTubePlayer(String videoId) {
         binding.youtubevideoPlayer.setVisibility(View.VISIBLE);
         binding.youtubevideoPlayer.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
@@ -312,7 +341,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         });
     }
 
-
     // play video
     private void initializePlayer() {
         if (!ContentResponseObj.data.type.equalsIgnoreCase("VIDEO")) {
@@ -328,7 +356,7 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         Uri videoUri = Uri.parse(ContentResponseObj.data.youtubeUrl);// responseObj.getPreviewUrl()
         //MediaItem mediaItem = MediaItem.fromUri(videoUri);
         //player.setMediaItem(mediaItem);
-        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA + ""); //responseObj.getUrl()
+        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA); //responseObj.getUrl()
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(this))
                 .createMediaSource(MediaItem.fromUri(videoUri));
 
@@ -355,7 +383,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
 
     }
-
 
     // Audio content in series // note  -  need to ask why cant we make details response common for all type of content
     private void setupAudioContent(EpisodeDetailContentResponse responseObj) {
@@ -432,7 +459,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         });
     }
 
-
     // set background color of module
     private void setModuleColor(TextView txtDesc, String moduleId) {
         if (moduleId.equalsIgnoreCase("EAT_RIGHT")) {
@@ -449,34 +475,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
             binding.txtDesc.setBackgroundTintList(colorStateList);
         }
     }
-
-    // Update progress in SeekBar and Circular Progress Bar
-    private final Runnable updateProgress = new Runnable() {
-        @Override
-        public void run() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                int currentPosition = mediaPlayer.getCurrentPosition();
-                int totalDuration = mediaPlayer.getDuration();
-
-                // Update seek bar and progress bar
-                binding.seekBar.setProgress(currentPosition);
-                // Update Circular ProgressBar
-                int progressPercent = (int) ((currentPosition / (float) totalDuration) * 100);
-                binding.circularProgressBar.setProgress(progressPercent);
-
-
-                // Update time display
-                String timeFormatted = String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                        TimeUnit.MILLISECONDS.toSeconds(currentPosition) % 60);
-                binding.currentTime.setText(timeFormatted);
-
-                // Update every second
-                handler.postDelayed(this, 1000);
-            }
-        }
-    };
-
 
     @Override
     protected void onStart() {

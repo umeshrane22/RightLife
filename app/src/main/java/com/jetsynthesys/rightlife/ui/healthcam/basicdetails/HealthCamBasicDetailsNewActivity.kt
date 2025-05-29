@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -439,6 +440,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
+        dialogBinding.switchWeightMetric.apply {
+            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
+            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
+        }
 
         // Set up the animation
         val bottomSheetLayout =
@@ -561,7 +566,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
-
+        dialogBinding.switchHeightMetric.apply {
+            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
+            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
+        }
         // Set up the animation
         val bottomSheetLayout =
             bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)

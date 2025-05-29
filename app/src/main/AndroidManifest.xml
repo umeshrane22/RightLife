@@ -201,10 +201,6 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.healthcam.HealthCamBasicDetailsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
