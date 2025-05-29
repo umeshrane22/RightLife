@@ -460,6 +460,11 @@ class ProfileNewActivity : BaseActivity() {
 
         bottomSheetDialog.setContentView(bottomSheetView)
 
+        dialogBinding.switchWeightMetric.apply {
+            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
+            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
+        }
+
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
@@ -579,6 +584,11 @@ class ProfileNewActivity : BaseActivity() {
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
+
+        dialogBinding.switchHeightMetric.apply {
+            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
+            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
+        }
 
         // Set up the animation
         val bottomSheetLayout =

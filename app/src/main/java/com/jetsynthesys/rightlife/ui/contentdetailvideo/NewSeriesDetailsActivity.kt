@@ -30,7 +30,10 @@ import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeDetail.NextEpisode
 import com.jetsynthesys.rightlife.databinding.ActivityNewSeriesDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
+import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
+import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
@@ -70,7 +73,13 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 }
             }
         }
-        binding.icBackDialog.setOnClickListener{
+
+        val viewCountRequest = ViewCountRequest()
+        viewCountRequest.id = seriesId
+        viewCountRequest.userId = sharedPreferenceManager.userId
+        updateViewCount(this, viewCountRequest)
+
+        binding.icBackDialog.setOnClickListener {
             finish()
         }
     }
@@ -105,7 +114,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                             )
                             setcontentDetails(ContentResponseObj)
 
-                        //getSeriesWithEpisodes(ContentResponseObj.getData().getId());
+                            //getSeriesWithEpisodes(ContentResponseObj.getData().getId());
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -130,10 +139,10 @@ class NewSeriesDetailsActivity : BaseActivity() {
     }
 
     private fun setcontentDetails(contentResponseObj: EpisodeDetailContentResponse) {
-        binding.tvContentTitle.setText(contentResponseObj?.data?.title ?: "")
-        binding.tvContentDesc.setText(contentResponseObj?.data?.desc)
-        binding.category.text = contentResponseObj?.data?.tags?.get(0)?.name ?: ""
-        binding.tvTime.setText(contentResponseObj?.data?.meta?.let { formatTimeInMinSec(it.duration) })
+        binding.tvContentTitle.text = contentResponseObj.data?.title ?: ""
+        binding.tvContentDesc.text = contentResponseObj.data?.desc
+        binding.category.text = contentResponseObj.data?.tags?.get(0)?.name ?: ""
+        binding.tvTime.text = contentResponseObj.data?.meta?.let { formatTimeInMinSec(it.duration) }
         if (contentResponseObj != null) {
             //binding.authorName.setText(contentResponseObj.data.artist.get(0).firstName + " " + contentResponseObj.data.artist.get(0).lastName)
 
@@ -141,14 +150,15 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
             Glide.with(applicationContext)
                 .load(
-                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist.firstOrNull()?.profilePicture)
+                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist.firstOrNull()?.profilePicture
+                )
                 .placeholder(R.drawable.profile_man) // Replace with your placeholder image
                 .circleCrop()
                 .into(binding.profileImage)
             setModuleColor(contentResponseObj.data.moduleId)
-            binding.category.setText(contentResponseObj.data.tags.get(0).name)
+            binding.category.text = contentResponseObj.data.tags.get(0).name
 
-            if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
+            if (contentResponseObj.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
                 val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
 
                 if (videoId != null) {
@@ -161,14 +171,14 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     //Provide user feedback
                 }
                 contentTypeForTrack = "VIDEO"
-            }else if (contentResponseObj.data.type.equals("AUDIO", ignoreCase = true)) {
+            } else if (contentResponseObj.data.type.equals("AUDIO", ignoreCase = true)) {
                 // For Audio Player
                 setupMusicPlayer(contentResponseObj)
                 binding.rlPlayerMusicMain.visibility = View.VISIBLE
                 binding.rlVideoPlayerMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Audio"
                 contentTypeForTrack = "AUDIO"
-            }else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
+            } else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
                 // For video Player
                 initializePlayer(contentResponseObj.data.previewUrl)
                 binding.rlVideoPlayerMain.visibility = View.VISIBLE
@@ -178,18 +188,18 @@ class NewSeriesDetailsActivity : BaseActivity() {
             }
             setReadMoreView(contentResponseObj.data.desc)
 
-         /*   binding.imageLikeArticle.setOnClickListener { v ->
-                binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
-                if (contentResponseObj.data.li) {
-                    binding.imageLikeArticle.setImageResource(R.drawable.like)
-                    contentResponseObj.data.like = false
-                    postContentLike(contentResponseObj.data.id, false)
-                } else {
-                    binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
-                    contentResponseObj.data.like = true
-                    postContentLike(contentResponseObj.data.id, true)
-                }
-            }*/
+            /*   binding.imageLikeArticle.setOnClickListener { v ->
+                   binding.imageLikeArticle.setImageResource(R.drawable.like_article_active)
+                   if (contentResponseObj.data.li) {
+                       binding.imageLikeArticle.setImageResource(R.drawable.like)
+                       contentResponseObj.data.like = false
+                       postContentLike(contentResponseObj.data.id, false)
+                   } else {
+                       binding.imageLikeArticle.setImageResource(R.drawable.ic_like_receipe)
+                       contentResponseObj.data.like = true
+                       postContentLike(contentResponseObj.data.id, true)
+                   }
+               }*/
             binding.imageShareArticle.setOnClickListener { shareIntent() }
         }
 
@@ -198,8 +208,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
             val nextEpisode = contentResponseObj.data.nextEpisode
             binding.cardviewEpisodeSingle.visibility = View.VISIBLE
             //binding.txtEpisodesSection.setText("Next Episode" + contentResponseObj.data.episodeNumber)
-            binding.itemText.setText(nextEpisode.title) // Use the same TextView for the title
-            binding.category2.setText(nextEpisode.tags.get(0).name)
+            binding.itemText.text = nextEpisode.title // Use the same TextView for the title
+            binding.category2.text = nextEpisode.tags.get(0).name
             setAuthorname(nextEpisode)
 
             Glide.with(this)
@@ -207,7 +217,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 .into(binding.itemImage) // Use the same ImageView for the thumbnail
             // ... (set other views for the next episode using the same IDs)
 
-            binding.cardviewEpisodeSingle.setOnClickListener(){
+            binding.cardviewEpisodeSingle.setOnClickListener {
                 val intent = Intent(this, NewSeriesDetailsActivity::class.java)
                 intent.putExtra("seriesId", nextEpisode.contentId)
                 intent.putExtra("episodeId", nextEpisode._id)
@@ -219,13 +229,19 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         }
-        callContentTracking(contentResponseObj,"1.0","1.0")
+        callContentTracking(contentResponseObj, "1.0", "1.0")
     }
-    private fun callContentTracking(contentResponseObj: EpisodeDetailContentResponse, duration: String, watchDuration: String) {
+
+    private fun callContentTracking(
+        contentResponseObj: EpisodeDetailContentResponse,
+        duration: String,
+        watchDuration: String
+    ) {
 // article consumed
         val episodeTrackRequest = EpisodeTrackRequest(
-            sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
-            contentResponseObj?.data?._id ?: "", duration, watchDuration, contentTypeForTrack)
+            sharedPreferenceManager.userId, contentResponseObj.data?.moduleId ?: "",
+            contentResponseObj.data?._id ?: "", duration, watchDuration, contentTypeForTrack
+        )
 
         trackEpisodeOrContent(this, episodeTrackRequest)
     }
@@ -256,17 +272,16 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     binding.tvContentDesc.text = desc
                     binding.readToggle.text = "Read Less"
                     binding.imgReadToggle.setImageResource(R.drawable.icon_arrow_article)
-                    binding.imgReadToggle.setRotation(180f) // Rotate by 180 degrees
+                    binding.imgReadToggle.rotation = 180f // Rotate by 180 degrees
                 } else {
                     binding.tvContentDesc.text = shortDescription
                     binding.readToggle.text = "Read More"
                     binding.imgReadToggle.setImageResource(R.drawable.icon_arrow_article)
-                    binding.imgReadToggle.setRotation(360f) // Rotate by 180 degrees
+                    binding.imgReadToggle.rotation = 360f // Rotate by 180 degrees
                 }
             }
         }
     }
-
 
 
     private fun initializePlayer(previewUrl: String) {
@@ -291,16 +306,16 @@ class NewSeriesDetailsActivity : BaseActivity() {
     fun setModuleColor(moduleId: String) {
         if (moduleId.equals("EAT_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.eatright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
         } else if (moduleId.equals("THINK_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
         } else if (moduleId.equals("SLEEP_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
         } else if (moduleId.equals("MOVE_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.moveright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
         }
     }
 
@@ -308,7 +323,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
     // For music player and audio content
     private fun setupMusicPlayer(moduleContentDetail: EpisodeDetailContentResponse) {
         val backgroundImage = findViewById<ImageView>(R.id.backgroundImage)
-        binding.rlPlayerMusicMain.setVisibility(View.VISIBLE)
+        binding.rlPlayerMusicMain.visibility = View.VISIBLE
 
 
         if (moduleContentDetail != null) {
@@ -320,7 +335,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
         //val previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3"
-        val url = ApiClient.CDN_URL_QA + (moduleContentDetail?.data?.previewUrl ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        val url = ApiClient.CDN_URL_QA + (moduleContentDetail.data?.previewUrl
+            ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: $url")
         mediaPlayer = MediaPlayer()
         try {
@@ -332,7 +348,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
         mediaPlayer.setOnPreparedListener(OnPreparedListener { mp: MediaPlayer? ->
             mediaPlayer.start()
-            binding.seekBar.setMax(mediaPlayer.getDuration())
+            binding.seekBar.max = mediaPlayer.duration
             isPlaying = true
             binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
             // Update progress every second
@@ -374,15 +390,15 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
     private val updateProgress: Runnable = object : Runnable {
         override fun run() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                val currentPosition: Int = mediaPlayer.getCurrentPosition()
-                val totalDuration: Int = mediaPlayer.getDuration()
+            if (mediaPlayer != null && mediaPlayer.isPlaying) {
+                val currentPosition: Int = mediaPlayer.currentPosition
+                val totalDuration: Int = mediaPlayer.duration
 
                 // Update seek bar and progress bar
-                binding.seekBar.setProgress(currentPosition)
+                binding.seekBar.progress = currentPosition
                 // Update Circular ProgressBar
                 val progressPercent = ((currentPosition / totalDuration.toFloat()) * 100).toInt()
-                binding.circularProgressBar.setProgress(progressPercent)
+                binding.circularProgressBar.progress = progressPercent
 
 
                 // Update time display
@@ -391,7 +407,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                     TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()),
                     TimeUnit.MILLISECONDS.toSeconds(currentPosition.toLong()) % 60
                 )
-                binding.currentTime.setText(timeFormatted)
+                binding.currentTime.text = timeFormatted
 
                 // Update every second
                 handler.postDelayed(this, 1000)
@@ -400,29 +416,28 @@ class NewSeriesDetailsActivity : BaseActivity() {
     }
 
 
-
-// post like api
-private fun postContentLike(contentId: String, isLike: Boolean) {
-    val request = ArticleLikeRequest(contentId, isLike)
-    // Make the API call
-    val call = apiService.ArticleLikeRequest(sharedPreferenceManager.accessToken, request)
-    call.enqueue(object : Callback<ResponseBody?> {
-        override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-            if (response.isSuccessful && response.body() != null) {
-                val articleLikeResponse = response.body()
-                Log.d("API Response", "Article response: $articleLikeResponse")
-                val gson = Gson()
-                val jsonResponse = gson.toJson(response.body())
-            } else {
-                //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+    // post like api
+    private fun postContentLike(contentId: String, isLike: Boolean) {
+        val request = ArticleLikeRequest(contentId, isLike)
+        // Make the API call
+        val call = apiService.ArticleLikeRequest(sharedPreferenceManager.accessToken, request)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val articleLikeResponse = response.body()
+                    Log.d("API Response", "Article response: $articleLikeResponse")
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-        override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-            handleNoInternetView(t)
-        }
-    })
-}
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
 
     private fun shareIntent() {
         val intent = Intent(Intent.ACTION_SEND)
@@ -485,14 +500,14 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
         })
     }*/
 
-/*    private fun setupListData(contentList: List<Like>) {
-        binding.rlMoreLikeSection.setVisibility(View.VISIBLE)
-        val adapter = RLEditDetailMoreAdapter(this, contentList)
-        val horizontalLayoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.recyclerView.setLayoutManager(horizontalLayoutManager)
-        binding.recyclerView.setAdapter(adapter)
-    }*/
+    /*    private fun setupListData(contentList: List<Like>) {
+            binding.rlMoreLikeSection.setVisibility(View.VISIBLE)
+            val adapter = RLEditDetailMoreAdapter(this, contentList)
+            val horizontalLayoutManager =
+                LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            binding.recyclerView.setLayoutManager(horizontalLayoutManager)
+            binding.recyclerView.setAdapter(adapter)
+        }*/
 
 
     private fun playPlayer() {
@@ -533,7 +548,7 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
             mediaPlayer.release()
         }
         handler.removeCallbacks(updateProgress)
-        Log.d("contentDetails","onDestroyCalled")
+        Log.d("contentDetails", "onDestroyCalled")
     }
 
 
@@ -560,7 +575,7 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
     }
 
     private fun setupYouTubePlayer(videoId: String) {
-        binding.youtubevideoPlayer.setVisibility(View.VISIBLE)
+        binding.youtubevideoPlayer.visibility = View.VISIBLE
         binding.youtubevideoPlayer.addYouTubePlayerListener(object :
             AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
@@ -589,10 +604,10 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
             else -> "$secs sec"
         }
     }
+
     private fun setArtistname(contentResponseObj: EpisodeDetailContentResponse?) {
         //if (binding != null && binding.tvAuthorName != null && contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist != null && !contentResponseObj.data.artist.isEmpty())
-        if (contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist != null)
-        {
+        if (contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist.size > 0) {
             var name = ""
             if (contentResponseObj.data.artist[0].firstName != null) {
                 name = contentResponseObj.data.artist[0].firstName
@@ -601,16 +616,20 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
                 name += (if (name.isEmpty()) "" else " ") + contentResponseObj.data.artist[0].lastName
             }
 
-            binding.tvArtistname.setText(name)
+            binding.tvArtistname.text = name
+            binding.llAuthorMain.setOnClickListener {
+                startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
+                    putExtra("ArtistId", contentResponseObj.data.artist[0]._id)
+                })
+            }
         } else if (binding != null && binding.tvAuthorName != null) {
-            binding.tvArtistname.setText("") // or set some default value
+            binding.tvArtistname.text = "" // or set some default value
         }
     }
 
     private fun setAuthorname(nextEpisode: NextEpisode) {
         //if (binding != null && binding.tvAuthorName != null && contentResponseObj != null && contentResponseObj.data != null && contentResponseObj.data.artist != null && !contentResponseObj.data.artist.isEmpty())
-        if (nextEpisode != null && nextEpisode.artist != null )
-        {
+        if (nextEpisode != null && nextEpisode.artist != null) {
             var name = ""
             if (nextEpisode.artist[0].firstName != null) {
                 name = nextEpisode.artist[0].firstName
@@ -619,9 +638,9 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
                 name += (if (name.isEmpty()) "" else " ") + nextEpisode.artist[0].lastName
             }
 
-            binding.tvArtistname.setText(name)
+            binding.tvArtistname.text = name
         } else if (binding != null && binding.tvAuthorName != null) {
-            binding.tvAuthorName.setText("") // or set some default value
+            binding.tvAuthorName.text = "" // or set some default value
         }
     }
 }
