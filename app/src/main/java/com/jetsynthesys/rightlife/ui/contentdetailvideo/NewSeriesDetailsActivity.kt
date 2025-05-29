@@ -180,13 +180,6 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 binding.tvHeaderHtw.text = "Audio"
                 contentTypeForTrack = "AUDIO"
             } else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
-                // For video Player
-                initializePlayer(contentResponseObj.data.previewUrl)
-                binding.rlVideoPlayerMain.visibility = View.VISIBLE
-                binding.rlPlayerMusicMain.visibility = View.GONE
-                binding.tvHeaderHtw.text = "Video"
-                contentTypeForTrack = "VIDEO"
-            }else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
                 if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
                     val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
 
