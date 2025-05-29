@@ -320,7 +320,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         getMealsLogList(formattedDate)
 
         //Set Tooltip
-       // showTooltipDialog(layoutToolbar)
+        showTooltipDialog(layoutToolbar)
 
         imageCalender.setOnClickListener {
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")

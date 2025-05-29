@@ -100,6 +100,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var tvBurnValue: TextView
     private lateinit var text_activity: TextView
+    private lateinit var weightLossZoneText: TextView
     private lateinit var lightZoneBelow: TextView
     private lateinit var lightZoneHighl: TextView
     private lateinit var fatLossHighl: TextView
@@ -179,6 +180,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         calorie_layout_data_filled = view.findViewById(R.id.calorie_layout_data_filled)
         text_no_data_activity_factor = view.findViewById(R.id.text_no_data_activity_factor)
         line_graph = view.findViewById(R.id.line_graph)
+        weightLossZoneText = view.findViewById(R.id.weightLossZoneText)
         lightZoneBelow = view.findViewById(R.id.lightZoneBelow)
         lightZoneHighl = view.findViewById(R.id.lightZoneHigh)
         fatLossHighl = view.findViewById(R.id.fatLossHigh)
@@ -466,9 +468,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                         constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
                                         constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
                                         constraintSet.applyTo(progressBarLayout)
+                                        val burnedTarget = it.data.calorieBalance.calorieBurnTarget ?: 0.0
+                                        val rangeStart = it.data.calorieBalance.calorieRange.getOrNull(0) ?: 0.0
+                                       // transparentOverlay = view?.findViewById(R.id.transparentOverlay)
+                                        transparentOverlay.let { overlay ->
+                                            // Use the progressBarLayout width to calculate proportional widths
+                                            val parentWidth = progressBarLayout.width
+                                            val isWeightGainZone = burnedTarget < rangeStart
+                                            val overlayWidth = if (isWeightGainZone) {
+                                                weightLossZoneText.text = "Weight Gain Zone"
+                                                (parentWidth * 0.4).toInt() // 40% of parent width for Weight Gain Zone
+                                            } else {
+                                                weightLossZoneText.text = "Weight Loss Zone"
+                                                (parentWidth * 0.2).toInt() // 20% of parent width for Weight Loss Zone
+                                            }
+                                            // Update the layout params to set the new width
+                                            val layoutParams = overlay.layoutParams
+                                            layoutParams.width = overlayWidth
+                                            overlay.layoutParams = layoutParams
+                                            overlay.visibility = View.VISIBLE // Ensure overlay is visible
+                                        }
                                     }
                                 })
                             }
+
                             val heartRateZones = it.data.heartRateZones
                             val errorMessages = mutableListOf<String>()
                             if (activityFactorData.isEmpty() || activityFactorData.all { it == 0f }) {
