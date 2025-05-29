@@ -68,9 +68,17 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
                 receivedProductType = "BOOSTER"
                 setupBillingClient()
             } else {
-                intent.putExtra("PRODUCT_TYPE", "SUBSCRIPTION") // Replace "your_specific_product_id"
-                receivedProductType = "SUBSCRIPTION"
-                setupBillingClient()
+                if (plan.status.equals("ACTIVE", ignoreCase = true)) {
+                    showToast("This plan is currently active.")
+                    return@SubscriptionPlanAdapter
+                }else {
+                    intent.putExtra(
+                        "PRODUCT_TYPE",
+                        "SUBSCRIPTION"
+                    ) // Replace "your_specific_product_id"
+                    receivedProductType = "SUBSCRIPTION"
+                    setupBillingClient()
+                }
             }
             //startActivity(intent)
 
@@ -92,7 +100,7 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
             binding.continueButton.visibility = View.GONE
         } else {
             binding.cancelButton.visibility = View.VISIBLE
-            binding.continueButton.visibility = View.VISIBLE
+            binding.continueButton.visibility = View.GONE
         }
     }
     private fun openPlayStoreSubscriptionPage() {

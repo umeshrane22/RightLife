@@ -1,42 +1,177 @@
 {
   "project_info": {
-    "project_number": "271466259719",
-    "project_id": "newrightlifepackageqa",
-    "storage_bucket": "newrightlifepackageqa.firebasestorage.app"
+    "project_number": "788352496395",
+    "project_id": "rightlife-qa",
+    "storage_bucket": "rightlife-qa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:271466259719:android:98e9d4e615866ba81b91a2",
+        "mobilesdk_app_id": "1:788352496395:android:18870da9cafca67d57a80e",
         "android_client_info": {
           "package_name": "com.jetsynthesys.rightlife.qa"
         }
       },
       "oauth_client": [
         {
-          "client_id": "271466259719-s9r8egsqiqt9rqqr9ko24ug3t45ini88.apps.googleusercontent.com",
+          "client_id": "788352496395-3u4qad86pj94059kqrespjhqm2gd92np.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.jetsynthesys.rightlife.qa",
-            "certificate_hash": "35af4d5827684e2ea957e8a99904576c3bdcbe90"
+            "certificate_hash": "848ef45f3a9f0bde9e41f38d3589e3290bed45ba"
           }
         },
         {
-          "client_id": "271466259719-2mkh0kqpm6a65pbqhl4qo7i6uju0u7ck.apps.googleusercontent.com",
+          "client_id": "788352496395-5nt3eng3tk246cm9uuv650tef1fl567b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "1c82c9eb87c877a709b464fab4dfdd565cbaa704"
+          }
+        },
+        {
+          "client_id": "788352496395-6ge3hvhd9djskskntj7supejks7cvlsl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "7ba2b86146cf2b5b09bdba46a0993cc0447aff6e"
+          }
+        },
+        {
+          "client_id": "788352496395-722ce2gi7050784i4crqtfgev84mgal0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "d4437ec346a1122654f9ee2ae9658303163ccc4e"
+          }
+        },
+        {
+          "client_id": "788352496395-8em11h0vnhkmt12vjub45vfs4k06m58a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "257a1eff90366fe86f3b93ecadf4a5a6e94726d1"
+          }
+        },
+        {
+          "client_id": "788352496395-b338b609d1e1dee82c7vlisag927rfn3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "6ac1b0ba4a8d003eab456783050433b38b6f44fb"
+          }
+        },
+        {
+          "client_id": "788352496395-cl2geo0ki0dvh72ultrtcedbbu1q2o1u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "ec15b4148691616cf146a3ea509df19c72666041"
+          }
+        },
+        {
+          "client_id": "788352496395-g9pei1ebb6uknmecgn8f5hi4r8l225sd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "63b4b2ebf0a14c2ddee0e23464d53e832150ef14"
+          }
+        },
+        {
+          "client_id": "788352496395-jit9usbum0p5hllpsrbrg9ehkn2g3o1f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "8e534a90a35ade0f097e894dfd9c3d7f3d832a67"
+          }
+        },
+        {
+          "client_id": "788352496395-k2tr28ijk2fb414ho1vvm9eta2o83fde.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "f7897c812f48440abd28f299238e03bc59d06613"
+          }
+        },
+        {
+          "client_id": "788352496395-lha3toknseh2not92bee2vv15lkp1t80.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "8306520586eb7b4537556af276765ba0bc61a8bc"
+          }
+        },
+        {
+          "client_id": "788352496395-os4id772rkl6kmi1jel1espauouqupnc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "0e385b2495a1996b1b57db85a4f397e0f42ba127"
+          }
+        },
+        {
+          "client_id": "788352496395-p4oh3ka42d6ao4s3rdvkg8bf08geks2l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "29d43417b8a8c207bc279d97b702e5e6f787d9c8"
+          }
+        },
+        {
+          "client_id": "788352496395-qresqp45o9149nuarfl04r20onp9i8ld.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "f2866dbe0983d5744829130d7b1cffbbbdb39956"
+          }
+        },
+        {
+          "client_id": "788352496395-s3l9mrc7ohgoqbvc2am95tsddq7m98cu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "1d4a2a162f4b242f46e19c38034210324f09ab8c"
+          }
+        },
+        {
+          "client_id": "788352496395-uc5j3hncqesakaitgprighcg2n8pne48.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "b19480c63f58110e09e778387cfbcb2f53bef4b6"
+          }
+        },
+        {
+          "client_id": "788352496395-up8f61i6214tcasp8n33l1t7rijefsba.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife.qa",
+            "certificate_hash": "edd304f3dfa2619a4abfffef0d1a88ab045da08e"
+          }
+        },
+        {
+          "client_id": "788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAbh-dqll-vAY_O0t2iVhWstKm_WzFoDPM"
+          "current_key": "AIzaSyB0AuoX-W6XzrpNMxfRd0YQS1KOnMwRogA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "271466259719-2mkh0kqpm6a65pbqhl4qo7i6uju0u7ck.apps.googleusercontent.com",
+              "client_id": "788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "788352496395-2fue9ik3p8vpv32130lho21rfivgm92t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterMessagingSample"
+              }
             }
           ]
         }
