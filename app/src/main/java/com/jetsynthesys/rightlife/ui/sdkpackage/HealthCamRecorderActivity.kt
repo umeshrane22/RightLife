@@ -83,6 +83,8 @@ class HealthCamRecorderActivity : BaseActivity() {
         USER_PROFILE_GENDER = intent.getStringExtra("USER_PROFILE_GENDER").toString()
 
 
+
+
         exampleStartViewModel.readyToMeasure.observe(this) { handleTokenVerified(it) }
         exampleStartViewModel.error.observe(this) { handleError(it) }
 

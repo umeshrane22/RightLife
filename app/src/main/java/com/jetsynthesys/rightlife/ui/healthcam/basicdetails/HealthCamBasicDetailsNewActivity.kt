@@ -225,7 +225,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 val heightInCms = if (heightWithUnit.size == 2)
                     heightWithUnit[0]
                 else
-                    "${heightWithUnit[0]}.${heightWithUnit[2]}"
+                    CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
 
 
                 val weightInKg =
@@ -233,7 +233,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                             "kgs",
                             ignoreCase = true
                         )
-                    ) weightWithUnit[0] else ConversionUtils.convertLbsToKgs(
+                    ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
                         weightWithUnit[0]
                     )
 

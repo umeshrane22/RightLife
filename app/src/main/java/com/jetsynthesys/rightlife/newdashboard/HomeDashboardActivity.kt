@@ -54,7 +54,6 @@ import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
-import com.jetsynthesys.rightlife.subsciptions.BillingActivity
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -131,7 +130,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         //handle bottom menu
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
-            DialogUtils.showCheckListQuestionCommonDialog(this,"Why Checklist?")
+            DialogUtils.showCheckListQuestionCommonDialog(this, "Why Checklist?")
             /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
                 //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 //putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
@@ -238,9 +237,13 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
             Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
-                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-            })
+            startActivity(
+                Intent(
+                    this@HomeDashboardActivity,
+                    SubscriptionPlanListActivity::class.java
+                ).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
         }
 
 
@@ -519,8 +522,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                     val ResponseObj = gson.fromJson(
                         jsonResponse, UserProfileResponse::class.java
                     )
-                    SharedPreferenceManager.getInstance(applicationContext).saveUserId(ResponseObj.userdata.id)
-                    SharedPreferenceManager.getInstance(applicationContext).saveUserProfile(ResponseObj)
+                    SharedPreferenceManager.getInstance(applicationContext)
+                        .saveUserId(ResponseObj.userdata.id)
+                    SharedPreferenceManager.getInstance(applicationContext)
+                        .saveUserProfile(ResponseObj)
 
 
                     if (ResponseObj.userdata.profilePicture != null) {
@@ -540,7 +545,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                     } else {
                         binding.llCountDown.visibility = View.GONE
-                        if(!DashboardChecklistManager.paymentStatus){
+                        if (!DashboardChecklistManager.paymentStatus) {
                             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                         }
                     }
@@ -752,7 +757,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
 
                         binding.halfCurveProgressBar.setProgress(0f)
-                        binding.halfCurveProgressBar.setValues(0,0)
+                        binding.halfCurveProgressBar.setValues(0, 0)
                         // value is wrong for eatright progress let backend correct then uncomment below
                         /*val (curent, max) = extractNumericValues(module.calories.toString())
                             binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
@@ -1236,6 +1241,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         dialogBinding.btnExplorePlan.setOnClickListener {
             bottomSheetDialog.dismiss()
+            startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+            })
             //finish()
         }
 
