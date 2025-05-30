@@ -80,6 +80,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var workoutHistoryResponse: WorkoutHistoryResponse? = null
     private var workoutLogHistory: ArrayList<WorkoutRecord> = ArrayList()
     private var loadingOverlay: FrameLayout? = null
+    private var activityList: ArrayList<ActivityModel> = ArrayList() // Moved to class-level
 
     private val handler = Handler(Looper.getMainLooper())
     private var tooltipRunnable1: Runnable? = null
@@ -232,8 +233,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         btnLogMeal.setOnClickListener {
             val fragment = CreateRoutineFragment()
-            val args = Bundle()
+            val args = Bundle().apply {
+                putParcelableArrayList("ACTIVITY_LIST", activityList)
+            }
             fragment.arguments = args
+            Log.d("YourActivityFragment", "Sending ${activityList.size} activities to CreateRoutineFragment")
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "CreateRoutineFragment")
                 addToBackStack("CreateRoutineFragment")
@@ -306,8 +310,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     val caloriesResponse = response.body()
                     Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
-                    val activityList = ArrayList<ActivityModel>()
-                    activityList.clear()
+                    activityList.clear() // Clear existing list
 
                     caloriesResponse?.data?.forEachIndexed { index, workout ->
                         Log.d("FetchCalories", "Workout $index - ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}")
@@ -323,6 +326,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         )
 
                         activityList.add(activity)
+                        withContext(Dispatchers.Main) {
+                            btnLogMeal.isEnabled = true
+                        }
                     }
 
                     withContext(Dispatchers.Main) {
@@ -450,69 +456,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
         }, 3000)
-    }
-
-    private fun updateCalorieRecord() {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                if (isAdded && view != null) {
-                    requireActivity().runOnUiThread {
-                        showLoader(requireView())
-                    }
-                }
-                val calorieId: String = "67e0f84505b80d8823623e27"
-                val request = UpdateCalorieRequest(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    activity = "Cricket",
-                    durationMin = 60,
-                    intensity = "High",
-                    activityFactor = 1.2,
-                    sessions = 1
-                )
-
-                val response: Response<UpdateCalorieResponse> = ApiClient.apiServiceFastApi.updateCalorie(
-                    calorieId = calorieId,
-                    request = request
-                )
-
-                if (response.isSuccessful) {
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val updateResponse: UpdateCalorieResponse? = response.body()
-                    if (updateResponse != null) {
-                        withContext(Dispatchers.Main) {
-                            Log.d("UpdateCalorie", "Success: ${updateResponse.message}")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Log.e("UpdateCalorie", "Response body is null")
-                        }
-                    }
-                } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error details"
-                    withContext(Dispatchers.Main) {
-                        Log.e("UpdateCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
-                        if (isAdded && view != null) {
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("UpdateCalorie", "Exception: ${e.message}", e)
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun onWorkoutItemClick(workoutModel: ActivityModel, position: Int, isRefresh: Boolean) {

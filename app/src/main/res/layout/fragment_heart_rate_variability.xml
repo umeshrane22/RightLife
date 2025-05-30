@@ -303,7 +303,7 @@
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
                                     android:layout_marginStart="3dp"
-                                    android:src="@drawable/active_heartrate_icon"
+                                    android:src="@drawable/heart_rate_variability"
                                     />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>

@@ -244,24 +244,24 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
     /** Update BarChart with new data */
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = ContextCompat.getColor(requireContext(),R.color.moveright)
-        dataSet.valueTextColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
-        if (entries.size > 7){
+        if (entries.size > 7) {
             dataSet.setDrawValues(false)
-        }else{
+        } else {
             dataSet.setDrawValues(true)
         }
         dataSet.barShadowColor = Color.TRANSPARENT
-        dataSet.highLightColor = ContextCompat.getColor(requireContext(),R.color.light_orange)
+        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
-    //    barChart.renderer = CurvedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-//        val parts = label.split("\n")
-//        val day = parts.getOrNull(0) ?: ""
-//        val date = parts.getOrNull(1) ?: ""
+        // barChart.renderer = CurvedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+        // val parts = label.split("\n")
+        // val day = parts.getOrNull(0) ?: ""
+        // val date = parts.getOrNull(1) ?: ""
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
         xAxis.position = XAxis.XAxisPosition.BOTTOM
@@ -269,16 +269,17 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         xAxis.granularity = 1f
         xAxis.labelCount = labels.size
         xAxis.setDrawLabels(true)
-      //  xAxis.labelRotationAngle = -45f
+        // xAxis.labelRotationAngle = -45f
         xAxis.labelRotationAngle = 0f // optional, for vertical display
         xAxis.setDrawGridLines(false)
-        xAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         xAxis.yOffset = 15f // Move labels down
-     //   barChart.extraBottomOffset = 15f // Adjust as needed
+        // barChart.extraBottomOffset = 15f // Adjust as needed
         val leftYAxis: YAxis = barChart.axisLeft
         leftYAxis.textSize = 12f
-        leftYAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+        leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
+        leftYAxis.setAxisMinimum(0f) // Ensure Y-axis starts at 0 for positive values
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
         barChart.setExtraOffsets(0f, 0f, 0f, 0f)

@@ -104,18 +104,28 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
 
                     val workoutList = ArrayList<WorkoutRoutineItem>()
                     routineResponse?.routines?.forEach { plan ->
-                        plan.workouts.forEach { exercise ->
+                        if (plan.workouts.isNotEmpty()) {
+                            // Merge workouts
+                            val mergedActivityName = plan.workouts.joinToString(" | ") { it.activityName }
+                            val totalDurationMin = plan.workouts.sumOf { it.durationMin }.toInt()
+                            val totalCaloriesBurned = plan.workouts.sumOf { it.caloriesBurned }
+                            val firstIntensity = plan.workouts.first().intensity
+                            val firstActivityId = plan.workouts.first().activityId
+
                             val workoutItem = WorkoutRoutineItem(
                                 routineId = plan.routineId,
                                 routineName = plan.routineName,
-                                activityName = exercise.activityName,
-                                duration = "${exercise.durationMin.toInt()} min",
-                                caloriesBurned = String.format("%.1f", exercise.caloriesBurned),
-                                intensity = exercise.intensity,
-                                activityId = exercise.activityId,
+                                activityName = mergedActivityName,
+                                duration = "$totalDurationMin min",
+                                caloriesBurned = String.format("%.1f", totalCaloriesBurned),
+                                intensity = firstIntensity,
+                                activityId = firstActivityId, // Using first workout's activityId
                                 userId = userId
                             )
                             workoutList.add(workoutItem)
+                            Log.d("FetchRoutines", "Merged routine ${plan.routineName}: activities=$mergedActivityName, duration=$totalDurationMin min, calories=${totalCaloriesBurned}, intensity=$firstIntensity")
+                        } else {
+                            Log.d("FetchRoutines", "Routine ${plan.routineName} has no workouts, skipping")
                         }
                     }
 
@@ -124,10 +134,10 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
                             if (workoutList.isNotEmpty()) {
                                 myRoutineRecyclerView.visibility = View.VISIBLE
                                 myRoutineListAdapter.addAll(workoutList, -1, null, false)
-                                Log.d("FetchRoutines", "Displaying ${workoutList.size} workouts")
+                                Log.d("FetchRoutines", "Displaying ${workoutList.size} merged routines")
                             } else {
                                 myRoutineRecyclerView.visibility = View.GONE
-                                Log.d("FetchRoutines", "No workouts to display")
+                                Log.d("FetchRoutines", "No routines to display")
                             }
                         }
                     }
