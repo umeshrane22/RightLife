@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -41,6 +43,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
@@ -48,6 +51,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegment
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
+import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
@@ -108,6 +112,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         // Set default fragment
         loadFragment(HomeFragment())
+
+        //getLatestVersion()
 
         //set report list dummy for demo
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
@@ -468,6 +474,15 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
+    }
+
+    private fun getLatestVersion() {
+        val currentVersion = BuildConfig.VERSION_NAME
+
+        /*** write here the code to get latest version from API
+         *
+          */
+        showForceUpdateDialog()
     }
 
     override fun onResume() {
@@ -1248,5 +1263,34 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         }
 
         bottomSheetDialog.show()
+    }
+
+    private fun showForceUpdateDialog(){
+
+        // Create the dialog
+        val dialog = Dialog(this)
+        val binding = DialogForceUpdateBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.setCancelable(false) // Prevent back press
+        dialog.setCanceledOnTouchOutside(false) // Prevent outside tap
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val window = dialog.window
+        window?.let {
+            val layoutParams = it.attributes
+            layoutParams.dimAmount = 0.7f
+            it.attributes = layoutParams
+        }
+
+        binding.btnUpdate.setOnClickListener {
+            startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${packageName}"))
+            )
+            finish()
+        }
+
+        dialog.show()
+
     }
 }

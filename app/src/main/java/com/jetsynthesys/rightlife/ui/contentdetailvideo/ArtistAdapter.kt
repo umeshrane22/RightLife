@@ -27,7 +27,7 @@ class ArtistAdapter(
         val artist = artists[position]
         holder.binding.tvArtistname.text = artist.firstName
 
-        val profileUrl = if (artist.profilePicture.startsWith("http")) {
+        val profileUrl = if (artist.profilePicture != null && artist.profilePicture.startsWith("http")) {
             artist.profilePicture
         } else {
             ApiClient.CDN_URL_QA + artist.profilePicture
