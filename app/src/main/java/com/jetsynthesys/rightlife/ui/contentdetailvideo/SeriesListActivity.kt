@@ -26,6 +26,7 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall.updateViewCount
 import com.jetsynthesys.rightlife.ui.Wellness.SeriesListAdapter
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.Episode
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.model.SeriesResponse
+import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
@@ -136,6 +137,11 @@ class SeriesListActivity : BaseActivity() {
                     .placeholder(R.drawable.profile_man) // Replace with your placeholder image
                     .circleCrop()
                     .into(binding.profileImage)
+                binding.authorName.setOnClickListener {
+                    startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
+                        putExtra("ArtistId", artistList[0].id)
+                    })
+                }
             }
 
             Glide.with(applicationContext)
@@ -362,7 +368,12 @@ class SeriesListActivity : BaseActivity() {
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerArtists.layoutManager = layoutManager
         val adapter =
-            seriesResponseModel?.data?.let { ArtistAdapter(it.artist) } // artistList is List<Artist>
+            seriesResponseModel?.data?.let {
+                ArtistAdapter(
+                    this,
+                    it.artist
+                )
+            } // artistList is List<Artist>
         binding.recyclerArtists.adapter = adapter
     }
 

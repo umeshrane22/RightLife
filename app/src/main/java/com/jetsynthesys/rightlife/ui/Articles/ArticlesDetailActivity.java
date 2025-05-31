@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -193,13 +192,21 @@ public class ArticlesDetailActivity extends BaseActivity {
     private void handleArticleResponseData(ArticleDetailsResponse articleDetailsResponse) {
 
         binding.tvHeaderArticle.setText(articleDetailsResponse.getData().getTitle());
-        Artist artist = articleDetailsResponse.getData().getArtist().get(0);
-        binding.tvAuthorName.setText(String.format("%s %s", artist.getFirstName(), artist.getLastName()));
-        binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
+        if (!articleDetailsResponse.getData().getArtist().isEmpty()) {
+            Artist artist = articleDetailsResponse.getData().getArtist().get(0);
+            binding.tvAuthorName.setText(String.format("%s %s", artist.getFirstName(), artist.getLastName()));
+            binding.tvAuthorName.setOnClickListener(view -> {
+                Intent intent = new Intent(this, ArticlesDetailActivity.class);
+                intent.putExtra("ArtistId", artist.getId());
+                startActivity(intent);
+            });
 
-        Glide.with(this).load(ApiClient.CDN_URL_QA + artist.getProfilePicture())
-                .transform(new RoundedCorners(25))
-                .into(binding.authorImage);
+            if (!this.isFinishing() && !this.isDestroyed())
+                Glide.with(this).load(ApiClient.CDN_URL_QA + artist.getProfilePicture())
+                        .transform(new RoundedCorners(25))
+                        .into(binding.authorImage);
+        }
+        binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
         binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
         setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
         binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime() + " min read");

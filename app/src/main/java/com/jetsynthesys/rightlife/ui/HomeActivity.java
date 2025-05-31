@@ -1216,7 +1216,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     String jsonResponse = gson.toJson(response.body());
 
                     LiveEventResponse ResponseObj = gson.fromJson(jsonResponse, LiveEventResponse.class);
-                    Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().getEvents().get(0).getEventType());
                     setupLiveEvent(ResponseObj);
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
