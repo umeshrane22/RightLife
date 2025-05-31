@@ -1417,16 +1417,16 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             intent.putExtra("Categorytype", moveRightSubmodule.get(0).getCategoryId());
             intent.putExtra("moduleId", moveRightSubmodule.get(0).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_moveright_categor2 && moveRightSubmodule.size() > 1) {
+        } else if (viewId == R.id.ll_moveright_categor2 && moveRightSubmodule.size() > 2) {
 
-            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", moveRightSubmodule.get(1).getCategoryId());
-            intent.putExtra("moduleId", moveRightSubmodule.get(1).getModuleId());
-            startActivity(intent);
-        } else if (viewId == R.id.ll_moveright_category3 && moveRightSubmodule.size() > 2) {
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
             intent.putExtra("Categorytype", moveRightSubmodule.get(2).getCategoryId());
             intent.putExtra("moduleId", moveRightSubmodule.get(2).getModuleId());
+            startActivity(intent);
+        } else if (viewId == R.id.ll_moveright_category3 && moveRightSubmodule.size() > 2) {
+            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+            intent.putExtra("Categorytype", moveRightSubmodule.get(1).getCategoryId());
+            intent.putExtra("moduleId", moveRightSubmodule.get(1).getModuleId());
             startActivity(intent);
 
         } else if (viewId == R.id.ll_eatright_category1 && !eatRightSubmodule.isEmpty()) {
