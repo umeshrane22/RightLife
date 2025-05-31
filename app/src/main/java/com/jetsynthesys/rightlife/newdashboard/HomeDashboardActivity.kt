@@ -54,6 +54,7 @@ import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
+import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -397,6 +398,23 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 })
             }
         }
+        binding.cardSleepMainIdeal.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+        binding.cardSleepMainLog.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+
 
         // for no data card
         binding.cardThinkrightMainNodata.setOnClickListener {
@@ -783,41 +801,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         if (isSelected == true) {
                             binding.cardSleeprightMain.visibility = View.VISIBLE
                             binding.cardSleepright.visibility = View.GONE
+                            checkTimeAndSetVisibility(module)
                         }
-                        binding.tvRem.text = module.rem.toString()
-                        binding.tvCore.text = module.core.toString()
-                        binding.tvDeep.text = module.deep.toString()
-                        binding.tvAwake.text = module.awake.toString()
-                        binding.tvSleepTime.text = module.sleepTime.toString()
-                        binding.tvWakeupTime.text = module.wakeUpTime.toString()
 
-                        val sleepData = listOf(
-                            SleepSegmentModel(
-                                0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
-                            ), SleepSegmentModel(
-                                0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
-                            ), SleepSegmentModel(
-                                0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
-                            )
-                        )
-
-                        binding.sleepStagesView.setSleepData(sleepData)
 
                         setIfNotNullOrBlank(
                             binding.tvModuleValueEatright,
@@ -1249,4 +1235,89 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         bottomSheetDialog.show()
     }
+// new sleep time implementation
+private fun checkTimeAndSetVisibility(module: UpdatedModule) {
+    val calendar = Calendar.getInstance()
+    val currentHour = calendar.get(Calendar.HOUR_OF_DAY) // Get hour in 24-hour format (0-23)
+
+    // Check if currentHour is between 18 (6 PM) and 1 (1 AM)
+    // OR if currentHour is 0 (12 AM) or 1 (1 AM) or 2 (2 AM) for the next day
+    val isVisible = (currentHour >= 18 && currentHour <= 23) || // 6 PM to 11 PM
+            (currentHour >= 0 && currentHour <= 2)      // 12 AM (midnight) to 2 AM
+
+    if (isVisible) {
+        binding.cardSleepMainIdeal.visibility = View.VISIBLE
+
+        binding.tvTodaysSleepStartTime.text = module.sleepTime ?: "00:00"
+        binding.tvTodaysWakeupTime.text = module.wakeUpTime ?: "00:00"
+        binding.tvTodaysSleepTimeRequirement.text = module.sleepDuration ?: "0min"
+
+        binding.cardSleepMainLog.visibility = View.GONE
+        binding.cardSleeprightMain.visibility = View.GONE
+    } else {
+        try {
+            // Check if all specified sleep-related fields are "0min"
+            val isAllZero = module.rem == "0min" &&
+                    module.core == "0min" &&
+                    module.deep == "0min" &&
+                    module.awake == "0min"
+
+
+            if (isAllZero) {
+                binding.cardSleepMainIdeal.visibility = View.GONE
+                binding.cardSleepMainLog.visibility = View.VISIBLE
+                binding.cardSleeprightMain.visibility = View.GONE
+                // sleeo log card is visible, you can show a message or prompt the user to log their sleep
+                binding.tvPerformSleepDuration.text = module.sleepDuration ?: "0min"
+                binding.tvPerformIdealDuration.text = module.sleepDuration ?: "0min"
+                binding.tvPerformSleepPercent.text = module.sleepDuration ?: "0"
+            } else {
+                // sleep data available  // For example, update your UI elements with sleepData.rem, sleepData.core, etc.
+                binding.cardSleepMainIdeal.visibility = View.GONE
+                binding.cardSleepMainLog.visibility = View.GONE
+                    // Update UI elements here
+                binding.cardSleeprightMain.visibility = View.VISIBLE
+                binding.tvRem.text = module.rem.toString()
+                binding.tvCore.text = module.core.toString()
+                binding.tvDeep.text = module.deep.toString()
+                binding.tvAwake.text = module.awake.toString()
+                binding.tvSleepTime.text = module.sleepTime.toString()
+                binding.tvWakeupTime.text = module.wakeUpTime.toString()
+
+                val sleepData = listOf(
+                    SleepSegmentModel(
+                        0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
+                    ), SleepSegmentModel(
+                        0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
+                    ), SleepSegmentModel(
+                        0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
+                    )
+                )
+
+                binding.sleepStagesView.setSleepData(sleepData)
+            }
+        } catch (e: Exception) {
+            // Handle JSON parsing errors (e.g., malformed JSON)
+            Toast.makeText(this, "Error parsing sleep data: ${e.message}", Toast.LENGTH_LONG).show()
+            e.printStackTrace() // Log the error for debugging
+        }
+
+    }
+}
 }
