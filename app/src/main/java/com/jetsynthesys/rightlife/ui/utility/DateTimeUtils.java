@@ -2,6 +2,10 @@ package com.jetsynthesys.rightlife.ui.utility;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -96,4 +100,19 @@ public class DateTimeUtils {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd | hh:mm a", Locale.ENGLISH);
         return dateFormat.format(new Date());
     }
+
+    public static String getLocalTime12HourFormat(String utcTimestamp) {
+        Instant instant = Instant.parse(utcTimestamp);
+        ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+        return zonedDateTime.format(formatter);
+    }
+
+    public static String formatSleepDuration(double hours) {
+        int hr = (int) hours;
+        int mins = (int) Math.round((hours - hr) * 60);
+        return hr + " hr " + mins + " mins";
+    }
+
 }

@@ -840,10 +840,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             aiDashboardResponseMain.data.updatedModules.find { it.moduleId == "SLEEP_RIGHT" }
                         sleepModule?.let {
                             setStageGraphFromSleepRightModule(
-                                rem = it.rem ?: "0min",
-                                core = it.core ?: "0min",
-                                deep = it.deep ?: "0min",
-                                awake = it.awake ?: "0min"
+                                rem = (it.rem ?: "0min").toString(),
+                                core = (it.core ?: "0min").toString(),
+                                deep = (it.deep ?: "0min").toString(),
+                                awake = (it.awake ?: "0min").toString()
                             )
                         }
                     }
@@ -1265,17 +1265,17 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
 
         binding.tvTodaysSleepStartTime.text = module.sleepTime ?: "00:00"
         binding.tvTodaysWakeupTime.text = module.wakeUpTime ?: "00:00"
-        binding.tvTodaysSleepTimeRequirement.text = module.sleepDuration ?: "0min"
+        binding.tvTodaysSleepTimeRequirement.text = (module.sleepDuration ?: "0min").toString()
 
         binding.cardSleepMainLog.visibility = View.GONE
         binding.cardSleeprightMain.visibility = View.GONE
     } else {
         try {
             // Check if all specified sleep-related fields are "0min"
-            val isAllZero = module.rem == "0min" &&
-                    module.core == "0min" &&
-                    module.deep == "0min" &&
-                    module.awake == "0min"
+            val isAllZero = module.rem == 0.toDouble() &&
+                    module.core == 0.toDouble() &&
+                    module.deep == 0.toDouble() &&
+                    module.awake == 0.toDouble()
 
 
             if (isAllZero) {
@@ -1283,9 +1283,14 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
                 binding.cardSleepMainLog.visibility = View.VISIBLE
                 binding.cardSleeprightMain.visibility = View.GONE
                 // sleeo log card is visible, you can show a message or prompt the user to log their sleep
-                binding.tvPerformSleepDuration.text = module.sleepDuration ?: "0min"
-                binding.tvPerformIdealDuration.text = module.sleepDuration ?: "0min"
-                binding.tvPerformSleepPercent.text = module.sleepDuration ?: "0"
+                binding.tvPerformSleepDuration.text =
+                    module.sleepPerformanceDetail?.idealSleepDuration?.let {
+                        DateTimeUtils.formatSleepDuration(
+                            it
+                        )
+                    }// (module.sleepDuration ?: "0min").toString()
+                binding.tvPerformIdealDuration.text = (module.sleepDuration ?: "0min").toString()
+                binding.tvPerformSleepPercent.text = (module.sleepDuration ?: "0").toString()
             } else {
                 // sleep data available  // For example, update your UI elements with sleepData.rem, sleepData.core, etc.
                 binding.cardSleepMainIdeal.visibility = View.GONE
