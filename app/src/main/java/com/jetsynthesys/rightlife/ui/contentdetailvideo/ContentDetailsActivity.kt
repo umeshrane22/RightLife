@@ -143,14 +143,14 @@ class ContentDetailsActivity : BaseActivity() {
                     .firstName + " " + contentResponseObj.data.artist[0]
                     .lastName
 
-                Glide.with(applicationContext)
-                    .load(
-                        ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
-                            .profilePicture
-                    )
-                    .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
-                    .circleCrop()
-                    .into(binding.profileImage)
+            Glide.with(applicationContext)
+                .load(
+                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
+                        .profilePicture
+                )
+                .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                .circleCrop()
+                .into(binding.profileImage)
 
                 binding.llAuthorMain.setOnClickListener {
                     startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {

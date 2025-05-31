@@ -1147,20 +1147,32 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         rl_wellness_main.setVisibility(View.VISIBLE);
         // Bind data for item 1
-        if (!contentList.isEmpty())
+        if (!contentList.isEmpty()) {
             bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5, imgtag_tv1);
+        }else {
+            relative_wellness1.setVisibility(View.GONE);
+        }
 
         // Bind data for item 2
-        if (contentList.size() > 1)
+        if (contentList.size() > 1) {
             bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6, imgtag_tv2);
+        }else {
+            relative_wellness2.setVisibility(View.GONE);
+        }
 
         // Bind data for item 3
-        if (contentList.size() > 2)
+        if (contentList.size() > 2) {
             bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7, imgtag_tv3);
+        }else {
+            relative_wellness3.setVisibility(View.GONE);
+        }
 
         // Bind data for item 4
-        if (contentList.size() > 3)
+        if (contentList.size() > 3) {
             bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8, imgtag_tv4);
+        }else {
+            relative_wellness4.setVisibility(View.GONE);
+        }
     }
 
     //Bind Wellnes content
