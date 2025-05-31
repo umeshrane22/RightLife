@@ -570,26 +570,44 @@ class NewSeriesDetailsActivity : BaseActivity() {
 
 
     private fun extractVideoId(youtubeUrl: String): String? {
-        try {
+        return try {
             val uri = URI(youtubeUrl)
-            val query = uri.query
+            val host = uri.host ?: return null
 
-            if (query != null) {
-                val params =
-                    query.split("&".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                for (param in params) {
-                    val keyValue =
-                        param.split("=".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    if (keyValue.size == 2 && keyValue[0] == "v") {
-                        return keyValue[1]
-                    }
+            when {
+                host.contains("youtu.be") -> {
+                    // Example: https://youtu.be/VIDEO_ID
+                    uri.path?.substring(1)
                 }
+                host.contains("youtube.com") -> {
+                    val query = uri.query
+                    if (query != null) {
+                        val params = query.split("&")
+                        for (param in params) {
+                            val keyValue = param.split("=")
+                            if (keyValue.size == 2 && keyValue[0] == "v") {
+                                return keyValue[1]
+                            }
+                        }
+                    }
+
+                    // Example: https://www.youtube.com/embed/VIDEO_ID
+                    val path = uri.path ?: return null
+                    val segments = path.split("/")
+                    if (segments.contains("embed")) {
+                        return segments.lastOrNull()
+                    }
+
+                    null
+                }
+                else -> null
             }
-        } catch (e: URISyntaxException) {
+        } catch (e: Exception) {
             e.printStackTrace()
+            null
         }
-        return null
     }
+
 
     private fun setupYouTubePlayer(videoId: String) {
         binding.youtubevideoPlayer.visibility = View.VISIBLE
