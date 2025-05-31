@@ -342,18 +342,35 @@
                         android:background="@drawable/artcle_bottom_separator_line"
                         android:scaleType="fitXY" />
 
-                    <TextView
-                        android:id="@+id/txt_alsolike_header"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:fontFamily="@font/merriweather_bold"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/margin_card_16dp"
-                        android:paddingEnd="30dp"
-                        android:text="You May Also Like"
-                        android:visibility="visible"
-                        android:textColor="@color/txt_color_header"
-                        android:textSize="@dimen/textsize_large" />
+                    <!-- More Like This Section -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:id="@+id/rl_more_like_section"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/txtAlsolikeHeader"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/merriweather_bold"
+                            android:padding="16dp"
+                            android:text="You May Also Like"
+                            android:textColor="@color/text_color_app"
+                            android:textSize="16sp"
+                            android:layout_alignParentStart="true" />
+
+                        <TextView
+                            android:id="@+id/tv_view_all"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:padding="16dp"
+                            android:text="View All"
+                            android:textSize="12sp"
+                            android:visibility="gone"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:layout_width="match_parent"
