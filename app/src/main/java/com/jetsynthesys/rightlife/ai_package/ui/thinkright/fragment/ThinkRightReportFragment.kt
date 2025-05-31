@@ -254,6 +254,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         toolRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         toolRecyclerView.adapter = toolAdapter
 
+
         tvQuote.setOnClickListener {
             navigateToFragment(ViewQuoteFragment(),"ViewQuote")
         }
