@@ -75,12 +75,24 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                     showToast("This plan is currently active.")
                     return@SubscriptionPlanAdapter
                 } else {
-                    intent.putExtra(
-                        "PRODUCT_TYPE",
-                        "SUBSCRIPTION"
-                    ) // Replace "your_specific_product_id"
-                    receivedProductType = "SUBSCRIPTION"
-                    setupBillingClient()
+                    var flag = false
+                    planList.forEach {
+                        if (it.status.equals("ACTIVE", ignoreCase = true)) {
+                            flag = true
+                            return@forEach
+                        }
+                    }
+
+                    if (flag) {
+                        showToast("You have currently one Active Subscription!!")
+                    } else {
+                        intent.putExtra(
+                            "PRODUCT_TYPE",
+                            "SUBSCRIPTION"
+                        ) // Replace "your_specific_product_id"
+                        receivedProductType = "SUBSCRIPTION"
+                        setupBillingClient()
+                    }
                 }
             }
             //startActivity(intent)

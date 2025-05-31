@@ -41,6 +41,7 @@ import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkReque
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
+import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
@@ -145,6 +146,12 @@ public class ArticlesDetailActivity extends BaseActivity {
         //setVideoPlayerView();
         getArticleDetails(contentId);
         getRecommendedContent(contentId);
+
+        binding.tvViewAll.setOnClickListener(view -> {
+            Intent intent1 = new Intent(ArticlesDetailActivity.this, ViewAllActivity.class);
+            intent1.putExtra("ContentId", contentId);
+            startActivity(intent1);
+        });
     }
 
 
@@ -231,7 +238,7 @@ public class ArticlesDetailActivity extends BaseActivity {
         } else {
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive);
         }
-        if (articleDetailsResponse.getData().getLikeCount()!=null) {
+        if (articleDetailsResponse.getData().getLikeCount() != null) {
             binding.txtLikeCount.setText(articleDetailsResponse.getData().getLikeCount().toString());
         }
 
@@ -242,9 +249,9 @@ public class ArticlesDetailActivity extends BaseActivity {
         }
 
         // article consumed
-        EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(sharedPreferenceManager.getUserId(),articleDetailsResponse.getData().getModuleId(),
-                articleDetailsResponse.getData().getId(),"1.0","1.0","TEXT");
-        CommonAPICall.INSTANCE.trackEpisodeOrContent(this,episodeTrackRequest);
+        EpisodeTrackRequest episodeTrackRequest = new EpisodeTrackRequest(sharedPreferenceManager.getUserId(), articleDetailsResponse.getData().getModuleId(),
+                articleDetailsResponse.getData().getId(), "1.0", "1.0", "TEXT");
+        CommonAPICall.INSTANCE.trackEpisodeOrContent(this, episodeTrackRequest);
     }
 
     private void handleInThisArticle(List<String> tocItems) {
@@ -433,7 +440,7 @@ public class ArticlesDetailActivity extends BaseActivity {
 
     private void getRecommendedContent(String contentId) {
         // Make the API call
-        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId,0,5);
+        Call<ResponseBody> call = apiService.getMoreLikeContent(sharedPreferenceManager.getAccessToken(), contentId, 0, 5);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -452,11 +459,11 @@ public class ArticlesDetailActivity extends BaseActivity {
                             if (!likeList.isEmpty()) {
                                 setupListData(likeList);
 
-                               /* if (likeList.size() < 5) {
+                                if (likeList.size() < 5) {
                                     binding.tvViewAll.setVisibility(View.GONE);
                                 } else {
                                     binding.tvViewAll.setVisibility(View.VISIBLE);
-                                }*/
+                                }
                             } else {
                                 binding.txtAlsolikeHeader.setVisibility(View.GONE);
                             }
