@@ -287,6 +287,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             override fun handleOnBackPressed() {
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
+                args.putString("ModuleName", "EatRight")
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")

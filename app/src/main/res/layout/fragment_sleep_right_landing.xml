@@ -694,7 +694,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
-                        android:text="Sync With Apple Health"
+                        android:text="Sync With Health Connect"
                         android:layout_marginEnd="20dp"
                         android:textSize="14sp"
                         android:id="@+id/tv_sync_with_health"
