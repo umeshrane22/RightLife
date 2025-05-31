@@ -75,7 +75,7 @@ public class MoreContentDetailViewActivity extends BaseActivity {
     private ImageButton playPauseButton;
     private ImageView img_contentview, img_artist;
     private TextView tv_artistname;
-    private boolean isFullscreen = false;
+    private final boolean isFullscreen = false;
     private TextView tvViewAll;
 
     @Override
@@ -195,19 +195,21 @@ public class MoreContentDetailViewActivity extends BaseActivity {
         }
 
 
-        tv_artistname.setText(contentList.get(position).getArtist().get(0).getFirstName() +
-                " " + contentList.get(position).getArtist().get(0).getLastName());
-        Glide.with(getApplicationContext())
-                .load(ApiClient.CDN_URL_QA + contentList.get(position).getArtist().get(0).getProfilePicture())
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
-                .circleCrop()
-                .into(img_artist);
+        if (!contentList.get(position).getArtist().isEmpty()) {
+            tv_artistname.setText(contentList.get(position).getArtist().get(0).getFirstName() +
+                    " " + contentList.get(position).getArtist().get(0).getLastName());
+            Glide.with(getApplicationContext())
+                    .load(ApiClient.CDN_URL_QA + contentList.get(position).getArtist().get(0).getProfilePicture())
+                    .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                    .circleCrop()
+                    .into(img_artist);
 
-        tv_artistname.setOnClickListener(view -> {
-            Intent intent1 = new Intent(this, ArtistsDetailsActivity.class);
-            intent1.putExtra("ArtistId", contentList.get(position).getArtist().get(0).getId());
-            startActivity(intent1);
-        });
+            tv_artistname.setOnClickListener(view -> {
+                Intent intent1 = new Intent(this, ArtistsDetailsActivity.class);
+                intent1.putExtra("ArtistId", contentList.get(position).getArtist().get(0).getId());
+                startActivity(intent1);
+            });
+        }
 
 
         playButton = findViewById(R.id.playButton);
@@ -375,7 +377,7 @@ public class MoreContentDetailViewActivity extends BaseActivity {
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     JsonElement affirmationsResponse = response.body();
-                    Log.d("API Response", "Wellness:SeriesList " + affirmationsResponse.toString());
+                    Log.d("API Response", "Wellness:SeriesList " + affirmationsResponse);
                     Gson gson = new Gson();
                     String jsonResponse = gson.toJson(response.body());
 

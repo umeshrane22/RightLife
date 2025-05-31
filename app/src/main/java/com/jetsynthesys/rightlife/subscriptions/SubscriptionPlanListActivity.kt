@@ -32,12 +32,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
+class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
     private lateinit var billingClient: BillingClient
     private lateinit var binding: ActivitySubscriptionPlanListBinding
     private lateinit var adapter: SubscriptionPlanAdapter
-    private var  type: String = "FACIAL_SCAN" // Default value, can be overridden by intent
-    private val planList = ArrayList<PlanList>();
+    private var type: String = "FACIAL_SCAN" // Default value, can be overridden by intent
+    private val planList = ArrayList<PlanList>()
     private var selectedPlan: PlanList? = null
     private var receivedProductId: String? = null // Will be set from intent
     private var receivedProductType = "BOOSTER" // Default value, can be overridden by intent
@@ -45,20 +45,23 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionPlanListBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
-         type = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
+        type = intent.getStringExtra("SUBSCRIPTION_TYPE").toString()
         //val type = "FACIAL_SCAN"
-        getSubscriptionList(type ?: "FACIAL_SCAN")
+        if (type == "FACIAL_SCAN") {
+            binding.tvHeader.text = "Face Scan Booster"
+        }
+        getSubscriptionList(type)
 
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
         binding.iconInfo.setOnClickListener {
-            startActivity(Intent(this,PlanInfoActivity::class.java))
+            startActivity(Intent(this, PlanInfoActivity::class.java))
         }
 
         adapter = SubscriptionPlanAdapter(planList) { plan ->
-           // showToast("Plan Clicked - " + plan.googlePlay)
+            // showToast("Plan Clicked - " + plan.googlePlay)
             selectedPlan = plan // Save plan for later
             val intent = Intent(this, BillingActivity::class.java)
             intent.putExtra("PRODUCT_ID", plan.googlePlay) // Replace "your_specific_product_id"
@@ -71,7 +74,7 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
                 if (plan.status.equals("ACTIVE", ignoreCase = true)) {
                     showToast("This plan is currently active.")
                     return@SubscriptionPlanAdapter
-                }else {
+                } else {
                     intent.putExtra(
                         "PRODUCT_TYPE",
                         "SUBSCRIPTION"
@@ -83,16 +86,15 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
             //startActivity(intent)
 
 
-
         }
 
         binding.plansRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.plansRecyclerView.adapter = adapter
 
-        binding.cancelButton.setOnClickListener() {
+        binding.cancelButton.setOnClickListener {
             openPlayStoreSubscriptionPage()
         }
-        binding.continueButton.setOnClickListener() {
+        binding.continueButton.setOnClickListener {
             openPlayStoreSubscriptionPage()
         }
         if (type == "FACIAL_SCAN") {
@@ -103,9 +105,11 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
             binding.continueButton.visibility = View.GONE
         }
     }
+
     private fun openPlayStoreSubscriptionPage() {
         val packageName = applicationContext.packageName
-        val uri = Uri.parse("https://play.google.com/store/account/subscriptions?package=$packageName")
+        val uri =
+            Uri.parse("https://play.google.com/store/account/subscriptions?package=$packageName")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         intent.setPackage("com.android.vending") // Optional: force it to open in Play Store app
         try {
@@ -205,10 +209,13 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
                     //restoreSubscription()
                     if (receivedProductType == "BOOSTER") {
                         if (receivedProductId != null) {
-                            queryProductDetails(receivedProductId!!, BillingClient.ProductType.INAPP)
+                            queryProductDetails(
+                                receivedProductId!!,
+                                BillingClient.ProductType.INAPP
+                            )
                             //queryProductDetails("product_test_2", BillingClient.ProductType.INAPP)
                         }
-                    }else if (receivedProductType == "SUBSCRIPTION") {
+                    } else if (receivedProductType == "SUBSCRIPTION") {
                         if (receivedProductId != null) {
                             queryProductDetails(receivedProductId!!, BillingClient.ProductType.SUBS)
                         }
@@ -245,7 +252,11 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
                     Toast.makeText(this, "Product not found: $productId", Toast.LENGTH_LONG).show()
                 }
             } else {
-                Toast.makeText(this, "Query failed: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Query failed: ${billingResult.debugMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -287,7 +298,10 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
         }
     }
 
-    override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
+    override fun onPurchasesUpdated(
+        billingResult: BillingResult,
+        purchases: MutableList<Purchase>?
+    ) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
                 handlePurchase(purchase)
@@ -296,7 +310,11 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
             Toast.makeText(this, "Purchase canceled", Toast.LENGTH_SHORT).show()
 
         } else {
-            Toast.makeText(this, "Purchase error: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "Purchase error: ${billingResult.debugMessage}",
+                Toast.LENGTH_SHORT
+            ).show()
 
         }
     }
@@ -313,11 +331,19 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
 
                     billingClient.consumeAsync(consumeParams) { billingResult, _ ->
                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                            Toast.makeText(this, "Consumable purchase successful", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                "Consumable purchase successful",
+                                Toast.LENGTH_SHORT
+                            ).show()
                             Log.d("Billing--", "Consumable purchase successful")
                             //call your method to update UI or backend
                         } else {
-                            Toast.makeText(this, "Consume failed: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this,
+                                "Consume failed: ${billingResult.debugMessage}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
@@ -330,11 +356,19 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
 
                         billingClient.acknowledgePurchase(acknowledgeParams) { result ->
                             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                                Toast.makeText(this, "Subscription acknowledged", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this,
+                                    "Subscription acknowledged",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 //call your method to update UI or backend
                                 showSubscriptionStatus(purchase)
                             } else {
-                                Toast.makeText(this, "Acknowledge failed: ${result.debugMessage}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this,
+                                    "Acknowledge failed: ${result.debugMessage}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     } else {
@@ -345,9 +379,11 @@ class SubscriptionPlanListActivity : BaseActivity() , PurchasesUpdatedListener {
             updateBackendForPurchase(purchase)
         }
     }
+
     private fun showSubscriptionStatus(purchase: Purchase) {
-        val purchaseTime = java.text.SimpleDateFormat("dd MMM yyyy HH:mm", java.util.Locale.getDefault())
-            .format(java.util.Date(purchase.purchaseTime))
+        val purchaseTime =
+            java.text.SimpleDateFormat("dd MMM yyyy HH:mm", java.util.Locale.getDefault())
+                .format(java.util.Date(purchase.purchaseTime))
         //subscriptionStatusText.text = "Subscription Active\nStart: $purchaseTime"
     }
 

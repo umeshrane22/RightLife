@@ -138,23 +138,25 @@ class ContentDetailsActivity : BaseActivity() {
         binding.tvContentTitle.text = contentResponseObj?.data?.title
         binding.tvContentDesc.text = contentResponseObj?.data?.desc
         if (contentResponseObj != null) {
-            binding.authorName.text = contentResponseObj.data.artist[0]
-                .firstName + " " + contentResponseObj.data.artist[0]
-                .lastName
+            if (contentResponseObj.data.artist.isNotEmpty()) {
+                binding.authorName.text = contentResponseObj.data.artist[0]
+                    .firstName + " " + contentResponseObj.data.artist[0]
+                    .lastName
 
-            Glide.with(applicationContext)
-                .load(
-                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
-                        .profilePicture
-                )
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
-                .circleCrop()
-                .into(binding.profileImage)
+                Glide.with(applicationContext)
+                    .load(
+                        ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
+                            .profilePicture
+                    )
+                    .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                    .circleCrop()
+                    .into(binding.profileImage)
 
-            binding.llAuthorMain.setOnClickListener {
-                startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
-                    putExtra("ArtistId", contentResponseObj.data.artist[0].id)
-                })
+                binding.llAuthorMain.setOnClickListener {
+                    startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
+                        putExtra("ArtistId", contentResponseObj.data.artist[0].id)
+                    })
+                }
             }
 
             setModuleColor(contentResponseObj.data.moduleId)

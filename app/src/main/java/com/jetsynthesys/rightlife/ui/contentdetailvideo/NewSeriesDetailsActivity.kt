@@ -180,8 +180,9 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 binding.tvHeaderHtw.text = "Audio"
                 contentTypeForTrack = "AUDIO"
             } else if (contentResponseObj.data.type.equals("VIDEO", ignoreCase = true)) {
-                if (contentResponseObj?.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
-                    val videoId: String = extractVideoId(contentResponseObj.data.youtubeUrl).toString()
+                if (contentResponseObj.data != null && contentResponseObj.data.youtubeUrl != null && !contentResponseObj.data.youtubeUrl.isEmpty()) {
+                    val videoId: String =
+                        extractVideoId(contentResponseObj.data.youtubeUrl).toString()
 
                     if (videoId != null) {
                         Log.e("YouTube", "video ID - call player$videoId")
@@ -193,7 +194,7 @@ class NewSeriesDetailsActivity : BaseActivity() {
                         //Provide user feedback
                     }
                     contentTypeForTrack = "VIDEO"
-                }else {
+                } else {
                     // For video Player
                     initializePlayer(contentResponseObj.data.previewUrl)
                     binding.rlVideoPlayerMain.visibility = View.VISIBLE
@@ -655,6 +656,11 @@ class NewSeriesDetailsActivity : BaseActivity() {
             }
 
             binding.tvArtistname.text = name
+            binding.tvArtistname.setOnClickListener {
+                startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
+                    putExtra("ArtistId", nextEpisode.artist[0]._id)
+                })
+            }
         } else if (binding != null && binding.tvAuthorName != null) {
             binding.tvAuthorName.text = "" // or set some default value
         }
