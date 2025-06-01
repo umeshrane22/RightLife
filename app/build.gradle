@@ -89,11 +89,11 @@ android {
             dimension = "environment"
             // applicationIdSuffix = ".qa"
             // versionNameSuffix = "-qa"
-            // buildConfigField("String", "BASE_URL", "\"https://"")
+            buildConfigField("String", "BASE_URL", "\"https://ai-qa.rightlife.com/\"")
         }
         create("production") {
             dimension = "environment"
-            // buildConfigField("String", "BASE_URL", "\"https://\"")
+            buildConfigField("String", "BASE_URL", "\"https://ai.rightlife.com/\"")
         }
     }
 }
