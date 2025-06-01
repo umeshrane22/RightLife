@@ -42,6 +42,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
@@ -117,7 +120,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         // Set default fragment
         loadFragment(HomeFragment())
 
-        //getLatestVersion()
+        checkForUpdate()
 
         //set report list dummy for demo
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
@@ -497,14 +500,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
     }
 
-    private fun getLatestVersion() {
-        val currentVersion = BuildConfig.VERSION_NAME
 
-        /*** write here the code to get latest version from API
-         *
-          */
-        showForceUpdateDialog()
-    }
 
     override fun onResume() {
         super.onResume()
@@ -1609,5 +1605,39 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
 
         binding.sleepStagesView.setSleepData(sleepData)
 
+    }
+
+
+    private fun checkForUpdate() {
+        val remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(
+            mapOf(
+                "force_update_current_version" to "1.0.0",
+                "isForceUpdate" to false,
+                "force_update_build_number" to "261"
+            )
+        )
+
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val latestVersion = remoteConfig.getString("force_update_current_version")
+                val isForceUpdate = remoteConfig.getBoolean("isForceUpdate")
+                val forceUpdateBuildNumber = remoteConfig.getString("force_update_build_number")
+
+                val currentVersion = BuildConfig.VERSION_NAME
+
+                if (isForceUpdate && isVersionOutdated(currentVersion, latestVersion)) {
+                    showForceUpdateDialog()
+                }
+            }
+        }
+    }
+
+    private fun isVersionOutdated(current: String, latest: String): Boolean {
+        return current != latest // or use a version comparator for more complex rules
     }
 }
