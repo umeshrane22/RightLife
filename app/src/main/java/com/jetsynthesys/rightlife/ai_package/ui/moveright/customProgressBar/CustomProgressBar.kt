@@ -58,16 +58,10 @@ class CustomProgressBar(context: Context, attrs: AttributeSet?) : View(context, 
         val startX = padding
         val endX = width - padding
         val centerY = height / 2f + 20f
-
-        // Draw Background Bar
         val backgroundRect = RectF(startX, centerY - barHeight / 2, endX, centerY + barHeight / 2)
         canvas.drawRoundRect(backgroundRect, barHeight / 2, barHeight / 2, progressBarBackgroundPaint)
-
-        // Draw Progress Indicator (Big Red Circle)
         val progressX = startX + (endX - startX) * progress
         canvas.drawCircle(progressX, centerY, 25f, indicatorPaint)
-
-        // Labels and Indicator Dots
         val textOffsetX = 10f
 
         for (i in intensityLabels.indices) {

@@ -287,6 +287,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             override fun handleOnBackPressed() {
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
+                args.putString("ModuleName", "EatRight")
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -320,7 +321,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         getMealsLogList(formattedDate)
 
         //Set Tooltip
-       // showTooltipDialog(layoutToolbar)
+        showTooltipDialog(layoutToolbar)
 
         imageCalender.setOnClickListener {
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")

@@ -28,7 +28,7 @@
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="-10dp"
+            android:layout_marginTop="-20dp"
             android:layout_gravity="start"
             android:background="@drawable/green_circle"
             android:layout_marginBottom="4dp"/>
@@ -38,6 +38,7 @@
             android:id="@+id/servingTimeKcal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="Serves 1 | 25 mins | 459 Kcal"
             android:textSize="12sp"
             android:textColor="#777" />

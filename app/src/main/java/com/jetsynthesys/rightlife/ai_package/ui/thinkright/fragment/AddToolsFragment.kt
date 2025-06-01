@@ -1,16 +1,20 @@
 package com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -150,6 +154,16 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                 toolHolder.selectButton.setOnClickListener {
                     onItemClick(position, tool)
                 }
+
+                val getVisit = SharedPreferenceManager.getInstance(contexts).userFirstVisit
+
+                if (position == 0 && getVisit == "1") {
+                   // holder.tooltipLayout.visibility = View.VISIBLE
+                    showTooltipPopup( toolHolder.selectButton,"Quickly add it to your tools")
+                } else if (position == 0) {
+                   // showTooltipPopup( toolHolder.selectButton,"Quickly add it to your tools")
+                   // holder.tooltipLayout.visibility = View.GONE
+                }
             }
 
             is ToolDisplayItem.AffirmationCard -> {
@@ -160,9 +174,40 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
 
             }
         }
+
     }
 
     override fun getItemCount(): Int = items.size
+
+    fun showTooltipPopup(anchorView: View, tooltipText: String) {
+        val popupView = LayoutInflater.from(anchorView.context).inflate(R.layout.tooltip_sync_layout, null)
+        val tvTooltip = popupView.findViewById<TextView>(R.id.tvTooltipText)
+        tvTooltip.text = tooltipText
+
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
+        popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        popupWindow.isOutsideTouchable = true
+
+        // Optional: measure and offset tooltip above or below the anchor
+        anchorView.post {
+            val location = IntArray(2)
+            anchorView.getLocationOnScreen(location)
+
+            val offsetX = -5
+            val offsetY = 0 // position below the button with a small margin
+
+            popupWindow.showAsDropDown(anchorView, offsetX, offsetY)
+        }
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            popupWindow.dismiss()
+        }, 3000)
+    }
 }
 
 fun transformTools(tools: List<ToolsData>): List<ToolDisplayItem> {
@@ -268,6 +313,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
         }
 
+        val getVisit = SharedPreferenceManager.getInstance(requireContext()).userFirstVisit
+        if (getVisit == ""){
+            SharedPreferenceManager.getInstance(requireContext()).saveUserFirstVisit("1")
+        }else{
+            SharedPreferenceManager.getInstance(requireContext()).saveUserFirstVisit("2")
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
@@ -294,7 +346,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             if (toolsData!=null) {
                 moduleId = toolsData._id ?: ""
                 isSelectedModule = if (toolsData.isSelectedModule == true) false else true
-                selectTools()
+                selectTools(toolsData?.title)
             }else{
                 startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
             }
@@ -364,7 +416,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
 
     }
 
-    private fun selectTools() {
+    private fun selectTools(title1: String?) {
         progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
        // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
@@ -375,7 +427,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                     progressDialog.dismiss()
                     if (response.body()!=null) {
                         baseResponse = response.body()!!
-                        Toast.makeText(requireContext(), "${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
+                        if (baseResponse.successMessage == "Tools add successfully"){
+                            showGreenBannerToast(requireActivity(),"$title1 Added To Tools")
+                        }else{
+                            showRedBannerToast(requireActivity(),"$title1 Removed From Tools")
+                        }
+
+                     //   Toast.makeText(requireContext(), "${baseResponse.successMessage}", Toast.LENGTH_SHORT).show()
                         toolsAdapter.notifyDataSetChanged()
                         fetchToolsList(filterName)
                         Log.e("Success", "Response is successful: ${response.isSuccessful}")
@@ -392,6 +450,68 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                 progressDialog.dismiss()
             }
         })
+    }
+
+    fun showRedBannerToast(activity: Activity, message: String) {
+        val rootView = activity.findViewById<ViewGroup>(android.R.id.content)
+        val bannerView = LayoutInflater.from(activity).inflate(R.layout.custom_toast_red_banner, rootView, false)
+        val tvMessage = bannerView.findViewById<TextView>(R.id.tvBannerText)
+        tvMessage.text = message
+
+        // Add to root view
+        rootView.addView(bannerView)
+
+        // Slide in animation
+        bannerView.translationY = -bannerView.height.toFloat()
+        bannerView.alpha = 0f
+        bannerView.animate()
+            .translationY(0f)
+            .alpha(1f)
+            .setDuration(300)
+            .start()
+
+        // Auto dismiss after 3 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            bannerView.animate()
+                .translationY(-bannerView.height.toFloat())
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    rootView.removeView(bannerView)
+                }
+                .start()
+        }, 3000)
+    }
+
+    fun showGreenBannerToast(activity: Activity, message: String) {
+        val rootView = activity.findViewById<ViewGroup>(android.R.id.content)
+        val bannerView = LayoutInflater.from(activity).inflate(R.layout.custom_toast_green_banner, rootView, false)
+        val tvMessage = bannerView.findViewById<TextView>(R.id.tvBannerText)
+        tvMessage.text = message
+
+        // Add to root view
+        rootView.addView(bannerView)
+
+        // Slide in animation
+        bannerView.translationY = -bannerView.height.toFloat()
+        bannerView.alpha = 0f
+        bannerView.animate()
+            .translationY(0f)
+            .alpha(1f)
+            .setDuration(300)
+            .start()
+
+        // Auto dismiss after 3 seconds
+        Handler(Looper.getMainLooper()).postDelayed({
+            bannerView.animate()
+                .translationY(-bannerView.height.toFloat())
+                .alpha(0f)
+                .setDuration(300)
+                .withEndAction {
+                    rootView.removeView(bannerView)
+                }
+                .start()
+        }, 3000)
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {

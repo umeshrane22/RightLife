@@ -18,22 +18,17 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.os.BundleCompat
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
-import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineResponse
 import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
-import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
-import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
-import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
-import com.jetsynthesys.rightlife.ai_package.ui.adapter.CreateRoutineListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.RoutineWorkoutListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -41,10 +36,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Response
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -58,12 +50,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var save_workout_routine_btn: LinearLayoutCompat
     private lateinit var addNameLayout: ConstraintLayout
     private lateinit var createListRoutineLayout: ConstraintLayout
-    private var workout: WorkoutList? = null
-    private var workoutRecord: WorkoutSessionRecord? = null
-    private var myroutine: String = ""
+    private var workoutList = ArrayList<WorkoutSessionRecord>()
     private var routine: String = ""
     private var routineName: String = ""
-    private var workoutList = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
@@ -76,19 +65,6 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         )
     }
 
-    private val myRoutineListAdapter by lazy {
-        CreateRoutineListAdapter(
-            context = requireContext(),
-            dataLists = arrayListOf(),
-            clickPos = -1,
-            selectedWorkout = null,
-            isClickView = false,
-            onWorkoutItemClick = { workout, position, isClicked ->
-                Log.d("RoutineAdapter", "Workout clicked: ${workout.workoutType} at position $position")
-            }
-        )
-    }
-
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,6 +72,15 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         routine = arguments?.getString("routine").toString()
         routineName = arguments?.getString("routineName").toString()
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
+
+        // Fetch activityList from YourActivityFragment
+        val activityList = arguments?.getParcelableArrayList<ActivityModel>("ACTIVITY_LIST") ?: ArrayList()
+        Log.d("CreateRoutineFragment", "Received ${activityList.size} activities from YourActivityFragment")
+
+        // Map ActivityModel to WorkoutSessionRecord and append to workoutList
+        if (activityList.isNotEmpty()) {
+            mapActivityModelToWorkoutSessionRecord(activityList)
+        }
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
@@ -197,13 +182,39 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         }
     }
 
+    // Function to map ActivityModel to WorkoutSessionRecord by iterating over activityList
+    private fun mapActivityModelToWorkoutSessionRecord(activityList: ArrayList<ActivityModel>) {
+        activityList.forEach { activity ->
+            // Extract numeric part from duration (e.g., "61 min" -> 61)
+            val durationValue = activity.duration.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
+            // Extract numeric part from caloriesBurned (e.g., "125 kcal" -> 125.0)
+            val caloriesValue = activity.caloriesBurned.replace(Regex("[^0-9.]"), "").toDoubleOrNull()
+
+            val workoutRecord = WorkoutSessionRecord(
+                userId = activity.userId,
+                activityId = activity.activity_id,
+                durationMin = durationValue,
+                intensity = activity.intensity,
+                sessions = 1, // Default value, as not present in ActivityModel
+                moduleName = activity.activityType,
+                caloriesBurned = caloriesValue,
+                message = null, // Response field, not applicable
+                activityFactor = null // Response field, not applicable
+            )
+            workoutList.add(workoutRecord)
+            Log.d("CreateRoutineFragment", "Added workout: ${workoutRecord.moduleName} to workoutList")
+            val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
+            routineWorkoutListAdapter.setData(routineWorkoutModels)
+        }
+    }
+
     // Function to map WorkoutSessionRecord to RoutineWorkoutDisplayModel
     private fun mapWorkoutSessionRecordsToRoutineWorkoutModels(records: ArrayList<WorkoutSessionRecord>): ArrayList<RoutineWorkoutDisplayModel> {
         return records.map { record ->
             RoutineWorkoutDisplayModel(
-                name = record.moduleName ?: "Unknown Workout",
+                name = record.moduleName,
                 duration = "${record.durationMin} min",
-                caloriesBurned = record.caloriesBurned?.toInt().toString() ?: "N/A",
+                caloriesBurned = record.caloriesBurned?.toString() ?: "N/A",
                 intensity = record.intensity
             )
         }.toCollection(ArrayList())
@@ -231,7 +242,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 // Map workoutList to CreateRoutineRequest.Workout
                 val workoutRequests = workoutList.map { record ->
                     CreateRoutineRequest.Workout(
-                        activityId = record.activityId ?: "",
+                        activityId = record.activityId,
                         duration = record.durationMin,
                         intensity = record.intensity
                     )
@@ -273,109 +284,4 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             }
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun createWorkout(name: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
-
-                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
-                val request = workoutRecord?.let {
-                    CreateWorkoutRequest(
-                        userId = userId,
-                        activityId = it.activityId,
-                        durationMin = it.durationMin,
-                        intensity = it.intensity,
-                        sessions = 1,
-                        date = currentDate
-                    )
-                } ?: run {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "Workout data is missing", Toast.LENGTH_SHORT).show()
-                    }
-                    return@launch
-                }
-
-                val response = ApiClient.apiServiceFastApi.createWorkout(request)
-
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                        responseBody?.let {
-                            Toast.makeText(requireContext(), "Workout Created Successfully", Toast.LENGTH_SHORT).show()
-                        } ?: Toast.makeText(
-                            requireContext(),
-                            "Empty response",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error creating workout: ${response.code()} - ${response.message()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Exception: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-    }
-
-    private fun assignWorkoutRoutine() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val id: String = "67e1317722a2406f2eceb627"
-                val userId: String = "64763fe2fa0e40d9c0bc8264"
-                val routineName: String = editText.text.toString()
-                val workoutIds: List<String> = workoutList.mapNotNull { it.activityId }
-                val date: String = "2025-03-24"
-
-                val request = AssignRoutineRequest(
-                    routineName = routineName,
-                    workoutIds = workoutIds,
-                    date = date
-                )
-                val response: Response<AssignRoutineResponse> = ApiClient.apiServiceFastApi.assignRoutine(
-                    id = id,
-                    userId = userId,
-                    request = request
-                )
-
-                if (response.isSuccessful) {
-                    val assignResponse: AssignRoutineResponse? = response.body()
-                    if (assignResponse != null) {
-                        withContext(Dispatchers.Main) {
-                            Log.d("AssignRoutine", "Success: ${assignResponse.message}")
-                            Log.d("AssignRoutine", "Document ID: ${assignResponse.documentId}")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Log.e("AssignRoutine", "Response body is null")
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        val errorMessage = "Error: ${response.code()} - ${response.message()}"
-                        Log.e("AssignRoutine", errorMessage)
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("AssignRoutine", "Exception: ${e.message}", e)
-                }
-            }
-        }
-    }
-
-
 }

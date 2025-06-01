@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -69,23 +70,37 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var myActivityRecyclerView: RecyclerView
     private lateinit var imageCalender: ImageView
     private lateinit var btnLogMeal: LinearLayoutCompat
-    private lateinit var workoutDateTv : TextView
-    private lateinit var nextWeekBtn : ImageView
-    private lateinit var prevWeekBtn : ImageView
+    private lateinit var workoutDateTv: TextView
+    private lateinit var nextWeekBtn: ImageView
+    private lateinit var prevWeekBtn: ImageView
     private lateinit var layout_btn_addWorkout: LinearLayoutCompat
     private lateinit var healthConnectSyncButton: LinearLayoutCompat
-    private var workoutWeeklyDayList : List<WorkoutWeeklyDayModel> = ArrayList()
+    private var workoutWeeklyDayList: List<WorkoutWeeklyDayModel> = ArrayList()
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
-    private var workoutHistoryResponse : WorkoutHistoryResponse? = null
-    private var  workoutLogHistory :  ArrayList<WorkoutRecord> = ArrayList()
-    private var loadingOverlay : FrameLayout? = null
+    private var workoutHistoryResponse: WorkoutHistoryResponse? = null
+    private var workoutLogHistory: ArrayList<WorkoutRecord> = ArrayList()
+    private var loadingOverlay: FrameLayout? = null
+    private var activityList: ArrayList<ActivityModel> = ArrayList() // Moved to class-level
+
+    private val handler = Handler(Looper.getMainLooper())
+    private var tooltipRunnable1: Runnable? = null
+    private var tooltipRunnable2: Runnable? = null
+    private var isTooltipShown = false // Track if tooltips have been shown
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
     var snackbar: Snackbar? = null
 
-    private val yourActivitiesWeeklyListAdapter by lazy { YourActivitiesWeeklyListAdapter(requireContext(), arrayListOf(), -1,
-        null, false, ::onWorkoutLogDateItem) }
+    private val yourActivitiesWeeklyListAdapter by lazy {
+        YourActivitiesWeeklyListAdapter(
+            requireContext(),
+            arrayListOf(),
+            -1,
+            null,
+            false,
+            ::onWorkoutLogDateItem
+        )
+    }
 
     private val myActivityAdapter by lazy {
         YourActivitiesAdapter(
@@ -99,7 +114,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 val fragment = AddWorkoutSearchFragment()
                 val args = Bundle().apply {
                     putParcelable("ACTIVITY_MODEL", activityModel)
-                   putString("edit","edit")
+                    putString("edit", "edit")
                 }
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -107,9 +122,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     addToBackStack("workoutDetails")
                     commit()
                 }
-                //showActivityDetailsDialog(activityModel, position)
-//                println(activityModel)
-//                println(position)
             }
         )
     }
@@ -157,15 +169,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         myActivityRecyclerView.layoutManager = LinearLayoutManager(context)
         myActivityRecyclerView.adapter = myActivityAdapter
 
-        showTooltipsSequentially()
-
         activitySync.setOnClickListener {
             val bottomSheet = ActivitySyncBottomSheet()
             bottomSheet.show(parentFragmentManager, "ActivitySyncBottomSheet")
         }
 
         healthConnectSyncButton.setOnClickListener {
-
             // AddWorkoutSearchFragment navigation (commented as per original)
         }
 
@@ -209,7 +218,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
             getWorkoutLogHistory(currentWeekStart.toString())
         }
-        //fetchActivities()
         fetchCalories(formattedDate)
 
         imageCalender.setOnClickListener {
@@ -225,20 +233,49 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         btnLogMeal.setOnClickListener {
             val fragment = CreateRoutineFragment()
-            val args = Bundle()
+            val args = Bundle().apply {
+                putParcelableArrayList("ACTIVITY_LIST", activityList)
+            }
             fragment.arguments = args
+            Log.d("YourActivityFragment", "Sending ${activityList.size} activities to CreateRoutineFragment")
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "CreateRoutineFragment")
                 addToBackStack("CreateRoutineFragment")
                 commit()
             }
         }
+
+        // Check if tooltips have already been shown
+        val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
+        isTooltipShown = prefs.getBoolean("hasShownTooltips", false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Schedule tooltips only if they haven't been shown yet
+        if (!isTooltipShown) {
+            showTooltipsSequentially()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Remove pending tooltip tasks when fragment is not visible
+        tooltipRunnable1?.let { handler.removeCallbacks(it) }
+        tooltipRunnable2?.let { handler.removeCallbacks(it) }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clean up handler callbacks to prevent memory leaks
+        handler.removeCallbacksAndMessages(null)
     }
 
     fun showLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE
     }
+
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
@@ -248,13 +285,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun fetchCalories(formattedDate: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                if (isAdded  && view != null){
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         showLoader(requireView())
                     }
                 }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-               // Log.d("FetchCalories", "Fetching calories for userId: $userId, startDate: $startDate, endDate: $endDate")
                 val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
                 val response = ApiClient.apiServiceFastApi.getCalories(
                     userId = userId,
@@ -266,7 +302,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 )
 
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
@@ -274,8 +310,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     val caloriesResponse = response.body()
                     Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
-                    val activityList = ArrayList<ActivityModel>()
-                    activityList.clear()
+                    activityList.clear() // Clear existing list
 
                     caloriesResponse?.data?.forEachIndexed { index, workout ->
                         Log.d("FetchCalories", "Workout $index - ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}")
@@ -291,6 +326,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         )
 
                         activityList.add(activity)
+                        withContext(Dispatchers.Main) {
+                            btnLogMeal.isEnabled = true
+                        }
                     }
 
                     withContext(Dispatchers.Main) {
@@ -342,15 +380,26 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
     }
 
-
     private fun showTooltipsSequentially() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            showTooltipDialogSync(activitySync, "You can sync to apple \n health / google health \n from here.")
-        }, 1000)
+        // Schedule first tooltip
+        tooltipRunnable1 = Runnable {
+            if (isResumed) { // Only show if fragment is resumed
+                showTooltipDialogSync(activitySync, "You can sync to apple \n health / google health \n from here.")
+            }
+        }
+        handler.postDelayed(tooltipRunnable1!!, 1000)
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
-        }, 5000)
+        // Schedule second tooltip
+        tooltipRunnable2 = Runnable {
+            if (isResumed) { // Only show if fragment is resumed
+                showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
+            }
+        }
+        handler.postDelayed(tooltipRunnable2!!, 5000)
+
+        // Mark tooltips as shown in SharedPreferences
+        val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
+        prefs.edit().putBoolean("hasShownTooltips", true).apply()
     }
 
     private fun showTooltipDialog(anchorView: View, tooltipText: String) {
@@ -409,131 +458,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }, 3000)
     }
 
-    private fun updateCalorieRecord() {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        showLoader(requireView())
-                    }
-                }
-                val calorieId: String = "67e0f84505b80d8823623e27"
-                val request = UpdateCalorieRequest(
-                    userId = "64763fe2fa0e40d9c0bc8264",
-                    activity = "Cricket",
-                    durationMin = 60,
-                    intensity = "High",
-                    activityFactor = 1.2,
-                    sessions = 1
-                )
-
-                val response: Response<UpdateCalorieResponse> = ApiClient.apiServiceFastApi.updateCalorie(
-                    calorieId = calorieId,
-                    request = request
-                )
-
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val updateResponse: UpdateCalorieResponse? = response.body()
-                    if (updateResponse != null) {
-                        withContext(Dispatchers.Main) {
-                            Log.d("UpdateCalorie", "Success: ${updateResponse.message}")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Log.e("UpdateCalorie", "Response body is null")
-                        }
-                    }
-                } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error details"
-                    withContext(Dispatchers.Main) {
-                        Log.e("UpdateCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
-                        if (isAdded  && view != null){
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("UpdateCalorie", "Exception: ${e.message}", e)
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun deleteCalorieRecord() {
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
-                        showLoader(requireView())
-                    }
-                }
-                val calorieId: String = "67e1122a3051bc4fbd9c42aa"
-                val userId: String = "64763fe2fa0e40d9c0bc8264"
-
-                val response: Response<DeleteCalorieResponse> = ApiClient.apiServiceFastApi.deleteCalorie(
-                    calorieId = calorieId,
-                    userId = userId
-                )
-
-                if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                    val deleteResponse: DeleteCalorieResponse? = response.body()
-                    if (deleteResponse != null) {
-                        withContext(Dispatchers.Main) {
-                            Log.d("DeleteCalorie", "Success: ${deleteResponse.message}")
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            Log.e("DeleteCalorie", "Response body is null")
-                        }
-                    }
-                } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error details"
-                    withContext(Dispatchers.Main) {
-                        Log.e("DeleteCalorie", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
-                        if (isAdded  && view != null){
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e("DeleteCalorie", "Exception: ${e.message}", e)
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private fun onWorkoutItemClick(workoutModel: ActivityModel, position: Int, isRefresh: Boolean) {
         Log.d("WorkoutClick", "Clicked on ${workoutModel.activityType} at position $position")
     }
 
     private fun getWorkoutLogHistory(formattedDate: String) {
-        if (isAdded  && view != null){
+        if (isAdded && view != null) {
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
@@ -543,14 +473,14 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         call.enqueue(object : Callback<WorkoutHistoryResponse> {
             override fun onResponse(call: Call<WorkoutHistoryResponse>, response: Response<WorkoutHistoryResponse>) {
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
-                    if (response.body() != null){
+                    if (response.body() != null) {
                         workoutHistoryResponse = response.body()
-                        if (workoutHistoryResponse?.data?.record_details!!.size > 0){
+                        if (workoutHistoryResponse?.data?.record_details!!.size > 0) {
                             workoutLogHistory.addAll(workoutHistoryResponse!!.data.record_details)
                             onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
                         }
@@ -558,17 +488,18 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
                     }
                 }
             }
+
             override fun onFailure(call: Call<WorkoutHistoryResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                if (isAdded  && view != null){
+                if (isAdded && view != null) {
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
                     }
@@ -579,12 +510,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
     private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>) {
         val today = LocalDate.now()
-        val weekLists : ArrayList<WorkoutWeeklyDayModel> = ArrayList()
-        if (workoutLogHistory.size > 0 && weekList.isNotEmpty()){
+        val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
+        if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
             workoutLogHistory.forEach { workoutLog ->
-                for (item in weekList){
-                    if (item.fullDate.toString() == workoutLog.date){
-                        if (workoutLog.is_available_workout == true){
+                for (item in weekList) {
+                    if (item.fullDate.toString() == workoutLog.date) {
+                        if (workoutLog.is_available_workout == true) {
                             item.is_available = true
                         }
                     }
@@ -592,13 +523,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
 
-        if (weekList.isNotEmpty()){
+        if (weekList.isNotEmpty()) {
             weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
             var workoutLogDateData: WorkoutWeeklyDayModel? = null
             var isClick = false
             var index = -1
-            for (currentDay in weekLists){
-                if (currentDay.fullDate == today){
+            for (currentDay in weekLists) {
+                if (currentDay.fullDate == today) {
                     workoutLogDateData = currentDay
                     isClick = true
                     index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
@@ -611,11 +542,10 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun onWorkoutLogDateItem(mealLogWeeklyDayModel: WorkoutWeeklyDayModel, position: Int, isRefresh: Boolean) {
-
         val formatter = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         workoutDateTv.text = mealLogWeeklyDayModel.fullDate.format(formatter)
 
-        val weekLists : ArrayList<WorkoutWeeklyDayModel> = ArrayList()
+        val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
         weekLists.addAll(workoutWeeklyDayList as Collection<WorkoutWeeklyDayModel>)
         yourActivitiesWeeklyListAdapter.addAll(weekLists, position, mealLogWeeklyDayModel, isRefresh)
 
