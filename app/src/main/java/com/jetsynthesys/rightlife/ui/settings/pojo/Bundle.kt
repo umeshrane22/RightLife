@@ -14,11 +14,11 @@ class Bundle {
 
     @SerializedName("limit")
     @Expose
-    var limit: Int? = null
+    var limit: Double? = null
 
     @SerializedName("used")
     @Expose
-    var used: Int? = null
+    var used: Double? = null
 
     @SerializedName("entities")
     @Expose

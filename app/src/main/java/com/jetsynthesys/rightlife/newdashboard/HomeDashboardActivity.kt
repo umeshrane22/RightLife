@@ -1,14 +1,17 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
@@ -19,6 +22,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
@@ -38,9 +42,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
@@ -48,13 +56,15 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegment
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeDashboardBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
+import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.newdashboard.NewHomeFragment.HomeFragment
 import com.jetsynthesys.rightlife.newdashboard.model.AiDashboardResponseMain
 import com.jetsynthesys.rightlife.newdashboard.model.ChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
-import com.jetsynthesys.rightlife.subsciptions.BillingActivity
+import com.jetsynthesys.rightlife.newdashboard.model.SleepStage
+import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -110,6 +120,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         // Set default fragment
         loadFragment(HomeFragment())
 
+        checkForUpdate()
+
         //set report list dummy for demo
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -131,7 +143,11 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         //handle bottom menu
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
-            DialogUtils.showCheckListQuestionCommonDialog(this,"Why Checklist?")
+            DialogUtils.showCheckListQuestionCommonDialog(this, "Why Checklist?")
+            /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
+                //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                //putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
+            })*/
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(this)
@@ -234,6 +250,13 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
             Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+            startActivity(
+                Intent(
+                    this@HomeDashboardActivity,
+                    SubscriptionPlanListActivity::class.java
+                ).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
         }
 
 
@@ -294,14 +317,14 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         getAiDashboard("")
 
-        binding.progressBarOnboarding.post {
+      /*  binding.progressBarOnboarding.post {
             val progressPercentage =
                 binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
             val progressWidth = binding.progressBarOnboarding.width + 80
             val thumbX = (progressPercentage) * progressWidth - binding.progressThumb.width / 2
             binding.progressThumb.translationX = thumbX
             binding.tvWeightlossZone.translationX = thumbX
-        }
+        }*/
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
@@ -387,6 +410,23 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 })
             }
         }
+        binding.cardSleepMainIdeal.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+        binding.cardSleepMainLog.setOnClickListener {
+            if (checkTrailEndedAndShowDialog()) {
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "SleepRight")
+                    putExtra("BottomSeatName", "Not")
+                })
+            }
+        }
+
 
         // for no data card
         binding.cardThinkrightMainNodata.setOnClickListener {
@@ -460,6 +500,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
     }
 
+
+
     override fun onResume() {
         super.onResume()
         getDashboardChecklist("")
@@ -512,8 +554,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                     val ResponseObj = gson.fromJson(
                         jsonResponse, UserProfileResponse::class.java
                     )
-                    SharedPreferenceManager.getInstance(applicationContext).saveUserId(ResponseObj.userdata.id)
-                    SharedPreferenceManager.getInstance(applicationContext).saveUserProfile(ResponseObj)
+                    SharedPreferenceManager.getInstance(applicationContext)
+                        .saveUserId(ResponseObj.userdata.id)
+                    SharedPreferenceManager.getInstance(applicationContext)
+                        .saveUserProfile(ResponseObj)
 
 
                     if (ResponseObj.userdata.profilePicture != null) {
@@ -533,7 +577,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                     } else {
                         binding.llCountDown.visibility = View.GONE
-                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                        if (!DashboardChecklistManager.paymentStatus) {
+                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                        }
                     }
 
                 } else {
@@ -690,6 +736,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         setIfNotNullOrBlank(
                             binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
+
+                        setProgressBarMoveright(module)
+
                     }
 
                     "THINK_RIGHT" -> {
@@ -743,7 +792,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
 
                         binding.halfCurveProgressBar.setProgress(0f)
-                        binding.halfCurveProgressBar.setValues(0,0)
+                        binding.halfCurveProgressBar.setValues(0, 0)
                         // value is wrong for eatright progress let backend correct then uncomment below
                         /*val (curent, max) = extractNumericValues(module.calories.toString())
                             binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
@@ -769,41 +818,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         if (isSelected == true) {
                             binding.cardSleeprightMain.visibility = View.VISIBLE
                             binding.cardSleepright.visibility = View.GONE
+                            checkTimeAndSetVisibility(module)
                         }
-                        binding.tvRem.text = module.rem.toString()
-                        binding.tvCore.text = module.core.toString()
-                        binding.tvDeep.text = module.deep.toString()
-                        binding.tvAwake.text = module.awake.toString()
-                        binding.tvSleepTime.text = module.sleepTime.toString()
-                        binding.tvWakeupTime.text = module.wakeUpTime.toString()
 
-                        val sleepData = listOf(
-                            SleepSegmentModel(
-                                0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
-                            ), SleepSegmentModel(
-                                0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
-                            ), SleepSegmentModel(
-                                0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
-                            ), SleepSegmentModel(
-                                0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
-                            )
-                        )
-
-                        binding.sleepStagesView.setSleepData(sleepData)
 
                         setIfNotNullOrBlank(
                             binding.tvModuleValueEatright,
@@ -825,10 +842,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             aiDashboardResponseMain.data.updatedModules.find { it.moduleId == "SLEEP_RIGHT" }
                         sleepModule?.let {
                             setStageGraphFromSleepRightModule(
-                                rem = it.rem ?: "0min",
-                                core = it.core ?: "0min",
-                                deep = it.deep ?: "0min",
-                                awake = it.awake ?: "0min"
+                                rem = (it.rem ?: "0min").toString(),
+                                core = (it.core ?: "0min").toString(),
+                                deep = (it.deep ?: "0min").toString(),
+                                awake = (it.awake ?: "0min").toString()
                             )
                         }
                     }
@@ -842,6 +859,173 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
             }
         }
+    }
+    /*private fun setProgressBarMoveright1() {
+
+        // 🔸 Hardcoded test values
+        val intakeStr = "2408.7"
+        val burnedStr = "2481.8"
+        val calorieBalanceStr = "2073.2"
+        val calorieRange = listOf(1589.79, 1751.99)
+        val goal = "weight_loss" // or "weight_gain"
+        val intake = intakeStr.toFloatOrNull() ?: 0f
+        val burned = burnedStr.toFloatOrNull() ?: 0f
+
+        binding.progressBarOnboarding.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.progressBarOnboarding.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val progressBarWidth = binding.progressBarOnboarding.width.toFloat()
+
+
+
+                val maxValue = (intake + burned).toInt()
+                val progressValue = intake.toInt()
+
+                binding.progressBarOnboarding.max = maxValue
+                binding.progressBarOnboarding.progress = progressValue
+
+                val percentage = binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
+                val value = (percentage / 10)
+                val overlayPositionPercentage: Float = String.format("%.1f", value).toFloat()
+
+                val progress = binding.progressBarOnboarding.progress
+                val max = binding.progressBarOnboarding.max
+                val progressPercentage = progress.toFloat() / max
+
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.progressBarLayout)
+                constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
+                constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
+                constraintSet.applyTo(binding.progressBarLayout)
+            }
+        })
+
+        // 🔸 Calorie Balance Color Logic
+        val balance = calorieBalanceStr.toDoubleOrNull()?.toInt() ?: 0
+        val upperRange = calorieRange.getOrNull(1)?.toInt() ?: 0
+
+        val color = when (goal) {
+            "weight_loss" -> {
+                if (intake < upperRange) R.color.color_eat_right else R.color.red
+            }
+            "weight_gain" -> {
+                if (intake < upperRange) R.color.red else R.color.color_eat_right
+            }
+            else -> R.color.black
+        }
+
+        binding.tvCaloryValue.setTextColor(ContextCompat.getColor(this, color))
+    }*/
+
+    /*private fun setProgressBarMoveright(module: UpdatedModule) {
+        val intakeStr = module.intake ?: "0.0"
+        val burnedStr = module.burned ?: "0.0"
+
+        val intake = intakeStr.toFloatOrNull() ?: 0f
+        val burned = burnedStr.toFloatOrNull() ?: 0f
+        binding.progressBarOnboarding.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.progressBarOnboarding.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val progressBarWidth = binding.progressBarOnboarding.width.toFloat()
+                //val percentage = (( it.data.calorieBalance.calorieBurnTarget - it.data.calorieBalance.calorieRange.get(0)) / (it.data.calorieBalance.calorieRange.get(1) - it.data.calorieBalance.calorieRange.get(0))).toFloat()
+
+
+
+                val maxValue = (intake + burned).toInt()
+                val progressValue = intake.toInt()
+
+                binding.progressBarOnboarding.max = maxValue
+                binding.progressBarOnboarding.progress = progressValue
+
+                val percentage =
+                    binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
+                val value = (percentage / 10)
+                val overlayPositionPercentage : Float = String.format("%.1f", value).toFloat()
+                binding.progressBarOnboarding.progress = module.intake?.toInt() ?: 0//it.data.calorieBalance.calorieIntake.toInt()
+                //val progress = binding.progressBarOnboarding.progress
+                //binding.progressBarOnboarding.max = it.data.calorieBalance.calorieBurnTarget.toInt()
+                val progress = binding.progressBarOnboarding.progress
+                val max = binding.progressBarOnboarding.max
+                val progressPercentage = progress.toFloat() / max
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.progressBarLayout)
+                constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
+                constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
+                constraintSet.applyTo(binding.progressBarLayout)
+            }
+        })
+
+        val balance = module.calorieBalance?.toString()?.toIntOrNull() ?: 0
+        val upperRange = module.calorieRange?.getOrNull(1)?.toString()?.toIntOrNull() ?: 0
+
+        val color = when (module.goal) {
+            "weight_loss" -> {
+                if (intake < upperRange) R.color.color_eat_right else R.color.red
+            }
+            "weight_gain" -> {
+                if (intake < upperRange) R.color.red else R.color.color_eat_right
+            }
+            else -> R.color.color_eat_right
+        }
+
+        binding.tvCaloryValue.setTextColor(ContextCompat.getColor(this, color))
+
+    }*/
+
+
+    private fun setProgressBarMoveright(module: UpdatedModule) {
+        val intakeStr = module.intake ?: "0.0"
+        val burnedStr = module.burned ?: "0.0"
+
+        val intake = intakeStr.toFloatOrNull() ?: 0f
+        val burned = burnedStr.toFloatOrNull() ?: 0f
+
+        binding.progressBarOnboarding.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                binding.progressBarOnboarding.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                val progressBarWidth = binding.progressBarOnboarding.width.toFloat()
+
+                val maxValue = (intake + burned).toInt()
+                val progressValue = intake.toInt()
+
+                binding.progressBarOnboarding.max = maxValue
+                binding.progressBarOnboarding.progress = progressValue
+
+                val percentage =
+                    binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
+                val value = (percentage / 10)
+                val overlayPositionPercentage: Float = String.format("%.1f", value).toFloat()
+
+                val progress = binding.progressBarOnboarding.progress
+                val max = binding.progressBarOnboarding.max
+                val progressPercentage = progress.toFloat() / max
+
+                val constraintSet = ConstraintSet()
+                constraintSet.clone(binding.progressBarLayout)
+                constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
+                constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
+                constraintSet.applyTo(binding.progressBarLayout)
+            }
+        })
+
+        val balance = module.calorieBalance?.toString()?.toFloatOrNull()?.toInt() ?: 0
+        val upperRange = module.calorieRange?.getOrNull(1)?.toString()?.toFloatOrNull()?.toInt() ?: 0
+
+        val color = when (module.goal) {
+            "weight_loss" -> {
+                binding.weightLossZoneText.text = "Weight Loss Zone"
+                if (intake < upperRange) R.color.color_eat_right else R.color.red
+            }
+            "weight_gain" -> {
+                binding.weightLossZoneText.text = "Weight Gain Zone"
+                if (intake < upperRange) R.color.red else R.color.color_eat_right
+            }
+            else -> {
+                binding.weightLossZoneText.text = "Weight Loss Zone"
+                R.color.color_eat_right}
+        }
+
+        binding.tvCaloryValue.setTextColor(ContextCompat.getColor(this, color))
     }
 
 
@@ -884,7 +1068,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             currentPosition += duration
         }
 
-        binding.sleepStagesView.setSleepData(sleepData)//sleepStagesView.setSleepData(sleepData)
+        //binding.sleepStagesView.setSleepData(sleepData)//sleepStagesView.setSleepData(sleepData)
     }
 
 
@@ -1227,9 +1411,233 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         dialogBinding.btnExplorePlan.setOnClickListener {
             bottomSheetDialog.dismiss()
+            startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+            })
             //finish()
         }
 
         bottomSheetDialog.show()
+    }
+// new sleep time implementation
+private fun checkTimeAndSetVisibility(module: UpdatedModule) {
+    val calendar = Calendar.getInstance()
+    val currentHour = calendar.get(Calendar.HOUR_OF_DAY) // Get hour in 24-hour format (0-23)
+
+    // Check if currentHour is between 18 (6 PM) and 1 (1 AM)
+    // OR if currentHour is 0 (12 AM) or 1 (1 AM) or 2 (2 AM) for the next day
+    val isVisible = (currentHour >= 18 && currentHour <= 23) || // 6 PM to 11 PM
+            (currentHour >= 0 && currentHour <= 2)      // 12 AM (midnight) to 2 AM
+
+    if (isVisible) {
+        binding.cardSleepMainIdeal.visibility = View.VISIBLE
+        if (module.sleepTime.equals("00:00")) {
+            binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat("2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
+        } else {
+            binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat(module.sleepTime ?: "2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
+        }
+        if (module.wakeUpTime.equals("00:00")) {
+            binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat("2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
+        } else {
+            binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat(module.wakeUpTime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
+        }
+
+        //binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat(module.sleepTime ?: "2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
+        //binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat(module.wakeUpTime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
+        binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.formatSleepDuration(module.sleepPerformanceDetail?.idealSleepDuration ?: 0.0)   //(module.sleepPerformanceDetail?.idealSleepDuration ?: "0min").toString()
+
+        binding.cardSleepMainLog.visibility = View.GONE
+        binding.cardSleeprightMain.visibility = View.GONE
+    } else {
+        try {
+            // Check if all specified sleep-related fields are "0min"
+            var isAllZero = module.rem == 0.toDouble() &&
+                    module.core == 0.toDouble() &&
+                    module.deep == 0.toDouble() &&
+                    module.awake == 0.toDouble()
+
+            if (isAllZero) {
+                binding.cardSleepMainIdeal.visibility = View.GONE
+                binding.cardSleepMainLog.visibility = View.VISIBLE
+                binding.cardSleeprightMain.visibility = View.GONE
+                // sleeo log card is visible, you can show a message or prompt the user to log their sleep
+                binding.tvPerformSleepDuration.text =
+                    module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
+                        DateTimeUtils.formatSleepDuration(it)
+                    } ?: "0 hr"// (module.sleepDuration ?: "0min").toString()
+                binding.tvPerformIdealDuration.text =
+                    module.sleepPerformanceDetail?.idealSleepDuration?.let {
+                    DateTimeUtils.formatSleepDuration(
+                        it
+                    )
+                }?: "0 hr"//(module.sleepDuration ?: "0min").toString()
+                binding.tvPerformSleepPercent.text =
+                    (module.sleepPerformanceDetail?.sleepPerformanceData?.sleepPerformance?: "0").toString()
+                    //(module.sleepDuration ?: "0").toString()
+            } else {
+                // sleep data available  // For example, update your UI elements with sleepData.rem, sleepData.core, etc.
+                binding.cardSleepMainIdeal.visibility = View.GONE
+                binding.cardSleepMainLog.visibility = View.GONE
+                    // Update UI elements here
+                binding.cardSleeprightMain.visibility = View.VISIBLE
+                binding.tvRem.text = module.rem.toString()
+                binding.tvCore.text = module.core.toString()
+                binding.tvDeep.text = module.deep.toString()
+                binding.tvAwake.text = module.awake.toString()
+                binding.tvSleepTime.text = module.sleepTime.toString()
+                binding.tvWakeupTime.text = module.wakeUpTime.toString()
+
+                val sleepData = listOf(
+                    SleepSegmentModel(
+                        0.001f, 0.100f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.101f, 0.150f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.151f, 0.300f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.301f, 0.400f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.401f, 0.450f, resources.getColor(R.color.blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.451f, 0.550f, resources.getColor(R.color.sky_blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.551f, 0.660f, resources.getColor(R.color.sky_blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.661f, 0.690f, resources.getColor(R.color.sky_blue_bar), 110f
+                    ), SleepSegmentModel(
+                        0.691f, 0.750f, resources.getColor(R.color.deep_purple_bar), 110f
+                    ), SleepSegmentModel(
+                        0.751f, 0.860f, resources.getColor(R.color.deep_purple_bar), 110f
+                    ), SleepSegmentModel(
+                        0.861f, 0.990f, resources.getColor(R.color.red_orange_bar), 110f
+                    )
+                )
+
+                //binding.sleepStagesView.setSleepData(sleepData)
+                newSleepStagesHandling(module.sleepStages?: emptyList());
+            }
+        } catch (e: Exception) {
+            // Handle JSON parsing errors (e.g., malformed JSON)
+            Toast.makeText(this, "Error parsing sleep data: ${e.message}", Toast.LENGTH_LONG).show()
+            e.printStackTrace() // Log the error for debugging
+        }
+
+    }
+}
+
+    private fun showForceUpdateDialog(){
+
+        // Create the dialog
+        val dialog = Dialog(this)
+        val binding = DialogForceUpdateBinding.inflate(layoutInflater)
+
+        dialog.setContentView(binding.root)
+        dialog.setCancelable(false) // Prevent back press
+        dialog.setCanceledOnTouchOutside(false) // Prevent outside tap
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        val window = dialog.window
+        window?.let {
+            val layoutParams = it.attributes
+            layoutParams.dimAmount = 0.7f
+            it.attributes = layoutParams
+        }
+
+        binding.btnUpdate.setOnClickListener {
+            startActivity(
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=${packageName}"))
+            )
+            finish()
+        }
+
+        dialog.show()
+
+    }
+
+    private fun newSleepStagesHandling(sleepStages: List<SleepStage>?) {
+        /*val SleepStage = arrayListOf(
+            SleepStage("REM Sleep", "2025-05-15T00:01:44.000Z", "2025-05-15T00:19:14.000Z", 17.5),
+            SleepStage("Light Sleep", "2025-05-15T00:19:14.000Z", "2025-05-15T01:22:44.000Z", 63.5),
+            SleepStage("REM Sleep", "2025-05-15T01:22:44.000Z", "2025-05-15T01:51:14.000Z", 28.5),
+            SleepStage("Awake", "2025-05-15T01:51:14.000Z", "2025-05-15T01:52:14.000Z", 1.0),
+            SleepStage("Light Sleep", "2025-05-15T01:52:14.000Z", "2025-05-15T01:56:44.000Z", 4.5),
+            SleepStage("REM Sleep", "2025-05-15T01:56:44.000Z", "2025-05-15T02:29:14.000Z", 32.5),
+            SleepStage("Light Sleep", "2025-05-15T02:29:14.000Z", "2025-05-15T02:31:14.000Z", 2.0),
+            SleepStage("Awake", "2025-05-15T02:31:14.000Z", "2025-05-15T02:32:44.000Z", 1.5),
+            SleepStage("Light Sleep", "2025-05-15T02:32:44.000Z", "2025-05-15T02:34:14.000Z", 1.5),
+            SleepStage("Awake", "2025-05-15T02:34:14.000Z", "2025-05-15T02:36:14.000Z", 2.0),
+            SleepStage("Light Sleep", "2025-05-15T02:36:14.000Z", "2025-05-15T02:59:44.000Z", 23.5),
+            SleepStage("Awake", "2025-05-15T02:59:44.000Z", "2025-05-15T03:01:44.000Z", 2.0),
+            SleepStage("Light Sleep", "2025-05-15T03:01:44.000Z", "2025-05-15T03:09:14.000Z", 7.5),
+            SleepStage("Light Sleep", "2025-05-15T21:08:54.000Z", "2025-05-15T21:24:54.000Z", 16.0),
+            SleepStage("Deep Sleep", "2025-05-15T21:24:54.000Z", "2025-05-15T21:36:24.000Z", 11.5),
+            SleepStage("Light Sleep", "2025-05-15T21:36:24.000Z", "2025-05-15T21:41:24.000Z", 5.0),
+            SleepStage("Deep Sleep", "2025-05-15T21:41:24.000Z", "2025-05-15T22:20:54.000Z", 39.5),
+            SleepStage("Light Sleep", "2025-05-15T22:20:54.000Z", "2025-05-15T22:24:54.000Z", 4.0),
+            SleepStage("REM Sleep", "2025-05-15T22:24:54.000Z", "2025-05-15T22:52:24.000Z", 27.5),
+            SleepStage("Light Sleep", "2025-05-15T22:52:24.000Z", "2025-05-15T23:07:24.000Z", 15.0),
+            SleepStage("Deep Sleep", "2025-05-15T23:07:24.000Z", "2025-05-15T23:35:24.000Z", 28.0),
+            SleepStage("Light Sleep", "2025-05-15T23:35:24.000Z", "2025-05-16T00:08:24.000Z", 33.0)
+        )*/
+        val totalDuration = sleepStages?.sumByDouble { it.durationMinutes ?: 0.0 }
+        println("Total Sleep Duration (in minutes): $totalDuration")
+
+
+        val sleepData = mutableListOf<SleepSegmentModel>()
+        var currentPosition = 0f
+
+        sleepStages?.forEach { stageData ->
+            var duration = stageData.durationMinutes?.toFloat()?:0f
+            var start = currentPosition / (totalDuration?.toFloat() ?: 1f)
+            var end = (currentPosition + duration) / (totalDuration?.toFloat() ?: 1f)
+
+            val color = when {
+                stageData.stage?.contains("REM", ignoreCase = true) == true -> Color.parseColor("#63D4FE")
+                stageData.stage?.contains("Deep", ignoreCase = true) == true -> Color.parseColor("#5E5CE6")
+                stageData.stage?.contains("Light", ignoreCase = true) == true -> Color.parseColor("#FF6650")
+                stageData.stage?.contains("Awake", ignoreCase = true) == true -> Color.parseColor("#0B84FF")
+                else -> Color.GRAY
+            }
+
+            sleepData.add(SleepSegmentModel(start, end, color, 110f))
+            currentPosition += duration
+        }
+
+        binding.sleepStagesView.setSleepData(sleepData)
+
+    }
+
+
+    private fun checkForUpdate() {
+        val remoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(
+            mapOf(
+                "force_update_current_version" to "1.0.0",
+                "isForceUpdate" to false,
+                "force_update_build_number" to "261"
+            )
+        )
+
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val latestVersion = remoteConfig.getString("force_update_current_version")
+                val isForceUpdate = remoteConfig.getBoolean("isForceUpdate")
+                val forceUpdateBuildNumber = remoteConfig.getString("force_update_build_number")
+
+                val currentVersion = BuildConfig.VERSION_NAME
+
+                if (isForceUpdate && isVersionOutdated(currentVersion, latestVersion)) {
+                    showForceUpdateDialog()
+                }
+            }
+        }
+    }
+
+    private fun isVersionOutdated(current: String, latest: String): Boolean {
+        return current != latest // or use a version comparator for more complex rules
     }
 }

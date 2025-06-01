@@ -126,6 +126,7 @@
                                         android:layout_centerVertical="true"
                                         android:layout_marginEnd="24dp"
                                         android:src="@drawable/ic_search"
+                                        android:visibility="gone"
                                         app:tint="@android:color/black" />
 
                                 </RelativeLayout>
@@ -144,7 +145,7 @@
                                         android:clipToPadding="false"
                                         android:paddingStart="2dp"
                                         android:paddingEnd="2dp"
-                                        android:visibility="visible" />
+                                        android:visibility="gone" />
 
 
                                 </RelativeLayout>
@@ -290,7 +291,7 @@
                                                     app:bvp_indicator_slide_mode="scale"
                                                     app:bvp_indicator_radius="10dp"
                                                     app:bvp_indicator_checked_color="@color/menuselected"
-                                                    android:visibility="visible" />
+                                                    android:visibility="gone" />
 
                                             </LinearLayout>
 

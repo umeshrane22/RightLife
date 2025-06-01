@@ -18,7 +18,7 @@ class OrderInfo {
 
     @SerializedName("amountPaid")
     @Expose
-    var amountPaid: Int? = null
+    var amountPaid: Double? = null
 
     @SerializedName("paymentMethod")
     @Expose

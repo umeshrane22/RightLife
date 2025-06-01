@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -19,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
@@ -36,10 +38,10 @@ import retrofit2.Response;
 
 public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapter.CardViewHolder> {
 
-    private Context mContext;
-    private List<CardItem> items; // Replace CardItem with your model class
+    private final Context mContext;
+    private final List<CardItem> items; // Replace CardItem with your model class
 
-    public CircularCardAdapter( Context context, List<CardItem> items) {
+    public CircularCardAdapter(Context context, List<CardItem> items) {
         this.items = items;
         this.mContext = context;
     }
@@ -54,15 +56,26 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         // Circular scrolling logic
+        if (items.isEmpty())
+            return;
         CardItem item = items.get(position % items.size());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(view.getContext(), "Clicked on: " + item.getTitle()+ holder.getAdapterPosition(), Toast.LENGTH_SHORT).show();
                 // Start new activity here
 
-
-                if (item.getCategory().equalsIgnoreCase("MIND_AUDIT")) {
+                if (item.getCategory().equalsIgnoreCase("daily") ||
+                        item.getCategory().equalsIgnoreCase("CONTENT")) {
+                    Intent intent = new Intent(mContext, ContentDetailsActivity.class);
+                    intent.putExtra("contentId", item.getSeriesId());
+                    mContext.startActivity(intent);
+                } else if (item.getCategory().equalsIgnoreCase("live")) {
+                    Toast.makeText(mContext, "Live Content", Toast.LENGTH_SHORT).show();
+                } else if (item.getCategory().equalsIgnoreCase("MIND_AUDIT") ||
+                        item.getCategory().equalsIgnoreCase("Mind Audit") ||
+                        item.getCategory().equalsIgnoreCase("Health Audit") ||
+                        item.getCategory().equalsIgnoreCase("mindAudit")) {
                     Intent intent = new Intent(mContext, MindAuditActivity.class);
                     // Optionally pass data
                     //intent.putExtra("key", "value");
@@ -74,8 +87,8 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                     //intent.putExtra("key", "value");
                     mContext.startActivity(intent);
 
-                }else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN")) {
-
+                } else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
+                        item.getCategory().equalsIgnoreCase("Health Cam")) {
                     Intent intent = new Intent(mContext, HealthCamActivity.class);
                     // Optionally pass data
                     //intent.putExtra("key", "value");
@@ -85,10 +98,10 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 ViewCountRequest viewCountRequest = new ViewCountRequest();
                 viewCountRequest.setId(item.getId());
                 viewCountRequest.setUserId(SharedPreferenceManager.getInstance(mContext).getUserId());
-                updateViewCount(viewCountRequest,holder.getBindingAdapterPosition());
+                updateViewCount(viewCountRequest, holder.getBindingAdapterPosition());
             }
         });
-        Utils.logDebug("CircularCardAdapter",""+holder.getBindingAdapterPosition());
+        Utils.logDebug("CircularCardAdapter", "" + holder.getBindingAdapterPosition());
         holder.bind(item);
 
     }
@@ -99,62 +112,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         return Integer.MAX_VALUE;
     }
 
-
-
-    static class CardViewHolder extends RecyclerView.ViewHolder {
-        private TextView cardTitle,cardbtntext,cardbtntextDesc,workshop_tag1,workshop_tag3;
-        private ImageView cardImage;
-
-        public CardViewHolder(@NonNull View itemView) {
-            super(itemView);
-            cardTitle  = itemView.findViewById(R.id.promotitle);
-            cardbtntextDesc= itemView.findViewById(R.id.promodescription);
-            cardbtntext = itemView.findViewById(R.id.promobtntxt);
-            cardImage = itemView.findViewById(R.id.cardImage);
-            workshop_tag1 = itemView.findViewById(R.id.workshop_tag1);
-        }
-
-        public void bind(CardItem item) {
-           // cardTitle.setText(item.getTitle());
-            cardImage.setImageResource(item.getImageResId());
-            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA+item.getImageUrl()).into(cardImage);
-                Log.e("Image URL List", "list : " + ApiClient.CDN_URL_QA+item.getImageUrl());
-            }
-            cardbtntext.setText(item.getButtonText());
-            cardTitle.setText(item.getTitle());
-            cardbtntextDesc.setText(item.getContent());
-            workshop_tag1.setText(item.getViewCount());
-
-            //Drawable drawable = itemView.getContext().getResources().getDrawable(R.drawable.ic_home_black_24dp);
-
-            Log.d("banner", "cardcategory " + item.getCategory());
-            if (item.getCategory().equalsIgnoreCase("MIND_AUDIT")) {
-                Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_mindaudit);
-                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-                Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_chekinnow);
-                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
-
-            } else if (item.getCategory().equalsIgnoreCase("VOICE_SCAN")) {
-
-                Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_voicescan);
-                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-                Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_recordnow);
-                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
-
-            } else
-            {
-                //else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN"))
-                Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_healthcam);
-                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
-                Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_scannow);
-                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
-            }
-
-        }
-    }
-
-        public void updateData(List<CardItem> newData) {
+    public void updateData(List<CardItem> newData) {
         // 1. Clear the existing data
         items.clear();
 
@@ -178,8 +136,8 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                         String jsonString = jsonString = response.body().string();
                         Log.d("API_RESPONSE", "View Count content: " + jsonString);
 
-                   //     int currentViewCount = Integer.parseInt(items.get(position).getViewCount());
-                 //       items.get(position).setViewCount(String.valueOf(currentViewCount + 1));
+                        //     int currentViewCount = Integer.parseInt(items.get(position).getViewCount());
+                        //       items.get(position).setViewCount(String.valueOf(currentViewCount + 1));
                         //notifyDataSetChanged();
 
                     } catch (IOException e) {
@@ -195,5 +153,61 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                 Log.e("API_FAILURE", "Failure: " + t.getMessage());
             }
         });
+    }
+
+    static class CardViewHolder extends RecyclerView.ViewHolder {
+        private final TextView cardTitle;
+        private final TextView cardbtntext;
+        private final TextView cardbtntextDesc;
+        private final TextView workshop_tag1;
+        private final ImageView cardImage;
+        private TextView workshop_tag3;
+
+        public CardViewHolder(@NonNull View itemView) {
+            super(itemView);
+            cardTitle = itemView.findViewById(R.id.promotitle);
+            cardbtntextDesc = itemView.findViewById(R.id.promodescription);
+            cardbtntext = itemView.findViewById(R.id.promobtntxt);
+            cardImage = itemView.findViewById(R.id.cardImage);
+            workshop_tag1 = itemView.findViewById(R.id.workshop_tag1);
+        }
+
+        public void bind(CardItem item) {
+            // cardTitle.setText(item.getTitle());
+            cardImage.setImageResource(item.getImageResId());
+            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getImageUrl()).into(cardImage);
+                Log.e("Image URL List", "list : " + ApiClient.CDN_URL_QA + item.getImageUrl());
+            }
+            cardbtntext.setText(item.getButtonText());
+            cardTitle.setText(item.getTitle());
+            cardbtntextDesc.setText(item.getContent());
+            workshop_tag1.setText(item.getViewCount());
+
+            //Drawable drawable = itemView.getContext().getResources().getDrawable(R.drawable.ic_home_black_24dp);
+
+            Log.d("banner", "cardcategory " + item.getCategory());
+            if (item.getCategory().equalsIgnoreCase("MIND_AUDIT")) {
+                Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_mindaudit);
+                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_chekinnow);
+                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
+
+            } else if (item.getCategory().equalsIgnoreCase("VOICE_SCAN")) {
+
+                Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_voicescan);
+                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_recordnow);
+                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
+
+            } else {
+                //else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN"))
+                Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_healthcam);
+                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_scannow);
+                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
+            }
+
+        }
     }
 }

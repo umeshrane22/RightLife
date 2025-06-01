@@ -17,8 +17,8 @@ android {
         applicationId "com.jetsynthesys.rightlife"
         minSdk 26
         targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        versionCode 283
+        versionName "1.1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -35,16 +35,27 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file("my-release-key.jks") // Use the same keystore for debug
+            /*storeFile file("my-release-key.jks") // Use the same keystore for debug
             storePassword "android" // Use the same password
             keyAlias "key0" // Use the same alias
-            keyPassword "android" // Use the same key password
+            keyPassword "android" // Use the same key password*/
+            //--new
+            //----new
+            storeFile file("rightlife_keystore.jks") // Use the same keystore for release
+            storePassword "rightlife@2023" // Use the same password
+            keyAlias "rightlife" // Use the same alias
+            keyPassword "rightlife@2023" // Use the same key password
         }
         release {
-            storeFile file("my-release-key.jks") // Use the same keystore for release
+            /*storeFile file("my-release-key.jks") // Use the same keystore for release
             storePassword "android" // Use the same password
             keyAlias "key0" // Use the same alias
-            keyPassword "android" // Use the same key password
+            keyPassword "android" // Use the same key password*/
+            //----new
+            storeFile file("rightlife_keystore.jks") // Use the same keystore for release
+            storePassword "rightlife@2023" // Use the same password
+            keyAlias "rightlife" // Use the same alias
+            keyPassword "rightlife@2023" // Use the same key password
         }
     }
     buildTypes {
@@ -85,16 +96,28 @@ android {
     flavorDimensions 'environment'
 
     productFlavors {
-        create("development") {
+        create("qa") {
             dimension = "environment"
-            // applicationIdSuffix = ".qa"
-            // versionNameSuffix = "-qa"
-            buildConfigField("String", "BASE_URL", "\"https://ai-qa.rightlife.com/\"")
+             applicationIdSuffix = ".qa"
+             versionNameSuffix = "-qa"
+            buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
+            buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
+            buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
+            // buildConfigField("String", "BASE_URL", "\"https://"")
+
+        buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
+        buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
+        buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
+        // buildConfigField("String", "BASE_URL", "\"https://"")
         }
+
         create("production") {
             dimension = "environment"
+            buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"468192274227-0ptrdeff84u6b01ak5fmaiipbds91s4c.apps.googleusercontent.com\""
+             buildConfigField "String", "BASE_URL", "\"https://app.rightlife.com/api/app/api/\""
+             buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
             buildConfigField("String", "BASE_URL", "\"https://ai.rightlife.com/\"")
-        }
+        
     }
 }
 
@@ -246,4 +269,9 @@ dependencies {
 
     // billing
     implementation("com.android.billingclient:billing-ktx:6.1.0")
+
+    //remote config
+    implementation 'com.google.firebase:firebase-config:21.6.0'
+    implementation 'com.google.firebase:firebase-analytics:21.5.0'
+    apply plugin: 'com.google.gms.google-services'
 }

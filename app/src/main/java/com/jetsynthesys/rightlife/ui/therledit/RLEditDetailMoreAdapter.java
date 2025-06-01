@@ -73,7 +73,7 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
                 intent = new Intent(holder.itemView.getContext(), ArticlesDetailActivity.class);
                 intent.putExtra("contentId", contentList.get(position).getId());
                 holder.itemView.getContext().startActivity(intent);
-            } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")) {
+            } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO") || contentList.get(position).getContentType().equalsIgnoreCase("AUDIO")) {
                 intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
                 intent.putExtra("contentId", contentList.get(position).getId());
                 holder.itemView.getContext().startActivity(intent);

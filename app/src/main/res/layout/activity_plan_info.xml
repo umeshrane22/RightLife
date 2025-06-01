@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white">
+
+    <ScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/btnBeginFreeTrial"
+        android:layout_marginVertical="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <!-- Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Your Health, Your Plan"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingBottom="4dp" />
+
+                <ImageView
+                    android:id="@+id/closeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/close_journal"
+                    android:layout_alignParentEnd="true" />
+
+            </RelativeLayout>
+
+
+            <!-- Privacy Policy -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Retain your full access to expert insights &amp; tools."
+                android:textSize="@dimen/textsize_medium"
+                android:textColor="@color/txt_color_header"
+                android:padding="@dimen/margin_card_16dp"
+                android:gravity="center"
+                android:fontFamily="@font/dmsans_regular" />
+
+            <!-- ViewPager2 for Image Slider -->
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager_image_slider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+
+            <!-- TabLayout for dots -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                app:tabGravity="center"
+                android:visibility="gone"
+                app:tabIndicatorHeight="0dp" />
+
+            <com.zhpan.bannerview.indicator.DrawableIndicator
+                android:id="@+id/indicator_view_pager1"
+                android:layout_width="wrap_content"
+                android:layout_margin="7dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/selectPlanContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:background="@drawable/roundedcornershape"
+                android:backgroundTint="#FFF4D0"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/selectPlanTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select A Plan"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#000000"
+                    android:paddingBottom="12dp" />
+
+                <LinearLayout
+                    android:id="@+id/planOptionsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:weightSum="2"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginHorizontal="8dp">
+
+                    <!-- 1 Year Plan -->
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/roundedcornershape"
+                        android:backgroundTint="@color/white"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:elevation="2dp">
+
+                        <TextView
+                            android:id="@+id/oneYearLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1 year"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="#000000" />
+
+                        <TextView
+                            android:id="@+id/oneYearPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹XXXX"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#000000"
+                            android:layout_marginTop="4dp" />
+
+                        <TextView
+                            android:id="@+id/oneYearPerMonth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹XXX/month"
+                            android:textSize="14sp"
+                            android:textColor="#888888"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <!-- 1 Month Plan -->
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/roundedcornershape"
+                        android:backgroundTint="@color/white"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:elevation="2dp">
+
+                        <TextView
+                            android:id="@+id/oneMonthLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1 month"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:textColor="#000000" />
+
+                        <TextView
+                            android:id="@+id/oneMonthPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="₹XXXX"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="#000000"
+                            android:layout_marginTop="4dp" />
+
+                        <TextView
+                            android:id="@+id/oneMonthPerMonth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Per month"
+                            android:textSize="14sp"
+                            android:textColor="#888888"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/tvHtmlText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/textsize_large"
+                android:layout_margin="16dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Button -->
+    <Button
+        android:id="@+id/btnBeginFreeTrial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Begin My Free Trial"
+        android:backgroundTint="@color/menuselected"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:textSize="16sp"
+        android:visibility="gone"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@id/llFooterLinks" />
+
+    <!-- Footer Links -->
+    <LinearLayout
+        android:id="@+id/llFooterLinks"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:id="@+id/tv_terms_condition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Terms of Service"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:paddingEnd="16dp" />
+
+        <TextView
+            android:id="@+id/tvPrivacyPolicy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Privacy Policy"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+
+</RelativeLayout>

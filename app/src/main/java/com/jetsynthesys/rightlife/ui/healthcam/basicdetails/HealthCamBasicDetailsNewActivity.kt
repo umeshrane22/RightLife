@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -31,13 +32,13 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetAgeSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetHeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetWeightSelectionBinding
 import com.jetsynthesys.rightlife.showCustomToast
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.Option
 import com.jetsynthesys.rightlife.ui.healthaudit.questionlist.QuestionListHealthAudit
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamSubmitResponse
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapter
 import com.jetsynthesys.rightlife.ui.new_design.RulerAdapterVertical
-import com.jetsynthesys.rightlife.ui.payment.AccessPaymentActivity
 import com.jetsynthesys.rightlife.ui.sdkpackage.HealthCamRecorderActivity
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -224,7 +225,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 val heightInCms = if (heightWithUnit.size == 2)
                     heightWithUnit[0]
                 else
-                    "${heightWithUnit[0]}.${heightWithUnit[2]}"
+                    CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
 
 
                 val weightInKg =
@@ -232,7 +233,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                             "kgs",
                             ignoreCase = true
                         )
-                    ) weightWithUnit[0] else ConversionUtils.convertLbsToKgs(
+                    ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
                         weightWithUnit[0]
                     )
 
@@ -439,6 +440,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
+        dialogBinding.switchWeightMetric.apply {
+            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
+            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
+        }
 
         // Set up the animation
         val bottomSheetLayout =
@@ -561,7 +566,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
-
+        dialogBinding.switchHeightMetric.apply {
+            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
+            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
+        }
         // Set up the animation
         val bottomSheetLayout =
             bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
@@ -920,9 +928,9 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     ) {
                         val intent = Intent(
                             this@HealthCamBasicDetailsNewActivity,
-                            AccessPaymentActivity::class.java
+                            SubscriptionPlanListActivity::class.java
                         )
-                        intent.putExtra("ACCESS_VALUE", "FACIAL_SCAN")
+                        intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
                         startActivity(intent)
                         finish()
                     } else {

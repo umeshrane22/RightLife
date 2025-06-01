@@ -1654,7 +1654,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:id="@+id/card_sleep_time_requirement"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"

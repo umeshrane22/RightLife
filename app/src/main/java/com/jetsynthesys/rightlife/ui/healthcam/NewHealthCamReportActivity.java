@@ -36,6 +36,7 @@ import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
@@ -85,7 +86,9 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
         binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
         binding.cardviewLastCheckin.setOnClickListener(v -> {
-            startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
+            Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
+            intent.putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN");
+            startActivity(intent);
         });
 
         binding.btnBuyFacescan.setOnClickListener(v -> {
@@ -93,7 +96,10 @@ public class NewHealthCamReportActivity extends BaseActivity {
             if (facialReportResponseNew.data.boosterLimit > 0 && facialReportResponseNew.data.boosterUsed < facialReportResponseNew.data.boosterLimit) {
                 startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
             } else {
-                Toast.makeText(NewHealthCamReportActivity.this, "Buy New Process here...", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
+                intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN");
+                startActivity(intent);
+
             }
 
         });
@@ -116,6 +122,12 @@ public class NewHealthCamReportActivity extends BaseActivity {
         }*/
 
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getMyRLHealthCamResult();
     }
 
     private void onBackPressHandle() {
@@ -158,7 +170,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
                         Gson gson = new Gson();
                         facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
                         HandleNewReportUI(facialReportResponseNew);
-                        HandleContinueWatchUI(facialReportResponseNew);
+                      //  HandleContinueWatchUI(facialReportResponseNew);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -208,7 +220,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
                 binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
                 binding.recyclerViewVitalCards.setAdapter(adapter);
-                if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
+                if (facialReportResponseNew.data.limit > 0) {  //if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
                     setupScanTracker(scanBinding, facialReportResponseNew.data.usedCount, facialReportResponseNew.data.limit);
                     binding.cardFacescanBooster.setVisibility(View.VISIBLE);
                     binding.scanProgressLayout.scanContainer.setVisibility(View.VISIBLE);
@@ -245,14 +257,14 @@ public class NewHealthCamReportActivity extends BaseActivity {
         binding.txtWellStreak.setText(message);
     }
 
-    private void HandleContinueWatchUI(FacialReportResponseNew facialReportResponseNew) {
+    /*private void HandleContinueWatchUI(FacialReportResponseNew facialReportResponseNew) {
         if (!facialReportResponseNew.data.recommendation.isEmpty()) {
             HealthCamRecommendationAdapter adapter = new HealthCamRecommendationAdapter(this, facialReportResponseNew.data.recommendation);
             LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
             binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager);
             binding.recyclerViewContinue.setAdapter(adapter);
         }
-    }
+    }*/
 
     private void showDisclaimerDialog() {
         // Create the dialog

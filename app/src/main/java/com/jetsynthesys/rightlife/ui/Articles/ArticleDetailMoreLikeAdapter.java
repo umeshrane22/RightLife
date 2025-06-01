@@ -132,14 +132,16 @@ public class ArticleDetailMoreLikeAdapter extends RecyclerView.Adapter<ArticleDe
                 && contentResponseObj.getArtist().size()>0) {
 
             String name = "";
-            if (contentResponseObj.getArtist().get(0).getFirstName() != null) {
-                name = contentResponseObj.getArtist().get(0).getFirstName();
-            }
-            if (contentResponseObj.getArtist().get(0).getLastName() != null) {
-                name += (name.isEmpty() ? "" : " ") + contentResponseObj.getArtist().get(0).getLastName();
-            }
+            if (!contentResponseObj.getArtist().isEmpty()) {
+                if (contentResponseObj.getArtist().get(0).getFirstName() != null) {
+                    name = contentResponseObj.getArtist().get(0).getFirstName();
+                }
+                if (contentResponseObj.getArtist().get(0).getLastName() != null) {
+                    name += (name.isEmpty() ? "" : " ") + contentResponseObj.getArtist().get(0).getLastName();
+                }
 
-            holder.binding.tvArtistName.setText(name);
+                holder.binding.tvArtistName.setText(name);
+            }
         } else if (holder.binding != null && holder.binding.tvArtistName != null) {
             holder.binding.tvArtistName.setText(""); // or set some default value
         }

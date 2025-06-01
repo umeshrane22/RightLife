@@ -54,6 +54,48 @@ public class PromotionResponse {
         @Expose
         private Boolean isScrollReverse;
 
+        public Boolean getScrollReverse() {
+            return isScrollReverse;
+        }
+
+        public void setScrollReverse(Boolean scrollReverse) {
+            isScrollReverse = scrollReverse;
+        }
+
+        public String getSectionTitle() {
+            return sectionTitle;
+        }
+
+        public void setSectionTitle(String sectionTitle) {
+            this.sectionTitle = sectionTitle;
+        }
+
+        public String getSectionSubtitle() {
+            return sectionSubtitle;
+        }
+
+        public void setSectionSubtitle(String sectionSubtitle) {
+            this.sectionSubtitle = sectionSubtitle;
+        }
+
+        public Boolean getShowGrid() {
+            return isShowGrid;
+        }
+
+        public void setShowGrid(Boolean showGrid) {
+            isShowGrid = showGrid;
+        }
+
+        @SerializedName("sectionTitle")
+        @Expose
+        private String sectionTitle;
+        @SerializedName("sectionSubtitle")
+        @Expose
+        private String sectionSubtitle;
+        @SerializedName("isShowGrid")
+        @Expose
+        private Boolean isShowGrid;
+
         public List<Promotion> getPromotionList() {
             return promotionList;
         }
@@ -98,6 +140,9 @@ public class PromotionResponse {
             @SerializedName("thumbnail")
             @Expose
             private Thumbnail thumbnail;
+            @SerializedName("videoThumbnail")
+            @Expose
+            private VideoThumbnail videoThumbnail;
             @SerializedName("navigationModule")
             @Expose
             private String navigationModule;
@@ -122,6 +167,27 @@ public class PromotionResponse {
             @SerializedName("buttonName")
             @Expose
             private String buttonName;
+            @SerializedName("titleImage")
+            @Expose
+            private String titleImage;
+            @SerializedName("buttonImage")
+            @Expose
+            private String buttonImage;
+            @SerializedName("seriesType")
+            @Expose
+            private String seriesType;
+            @SerializedName("seriesId")
+            @Expose
+            private String seriesId;
+            @SerializedName("selectedContentType")
+            @Expose
+            private String selectedContentType;
+            @SerializedName("selectedContentName")
+            @Expose
+            private String selectedContentName;
+            @SerializedName("deviceType")
+            @Expose
+            private DeviceType deviceType;
 
             public String getId() {
                 return id;
@@ -169,6 +235,14 @@ public class PromotionResponse {
 
             public void setThumbnail(Thumbnail thumbnail) {
                 this.thumbnail = thumbnail;
+            }
+
+            public VideoThumbnail getVideoThumbnail() {
+                return videoThumbnail;
+            }
+
+            public void setVideoThumbnail(VideoThumbnail videoThumbnail) {
+                this.videoThumbnail = videoThumbnail;
             }
 
             public String getNavigationModule() {
@@ -235,21 +309,154 @@ public class PromotionResponse {
                 this.buttonName = buttonName;
             }
 
-            public class Thumbnail {
-
-                @SerializedName("url")
-                @Expose
-                private String url;
-
-                public String getUrl() {
-                    return url;
-                }
-
-                public void setUrl(String url) {
-                    this.url = url;
-                }
-
+            public String getTitleImage() {
+                return titleImage;
             }
+
+            public void setTitleImage(String titleImage) {
+                this.titleImage = titleImage;
+            }
+
+            public String getButtonImage() {
+                return buttonImage;
+            }
+
+            public void setButtonImage(String buttonImage) {
+                this.buttonImage = buttonImage;
+            }
+
+            public String getSeriesType() {
+                return seriesType;
+            }
+
+            public void setSeriesType(String seriesType) {
+                this.seriesType = seriesType;
+            }
+
+            public String getSeriesId() {
+                return seriesId;
+            }
+
+            public void setSeriesId(String seriesId) {
+                this.seriesId = seriesId;
+            }
+
+            public String getSelectedContentType() {
+                return selectedContentType;
+            }
+
+            public void setSelectedContentType(String selectedContentType) {
+                this.selectedContentType = selectedContentType;
+            }
+
+            public String getSelectedContentName() {
+                return selectedContentName;
+            }
+
+            public void setSelectedContentName(String selectedContentName) {
+                this.selectedContentName = selectedContentName;
+            }
+
+            public DeviceType getDeviceType() {
+                return deviceType;
+            }
+
+            public void setDeviceType(DeviceType deviceType) {
+                this.deviceType = deviceType;
+            }
+
+        }
+
+        public class Thumbnail {
+
+            @SerializedName("url")
+            @Expose
+            private String url;
+            @SerializedName("title")
+            @Expose
+            private String title;
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public void setTitle(String title) {
+                this.title = title;
+            }
+
+        }
+
+        public class VideoThumbnail {
+
+            @SerializedName("url")
+            @Expose
+            private String url;
+            @SerializedName("title")
+            @Expose
+            private String title;
+
+            public String getUrl() {
+                return url;
+            }
+
+            public void setUrl(String url) {
+                this.url = url;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public void setTitle(String title) {
+                this.title = title;
+            }
+
+        }
+
+        public class DeviceType {
+
+            @SerializedName("ios")
+            @Expose
+            private Boolean ios;
+            @SerializedName("android")
+            @Expose
+            private Boolean android;
+            @SerializedName("web")
+            @Expose
+            private Boolean web;
+
+            public Boolean getIos() {
+                return ios;
+            }
+
+            public void setIos(Boolean ios) {
+                this.ios = ios;
+            }
+
+            public Boolean getAndroid() {
+                return android;
+            }
+
+            public void setAndroid(Boolean android) {
+                this.android = android;
+            }
+
+            public Boolean getWeb() {
+                return web;
+            }
+
+            public void setWeb(Boolean web) {
+                this.web = web;
+            }
+
         }
     }
 }

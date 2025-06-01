@@ -286,7 +286,7 @@
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/imageprofileniks"
+                                android:src="@drawable/testimonials2"
                                 android:scaleType="centerCrop"
                                 android:layout_marginEnd="8dp" />
 
@@ -331,7 +331,7 @@
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/imageprofileniks"
+                                android:src="@drawable/testimonials1"
                                 android:scaleType="centerCrop"
                                 android:layout_marginEnd="8dp" />
 
@@ -378,14 +378,14 @@ every day. It feels like it's made just for me!”"
                             <de.hdodenhof.circleimageview.CircleImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
-                                android:src="@drawable/imageprofileniks"
+                                android:src="@drawable/testimonials3"
                                 android:scaleType="centerCrop"
                                 android:layout_marginEnd="8dp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Priya Menon"
+                                android:text="Ravi Sharma"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
                         </LinearLayout>

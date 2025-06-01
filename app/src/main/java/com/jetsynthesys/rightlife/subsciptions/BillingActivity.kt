@@ -28,15 +28,15 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
     private lateinit var subscriptionButton: Button
     private lateinit var subscriptionStatusText: TextView
 
-    private val consumableProductId = "product_test_2"
+    private val consumableProductId = "product_test_1"
     private val subscriptionProductId = "bundle_monthly"
-
-
+    private var receivedProductType = "BOOSTER" // Default value, can be overridden by intent
+    private var receivedProductId: String? = null // Will be set from intent
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_billing)
-        val receivedProductId = intent.getStringExtra("PRODUCT_ID") // Use the same key
-        val receivedProductType = intent.getStringExtra("PRODUCT_TYPE") // Use the same key
+         receivedProductId = intent.getStringExtra("PRODUCT_ID").toString() // Use the same key
+         receivedProductType = intent.getStringExtra("PRODUCT_TYPE").toString() // Use the same key
 
 
         purchaseButton = findViewById(R.id.purchaseButton)
@@ -48,11 +48,11 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
         purchaseButton.setOnClickListener {
             if (receivedProductType == "BOOSTER") {
                 if (receivedProductId != null) {
-                    queryProductDetails(receivedProductId, BillingClient.ProductType.INAPP)
+                    queryProductDetails(receivedProductId!!, BillingClient.ProductType.INAPP)
                 }
             }else if (receivedProductType == "SUBSCRIPTION") {
                 if (receivedProductId != null) {
-                    queryProductDetails(receivedProductId, BillingClient.ProductType.SUBS)
+                    queryProductDetails(receivedProductId!!, BillingClient.ProductType.SUBS)
                 }
             }
 
@@ -73,7 +73,17 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     Log.d("Billing", "Billing setup successful")
-                    restoreSubscription()
+                    //restoreSubscription()
+                    if (receivedProductType == "BOOSTER") {
+                        if (receivedProductId != null) {
+                            queryProductDetails(receivedProductId!!, BillingClient.ProductType.INAPP)
+                            //queryProductDetails("product_test_2", BillingClient.ProductType.INAPP)
+                        }
+                    }else if (receivedProductType == "SUBSCRIPTION") {
+                        if (receivedProductId != null) {
+                            queryProductDetails(receivedProductId!!, BillingClient.ProductType.SUBS)
+                        }
+                    }
                 } else {
                     Log.e("Billing", "Billing setup failed: ${billingResult.debugMessage}")
                 }
@@ -87,6 +97,7 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
     }
 
     private fun queryProductDetails(productId: String, productType: String) {
+        Log.d("Billing", "Querying product: $productId of type: $productType")
         val queryProductDetailsParams = QueryProductDetailsParams.newBuilder()
             .setProductList(
                 listOf(
@@ -102,7 +113,7 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
                 if (productDetailsList.isNotEmpty()) {
                     launchBillingFlow(productDetailsList[0])
                 } else {
-                    Toast.makeText(this, "Product not found: $productId", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Product not found: $productId", Toast.LENGTH_LONG).show()
                 }
             } else {
                 Toast.makeText(this, "Query failed: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
@@ -118,9 +129,14 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
                 return
             }
 
+            val offerToken = offerDetails.offerToken
+            if (offerToken.isNullOrEmpty()) {
+                Toast.makeText(this, "Offer token missing", Toast.LENGTH_SHORT).show()
+                return
+            }
             val productDetailsParams = BillingFlowParams.ProductDetailsParams.newBuilder()
                 .setProductDetails(productDetails)
-                .setOfferToken(offerDetails.offerToken)
+                .setOfferToken(offerToken) // ✅ REQUIRED
                 .build()
 
             val billingFlowParams = BillingFlowParams.newBuilder()
@@ -142,6 +158,20 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
         }
     }
 
+    /*fun launchBillingFlow(productDetails: ProductDetails) {
+        val billingFlowParams = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(
+                listOf(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(productDetails)
+                        .build()
+                )
+            )
+            .build()
+
+        val billingResult = billingClient.launchBillingFlow(this, billingFlowParams)
+        Log.d("Billing", "Launch result: ${billingResult.responseCode} - ${billingResult.debugMessage}")
+    }*/
     override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
@@ -149,8 +179,10 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
             Toast.makeText(this, "Purchase canceled", Toast.LENGTH_SHORT).show()
+            finish()
         } else {
             Toast.makeText(this, "Purchase error: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 
@@ -158,8 +190,8 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
             val productId = purchase.products.firstOrNull()
 
-            when (productId) {
-                consumableProductId -> {
+            when (receivedProductType) {
+                "BOOSTER" -> {
                     val consumeParams = ConsumeParams.newBuilder()
                         .setPurchaseToken(purchase.purchaseToken)
                         .build()
@@ -167,13 +199,14 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
                     billingClient.consumeAsync(consumeParams) { billingResult, _ ->
                         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                             Toast.makeText(this, "Consumable purchase successful", Toast.LENGTH_SHORT).show()
+                            //call your method to update UI or backend
                         } else {
                             Toast.makeText(this, "Consume failed: ${billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
 
-                subscriptionProductId -> {
+                "SUBSCRIPTION" -> {
                     if (!purchase.isAcknowledged) {
                         val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
                             .setPurchaseToken(purchase.purchaseToken)
@@ -182,6 +215,7 @@ class BillingActivity : AppCompatActivity(), PurchasesUpdatedListener {
                         billingClient.acknowledgePurchase(acknowledgeParams) { result ->
                             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                                 Toast.makeText(this, "Subscription acknowledged", Toast.LENGTH_SHORT).show()
+                                //call your method to update UI or backend
                                 showSubscriptionStatus(purchase)
                             } else {
                                 Toast.makeText(this, "Acknowledge failed: ${result.debugMessage}", Toast.LENGTH_SHORT).show()

@@ -23,17 +23,29 @@
             android:textColor="@color/white"
             android:paddingHorizontal="16dp"
             android:paddingVertical="4dp"
+            android:textSize="@dimen/textsize_small"
             android:backgroundTint="@color/color_green" />
+
+        <TextView
+            android:id="@+id/planTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monthly Plan"
+            android:layout_marginVertical="4dp"
+            android:fontFamily="@font/dmsans_bold"
+            android:textColor="@color/txt_color_mind"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/planName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Monthly Plan"
-            android:layout_marginVertical="8dp"
-            android:fontFamily="@font/dmsans_bold"
+            android:layout_marginBottom="4dp"
+            android:layout_below="@+id/planTitle"
+            android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/txt_color_mind"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/tvPlanAmmount"
@@ -42,7 +54,7 @@
             android:text="0.0"
             android:layout_below="@id/planName"
             android:textColor="@color/txt_color_header"
-            android:paddingHorizontal="16dp"
+
             android:textSize="20sp"
             android:fontFamily="@font/dmsans_bold"
             android:paddingVertical="4dp"
@@ -56,7 +68,7 @@
             android:text="First 14 days free · XXX/month"
             android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/text_color_char_left"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/trialEnds"
@@ -65,7 +77,8 @@
             android:layout_below="@id/planOffer"
             android:text="Trial ends on ##-##-##"
             android:textColor="@color/text_color_char_left"
-            android:textSize="16sp"
+            android:textSize="14sp"
+            android:fontFamily="@font/dmsans_regular"
             android:layout_marginTop="4dp" />
 
     </RelativeLayout>

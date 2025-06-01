@@ -2,25 +2,17 @@ package com.jetsynthesys.rightlife.ui;
 
 public class CardItem {
     private String id;
-    private String title;
-    private int imageResId;
-    private String imageUrl;
-    private String content;
-    private String buttonText;
-    private String category;
+    private final String title;
+    private final int imageResId;
+    private final String imageUrl;
+    private final String content;
+    private final String buttonText;
+    private final String category;
+    private String seriesId;
     private boolean isAffirmation = false;
-
-    public void setViewCount(String viewCount) {
-        this.viewCount = viewCount;
-    }
-
     private String viewCount;
 
-    public String getCategory() {
-        return category;
-    }
-
-    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount) {
+    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -28,8 +20,20 @@ public class CardItem {
         this.buttonText = buttonText;
         this.content = content;
         this.category = category;
-
         this.viewCount = viewCount;
+        this.seriesId = seriesId;
+    }
+
+    public String getSeriesId() {
+        return seriesId;
+    }
+
+    public void setSeriesId(String seriesId) {
+        this.seriesId = seriesId;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getTitle() {
@@ -62,6 +66,10 @@ public class CardItem {
 
     public String getViewCount() {
         return viewCount;
+    }
+
+    public void setViewCount(String viewCount) {
+        this.viewCount = viewCount;
     }
 
     public String getId() {

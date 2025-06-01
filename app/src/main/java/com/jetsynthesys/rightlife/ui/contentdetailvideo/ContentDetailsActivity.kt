@@ -32,10 +32,13 @@ import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentRespon
 import com.jetsynthesys.rightlife.databinding.ActivityContentDetailsBinding
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
+import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
@@ -71,9 +74,14 @@ class ContentDetailsActivity : BaseActivity() {
                 startActivity(intent1)
             })
         }
-        binding.icBackDialog.setOnClickListener{
+        binding.icBackDialog.setOnClickListener {
             finish()
         }
+
+        val viewCountRequest = ViewCountRequest()
+        viewCountRequest.id = contentId
+        viewCountRequest.userId = sharedPreferenceManager.userId
+        CommonAPICall.updateViewCount(this, viewCountRequest)
     }
 
     // get single content details
@@ -82,7 +90,7 @@ class ContentDetailsActivity : BaseActivity() {
         Utils.showLoader(this)
         // Make the GET request
         val call: Call<ResponseBody> = apiService.getRLDetailpage(
-            sharedPreferenceManager.getAccessToken(),
+            sharedPreferenceManager.accessToken,
             categoryId
 
         )
@@ -127,39 +135,48 @@ class ContentDetailsActivity : BaseActivity() {
 
     private fun setcontentDetails(contentResponseObj: ModuleContentDetail?) {
 
-        binding.tvContentTitle.setText(contentResponseObj?.getData()?.getTitle())
-        binding.tvContentDesc.setText(contentResponseObj?.getData()?.getDesc())
+        binding.tvContentTitle.text = contentResponseObj?.data?.title
+        binding.tvContentDesc.text = contentResponseObj?.data?.desc
         if (contentResponseObj != null) {
-            binding.authorName.setText(
-                contentResponseObj.getData().getArtist().get(0).getFirstName() + " " + contentResponseObj.getData().getArtist().get(0).getLastName()
-            )
+            if (contentResponseObj.data.artist.isNotEmpty()) {
+                binding.authorName.text = contentResponseObj.data.artist[0]
+                    .firstName + " " + contentResponseObj.data.artist[0]
+                    .lastName
 
             Glide.with(applicationContext)
                 .load(
-                    ApiClient.CDN_URL_QA + contentResponseObj.getData().getArtist().get(0)
-                        .getProfilePicture()
+                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
+                        .profilePicture
                 )
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                .placeholder(R.drawable.profile_man) // Replace with your placeholder image
                 .circleCrop()
                 .into(binding.profileImage)
-            setModuleColor(contentResponseObj.getData().getModuleId())
-            binding.category.setText(contentResponseObj.getData().categoryName)
-            if (contentResponseObj.getData().getContentType().equals("AUDIO", ignoreCase = true)) {
+
+                binding.llAuthorMain.setOnClickListener {
+                    startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
+                        putExtra("ArtistId", contentResponseObj.data.artist[0].id)
+                    })
+                }
+            }
+
+            setModuleColor(contentResponseObj.data.moduleId)
+            binding.category.text = contentResponseObj.data.categoryName
+            if (contentResponseObj.data.contentType.equals("AUDIO", ignoreCase = true)) {
                 // For Audio Player
                 setupMusicPlayer(contentResponseObj)
                 binding.rlPlayerMusicMain.visibility = View.VISIBLE
                 binding.rlVideoPlayerMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Audio"
                 contentTypeForTrack = "AUDIO"
-            }else {
+            } else {
                 // For video Player
-                initializePlayer(contentResponseObj.getData().getPreviewUrl())
+                initializePlayer(contentResponseObj.data.previewUrl)
                 binding.rlVideoPlayerMain.visibility = View.VISIBLE
                 binding.rlPlayerMusicMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Video"
                 contentTypeForTrack = "VIDEO"
             }
-            setReadMoreView(contentResponseObj.getData().getDesc())
+            setReadMoreView(contentResponseObj.data.desc)
 
             binding.imageLikeArticle.setOnClickListener { v ->
                 if (contentResponseObj.data.like) {
@@ -184,7 +201,7 @@ class ContentDetailsActivity : BaseActivity() {
                     contentResponseObj.data.bookmarked = false
                     binding.icBookmark.setImageResource(R.drawable.ic_save_article)
                     postArticleBookMark(contentResponseObj.data.id, false)
-                }else{
+                } else {
                     contentResponseObj.data.bookmarked = true
                     binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
                     postArticleBookMark(contentResponseObj.data.id, true)
@@ -195,18 +212,23 @@ class ContentDetailsActivity : BaseActivity() {
             binding.icBookmark.setImageResource(R.drawable.ic_save_article_active)
         }
 
-        callContentTracking(contentResponseObj,"1.0","1.0")
+        callContentTracking(contentResponseObj, "1.0", "1.0")
 
     }
 
-   private fun callContentTracking(contentResponseObj: ModuleContentDetail?, duration: String, watchDuration: String) {
+    private fun callContentTracking(
+        contentResponseObj: ModuleContentDetail?,
+        duration: String,
+        watchDuration: String
+    ) {
 // article consumed
-       val episodeTrackRequest = EpisodeTrackRequest(
-           sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
-           contentResponseObj?.data?.id ?: "", duration, watchDuration, contentTypeForTrack)
+        val episodeTrackRequest = EpisodeTrackRequest(
+            sharedPreferenceManager.userId, contentResponseObj?.data?.moduleId ?: "",
+            contentResponseObj?.data?.id ?: "", duration, watchDuration, contentTypeForTrack
+        )
 
-       trackEpisodeOrContent(this, episodeTrackRequest)
-   }
+        trackEpisodeOrContent(this, episodeTrackRequest)
+    }
 
     private fun setReadMoreView(desc: String?) {
         if (desc.isNullOrEmpty()) {
@@ -233,17 +255,16 @@ class ContentDetailsActivity : BaseActivity() {
                     binding.tvContentDesc.text = desc
                     binding.readToggle.text = "Read Less"
                     binding.imgReadToggle.setImageResource(R.drawable.icon_arrow_article)
-                    binding.imgReadToggle.setRotation(180f) // Rotate by 180 degrees
+                    binding.imgReadToggle.rotation = 180f // Rotate by 180 degrees
                 } else {
                     binding.tvContentDesc.text = shortDescription
                     binding.readToggle.text = "Read More"
                     binding.imgReadToggle.setImageResource(R.drawable.icon_arrow_article)
-                    binding.imgReadToggle.setRotation(360f) // Rotate by 180 degrees
+                    binding.imgReadToggle.rotation = 360f // Rotate by 180 degrees
                 }
             }
         }
     }
-
 
 
     private fun initializePlayer(previewUrl: String) {
@@ -268,24 +289,24 @@ class ContentDetailsActivity : BaseActivity() {
     fun setModuleColor(moduleId: String) {
         if (moduleId.equals("EAT_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.eatright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
             binding.imgModule.setImageResource(R.drawable.ic_db_eatright)
-            binding.tvModulename.setText(AppConstants.EAT_RIGHT)
+            binding.tvModulename.text = AppConstants.EAT_RIGHT
         } else if (moduleId.equals("THINK_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.thinkright)
             binding.imgModule.setImageResource(R.drawable.ic_db_thinkright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
-            binding.tvModulename.setText(AppConstants.THINK_RIGHT)
+            binding.imgModuleTag.imageTintList = colorStateList
+            binding.tvModulename.text = AppConstants.THINK_RIGHT
         } else if (moduleId.equals("SLEEP_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.sleepright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
             binding.imgModule.setImageResource(R.drawable.ic_db_sleepright)
-            binding.tvModulename.setText(AppConstants.SLEEP_RIGHT)
+            binding.tvModulename.text = AppConstants.SLEEP_RIGHT
         } else if (moduleId.equals("MOVE_RIGHT", ignoreCase = true)) {
             val colorStateList = ContextCompat.getColorStateList(this, R.color.moveright)
-            binding.imgModuleTag.setImageTintList(colorStateList)
+            binding.imgModuleTag.imageTintList = colorStateList
             binding.imgModule.setImageResource(R.drawable.ic_db_moveright)
-            binding.tvModulename.setText(AppConstants.MOVE_RIGHT)
+            binding.tvModulename.text = AppConstants.MOVE_RIGHT
         }
     }
 
@@ -293,7 +314,7 @@ class ContentDetailsActivity : BaseActivity() {
     // For music player and audio content
     private fun setupMusicPlayer(moduleContentDetail: ModuleContentDetail?) {
         val backgroundImage = findViewById<ImageView>(R.id.backgroundImage)
-        binding.rlPlayerMusicMain.setVisibility(View.VISIBLE)
+        binding.rlPlayerMusicMain.visibility = View.VISIBLE
 
 
         if (moduleContentDetail != null) {
@@ -305,7 +326,8 @@ class ContentDetailsActivity : BaseActivity() {
 
 
         //val previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3"
-        val url = ApiClient.CDN_URL_QA + (moduleContentDetail?.data?.previewUrl ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        val url = ApiClient.CDN_URL_QA + (moduleContentDetail?.data?.previewUrl
+            ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: $url")
         mediaPlayer = MediaPlayer()
         try {
@@ -317,7 +339,7 @@ class ContentDetailsActivity : BaseActivity() {
 
         mediaPlayer.setOnPreparedListener(OnPreparedListener { mp: MediaPlayer? ->
             mediaPlayer.start()
-            binding.seekBar.setMax(mediaPlayer.getDuration())
+            binding.seekBar.max = mediaPlayer.duration
             isPlaying = true
             binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
             // Update progress every second
@@ -359,15 +381,15 @@ class ContentDetailsActivity : BaseActivity() {
 
     private val updateProgress: Runnable = object : Runnable {
         override fun run() {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                val currentPosition: Int = mediaPlayer.getCurrentPosition()
-                val totalDuration: Int = mediaPlayer.getDuration()
+            if (mediaPlayer != null && mediaPlayer.isPlaying) {
+                val currentPosition: Int = mediaPlayer.currentPosition
+                val totalDuration: Int = mediaPlayer.duration
 
                 // Update seek bar and progress bar
-                binding.seekBar.setProgress(currentPosition)
+                binding.seekBar.progress = currentPosition
                 // Update Circular ProgressBar
                 val progressPercent = ((currentPosition / totalDuration.toFloat()) * 100).toInt()
-                binding.circularProgressBar.setProgress(progressPercent)
+                binding.circularProgressBar.progress = progressPercent
 
 
                 // Update time display
@@ -376,14 +398,13 @@ class ContentDetailsActivity : BaseActivity() {
                     TimeUnit.MILLISECONDS.toMinutes(currentPosition.toLong()),
                     TimeUnit.MILLISECONDS.toSeconds(currentPosition.toLong()) % 60
                 )
-                binding.currentTime.setText(timeFormatted)
+                binding.currentTime.text = timeFormatted
 
                 // Update every second
                 handler.postDelayed(this, 1000)
             }
         }
     }
-
 
 
     // post Bookmark api
@@ -414,29 +435,29 @@ class ContentDetailsActivity : BaseActivity() {
     }
 
 
-// post like api
-private fun postContentLike(contentId: String, isLike: Boolean) {
-    val request = ArticleLikeRequest(contentId, isLike)
-    // Make the API call
-    val call = apiService.ArticleLikeRequest(sharedPreferenceManager.accessToken, request)
-    call.enqueue(object : Callback<ResponseBody?> {
-        override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
-            if (response.isSuccessful && response.body() != null) {
-                val articleLikeResponse = response.body()
-                Log.d("API Response", "Article response: $articleLikeResponse")
-                val gson = Gson()
-                val jsonResponse = gson.toJson(response.body())
-                Utils.showCustomToast(this@ContentDetailsActivity, response.message())
-            } else {
-                //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+    // post like api
+    private fun postContentLike(contentId: String, isLike: Boolean) {
+        val request = ArticleLikeRequest(contentId, isLike)
+        // Make the API call
+        val call = apiService.ArticleLikeRequest(sharedPreferenceManager.accessToken, request)
+        call.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val articleLikeResponse = response.body()
+                    Log.d("API Response", "Article response: $articleLikeResponse")
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+                    Utils.showCustomToast(this@ContentDetailsActivity, response.message())
+                } else {
+                    //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
             }
-        }
 
-        override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-            handleNoInternetView(t)
-        }
-    })
-}
+            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
 
     private fun shareIntent() {
         val intent = Intent(Intent.ACTION_SEND)
@@ -477,12 +498,12 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
                             if (!ResponseObj.data.likeList.isEmpty() && ResponseObj.data.likeList.size > 0) {
                                 setupListData(ResponseObj.data.likeList)
                                 if (ResponseObj.data.likeList.size < 5) {
-                                    binding.tvViewAll.setVisibility(View.GONE)
+                                    binding.tvViewAll.visibility = View.GONE
                                 } else {
-                                    binding.tvViewAll.setVisibility(View.VISIBLE)
+                                    binding.tvViewAll.visibility = View.VISIBLE
                                 }
                             } else {
-                                binding.rlMoreLikeSection.setVisibility(View.GONE)
+                                binding.rlMoreLikeSection.visibility = View.GONE
                             }
                         }
                     } catch (e: java.lang.Exception) {
@@ -500,25 +521,12 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
     }
 
     private fun setupListData(contentList: List<Like>) {
-        binding.rlMoreLikeSection.setVisibility(View.VISIBLE)
+        binding.rlMoreLikeSection.visibility = View.VISIBLE
         val adapter = RLEditDetailMoreAdapter(this, contentList)
         val horizontalLayoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.recyclerView.setLayoutManager(horizontalLayoutManager)
         binding.recyclerView.setAdapter(adapter)
-    }
-
-
-    private fun playPlayer() {
-        player.play()
-        isPlaying = true
-        binding.playPauseButton.setImageResource(R.drawable.ic_notifications_black_24dp) // Change to pause icon
-    }
-
-    private fun pausePlayer() {
-        player.pause()
-        isPlaying = false
-        binding.playPauseButton.setImageResource(R.drawable.ic_play) // Change to play icon
     }
 
     override fun onStart() {
@@ -547,6 +555,6 @@ private fun postContentLike(contentId: String, isLike: Boolean) {
             mediaPlayer.release()
         }
         handler.removeCallbacks(updateProgress)
-        Log.d("contentDetails","onDestroyCalled")
+        Log.d("contentDetails", "onDestroyCalled")
     }
 }

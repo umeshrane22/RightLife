@@ -54,6 +54,7 @@ import com.jetsynthesys.rightlife.apimodel.rledit.Artist;
 import com.jetsynthesys.rightlife.apimodel.rledit.RightLifeEditResponse;
 import com.jetsynthesys.rightlife.apimodel.rledit.Top;
 import com.jetsynthesys.rightlife.apimodel.servicepane.ServicePaneResponse;
+import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleData;
 import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse;
 import com.jetsynthesys.rightlife.apimodel.upcomingevents.UpcomingEventResponse;
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
@@ -66,7 +67,6 @@ import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity;
-import com.jetsynthesys.rightlife.ui.Wellness.WellnessDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity;
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
@@ -76,7 +76,6 @@ import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity;
 import com.jetsynthesys.rightlife.ui.healthpagemain.HealthPageMainActivity;
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity;
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity;
-import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity;
 import com.jetsynthesys.rightlife.ui.search.SearchActivity;
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest;
@@ -118,7 +117,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     RelativeLayout rl_wellness_lock;
     Button btn_wellness_preference;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
-    RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4,rl_wellness_main;
+    RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4, rl_wellness_main;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
             tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
     //LinearLayout ll_health_cam, ll_mind_audit, ll_health_audit, ll_voice_scan;
@@ -581,7 +580,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         getAffirmations();
 
         getWelnessPlaylist();
-        getCuratedContent();
+        //getCuratedContent();
         getModuleContent();
 
 
@@ -688,7 +687,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     }
 
     private void getPromotionList() {
-        Call<JsonElement> call = apiService.getPromotionList(sharedPreferenceManager.getAccessToken(), "HOME_PAGE", "THINK_RIGHT", "TOP");
+        Call<JsonElement> call = apiService.getPromotionList(sharedPreferenceManager.getAccessToken(), "HOME_PAGE", sharedPreferenceManager.getUserId(), "TOP");
         call.enqueue(new Callback<JsonElement>() {
             @Override
             public void onResponse(Call<JsonElement> call, Response<JsonElement> response) {
@@ -735,13 +734,18 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getContent(),
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getButtonName(),
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getCategory(),
-                    String.valueOf(promotionResponse.getPromotiondata().getPromotionList().get(i).getViews())
-            );
+                    String.valueOf(promotionResponse.getPromotiondata().getPromotionList().get(i).getViews()),
+                    promotionResponse.getPromotiondata().getPromotionList().get(i).getSeriesId());
             cardItems.add(i, cardItem);
         }
         Log.e("API image List", "list : " + cardItems.size());
-        adapter = new CircularCardAdapter(HomeActivity.this, cardItems);
-        viewPager.setAdapter(adapter);
+        if (!cardItems.isEmpty()) {
+            viewPager.setVisibility(View.VISIBLE);
+            adapter = new CircularCardAdapter(HomeActivity.this, cardItems);
+            viewPager.setAdapter(adapter);
+        } else {
+            viewPager.setVisibility(View.GONE);
+        }
         adapter.notifyDataSetChanged();
 
 
@@ -761,11 +765,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private List<CardItem> getCardItems() {
         List<CardItem> items = new ArrayList<>();
         // Add your CardItem instances here
-        items.add(new CardItem("0", "Card 1", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("1", "Card 2", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("2", "Card 3", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("3", "Card 4", R.drawable.facialconcept, "", "", "scan now", "", ""));
-        items.add(new CardItem("4", "Card 5", R.drawable.facialconcept, "", "", "scan now", "", ""));
+        items.add(new CardItem("0", "Card 1", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
+        items.add(new CardItem("1", "Card 2", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
+        items.add(new CardItem("2", "Card 3", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
+        items.add(new CardItem("3", "Card 4", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
+        items.add(new CardItem("4", "Card 5", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
         return items;
     }
 
@@ -887,17 +891,22 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         int selectedColor = ContextCompat.getColor(HomeActivity.this, R.color.menuselected);
         int unselectedColor = ContextCompat.getColor(HomeActivity.this, R.color.gray);
         // Set up the ViewPager
-        testAdapter = new TestAdapter(responseObj.getData().getSortedServices());
-        mViewPager.setAdapter(testAdapter);
-        // mViewPager.setLifecycleRegistry(getLifecycle());
-        mViewPager.setScrollDuration(1000);
-        mViewPager.setPageStyle(PageStyle.MULTI_PAGE);
-        mViewPager.setIndicatorSliderGap(20) // Adjust spacing if needed
-                .setIndicatorStyle(IndicatorStyle.ROUND_RECT)
-                .setIndicatorHeight(20) // Adjust height for a pill-like shape
-                .setIndicatorSliderWidth(20, 50) // Unselected: 10px, Selected: 20px
-                .setIndicatorSliderColor(unselectedColor, selectedColor) // Adjust colors accordingly
-                .create(responseObj.getData().getSortedServices());
+        if (!responseObj.getData().getSortedServices().isEmpty()) {
+            mViewPager.setVisibility(View.VISIBLE);
+            testAdapter = new TestAdapter(responseObj.getData().getSortedServices());
+            mViewPager.setAdapter(testAdapter);
+            // mViewPager.setLifecycleRegistry(getLifecycle());
+            mViewPager.setScrollDuration(1000);
+            mViewPager.setPageStyle(PageStyle.MULTI_PAGE);
+            mViewPager.setIndicatorSliderGap(20) // Adjust spacing if needed
+                    .setIndicatorStyle(IndicatorStyle.ROUND_RECT)
+                    .setIndicatorHeight(20) // Adjust height for a pill-like shape
+                    .setIndicatorSliderWidth(20, 50) // Unselected: 10px, Selected: 20px
+                    .setIndicatorSliderColor(unselectedColor, selectedColor) // Adjust colors accordingly
+                    .create(responseObj.getData().getSortedServices());
+        } else {
+            mViewPager.setVisibility(View.GONE);
+        }
 
     }
 
@@ -1134,20 +1143,36 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
 
     private void setupWellnessContent(List<ContentWellness> contentList) {
-        if (contentList == null || contentList.size() < 4) return;
+        if (contentList.isEmpty()) return;
 
         rl_wellness_main.setVisibility(View.VISIBLE);
         // Bind data for item 1
-        bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5, imgtag_tv1);
+        if (!contentList.isEmpty()) {
+            bindContentToView(contentList.get(0), tv1_header, tv1, img1, tv1_viewcount, img5, imgtag_tv1);
+        }else {
+            relative_wellness1.setVisibility(View.GONE);
+        }
 
         // Bind data for item 2
-        bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6, imgtag_tv2);
+        if (contentList.size() > 1) {
+            bindContentToView(contentList.get(1), tv2_header, tv2, img2, tv2_viewcount, img6, imgtag_tv2);
+        }else {
+            relative_wellness2.setVisibility(View.GONE);
+        }
 
         // Bind data for item 3
-        bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7, imgtag_tv3);
+        if (contentList.size() > 2) {
+            bindContentToView(contentList.get(2), tv3_header, tv3, img3, tv3_viewcount, img7, imgtag_tv3);
+        }else {
+            relative_wellness3.setVisibility(View.GONE);
+        }
 
         // Bind data for item 4
-        bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8, imgtag_tv4);
+        if (contentList.size() > 3) {
+            bindContentToView(contentList.get(3), tv4_header, tv4, img4, tv4_viewcount, img8, imgtag_tv4);
+        }else {
+            relative_wellness4.setVisibility(View.GONE);
+        }
     }
 
     //Bind Wellnes content
@@ -1203,7 +1228,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     String jsonResponse = gson.toJson(response.body());
 
                     LiveEventResponse ResponseObj = gson.fromJson(jsonResponse, LiveEventResponse.class);
-                    Log.d("API Response body", "Success:AuthorName " + ResponseObj.getData().getEvents().get(0).getEventType());
                     setupLiveEvent(ResponseObj);
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -1358,84 +1382,89 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             }*/
         }
 
-        if (viewId == R.id.ll_thinkright_category1) {
+        List<SubModuleData> thinkRightSubmodule = ThinkRSubModuleResponse.getData();
+        List<SubModuleData> moveRightSubmodule = MoveRSubModuleResponse.getData();
+        List<SubModuleData> eatRightSubmodule = EatRSubModuleResponse.getData();
+        List<SubModuleData> sleepRightSubmodule = SleepRSubModuleResponse.getData();
+
+        if (viewId == R.id.ll_thinkright_category1 && !thinkRightSubmodule.isEmpty()) {
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", ThinkRSubModuleResponse.getData().get(0).getCategoryId());
-            intent.putExtra("moduleId", ThinkRSubModuleResponse.getData().get(0).getModuleId());
+            intent.putExtra("Categorytype", thinkRightSubmodule.get(0).getCategoryId());
+            intent.putExtra("moduleId", thinkRightSubmodule.get(0).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_thinkright_category2) {
-            ThinkRSubModuleResponse.getData().get(1).getName();
+        } else if (viewId == R.id.ll_thinkright_category2 && thinkRightSubmodule.size() > 1) {
+            thinkRightSubmodule.get(1).getName();
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", ThinkRSubModuleResponse.getData().get(1).getCategoryId());
-            intent.putExtra("moduleId", ThinkRSubModuleResponse.getData().get(1).getModuleId());
+            intent.putExtra("Categorytype", thinkRightSubmodule.get(1).getCategoryId());
+            intent.putExtra("moduleId", thinkRightSubmodule.get(1).getModuleId());
             startActivity(intent);
 
-        } else if (viewId == R.id.ll_thinkright_category3) {
-            ThinkRSubModuleResponse.getData().get(2).getName();
+        } else if (viewId == R.id.ll_thinkright_category3 && thinkRightSubmodule.size() > 2) {
+            thinkRightSubmodule.get(2).getName();
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", ThinkRSubModuleResponse.getData().get(2).getCategoryId());
-            intent.putExtra("moduleId", ThinkRSubModuleResponse.getData().get(2).getModuleId());
+            intent.putExtra("Categorytype", thinkRightSubmodule.get(2).getCategoryId());
+            intent.putExtra("moduleId", thinkRightSubmodule.get(2).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_thinkright_category4) {
-            ThinkRSubModuleResponse.getData().get(3).getName();
+        } else if (viewId == R.id.ll_thinkright_category4 && thinkRightSubmodule.size() > 3) {
+            thinkRightSubmodule.get(3).getName();
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", ThinkRSubModuleResponse.getData().get(3).getCategoryId());
-            intent.putExtra("moduleId", ThinkRSubModuleResponse.getData().get(3).getModuleId());
+            intent.putExtra("Categorytype", thinkRightSubmodule.get(3).getCategoryId());
+            intent.putExtra("moduleId", thinkRightSubmodule.get(3).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_moveright_category1) {
+        } else if (viewId == R.id.ll_moveright_category1 && !moveRightSubmodule.isEmpty()) {
 
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", MoveRSubModuleResponse.getData().get(0).getCategoryId());
-            intent.putExtra("moduleId", MoveRSubModuleResponse.getData().get(0).getModuleId());
+            intent.putExtra("Categorytype", moveRightSubmodule.get(0).getCategoryId());
+            intent.putExtra("moduleId", moveRightSubmodule.get(0).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_moveright_categor2) {
+        } else if (viewId == R.id.ll_moveright_categor2 && moveRightSubmodule.size() > 2) {
 
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", MoveRSubModuleResponse.getData().get(1).getCategoryId());
-            intent.putExtra("moduleId", MoveRSubModuleResponse.getData().get(1).getModuleId());
+            intent.putExtra("Categorytype", moveRightSubmodule.get(2).getCategoryId());
+            intent.putExtra("moduleId", moveRightSubmodule.get(2).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_moveright_category3) {
+        } else if (viewId == R.id.ll_moveright_category3 && moveRightSubmodule.size() > 2) {
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", MoveRSubModuleResponse.getData().get(2).getCategoryId());
-            intent.putExtra("moduleId", MoveRSubModuleResponse.getData().get(2).getModuleId());
-            startActivity(intent);
-
-        } else if (viewId == R.id.ll_eatright_category1) {
-
-            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", EatRSubModuleResponse.getData().get(0).getCategoryId());
-            intent.putExtra("moduleId", EatRSubModuleResponse.getData().get(0).getModuleId());
-            startActivity(intent);
-        } else if (viewId == R.id.ll_eatright_category2) {
-            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", EatRSubModuleResponse.getData().get(1).getCategoryId());
-            intent.putExtra("moduleId", EatRSubModuleResponse.getData().get(1).getModuleId());
-            startActivity(intent);
-        } else if (viewId == R.id.ll_eatright_category3) {
-            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", EatRSubModuleResponse.getData().get(2).getCategoryId());
-            intent.putExtra("moduleId", EatRSubModuleResponse.getData().get(2).getModuleId());
-            startActivity(intent);
-        } else if (viewId == R.id.ll_eatright_category4) {
-            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", EatRSubModuleResponse.getData().get(3).getCategoryId());
-            intent.putExtra("moduleId", EatRSubModuleResponse.getData().get(3).getModuleId());
-            startActivity(intent);
-        } else if (viewId == R.id.ll_sleepright_category1) {
-            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", SleepRSubModuleResponse.getData().get(0).getCategoryId());
-            intent.putExtra("moduleId", SleepRSubModuleResponse.getData().get(0).getModuleId());
+            intent.putExtra("Categorytype", moveRightSubmodule.get(1).getCategoryId());
+            intent.putExtra("moduleId", moveRightSubmodule.get(1).getModuleId());
             startActivity(intent);
 
-        } else if (viewId == R.id.ll_sleepright_category2) {
+        } else if (viewId == R.id.ll_eatright_category1 && !eatRightSubmodule.isEmpty()) {
+
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", SleepRSubModuleResponse.getData().get(1).getCategoryId());
-            intent.putExtra("moduleId", SleepRSubModuleResponse.getData().get(1).getModuleId());
+            intent.putExtra("Categorytype", eatRightSubmodule.get(0).getCategoryId());
+            intent.putExtra("moduleId", eatRightSubmodule.get(0).getModuleId());
             startActivity(intent);
-        } else if (viewId == R.id.ll_sleepright_category3) {
+        } else if (viewId == R.id.ll_eatright_category2 && eatRightSubmodule.size() > 1) {
             Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
-            intent.putExtra("Categorytype", SleepRSubModuleResponse.getData().get(2).getCategoryId());
-            intent.putExtra("moduleId", SleepRSubModuleResponse.getData().get(2).getModuleId());
+            intent.putExtra("Categorytype", eatRightSubmodule.get(1).getCategoryId());
+            intent.putExtra("moduleId", eatRightSubmodule.get(1).getModuleId());
+            startActivity(intent);
+        } else if (viewId == R.id.ll_eatright_category3 && eatRightSubmodule.size() > 2) {
+            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+            intent.putExtra("Categorytype", eatRightSubmodule.get(2).getCategoryId());
+            intent.putExtra("moduleId", eatRightSubmodule.get(2).getModuleId());
+            startActivity(intent);
+        } else if (viewId == R.id.ll_eatright_category4 && eatRightSubmodule.size() > 3) {
+            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+            intent.putExtra("Categorytype", eatRightSubmodule.get(3).getCategoryId());
+            intent.putExtra("moduleId", eatRightSubmodule.get(3).getModuleId());
+            startActivity(intent);
+        } else if (viewId == R.id.ll_sleepright_category1 && !sleepRightSubmodule.isEmpty()) {
+            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+            intent.putExtra("Categorytype", sleepRightSubmodule.get(0).getCategoryId());
+            intent.putExtra("moduleId", sleepRightSubmodule.get(0).getModuleId());
+            startActivity(intent);
+
+        } else if (viewId == R.id.ll_sleepright_category2 && sleepRightSubmodule.size() > 1) {
+            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+            intent.putExtra("Categorytype", sleepRightSubmodule.get(1).getCategoryId());
+            intent.putExtra("moduleId", sleepRightSubmodule.get(1).getModuleId());
+            startActivity(intent);
+        } else if (viewId == R.id.ll_sleepright_category3 && sleepRightSubmodule.size() > 2) {
+            Intent intent = new Intent(HomeActivity.this, CategoryListActivity.class);
+            intent.putExtra("Categorytype", sleepRightSubmodule.get(2).getCategoryId());
+            intent.putExtra("moduleId", sleepRightSubmodule.get(2).getModuleId());
             startActivity(intent);
         } else if (viewId == R.id.relative_rledit3) {
             CallRlEditDetailActivity(2);
@@ -1623,10 +1652,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
                     if (moduleid.equalsIgnoreCase("THINK_RIGHT")) {
                         ThinkRSubModuleResponse = gson.fromJson(affirmationsResponse.toString(), SubModuleResponse.class);
-                        Log.d("API Response body", "Success:AuthorName " + ThinkRSubModuleResponse.getData().get(0).getName());
                     } else if (moduleid.equalsIgnoreCase("MOVE_RIGHT")) {
                         MoveRSubModuleResponse = gson.fromJson(affirmationsResponse.toString(), SubModuleResponse.class);
-                        Log.d("API Response body", "Success:AuthorName " + MoveRSubModuleResponse.getData().get(0).getName());
                     } else if (moduleid.equalsIgnoreCase("EAT_RIGHT")) {
                         EatRSubModuleResponse = gson.fromJson(affirmationsResponse.toString(), SubModuleResponse.class);
                     } else if (moduleid.equalsIgnoreCase("SLEEP_RIGHT")) {
@@ -1708,7 +1735,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             return false; // Return false if condition is true and dialog is shown
         } else {
             if (!DashboardChecklistManager.INSTANCE.getChecklistStatus()) {
-                DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this,"Finish Checklist to Unlock");
+                DialogUtils.INSTANCE.showCheckListQuestionCommonDialog(this, "Finish Checklist to Unlock");
                 return false;
             } else {
                 return true;// Return true if condition is false
