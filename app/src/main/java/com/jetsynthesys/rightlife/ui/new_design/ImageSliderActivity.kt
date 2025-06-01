@@ -155,8 +155,8 @@ class ImageSliderActivity : BaseActivity() {
             //.requestIdToken("341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com")
             //.requestServerAuthCode("341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com")
 
-            .requestIdToken("788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com")//BuildConfig.GOOGLE_WEB_CLIENT_ID) // Use your actual client ID from build config
-            .requestServerAuthCode("788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com")//BuildConfig.GOOGLE_WEB_CLIENT_ID) // Use your actual client ID from build config
+            .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID) // Use your actual client ID from build config
+            .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID) // Use your actual client ID from build config
             .requestEmail()
             .requestProfile()
             .requestScopes(

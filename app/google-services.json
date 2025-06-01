@@ -1,34 +1,49 @@
 {
   "project_info": {
-    "project_number": "341535838422",
-    "project_id": "newrightlifepackage",
-    "storage_bucket": "newrightlifepackage.firebasestorage.app"
+    "project_number": "468192274227",
+    "project_id": "rightlife-jet",
+    "storage_bucket": "rightlife-jet.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:341535838422:android:69d65b35b923438c947977",
+        "mobilesdk_app_id": "1:468192274227:android:f54c8bdf1447a72e42c046",
         "android_client_info": {
           "package_name": "com.jetsynthesys.rightlife"
         }
       },
       "oauth_client": [
         {
-          "client_id": "341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com",
+          "client_id": "468192274227-4jsejlc9u095neq0a5asjbp3su8snof0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jetsynthesys.rightlife",
+            "certificate_hash": "d4437ec346a1122654f9ee2ae9658303163ccc4e"
+          }
+        },
+        {
+          "client_id": "468192274227-0ptrdeff84u6b01ak5fmaiipbds91s4c.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCpbHvlEnK-NY-sbaqJJswx24nD6WZm0PA"
+          "current_key": "AIzaSyAuPcrsuQjh_pBgT6nh7YO_3er2JUd0Pr4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "341535838422-d0tnfv0vm1gbuea70gc9o6etavbs0t9p.apps.googleusercontent.com",
+              "client_id": "468192274227-0ptrdeff84u6b01ak5fmaiipbds91s4c.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "468192274227-qakcnmeqk3eqgbj65e092gn3nc33cqfu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jetsynthesys.rightlife"
+              }
             }
           ]
         }

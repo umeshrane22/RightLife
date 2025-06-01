@@ -36,7 +36,9 @@
         android:layout_margin="20dp"
         android:fontFamily="@font/dmsans_regular"
         android:layout_gravity="center"
-        android:text="Please update to continue using the app."
+        android:gravity="center"
+        android:text="A new version of RightLife is available.
+Please update to keep using the app without interruption."
         android:textColor="@color/txt_color_header"
         android:textSize="14sp" />
 
