@@ -695,7 +695,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
+                //    Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
                 fetchAllHealthData()
                 storeHealthData()
@@ -1010,7 +1010,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 android.util.Log.d("HealthData", "Respiratory rate permission denied")
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
