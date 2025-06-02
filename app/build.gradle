@@ -17,8 +17,8 @@ android {
         applicationId "com.jetsynthesys.rightlife"
         minSdk 26
         targetSdk 34
-        versionCode 283
-        versionName "1.1.1"
+        versionCode 282
+        versionName "1.1.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -98,26 +98,27 @@ android {
     productFlavors {
         create("qa") {
             dimension = "environment"
-             applicationIdSuffix = ".qa"
-             versionNameSuffix = "-qa"
+            applicationIdSuffix = ".qa"
+            versionNameSuffix = "-qa"
+            buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
+            buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
+
+            // buildConfigField("String", "BASE_URL", "\"https://"")
+
             buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
             buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
             buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
             // buildConfigField("String", "BASE_URL", "\"https://"")
-
-        buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
-        buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
-        buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
-        // buildConfigField("String", "BASE_URL", "\"https://"")
         }
 
         create("production") {
             dimension = "environment"
             buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"468192274227-0ptrdeff84u6b01ak5fmaiipbds91s4c.apps.googleusercontent.com\""
-             buildConfigField "String", "BASE_URL", "\"https://app.rightlife.com/api/app/api/\""
-             buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
-            buildConfigField("String", "BASE_URL", "\"https://ai.rightlife.com/\"")
-        
+            buildConfigField "String", "BASE_URL", "\"https://app.rightlife.com/api/app/api/\""
+            buildConfigField "String", "CDN_URL", "\"https://d1uxs9zd0apq85.cloudfront.net/\""
+            buildConfigField("String", "BASE_URL_AI", "\"https://ai.rightlife.com/\"")
+
+        }
     }
 }
 
