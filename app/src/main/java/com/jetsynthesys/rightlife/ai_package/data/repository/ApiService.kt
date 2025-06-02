@@ -132,7 +132,7 @@ import retrofit2.http.Url
 
 interface ApiService {
 
-    @GET("app/api/activityMaster")
+    @GET("activityMaster")
     fun getWorkoutList(
         @Header("Authorization") authToken: String): Call<WorkoutResponseModel>
 

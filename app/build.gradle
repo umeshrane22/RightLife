@@ -106,7 +106,7 @@ android {
             // buildConfigField("String", "BASE_URL", "\"https://"")
 
             buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"788352496395-ame1pvu6b0lve0g37kvnhuhl4kh2str8.apps.googleusercontent.com\""
-            buildConfigField("String", "BASE_URL", "\"https://qa.rightlife.com/api/app/api/\"")
+            buildConfigField("String", "BASE_URL_AI", "\"https://ai-qa.rightlife.com/\"")
             buildConfigField("String", "CDN_URL", "\"https://d1sacaybzizpm5.cloudfront.net/\"")
             // buildConfigField("String", "BASE_URL", "\"https://"")
         }
