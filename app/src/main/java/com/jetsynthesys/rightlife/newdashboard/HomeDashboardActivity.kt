@@ -328,14 +328,12 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()) {
-                startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
-            }
+             startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()) {
-                startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
-            }
+
+            startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
+
         }
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
             val availabilityStatus = HealthConnectClient.getSdkStatus(this)
@@ -350,11 +348,11 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()) {
+
                 val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
                 intent.putExtra("forProfileChecklist", true)
                 startActivity(intent)
-            }
+
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {

@@ -700,7 +700,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     Log.d("API Response body", "Success: promotion " + jsonResponse);
                     if (promotionResponse.getSuccess()) {
 
-                        Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
+
                         //  adapter.updateData(cardItems);
                         handlePromotionResponse(promotionResponse);
                     } else {
@@ -831,7 +831,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         ServicePaneAdapter adapter = new ServicePaneAdapter(this, responseObj.getData().getHomeServices(), homeService -> {
             switch (homeService.getTitle()) {
                 case "Voice Scan":
-                    Intent intentVoice = new Intent(HomeActivity.this, VoiceScanActivity.class);
+                    /*Intent intentVoice = new Intent(HomeActivity.this, VoiceScanActivity.class);
+                    startActivity(intentVoice);*/
+                    Intent intentVoice = new Intent(HomeActivity.this, MindAuditActivity.class);
                     startActivity(intentVoice);
                     break;
                 case "Mind Audit":
@@ -842,7 +844,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
                     break;
                 default:
-                    Intent intentHealthAudit = new Intent(HomeActivity.this, HealthAuditActivity.class);
+                    Intent intentHealthAudit = new Intent(HomeActivity.this, HealthCamActivity.class);
                     startActivity(intentHealthAudit);
                     break;
             }
