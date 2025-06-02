@@ -35,6 +35,7 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
     private lateinit var tvMove : TextView
     private lateinit var tvEat : TextView
     private lateinit var tvSleep : TextView
+    var homeBottomArgument:String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> HomeBottomTabFragmentAiBinding
         get() = HomeBottomTabFragmentAiBinding::inflate
@@ -59,6 +60,8 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
         tvEat = view.findViewById(R.id.tvEat)
         tvSleep = view.findViewById(R.id.tvSleep)
 
+
+        homeBottomArgument = arguments?.getString("HomeBottomTabFragment").toString()
         val moduleName = arguments?.getString("ModuleName").toString()
         val bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
@@ -72,6 +75,7 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
                 requireActivity().finish()
             }
         })
+
         if (moduleName.contentEquals("MoveRight")){
             switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName)
         }else if (moduleName.contentEquals("EatRight")){

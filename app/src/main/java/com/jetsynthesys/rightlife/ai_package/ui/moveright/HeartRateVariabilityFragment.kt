@@ -90,8 +90,16 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         heartRateDescription = view.findViewById(R.id.heartRateDescription)
         heart_rate_variability_back_image = view.findViewById(R.id.heart_rate_variability_back_image)
         heart_rate_variability_back_image.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
-        }
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }        }
         // Show Week data by default
        // updateChart(getWeekData(), getWeekLabels())
         radioGroup.check(R.id.rbWeek)
@@ -211,7 +219,16 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 
