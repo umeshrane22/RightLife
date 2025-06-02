@@ -1699,7 +1699,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun storeJsonHealthData(sleepJsonRequest: SleepJsonRequest) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
 
                 val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
 

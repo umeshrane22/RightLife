@@ -111,6 +111,7 @@
                             <ImageView
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="parent"
                                 android:src="@drawable/apple_icon" />
@@ -258,7 +259,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/lyt_stage_nocard"
+                android:id="@+id/lyt_nocard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
@@ -291,6 +292,84 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
                         android:textSize="20sp" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/lyt_stage_nocard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="30dp"
+                android:elevation="4dp"
+                android:background="@color/white"
+                android:visibility="gone"
+                app:cardCornerRadius="10dp"
+                android:paddingBottom="5dp"
+                app:layout_constraintTop_toBottomOf="@+id/heading_one"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:paddingBottom="20dp"
+                    android:visibility="visible"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/sleep_text_color"
+                        android:text="Your Sleep's Got Depth.\nShow Us."
+                        android:id="@+id/tv_sleep_got_depth"
+                        android:layout_marginTop="30dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:layout_marginStart="15dp"
+                        android:textSize="20sp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/sleep_text_color"
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/tv_sync_wearable"
+                        android:text="Deep, light, REM-it's all in the details. \nSync your wearable to unlock your sleep stages."
+                        android:fontFamily="@font/dmsans_regular"
+                        android:textSize="16sp"
+                        android:layout_marginStart="15dp"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_sleep_got_depth"
+                        app:layout_constraintStart_toStartOf="parent" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lyt_sync_with_health"
+                        android:layout_marginStart="40dp"
+                        android:visibility="gone"
+                        android:background="@drawable/blue_curved_bg"
+                        android:layout_marginEnd="40dp"
+                        app:layout_constraintTop_toBottomOf="@id/tv_sync_wearable"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:gravity="center"
+                        android:layout_marginTop="25dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/apple_health_icon"
+                            android:id="@+id/img_heart_health" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:text="Sync With Health Connect"
+                            android:layout_marginEnd="20dp"
+                            android:textSize="14sp"
+                            android:id="@+id/tv_sync_with_health"
+                            android:layout_marginStart="10dp" />
+                    </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
