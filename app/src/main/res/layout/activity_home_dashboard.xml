@@ -2681,6 +2681,8 @@
                         android:src="@drawable/sleep_right_arrow_btn" />
                 </RelativeLayout>
 
+            </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/llDiscoverLayout"
                     android:layout_width="match_parent"
@@ -2719,7 +2721,6 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
             </LinearLayout>
         </FrameLayout>
     </androidx.core.widget.NestedScrollView>
