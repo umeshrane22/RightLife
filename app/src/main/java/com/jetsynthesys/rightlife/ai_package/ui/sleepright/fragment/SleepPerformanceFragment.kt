@@ -124,7 +124,16 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "SleepRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
 
             }
         })
@@ -132,7 +141,16 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "SleepRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
     //    setupChart()

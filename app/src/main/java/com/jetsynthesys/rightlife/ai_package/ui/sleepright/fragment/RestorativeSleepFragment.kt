@@ -129,7 +129,16 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "SleepRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
 
             }
         })
@@ -137,7 +146,16 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "SleepRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         /*barChart.renderer = RoundedBarChartRenderer(
@@ -305,7 +323,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
     private fun fetchSleepData(endDate: String,period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val source = "apple"
         val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, "2025-04-30")
         call.enqueue(object : Callback<RestorativeSleepResponse> {

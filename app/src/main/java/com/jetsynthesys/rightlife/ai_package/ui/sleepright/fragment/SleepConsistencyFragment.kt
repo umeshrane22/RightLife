@@ -110,15 +110,32 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "SleepRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
 
             }
         })
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-        }
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "SleepRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }        }
     }
 
     fun getTodayDate(): LocalDate {
@@ -257,7 +274,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
     private fun fetchSleepData(mEndDate: String,period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val source = "android"
         val date = mEndDate
         val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,mEndDate)
@@ -397,10 +414,10 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
 
         val padding = 50f
         val widthPerDay = (width - 2 * padding) / sleepData.size
-        val heightPerHour = (height - 2 * padding) / 12f // Assuming 12-hour range (from 6 PM to 6 AM)
+        val heightPerHour = (height - 2 * padding) / 7f // Assuming 12-hour range (from 6 PM to 6 AM)
 
         // Draw grid lines for hours
-        val hours = listOf("8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8")
+        val hours = listOf("8","6","4","2","12","10","8")
         for (i in hours.indices) {
             val y = height - padding - (i * heightPerHour)
             canvas.drawText(hours[i], 10f, y, paintText)
