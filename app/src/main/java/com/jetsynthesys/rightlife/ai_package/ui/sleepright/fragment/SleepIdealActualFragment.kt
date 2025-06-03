@@ -102,12 +102,30 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         fetchSleepData(mEndDate,"weekly")
 
         backBtn.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "SleepRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "SleepRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
 
             }
         })

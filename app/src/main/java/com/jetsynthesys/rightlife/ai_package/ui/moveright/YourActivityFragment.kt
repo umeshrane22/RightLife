@@ -80,12 +80,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var workoutHistoryResponse: WorkoutHistoryResponse? = null
     private var workoutLogHistory: ArrayList<WorkoutRecord> = ArrayList()
     private var loadingOverlay: FrameLayout? = null
-    private var activityList: ArrayList<ActivityModel> = ArrayList() // Moved to class-level
+    private var activityList: ArrayList<ActivityModel> = ArrayList()
 
     private val handler = Handler(Looper.getMainLooper())
     private var tooltipRunnable1: Runnable? = null
     private var tooltipRunnable2: Runnable? = null
-    private var isTooltipShown = false // Track if tooltips have been shown
+    private var isTooltipShown = false
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -157,11 +157,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         yourActivityBackButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
-            val args = Bundle()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
                 commit()
             }
         }
@@ -187,11 +189,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     val fragment = HomeBottomTabFragment()
-                    val args = Bundle()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "MoveRight")
+                    }
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
-                        replace(R.id.flFragment, fragment, "landing")
-                        addToBackStack("landing")
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
                         commit()
                     }
                 }
@@ -245,14 +249,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
 
-        // Check if tooltips have already been shown
         val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
         isTooltipShown = prefs.getBoolean("hasShownTooltips", false)
     }
 
     override fun onResume() {
         super.onResume()
-        // Schedule tooltips only if they haven't been shown yet
         if (!isTooltipShown) {
             showTooltipsSequentially()
         }
@@ -260,14 +262,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
     override fun onPause() {
         super.onPause()
-        // Remove pending tooltip tasks when fragment is not visible
         tooltipRunnable1?.let { handler.removeCallbacks(it) }
         tooltipRunnable2?.let { handler.removeCallbacks(it) }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Clean up handler callbacks to prevent memory leaks
         handler.removeCallbacksAndMessages(null)
     }
 
@@ -285,13 +285,18 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun fetchCalories(formattedDate: String) {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                if (isAdded && view != null) {
-                    requireActivity().runOnUiThread {
-                        showLoader(requireView())
-                    }
+                // Skip if fragment is not attached or not visible
+                if (!isAdded || view == null || !isVisible) {
+                    Log.w("FetchCalories", "Fragment not attached or not visible for date $formattedDate, skipping")
+                    return@launch
                 }
+
+                withContext(Dispatchers.Main) {
+                    showLoader(requireView())
+                }
+
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                    ?: "64763fe2fa0e40d9c0bc8264" // Fallback userId
                 val response = ApiClient.apiServiceFastApi.getCalories(
                     userId = userId,
                     startDate = formattedDate,
@@ -302,19 +307,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 )
 
                 if (response.isSuccessful) {
-                    if (isAdded && view != null) {
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
                     val caloriesResponse = response.body()
-                    Log.d("FetchCalories", "Received ${caloriesResponse?.data?.size ?: 0} workouts")
+                    Log.d("FetchCalories", "Date: $formattedDate, Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
-                    activityList.clear() // Clear existing list
-
+                    val newActivities = mutableListOf<ActivityModel>()
                     caloriesResponse?.data?.forEachIndexed { index, workout ->
-                        Log.d("FetchCalories", "Workout $index - ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}")
-
+                        Log.d("FetchCalories", "Workout $index - Type: ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}, ID: ${workout.activity_id}")
                         val activity = ActivityModel(
                             activityType = workout.workoutType,
                             activity_id = workout.activity_id,
@@ -324,80 +322,70 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             calorieId = workout.id,
                             userId = userId
                         )
-
-                        activityList.add(activity)
-                        withContext(Dispatchers.Main) {
-                            btnLogMeal.isEnabled = true
-                        }
+                        newActivities.add(activity)
                     }
 
                     withContext(Dispatchers.Main) {
-                        if (isAdded && view != null) {
-                            if (activityList.isNotEmpty()) {
-                                myActivityRecyclerView.visibility = View.VISIBLE
-                                Log.d("FetchCalories", "Displaying ${activityList.size} activities")
-                            } else {
-                                myActivityRecyclerView.visibility = View.GONE
-                                Log.d("FetchCalories", "No activities to display")
-                            }
-                            myActivityAdapter.addAll(activityList, -1, null, false)
+                        if (!isAdded || view == null || !isVisible) {
+                            Log.w("FetchCalories", "Fragment not attached after API call for date $formattedDate, skipping UI update")
+                            return@withContext
                         }
+
+                        // Update activityList and adapter
+                        activityList.clear()
+                        activityList.addAll(newActivities)
+                        Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
+
+                        if (activityList.isNotEmpty()) {
+                            myActivityRecyclerView.visibility = View.VISIBLE
+                            myActivityAdapter.addAll(activityList, -1, null, false)
+                            myActivityAdapter.notifyDataSetChanged() // Force adapter refresh
+                            Log.d("FetchCalories", "Adapter updated with ${activityList.size} activities for date $formattedDate")
+                        } else {
+                            myActivityRecyclerView.visibility = View.GONE
+                            Log.d("FetchCalories", "No activities to display for date $formattedDate")
+                        }
+
+                        btnLogMeal.isEnabled = true
+                        dismissLoader(requireView())
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "No error details"
                     withContext(Dispatchers.Main) {
-                        if (isAdded && view != null) {
-                            Log.e("FetchCalories", "API Error ${response.code()}: $errorBody")
-                            myActivityRecyclerView.visibility = View.GONE
-                            Toast.makeText(
-                                context,
-                                "Failed to fetch calories: ${response.code()}",
-                                Toast.LENGTH_LONG
-                            ).show()
-
-                            requireActivity().runOnUiThread {
-                                dismissLoader(requireView())
-                            }
-                        }
+                        if (!isAdded || view == null || !isVisible) return@withContext
+                        Log.e("FetchCalories", "API Error ${response.code()} for date $formattedDate: $errorBody")
+                        myActivityRecyclerView.visibility = View.GONE
+                        Toast.makeText(context, "Failed to fetch calories: ${response.code()}", Toast.LENGTH_LONG).show()
+                        dismissLoader(requireView())
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    if (isAdded && view != null) {
-                        Log.e("FetchCalories", "Exception: ${e.message}", e)
-                        myActivityRecyclerView.visibility = View.GONE
-                        Toast.makeText(
-                            context,
-                            "Error fetching calories: ${e.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
+                    if (!isAdded || view == null || !isVisible) return@withContext
+                    Log.e("FetchCalories", "Exception for date $formattedDate: ${e.message}", e)
+                    myActivityRecyclerView.visibility = View.GONE
+                    Toast.makeText(context, "Error fetching calories: ${e.message}", Toast.LENGTH_LONG).show()
+                    dismissLoader(requireView())
                 }
             }
         }
     }
 
     private fun showTooltipsSequentially() {
-        // Schedule first tooltip
         tooltipRunnable1 = Runnable {
-            if (isResumed) { // Only show if fragment is resumed
+            if (isResumed) {
                 showTooltipDialogSync(activitySync, "You can sync to apple \n health / google health \n from here.")
             }
         }
         handler.postDelayed(tooltipRunnable1!!, 1000)
 
-        // Schedule second tooltip
         tooltipRunnable2 = Runnable {
-            if (isResumed) { // Only show if fragment is resumed
+            if (isResumed) {
                 showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
             }
         }
         handler.postDelayed(tooltipRunnable2!!, 5000)
 
-        // Mark tooltips as shown in SharedPreferences
         val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("hasShownTooltips", true).apply()
     }
@@ -558,7 +546,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         return (0..6).map { i ->
             val date = startDate.plusDays(i.toLong())
             WorkoutWeeklyDayModel(
-                dayName = date.dayOfWeek.name.take(1), // M, T, W...
+                dayName = date.dayOfWeek.name.take(1),
                 dayNumber = date.dayOfMonth.toString(),
                 fullDate = date,
             )

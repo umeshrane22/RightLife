@@ -108,7 +108,16 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         heartRateDescriptionHeading = view.findViewById(R.id.heartRateDescriptionHeading)
         heartRateDescription = view.findViewById(R.id.heartRateDescription)
         burn_back_button_image.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         // Initial chart setup with sample data
@@ -229,7 +238,16 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 

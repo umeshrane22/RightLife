@@ -132,7 +132,7 @@ import retrofit2.http.Url
 
 interface ApiService {
 
-    @GET("app/api/activityMaster")
+    @GET("activityMaster")
     fun getWorkoutList(
         @Header("Authorization") authToken: String): Call<WorkoutResponseModel>
 
@@ -173,7 +173,7 @@ interface ApiService {
         @Path("foodId") foodId: String,
         @Header("Authorization") authToken: String): Call<FoodDetailsResponse>
 
-    @GET("app/api/tools")
+    @GET("tools")
     fun getToolList(
         @Header("Authorization") authToken: String,
         @Query("userId") userId: String
@@ -500,38 +500,38 @@ interface ApiService {
         @Query("date") date: String
     ): Call<SleepStageResponse>
 
-    @GET("app/api/quoteOfDay")
+    @GET("quoteOfDay")
     fun quoteOfDay(@Header("Authorization") authToken: String): Call<ThinkQuoteResponse>
 
-    @GET("app/api/mind-audit/q/get-assessment-result")
+    @GET("mind-audit/q/get-assessment-result")
     fun getAssessmentResult(@Header("Authorization") authToken: String): Call<AssessmentResponse>
 
-    @GET("app/api/affirmationPlaylist")
+    @GET("affirmationPlaylist")
     fun getAffirmationPlaylist(@Header("Authorization") authToken: String): Call<AffirmationPlaylistResponse>
 
     @GET("app/api/tools")
     fun fetchToolsList(@Header("Authorization") authToken: String,@Query("userId") userId: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
-    @GET("app/api/content/list")
+    @GET("content/list")
     fun fetchThinkRecomended(@Header("Authorization") authToken: String,@Query("pageType") pageType: String,@Query("moduleId") moduleId: String): Call<ThinkRecomendedResponse>
 
-    @GET("app/api/tools")
+    @GET("tools")
     fun fetchToolsListAll(@Header("Authorization") authToken: String,@Query("filteredKey") filteredKey: String): Call<ToolsResponse>
 
-    @POST("app/api/tools")
+    @POST("tools")
     fun selectTools(@Header("Authorization") authToken: String, @Body addToolRequest: AddToolRequest,): Call<BaseResponse>
 
-    @GET("app/api/tools")
+    @GET("tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
 
-    @GET("app/api/journalNew/journalAnswer")
+    @GET("journalNew/journalAnswer")
     fun fetchJournalAnswer(@Header("Authorization") authToken: String,@Query("date") date: String): Call<JournalAnswerResponse>
 
-    @GET("app/api/mindFull")
+    @GET("mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
 
-    @POST("app/api/mindFull")
+    @POST("mindFull")
     fun postMindFull(@Header("Authorization") authToken: String,@Body mindfullData: MindfullRequest): Call<BaseResponse>
 
     @GET("sleep/fetch_sleep_time")
@@ -578,19 +578,19 @@ interface ApiService {
         @Query("date") date: String
     ): Call<RestorativeSleepResponse>
 
-    @GET("app/api/journalNew/recordEmotion")
+    @GET("journalNew/recordEmotion")
     fun fetchMoodTrackerPercentage(@Header("Authorization") authToken: String,
         @Query("type") type: String,
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String
     ): Call<MoodTrackerWeeklyResponse>
 
-    @GET("app/api/journalNew/recordEmotion")
+    @GET("journalNew/recordEmotion")
     fun fetchMoodTrackerMonthly(@Header("Authorization") authToken: String, @Query("type") type: String,
                                    @Query("startDate") startDate: String, @Query("endDate") endDate: String
     ): Call<MoodTrackerMonthlyResponse>
 
-    @POST("app/api/journalNew")
+    @POST("journalNew")
     fun addThinkJournalEmoji(@Header("Authorization") authToken: String, @Body addEmojiRequest: AddEmojiRequest): Call<BaseResponse>
 
     @GET("sleep/landing-page/")

@@ -90,7 +90,16 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         heartRateDescriptionHeading = view.findViewById(R.id.heartRateDescriptionHeading)
         heartRateDescription = view.findViewById(R.id.heartRateDescription)
         resting_heart_rate_back_image.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(),"HomeTabBottomFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         // Show Week data by default
@@ -211,7 +220,16 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 

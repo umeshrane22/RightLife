@@ -92,14 +92,30 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         peak_text_time_value = view.findViewById(R.id.peak_text_time_value)
         light_text_percentage = view.findViewById(R.id.light_text_percentage)
         workOutsAnalyticsBackButton.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "LandingFragment")
-        }
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }        }
 
         // Back press handling
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "LandingFragment")
-            }
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle().apply {
+                    putString("ModuleName", "MoveRight")
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }            }
         })
 
         // Retrieve the CardItem from the Bundle

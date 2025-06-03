@@ -109,7 +109,16 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         back_button_calorie_balance = view.findViewById(R.id.back_button_calorie_balance)
 
         back_button_calorie_balance.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         // Set default selection to Week
@@ -249,7 +258,16 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 

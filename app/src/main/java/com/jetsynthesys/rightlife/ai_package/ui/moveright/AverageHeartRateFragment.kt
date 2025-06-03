@@ -92,7 +92,16 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         heartRateDescription = view.findViewById(R.id.heartRateDescription)
         average_heart_rate_back_image = view.findViewById(R.id.average_heart_rate_back_image)
         average_heart_rate_back_image.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(),"HomeBottomTabFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         // Show Week data by default and fetch API data
@@ -214,7 +223,16 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
     }
 
