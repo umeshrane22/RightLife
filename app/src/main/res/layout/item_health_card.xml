@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="300dp"
-    android:layout_height="wrap_content"
+    android:layout_height="260dp"
     android:orientation="vertical"
     android:background="@drawable/roundedcornershape"
     android:padding="20dp"
@@ -35,7 +35,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="65dp"
         android:orientation="horizontal"
         android:gravity="center">
         <!-- "No Data" Title -->
@@ -68,7 +68,9 @@
         android:textSize="12sp"
         android:textColor="@color/txt_color_header"
         android:lineSpacingExtra="2dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:maxLines="4"
+        android:ellipsize="end" />
 
     <!-- Discover Button -->
     <Button
