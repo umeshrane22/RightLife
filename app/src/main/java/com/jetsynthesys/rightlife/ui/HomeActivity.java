@@ -722,11 +722,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
     private void handlePromotionResponse(PromotionResponse promotionResponse) {
 
-        if (promotionResponse.getPromotiondata().getPromotionList() != null && !promotionResponse.getPromotiondata().getPromotionList().isEmpty()) {
-            cardItems.clear();
-        }
+        cardItems.clear();
         for (int i = 0; i < promotionResponse.getPromotiondata().getPromotionList().size(); i++) {
-            Log.d("API image", "Image : " + promotionResponse.getPromotiondata().getPromotionList().get(i).getContentUrl());
+
             CardItem cardItem = new CardItem(promotionResponse.getPromotiondata().getPromotionList().get(i).getId(),
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getName(),
                     R.drawable.facialconcept,
@@ -738,7 +736,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getSeriesId());
             cardItems.add(i, cardItem);
         }
-        Log.e("API image List", "list : " + cardItems.size());
+
         if (!cardItems.isEmpty()) {
             viewPager.setVisibility(View.VISIBLE);
             adapter = new CircularCardAdapter(HomeActivity.this, cardItems);
