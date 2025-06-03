@@ -249,7 +249,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
-            Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+
             startActivity(
                 Intent(
                     this@HomeDashboardActivity,
@@ -328,14 +328,12 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         // click listners for checklist
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()) {
-                startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
-            }
+             startActivity(Intent(this, QuestionnaireEatRightActivity::class.java))
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()) {
-                startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
-            }
+
+            startActivity(Intent(this, QuestionnaireThinkRightActivity::class.java))
+
         }
         binding.includeChecklist.rlChecklistSynchealth.setOnClickListener {
             val availabilityStatus = HealthConnectClient.getSdkStatus(this)
@@ -350,11 +348,11 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             }
         }
         binding.includeChecklist.rlChecklistProfile.setOnClickListener {
-            if (ifFreeTrailOrPaymentAvailable()) {
+
                 val intent = Intent(this, OnboardingQuestionnaireActivity::class.java)
                 intent.putExtra("forProfileChecklist", true)
                 startActivity(intent)
-            }
+
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
@@ -571,7 +569,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
 
                     val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    if (countDown <= 7) {
+                    if (countDown < 7) {
                         binding.tvCountDown.text = "${countDown + 1}/7"
                         binding.llCountDown.visibility = View.VISIBLE
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE

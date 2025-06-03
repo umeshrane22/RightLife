@@ -9,7 +9,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
+
     private const val BASE_URL = BuildConfig.BASE_URL
+
     private const val BASE_URL_FAST_API = BuildConfig.BASE_URL_AI
     private const val BASE_URL_FOOD_CAPTURE_API = "https://api.spoonacular.com/"
     private const val BASE_URL_FOOD_CAPTURE_NEW_API = "https://us-central1-snapcalorieb2bapi.cloudfunctions.net/"
