@@ -183,7 +183,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:cardCornerRadius="@dimen/margin_card_16dp">
 
                     <LinearLayout
