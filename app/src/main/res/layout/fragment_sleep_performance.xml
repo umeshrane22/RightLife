@@ -295,38 +295,51 @@
                 android:id="@+id/sleep_perform_nocard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="4dp"
                 android:visibility="gone"
+                android:elevation="4dp"
                 android:background="@color/white"
-                app:contentPadding="5dp"
                 app:cardCornerRadius="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
+                android:paddingBottom="5dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginTop="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="150dp">
+                    android:paddingBottom="15dp"
+                    android:layout_height="wrap_content">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/sleep_text_color"
+                        android:id="@+id/tv_your_sleep_mystery"
                         android:fontFamily="@font/dmsans_bold"
-                        android:id="@+id/tv_resto_no_data"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
-                        android:visibility="visible"
-                        android:textColor="@color/black"
-                        android:text="NO DATA"
+                        android:text="Your Sleep's A Mystery"
+                        android:textSize="20dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="20dp"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:textSize="20sp" />
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/sleep_text_color"
+                        android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                        android:id="@+id/tv_sleep_mystery_subtitle"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/dmsans_regular"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_your_sleep_mystery"
+                        app:layout_constraintStart_toStartOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
