@@ -249,7 +249,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         // Handling Subscribe to RightLife
         binding.trialExpiredLayout.btnSubscription.setOnClickListener {
-            Toast.makeText(this, "Coming Soon", Toast.LENGTH_SHORT).show()
+
             startActivity(
                 Intent(
                     this@HomeDashboardActivity,
@@ -569,7 +569,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                     tvGreetingText.text = "Good " + DateTimeUtils.getWishingMessage() + " ,"
 
                     val countDown = getCountDownDays(ResponseObj.userdata.createdAt)
-                    if (countDown <= 7) {
+                    if (countDown < 7) {
                         binding.tvCountDown.text = "${countDown + 1}/7"
                         binding.llCountDown.visibility = View.VISIBLE
                         binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
