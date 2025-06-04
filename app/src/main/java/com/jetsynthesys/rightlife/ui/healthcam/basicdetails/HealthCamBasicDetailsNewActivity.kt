@@ -228,14 +228,25 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
 
 
-                val weightInKg =
+          /*      val weightInKg =
                     if (weightWithUnit[1].equals(
                             "kgs",
                             ignoreCase = true
                         )
                     ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
                         weightWithUnit[0]
-                    )
+                    )*/
+
+                val unit = listOfNotNull(
+                    weightWithUnit.getOrNull(1),
+                    weightWithUnit.getOrNull(2)
+                )
+
+                val weightInKg = if (unit.any { it.equals("kg", true) || it.equals("kgs", true) }) {
+                    weightWithUnit[0]
+                } else {
+                    ConversionUtils.convertKgToLbs(weightWithUnit[0])
+                }
 
                 val faceScanQuestionRequest = FaceScanQuestionRequest()
                 faceScanQuestionRequest.questionId = responseObj?.questionData?.id
