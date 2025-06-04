@@ -385,10 +385,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             "119 years",
             "120 years"
         )
-        val selectedAgeArray = binding.tvAge.text.toString().split(" ")
+        val selectedAgeArray = binding.edtAge.text.toString().split(" ")
         val selectedAgeFromUi =
             if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13) {
-                binding.tvAge.text.toString()
+                binding.edtAge.text.toString()
             } else
                 ""
         val value1 = if (selectedAgeFromUi.isNotEmpty())
