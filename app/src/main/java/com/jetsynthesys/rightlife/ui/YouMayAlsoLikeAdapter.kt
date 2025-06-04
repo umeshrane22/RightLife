@@ -68,13 +68,13 @@ class YouMayAlsoLikeAdapter(
             }
 
             if (item?.contentType.equals("TEXT", ignoreCase = true)) {
-                imageContentType.setImageResource(R.drawable.ic_read_category)
+                imageContentType.setImageResource(R.drawable.ic_text_content)
             } else if (item?.contentType.equals("VIDEO", ignoreCase = true)) {
-                imageContentType.setImageResource(R.drawable.play)
+                imageContentType.setImageResource(R.drawable.ic_video_content)
             } else if (item?.contentType.equals("SERIES", ignoreCase = true)) {
-                imageContentType.setImageResource(R.drawable.play)
+                imageContentType.setImageResource(R.drawable.ic_series_content)
             } else {
-                imageContentType.setImageResource(R.drawable.ic_sound_category)
+                imageContentType.setImageResource(R.drawable.ic_audio_content)
             }
         }
 
