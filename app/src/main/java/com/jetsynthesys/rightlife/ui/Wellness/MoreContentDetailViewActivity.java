@@ -40,6 +40,7 @@ import com.jetsynthesys.rightlife.apimodel.Episodes.EpisodeResponseModel;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse;
+import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter;
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
 import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
@@ -406,8 +407,8 @@ public class MoreContentDetailViewActivity extends BaseActivity {
 
     private void setupListData(List<Like> contentList) {
         rl_more_like_section.setVisibility(View.VISIBLE);
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        YouMayAlsoLikeAdapter adapter = new YouMayAlsoLikeAdapter(this, contentList);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
         recyclerView.setAdapter(adapter);
     }
