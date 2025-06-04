@@ -34,9 +34,9 @@ import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkReque
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonAPICall.trackEpisodeOrContent
+import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
-import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
@@ -143,14 +143,14 @@ class ContentDetailsActivity : BaseActivity() {
                     .firstName + " " + contentResponseObj.data.artist[0]
                     .lastName
 
-            Glide.with(applicationContext)
-                .load(
-                    ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
-                        .profilePicture
-                )
-                .placeholder(R.drawable.profile_man) // Replace with your placeholder image
-                .circleCrop()
-                .into(binding.profileImage)
+                Glide.with(applicationContext)
+                    .load(
+                        ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
+                            .profilePicture
+                    )
+                    .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                    .circleCrop()
+                    .into(binding.profileImage)
 
                 binding.llAuthorMain.setOnClickListener {
                     startActivity(Intent(this, ArtistsDetailsActivity::class.java).apply {
@@ -522,9 +522,9 @@ class ContentDetailsActivity : BaseActivity() {
 
     private fun setupListData(contentList: List<Like>) {
         binding.rlMoreLikeSection.visibility = View.VISIBLE
-        val adapter = RLEditDetailMoreAdapter(this, contentList)
+        val adapter = YouMayAlsoLikeAdapter(this, contentList)
         val horizontalLayoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerView.setLayoutManager(horizontalLayoutManager)
         binding.recyclerView.setAdapter(adapter)
     }
