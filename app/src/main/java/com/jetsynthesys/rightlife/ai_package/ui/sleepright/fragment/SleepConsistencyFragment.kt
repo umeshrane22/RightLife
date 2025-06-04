@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
 import com.github.mikephil.charting.data.BarEntry
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
@@ -68,6 +69,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var consistencyMessage: TextView
     private lateinit var percentageIcon: ImageView
     private lateinit var percentageText: TextView
+    private lateinit var consistencyCard: CardView
+    private lateinit var consistencyNoDataCard: CardView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -92,6 +95,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         consistencyMessage = view.findViewById(R.id.consistency_message)
         percentageIcon = view.findViewById(R.id.percentage_icon)
         percentageText = view.findViewById(R.id.percentage_text)
+        consistencyCard = view.findViewById(R.id.lyt_consistency_card)
+        consistencyNoDataCard = view.findViewById(R.id.lyt_consistency_nocard)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
         progressDialog.setCancelable(false)
@@ -282,32 +287,41 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 progressDialog.dismiss()
                 if (response.isSuccessful) {
-                    sleepConsistencyResponse = response.body()!!
-                    if (sleepConsistencyResponse.statusCode == 200) {
-                        if (sleepConsistencyResponse.data?.sleepDetails?.isNotEmpty() == true) {
-                            sleepConsistencyResponse.data?.sleepDetails?.let {
-                                setData(it)
+                    if (response.body()!=null) {
+                        sleepConsistencyResponse = response.body()!!
+                        if (sleepConsistencyResponse.message != "No sleep consistency data found.") {
+                            consistencyTitle.visibility = View.VISIBLE
+                            consistencyMessage.visibility = View.VISIBLE
+                            consistencyCard.visibility = View.VISIBLE
+                            consistencyNoDataCard.visibility = View.GONE
+                            if (sleepConsistencyResponse.data?.sleepDetails?.isNotEmpty() == true) {
+                                sleepConsistencyResponse.data?.sleepDetails?.let {
+                                    setData(it)
+                                }
                             }
-                        }
-                        setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
-                        consistencyTitle.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.title)
-                        consistencyMessage.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.message)
-                        if (sleepConsistencyResponse.data?.progress_detail?.progress_sign == "plus"){
-                            percentageIcon.visibility = View.VISIBLE
-                            percentageIcon.setImageResource(R.drawable.ic_up)
-                            percentageText.visibility = View.VISIBLE
-                            percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
+                            setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
+                            consistencyTitle.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.title)
+                            consistencyMessage.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.message)
+                            if (sleepConsistencyResponse.data?.progress_detail?.progress_sign == "plus"){
+                                percentageIcon.visibility = View.VISIBLE
+                                percentageIcon.setImageResource(R.drawable.ic_up)
+                                percentageText.visibility = View.VISIBLE
+                                percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
+                            }else{
+                                percentageIcon.visibility = View.VISIBLE
+                                percentageText.visibility = View.VISIBLE
+                                percentageIcon.setImageResource(R.drawable.ic_down)
+                                percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
+                                percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
+                            }
                         }else{
-                            percentageIcon.visibility = View.VISIBLE
-                            percentageText.visibility = View.VISIBLE
-                            percentageIcon.setImageResource(R.drawable.ic_down)
-                            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
-                            percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
+                            consistencyCard.visibility = View.GONE
+                            consistencyNoDataCard.visibility = View.VISIBLE
+                            consistencyTitle.visibility = View.GONE
+                            consistencyMessage.visibility = View.GONE
                         }
-                    } else {
-                        Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
-                        Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     }
+
                 }else if(response.code() == 400){
                     progressDialog.dismiss()
                     Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
