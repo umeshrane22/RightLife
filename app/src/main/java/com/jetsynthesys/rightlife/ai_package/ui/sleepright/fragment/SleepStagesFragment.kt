@@ -38,6 +38,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -158,11 +159,16 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
             })
     }
 
+    fun getCurrentDate(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        return LocalDate.now().format(formatter)
+    }
+
     private fun fetchSleepData() {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: "68010b615a508d0cfd6ac9ca"
-        val date = "2025-04-30"
-        val source = "apple"
+        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val date = getCurrentDate()
+        val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchSleepStage(userid, source, date)
         call.enqueue(object : Callback<SleepStageResponse> {
             override fun onResponse(
