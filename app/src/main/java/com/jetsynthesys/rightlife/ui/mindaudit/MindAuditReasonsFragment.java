@@ -21,13 +21,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ui.healthaudit.Fruit;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,14 +42,14 @@ public class MindAuditReasonsFragment extends Fragment {
     private static final String ARG_PAGE_INDEX = "page_index";
     private static final String ARG_EMOTION = "emotion";
     private static final String ARG_EMOTION_REASONS = "emotion_reasons";
-    private static ArrayList<String> userEmotionsString = new ArrayList<>();
+    private static final ArrayList<String> userEmotionsString = new ArrayList<>();
     private RecyclerView recyclerView;
     private MindAuditReasonslistAdapter adapter;
     private int pageIndex;
-    private ArrayList<String> selectedEmotionReasons = new ArrayList<>();
-    private ArrayList<String> emotionReasons = new ArrayList<>();
+    private final ArrayList<String> selectedEmotionReasons = new ArrayList<>();
+    private final ArrayList<String> emotionReasons = new ArrayList<>();
     private String emotion;
-    private ArrayList<Fruit> fruitList = new ArrayList<>();
+    private final ArrayList<Fruit> fruitList = new ArrayList<>();
     private TextView tvHeader;
 
     public static MindAuditReasonsFragment newInstance(int pageIndex, ArrayList<String> emotionReasons, String emotion) {
@@ -100,10 +100,14 @@ public class MindAuditReasonsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
-            if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
-                showDisclaimerDialog();
+            if (selectedEmotionReasons.isEmpty()) {
+                Toast.makeText(requireContext(),"Please select reason!!",Toast.LENGTH_SHORT).show();
             } else {
-                ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
+                if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
+                    showDisclaimerDialog();
+                } else {
+                    ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
+                }
             }
 
         });

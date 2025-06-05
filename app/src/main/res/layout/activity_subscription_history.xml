@@ -63,7 +63,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
-                android:visibility="gone"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="12dp"
                 android:foreground="?attr/selectableItemBackground">
@@ -92,6 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="true"
+                android:visibility="gone"
                 android:overScrollMode="never" />
 
             <TextView
@@ -111,14 +111,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="true"
-                android:overScrollMode="never" />
+                android:overScrollMode="never"
+                android:visibility="gone"/>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewNoPastSubscription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="2dp"
-                android:visibility="gone"
                 app:cardElevation="4dp"
                 app:cardCornerRadius="12dp"
                 android:foreground="?attr/selectableItemBackground">
