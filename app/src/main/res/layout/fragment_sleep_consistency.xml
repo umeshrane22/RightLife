@@ -191,7 +191,7 @@
                         android:id="@+id/tv_average_bed_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="6hr 50mins"
+                        android:text=""
                         android:textColor="@color/black"
                         android:textSize="16dp"
                         android:fontFamily="@font/dmsans_medium"
