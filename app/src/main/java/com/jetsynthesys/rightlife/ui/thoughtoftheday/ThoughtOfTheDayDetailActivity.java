@@ -33,8 +33,8 @@ import com.jetsynthesys.rightlife.apimodel.affirmations.updateAffirmation.Affirm
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.Like;
 import com.jetsynthesys.rightlife.apimodel.morelikecontent.MoreLikeContentResponse;
 import com.jetsynthesys.rightlife.databinding.ActivityThoughtofthedayDetailLayoutBinding;
+import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter;
 import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity;
-import com.jetsynthesys.rightlife.ui.therledit.RLEditDetailMoreAdapter;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
@@ -48,6 +48,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ThoughtOfTheDayDetailActivity extends BaseActivity {
+    private final Handler handler = new Handler();
     ActivityThoughtofthedayDetailLayoutBinding binding;
     String contentId = "";
     String affirmationId = "";
@@ -57,8 +58,6 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
     // Music player for Audio
     private MediaPlayer mediaPlayer;
     private boolean isPlayingmusic = false;
-    private final Handler handler = new Handler();
-
     private boolean is60PercentConsumed = false;
     // Update progress in SeekBar and Circular Progress Bar
     private final Runnable updateProgress = new Runnable() {
@@ -406,8 +405,8 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
 
     private void setupListData(List<Like> contentList) {
         binding.tvMoreLikeThis.setVisibility(View.VISIBLE);
-        RLEditDetailMoreAdapter adapter = new RLEditDetailMoreAdapter(this, contentList);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        YouMayAlsoLikeAdapter adapter = new YouMayAlsoLikeAdapter(this, contentList);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         binding.recyclerView.setLayoutManager(horizontalLayoutManager);
         binding.recyclerView.setAdapter(adapter);
     }

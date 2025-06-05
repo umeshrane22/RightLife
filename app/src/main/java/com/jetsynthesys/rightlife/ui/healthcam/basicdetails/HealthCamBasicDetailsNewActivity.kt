@@ -228,14 +228,25 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                     CommonAPICall.convertFeetInchToCmWithIndex(height).cmIndex.toString()
 
 
-                val weightInKg =
+          /*      val weightInKg =
                     if (weightWithUnit[1].equals(
                             "kgs",
                             ignoreCase = true
                         )
                     ) weightWithUnit[0] else ConversionUtils.convertKgToLbs(
                         weightWithUnit[0]
-                    )
+                    )*/
+
+                val unit = listOfNotNull(
+                    weightWithUnit.getOrNull(1),
+                    weightWithUnit.getOrNull(2)
+                )
+
+                val weightInKg = if (unit.any { it.equals("kg", true) || it.equals("kgs", true) }) {
+                    weightWithUnit[0]
+                } else {
+                    ConversionUtils.convertKgToLbs(weightWithUnit[0])
+                }
 
                 val faceScanQuestionRequest = FaceScanQuestionRequest()
                 faceScanQuestionRequest.questionId = responseObj?.questionData?.id
@@ -385,10 +396,10 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             "119 years",
             "120 years"
         )
-        val selectedAgeArray = binding.tvAge.text.toString().split(" ")
+        val selectedAgeArray = binding.edtAge.text.toString().split(" ")
         val selectedAgeFromUi =
             if (selectedAgeArray.isNotEmpty() && selectedAgeArray[0].toInt() >= 13) {
-                binding.tvAge.text.toString()
+                binding.edtAge.text.toString()
             } else
                 ""
         val value1 = if (selectedAgeFromUi.isNotEmpty())

@@ -40,6 +40,7 @@ import com.jetsynthesys.rightlife.ui.Articles.models.Artist;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
+import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter;
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
@@ -489,9 +490,9 @@ public class ArticlesDetailActivity extends BaseActivity {
     private void setupListData(List<Like> contentList) {
         binding.txtAlsolikeHeader.setVisibility(View.VISIBLE);
 
-        ArticleDetailMoreLikeAdapter adapter = new ArticleDetailMoreLikeAdapter(this, contentList);
+        YouMayAlsoLikeAdapter adapter = new YouMayAlsoLikeAdapter(this, contentList);
         LinearLayoutManager horizontalLayoutManager =
-                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
         binding.recyclerViewAlsolike.setLayoutManager(horizontalLayoutManager);
         binding.recyclerViewAlsolike.setAdapter(adapter);
