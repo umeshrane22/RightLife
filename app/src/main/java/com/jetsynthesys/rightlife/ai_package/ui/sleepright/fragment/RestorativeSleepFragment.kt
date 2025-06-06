@@ -324,15 +324,26 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     private fun fetchSleepData(endDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-        val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, "2025-04-30")
+        val source = "android"
+        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, endDate)
         call.enqueue(object : Callback<RestorativeSleepResponse> {
             override fun onResponse(call: Call<RestorativeSleepResponse>, response: Response<RestorativeSleepResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    if (response?.body()!=null) {
+                    if (response.body()!=null) {
                         restorativeSleepResponse = response.body()!!
-                        setRestorativeSleepData(restorativeSleepResponse?.data)
+                        if (restorativeSleepResponse.message != "No restorative sleep data found.") {
+                            tvRestoTitle.visibility = View.VISIBLE
+                            tvRestoMessage.visibility = View.VISIBLE
+                            lytRestoDataCard.visibility = View.VISIBLE
+                            lytRestoNoDataCard.visibility = View.GONE
+                            setRestorativeSleepData(restorativeSleepResponse?.data)
+                        }else{
+                            lytRestoDataCard.visibility = View.GONE
+                            lytRestoNoDataCard.visibility = View.VISIBLE
+                            tvRestoTitle.visibility = View.GONE
+                            tvRestoMessage.visibility = View.GONE
+                        }
                     }
 
                 }else if(response.code() == 400){
