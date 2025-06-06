@@ -5,6 +5,7 @@ data class ChecklistData(
     val userId: String,
     val profile: String,
     val meal_snap: String,
+    val snap_mealId: String,
     val discover_eating: String,
     val vital_facial_scan: String,
     val unlock_sleep: String,

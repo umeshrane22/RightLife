@@ -27,7 +27,7 @@ public class Recommendation {
     public int viewCount;
     public String moduleName;
     public String categoryName;
-    public List<String> tagsAsStrings;
+    //public List<String> tagsAsStrings;
     public boolean isWatched;
     public boolean isAffirmated;
     public boolean isFavourited;
