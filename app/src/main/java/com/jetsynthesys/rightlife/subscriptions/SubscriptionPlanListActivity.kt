@@ -142,6 +142,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                 response: Response<SubscriptionPlansResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    planList.clear()
                     response.body()?.data?.result?.list?.let { planList.addAll(it) }
                     adapter.notifyDataSetChanged()
                 } else {
