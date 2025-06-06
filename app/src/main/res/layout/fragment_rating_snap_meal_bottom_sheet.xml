@@ -16,8 +16,8 @@
         android:src="@drawable/ic_close_black"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
     </ImageView>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rating_snap_meal_layout"
         android:layout_width="match_parent"
@@ -25,6 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
         <TextView
             android:id="@+id/tv_delete"
             android:layout_width="wrap_content"
@@ -56,6 +57,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_delete"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
         <RatingBar
             android:id="@+id/ratingBar"
             android:layout_width="wrap_content"
@@ -85,7 +87,7 @@
             android:orientation="vertical">
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/layoutCancel"
+                android:id="@+id/layoutSubmit"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal"
@@ -99,7 +101,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/tv_no"
+                    android:id="@+id/tvSubmit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
@@ -143,13 +145,12 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:id="@+id/layoutDelete"
+                android:id="@+id/layoutNotNow"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/layoutCancel"
+                app:layout_constraintTop_toBottomOf="@+id/layoutSubmit"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -161,7 +162,7 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/tvDelete"
+                    android:id="@+id/tvNotNow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
@@ -179,6 +180,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/rate_successfull_layout"
         android:layout_width="match_parent"
@@ -187,6 +189,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
         <ImageView
             android:id="@+id/check_circle_icon"
             android:layout_width="90dp"
@@ -211,6 +214,7 @@
             app:layout_constraintTop_toBottomOf="@+id/check_circle_icon"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
+
         <TextView
             android:id="@+id/tv_logged_discription"
             android:layout_width="wrap_content"
@@ -227,7 +231,5 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
