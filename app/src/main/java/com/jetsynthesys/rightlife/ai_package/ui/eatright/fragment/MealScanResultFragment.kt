@@ -926,7 +926,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                             }
                         }else{
                             val mealId = response.body()?.inserted_ids?.meal_log_id?: ""
-                            CommonAPICall.updateChecklistStatus(requireContext(), mealId, AppConstants.CHECKLIST_COMPLETED)
+                            CommonAPICall.updateChecklistStatus(requireContext(),"meal_snap", AppConstants.CHECKLIST_COMPLETED)
+                            CommonAPICall.updateChecklistStatus(requireContext(),"snap_mealId", mealId)
                             startActivity(Intent(context, HomeDashboardActivity::class.java))
                             requireActivity().finish()
                         }
