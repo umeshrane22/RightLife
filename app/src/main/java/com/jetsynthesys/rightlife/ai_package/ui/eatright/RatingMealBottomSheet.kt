@@ -27,7 +27,7 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
     }
 
     interface RatingSnapMealListener {
-        fun onSnapMealRating(rating: Double)
+        fun onSnapMealRating(rating: Double, isSave: Boolean)
     }
 
     override fun onAttach(context: Context) {
@@ -60,6 +60,8 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
         val disabledLayoutCancel = view.findViewById<LinearLayoutCompat>(R.id.disabled_layoutCancel)
         val layoutNotNow = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNow)
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
+
+        val isSave = arguments?.getBoolean("isSave")?: false
       /*  if (isRating){
             layoutCancel.visibility = View.VISIBLE
             layoutCancel.setBackgroundResource(R.drawable.add_cart_button_background)
@@ -89,7 +91,7 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
             ratingLayout.visibility = View.GONE
             successLayout.visibility= View.VISIBLE
             //dismiss()
-            listener?.onSnapMealRating(1.0)
+            listener?.onSnapMealRating(1.0, isSave)
         }
 
         layoutNotNow.setOnClickListener {

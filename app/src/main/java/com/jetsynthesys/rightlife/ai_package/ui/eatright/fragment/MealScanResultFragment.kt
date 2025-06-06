@@ -39,20 +39,16 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
-import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogItem
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.Micros
 import com.jetsynthesys.rightlife.ai_package.model.response.Nutrients
-import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapMealScanResultAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
@@ -63,7 +59,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsMod
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
@@ -185,11 +180,10 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
         descriptionName = arguments?.getString("description") .toString()
         checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-               // Toast.makeText(context, "Added To Log!", Toast.LENGTH_SHORT).show()
                 if (mealId != "null" && mealId != null){
                     updateSnapMealsSave((snapRecipesList))
                 }else{
-                    createSnapMealLog(snapRecipesList, true)
+                    ratingMealLogDialog(true)
                 }
             }
         }
@@ -373,7 +367,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                 if (mealId != "null" && mealId != null){
                     updateSnapMealsSave((snapRecipesList))
                 }else{
-                    createSnapMealLog(snapRecipesList, false)
+                    ratingMealLogDialog(false)
                 }
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
 //                    val snapMealFragment = HomeBottomTabFragment()
@@ -385,7 +379,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
 //                    commit()
 //                }
             }else{
-                ratingMealLogDialog()
+                ratingMealLogDialog(false)
             }
         }
 
@@ -1071,11 +1065,11 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
         })
     }
 
-    private fun ratingMealLogDialog() {
+    private fun ratingMealLogDialog(isSave : Boolean) {
         val ratingMealBottomSheet = RatingMealBottomSheet()
         ratingMealBottomSheet.isCancelable = true
         val bundle = Bundle()
-        bundle.putBoolean("test",false)
+        bundle.putBoolean("isSave", isSave)
         ratingMealBottomSheet.arguments = bundle
         parentFragment.let { ratingMealBottomSheet.show(childFragmentManager, "RatingMealBottomSheet") }
      //   sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
@@ -1090,7 +1084,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
         loadingOverlay?.visibility = View.GONE
     }
 
-    override fun onSnapMealRating(rating: Double) {
-        createSnapMealLog(snapRecipesList, false)
+    override fun onSnapMealRating(rating: Double, isSave: Boolean) {
+        createSnapMealLog(snapRecipesList, isSave)
     }
 }
