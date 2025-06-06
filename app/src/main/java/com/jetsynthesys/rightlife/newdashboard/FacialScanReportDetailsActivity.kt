@@ -438,14 +438,16 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
     private fun convertVitalNameToKey(vitalName: String): String {
         return when (vitalName) {
-            "Blood Pressure" -> "BP_RPP"
-            "Breathing Rate" -> "BR_BPM"
+            "Breathing Rate", "Respiratory Rate" -> "BR_BPM"
             "Heart Rate Variability" -> "HRV_SDNN"
-            "Cardiac Workload" -> "MSI"
+            "Cardiac Workload" -> "BP_RPP"
             "Cardiovascular Disease Risks" -> "BP_CVD"
-            "Pulse Rate" -> "PULSE_RATE"
-            "Stress Index" -> "STRESS_INDEX"
-            "Body Mass Index" -> "BMI"
+            "Pulse Rate" -> "HR_BPM"
+            "Stress Index", "Stress Levels" -> "MSI"
+            "Body Mass Index" -> "BMI_CALC"
+            "Diastolic Blood Pressure", "Blood Pressure" -> "BP_DIASTOLIC"
+            "Systolic Blood Pressure" -> "BP_SYSTOLIC"
+            "Overall Wellness Score" -> "HEALTH_SCORE"
             else -> ""
         }
     }

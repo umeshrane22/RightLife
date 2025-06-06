@@ -3,7 +3,6 @@ package com.jetsynthesys.rightlife.ui.settings
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySupportBinding
@@ -40,7 +39,7 @@ class SupportActivity : BaseActivity() {
                 }
 
                 "Write to us!" -> {
-                    WriteToUsUtils.sendEmail(this@SupportActivity, packageManager)
+                    WriteToUsUtils.sendEmail(this@SupportActivity)
                 }
             }
         }
