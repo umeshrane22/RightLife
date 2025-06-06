@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ui.settings
 
 import android.os.Bundle
 import android.text.Html
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFaqDetailsBinding
 import com.jetsynthesys.rightlife.ui.settings.pojo.FAQDetails
@@ -34,7 +33,7 @@ class FAQDetailsActivity : BaseActivity() {
         }
 
         binding.writeToUsButton.setOnClickListener {
-            WriteToUsUtils.sendEmail(this, packageManager)
+            WriteToUsUtils.sendEmail(this)
         }
     }
 }

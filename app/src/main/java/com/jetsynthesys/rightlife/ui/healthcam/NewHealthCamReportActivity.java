@@ -34,6 +34,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
 import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
 import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
+import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity;
@@ -91,6 +92,10 @@ public class NewHealthCamReportActivity extends BaseActivity {
             startActivity(intent);
         });
 
+        binding.cardviewRightlifedays.setOnClickListener(view -> startNextOverAllWellnessDetails());
+
+        binding.imageNext.setOnClickListener(view -> startNextOverAllWellnessDetails());
+
         binding.btnBuyFacescan.setOnClickListener(v -> {
             // put check here if facescan remaning count is 0 buy new else Scan again
             if (facialReportResponseNew.data.boosterLimit > 0 && facialReportResponseNew.data.boosterUsed < facialReportResponseNew.data.boosterLimit) {
@@ -122,6 +127,26 @@ public class NewHealthCamReportActivity extends BaseActivity {
         }*/
 
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
+    }
+
+    private void startNextOverAllWellnessDetails(){
+        ArrayList<ParameterModel>  unifiedList = getUnifiedParameterList();
+        Intent intent = new Intent(this, FacialScanReportDetailsActivity.class);
+        List<HealthCamItem> healthCamItems = new ArrayList<>();
+        intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
+        intent.putExtra("UNIFIED_LIST", new ArrayList<>(unifiedList)); // Serializable list
+        intent.putExtra("position", 0);
+        startActivity(intent);
+    }
+
+    private ArrayList<ParameterModel> getUnifiedParameterList() {
+        ArrayList<ParameterModel> resultList = new ArrayList<>();
+        if (facialReportResponseNew.data.overallWellnessScore != null) {
+            String key = facialReportResponseNew.data.overallWellnessScore.fieldName;
+            String name = facialReportResponseNew.data.overallWellnessScore.parameter;
+            resultList.add(new ParameterModel(key, name));
+        }
+        return resultList;
     }
 
     @Override
