@@ -438,14 +438,16 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
     private fun convertVitalNameToKey(vitalName: String): String {
         return when (vitalName) {
-            "Blood Pressure" -> "BP_RPP"
-            "Breathing Rate" -> "BR_BPM"
+            "Breathing Rate", "Respiratory Rate" -> "BR_BPM"
             "Heart Rate Variability" -> "HRV_SDNN"
-            "Cardiac Workload" -> "MSI"
+            "Cardiac Workload" -> "BP_RPP"
             "Cardiovascular Disease Risks" -> "BP_CVD"
-            "Pulse Rate" -> "PULSE_RATE"
-            "Stress Index" -> "STRESS_INDEX"
-            "Body Mass Index" -> "BMI"
+            "Pulse Rate" -> "HR_BPM"
+            "Stress Index", "Stress Levels" -> "MSI"
+            "Body Mass Index" -> "BMI_CALC"
+            "Diastolic Blood Pressure", "Blood Pressure" -> "BP_DIASTOLIC"
+            "Systolic Blood Pressure" -> "BP_SYSTOLIC"
+            "Overall Wellness Score" -> "HEALTH_SCORE"
             else -> ""
         }
     }
@@ -470,7 +472,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         val startDate = dateFormat.format(calendar.time)
         endDateAPI = startDate
 
-        calendar.add(Calendar.DAY_OF_YEAR, -7)
+        calendar.add(Calendar.DAY_OF_YEAR, -6)
         val endDate = dateFormat.format(calendar.time)
         startDateAPI = endDate
 
@@ -535,6 +537,50 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
         when (duration.lowercase(Locale.ROOT)) {
             "week" -> {
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+                // Parse the selected week range start and end dates
+                val startDate = dateFormat.parse(startDateAPI)
+                val endDate = dateFormat.parse(endDateAPI)
+
+                if (startDate != null && endDate != null) {
+                    val calendar = Calendar.getInstance().apply {
+                        time = startDate
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+
+                    // Pre-process data for faster lookups
+                    val dataMap = parsedData.associateBy {
+                        val cal = Calendar.getInstance().apply { time = it.first }
+                        Pair(cal.get(Calendar.YEAR), cal.get(Calendar.DAY_OF_YEAR))
+                    }
+
+                    val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+                    var currentDayIndex = 0
+
+                    // Loop from startDate to endDate (inclusive)
+                    while (!calendar.time.after(endDate)) {
+                        val day = calendar.time
+                        val cal = Calendar.getInstance().apply { time = day }
+                        val key = Pair(cal.get(Calendar.YEAR), cal.get(Calendar.DAY_OF_YEAR))
+                        val value = dataMap[key]?.second ?: 0f
+
+                        entries.add(Entry(currentDayIndex.toFloat(), value))
+                        xAxisLabels.add(dayFormat.format(day))
+
+                        Log.d("WeekData", "Day: ${sdfInput.format(day)}, Value: $value")
+
+                        calendar.add(Calendar.DAY_OF_MONTH, 1)
+                        currentDayIndex++
+                    }
+                } else {
+                    Log.e("WeekData", "Failed to parse startDateAPI or endDateAPI.")
+                }
+            }
+            /*"week" -> {
                 val today = Calendar.getInstance().apply {
                     time = Date() // Current date/time
                     set(Calendar.HOUR_OF_DAY, 0)
@@ -581,8 +627,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     calendar.add(Calendar.DAY_OF_MONTH, 1)
                     currentDayIndex++
                 }
-            }
-
+            }*/
             "month" -> {
                 // 1. Get today at midnight (00:00:00.000)
                 val today = Calendar.getInstance().apply {
@@ -634,6 +679,57 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     "All dates in map: ${dateValueMap.keys.map { dayFormat.format(it) }}"
                 )
             }
+            /*"month" -> {
+                // 1. Get today at midnight (00:00:00.000)
+                val today = Calendar.getInstance().apply {
+                    time = Date()
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+
+                // 2. Start from first day of current month (e.g., April 1)
+                val calendar = Calendar.getInstance().apply {
+                    time = today.time
+                    set(Calendar.DAY_OF_MONTH, 1) // Reset to start of month
+                }
+
+                // 3. Pre-process data: Normalize timestamps to midnight & create lookup map
+                val dateValueMap = parsedData.associate { entry ->
+                    val cal = Calendar.getInstance().apply {
+                        time = entry.first
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+                    cal.time to entry.second // Map normalized date -> value
+                }
+
+                // 4. Format for day labels (e.g., "19 Apr")
+                val dayFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+
+                // 5. Generate entries for each day of the month
+                val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+                for (day in 1..daysInMonth) {
+                    calendar.set(Calendar.DAY_OF_MONTH, day)
+                    val currentDay = calendar.time
+
+                    // 6. Get value for this day (0f if no data)
+                    val dayValue = dateValueMap[currentDay] ?: 0f
+
+                    // 7. Add to chart (x-position = day-1, e.g., April 1 = 0, April 2 = 1)
+                    entries.add(Entry((day - 1).toFloat(), dayValue))
+                    xAxisLabels.add(dayFormat.format(currentDay))
+                }
+
+                // DEBUG: Verify April 19 is included
+                Log.d(
+                    "MonthView",
+                    "All dates in map: ${dateValueMap.keys.map { dayFormat.format(it) }}"
+                )
+            }*/
             // --- 6 Months: Group by month and average values ---
             "6months" -> {
                 val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
