@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.R.color.transparent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
 
@@ -47,11 +49,15 @@ class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setStyle(STYLE_NORMAL, R.style.LoggedBottomSheetDialogTheme)
         return inflater.inflate(R.layout.fragment_edit_workout_bottom_sheet, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val dialog = BottomSheetDialog(requireContext(), R.style.LoggedBottomSheetDialogTheme)
+        //dialog.setContentView(R.layout.fragment_edit_workout_bottom_sheet)
+        dialog.window?.setBackgroundDrawableResource(transparent)
 
         val yesButton = view.findViewById<LinearLayoutCompat>(R.id.yes_btn_bottom_sheet)
         val noButton = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
