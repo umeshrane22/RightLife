@@ -4,6 +4,8 @@ import android.os.Bundle
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.ViewMealInsightsFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.ViewSnapMealInsightsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
@@ -24,16 +26,29 @@ class MainAIActivity : BaseActivity() {
 
         val moduleName = intent.getStringExtra("ModuleName")
         val bottomSeatName = intent.getStringExtra("BottomSeatName")
+        val snapMealId = intent.getStringExtra("snapMealId")?: ""
 
         if (bottomSeatName.contentEquals("SnapMealTypeEat")){
-            supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = SnapMealFragment()
+            if (snapMealId != "" && snapMealId != "null"){
+                val fragment = ViewSnapMealInsightsFragment()
                 val args = Bundle()
-                args.putString("ModuleName", "HomeDashboard")
-                mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
-                addToBackStack(null)
-                commit()
+                args.putString("snapMealId", snapMealId)
+                fragment.arguments = args
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "viewMeal")
+                    addToBackStack("viewMeal")
+                    commit()
+                }
+            }else{
+                supportFragmentManager.beginTransaction().apply {
+                    val mealSearchFragment = SnapMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "HomeDashboard")
+                    mealSearchFragment.arguments = args
+                    replace(R.id.flFragment, mealSearchFragment, "Steps")
+                    addToBackStack(null)
+                    commit()
+                }
             }
         }else  if (bottomSeatName.contentEquals("MealLogTypeEat")){
             supportFragmentManager.beginTransaction().apply {
