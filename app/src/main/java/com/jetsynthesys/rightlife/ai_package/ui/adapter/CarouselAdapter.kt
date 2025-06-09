@@ -44,12 +44,18 @@ class CarouselAdapter(
         private val noDataText: TextView = itemView.findViewById(R.id.no_data_text_workout)
         private val leftTimeLabel: TextView = itemView.findViewById(R.id.left_time_label)
         private val rightTimeLabel: TextView = itemView.findViewById(R.id.right_time_label)
+        private val sourceIcon: ImageView = itemView.findViewById(R.id.sourceIcon)
 
         fun bind(item: CardItem, position: Int) {
             cardTitle.text = item.title
             durationText.text = item.duration
             caloriesText.text = item.caloriesBurned
             avgHeartRateText.text = item.avgHeartRate
+            if(item.isSynced){
+                sourceIcon.visibility = View.VISIBLE
+            }else{
+                sourceIcon.visibility = View.GONE
+            }
             if (item.heartRateData.isNotEmpty()) {
                 lineGraph.visibility = View.VISIBLE
                 itemView.findViewById<View>(R.id.timeline_layout).visibility = View.VISIBLE

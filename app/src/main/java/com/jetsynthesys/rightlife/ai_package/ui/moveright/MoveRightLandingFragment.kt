@@ -111,6 +111,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var line_graph: LineGraphView
     private lateinit var calorieBalanceIcon: ImageView
     private lateinit var step_forward_icon: ImageView
+    private lateinit var sync_with_icon: ImageView
     private lateinit var moveRightImageBack: ImageView
     private lateinit var stepLineGraphView: LineGrapghViewSteps
     private lateinit var todayStepsTv: TextView
@@ -184,6 +185,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         lightZoneBelow = view.findViewById(R.id.lightZoneBelow)
         lightZoneHighl = view.findViewById(R.id.lightZoneHigh)
         fatLossHighl = view.findViewById(R.id.fatLossHigh)
+        sync_with_icon = view.findViewById(R.id.sync_with_icon)
         cardioHighl = view.findViewById(R.id.cardioHigh)
         peakHighl = view.findViewById(R.id.peakHigh)
         text_activity = view.findViewById(R.id.text_activity)
@@ -1082,7 +1084,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 heartRateData = workout.heartRateData,
                                 heartRateZones = workout.heartRateZones ?: defaultHeartRateZones,
                                 heartRateZoneMinutes = workout.heartRateZoneMinutes ?: defaultHeartRateZoneMinutes,
-                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages
+                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages,
+                                isSynced = true
                             )
                         }
 
@@ -1103,7 +1106,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 heartRateData = emptyList(),
                                 heartRateZones = workout.heartRateZones ?: defaultHeartRateZones,
                                 heartRateZoneMinutes = workout.heartRateZoneMinutes ?: defaultHeartRateZoneMinutes,
-                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages
+                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages,
+                                isSynced = false
                             )
                         }
 
