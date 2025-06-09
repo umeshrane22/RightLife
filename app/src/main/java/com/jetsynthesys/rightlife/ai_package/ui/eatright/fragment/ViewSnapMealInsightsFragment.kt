@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,6 +33,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapMealLogsAda
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.databinding.FragmentViewMealInsightsBinding
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -105,26 +107,14 @@ class ViewSnapMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBindin
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragment = YourMealLogsFragment()
-                val args = Bundle()
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "mealLog")
-                    addToBackStack("mealLog")
-                    commit()
-                }
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
             }
         })
 
         backButton.setOnClickListener {
-            val fragment = YourMealLogsFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "mealLog")
-                addToBackStack("mealLog")
-                commit()
-            }
+            startActivity(Intent(context, HomeDashboardActivity::class.java))
+            requireActivity().finish()
         }
 
         layoutMacroTitle.setOnClickListener {
