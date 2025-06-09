@@ -302,7 +302,6 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
         val sleepDataMap = restorativeSleepDetails.associateBy { it.date }
         val chartData = mutableListOf<Pair<String, SleepStageDurations>>()
-
         var dayCounter = 1
 
         while (!startCal.after(endCal)) {
