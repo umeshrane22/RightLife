@@ -58,6 +58,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
@@ -72,6 +73,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
+
+    private var moduleName : String = ""
 
     private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(
@@ -119,6 +122,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         mealDescriptionET = view.findViewById(R.id.mealDescriptionET)
         backButton = view.findViewById(R.id.backButton)
 
+        moduleName = arguments?.getString("ModuleName").toString()
+
         skipTV.setOnClickListener {
 //            requireActivity().supportFragmentManager.beginTransaction().apply {
 //                val snapMealFragment = MealScanResultFragment()
@@ -131,12 +136,10 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 //                addToBackStack(null)
 //                commit()
 //            }
-            if (isProceedResult){
-                if (imagePath != ""){
-                    uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
-                }else{
-                    Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
-                }
+            if (imagePath != ""){
+                uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
+            }else{
+                Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
             }
 //            takePhotoInfoLayout.visibility = View.VISIBLE
 //            enterMealDescriptionLayout.visibility = View.GONE
@@ -265,14 +268,38 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
-                requireActivity().finish()
+                if (moduleName.equals("HomeDashboard")){
+                    startActivity(Intent(context, HomeDashboardActivity::class.java))
+                    requireActivity().finish()
+                }else{
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }
             }
         })
 
         backButton.setOnClickListener {
-            startActivity(Intent(context, HomeDashboardActivity::class.java))
-            requireActivity().finish()
+            if (moduleName.equals("HomeDashboard")){
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }else{
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }
         }
 
         mealDescriptionET.addTextChangedListener(object : TextWatcher {
@@ -522,7 +549,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 val snapMealFragment = MealScanResultFragment()
                                 val args = Bundle()
-                                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
+                                args.putString("ModuleName", moduleName)
                                 args.putString("ImagePath", imagePath)
                                 args.putString("description", mealDescriptionET.text.toString())
                                 args.putString("ImagePathsecound", imagePathsecond.toString())

@@ -9,10 +9,16 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
+
+    private const val BASE_URL = BuildConfig.BASE_URL//BuildConfig.BASE_URL//"http://18.159.113.191:8081/"
+    private const val BASE_URL_FAST_API = BuildConfig.BASE_URL_AI  //BuildConfig.BASE_URL_AI
+  
     /*private const val BASE_URL = "http://18.159.113.191:8081/"//BuildConfig.BASE_URL//"http://18.159.113.191:8081/"
     private const val BASE_URL_FAST_API = "http://18.159.113.191:8000/"  //BuildConfig.BASE_URL_AI*/
+  
     private const val BASE_URL = BuildConfig.BASE_URL
     private const val BASE_URL_FAST_API = BuildConfig.BASE_URL_AI
+
     private const val BASE_URL_FOOD_CAPTURE_API = "https://api.spoonacular.com/"
     private const val BASE_URL_FOOD_CAPTURE_NEW_API =
         "https://us-central1-snapcalorieb2bapi.cloudfunctions.net/"

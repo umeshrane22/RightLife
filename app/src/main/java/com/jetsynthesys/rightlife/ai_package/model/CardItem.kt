@@ -10,5 +10,6 @@ data class CardItem(
     val heartRateData: List<HeartRateDataWorkout>, // Heart rate data for the graph
     val heartRateZones: HeartRateZones, // e.g., {"Light Zone": [112, 124], ...}
     val heartRateZoneMinutes: HeartRateZoneMinutes, // e.g., {"Below Light": 338, ...}
-    val heartRateZonePercentages: HeartRateZonePercentages // e.g., {"Below Light": 54.96, ...}
+    val heartRateZonePercentages: HeartRateZonePercentages ,// e.g., {"Below Light": 54.96, ...}
+    val isSynced: Boolean
 ) : Serializable

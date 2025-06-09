@@ -89,6 +89,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWaterResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogPlanResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealPlanResponse
@@ -215,6 +216,9 @@ interface ApiService {
 
     @GET("eat/meals/get_meal_byID/")
     fun fetchMealDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<SnapMealDetailsResponse>
+
+    @GET("eat/meals/get_log_meal_byID/")
+    fun fetchMealLogDetails( @Query("user_id") userId: String, @Query("meal_id") mealId: String): Call<MealLogDetailsResponse>
 
     @PUT("eat/meals/update_meal/")
     fun updateSaveMeal(@Query("meal_id") mealId: String, @Query("user_id") userId: String,@Body request: UpdateMealRequest

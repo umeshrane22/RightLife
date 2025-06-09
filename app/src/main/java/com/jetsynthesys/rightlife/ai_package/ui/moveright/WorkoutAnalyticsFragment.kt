@@ -306,7 +306,8 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                                     heartRateData = workout.heartRateData,
                                     heartRateZones = workout.heartRateZones,
                                     heartRateZoneMinutes = workout.heartRateZoneMinutes,
-                                    heartRateZonePercentages = workout.heartRateZonePercentages
+                                    heartRateZonePercentages = workout.heartRateZonePercentages,
+                                    isSynced = true
                                 )
                             }
 

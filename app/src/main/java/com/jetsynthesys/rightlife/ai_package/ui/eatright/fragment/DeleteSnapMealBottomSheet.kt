@@ -70,6 +70,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
                             val fragment = MealScanResultFragment()
                             val args = Bundle()
+                            args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                             args.putString("mealId", mealId)
                             args.putString("mealName", mealName)
                             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
