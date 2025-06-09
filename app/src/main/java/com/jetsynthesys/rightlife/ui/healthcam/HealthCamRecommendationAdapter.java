@@ -22,6 +22,8 @@ import androidx.core.content.ContextCompat;
 
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.Recommendation;
 import com.jetsynthesys.rightlife.ui.Wellness.MoreContentDetailViewActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
+import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
 import com.jetsynthesys.rightlife.ui.utility.Utils; // Import your Utils class
 
 import java.util.List;
@@ -92,11 +94,20 @@ public class HealthCamRecommendationAdapter extends RecyclerView.Adapter<HealthC
             //Toast.makeText(ctx, "image clicked - " + holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
             Gson gson = new Gson();
             String json = gson.toJson(recommendations);
-            Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
+            if ("SERIES".equals(recommendation.contentType)) {
+                Intent intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
+                intent.putExtra("contentId", recommendation.id);
+                holder.itemView.getContext().startActivity(intent);
+            }else {
+                Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                intent.putExtra("contentId", recommendation.id);
+                holder.itemView.getContext().startActivity(intent);
+            }
+            /*Intent intent = new Intent(holder.itemView.getContext(), MoreContentDetailViewActivity.class);
             intent.putExtra("Categorytype", json);
             intent.putExtra("position", position);
             intent.putExtra("contentId", recommendations.get(position).id);
-            holder.itemView.getContext().startActivity(intent);
+            holder.itemView.getContext().startActivity(intent);*/
         });
     }
 
