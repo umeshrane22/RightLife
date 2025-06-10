@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -170,6 +171,10 @@ public class MindAuditReasonsFragment extends Fragment {
         Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
 
         Button dialogButtonOkay = dialog.findViewById(R.id.dialog_button_stay);
+
+        dialogButtonOkay.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.btn_color_journal));
+        dialogButtonOkay.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_think_right));
+
 
         dialogImage.setVisibility(View.GONE);
         dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");
