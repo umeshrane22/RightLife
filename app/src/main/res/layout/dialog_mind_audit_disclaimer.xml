@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/topcolorhealthcam"
+        android:background="@color/soft_beige"
         android:paddingTop="8dp"
         android:paddingBottom="8dp">
 
@@ -92,12 +92,15 @@
             <Button
                 android:id="@+id/btn_take_assessment"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
                 android:layout_centerHorizontal="true"
-                android:backgroundTint="@color/buttoncolormind"
+                android:backgroundTint="@color/btn_color_journal"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:text="Take Assessment" />
+                android:textColor="@color/color_think_right"
+                android:text="Take Assessment"
+                android:fontFamily="@font/dmsans_bold"
+                android:textSize="16sp"/>
             </RelativeLayout>
 
         </LinearLayout>

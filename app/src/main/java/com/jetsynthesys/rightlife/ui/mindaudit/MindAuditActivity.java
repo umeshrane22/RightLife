@@ -75,7 +75,7 @@ public class MindAuditActivity extends BaseActivity {
             int totalItems = adapter.getItemCount();
 
             if (currentItem == 0) {
-                finish();
+                showExitDialog();
             }
             // If on any other page, move to the previous page
             else {
@@ -125,7 +125,7 @@ public class MindAuditActivity extends BaseActivity {
     private void showExitDialog() {
         // Create the dialog
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_exit_dialog_mind);
+        dialog.setContentView(R.layout.layout_exit_dialog_mind_new);
         dialog.setCancelable(true);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         Window window = dialog.getWindow();

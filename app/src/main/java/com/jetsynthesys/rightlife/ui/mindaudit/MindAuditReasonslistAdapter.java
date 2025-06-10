@@ -38,9 +38,11 @@ public class MindAuditReasonslistAdapter extends RecyclerView.Adapter<MindAuditR
         holder.favoriteCheckbox.setChecked(fruit.isSelected());
 
         if (fruit.isSelected()) {
-            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerpinkborder_selected));
+            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerreasonborder_selected));
+            holder.fruitName.setTextColor(holder.itemView.getContext().getColor(R.color.white));
         } else {
-            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerpinkborder));
+            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerreasonborder));
+            holder.fruitName.setTextColor(holder.itemView.getContext().getColor(R.color.txt_color_header));
         }
 
 
