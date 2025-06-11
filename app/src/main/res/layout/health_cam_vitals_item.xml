@@ -10,6 +10,7 @@
         android:layout_margin="10dp"
         android:id="@+id/rl_main_bg"
         android:background="@drawable/roundedcornerbutton"
+        android:elevation="4dp"
         android:backgroundTint="@color/rightlife">
 
         <LinearLayout
@@ -18,7 +19,7 @@
             android:layout_marginTop="5dp"
             android:orientation="vertical"
             android:background="@drawable/roundedcornerbutton"
-            android:backgroundTint="@color/bg_edittext">
+            android:backgroundTint="@color/white">
 
             <ImageView
                 android:id="@+id/img1"
@@ -84,6 +85,15 @@
                 android:textSize="@dimen/textsize_medium" />
 
         </LinearLayout>
+        <ImageView
+            android:id="@+id/imageNext"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_db_report_right_arrow"
+            android:layout_alignParentEnd="true"
+            android:rotation="-45"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -18,9 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.PlaybackException
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
@@ -170,7 +174,7 @@ class ContentDetailsActivity : BaseActivity() {
                 contentTypeForTrack = "AUDIO"
             } else {
                 // For video Player
-                initializePlayer(contentResponseObj.data.previewUrl)
+                initializePlayer(contentResponseObj.data.url)
                 binding.rlVideoPlayerMain.visibility = View.VISIBLE
                 binding.rlPlayerMusicMain.visibility = View.GONE
                 binding.tvHeaderHtw.text = "Video"
@@ -267,22 +271,140 @@ class ContentDetailsActivity : BaseActivity() {
     }
 
 
-    private fun initializePlayer(previewUrl: String) {
+    /*private fun initializePlayer(previewUrl: String) {
         // Create a new ExoPlayer instance
         player = ExoPlayer.Builder(this).build()
-        player.playWhenReady = true
+        //player.playWhenReady = true
         binding.exoPlayerView.setPlayer(player)
         val videoUri = Uri.parse(
             ApiClient.CDN_URL_QA + previewUrl
         )
         Log.d("Received Content type", "Video URL: " + videoUri)
+
+
         val mediaSource: MediaSource = ProgressiveMediaSource.Factory(
-            DefaultDataSourceFactory(this)
+            DefaultDataSourceFactory(this@ContentDetailsActivity)
         ).createMediaSource(MediaItem.fromUri(videoUri))
         player.setMediaSource(mediaSource)
         // Prepare the player and start playing automatically
+
+        player.addListener(object : com.google.android.exoplayer2.Player.Listener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                if (playbackState == com.google.android.exoplayer2.Player.STATE_READY) {
+                    Log.d("ExoPlayer", "Player is ready to play")
+                    player.play()
+                } else if (playbackState == com.google.android.exoplayer2.Player.STATE_ENDED) {
+                    Log.d("ExoPlayer", "Playback ended")
+                }
+            }
+        })
         player.prepare()
-        player.play()
+
+    }*/
+
+    /*private fun initializePlayer(previewUrl: String) {
+        // Create a new ExoPlayer instance
+        player = ExoPlayer.Builder(this).build()
+        player.playWhenReady = true // Set to true to auto-start once ready
+        binding.exoPlayerView.setPlayer(player)
+
+        // *** Use a known good test URL ***
+        val testVideoUri = Uri.parse("https://live-hls-abr-cdn.livepush.io/live/bigbuckbunnyclip/index.m3u8")
+       *//* val testVideoUri = Uri.parse(
+            ApiClient.CDN_URL_QA + previewUrl
+        )*//*
+
+        // Log the test URL
+        Log.d("ExoPlayerTest", "Testing with known good URL: $testVideoUri")
+
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+        // No need for specific Accept header for general testing, keep it simple
+        // .setDefaultRequestProperties(mapOf("Accept" to "video/mp4"))
+
+        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(testVideoUri)) // Use the test URI
+
+        player.setMediaSource(mediaSource)
+
+        player.addListener(object : com.google.android.exoplayer2.Player.Listener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                if (playbackState == com.google.android.exoplayer2.Player.STATE_READY) {
+                    Log.d("ExoPlayer", "Player is ready to play - TEST URL")
+                    // player.play() // No need if playWhenReady is true
+                } else if (playbackState == com.google.android.exoplayer2.Player.STATE_ENDED) {
+                    Log.d("ExoPlayer", "Playback ended - TEST URL")
+                }
+                // Add more detailed state logging for debugging
+                when (playbackState) {
+                    com.google.android.exoplayer2.Player.STATE_IDLE -> Log.d("ExoPlayer", "State: IDLE")
+                    com.google.android.exoplayer2.Player.STATE_BUFFERING -> Log.d("ExoPlayer", "State: BUFFERING")
+                    com.google.android.exoplayer2.Player.STATE_READY -> Log.d("ExoPlayer", "State: READY")
+                    com.google.android.exoplayer2.Player.STATE_ENDED -> Log.d("ExoPlayer", "State: ENDED")
+                }
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                Log.e("ExoPlayer", "Playback error from test URL: ${error.message}", error)
+                error.printStackTrace()
+            }
+        })
+        player.prepare()
+    }*/
+
+
+    private fun initializePlayer(previewUrl: String) {
+        // Ensure 'this' is a valid Context.
+        // If in an Activity, 'this' is fine.
+        // If in a Fragment, use 'requireContext()':
+        player = ExoPlayer.Builder(this).build()
+        player?.playWhenReady = true
+        binding.exoPlayerView.player = player
+
+        val fullVideoUrl = ApiClient.CDN_URL_QA + previewUrl // Re-integrating your original URL logic
+        val videoUri = Uri.parse(fullVideoUrl)
+
+        Log.d("ExoPlayerInit", "Attempting to play URL: $videoUri")
+
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            // Set a User-Agent to improve compatibility and avoid 403 errors with some servers/CDNs
+            //.setUserAgent("ExoPlayer/2.x (Linux; Android) YourAppName/1.0") // Replace YourAppName and version
+
+        val mediaSource = if (videoUri.toString().endsWith(".m3u8", ignoreCase = true)) {
+            HlsMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(MediaItem.fromUri(videoUri))
+        } else if (videoUri.toString().endsWith(".mp4", ignoreCase = true)) {
+            ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(MediaItem.fromUri(videoUri))
+        } else {
+            // Handle other formats or throw an error if the format is not supported
+            Log.e("ExoPlayerInit", "Unsupported video format for URL: $videoUri")
+            // Optionally, return a dummy media source or throw an exception
+            return // Exit the function if format is unsupported
+        }
+
+        player?.setMediaSource(mediaSource)
+
+        player?.addListener(object : Player.Listener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_IDLE -> Log.d("ExoPlayer", "State: IDLE")
+                    Player.STATE_BUFFERING -> Log.d("ExoPlayer", "State: BUFFERING")
+                    Player.STATE_READY -> {
+                        Log.d("ExoPlayer", "Player is ready to play")
+                    }
+                    Player.STATE_ENDED -> Log.d("ExoPlayer", "Playback ended")
+                }
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                Log.e("ExoPlayer", "Playback error: ${error.message}", error)
+                error.printStackTrace()
+                // Optionally, show a Toast or dialog to the user about the error
+                // Toast.makeText(this@YourActivity, "Error playing video: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        })
+
+        player?.prepare()
     }
 
 
@@ -326,8 +448,7 @@ class ContentDetailsActivity : BaseActivity() {
 
 
         //val previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3"
-        val url = ApiClient.CDN_URL_QA + (moduleContentDetail?.data?.previewUrl
-            ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        val url = ApiClient.CDN_URL_QA + (moduleContentDetail?.data?.previewUrl?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: $url")
         mediaPlayer = MediaPlayer()
         try {
