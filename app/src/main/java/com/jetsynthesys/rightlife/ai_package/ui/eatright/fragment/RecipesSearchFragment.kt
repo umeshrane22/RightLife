@@ -174,6 +174,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 override fun handleOnBackPressed() {
                     val fragment = HomeBottomTabFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -186,6 +187,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         backButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
             val args = Bundle()
+            args.putString("ModuleName", "EatRight")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")

@@ -47,10 +47,8 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnac
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealPlanModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
@@ -141,6 +139,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private val eveningSnacksCombinedList = ArrayList<MergedLogsMealItem>()
     private val dinnerCombinedList = ArrayList<MergedLogsMealItem>()
     private var loadingOverlay : FrameLayout? = null
+    private var waterIntakeValue : Float = 0f
 
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
@@ -454,19 +453,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private fun onMealSuggestionItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
     }
 
-    private fun onTodayMealLogList(landingPageResponse: ArrayList<RegularRecipeEntry>) {
-        val meal = listOf(
-            MealPlanModel("Breakfast", "Poha", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
-            MealPlanModel("Lunch", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17"),
-            MealPlanModel("Dinner", "Dal,Rice,Chapati,Spinach,Paneer,Gulab Jamun", "Vegeterian", "25", "1", "1,157", "8", "308", "17")
-        )
-
-        val valueLists: ArrayList<RegularRecipeEntry> = ArrayList()
-        valueLists.addAll(landingPageResponse as Collection<RegularRecipeEntry>)
-        val mealPlanData: RegularRecipeEntry? = null
-        todayMealLogAdapter.addAll(valueLists, -1, mealPlanData, false)
-    }
-
     private fun onTodayMealLogItem(mealLogDateModel: RegularRecipeEntry, position: Int, isRefresh: Boolean) {
     }
 
@@ -571,6 +557,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             waterQuantityTv.text = landingPageResponse.total_water_ml.toInt().toString()
             val waterIntake = landingPageResponse.total_water_ml.toFloat()
             val waterGoal = 3000f
+            waterIntakeValue = waterIntake
             glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
         }else{
             waterQuantityTv.text = "0"
@@ -940,10 +927,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 waterQuantityTv.text = amount.toString()
                 val waterIntake = amount.toFloat()
                 val waterGoal = 3000f
+                waterIntakeValue = waterIntake
                 glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
                 // You can now call API or update UI etc.
             }
         }
+        val args = Bundle()
+        args.putFloat("waterIntakeValue", waterIntakeValue)
+        waterIntakeBottomSheet.arguments = args
         waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
     }
 

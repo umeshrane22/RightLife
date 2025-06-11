@@ -1,10 +1,8 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
-import android.app.Activity
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,7 +19,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -34,8 +31,6 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogData
-import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
-import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
@@ -55,7 +50,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMea
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentYourMealLogsBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
@@ -156,6 +150,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private var dinnerMealDetailsLog : MealDetailsLog? = null
     private var selectedDate : String = ""
     private var loadingOverlay : FrameLayout? = null
+    private var lastDayOfCurrentWeek : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
@@ -305,18 +300,36 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         getMealsLogHistory(formattedDate)
 
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
+        lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
         onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
        prevWeekBtn.setOnClickListener {
             currentWeekStart = currentWeekStart.minusWeeks(1)
            mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
+           lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
            onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
            getMealsLogHistory(currentWeekStart.toString())
         }
        nextWeekBtn.setOnClickListener {
-            currentWeekStart = currentWeekStart.plusWeeks(1)
-           mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
-           onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
-           getMealsLogHistory(currentWeekStart.toString())
+           val current = LocalDate.parse(formattedDate, formatter)
+           val updated = LocalDate.parse(lastDayOfCurrentWeek, formatter)
+
+//           if (current > updated) {
+//               println("date1 is before date2")
+//           } else if (date1 > date2) {
+//               println("date1 is after date2")
+//           } else {
+//               println("Both dates are equal")
+//           }
+           val currentDate : Int =  currentDateTime.dayOfMonth
+           if (current > updated){
+               currentWeekStart = currentWeekStart.plusWeeks(1)
+               mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
+               lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
+               onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+               getMealsLogHistory(currentWeekStart.toString())
+           }else{
+               Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
+           }
         }
         getMealsLogList(formattedDate)
 
@@ -338,6 +351,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         backButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
             val args = Bundle()
+            args.putString("ModuleName", "EatRight")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")

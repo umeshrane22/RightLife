@@ -68,8 +68,10 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.temporal.ChronoUnit
 import kotlin.math.abs
 
 class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
@@ -507,7 +509,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             }
                            // line_graph.setDataPoints(activityFactorData)
                             withContext(Dispatchers.Main) {
-                                if (it.data.steps.goalSteps > 0){
+                                if (it.data.steps.todayTotal > 0 || it.data.steps.averageSteps > 0 || it.data.steps.goalSteps > 0){
                                     stepNoDataLayout.visibility = View.GONE
                                     stepWithDataCardLayout.visibility = View.VISIBLE
                                     stepLineGraphView.clear()
@@ -733,56 +735,28 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
         if (syncTime == "") {
             endTime = Instant.now()
-             startTime = endTime.minus(Duration.ofDays(31))
+             startTime = endTime.minus(Duration.ofDays(30))
         }else{
             endTime = Instant.now()
-            startTime = convertUtcToInstant(syncTime).plus(Duration.ofMinutes(1))
+            startTime = convertUtcToInstant(syncTime)
         }
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
-                val endT = Instant.now()
-                val startT = endT.minusSeconds(7 * 24 * 60 * 60)
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
                         recordType = StepsRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endT)
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                     )
                 )
-                stepsRecord = stepsResponse.records
-                if (stepsRecord?.isEmpty() == true) {
-                    android.util.Log.d("HealthData", "No steps data found")
+                if (stepsResponse.records.isEmpty()) {
+                    Log.d("HealthData", "No steps data found")
                 } else {
-//                    val totalSteps = stepsRecord?.sumOf { it.count } ?: 0
-//                    withContext(Dispatchers.Main) {
-//                        stepsTv.text = totalSteps.toString()
-//                    }
-//                    android.util.Log.d("HealthData", "Steps: $totalSteps")
-                    val dailySteps = FloatArray(7) { index ->
-                        val dayStart = endT.minusSeconds(((6 - index) * 24 * 60 * 60).toLong())
-                        val dayEnd = dayStart.plusSeconds(24 * 60 * 60)
-                        stepsRecord?.filter { it.startTime.isAfter(dayStart) && it.endTime.isBefore(dayEnd) }
-                            ?.sumOf { it.count }?.toFloat() ?: 0f
-                    }
-                    val totalAverageSteps = dailySteps.average().toFloat()
-                    val totalGoalSteps = 700f * 7
-//                    withContext(Dispatchers.Main) {
-//                        activeStepsTv.text = totalAverageSteps.toInt().toString()
-//                        goalStepsTv.text = totalGoalSteps.toInt().toString()
-//                    }
-                    val averageSteps = FloatArray(7) { dailySteps.average().toFloat() }
-                    val goalSteps = FloatArray(7) { 3500f }
-//                    withContext(Dispatchers.Main) {
-//                        stepLineGraphView.clear()
-//                        stepLineGraphView.addDataSet(dailySteps, 0xFFFD6967.toInt())
-//                        stepLineGraphView.addDataSet(averageSteps, 0xFF707070.toInt())
-//                        stepLineGraphView.addDataSet(goalSteps, 0xFF03B27B.toInt())
-//                        stepLineGraphView.invalidate()
-//                    }
+                    stepsRecord = stepsResponse.records
                 }
             } else {
                 stepsRecord = emptyList()
-                android.util.Log.d("HealthData", "Steps permission denied")
+              Log.d("HealthData", "Steps permission denied")
             }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 val caloriesResponse = healthConnectClient.readRecords(
@@ -793,17 +767,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 totalCaloriesBurnedRecord = caloriesResponse.records
                 val totalBurnedCalories = totalCaloriesBurnedRecord?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
-                android.util.Log.d("HealthData", "Total Burned Calories: $totalBurnedCalories kcal")
-//                withContext(Dispatchers.Main) {
-//                    tvBurnValue.text = totalBurnedCalories.toString()
-//                    totalIntakeCalorieText.text = totalIntakeCaloriesSum.toString()
-//                    val calorieBalance = totalIntakeCaloriesSum - totalBurnedCalories
-//                    val absoluteCalorieBalance = abs(calorieBalance)
-//                    calorieCountText.text = if (calorieBalance >= 0) "+$absoluteCalorieBalance" else "$absoluteCalorieBalance"
-//                }
+                Log.d("HealthData", "Total Burned Calories: $totalBurnedCalories kcal")
             } else {
                 totalCaloriesBurnedRecord = emptyList()
-                android.util.Log.d("HealthData", "Calories permission denied")
+                Log.d("HealthData", "Calories permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
                 val response = healthConnectClient.readRecords(
@@ -815,7 +782,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 heartRateRecord = response.records
             }else {
                 heartRateRecord = emptyList()
-                android.util.Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(RestingHeartRateRecord::class) in grantedPermissions) {
                 val restingHRResponse = healthConnectClient.readRecords(
@@ -826,11 +793,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                restingHeartRecord = restingHRResponse.records
                 restingHeartRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
+                   Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
                 }
             }else {
                 restingHeartRecord = emptyList()
-                android.util.Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class) in grantedPermissions) {
                 val activeCalorieResponse = healthConnectClient.readRecords(
@@ -841,11 +808,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Resting Heart Rate: ${record.energy} kCal, Time: ${record.startTime}")
+                   Log.d("HealthData", "Resting Heart Rate: ${record.energy} kCal, Time: ${record.startTime}")
                 }
             }else {
                 activeCalorieBurnedRecord = emptyList()
-                android.util.Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
                 val basalMetabolic = healthConnectClient.readRecords(
@@ -856,11 +823,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 basalMetabolicRateRecord = basalMetabolic.records
                 basalMetabolicRateRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Resting Heart Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
+                    Log.d("HealthData", "Resting Heart Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
                 }
             }else {
                 basalMetabolicRateRecord = emptyList()
-                android.util.Log.d("HealthData", "Heart rate permission denied")
+               Log.d("HealthData", "Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(BloodPressureRecord::class) in grantedPermissions) {
                 val bloodPressure = healthConnectClient.readRecords(
@@ -871,11 +838,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 bloodPressureRecord = bloodPressure.records
                 bloodPressureRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Resting Heart Rate: ${record.systolic}, Time: ${record.time}")
+                    Log.d("HealthData", "Resting Heart Rate: ${record.systolic}, Time: ${record.time}")
                 }
             }else {
                 bloodPressureRecord = emptyList()
-                android.util.Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
                 val restingVresponse = healthConnectClient.readRecords(
@@ -886,11 +853,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 heartRateVariability = restingVresponse.records
                 heartRateVariability?.forEach { record ->
-                    android.util.Log.d("HealthData", "Resting Heart Rate: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
+                   Log.d("HealthData", "Resting Heart Rate: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
                 }
             }else {
                 heartRateVariability = emptyList()
-                android.util.Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                 val sleepResponse = healthConnectClient.readRecords(
@@ -901,11 +868,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 sleepSessionRecord = sleepResponse.records
                 sleepSessionRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+                    Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
                 }
             } else {
                 sleepSessionRecord = emptyList()
-                android.util.Log.d("HealthData", "Sleep session permission denied")
+                Log.d("HealthData", "Sleep session permission denied")
             }
             if (HealthPermission.getReadPermission(ExerciseSessionRecord::class) in grantedPermissions) {
                 val exerciseResponse = healthConnectClient.readRecords(
@@ -916,11 +883,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 exerciseSessionRecord = exerciseResponse.records
                 exerciseSessionRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
+                   Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
                 }
             } else {
                 exerciseSessionRecord = emptyList()
-                android.util.Log.d("HealthData", "Exercise session permission denied")
+                Log.d("HealthData", "Exercise session permission denied")
             }
             if (HealthPermission.getReadPermission(SpeedRecord::class) in grantedPermissions) {
                 val speedResponse = healthConnectClient.readRecords(
@@ -931,11 +898,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 speedRecord = speedResponse.records
                 speedRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Speed: ${record.samples.joinToString { it.speed.inMetersPerSecond.toString() }} m/s")
+                    Log.d("HealthData", "Speed: ${record.samples.joinToString { it.speed.inMetersPerSecond.toString() }} m/s")
                 }
             } else {
                 speedRecord = emptyList()
-                android.util.Log.d("HealthData", "Speed permission denied")
+                Log.d("HealthData", "Speed permission denied")
             }
             if (HealthPermission.getReadPermission(WeightRecord::class) in grantedPermissions) {
                 val weightResponse = healthConnectClient.readRecords(
@@ -946,11 +913,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 weightRecord = weightResponse.records
                 weightRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
+                    Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
                 }
             } else {
                 weightRecord = emptyList()
-                android.util.Log.d("HealthData", "Weight permission denied")
+                Log.d("HealthData", "Weight permission denied")
             }
             if (HealthPermission.getReadPermission(BodyFatRecord::class) in grantedPermissions) {
                 val bodyFatResponse = healthConnectClient.readRecords(
@@ -961,11 +928,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 bodyFatRecord = bodyFatResponse.records
                 bodyFatRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
+                    Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
                 }
             } else {
                 bodyFatRecord = emptyList()
-                android.util.Log.d("HealthData", "Weight permission denied")
+               Log.d("HealthData", "Weight permission denied")
             }
             if (HealthPermission.getReadPermission(DistanceRecord::class) in grantedPermissions) {
                 val distanceResponse = healthConnectClient.readRecords(
@@ -976,10 +943,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 distanceRecord = distanceResponse.records
                 val totalDistance = distanceRecord?.sumOf { it.distance.inMeters } ?: 0.0
-                android.util.Log.d("HealthData", "Total Distance: $totalDistance meters")
+                Log.d("HealthData", "Total Distance: $totalDistance meters")
             } else {
                 distanceRecord = emptyList()
-                android.util.Log.d("HealthData", "Distance permission denied")
+                Log.d("HealthData", "Distance permission denied")
             }
             if (HealthPermission.getReadPermission(OxygenSaturationRecord::class) in grantedPermissions) {
                 val oxygenSaturationResponse = healthConnectClient.readRecords(
@@ -990,11 +957,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 oxygenSaturationRecord = oxygenSaturationResponse.records
                 oxygenSaturationRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
+                    Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
                 }
             } else {
                 oxygenSaturationRecord = emptyList()
-                android.util.Log.d("HealthData", "Oxygen saturation permission denied")
+                Log.d("HealthData", "Oxygen saturation permission denied")
             }
             if (HealthPermission.getReadPermission(RespiratoryRateRecord::class) in grantedPermissions) {
                 val respiratoryRateResponse = healthConnectClient.readRecords(
@@ -1005,11 +972,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
                 respiratoryRateRecord?.forEach { record ->
-                    android.util.Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
+                    Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
                 }
             } else {
                 respiratoryRateRecord = emptyList()
-                android.util.Log.d("HealthData", "Respiratory rate permission denied")
+                Log.d("HealthData", "Respiratory rate permission denied")
             }
             withContext(Dispatchers.Main) {
               //  Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
@@ -1172,7 +1139,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
+                val activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
                     if (record.energy.inKilocalories > 0) {
                         EnergyBurnedRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -1386,8 +1353,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val todaysTime = Instant.now()
-                        val syncTime = convertToTargetFormat(todaysTime.toString())
-                        SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                     //   val instant = Instant.parse(todaysTime)
+                        // or convert to ZonedDateTime
+                        val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
+                    //    val syncTime = convertToTargetFormat(zdt.toString())
+                        SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime.toString())
                       //  Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
                     } else {
                        // Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
@@ -1434,7 +1404,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             "yyyy-MM-dd HH:mm:ss",           // Common DB format
             "yyyy/MM/dd HH:mm:ss",           // Slash format
             "dd-MM-yyyy HH:mm:ss",           // Day-Month-Year
-            "MM/dd/yyyy HH:mm:ss"            // US format
+            "MM/dd/yyyy HH:mm:ss",            // US format
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         )
 
         // Check if it's a nanosecond timestamp (very large number)

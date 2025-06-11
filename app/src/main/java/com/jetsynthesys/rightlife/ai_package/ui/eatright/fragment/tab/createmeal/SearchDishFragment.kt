@@ -152,6 +152,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         args.putString("mealName", mealName)
                         args.putString("mealType", mealType)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                        args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "landing")
@@ -159,9 +160,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                             commit()
                         }
                     }else{
-                        val fragment = YourMealLogsFragment()
+                        val fragment = CreateMealFragment()
                         val args = Bundle()
+                        args.putString("searchType", "createMeal")
+                        args.putString("mealId", mealId)
                         args.putString("mealType", mealType)
+                        args.putString("mealName", mealName)
+                        args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "landing")
@@ -181,6 +186,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -188,9 +194,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     commit()
                 }
             }else{
-                val fragment = YourMealLogsFragment()
+                val fragment = CreateMealFragment()
                 val args = Bundle()
+                args.putString("searchType", "createMeal")
+                args.putString("mealId", mealId)
                 args.putString("mealType", mealType)
+                args.putString("mealName", mealName)
+                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
