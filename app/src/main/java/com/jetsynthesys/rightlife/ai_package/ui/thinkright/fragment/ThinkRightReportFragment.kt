@@ -275,6 +275,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
             startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
         }
+        view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
+            startActivity(Intent(requireContext(), MindAuditActivity::class.java))
+        }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
             startActivity(Intent(requireContext(), JournalListActivity::class.java))
         }
