@@ -84,6 +84,7 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
                 case "Mind Audit":
                     colorStateList = ContextCompat.getColorStateList(context, R.color.light_pink);
                     break;
+                case "Face Scan":
                 case "Health Cam":
                     colorStateList = ContextCompat.getColorStateList(context, R.color.moveright);
                     break;
