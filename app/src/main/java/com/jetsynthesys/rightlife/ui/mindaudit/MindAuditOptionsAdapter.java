@@ -41,10 +41,14 @@ public class MindAuditOptionsAdapter extends RecyclerView.Adapter<MindAuditOptio
         ScoringPattern scoringPattern = scoringPatterns.get(position);
         holder.optionText.setText(scoringPattern.getOption());
 
-        if (position == selectedItemPos)
-            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerpinkborder_selected));
-        else
-            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerpinkborder));
+        if (position == selectedItemPos) {
+            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerreasonborder_selected));
+            holder.optionText.setTextColor(holder.itemView.getContext().getColor(R.color.white));
+        }
+        else {
+            holder.bgrelative.setBackgroundDrawable(holder.itemView.getContext().getDrawable(R.drawable.roundedcornerreasonborder));
+            holder.optionText.setTextColor(holder.itemView.getContext().getColor(R.color.txt_color_header));
+        }
 
 
         holder.itemView.setOnClickListener(view -> {

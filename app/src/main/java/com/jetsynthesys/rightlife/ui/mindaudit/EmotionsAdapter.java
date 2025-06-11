@@ -69,7 +69,7 @@ public class EmotionsAdapter extends RecyclerView.Adapter<EmotionsAdapter.Emotio
             if (emotion.isSelected()) {
                 holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_pink));
                 holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape_medium_pink));
-                setMargin(7, holder.tvEmotions);
+                setMargin(1, holder.tvEmotions);
             } else {
                 holder.linearLayout.setBackground(context.getDrawable(R.drawable.roundedcornerbutton_light_pink));
                 holder.tvEmotions.setBackground(context.getDrawable(R.drawable.roundedcornerbottomshape));

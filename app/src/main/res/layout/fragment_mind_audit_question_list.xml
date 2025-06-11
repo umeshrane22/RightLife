@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:minHeight="100dp"
         android:gravity="center"
-        android:background="@color/topcolormindauditQuestionbg"
+        android:background="@color/soft_beige"
         android:padding="16dp"
         android:text="Do any of your direct blood relatives currently have or have had medical conditions from the same below?"
         android:textColor="@color/txt_color_health"

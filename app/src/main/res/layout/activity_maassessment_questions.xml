@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -98,11 +99,13 @@
 
             <Button
                 android:id="@+id/submitButton"
-                android:layout_width="150dp"
-                android:layout_height="40dp"
+                android:layout_width="170dp"
+                android:layout_height="50dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:backgroundTint="@color/buttoncolormind"
+                android:backgroundTint="@color/btn_color_journal"
+                android:textColor="@color/color_think_right"
+                android:fontFamily="@font/dmsans_bold"
                 android:visibility="visible"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
