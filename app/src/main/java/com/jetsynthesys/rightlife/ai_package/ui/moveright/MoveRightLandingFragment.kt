@@ -601,6 +601,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             // Update RecyclerView
                             adapter.updateItems(items)
                             recyclerView.adapter = adapter
+                            recyclerView.setHasFixedSize(true)
+
+                            // Add ItemDecoration for spacing
+                            val spacingInPixels = resources.getDimensionPixelSize(R.dimen.grid_spacing) // Define in res/values/dimens.xml
+                            recyclerView.addItemDecoration(GridSpacingItemDecoration(spanCount = 2, spacing = spacingInPixels, includeEdge = true))
                         }
                     } ?: withContext(Dispatchers.Main) {
                         if (isAdded  && view != null){

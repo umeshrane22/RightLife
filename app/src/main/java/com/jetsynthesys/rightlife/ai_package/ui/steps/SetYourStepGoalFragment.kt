@@ -76,8 +76,8 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
     private fun setStepsGoal(stepsGoal: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userId = /*SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: */"680790d0a8d2c1b4456e5c7d" // Default user ID if not found
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "680790d0a8d2c1b4456e5c7d" // Default user ID if not found
                 val source = "samsung" // Hardcoded source as per the API call
 
                 val response = ApiClient.apiServiceFastApi.setStepsGoal(

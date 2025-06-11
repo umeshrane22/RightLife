@@ -57,7 +57,7 @@ class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val dialog = BottomSheetDialog(requireContext(), R.style.LoggedBottomSheetDialogTheme)
         //dialog.setContentView(R.layout.fragment_edit_workout_bottom_sheet)
-        dialog.window?.setBackgroundDrawableResource(transparent)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         val yesButton = view.findViewById<LinearLayoutCompat>(R.id.yes_btn_bottom_sheet)
         val noButton = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
