@@ -44,11 +44,14 @@
                 android:fontFamily="@font/dmsans_bold"
                 android:layout_marginTop="20dp"
                 android:text="Recipes"/>
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/layout_search"
-                android:layout_width="250dp"
+                android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:orientation="horizontal"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:padding="10dp"
                 android:gravity="left"
                 android:layout_marginBottom="20dp"
@@ -87,6 +90,7 @@
                     android:fontFamily="@font/dmsans_regular"
                     android:hint="Search dishes here" />
             </androidx.appcompat.widget.LinearLayoutCompat>
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabMacroLayout"
                 android:layout_width="wrap_content"
@@ -104,6 +108,7 @@
                 app:tabTextColor="@color/tab_color_selector"
                 app:tabSelectedTextColor="@color/white" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.cardview.widget.CardView
             android:id="@+id/tabContentCard"
             android:layout_width="match_parent"
@@ -114,9 +119,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_toolbar">
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <TextView
                     android:id="@+id/cardview_recipe_main_heading"
                     android:layout_width="wrap_content"
@@ -125,6 +132,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/tabContentRecyclerView"
                     android:layout_width="match_parent"
@@ -135,6 +143,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/cardview_recipe_main_heading"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
+
                 <Spinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
@@ -172,7 +181,6 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
-
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="20dp"
@@ -180,7 +188,6 @@
                 android:src="@drawable/left_arrow_reclangle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
 
             <TextView
                 android:id="@+id/tv_cancel"
@@ -196,7 +203,6 @@
                 android:fontFamily="@font/dmsans_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
@@ -238,7 +244,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_search_result"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="100dp"
@@ -261,7 +267,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="vertical"
-                android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 app:layout_constraintTop_toBottomOf="@id/tv_all_dishes"
                 app:layout_constraintStart_toStartOf="parent"

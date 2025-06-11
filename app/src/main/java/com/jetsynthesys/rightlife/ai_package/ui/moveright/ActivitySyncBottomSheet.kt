@@ -54,6 +54,7 @@ import kotlinx.coroutines.withContext
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 
@@ -246,7 +247,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             startTime = endTime.minus(Duration.ofDays(31))
         } else {
             endTime = Instant.now()
-            startTime = convertUtcToInstant(syncTime).plus(Duration.ofMinutes(1))
+            startTime = convertUtcToInstant(syncTime)
         }
         Log.d("ActivitySyncBottomSheet", "Time range: start=$startTime, end=$endTime")
 
@@ -276,27 +277,16 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
-                val endT = Instant.now()
-                val startT = endT.minus(Duration.ofDays(7))
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
                         recordType = StepsRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endT)
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                     )
                 )
-                stepsRecord = stepsResponse.records
-                Log.d("HealthData", "Fetched ${stepsRecord?.size ?: 0} steps records")
-                if (stepsRecord?.isEmpty() == true) {
+                if (stepsResponse.records.isEmpty()) {
                     Log.d("HealthData", "No steps data found")
                 } else {
-                    val dailySteps = FloatArray(7) { index ->
-                        val dayStart = endT.minus(Duration.ofDays((6 - index).toLong()))
-                        val dayEnd = dayStart.plus(Duration.ofDays(1))
-                        stepsRecord?.filter { it.startTime.isAfter(dayStart) && it.endTime.isBefore(dayEnd) }
-                            ?.sumOf { it.count }?.toFloat() ?: 0f
-                    }
-                    val totalAverageSteps = dailySteps.average().toFloat()
-                    Log.d("HealthData", "Daily steps: ${dailySteps.joinToString()}, Avg: $totalAverageSteps")
+                    stepsRecord = stepsResponse.records
                 }
             } else {
                 stepsRecord = emptyList()
@@ -546,7 +536,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 val userId = sharedPreferenceManager.userId ?: ""
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
 
-                val activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
+                val activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
                     if (record.energy.inKilocalories > 0) {
                         EnergyBurnedRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -793,8 +783,9 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     withContext(Dispatchers.Main) {
                         if (response.isSuccessful) {
                             val todaysTime = Instant.now()
-                            val syncTime = convertToTargetFormat(todaysTime.toString())
-                            sharedPreferenceManager.saveMoveRightSyncTime(syncTime)
+                           // val syncTime = convertToTargetFormat(todaysTime.toString())
+                            val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
+                            sharedPreferenceManager.saveMoveRightSyncTime(syncTime.toString())
                             Log.d("ActivitySyncBottomSheet", "Health data stored successfully, syncTime: $syncTime")
                             Toast.makeText(context, "Health data stored successfully", Toast.LENGTH_SHORT).show()
                         } else {

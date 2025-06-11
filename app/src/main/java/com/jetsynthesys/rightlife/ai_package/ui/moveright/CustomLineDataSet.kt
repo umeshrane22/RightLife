@@ -48,10 +48,10 @@ class CustomHeartRateGraph @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val path = Path()
-    private val minBpm = 70f
+    private val minBpm = 40f
     private val maxBpm = 200f
     private val bpmRange = maxBpm - minBpm
-    private val bpmLabels = listOf(70f, 100f, 120f, 140f, 160f, 180f, 200f) // Specific Y-axis labels
+    private val bpmLabels = listOf(40f, 70f, 100f, 120f, 140f, 160f, 180f, 200f) // Specific Y-axis labels
     private val granularityX = 10f
     private val labelCountX = 6
     private val timeFormat = SimpleDateFormat("h:mm a", Locale.getDefault())

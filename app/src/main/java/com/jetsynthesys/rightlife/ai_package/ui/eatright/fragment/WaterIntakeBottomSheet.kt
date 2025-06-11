@@ -45,9 +45,11 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
     private var dY = 0f
     private var minY = 0f
     private var maxY = 0f
+    private var maxValueY = 0f
     private var waterIntake = 0
     private val maxIntake = 3000
     private var loadingOverlay : FrameLayout? = null
+    private var waterIntakeValue : Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +90,8 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         selectedValueText = view.findViewById(R.id.selectedValueText)
         ivCupIcon = view.findViewById(R.id.ivCupIcon)
 
+        waterIntakeValue = arguments?.getFloat("waterIntakeValue")?: 0f
+
         progressBarContainer.viewTreeObserver.addOnGlobalLayoutListener {
             minY = progressBarContainer.top.toFloat()
             maxY = (progressBarContainer.bottom - ivCupIcon.height).toFloat()
@@ -98,11 +102,17 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             logUserWaterIntake(userId = userId, source = "apple", waterMl = waterIntake.toInt(), date = currentDate)
 
         }
-        updateUI()
+        updateUI(waterIntakeValue.toInt(), true)
 
         ivCupIcon.setOnTouchListener { v, event ->
             val parent = v.parent as View
             val maxY = (parent.height - v.height).toFloat()
+//            var updateMaxY = 0f
+//            if (maxY > 0){
+//                updateMaxY = maxY
+//            }else{
+//                updateMaxY = maxValueY
+//            }
 
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -124,7 +134,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun updateUI() {
+    private fun updateUI(waterIntake : Int, isPreValue : Boolean) {
         selectedValueText.text = "${waterIntake}"
         progressBarContainer.post {
             val containerHeight = progressBarContainer.height
@@ -133,6 +143,27 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             val params = progressFill.layoutParams
             params.height = newHeight
             progressFill.layoutParams = params
+
+            if (isPreValue){
+                ivCupIcon.let { overlay ->
+                    // Use the progressBarLayout width to calculate proportional widths
+                    val parentHeight = newHeight * 2
+//            val isWeightGainZone = burnedTarget < rangeStart
+//            val overlayWidth = if (isWeightGainZone) {
+//                weightLossZoneText.text = "Weight Gain Zone"
+//                (parentWidth * 0.4).toInt() // 40% of parent width for Weight Gain Zone
+//            } else {
+//                weightLossZoneText.text = "Weight Loss Zone"
+//                (parentWidth * 0.2).toInt() // 20% of parent width for Weight Loss Zone
+//            }
+                    // Update the layout params to set the new width
+//                    val layoutParams = overlay.layoutParams
+//                    layoutParams.height = parentHeight
+//                    overlay.layoutParams = layoutParams
+//                    val parent = overlay.parent as View
+//                    val maxY = (parent.height - overlay.height).toFloat()
+                }
+            }
         }
     }
      private fun logUserWaterIntake(
@@ -210,7 +241,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
         val clampedSteps = stepsFromBottom.coerceIn(0, maxSteps)
 
         waterIntake = clampedSteps * 250
-        updateUI()
+        updateUI(waterIntake, false)
     }
 
 //    private fun updateValueBasedOnPosition(y: Float) {
