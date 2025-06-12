@@ -27,12 +27,16 @@ import com.jetsynthesys.rightlife.databinding.FragmentIdealActualSleepTimeBindin
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -262,7 +266,14 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
-        val labels = weekRanges
+        val labels = mutableListOf<String>()
+
+        sleepData?.forEachIndexed { index, (label, durations) ->
+            val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+            val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+            labels.add("$top\n$bottom")
+        }
 
         sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
@@ -286,10 +297,17 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         lineChart.data = LineData(idealSet, actualSet)
 
         lineChart.xAxis.apply {
-            valueFormatter = IndexAxisValueFormatter(labels)
-            granularity = 1f
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    val index = value.toInt()
+                    return if (index in labels.indices) labels[index] else ""
+                }
+            }
             position = XAxis.XAxisPosition.BOTTOM
-            textSize = 12f
+            granularity = 1f
+            setDrawGridLines(false)
+            labelRotationAngle = 0f
+            textSize = 10f
         }
 
         lineChart.axisLeft.apply {
@@ -302,6 +320,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
         lineChart.legend.textSize = 12f
+        lineChart.setExtraBottomOffset(24f)
         lineChart.setPinchZoom(false)
         lineChart.setDrawGridBackground(false)
         lineChart.setScaleEnabled(false) // disables pinch and double-tap zoom
@@ -309,6 +328,13 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
         lineChart.isDragEnabled = false
         lineChart.isHighlightPerTapEnabled = false
+        lineChart.setXAxisRenderer(
+            MultilineXAxisRenderer(
+                lineChart.viewPortHandler,
+                lineChart.xAxis,
+                lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
+        )
 
         lineChart.invalidate()
     }
@@ -317,7 +343,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
             progressDialog.show()
             val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
             val source = "android"
-            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period, endDate)
+            val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period,endDate)
             call.enqueue(object : Callback<SleepIdealActualResponse> {
                 override fun onResponse(call: Call<SleepIdealActualResponse>, response: Response<SleepIdealActualResponse>) {
                     if (response.isSuccessful) {
@@ -393,9 +419,9 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     }
 
     private fun formatDate(dateTime: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("EEE dd MMM", Locale.getDefault())
-        return outputFormat.format(inputFormat.parse(dateTime)!!)
+      //  val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+     //   val outputFormat = SimpleDateFormat("EEE dd MMM", Locale.getDefault())
+        return dateTime
     }
 
     private fun setSleepRightData() {

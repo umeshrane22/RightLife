@@ -598,7 +598,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
 
             val selectedMealList = SelectedMealLogList(
-                meal_name = mealLogRequest1!!.meal_name,
+                meal_name = mealLogRequest1?.meal_name ?: mealLogRequest?.recipe_name,
                 meal_type = mealType,
                 meal_log = selectedMealLogList
             )

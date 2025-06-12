@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -16,7 +17,6 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.google.android.material.tabs.TabLayout
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMicosTabBinding
-
 
 class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
 
@@ -82,11 +82,17 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                navigateToHome()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
             }
-        })
+        }
 
         backIc.setOnClickListener {
             navigateToHome()
@@ -96,6 +102,7 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
     private fun navigateToHome() {
         val fragment = HomeBottomTabFragment()
         val args = Bundle()
+        args.putString("ModuleName", "EatRight")
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, "landing")

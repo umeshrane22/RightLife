@@ -454,8 +454,19 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
                 canvas.drawRoundRect(x, endY, x + widthPerDay * 0.8f, startY, 20f, 20f, paint)
 
                 // Draw date labels
-                val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d"))
-                canvas.drawText(dateLabel, x, height - 30f, paintLabelText)
+              //  val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("EEE \n d MMM"))
+             //   canvas.drawText(dateLabel, x, height - 30f, paintLabelText)
+                val top = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("EEE"))
+                val bottom = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
+                val topWidth = paintLabelText.measureText(top)
+                val bottomWidth = paintLabelText.measureText(bottom)
+
+                val lineSpacing = paintLabelText.textSize + 4f // Adjust spacing between lines
+
+// Center X-aligned drawing
+                canvas.drawText(top, x - topWidth / 2, height - 30f, paintLabelText)
+                canvas.drawText(bottom, x - bottomWidth / 2, height - 30f + lineSpacing, paintLabelText)
+
             }
         }catch (e: DateTimeParseException) {
             Log.e("SleepParse", "Failed to parse", e)

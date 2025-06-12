@@ -581,15 +581,19 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         }
             val capitalized = snapRecipeData.name.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
-            if (snapRecipeData.unit != null){
+            if (snapRecipeData.unit != null && snapRecipeData.unit != ""){
                 tvMeasure.text = snapRecipeData.unit
+            }else{
+                tvMeasure.text = "Bowl"
             }
         if (!isEdit){
             if (snapRecipeData.mealQuantity != null ){
                 if (snapRecipeData.mealQuantity > 0.0){
                     quantityEdit.setText(snapRecipeData.mealQuantity?.toInt().toString())
-                }else{
+                }else if (snapRecipeData.servings > 0){
                     quantityEdit.setText(snapRecipeData.servings?.toInt().toString())
+                }else{
+                    quantityEdit.setText("1")
                 }
             }
         }

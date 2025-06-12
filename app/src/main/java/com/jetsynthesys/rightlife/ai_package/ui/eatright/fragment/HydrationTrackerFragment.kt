@@ -56,13 +56,10 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     private lateinit var backwardImageHydration: ImageView
     private lateinit var today_water_intake_layout: CardView
     private lateinit var log_your_water_intake_filled : LinearLayout
-
     private lateinit var forwardImage: ImageView
     private lateinit var selectedDate: TextView
     private lateinit var tv_water_quantity: TextView
     private lateinit var glassWithWaterView: GlassWithWaterView
-
-
     private lateinit var hydration_description_heading: TextView
     private lateinit var hydration_description_text: TextView
     private var selectedWeekDate: String = ""
@@ -102,8 +99,15 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         backwardImageHydration = view.findViewById(R.id.backIc)
 
         backwardImageHydration.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
-
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
         }
         // Show Week data by default
         radioGroup.check(R.id.rbWeek)
@@ -240,7 +244,15 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
         }
     }
 
@@ -354,14 +366,6 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
                     }
                 }
             }
-        }
-    }
-
-    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
-        requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, fragment, tag)
-            addToBackStack(null)
-            commit()
         }
     }
 

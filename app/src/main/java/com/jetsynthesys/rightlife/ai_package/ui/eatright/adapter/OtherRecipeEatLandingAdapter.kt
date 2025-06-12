@@ -39,7 +39,11 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
         holder.baguetteValue.text = item.carbs.toInt().toString()
         holder.dewpointValue.text = item.fats.toInt().toString()
 
-        holder.layoutMain.setOnClickListener {
+//        holder.layoutMain.setOnClickListener {
+//            onOtherRecipeItem(item, position, true)
+//        }
+
+        holder.circlePlus.setOnClickListener {
             onOtherRecipeItem(item, position, true)
         }
     }

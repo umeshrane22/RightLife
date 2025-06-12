@@ -71,7 +71,7 @@
                 android:id="@+id/selectedValueText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="500"
+                android:text="0"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 android:textColor="@color/black_no_meals"
@@ -123,14 +123,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="300dp"
                 android:layout_marginBottom="15dp"
-                android:weightSum="6"
+                android:weightSum="10"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text=">12 cups"
+                    android:text=">20 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="18 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="16 cups"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="14 cups"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="12 cups"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -198,7 +223,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|top"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="130dp"
                 android:orientation="vertical">
 
                 <TextView

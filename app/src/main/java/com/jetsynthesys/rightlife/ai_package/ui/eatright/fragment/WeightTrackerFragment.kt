@@ -120,6 +120,19 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         loss_new_weight_filled = view.findViewById(R.id.loss_new_weight_filled)
         weightIntake = view.findViewById(R.id.weightIntake)
         weightIntakeUnit = view.findViewById(R.id.weightIntakeUnit)
+        val backIc = view.findViewById<ImageView>(R.id.backIc)
+
+        backIc.setOnClickListener {
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }
 
         // Show Week data by default
         radioGroup.check(R.id.rbMonth)
@@ -256,7 +269,15 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
         }
     }
    /* private fun fetchWeightData(period: String) {

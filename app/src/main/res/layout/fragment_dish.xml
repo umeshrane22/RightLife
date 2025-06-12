@@ -96,7 +96,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:text="Poha"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="5dp"
                         android:textSize="18sp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/black_no_meals"
@@ -198,10 +198,9 @@
                             android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/text_color_kcal"/>
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:background="@drawable/white_bg"
                             android:layout_marginTop="5dp"
                             android:paddingStart="10dp"
@@ -212,10 +211,9 @@
 
                             <EditText
                                 android:id="@+id/quantityEdit"
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:textSize="18sp"
-                                android:layout_weight=".8"
                                 android:background="@null"
                                 android:text="1"
                                 android:inputType="numberDecimal"
@@ -224,7 +222,6 @@
                                 android:layout_marginStart="10dp"
                                 android:textColor="@color/black_no_meals"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintEnd_toStartOf="@+id/editName"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintHorizontal_weight="1.9"
                                 />
@@ -233,12 +230,16 @@
                                 android:id="@+id/ivEdit"
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
+                                android:layout_marginTop="3dp"
+                                android:layout_marginEnd="5dp"
                                 android:scaleType="fitXY"
                                 android:visibility="visible"
-                                android:layout_weight=".2"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintHorizontal_weight=".1"
                                 android:src="@drawable/material_edit"
                                 />
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
 
                     <!-- Meal Selection Dropdown -->
