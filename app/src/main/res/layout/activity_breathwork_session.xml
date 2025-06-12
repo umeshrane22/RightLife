@@ -69,7 +69,6 @@
                     android:text="Equal Breathing"
                     android:textColor="@color/text_color_breathwork"
                     android:textSize="24sp"
-
                     android:textStyle="bold" />
 
                 <TextView
@@ -78,7 +77,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:gravity="center"
-                    android:text="Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting"
                     android:textColor="@color/text_color_breathwork"
                     android:layout_marginBottom="10dp"
                     android:paddingStart="25dp"
