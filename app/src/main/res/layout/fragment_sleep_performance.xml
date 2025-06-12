@@ -107,6 +107,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:visibility="gone"
                             android:text="6 Months"
                             android:textSize="14sp"
                             android:textColor="@color/black"

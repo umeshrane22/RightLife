@@ -1061,7 +1061,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:src="@drawable/sleep_right_arrow_btn"
                         android:id="@+id/img_sleep_perform_arrow"
                         android:layout_marginTop="14dp"
