@@ -27,10 +27,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
+import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.OtherRecipe
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
@@ -48,6 +51,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MacrosT
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.MicrosTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
@@ -67,12 +71,13 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.floor
 
-class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
+class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), SelectMealTypeEatLandingBottomSheet.OnOtherRecipeLogListener {
 
     private lateinit var todayMealLogsRecyclerView : RecyclerView
     private lateinit var loggedNextMealSuggestionRecyclerView : RecyclerView
     private lateinit var otherRecipeRecyclerView : RecyclerView
-    private lateinit var glassWithWaterView : GlassWithWaterView
+   // private lateinit var glassWithWaterView : GlassWithWaterView
+    private lateinit var glassWithWaterView: ImageView
     private lateinit var todayMacrosWithDataLayout : ConstraintLayout
     private lateinit var todayMacroNoDataLayout : ConstraintLayout
     private lateinit var todayMicrosWithDataLayout : ConstraintLayout
@@ -138,6 +143,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     private val lunchCombinedList = ArrayList<MergedLogsMealItem>()
     private val eveningSnacksCombinedList = ArrayList<MergedLogsMealItem>()
     private val dinnerCombinedList = ArrayList<MergedLogsMealItem>()
+    private lateinit var halfCurveProgressBar : HalfCurveProgressBar
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
 
@@ -182,7 +188,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         userData = userDataResponse.userdata
         //viewModel.userResponse = userData
 
-        val halfCurveProgressBar = view.findViewById<HalfCurveProgressBar>(R.id.halfCurveProgressBar)
+        halfCurveProgressBar = view.findViewById(R.id.halfCurveProgressBar)
         val snapMealBtn = view.findViewById<ConstraintLayout>(R.id.lyt_snap_meal)
         val mealLogLayout = view.findViewById<LinearLayout>(R.id.layout_meal_log)
         todayMealLogsRecyclerView = view.findViewById(R.id.todayMealLogsRecyclerView)
@@ -262,7 +268,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         loggedNextMealSuggestionRecyclerView.adapter = mealSuggestionAdapter
         // onFrequentlyLoggedItemRefresh()
         //  halfCurveProgressBar.setValues(2000,2000)
-        glassWithWaterView = view.findViewById<GlassWithWaterView>(R.id.glass_with_water_view)
+        glassWithWaterView = view.findViewById(R.id.glass_with_water_view)
 
         if (bottomSeatName.contentEquals("LogWeightEat")){
             showLogWeightBottomSheet()
@@ -363,9 +369,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MacrosTabFragment()
                 val args = Bundle()
+                args.putString("ModuleName", "EatRight")
                 mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
-                addToBackStack(null)
+                replace(R.id.flFragment, mealSearchFragment, "landing")
+                addToBackStack("landing")
                 commit()
             }
         }
@@ -374,6 +381,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()
+                args.putString("ModuleName", "EatRight")
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
                 addToBackStack(null)
@@ -405,16 +413,24 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         }
 
         otherRecipeMightLikeWithData.setOnClickListener {
-            val fragment = SearchDishToLogFragment()
+            val fragment = RecipesSearchFragment()
             val args = Bundle()
-            args.putString("searchType", "EatRight")
-            args.putParcelable("snapDishLocalListModel", null)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
                 addToBackStack("landing")
                 commit()
             }
+//            val fragment = SearchDishToLogFragment()
+//            val args = Bundle()
+//            args.putString("searchType", "EatRight")
+//            args.putParcelable("snapDishLocalListModel", null)
+//            fragment.arguments = args
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                replace(R.id.flFragment, fragment, "landing")
+//                addToBackStack("landing")
+//                commit()
+//            }
         }
 
         logFirstMealLayout.setOnClickListener {
@@ -471,6 +487,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
 
     private fun onOtherRecipeItem(recipesModel: OtherRecipe, position: Int, isRefresh: Boolean) {
 
+        val selectMealTypeEatLandingBottomSheet = SelectMealTypeEatLandingBottomSheet()
+        selectMealTypeEatLandingBottomSheet.isCancelable = true
+        val bundle = Bundle()
+        bundle.putString("recipeId", recipesModel._id)
+        selectMealTypeEatLandingBottomSheet.arguments = bundle
+        parentFragment.let { selectMealTypeEatLandingBottomSheet.show(childFragmentManager, "SelectMealTypeEatLandingBottomSheet") }
     }
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
@@ -556,9 +578,21 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
         if(landingPageResponse.total_water_ml.toInt() > 0){
             waterQuantityTv.text = landingPageResponse.total_water_ml.toInt().toString()
             val waterIntake = landingPageResponse.total_water_ml.toFloat()
-            val waterGoal = 3000f
+            val waterGoal = 5000f
             waterIntakeValue = waterIntake
-            glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
+//            glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
+            val glassValue =   milestoneFor(waterIntakeValue.toInt())
+            if (glassValue == 25){
+                glassWithWaterView.setImageResource(R.drawable.glass_image_25)
+            }else if (glassValue == 50){
+                glassWithWaterView.setImageResource(R.drawable.glass_image_50)
+            }else if (glassValue == 75){
+                glassWithWaterView.setImageResource(R.drawable.glass_image_75)
+            }else if (glassValue == 100){
+                glassWithWaterView.setImageResource(R.drawable.glass_image_100)
+            }else{
+                glassWithWaterView.setImageResource(R.drawable.glass_image_0)
+            }
         }else{
             waterQuantityTv.text = "0"
         }
@@ -926,16 +960,45 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
                 //Toast.makeText(requireContext(), "Water Intake: $amount ml", Toast.LENGTH_SHORT).show()
                 waterQuantityTv.text = amount.toString()
                 val waterIntake = amount.toFloat()
-                val waterGoal = 3000f
+                val waterGoal = 5000f
                 waterIntakeValue = waterIntake
-                glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
-                // You can now call API or update UI etc.
+              //  glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
+              val glassValue =   milestoneFor(waterIntakeValue.toInt())
+                if (glassValue == 25){
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_25)
+                }else if (glassValue == 50){
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_50)
+                }else if (glassValue == 75){
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_75)
+                }else if (glassValue == 100){
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_100)
+                }else{
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_0)
+                }
             }
         }
         val args = Bundle()
         args.putFloat("waterIntakeValue", waterIntakeValue)
         waterIntakeBottomSheet.arguments = args
         waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
+    }
+
+    private fun milestoneFor(value: Int): Int {
+        val max = 5000
+        val thresholds = listOf(
+            0,                // 0%
+            (max * 0.25).toInt(),  // 25%
+            (max * 0.50).toInt(),  // 50%
+            (max * 0.75).toInt(),  // 75%
+            max               // 100%
+        )
+        return when {
+            value <= thresholds[0] ->   0
+            value <  thresholds[1] ->  25
+            value <  thresholds[2] ->  50
+            value <  thresholds[3] ->  75
+            else                    -> 100
+        }
     }
 
     private fun getMealsLogList() {
@@ -1027,6 +1090,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>() {
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    override fun onOtherRecipeLog(mealData: String) {
+       // getMealLandingSummary(halfCurveProgressBar)
     }
 }
 

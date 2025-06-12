@@ -30,19 +30,23 @@
 
         <TextView
             android:id="@+id/mealNameTv"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="20dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintEnd_toStartOf="@+id/layoutDelete"
             app:layout_constraintStart_toEndOf="@+id/image_meal"
             app:layout_constraintTop_toTopOf="parent"
             android:textSize="14sp"
             android:fontFamily="@font/dmsans_regular"
             android:textColor="@color/black_no_meals"
-            android:text="Poha" />
+            android:text="" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"

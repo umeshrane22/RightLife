@@ -47,7 +47,7 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
     private var maxY = 0f
     private var maxValueY = 0f
     private var waterIntake = 0
-    private val maxIntake = 3000
+    private val maxIntake = 5000
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
 
