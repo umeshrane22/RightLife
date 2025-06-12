@@ -45,6 +45,7 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceAllData
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceList
 import com.jetsynthesys.rightlife.ai_package.model.SleepPerformanceResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.MindfullChartRenderer
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -440,12 +441,18 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     fun getWeekDayNames(endOfWeek: LocalDate): List<String> {
+        val labels = mutableListOf<String>()
+          //  val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+           // val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+         //   val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+        //    labels.add("$top\n$bottom")
         val startOfWeek = endOfWeek.minusDays(6)
-        val formatter = DateTimeFormatter.ofPattern("EEE") // "Mon", "Tue", etc.
-
-        return (0..6).map { dayOffset ->
-            startOfWeek.plusDays(dayOffset.toLong()).format(formatter)
+        for (i in 0..6) {
+            val top = startOfWeek.plusDays(i.toLong()).format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val bottom = startOfWeek.plusDays(i.toLong()).format(DateTimeFormatter.ofPattern("d MMM"))
+            labels.add("$top\n$bottom")
         }
+        return labels
     }
 
     fun setupWeeklyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, endDate: String) {
@@ -469,12 +476,25 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         customRenderer.initBuffers()
         chart.renderer = customRenderer
 
-        chart.xAxis.apply {
+        /*chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
             position = XAxis.XAxisPosition.BOTTOM
             setDrawGridLines(false)
             labelRotationAngle = -30f
+            textSize = 10f
+        }*/
+        chart.xAxis.apply {
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    val index = value.toInt()
+                    return if (index in labels.indices) labels[index] else ""
+                }
+            }
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            setDrawGridLines(false)
+            labelRotationAngle = 0f
             textSize = 10f
         }
 
@@ -484,8 +504,16 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
         chart.isHighlightPerDragEnabled = false
+        chart.setExtraBottomOffset(24f)
         chart.legend.isEnabled = false
         chart.setScaleEnabled(false)
+        chart.setXAxisRenderer(
+            MultilineXAxisRenderer(
+                chart.viewPortHandler,
+                chart.xAxis,
+                chart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
+        )
         chart.invalidate()
     }
 
