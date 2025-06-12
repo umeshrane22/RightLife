@@ -582,16 +582,22 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             waterIntakeValue = waterIntake
 //            glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
             val glassValue =   milestoneFor(waterIntakeValue.toInt())
-            if (glassValue == 25){
-                glassWithWaterView.setImageResource(R.drawable.glass_image_25)
-            }else if (glassValue == 50){
-                glassWithWaterView.setImageResource(R.drawable.glass_image_50)
-            }else if (glassValue == 75){
-                glassWithWaterView.setImageResource(R.drawable.glass_image_75)
-            }else if (glassValue == 100){
-                glassWithWaterView.setImageResource(R.drawable.glass_image_100)
-            }else{
-                glassWithWaterView.setImageResource(R.drawable.glass_image_0)
+            when (glassValue) {
+                25 -> {
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_25)
+                }
+                50 -> {
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_50)
+                }
+                75 -> {
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_75)
+                }
+                100 -> {
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_100)
+                }
+                else -> {
+                    glassWithWaterView.setImageResource(R.drawable.glass_image_0)
+                }
             }
         }else{
             waterQuantityTv.text = "0"
@@ -962,18 +968,24 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 val waterIntake = amount.toFloat()
                 val waterGoal = 5000f
                 waterIntakeValue = waterIntake
-              //  glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
-              val glassValue =   milestoneFor(waterIntakeValue.toInt())
-                if (glassValue == 25){
-                    glassWithWaterView.setImageResource(R.drawable.glass_image_25)
-                }else if (glassValue == 50){
-                    glassWithWaterView.setImageResource(R.drawable.glass_image_50)
-                }else if (glassValue == 75){
-                    glassWithWaterView.setImageResource(R.drawable.glass_image_75)
-                }else if (glassValue == 100){
-                    glassWithWaterView.setImageResource(R.drawable.glass_image_100)
-                }else{
-                    glassWithWaterView.setImageResource(R.drawable.glass_image_0)
+                //  glassWithWaterView.setTargetWaterLevel(waterIntake, waterGoal)
+                val glassValue =   milestoneFor(waterIntakeValue.toInt())
+                when (glassValue) {
+                    25 -> {
+                        glassWithWaterView.setImageResource(R.drawable.glass_image_25)
+                    }
+                    50 -> {
+                        glassWithWaterView.setImageResource(R.drawable.glass_image_50)
+                    }
+                    75 -> {
+                        glassWithWaterView.setImageResource(R.drawable.glass_image_75)
+                    }
+                    100 -> {
+                        glassWithWaterView.setImageResource(R.drawable.glass_image_100)
+                    }
+                    else -> {
+                        glassWithWaterView.setImageResource(R.drawable.glass_image_0)
+                    }
                 }
             }
         }
