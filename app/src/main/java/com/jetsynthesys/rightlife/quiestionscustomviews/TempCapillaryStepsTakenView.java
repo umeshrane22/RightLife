@@ -89,11 +89,29 @@ public class TempCapillaryStepsTakenView extends View {
             canvas.drawCircle(centerX, pos, 10, markerPaint);
         }
 
+        float bottomMargin = 0f;
+        float topMargin = 0f;
+
+        int value = getValueFromPosition(thumbY);
+        if (value == minValue) {
+            bottomMargin = -21f;
+            topMargin = -21f;
+        }
+        if (value == maxValue) {
+            topMargin = 21f;
+            bottomMargin = 21f;
+        }
+
+        float left = centerX - thumbWidth / 2f;
+        float top = thumbY - thumbHeight / 2f + topMargin;
+        float right = centerX + thumbWidth / 2f;
+        float bottom = thumbY + thumbHeight / 2f + bottomMargin;
+
         RectF thumbRect = new RectF(
-                centerX - thumbWidth / 2f,
-                thumbY - thumbHeight / 2f,
-                centerX + thumbWidth / 2f,
-                thumbY + thumbHeight / 2f
+                left,
+                top,
+                right,
+                bottom
         );
         canvas.drawRoundRect(thumbRect, thumbCornerRadius, thumbCornerRadius, thumbPaint);
     }

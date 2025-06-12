@@ -19,9 +19,9 @@ public class TempCapillaryAnxietyLevelView extends View {
     private int[] markerPositions;
     private int minValue = 0, maxValue = 5000, stepValue = 1000;
     private float cornerRadiusFactor = 0.7f;
-    private float thumbWidth = 80f;
-    private float thumbHeight = 40f;
-    private float thumbCornerRadius = 20f;
+    private float thumbWidth = 65f;
+    private float thumbHeight = 65f;
+    private float thumbCornerRadius = 32.5f;
     private OnValueChangeListener listener;
     private HashMap<Integer, Integer> stepColorMap = new HashMap<>();
 
@@ -111,11 +111,29 @@ public class TempCapillaryAnxietyLevelView extends View {
             canvas.drawCircle(centerX, pos, 10, markerPaint);
         }
 
+        float bottomMargin = 0f;
+        float topMargin = 0f;
+
+        int value = getValueFromPosition(thumbY);
+        if (value == minValue) {
+            bottomMargin = -5f;
+            topMargin = -5f;
+        }
+        if (value == maxValue) {
+            topMargin = 5f;
+            bottomMargin = 5f;
+        }
+
+        float left = centerX - thumbWidth / 2f;
+        float top = thumbY - thumbHeight / 2f + topMargin;
+        float right = centerX + thumbWidth / 2f;
+        float bottom = thumbY + thumbHeight / 2f + bottomMargin;
+
         RectF thumbRect = new RectF(
-                centerX - thumbWidth / 2f,
-                thumbY - thumbHeight / 2f,
-                centerX + thumbWidth / 2f,
-                thumbY + thumbHeight / 2f
+                left,
+                top,
+                right,
+                bottom
         );
         canvas.drawRoundRect(thumbRect, thumbCornerRadius, thumbCornerRadius, thumbPaint);
     }

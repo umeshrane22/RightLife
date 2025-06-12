@@ -13,11 +13,13 @@ import android.view.View;
 import java.util.HashMap;
 
 public class TempCapillaryCoffeWaterView extends View {
+    private final int minValue = 0;
+    private final int maxValue = 12000;
+    private final int stepValue = 1000;
     private Paint backgroundPaint, fillPaint, markerPaint, thumbPaint;
     private int viewHeight, viewWidth;
     private float thumbY;
     private int[] markerPositions;
-    private int minValue = 0, maxValue = 12000, stepValue = 1000;
     private float cornerRadiusFactor = 0.5f;
     private float thumbWidth = 80f;
     private float thumbHeight = 40f;
@@ -89,11 +91,29 @@ public class TempCapillaryCoffeWaterView extends View {
             canvas.drawCircle(centerX, pos, 10, markerPaint);
         }
 
+        float bottomMargin = 0f;
+        float topMargin = 0f;
+
+        int value = getValueFromPosition(thumbY);
+        if (value == minValue) {
+            bottomMargin = -21f;
+            topMargin = -21f;
+        }
+        if (value == maxValue) {
+            topMargin = 21f;
+            bottomMargin = 21f;
+        }
+
+        float left = centerX - thumbWidth / 2f;
+        float top = thumbY - thumbHeight / 2f + topMargin;
+        float right = centerX + thumbWidth / 2f;
+        float bottom = thumbY + thumbHeight / 2f + bottomMargin;
+
         RectF thumbRect = new RectF(
-                centerX - thumbWidth / 2f,
-                thumbY - thumbHeight / 2f,
-                centerX + thumbWidth / 2f,
-                thumbY + thumbHeight / 2f
+                left,
+                top,
+                right,
+                bottom
         );
         canvas.drawRoundRect(thumbRect, thumbCornerRadius, thumbCornerRadius, thumbPaint);
     }
@@ -110,7 +130,7 @@ public class TempCapillaryCoffeWaterView extends View {
                     if (stepColorMap.containsKey(value)) {
                         fillPaint.setColor(stepColorMap.get(value));
                     } else {
-                       // fillPaint.setColor(Color.parseColor("#61A5C2"));
+                        // fillPaint.setColor(Color.parseColor("#61A5C2"));
                     }
                     listener.onValueChanged(value);
                     invalidate();

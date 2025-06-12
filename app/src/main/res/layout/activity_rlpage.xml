@@ -268,7 +268,6 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="16sp"
                             android:fontFamily="@font/merriweather_bold"
-                            android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
                             android:textColor="@color/txt_color_header"
                             android:textSize="16sp" />
 
@@ -2632,7 +2631,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/merriweather_bold"
-                                android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry."
                                 android:textColor="@color/txt_color_header"
                                 android:textSize="14sp" />
 
