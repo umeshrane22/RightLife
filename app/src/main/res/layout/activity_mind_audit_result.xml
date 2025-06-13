@@ -667,10 +667,11 @@ While you do that here are some suggestion to help you in your journey."
             android:id="@+id/tv_assessment_not_taken_msg"
             android:layout_width="match_parent"
             android:text="You have not taken this assessment yet."
-            android:gravity="center"
+            android:layout_marginBottom="70dp"
+            android:layout_marginTop="10dp"
             android:layout_centerInParent="true"
-            android:paddingStart="@dimen/margin_card_16dp"
-            android:layout_height="50dp" />
+            android:padding="@dimen/margin_card_16dp"
+            android:layout_height="match_parent" />
 
         <Button
             android:id="@+id/btnTakeAssessment"

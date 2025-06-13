@@ -7,6 +7,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -18,6 +19,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityMindAuditResultBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -154,6 +156,11 @@ class MindAuditResultActivity : BaseActivity() {
                             // No result, show "not taken" layout
                             binding.rlAssessmentNotTaken.visibility = View.VISIBLE
                             binding.scrollviewResult.visibility = View.GONE
+                            setDialogText(
+                                binding.tvAssessmentNotTakenMsg,
+                                binding.tvAssessmentNotTaken,
+                                assessment
+                            )
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -728,4 +735,39 @@ class MindAuditResultActivity : BaseActivity() {
         }
     }
 
+// not taken assessment texts
+private fun setDialogText(tvItem1: TextView, tvItem2: TextView, header: String) {
+    when (header) {
+        "DASS-21" -> {
+            tvItem1.text = AppConstants.dass21FirstPara + " " + AppConstants.dass21SecondPara+ " " + AppConstants.dass21ThirdPara
+            tvItem2.text = "DASS-21"
+        }
+
+        "Sleep Audit" -> {
+            tvItem1.text = AppConstants.ssFirstPara+ " " + AppConstants.ssSecondPara+ " " + AppConstants.ssThirdPara
+            tvItem2.text = header
+        }
+
+        "GAD-7" -> {
+            tvItem1.text = AppConstants.gad7FirstPara + " " + AppConstants.gad7SecondPara + " " + AppConstants.gad7ThirdPara
+            tvItem2.text = header
+        }
+
+        "OHQ" -> {
+            tvItem1.text = AppConstants.ohqFirstPara + " " + AppConstants.ohqSecondPara + " " + AppConstants.ohqThirdPara
+            tvItem2.text = header
+        }
+
+        "CAS" -> {
+            tvItem1.text = AppConstants.casFirstPara + " " + AppConstants.casSecondPara + " " + AppConstants.casThirdPara
+            tvItem2.text = header
+        }
+
+        "PHQ-9" -> {
+            tvItem1.text = AppConstants.phq9FirstPara+ " " + AppConstants.phq9SecondPara + " " + AppConstants.phq9ThirdPara
+            tvItem2.text = header
+        }
+
+    }
+}
 }
