@@ -1,8 +1,8 @@
 package com.jetsynthesys.rightlife.ui.settings
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.animation.Animation
@@ -51,37 +51,20 @@ object WriteToUsUtils {
         bottomSheetDialog.show()
     }
 
-    fun sendEmail(context: Context, packageManager: PackageManager) {
+    fun sendEmail(context: Context) {
         val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:") // only email apps should handle this
+            type = "message/rfc822" // MIME type for email
+            data = Uri.parse("mailto:") // Only email apps should handle this
             putExtra(Intent.EXTRA_EMAIL, arrayOf("support@rightlife.com"))
             putExtra(Intent.EXTRA_SUBJECT, "Subject of Email")
-           // putExtra(Intent.EXTRA_TEXT, "Body of the email")
+            //putExtra(Intent.EXTRA_TEXT, "Body content here.")
+            setPackage("com.google.android.gm") // Force Gmail if installed
+        }
+        try {
+            context.startActivity(emailIntent)
+        } catch (e: ActivityNotFoundException) {
+            context.startActivity(Intent.createChooser(emailIntent, "Send email via"))
         }
 
-    /*    if (emailIntent.resolveActivity(packageManager) != null) {
-            context.startActivity(emailIntent)
-        } else {
-            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
-        }*/
-
-        val packageManager = context.packageManager
-        if (emailIntent.resolveActivity(packageManager) != null) {
-            context.startActivity(emailIntent)
-        } else {
-            // Try fallback with chooser (covers more cases)
-            val fallbackIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "message/rfc822" // MIME type for email
-                putExtra(Intent.EXTRA_EMAIL, arrayOf("support@rightlife.com"))
-                putExtra(Intent.EXTRA_SUBJECT, "Subject of Email")
-            }
-
-            val chooser = Intent.createChooser(fallbackIntent, "Choose an Email client")
-            if (fallbackIntent.resolveActivity(packageManager) != null) {
-                context.startActivity(chooser)
-            } else {
-                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 }

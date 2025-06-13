@@ -76,7 +76,7 @@
             <com.zhpan.bannerview.indicator.DrawableIndicator
                 android:id="@+id/indicator_view_pager1"
                 android:layout_width="wrap_content"
-                android:layout_margin="7dp"
+                android:layout_margin="14dp"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content" />
 
@@ -85,20 +85,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:background="@drawable/roundedcornershape"
+                android:background="@drawable/rounded_corder_border_gray_radius_small"
                 android:backgroundTint="#FFF4D0"
                 android:orientation="vertical"
+                android:visibility="visible"
                 android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/selectPlanTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Select A Plan"
-                    android:textStyle="bold"
+                    android:text="Premium features included in both Monthly and Yearly plans"
                     android:textSize="18sp"
                     android:layout_gravity="center_horizontal"
                     android:textColor="#000000"
+                    android:gravity="center"
+                    android:fontFamily="@font/merriweather_regular"
                     android:paddingBottom="12dp" />
 
                 <LinearLayout
@@ -108,6 +110,7 @@
                     android:orientation="horizontal"
                     android:gravity="center"
                     android:weightSum="2"
+                    android:visibility="gone"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"
                     android:layout_marginHorizontal="8dp">
@@ -122,6 +125,7 @@
                         android:orientation="vertical"
                         android:gravity="center"
                         android:padding="16dp"
+                        android:visibility="gone"
                         android:layout_marginEnd="8dp"
                         android:elevation="2dp">
 

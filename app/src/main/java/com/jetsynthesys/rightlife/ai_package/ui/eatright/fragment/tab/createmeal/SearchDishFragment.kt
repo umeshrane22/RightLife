@@ -147,10 +147,12 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     if (searchType.contentEquals("mealScanResult")){
                         val fragment = MealScanResultFragment()
                         val args = Bundle()
+                        args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
                         args.putString("mealType", mealType)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                        args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "landing")
@@ -158,9 +160,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                             commit()
                         }
                     }else{
-                        val fragment = YourMealLogsFragment()
+                        val fragment = CreateMealFragment()
                         val args = Bundle()
+                        args.putString("searchType", "createMeal")
+                        args.putString("mealId", mealId)
                         args.putString("mealType", mealType)
+                        args.putString("mealName", mealName)
+                        args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "landing")
@@ -175,10 +181,12 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             if (searchType.contentEquals("mealScanResult")){
                 val fragment = MealScanResultFragment()
                 val args = Bundle()
+                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -186,9 +194,13 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                     commit()
                 }
             }else{
-                val fragment = YourMealLogsFragment()
+                val fragment = CreateMealFragment()
                 val args = Bundle()
+                args.putString("searchType", "createMeal")
+                args.putString("mealId", mealId)
                 args.putString("mealType", mealType)
+                args.putString("mealName", mealName)
+                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -261,6 +273,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val snapMealFragment = SnapDishFragment()
                 val args = Bundle()
+                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
@@ -308,6 +321,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("searchType", "SearchDish")
                 args.putParcelable("searchResultItem", recipesModel)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 snapMealFragment.arguments = args
                 replace(R.id.flFragment, snapMealFragment, "Steps")
                 addToBackStack(null)

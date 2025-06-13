@@ -51,7 +51,7 @@
         android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Lorem Ipsum Is Simply Dummy Text Of The Printing And Typesetting"
+        android:text="Each question is here to help you process, remember, and heal - one step at a time."
         android:textSize="16sp"
         android:fontFamily="@font/dmsans_regular"
         android:paddingHorizontal="16dp"

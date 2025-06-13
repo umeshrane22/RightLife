@@ -22,7 +22,7 @@
         android:fontFamily="@font/dmsans_bold"
         android:text="Four Foundations, One Powerful App"
         android:textColor="@color/txt_color_header"
-        android:textSize="@dimen/textsize_extralarge" />
+        android:textSize="@dimen/textsize_large" />
 
     <TextView
         android:id="@+id/tv_description"

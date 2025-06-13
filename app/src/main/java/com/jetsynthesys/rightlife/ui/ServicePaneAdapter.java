@@ -37,7 +37,7 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
     public ServicePaneViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = null;
         if (homeServiceList.size() % 2 == 0) {
-            view = LayoutInflater.from(context).inflate(R.layout.row_service_pane_even, parent, false);
+            view = LayoutInflater.from(context).inflate(R.layout.row_service_pane_odd, parent, false);
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.row_service_pane_odd, parent, false);
         }
@@ -47,7 +47,7 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
     @Override
     public void onBindViewHolder(@NonNull ServicePaneViewHolder holder, int position) {
         HomeService homeService = homeServiceList.get(position);
-        if (homeServiceList.size() % 2 == 0) {
+        /*if (homeServiceList.size() % 2 == 0) {
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + homeService.getThumbnail().getUrl())
                     .placeholder(R.drawable.ic_healthcam_logo)
                     .into(holder.imgEven);
@@ -69,7 +69,7 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
                     colorStateList = ContextCompat.getColorStateList(context, R.color.healthauditgreen);
             }
             holder.llServicePaneEven.setBackgroundTintList(colorStateList);
-        } else {
+        } else */ {
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + homeService.getThumbnail().getUrl())
                     .placeholder(R.drawable.ic_healthcam_logo)
                     .into(holder.imgOdd);
@@ -84,6 +84,7 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
                 case "Mind Audit":
                     colorStateList = ContextCompat.getColorStateList(context, R.color.light_pink);
                     break;
+                case "Face Scan":
                 case "Health Cam":
                     colorStateList = ContextCompat.getColorStateList(context, R.color.moveright);
                     break;

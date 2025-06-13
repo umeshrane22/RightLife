@@ -11,7 +11,7 @@
     <stroke
         android:width="0.2dp"
         android:color="@color/border" />
-    <solid android:color="@color/color_lightpink_myhealth" />
+    <solid android:color="@color/white" />
     <!--  stroke for defining a border for view -->
 
     <!--    <size-->

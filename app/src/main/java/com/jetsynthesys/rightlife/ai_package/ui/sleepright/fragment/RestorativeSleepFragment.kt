@@ -25,13 +25,18 @@ import com.jetsynthesys.rightlife.databinding.FragmentRestorativeSleepBinding
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.BarChartRenderer
+import com.github.mikephil.charting.renderer.XAxisRenderer
+import com.github.mikephil.charting.utils.MPPointF
+import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -302,7 +307,6 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
         val sleepDataMap = restorativeSleepDetails.associateBy { it.date }
         val chartData = mutableListOf<Pair<String, SleepStageDurations>>()
-
         var dayCounter = 1
 
         while (!startCal.after(endCal)) {
@@ -324,15 +328,26 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     private fun fetchSleepData(endDate: String,period: String) {
         progressDialog.show()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-        val source = "apple"
-        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, "2025-04-30")
+        val source = "android"
+        val call = ApiClient.apiServiceFastApi.fetchSleepRestorativeDetail(userid, source,period, endDate)
         call.enqueue(object : Callback<RestorativeSleepResponse> {
             override fun onResponse(call: Call<RestorativeSleepResponse>, response: Response<RestorativeSleepResponse>) {
                 if (response.isSuccessful) {
                     progressDialog.dismiss()
-                    if (response?.body()!=null) {
+                    if (response.body()!=null) {
                         restorativeSleepResponse = response.body()!!
-                        setRestorativeSleepData(restorativeSleepResponse?.data)
+                        if (restorativeSleepResponse.message != "No restorative sleep data found.") {
+                            tvRestoTitle.visibility = View.VISIBLE
+                            tvRestoMessage.visibility = View.VISIBLE
+                            lytRestoDataCard.visibility = View.VISIBLE
+                            lytRestoNoDataCard.visibility = View.GONE
+                            setRestorativeSleepData(restorativeSleepResponse?.data)
+                        }else{
+                            lytRestoDataCard.visibility = View.GONE
+                            lytRestoNoDataCard.visibility = View.VISIBLE
+                            tvRestoTitle.visibility = View.GONE
+                            tvRestoMessage.visibility = View.GONE
+                        }
                     }
 
                 }else if(response.code() == 400){
@@ -405,7 +420,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             tvAveragePercentage.setText(""+restorativeSleepResponse?.averageRestorativeSleepPercentage?.roundToDecimals(2)+"%")
             if (restorativeSleepResponse.restorativeSleepDetails.size > 8){
                 val formattedData = mapToMonthlySleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
-                renderStackedChart(formattedData)
+                renderMonthStackedChart(formattedData)
             }else {
                 val formattedData = mapToSleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
                 renderStackedChart(formattedData)
@@ -434,12 +449,12 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
     fun mapToSleepChartData(startDate: String, endDate: String, restorativeSleepDetails: List<RestorativeSleepData>): List<Pair<String, SleepStageDurations>> {
 
-        val outputFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
+      //  val outputFormat = SimpleDateFormat("MMM dd", Locale.getDefault())
 
         return restorativeSleepDetails.mapNotNull { detail ->
             try {
-                val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(detail.date)
-                val formattedDate = parsedDate?.let { outputFormat.format(it) } ?: return@mapNotNull null
+                val parsedDate = detail.date
+                val formattedDate = parsedDate?.let { it } ?: return@mapNotNull null
 
                 val stages = detail.sleepStages
 
@@ -454,7 +469,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         }
     }
 
-    private fun renderStackedChart(mappedData: List<Pair<String, SleepStageDurations>>) {
+    private fun renderMonthStackedChart(mappedData: List<Pair<String, SleepStageDurations>>) {
         val entries = mutableListOf<BarEntry>()
         val xLabels = mutableListOf<String>()
 
@@ -465,6 +480,11 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             )
             entries.add(BarEntry(index.toFloat(), stackedValues))
             xLabels.add(label)
+          //  val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+
+          //  val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+          //  val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+          //  xLabels.add("$top\n$bottom")
         }
 
         val dataSet = BarDataSet(entries, "Sleep Stages").apply {
@@ -486,20 +506,133 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             description.isEnabled = false
             axisLeft.axisMinimum = 0f
             axisRight.isEnabled = false
-            description.isEnabled = false
             isHighlightPerTapEnabled = false
             isHighlightPerDragEnabled = false
             legend.isEnabled = false
             setScaleEnabled(false)
+            animateY(1000)
+
+            // ✅ Add bottom offset for multi-line X labels
+            setExtraBottomOffset(24f)
+
             xAxis.apply {
-                valueFormatter = IndexAxisValueFormatter(xLabels)
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        val index = value.toInt()
+                        return if (index in xLabels.indices) xLabels[index] else ""
+                    }
+                }
                 position = XAxis.XAxisPosition.BOTTOM
                 granularity = 1f
                 setDrawGridLines(false)
+                labelRotationAngle = 0f
+                textSize = 10f
             }
-            legend.isEnabled = false
-            animateY(1000)
+
+            setXAxisRenderer(
+                MultilineXAxisRenderer(
+                    viewPortHandler,
+                    xAxis,
+                    getTransformer(YAxis.AxisDependency.LEFT)
+                )
+            )
+
             invalidate()
+        }
+    }
+
+    private fun renderStackedChart(mappedData: List<Pair<String, SleepStageDurations>>) {
+        val entries = mutableListOf<BarEntry>()
+        val xLabels = mutableListOf<String>()
+
+        mappedData.forEachIndexed { index, (label, durations) ->
+            val stackedValues = floatArrayOf(
+                durations.rem / 60f,
+                durations.deep / 60f
+            )
+            entries.add(BarEntry(index.toFloat(), stackedValues))
+            val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+
+            val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+            xLabels.add("$top\n$bottom")
+        }
+
+        val dataSet = BarDataSet(entries, "Sleep Stages").apply {
+            setColors(
+                stageColorMap["REM Sleep"]!!,
+                stageColorMap["Deep Sleep"]!!
+            )
+            stackLabels = arrayOf("REM Sleep", "Deep Sleep")
+            valueTextColor = Color.TRANSPARENT
+            valueTextSize = 10f
+        }
+
+        barChart.setRenderer(
+            RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler, stageColorMap)
+        )
+
+        barChart.apply {
+            data = BarData(dataSet)
+            description.isEnabled = false
+            axisLeft.axisMinimum = 0f
+            axisRight.isEnabled = false
+            isHighlightPerTapEnabled = false
+            isHighlightPerDragEnabled = false
+            legend.isEnabled = false
+            setScaleEnabled(false)
+            animateY(1000)
+
+            // ✅ Add bottom offset for multi-line X labels
+            setExtraBottomOffset(24f)
+
+            xAxis.apply {
+                valueFormatter = object : ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        val index = value.toInt()
+                        return if (index in xLabels.indices) xLabels[index] else ""
+                    }
+                }
+                position = XAxis.XAxisPosition.BOTTOM
+                granularity = 1f
+                setDrawGridLines(false)
+                labelRotationAngle = 0f
+                textSize = 10f
+            }
+
+            setXAxisRenderer(
+                MultilineXAxisRenderer(
+                    viewPortHandler,
+                    xAxis,
+                    getTransformer(YAxis.AxisDependency.LEFT)
+                )
+            )
+
+            invalidate()
+        }
+    }
+    class MultilineXAxisRenderer(
+        viewPortHandler: ViewPortHandler,
+        xAxis: XAxis,
+        trans: Transformer
+    ) : XAxisRenderer(viewPortHandler, xAxis, trans) {
+
+        override fun drawLabel(
+            c: Canvas,
+            formattedLabel: String,
+            x: Float,
+            y: Float,
+            anchor: MPPointF,
+            angleDegrees: Float
+        ) {
+            val lines = formattedLabel.split("\n")
+
+            val topMargin = 18f // 👈 Add your desired top margin in pixels
+
+            for ((i, line) in lines.withIndex()) {
+                val offsetY = i * mAxisLabelPaint.textSize * 1.1f
+                c.drawText(line, x, y + topMargin + offsetY, mAxisLabelPaint)
+            }
         }
     }
 

@@ -142,6 +142,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                 response: Response<SubscriptionPlansResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    planList.clear()
                     response.body()?.data?.result?.list?.let { planList.addAll(it) }
                     adapter.notifyDataSetChanged()
                 } else {
@@ -189,7 +190,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     showToast("Subscribed Successfully!!")
-                    //getSubscriptionList(type)
+                    getSubscriptionList(type)
                 } else {
                     showToast(response.message())
                 }

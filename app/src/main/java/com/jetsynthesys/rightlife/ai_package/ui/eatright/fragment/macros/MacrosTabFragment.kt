@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMacosTabBinding
 
@@ -27,10 +29,6 @@ class MacrosTabFragment : BaseFragment<FragmentMacosTabBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMacosTabBinding
         get() = FragmentMacosTabBinding::inflate
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -86,40 +84,26 @@ class MacrosTabFragment : BaseFragment<FragmentMacosTabBinding>() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        // Handle back press
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    navigateToHome()
-                }
-            }
-        )
-
         backIc.setOnClickListener {
-            navigateToHome()
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
         }
     }
 
-    private fun navigateToHome() {
-        val fragment = HomeBottomTabFragment()
-        val args = Bundle()
-        fragment.arguments = args
-        requireActivity().supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, fragment, "landing")
-            addToBackStack("landing")
-            commit()
-        }
-    }
 
     private fun showFragment(tag: String) {
         val transaction = childFragmentManager.beginTransaction()
-
         // Hide all existing fragments
         for (fragment in fragmentMap.values) {
             transaction.hide(fragment)
         }
-
         // Show or create the fragment
         var fragment = fragmentMap[tag]
         if (fragment == null) {
@@ -135,7 +119,6 @@ class MacrosTabFragment : BaseFragment<FragmentMacosTabBinding>() {
         } else {
             transaction.show(fragment)
         }
-
         transaction.commit()
     }
 
@@ -157,6 +140,18 @@ class MacrosTabFragment : BaseFragment<FragmentMacosTabBinding>() {
             }
         }
     }
+
+    fun handleBackPressed() {
+        val fragment = HomeBottomTabFragment()
+        val args = Bundle()
+        args.putString("ModuleName", "EatRight")
+        fragment.arguments = args
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.flFragment, fragment, "landing")
+            .addToBackStack("landing")
+            .commit()
+    }
+
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

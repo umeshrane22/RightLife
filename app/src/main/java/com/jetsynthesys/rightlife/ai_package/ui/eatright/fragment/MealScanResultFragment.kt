@@ -39,11 +39,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
-import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapDish
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogItem
 import com.jetsynthesys.rightlife.ai_package.model.request.SnapMealLogRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.UpdateMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
@@ -51,7 +49,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.Micros
 import com.jetsynthesys.rightlife.ai_package.model.response.Nutrients
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
-import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapMealScanResultAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsAdapter
@@ -62,7 +59,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsMod
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
@@ -79,7 +75,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
+class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), RatingMealBottomSheet.RatingSnapMealListener {
 
     private lateinit var macroItemRecyclerView : RecyclerView
     private lateinit var microItemRecyclerView : RecyclerView
@@ -97,6 +93,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var layoutMicroTitle : ConstraintLayout
     private lateinit var layoutMacroTitle : ConstraintLayout
     private lateinit var icMacroUP : ImageView
+    private lateinit var backButton : ImageView
     private lateinit var microUP : ImageView
     private lateinit var addLayout : LinearLayoutCompat
     private lateinit var checkBox: CheckBox
@@ -107,6 +104,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     private lateinit var selectedMealType : String
     private var mealId : String = ""
     private var mealName : String = ""
+    private var moduleName : String = ""
     private var quantity = 1
     private var loadingOverlay : FrameLayout? = null
 
@@ -141,6 +139,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         addLayout = view.findViewById(R.id.addLayout)
         checkBox = view.findViewById(R.id.saveMealCheckBox)
+        backButton = view.findViewById(R.id.backButton)
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = mealListAdapter
         macroItemRecyclerView.layoutManager = GridLayoutManager(context, 4)
@@ -157,6 +156,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         val colorStateList = ColorStateList(states, colors)
         checkBox.buttonTintList = colorStateList
 
+        moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
 
@@ -180,15 +180,19 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             currentPhotoPathsecound = null
         }
 
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formatFullDate = DateTimeFormatter.ofPattern("d MMMM yyyy")
+        tvSelectedDate.text = currentDateTime.format(formatFullDate)
+
         //currentPhotoPathsecound = arguments?.get("ImagePathsecound") as Uri
         descriptionName = arguments?.getString("description") .toString()
         checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-               // Toast.makeText(context, "Added To Log!", Toast.LENGTH_SHORT).show()
                 if (mealId != "null" && mealId != null){
                     updateSnapMealsSave((snapRecipesList))
                 }else{
-                    createSnapMealLog(snapRecipesList, true)
+                    ratingMealLogDialog(true)
                 }
             }
         }
@@ -311,9 +315,39 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             }
         }
 
+        backButton.setOnClickListener {
+            if (moduleName.contentEquals("EatRight")){
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    val snapMealFragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    snapMealFragment.arguments = args
+                    replace(R.id.flFragment, snapMealFragment, "Steps")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else{
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "LandingFragment")
+                if (moduleName.contentEquals("EatRight")){
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val snapMealFragment = HomeBottomTabFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", moduleName)
+                        snapMealFragment.arguments = args
+                        replace(R.id.flFragment, snapMealFragment, "Steps")
+                        addToBackStack(null)
+                        commit()
+                    }
+                }else{
+                    startActivity(Intent(context, HomeDashboardActivity::class.java))
+                    requireActivity().finish()
+                }
             }
         })
 
@@ -332,6 +366,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             val fragment = SearchDishFragment()
             val args = Bundle()
             args.putString("searchType", "mealScanResult")
+            args.putString("ModuleName", moduleName)
             args.putString("mealId", mealId)
             args.putString("mealName", mealName)
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -346,7 +381,6 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
         saveMealLayout.setOnClickListener {
             Toast.makeText(context, "Save Meal", Toast.LENGTH_SHORT).show()
-            val moduleName = arguments?.getString("ModuleName").toString()
             if (moduleName.contentEquals("EatRight")){
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     val snapMealFragment = HomeBottomTabFragment()
@@ -365,20 +399,13 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 
         addToLogLayout.setOnClickListener {
           //  Toast.makeText(context, "Added To Log", Toast.LENGTH_SHORT).show()
-            val moduleName = arguments?.getString("ModuleName").toString()
             if (moduleName.contentEquals("EatRight")){
-                val ratingMealBottomSheet = RatingMealBottomSheet()
-                ratingMealBottomSheet.isCancelable = true
-                val bundle = Bundle()
-                bundle.putBoolean("test",false)
-                ratingMealBottomSheet.arguments = bundle
-                activity?.supportFragmentManager?.let { ratingMealBottomSheet.show(it, "RatingMealBottomSheet") }
-                sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
-
+               // ratingMealLogDialog()
+               // sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
                 if (mealId != "null" && mealId != null){
                     updateSnapMealsSave((snapRecipesList))
                 }else{
-                    createSnapMealLog(snapRecipesList, false)
+                    ratingMealLogDialog(false)
                 }
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
 //                    val snapMealFragment = HomeBottomTabFragment()
@@ -390,8 +417,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
 //                    commit()
 //                }
             }else{
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
-                requireActivity().finish()
+                ratingMealLogDialog(false)
             }
         }
 
@@ -418,7 +444,6 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
-        CommonAPICall.updateChecklistStatus(requireContext(), "meal_snap", AppConstants.CHECKLIST_COMPLETED)
     }
 
     private fun onMicroNutrientsList (nutrition: ArrayList<SearchResultItem>){
@@ -663,6 +688,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
             val args = Bundle()
             args.putString("mealId", mealId)
             args.putString("mealName", mealName)
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", "MealScanResult")
             args.putString("mealQuantity", snapRecipeData.mealQuantity.toString())
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -680,6 +706,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         deleteSnapMealBottomSheet.isCancelable = true
         val args = Bundle()
         args.putBoolean("test",false)
+        args.putString("ModuleName", moduleName)
         args.putString("mealId", mealId)
         args.putString("mealName", mealName)
         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -761,6 +788,12 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         return BitmapFactory.decodeFile(filePath, options)
     }
 
+    fun getFormattedDate(): String {
+        val date = Date()
+        val formatter = SimpleDateFormat("d MMMM yyyy", Locale.ENGLISH)
+        return formatter.format(date)
+    }
+
     private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
         val (height: Int, width: Int) = options.run { outHeight to outWidth }
         var inSampleSize = 1
@@ -814,7 +847,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         val calendar = Calendar.getInstance()
         val datePicker = DatePickerDialog(
             requireContext(), { _, year, month, dayOfMonth ->
-                val date = "$dayOfMonth ${getMonthName(month)} $year"
+                val date = "$dayOfMonth ${getMonthName(month+1)} $year"
                 tvSelectedDate.text = date
             },
             calendar.get(Calendar.YEAR),
@@ -926,6 +959,24 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
                         }
                         val mealData = response.body()?.message
                         Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
+                        val moduleName = arguments?.getString("ModuleName").toString()
+                        if (moduleName.contentEquals("EatRight")){
+                            val fragment = HomeBottomTabFragment()
+                            val args = Bundle()
+                            args.putString("ModuleName", "EatRight")
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "landing")
+                                addToBackStack("landing")
+                                commit()
+                            }
+                        }else{
+                            val mealId = response.body()?.inserted_ids?.meal_log_id?: ""
+                            CommonAPICall.updateChecklistStatus(requireContext(),"meal_snap", AppConstants.CHECKLIST_COMPLETED)
+                            CommonAPICall.updateChecklistStatus(requireContext(),"snap_mealId", mealId)
+                            startActivity(Intent(context, HomeDashboardActivity::class.java))
+                            requireActivity().finish()
+                        }
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
@@ -1061,6 +1112,16 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
         })
     }
 
+    private fun ratingMealLogDialog(isSave : Boolean) {
+        val ratingMealBottomSheet = RatingMealBottomSheet()
+        ratingMealBottomSheet.isCancelable = true
+        val bundle = Bundle()
+        bundle.putBoolean("isSave", isSave)
+        ratingMealBottomSheet.arguments = bundle
+        parentFragment.let { ratingMealBottomSheet.show(childFragmentManager, "RatingMealBottomSheet") }
+     //   sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
+    }
+
     fun showLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE
@@ -1068,5 +1129,9 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>() {
     fun dismissLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
+    }
+
+    override fun onSnapMealRating(rating: Double, isSave: Boolean) {
+        createSnapMealLog(snapRecipesList, isSave)
     }
 }

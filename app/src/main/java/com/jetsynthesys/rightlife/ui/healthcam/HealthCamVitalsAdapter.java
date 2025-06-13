@@ -54,6 +54,7 @@ public class HealthCamVitalsAdapter extends RecyclerView.Adapter<HealthCamVitals
         holder.binding.indicatorTextView.setText(item.indicator);
         holder.binding.parameterTextView.setText(item.parameter);
         holder.binding.rlMainBg.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.colour)));
+        holder.binding.indicatorTextView.setTextColor(Utils.getColorFromColorCode(item.colour));
 
         holder.itemView.setOnClickListener(view -> {
             ArrayList<ParameterModel>  unifiedList = getUnifiedParameterList();

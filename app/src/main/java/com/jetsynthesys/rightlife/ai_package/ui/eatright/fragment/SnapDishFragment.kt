@@ -76,6 +76,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvChange: TextView
     private lateinit var quantityEdit: EditText
     private lateinit var ivEdit : ImageView
+    private lateinit var backButton : ImageView
     private var mealQuantity = 1.0
     private lateinit var tvMeasure :TextView
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
@@ -116,6 +117,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         microUP = view.findViewById(R.id.microUP)
         icMacroUP = view.findViewById(R.id.icMacroUP)
         ivEdit = view.findViewById(R.id.ivEdit)
+        backButton = view.findViewById(R.id.back_button)
 
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
@@ -249,6 +251,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     args.putString("searchType", searchType)
                     args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                    args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
                         addToBackStack("landing")
@@ -257,6 +260,43 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 }
             }
         })
+
+        backButton.setOnClickListener {
+            if (searchType.contentEquals("EatRight")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else if (searchType.contentEquals("searchScanResult")){
+                val fragment = SearchDishFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                args.putString("searchType", searchType)
+                args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else{
+                val fragment = MealScanResultFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                args.putString("searchType", searchType)
+                args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }
+        }
 
         quantityEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(update: Editable?) {
@@ -412,6 +452,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         args.putString("mealName", mealName)
                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
+                        args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             replace(R.id.flFragment, fragment, "mealLog")
@@ -502,6 +543,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         args.putString("mealName", mealName)
                                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+                                        args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                                         fragment.arguments = args
                                         requireActivity().supportFragmentManager.beginTransaction().apply {
                                             replace(R.id.flFragment, fragment, "mealLog")
@@ -539,15 +581,19 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         }
             val capitalized = snapRecipeData.name.toString().replaceFirstChar { it.uppercase() }
             tvMealName.text = capitalized
-            if (snapRecipeData.unit != null){
+            if (snapRecipeData.unit != null && snapRecipeData.unit != ""){
                 tvMeasure.text = snapRecipeData.unit
+            }else{
+                tvMeasure.text = "Bowl"
             }
         if (!isEdit){
             if (snapRecipeData.mealQuantity != null ){
                 if (snapRecipeData.mealQuantity > 0.0){
                     quantityEdit.setText(snapRecipeData.mealQuantity?.toInt().toString())
-                }else{
+                }else if (snapRecipeData.servings > 0){
                     quantityEdit.setText(snapRecipeData.servings?.toInt().toString())
+                }else{
+                    quantityEdit.setText("1")
                 }
             }
         }

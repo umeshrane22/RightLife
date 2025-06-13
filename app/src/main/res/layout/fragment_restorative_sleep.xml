@@ -119,6 +119,7 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:visibility="gone"
                             android:text="6 Months"
                             android:textSize="14sp"
                             android:textColor="@color/black"
@@ -249,7 +250,7 @@
                         android:layout_marginEnd="10dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tv_average_sleep_duration"
+                        app:layout_constraintTop_toBottomOf="@+id/percentage_icon"
                         android:orientation="vertical">
                     <TextView
                         android:id="@+id/tv_restorative_date"
@@ -349,52 +350,62 @@
                         android:id="@+id/restorativeBarChart"
                         android:layout_width="match_parent"
                         android:layout_height="350dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="5dp"
                         android:background="@color/white"
                         app:layout_constraintTop_toBottomOf="@+id/lyt_sleep_detail"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
             </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:id="@+id/lyt_resto_nocard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            android:visibility="gone"
-            android:background="@color/white"
-            app:contentPadding="5dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/lyt_resto_nocard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:elevation="4dp"
+                    android:paddingBottom="5dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/white"
+                    app:cardCornerRadius="10dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="150dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/dmsans_bold"
-                android:id="@+id/tv_resto_no_data"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="10dp"
-                android:visibility="visible"
-                android:textColor="@color/black"
-                android:text="NO DATA"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textSize="20sp" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:paddingBottom="20dp"
+                        android:layout_height="wrap_content">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:id="@+id/tv_sleep_no_data_"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="No Sleep Data Available"
+                            android:textSize="20dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="30dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/sleep_text_color"
+                            android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                            android:id="@+id/tv_sleep_data_subtitle_"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/dmsans_regular"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            app:layout_constraintTop_toBottomOf="@+id/tv_sleep_no_data_"
+                            app:layout_constraintStart_toStartOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

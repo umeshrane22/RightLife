@@ -17,17 +17,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ui.healthaudit.Fruit;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,14 +43,14 @@ public class MindAuditReasonsFragment extends Fragment {
     private static final String ARG_PAGE_INDEX = "page_index";
     private static final String ARG_EMOTION = "emotion";
     private static final String ARG_EMOTION_REASONS = "emotion_reasons";
-    private static ArrayList<String> userEmotionsString = new ArrayList<>();
+    private static final ArrayList<String> userEmotionsString = new ArrayList<>();
     private RecyclerView recyclerView;
     private MindAuditReasonslistAdapter adapter;
     private int pageIndex;
-    private ArrayList<String> selectedEmotionReasons = new ArrayList<>();
-    private ArrayList<String> emotionReasons = new ArrayList<>();
+    private final ArrayList<String> selectedEmotionReasons = new ArrayList<>();
+    private final ArrayList<String> emotionReasons = new ArrayList<>();
     private String emotion;
-    private ArrayList<Fruit> fruitList = new ArrayList<>();
+    private final ArrayList<Fruit> fruitList = new ArrayList<>();
     private TextView tvHeader;
 
     public static MindAuditReasonsFragment newInstance(int pageIndex, ArrayList<String> emotionReasons, String emotion) {
@@ -100,10 +101,14 @@ public class MindAuditReasonsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
-            if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
-                showDisclaimerDialog();
+            if (selectedEmotionReasons.isEmpty()) {
+                Toast.makeText(requireContext(),"Please select reason!!",Toast.LENGTH_SHORT).show();
             } else {
-                ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
+                if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
+                    showDisclaimerDialog();
+                } else {
+                    ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
+                }
             }
 
         });
@@ -166,6 +171,10 @@ public class MindAuditReasonsFragment extends Fragment {
         Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
 
         Button dialogButtonOkay = dialog.findViewById(R.id.dialog_button_stay);
+
+        dialogButtonOkay.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.btn_color_journal));
+        dialogButtonOkay.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_think_right));
+
 
         dialogImage.setVisibility(View.GONE);
         dialogText.setText("The assessments provided are for self-evaluation and awareness only, not for diagnostic use. They are designed for self-awareness and are based on widely recognized methodologies in the public domain. They are not a substitute for professional medical advice or psychological diagnoses, treatments, or consultations. If you have or suspect you may have a health condition, consult with a qualified healthcare provider.");

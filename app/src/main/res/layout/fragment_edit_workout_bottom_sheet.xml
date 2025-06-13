@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/LoggedBottomSheetStyle">
     <TextView
         android:id="@+id/delete_workout_heading"
         android:layout_width="wrap_content"
@@ -30,10 +31,12 @@
         app:layout_constraintEnd_toEndOf="parent"/>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/layout_btn_log_meal"
-        android:layout_width="162dp"
+        android:layout_width="wrap_content"
         android:layout_height="46dp"
         android:orientation="horizontal"
         android:layout_marginTop="30dp"
+        android:paddingStart="45dp"
+        android:paddingEnd="45dp"
         app:layout_constraintTop_toBottomOf="@+id/delete_workout_description"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/add_cart_button_background"
@@ -70,7 +73,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/yes_btn_bottom_sheet"
-        android:layout_width="162dp"
+        android:layout_width="wrap_content"
         android:layout_height="46dp"
         android:orientation="horizontal"
         android:layout_marginTop="30dp"
@@ -78,6 +81,8 @@
         app:layout_constraintStart_toStartOf="parent"
        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="20dp"
+        android:paddingStart="45dp"
+        android:paddingEnd="45dp"
         android:background="@drawable/background_yes_bottom"
         android:layout_marginStart="20dp"
         android:gravity="center"

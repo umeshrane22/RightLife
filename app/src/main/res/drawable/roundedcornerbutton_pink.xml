@@ -6,8 +6,8 @@
     <corners
         android:radius="10dp" />
     <stroke android:width="0.5dp"
-        android:color="@color/color_pink_myhealth" />
-    <solid android:color="@color/medium_pink"/>
+        android:color="@color/btn_color_journal" />
+    <solid android:color="@color/btn_color_journal"/>
     <!--  stroke for defining a border for view -->
 
 <!--    <size-->

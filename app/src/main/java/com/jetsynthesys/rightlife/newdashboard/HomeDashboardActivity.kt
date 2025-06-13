@@ -96,6 +96,7 @@ import java.util.concurrent.TimeUnit
 
 class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityHomeDashboardBinding
+    private var snapMealId: String = ""
     private var isAdd = true
     private var checklistComplete = true
     private var checkListCount = 0
@@ -358,6 +359,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                 putExtra("ModuleName", "EatRight")
                 putExtra("BottomSeatName", "SnapMealTypeEat")
+                putExtra("snapMealId", snapMealId)
             })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
@@ -1142,6 +1144,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         } else {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
+        }
+        checklistResponse.data.snap_mealId?.let { snapMealId ->
+            //SharedPreferenceManager.getInstance(this).saveSnapMealId(snapMealId)
+            this@HomeDashboardActivity.snapMealId = snapMealId
         }
     }
 

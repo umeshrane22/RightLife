@@ -69,11 +69,17 @@ class SubscriptionHistoryActivity : BaseActivity() {
                         if (pastSubscriptions.isEmpty()) {
                             binding.rvPastSubscription.visibility = View.GONE
                             binding.cardViewNoPastSubscription.visibility = View.VISIBLE
+                        } else {
+                            binding.rvPastSubscription.visibility = View.VISIBLE
+                            binding.cardViewNoPastSubscription.visibility = View.GONE
                         }
 
                         if (activeSubscriptions.isEmpty()) {
                             binding.rvActiveSubscription.visibility = View.GONE
                             binding.cardViewNoActiveSubscription.visibility = View.VISIBLE
+                        } else {
+                            binding.rvActiveSubscription.visibility = View.VISIBLE
+                            binding.cardViewNoActiveSubscription.visibility = View.GONE
                         }
 
                         activeSubscriptionAdapter.notifyDataSetChanged()
