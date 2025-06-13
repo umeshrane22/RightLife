@@ -48,6 +48,11 @@ class ToolsAdapter( context: Context, private var dataLists: ArrayList<ToolGridD
         holder.itemView.findViewById<TextView>(R.id.titleTextView).setText(dataLists?.getOrNull(position)?.moduleName)
         colorList.getOrNull(position)?.let { holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(it) }
       //  holder.itemView.findViewById<TextView>(R.id.subtitleTextView).setText(dataLists?.getOrNull(position)?.subtitle)
+        if (position == 3){
+            holder.itemView.findViewById<CardView>(R.id.mainLayout).visibility = View.GONE
+        }else{
+            holder.itemView.findViewById<CardView>(R.id.mainLayout).visibility = View.VISIBLE
+        }
 
 
         holder.itemView.findViewById<CardView>(R.id.mainLayout).setOnClickListener {

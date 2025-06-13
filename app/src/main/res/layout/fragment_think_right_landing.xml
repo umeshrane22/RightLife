@@ -18,6 +18,7 @@
         <ImageView
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:id="@+id/img_back"
             android:src="@drawable/eat_right_back"
             android:layout_marginStart="22dp"
             app:layout_constraintStart_toStartOf="parent"

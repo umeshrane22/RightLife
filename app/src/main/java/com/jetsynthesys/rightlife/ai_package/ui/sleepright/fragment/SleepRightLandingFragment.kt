@@ -341,12 +341,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(HomeBottomTabFragment(), "HomeFragment")
+                requireActivity().finish()
             }
         })
 
         backButton.setOnClickListener {
-            navigateToFragment(HomeBottomTabFragment(), "HomeFragment")
+            requireActivity().finish()
         }
 
         sleepArrowView.setOnClickListener {
