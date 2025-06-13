@@ -142,8 +142,8 @@
 
                     <ImageView
                         android:id="@+id/icon_plus_one"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="21dp"
+                        android:layout_height="21dp"
                         android:layout_gravity="center"
                         android:scaleType="fitXY"
                         android:src="@drawable/icon_feather_plus"
@@ -159,7 +159,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginStart="3dp"
                         android:layout_gravity="center"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         android:textColor="@color/white"
                         android:fontFamily="@font/dmsans_bold"
                         android:text="Create A Work Routine" />
