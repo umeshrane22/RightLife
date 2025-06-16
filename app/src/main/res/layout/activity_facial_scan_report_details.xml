@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:background="@drawable/rounded_corder_border_gray"
+                android:background="@drawable/bg_gray_border"
                 android:paddingVertical="8dp">
 
                 <LinearLayout
@@ -477,7 +477,7 @@
             android:padding="16dp"
             android:layout_margin="16dp"
             android:layout_below="@+id/tvDescription"
-            android:background="@drawable/rounded_corder_border_gray">
+            android:background="@drawable/bg_gray_border">
 
             <LinearLayout
                 android:layout_width="match_parent"

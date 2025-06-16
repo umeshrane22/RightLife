@@ -208,6 +208,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var healthConnectClient: HealthConnectClient
     private lateinit var btnSync : LinearLayout
+    private lateinit var btnSleepSound : LinearLayout
     private var mWakeupTime = ""
     private var mRecordId = ""
     private var loadingOverlay : FrameLayout? = null
@@ -240,6 +241,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
         sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         btnSync = view.findViewById(R.id.lyt_sync_with_health)
+        btnSleepSound = view.findViewById(R.id.btn_sleep_sound)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         imgIdealInfo = view.findViewById(R.id.img_ideal_info)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
@@ -307,6 +309,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             } else {
                 Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
             }
+        }
+        btnSleepSound.setOnClickListener {
+            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
+                //putExtra("PlayList", "PlayList")
+            })
         }
 
         sleepInfo.setOnClickListener {
