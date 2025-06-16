@@ -165,7 +165,13 @@ public class MindAuditActivity extends BaseActivity {
             public void onResponse(Call<MindAuditResultResponse> call, Response<MindAuditResultResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     if (!response.body().getResult().isEmpty()) {
-                        startActivity(new Intent(MindAuditActivity.this, MindAuditResultActivity.class));
+                        Intent intent = new Intent(MindAuditActivity.this, MindAuditResultActivity.class);
+                        if (!response.body().getResult().isEmpty()) {
+                            intent.putExtra("REPORT_ID", response.body().getResult().get(0).getId());
+                            if (!response.body().getResult().get(0).getAssessmentsTaken().isEmpty())
+                                intent.putExtra("Assessment", response.body().getResult().get(0).getAssessmentsTaken().get(0).getAssessment());
+                        }
+                        startActivity(intent);
                         finish();
                     }
                 } else {
