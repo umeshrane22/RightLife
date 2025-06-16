@@ -97,6 +97,7 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
         layoutNotNow.setOnClickListener {
             dismiss()
          //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
+            listener?.onSnapMealRating(1.0, isSave)
         }
     }
 
