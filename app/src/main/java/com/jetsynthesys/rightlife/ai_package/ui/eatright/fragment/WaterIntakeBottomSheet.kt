@@ -96,8 +96,10 @@ class WaterIntakeBottomSheet : BottomSheetDialogFragment() {
             logUserWaterIntake(userId = userId, source = "apple", waterMl = waterIntake.toInt(), date = currentDate)
         }
 
-        progressBarContainer.post {
-            setPreviousProgress(previousWaterIntake.toInt())
+        if (previousWaterIntake > 0){
+            progressBarContainer.post {
+                setPreviousProgress(previousWaterIntake)
+            }
         }
 
         ivCupIcon.setOnTouchListener { v, event ->

@@ -305,6 +305,7 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
 
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = BarDataSet(entries, "")
+        selectHeartRateLayout.visibility = View.INVISIBLE
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
@@ -362,7 +363,7 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
         barChart.description.isEnabled = false
         // Optional chart description
         val description = Description().apply {
-            text = "Protein"
+            text = ""
             textColor = Color.BLACK
             textSize = 14f
             setPosition(barChart.width / 2f, barChart.height.toFloat() - 10f)
