@@ -1,7 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,13 +35,9 @@ class YourActivitiesAdapter(
         holder.servesCount.text = item.duration
         holder.calValue.text = item.caloriesBurned
         holder.subtractionValue.text = item.intensity
-
-        // Hide unused views
         holder.mealName.visibility = View.GONE
         holder.delete.visibility = View.GONE
         holder.circlePlus.visibility = View.VISIBLE
-
-        // Set up edit button click listener
         holder.edit.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet.newInstance(
                 calorieId = item.calorieId,

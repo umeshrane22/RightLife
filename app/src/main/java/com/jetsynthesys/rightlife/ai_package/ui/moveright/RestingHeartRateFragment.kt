@@ -16,12 +16,14 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentRestingHeartRateBinding
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarEntry
@@ -33,6 +35,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -244,62 +247,72 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
     /** Update chart with new data and X-axis labels */
     private fun updateChart(entries: List<Entry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = LineDataSet(entries, "Resting Heart Rate (bpm)")
-        dataSet.color = ContextCompat.getColor(requireContext(),R.color.moveright)
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
         dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextSize = 12f
         dataSet.setCircleColor(Color.RED)
-        if (entries.size > 7){
-            dataSet.setDrawValues(false)
-        }else{
-            dataSet.setDrawValues(true)
-        }
         dataSet.circleRadius = 5f
         dataSet.lineWidth = 2f
-        dataSet.setDrawValues(false) // Hide values on points
+        dataSet.setDrawValues(entries.size <= 7)
 
         val lineData = LineData(dataSet)
         lineChart.data = lineData
+        val combinedLabels = labels.zip(labelsDate) { label, date ->
+            val cleanedDate = date.substringBefore(",") // removes ,2025
+            "$label\n$cleanedDate"
+        }
+        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
+        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        lineChart.xAxis.textSize = 12f
+        lineChart.xAxis.granularity = 1f
+        lineChart.xAxis.setDrawGridLines(false)
+        lineChart.xAxis.textColor = Color.BLACK
+        lineChart.xAxis.yOffset = 15f
+        val description = Description().apply {
+            text = "Resting Heart Rate (bpm)"
+            textColor = Color.BLACK
+            textSize = 14f
+            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
+        }
+        lineChart.description = description
+        lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
 
-        // Customize X-Axis
-        val xAxis = lineChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
-        xAxis.granularity = 1f
-        xAxis.labelCount = labels.size
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
+        // ⛏️ Custom XAxisRenderer set
+        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+            lineChart.viewPortHandler,
+            lineChart.xAxis,
+            lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
+        (lineChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
 
-        // Customize Y-Axis
+        // Y-axis customization
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = Color.BLACK
         leftYAxis.setDrawGridLines(true)
 
-        // Disable right Y-axis
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+
+        // Chart click listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
                 if (e != null) {
                     val x = e.x.toInt()
                     val y = e.y
-                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    selectedItemDate.text = labelsDate.get(x)
+                    selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
+
             override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
 
-        // Refresh chart
         lineChart.invalidate()
     }
-
     /** Sample Data for Week */
     private fun getWeekData(): List<Entry> {
         return listOf(

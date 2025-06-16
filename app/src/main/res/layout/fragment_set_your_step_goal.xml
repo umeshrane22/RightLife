@@ -68,7 +68,7 @@
 
         <com.jetsynthesys.rightlife.ai_package.ui.moveright.StepIntake
             android:id="@+id/steps_slider_view"
-            android:layout_width="80dp"
+            android:layout_width="110dp"
             android:layout_centerInParent="true"
             android:layout_height="350dp" />
 
@@ -78,61 +78,29 @@
             android:layout_alignTop="@+id/steps_slider_view"
             android:layout_marginEnd="20dp"
             android:layout_toLeftOf="@id/steps_slider_view"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/step_count_text_6"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="16dp"
-                android:gravity="top"
-                android:text="12K + steps" />
+            android:orientation="vertical"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/step_count_text_5"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="16dp"
-                android:gravity="top"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/black"
+                android:layout_marginStart="16dp"
                 android:text="10k steps" />
 
             <TextView
-                android:id="@+id/step_count_text_4"
+                android:id="@+id/step_count_text_your_goal"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="16dp"
-                android:gravity="top"
-                android:text="8k steps" />
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:fontFamily="@font/dmsans_regular"
+                android:textColor="@color/black"
+                android:layout_marginStart="16dp"
+                android:text="Your Goal" />
 
-            <TextView
-                android:id="@+id/step_count_text_3"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="16dp"
-                android:gravity="top"
-                android:text="6k steps" />
-
-            <TextView
-                android:id="@+id/step_count_text_2"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="16dp"
-                android:gravity="top"
-                android:text="4k steps" />
-
-            <TextView
-                android:id="@+id/step_count_text_1"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="16dp"
-                android:gravity="top"
-                android:text="2k steps" />
         </LinearLayout>
 
 

@@ -264,7 +264,12 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                             responseBody?.message ?: "Routine created successfully",
                             Toast.LENGTH_SHORT
                         ).show()
-                        navigateToFragment(YourActivityFragment(), "YourActivityFragment")
+                        val fragment = SearchWorkoutFragment()
+                        val bundle = Bundle().apply {
+                            putInt("selectedTab", 1) // 👈 My Routine tab
+                        }
+                        fragment.arguments = bundle
+                        navigateToFragment(fragment, "SearchWorkoutFragment")
                     } else {
                         Toast.makeText(
                             requireContext(),
