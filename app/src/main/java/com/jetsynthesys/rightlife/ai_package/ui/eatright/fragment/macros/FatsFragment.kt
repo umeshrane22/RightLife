@@ -24,7 +24,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -48,6 +50,7 @@ import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.databinding.FragmentFatsBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -257,57 +260,148 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         }
     }
 
-    /** Update BarChart with new data */
+//    /** Update BarChart with new data */
+//    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
+//        val dataSet = BarDataSet(entries, "Calories Burned")
+//        dataSet.color = ContextCompat.getColor(requireContext(),R.color.light_green)
+//        dataSet.valueTextColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+//        dataSet.valueTextSize = 12f
+//        if (entries.size > 7){
+//            dataSet.setDrawValues(false)
+//        }else{
+//            dataSet.setDrawValues(true)
+//        }
+//        dataSet.barShadowColor = Color.TRANSPARENT
+//        dataSet.highLightColor = ContextCompat.getColor(requireContext(),R.color.light_green)
+//        val barData = BarData(dataSet)
+//        barData.barWidth = 0.4f
+//        barChart.data = barData
+//        barChart.setFitBars(true)
+//        //    barChart.renderer = CurvedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
+////        val parts = label.split("\n")
+////        val day = parts.getOrNull(0) ?: ""
+////        val date = parts.getOrNull(1) ?: ""
+//        val xAxis = barChart.xAxis
+//        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
+//        xAxis.position = XAxis.XAxisPosition.BOTTOM
+//        xAxis.textSize = 10f
+//        xAxis.granularity = 1f
+//        xAxis.labelCount = labels.size
+//        xAxis.setDrawLabels(true)
+//        //  xAxis.labelRotationAngle = -45f
+//        xAxis.labelRotationAngle = 0f // optional, for vertical display
+//        xAxis.setDrawGridLines(false)
+//        xAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+//        xAxis.yOffset = 15f // Move labels down
+//        //   barChart.extraBottomOffset = 15f // Adjust as needed
+//        val leftYAxis: YAxis = barChart.axisLeft
+//        leftYAxis.textSize = 12f
+//        leftYAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+//        leftYAxis.setDrawGridLines(true)
+//        barChart.axisRight.isEnabled = false
+//        barChart.description.isEnabled = false
+//        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+//        val legend = barChart.legend
+//        legend.setDrawInside(false)
+//        barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+//            override fun onValueSelected(e: Entry?, h: Highlight?) {
+//                selectHeartRateLayout.visibility = View.VISIBLE
+//                if (e != null) {
+//                    val x = e.x.toInt()
+//                    val y = e.y
+//                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+//                    selectedItemDate.text = labelsDate.get(x)
+//                    selectedCalorieTv.text = y.toInt().toString()
+//                }
+//            }
+//            override fun onNothingSelected() {
+//                Log.d("ChartClick", "Nothing selected")
+//                selectHeartRateLayout.visibility = View.INVISIBLE
+//            }
+//        })
+//        barChart.animateY(1000)
+//        barChart.invalidate()
+//    }
+
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
-        val dataSet = BarDataSet(entries, "Calories Burned")
-        dataSet.color = ContextCompat.getColor(requireContext(),R.color.light_green)
-        dataSet.valueTextColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+        val dataSet = BarDataSet(entries, "")
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
-        if (entries.size > 7){
-            dataSet.setDrawValues(false)
-        }else{
-            dataSet.setDrawValues(true)
-        }
+        dataSet.setDrawValues(entries.size <= 7)
         dataSet.barShadowColor = Color.TRANSPARENT
-        dataSet.highLightColor = ContextCompat.getColor(requireContext(),R.color.light_green)
+        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_green)
+
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
-        //    barChart.renderer = CurvedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-//        val parts = label.split("\n")
-//        val day = parts.getOrNull(0) ?: ""
-//        val date = parts.getOrNull(1) ?: ""
+
+        // X-axis label handling
+        val combinedLabels = if (entries.size == 30) {
+            labels
+        } else {
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",")
+                "$label\n$cleanedDate"
+            }
+        }
+
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 10f
-        xAxis.granularity = 1f
-        xAxis.labelCount = labels.size
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
+        xAxis.labelCount =  entries.size
         xAxis.setDrawLabels(true)
-        //  xAxis.labelRotationAngle = -45f
-        xAxis.labelRotationAngle = 0f // optional, for vertical display
+        xAxis.setAvoidFirstLastClipping(false)
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.labelRotationAngle = 0f
         xAxis.setDrawGridLines(false)
-        xAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
-        xAxis.yOffset = 15f // Move labels down
-        //   barChart.extraBottomOffset = 15f // Adjust as needed
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
+        xAxis.yOffset = 15f
+        xAxis.axisMinimum = -0.5f
+        xAxis.axisMaximum = entries.size - 0.5f
+        xAxis.setCenterAxisLabels(false)
+
+        // Custom XAxis Renderer (multiline support)
+        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+            barChart.viewPortHandler,
+            barChart.xAxis,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
+        (barChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
+
+        // Y-axis
         val leftYAxis: YAxis = barChart.axisLeft
         leftYAxis.textSize = 12f
-        leftYAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
+        leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
+        leftYAxis.axisMinimum = 0f
+        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
+        leftYAxis.granularity = 1f
+
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+        // Optional chart description
+        val description = Description().apply {
+            text = "Fats"
+            textColor = Color.BLACK
+            textSize = 14f
+            setPosition(barChart.width / 2f, barChart.height.toFloat() - 10f)
+        }
+        barChart.description = description
+        barChart.setExtraOffsets(0f, 0f, 0f, 25f)
+        // Legend
         val legend = barChart.legend
         legend.setDrawInside(false)
+
+        // Chart selection listener
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
-                if (e != null) {
+                e?.let {
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    selectedItemDate.text = labelsDate.get(x)
+                    selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
@@ -495,6 +589,7 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         calendar.set(year, month, day)
         calendar.add(Calendar.DAY_OF_YEAR, -29)
         val calorieMap = mutableMapOf<String, Float>()
+        val dateList = mutableListOf<String>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
@@ -502,32 +597,13 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             calorieMap[dateStr] = 0f
+            dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until 30) {
-            weeklyLabels.add(
-                when (i) {
-                    2 -> "1-7"
-                    9 -> "8-14"
-                    15 -> "15-21"
-                    22 -> "22-28"
-                    29 -> "29-31"
-                    else -> "" // empty string hides the label
-                }
-            )
-            val dateLabel = (convertMonth(dateString) + "," + year)
-            if (i < 7){
-                labelsDate.add("1-7 $dateLabel")
-            }else if (i < 14){
-                labelsDate.add("8-14 $dateLabel")
-            }else if (i < 21){
-                labelsDate.add("15-21 $dateLabel")
-            }else if (i < 28){
-                labelsDate.add("22-28 $dateLabel")
-            }else{
-                labelsDate.add("29-31 $dateLabel")
-            }
-        }
+        val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        weeklyLabels.addAll(labelsWithEmpty)
+        labelsDate.addAll(labels)
         // Aggregate calories by week
         if (activeCaloriesResponse.consumedFatTotals.isNotEmpty()) {
             activeCaloriesResponse.consumedFatTotals.forEach { fat ->
@@ -546,6 +622,89 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
     }
 
     /** Process API data for last_six_months (6 months) */
