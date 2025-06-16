@@ -267,11 +267,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
-        if (entries.size > 7) {
-            dataSet.setDrawValues(false)
-        } else {
-            dataSet.setDrawValues(true)
-        }
+        dataSet.setDrawValues(entries.size <= 7)
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
 
@@ -281,33 +277,40 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         barChart.setFitBars(true)
 
         // Multiline X-axis labels
-        val combinedLabels = if (entries.size == 30) {
-            // Weekly ranges for June when entries.size == 30
-            val weekRanges = listOf("1-7", "8-14", "15-21", "22-28", "29-30")
-            weekRanges.map { range -> "$range\nJun" }
+        val combinedLabels: List<String> = if (entries.size == 30) {
+            List(30) { index ->
+                when (index) {
+                    3 -> "1-7\nJun"
+                    10 -> "8-14\nJun"
+                    17 -> "15-21\nJun"
+                    24 -> "22-28\nJun"
+                    28 -> "29-30\nJun"
+                    else -> "" // Empty label for spacing
+                }
+            }
         } else {
-            // Default labels for other sizes
             labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
-                val cleanedDate = date.substringBefore(",") // removes ,2025
+                val cleanedDate = date.substringBefore(",")
                 "$label\n$cleanedDate"
             }
         }
+
         val xAxis = barChart.xAxis
         xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.textSize = 10f
         xAxis.granularity = 1f
-        xAxis.labelCount = if (entries.size == 30) 5 else entries.size // 5 labels for 30 entries
+        xAxis.labelCount = entries.size
         xAxis.setDrawLabels(true)
-        xAxis.labelRotationAngle = 0f // Vertical display
+        xAxis.labelRotationAngle = 0f
         xAxis.setDrawGridLines(false)
         xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         xAxis.yOffset = 15f
-        // Fix label alignment for 30 entries
+
         if (entries.size == 30) {
-            xAxis.axisMinimum = -0.5f // Start slightly before first bar
-            xAxis.axisMaximum = 4.5f // End slightly after last label
-            xAxis.setCenterAxisLabels(false) // Labels at start of bars
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = 29.5f
+            xAxis.setCenterAxisLabels(false)
         } else {
             xAxis.axisMinimum = -0.5f
             xAxis.axisMaximum = entries.size - 0.5f
@@ -327,9 +330,9 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         leftYAxis.textSize = 12f
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
-        leftYAxis.axisMinimum = 0f // No negative values
-        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f // Dynamic max with padding
-        leftYAxis.granularity = 100f // Cleaner labels for calories (e.g., 0, 100, 200, ...)
+        leftYAxis.axisMinimum = 0f
+        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
+        leftYAxis.granularity = 100f
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
@@ -343,7 +346,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         }
         barChart.description = description
 
-        // Extra offsets like LineChart
+        // Extra offsets
         barChart.setExtraOffsets(0f, 0f, 0f, 25f)
 
         // Legend
@@ -362,6 +365,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
+
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
@@ -371,6 +375,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         barChart.animateY(1000)
         barChart.invalidate()
     }
+
 
     /** Sample Data for Week */
     private fun getWeekData(): List<BarEntry> {

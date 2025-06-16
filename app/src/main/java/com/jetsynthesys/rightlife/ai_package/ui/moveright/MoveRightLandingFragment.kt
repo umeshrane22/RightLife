@@ -112,6 +112,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var peakHighl: TextView
     private lateinit var line_graph: LineGraphView
     private lateinit var calorieBalanceIcon: ImageView
+    private lateinit var calorie_balance_icon_no_data: ImageView
     private lateinit var step_forward_icon: ImageView
     private lateinit var sync_with_icon: ImageView
     private lateinit var moveRightImageBack: ImageView
@@ -200,6 +201,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         stes_no_data_text_description = view.findViewById(R.id.stes_no_data_text_description)
         syncWithHealthConnectButton = view.findViewById(R.id.syncWithHealthConnectButton)
         calorieBalanceIcon = view.findViewById(R.id.calorie_balance_icon)
+        calorie_balance_icon_no_data = view.findViewById(R.id.calorie_balance_icon_no_data)
         dotsLayout = view.findViewById(R.id.dotsLayout)
         moveRightImageBack = view.findViewById(R.id.moveright_image_back)
         calorieBalanceDescription = view.findViewById(R.id.calorieBalanceMessage)
@@ -247,6 +249,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val logMealNoDataBtn = view.findViewById<ConstraintLayout>(R.id.logMealNoDataBtn)
 
         calorieBalanceIcon.setOnClickListener {
+            val fragment = CalorieBalance()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.flFragment, fragment, "CalorieBalance")
+                .addToBackStack(null)
+                .commit()
+        }
+        calorie_balance_icon_no_data.setOnClickListener {
             val fragment = CalorieBalance()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.flFragment, fragment, "CalorieBalance")
