@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.billingclient.api.AcknowledgePurchaseParams
 import com.android.billingclient.api.BillingClient
@@ -32,6 +33,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
     private lateinit var billingClient: BillingClient
     private lateinit var binding: ActivitySubscriptionPlanListBinding
@@ -41,6 +43,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
     private var selectedPlan: PlanList? = null
     private var receivedProductId: String? = null // Will be set from intent
     private var receivedProductType = "BOOSTER" // Default value, can be overridden by intent
+    private var isSubscriptionTaken: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySubscriptionPlanListBinding.inflate(layoutInflater)
@@ -54,6 +57,15 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
 
         binding.iconBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (isSubscriptionTaken) {
+                val returnIntent = Intent()
+                returnIntent.putExtra("result", isSubscriptionTaken)
+                setResult(RESULT_OK, returnIntent)
+            }
+            finish()
         }
 
         binding.iconInfo.setOnClickListener {
@@ -390,6 +402,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                 }
             }
             updateBackendForPurchase(purchase)
+            isSubscriptionTaken = true
         }
     }
 
