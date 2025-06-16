@@ -247,36 +247,59 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
     private fun updateChart(entries: List<Entry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = LineDataSet(entries, "Heart Rate Variability (bpm)")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
-        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
         dataSet.setCircleColor(Color.RED)
         dataSet.circleRadius = 5f
         dataSet.lineWidth = 2f
         dataSet.setDrawValues(entries.size <= 7)
+        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
 
         val lineData = LineData(dataSet)
         lineChart.data = lineData
-        val combinedLabels = labels.zip(labelsDate) { label, date ->
-            val cleanedDate = date.substringBefore(",") // removes ,2025
-            "$label\n$cleanedDate"
-        }
-        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
-        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        lineChart.xAxis.textSize = 12f
-        lineChart.xAxis.granularity = 1f
-        lineChart.xAxis.setDrawGridLines(false)
-        lineChart.xAxis.textColor = Color.BLACK
-        lineChart.xAxis.yOffset = 15f
-        val description = Description().apply {
-            text = "Heart Rate Variability (bpm)"
-            textColor = Color.BLACK
-            textSize = 14f
-            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
-        }
-        lineChart.description = description
-        lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
 
-        // ⛏️ Custom XAxisRenderer set
+        // Multiline X-axis labels
+        val combinedLabels: List<String> = if (entries.size == 30) {
+            List(30) { index ->
+                when (index) {
+                    3 -> "1-7\nJun"
+                    10 -> "8-14\nJun"
+                    17 -> "15-21\nJun"
+                    24 -> "22-28\nJun"
+                    28 -> "29-30\nJun"
+                    else -> ""
+                }
+            }
+        } else {
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",")
+                "$label\n$cleanedDate"
+            }
+        }
+
+        val xAxis = lineChart.xAxis
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.textSize = 10f
+        xAxis.granularity = 1f
+        xAxis.labelCount = entries.size
+        xAxis.setDrawLabels(true)
+        xAxis.labelRotationAngle = 0f
+        xAxis.setDrawGridLines(false)
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
+        xAxis.yOffset = 15f
+
+        if (entries.size == 30) {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = 29.5f
+            xAxis.setCenterAxisLabels(false)
+        } else {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.setCenterAxisLabels(false)
+        }
+
+        // Custom XAxisRenderer for multiline labels
         val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
             lineChart.viewPortHandler,
             lineChart.xAxis,
@@ -287,14 +310,30 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         // Y-axis customization
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
+        leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
-        leftYAxis.axisMinimum = 0f // Set minimum to 0 to avoid negative values
-        leftYAxis.axisMaximum = 150f // Optional: Max for realistic heart rate range
-        leftYAxis.granularity = 10f // Optional: Cleaner labels (0, 10, 20, ...)
+        leftYAxis.axisMinimum = 0f
+        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f
+        leftYAxis.granularity = 10f
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+
+        // Description
+        val description = Description().apply {
+            text = ""
+            textColor = Color.BLACK
+            textSize = 14f
+            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
+        }
+        lineChart.description = description
+
+        // Extra offsets
+        lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
+
+        // Legend (optional)
+        val legend = lineChart.legend
+        legend.setDrawInside(false)
 
         // Chart click listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
@@ -303,18 +342,22 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
                 if (e != null) {
                     val x = e.x.toInt()
                     val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
                     selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
 
             override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
 
+        lineChart.animateY(1000)
         lineChart.invalidate()
     }
+
 
     /** Sample Data for Week */
     private fun getWeekData(): List<Entry> {

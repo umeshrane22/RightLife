@@ -227,6 +227,17 @@
             app:layout_constraintStart_toStartOf="@+id/no_data_workout_icon"
             app:layout_constraintEnd_toEndOf="@+id/no_data_workout_icon"
             app:layout_constraintTop_toBottomOf="@+id/no_data_workout_icon" />
+        <TextView
+            android:id="@+id/no_data_text_workout_lpgged_manually"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="Workout Logged Manually"
+            android:textStyle="normal"
+            android:textSize="12dp"
+            app:layout_constraintStart_toStartOf="@+id/no_data_text_workout"
+            app:layout_constraintEnd_toEndOf="@+id/no_data_text_workout"
+            app:layout_constraintTop_toBottomOf="@+id/no_data_text_workout" />
 
         <com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphViewWorkout
             android:id="@+id/line_graph_workout"
