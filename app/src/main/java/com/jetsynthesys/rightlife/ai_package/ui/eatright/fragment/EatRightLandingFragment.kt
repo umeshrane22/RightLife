@@ -105,7 +105,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private lateinit var hydrationTrackerForwardImage : ImageView
     private lateinit var logWeightRulerAdapter : LogWeightRulerAdapter
     private val numbers = mutableListOf<Float>()
-    private lateinit var waterIntakeBottomSheet: WaterIntakeBottomSheet
     private lateinit var macroIc : ImageView
     private lateinit var proteinUnitTv : TextView
     private lateinit var carbsUnitTv : TextView
@@ -990,7 +989,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
         val args = Bundle()
-        args.putFloat("waterIntakeValue", waterIntakeValue)
+        args.putInt("waterIntakeValue", waterIntakeValue.toInt())
         waterIntakeBottomSheet.arguments = args
         waterIntakeBottomSheet.show(parentFragmentManager, WaterIntakeBottomSheet.TAG)
     }

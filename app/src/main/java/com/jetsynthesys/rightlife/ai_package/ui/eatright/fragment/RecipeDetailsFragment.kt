@@ -228,7 +228,6 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                 val client = OkHttpClient.Builder()
                     .followRedirects(true) // Handle redirects
                     .build()
-
                 val request = Request.Builder()
                     .url(directImageUrl)
                     .build()

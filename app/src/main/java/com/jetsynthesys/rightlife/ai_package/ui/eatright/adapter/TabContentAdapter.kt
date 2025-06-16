@@ -7,9 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 
-class TabContentAdapter(
-    private val onItemClick: (String, Int) -> Unit
-) : RecyclerView.Adapter<TabContentAdapter.ViewHolder>() {
+class TabContentAdapter(private val onItemClick: (String, Int) -> Unit) : RecyclerView.Adapter<TabContentAdapter.ViewHolder>() {
 
     private var items: List<String> = emptyList()
     private var selectedPosition: Int = -1
@@ -27,8 +25,7 @@ class TabContentAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (position < items.size) {
             val item = items[position]
-            holder.textView.text = item
-
+            holder.textView.text = item.substringBefore("_")
             // Set the selected state based on the selectedPosition
             holder.textView.isSelected = (position == selectedPosition)
 

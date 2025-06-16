@@ -24,6 +24,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.tabs.TabLayout
 import com.jetsynthesys.rightlife.R
@@ -87,9 +88,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         searchLayout = view.findViewById(R.id.layout_search)
         searchEditText = view.findViewById(R.id.et_search)
         cancel = view.findViewById(R.id.tv_cancel)
-        searchResultLayout = view.findViewById(R.id.layout_search_result)
         searchResultListLayout = view.findViewById(R.id.layout_search_resultList)
-        tvAllDishes = view.findViewById(R.id.tv_all_dishes)
         allDishesRecyclerview = view.findViewById(R.id.recyclerView_all_dishes)
         backButton = view.findViewById(R.id.backButton)
         tabLayout = view.findViewById(R.id.tabMacroLayout)
@@ -97,7 +96,8 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         tabContentRecyclerView = view.findViewById(R.id.tabContentRecyclerView)
         spinner = view.findViewById(R.id.spinner)
 
-        tabContentRecyclerView.layoutManager = GridLayoutManager(context, 4)
+        tabContentRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
+            false)
         tabContentAdapter = TabContentAdapter { item, position ->
             if (position < tabContentAdapter.itemCount) {
                 when (currentFragmentTag) {
@@ -200,6 +200,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             filterDishes(query)
         }
 
+        cancel.setOnClickListener {
+            if (searchEditText.text.toString().isNotEmpty()){
+                dishesViewModel.setSearchQuery("")
+                searchEditText.setText("")
+                snapRecipesList.clear()
+            }
+        }
+
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -231,20 +239,22 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tabContentAdapter.updateItems(foodTypeList)
             }
             "Cuisine" -> {
-                spinner.visibility = View.VISIBLE
-                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, cuisineList)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = adapter
-                spinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        selectedCuisine = cuisineList[position]
-                        getFilterRecipesList(null, null, selectedCuisine)
-                        Log.d("RecipesSearchFragment", "Selected cuisine: $selectedCuisine")
-                        refreshRecipesList()
-                    }
-                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
-                }
-                spinner.performClick()
+                tabContentRecyclerView.visibility = View.VISIBLE
+                tabContentAdapter.updateItems(cuisineList)
+//                spinner.visibility = View.VISIBLE
+//                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, cuisineList)
+//                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//                spinner.adapter = adapter
+//                spinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+//                    override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+//                        selectedCuisine = cuisineList[position]
+//                        getFilterRecipesList(null, null, selectedCuisine)
+//                        Log.d("RecipesSearchFragment", "Selected cuisine: $selectedCuisine")
+//                        refreshRecipesList()
+//                    }
+//                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+//                }
+//                spinner.performClick()
             }
         }
     }
@@ -256,17 +266,24 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val customView = tab?.customView
             val tabText = customView?.findViewById<TextView>(R.id.tabText)
             val circleText = customView?.findViewById<TextView>(R.id.circleText)
+            val imageArrow = customView?.findViewById<ImageView>(R.id.imageArrow)
 
             if (tab?.isSelected == true) {
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 val typeface = resources.getFont(R.font.dmsans_bold)
                 tabText?.typeface = typeface
-                circleText?.visibility = View.VISIBLE
+                circleText?.visibility = View.GONE
+                imageArrow?.setImageResource(R.drawable.ic_up)
+                val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_up)
+                drawable?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
+                imageArrow?.setImageDrawable(drawable)
+
             } else {
                 val typeface = resources.getFont(R.font.dmsans_regular)
                 tabText?.typeface = typeface
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
                 circleText?.visibility = View.GONE
+                imageArrow?.setImageResource(R.drawable.ic_down)
             }
         }
     }
@@ -301,7 +318,11 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             matchesQuery && matchesMealType && matchesFoodType && matchesCuisine
         }
         recipeSearchAdapter.updateList(filteredList)
-        searchResultLayout.visibility = View.VISIBLE
+        if (query.isNotEmpty()) {
+            cancel.visibility = View.VISIBLE
+        }else{
+            cancel.visibility = View.GONE
+        }
     }
 
     private fun refreshRecipesList() {

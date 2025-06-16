@@ -12,10 +12,9 @@
     <LinearLayout
         android:id="@+id/layout_log_water"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="visible"
-        android:layout_marginBottom="20dp"
         android:gravity="center_horizontal"
         android:background="#FFFFFF">
 
@@ -47,8 +46,7 @@
                 android:src="@drawable/ic_close_circle_red"
                 android:gravity="center"
                 card_view:layout_constraintTop_toTopOf="parent"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                />
+                card_view:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -59,8 +57,7 @@
             android:textSize="16sp"
             android:textColor="@color/black_no_meals"
             android:fontFamily="@font/dmsans_regular"
-            android:layout_marginTop="20dp"
-            />
+            android:layout_marginTop="10dp" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="wrap_content"
@@ -76,8 +73,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/black_no_meals"
                 android:fontFamily="@font/dmsans_bold"
-                android:layout_marginTop="15dp"
-                />
+                android:layout_marginTop="15dp" />
 
             <TextView
                 android:id="@+id/selectedUnitText"
@@ -88,33 +84,15 @@
                 android:textStyle="bold"
                 android:textColor="@color/black_no_meals"
                 android:fontFamily="@font/dmsans_regular"
-                android:layout_marginTop="15dp"
-               />
+                android:layout_marginTop="15dp" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/cupRecyclerView"
-            android:layout_width="100dp"
-            android:layout_height="400dp"
-            android:visibility="gone"
-            android:layout_gravity="center"
-            android:overScrollMode="never"
-            android:scrollbars="none" />
-
-        <com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.VerticalProgressBar
-            android:id="@+id/verticalProgressBar"
-            android:layout_width="40dp"
-            android:layout_height="300dp"
-            android:visibility="gone"
-            android:layout_gravity="center"
-            android:background="#E0F2F1" />
 
         <LinearLayout
             android:id="@+id/rulerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:layout_marginStart="25dp"
             android:gravity="bottom|center">
@@ -266,13 +244,12 @@
             android:layout_height="50dp"
             android:layout_marginHorizontal="36dp"
             android:layout_marginTop="16dp"
-            android:layout_marginBottom="36dp"
+            android:layout_marginBottom="20dp"
             android:backgroundTint="@color/border_green"
             android:fontFamily="@font/dmsans_bold"
             android:text="Confirm"
             android:textColor="@color/white"
             android:textSize="@dimen/textsize_large" />
-
     </LinearLayout>
 
     <include
