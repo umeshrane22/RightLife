@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.healthcam;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -19,10 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.BaseActivity;
@@ -36,7 +38,6 @@ import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
 import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
 import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity;
 import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity;
-import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager;
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity;
 import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
@@ -64,6 +65,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
     private FacialReportResponseNew facialReportResponseNew;
     private String reportId;
     private String isFrom = null;
+    private ActivityResultLauncher<Intent> resultLauncher;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,6 +76,20 @@ public class NewHealthCamReportActivity extends BaseActivity {
         scanBinding = LayoutScanProgressBinding.bind(binding.scanProgressLayout.getRoot());
         reportId = getIntent().getStringExtra("REPORT_ID");
         isFrom = getIntent().getStringExtra("FROM");
+
+        // Register the result launcher
+        resultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            boolean returnedValue = data.getBooleanExtra("result", false);
+                            getMyRLHealthCamResult();
+                        }
+                    }
+                }
+        );
 
         findViewById(R.id.ic_back_dialog).setOnClickListener(view -> onBackPressHandle());
 
@@ -89,7 +105,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
         binding.cardviewLastCheckin.setOnClickListener(v -> {
             Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
             intent.putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN");
-            startActivity(intent);
+            resultLauncher.launch(intent);
         });
 
         binding.cardviewRightlifedays.setOnClickListener(view -> startNextOverAllWellnessDetails());
@@ -103,8 +119,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
             } else {
                 Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
                 intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN");
-                startActivity(intent);
-
+                resultLauncher.launch(intent);
             }
 
         });
@@ -129,8 +144,8 @@ public class NewHealthCamReportActivity extends BaseActivity {
         binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
     }
 
-    private void startNextOverAllWellnessDetails(){
-        ArrayList<ParameterModel>  unifiedList = getUnifiedParameterList();
+    private void startNextOverAllWellnessDetails() {
+        ArrayList<ParameterModel> unifiedList = getUnifiedParameterList();
         Intent intent = new Intent(this, FacialScanReportDetailsActivity.class);
         List<HealthCamItem> healthCamItems = new ArrayList<>();
         intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
@@ -147,12 +162,6 @@ public class NewHealthCamReportActivity extends BaseActivity {
             resultList.add(new ParameterModel(key, name));
         }
         return resultList;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getMyRLHealthCamResult();
     }
 
     private void onBackPressHandle() {
@@ -195,7 +204,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
                         Gson gson = new Gson();
                         facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
                         HandleNewReportUI(facialReportResponseNew);
-                      //  HandleContinueWatchUI(facialReportResponseNew);
+                        //  HandleContinueWatchUI(facialReportResponseNew);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
