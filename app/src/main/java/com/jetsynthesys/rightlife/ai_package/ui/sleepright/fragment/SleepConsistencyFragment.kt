@@ -44,6 +44,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.Locale
@@ -282,7 +283,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val source = "android"
         val date = mEndDate
-        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,mEndDate)
+        val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,"2025-05-01")
         call.enqueue(object : Callback<SleepConsistencyResponse> {
             override fun onResponse(call: Call<SleepConsistencyResponse>, response: Response<SleepConsistencyResponse>) {
                 progressDialog.dismiss()
@@ -456,22 +457,33 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
                 // Draw date labels
               //  val dateLabel = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("EEE \n d MMM"))
              //   canvas.drawText(dateLabel, x, height - 30f, paintLabelText)
-                val top = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("EEE"))
-                val bottom = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
-                val topWidth = paintLabelText.measureText(top)
-                val bottomWidth = paintLabelText.measureText(bottom)
-
-                val lineSpacing = paintLabelText.textSize + 4f // Adjust spacing between lines
-
-// Center X-aligned drawing
-                canvas.drawText(top, x - topWidth / 2, height - 30f, paintLabelText)
-                canvas.drawText(bottom, x - bottomWidth / 2, height - 30f + lineSpacing, paintLabelText)
-
+                if (sleepData.size > 8){
+                    val startDate = entry.getStartLocalDateTime().toLocalDate()
+                    val endDate = startDate.plusDays(6)
+                    val dayRange = "${startDate.dayOfMonth}-${endDate.dayOfMonth}"
+                    val month = startDate.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+                    val label = "$dayRange\n$month"
+                    val lines = label.split("\n")
+                    val top = lines[0]
+                    val bottom = lines[1]
+                    val topWidth = paintLabelText.measureText(top)
+                    val bottomWidth = paintLabelText.measureText(bottom)
+                    val lineSpacing = paintLabelText.textSize + 4f
+                    canvas.drawText(top, x - topWidth / 2, height - 30f, paintLabelText)
+                    canvas.drawText(bottom, x - bottomWidth / 2, height - 30f + lineSpacing, paintLabelText)
+                }else {
+                    val top = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("EEE"))
+                    val bottom = entry.getStartLocalDateTime().format(DateTimeFormatter.ofPattern("d MMM"))
+                    val topWidth = paintLabelText.measureText(top)
+                    val bottomWidth = paintLabelText.measureText(bottom)
+                    val lineSpacing = paintLabelText.textSize + 4f
+                    canvas.drawText(top, x - topWidth / 2, height - 30f, paintLabelText)
+                    canvas.drawText(bottom, x - bottomWidth / 2, height - 30f + lineSpacing, paintLabelText)
+                }
             }
         }catch (e: DateTimeParseException) {
             Log.e("SleepParse", "Failed to parse", e)
         }
-
     }
 }
 
