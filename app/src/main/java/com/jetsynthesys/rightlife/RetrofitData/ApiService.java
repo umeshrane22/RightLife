@@ -460,6 +460,12 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("mind-audit/q/get-assessment-result")
     Call<MindAuditResultResponse> getMindAuditAssessmentResult(
+            @Header("Authorization") String authToken
+    );
+
+    @Headers("Content-Type: application/json")
+    @GET("mind-audit/q/get-assessment-result")
+    Call<MindAuditResultResponse> getMindAuditAssessmentResult(
             @Header("Authorization") String authToken,
             @Query("assessment") String assessment
     );
