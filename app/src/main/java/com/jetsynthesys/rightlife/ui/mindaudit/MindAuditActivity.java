@@ -11,15 +11,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
-import com.jetsynthesys.rightlife.RetrofitData.ApiService;
 import com.jetsynthesys.rightlife.ui.healthaudit.HealthAuditPagerAdapter;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 import com.zhpan.indicator.IndicatorView;
 
 import me.relex.circleindicator.CircleIndicator3;
@@ -45,7 +41,7 @@ public class MindAuditActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setChildContentView(R.layout.activity_mindaudit);
 
-        getAssessmentResult("CAS");
+        getAssessmentResult();
 
         ViewPager2 viewPager = findViewById(R.id.view_pager);
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -161,19 +157,17 @@ public class MindAuditActivity extends BaseActivity {
         dialog.show();
     }
 
-    private void getAssessmentResult(String assessment) {
+    private void getAssessmentResult() {
 
-        Call<MindAuditResultResponse> call = apiService.getMindAuditAssessmentResult(sharedPreferenceManager.getAccessToken(), assessment);
+        Call<MindAuditResultResponse> call = apiService.getMindAuditAssessmentResult(sharedPreferenceManager.getAccessToken());
         call.enqueue(new Callback<MindAuditResultResponse>() {
             @Override
             public void onResponse(Call<MindAuditResultResponse> call, Response<MindAuditResultResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-
-                    /*if (!response.body().getResult().isEmpty()) {
+                    if (!response.body().getResult().isEmpty()) {
                         startActivity(new Intent(MindAuditActivity.this, MindAuditResultActivity.class));
                         finish();
-                    }*/
-
+                    }
                 } else {
                     Toast.makeText(MindAuditActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }

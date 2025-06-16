@@ -649,10 +649,13 @@ class MindAuditResultActivity : BaseActivity() {
 
         // Text color for selected state
         chip.setTextColor(textColorStateList)
-        binding.chipGroup1.addView(chip)
+        if (isSelected)
+            binding.chipGroup1.addView(chip, 0)
+        else
+            binding.chipGroup1.addView(chip)
     }
 
-    fun getColorResForScore(score: Int): Int {
+    private fun getColorResForScore(score: Int): Int {
         return when (score) {
             in 0..3 -> R.color.green_minimal
             in 4..8 -> R.color.cyan_mild
@@ -735,39 +738,45 @@ class MindAuditResultActivity : BaseActivity() {
         }
     }
 
-// not taken assessment texts
-private fun setDialogText(tvItem1: TextView, tvItem2: TextView, header: String) {
-    when (header) {
-        "DASS-21" -> {
-            tvItem1.text = AppConstants.dass21FirstPara + " " + AppConstants.dass21SecondPara+ " " + AppConstants.dass21ThirdPara
-            tvItem2.text = "DASS-21"
-        }
+    // not taken assessment texts
+    private fun setDialogText(tvItem1: TextView, tvItem2: TextView, header: String) {
+        when (header) {
+            "DASS-21" -> {
+                tvItem1.text =
+                    AppConstants.dass21FirstPara + " " + AppConstants.dass21SecondPara + " " + AppConstants.dass21ThirdPara
+                tvItem2.text = "DASS-21"
+            }
 
-        "Sleep Audit" -> {
-            tvItem1.text = AppConstants.ssFirstPara+ " " + AppConstants.ssSecondPara+ " " + AppConstants.ssThirdPara
-            tvItem2.text = header
-        }
+            "Sleep Audit" -> {
+                tvItem1.text =
+                    AppConstants.ssFirstPara + " " + AppConstants.ssSecondPara + " " + AppConstants.ssThirdPara
+                tvItem2.text = header
+            }
 
-        "GAD-7" -> {
-            tvItem1.text = AppConstants.gad7FirstPara + " " + AppConstants.gad7SecondPara + " " + AppConstants.gad7ThirdPara
-            tvItem2.text = header
-        }
+            "GAD-7" -> {
+                tvItem1.text =
+                    AppConstants.gad7FirstPara + " " + AppConstants.gad7SecondPara + " " + AppConstants.gad7ThirdPara
+                tvItem2.text = header
+            }
 
-        "OHQ" -> {
-            tvItem1.text = AppConstants.ohqFirstPara + " " + AppConstants.ohqSecondPara + " " + AppConstants.ohqThirdPara
-            tvItem2.text = header
-        }
+            "OHQ" -> {
+                tvItem1.text =
+                    AppConstants.ohqFirstPara + " " + AppConstants.ohqSecondPara + " " + AppConstants.ohqThirdPara
+                tvItem2.text = header
+            }
 
-        "CAS" -> {
-            tvItem1.text = AppConstants.casFirstPara + " " + AppConstants.casSecondPara + " " + AppConstants.casThirdPara
-            tvItem2.text = header
-        }
+            "CAS" -> {
+                tvItem1.text =
+                    AppConstants.casFirstPara + " " + AppConstants.casSecondPara + " " + AppConstants.casThirdPara
+                tvItem2.text = header
+            }
 
-        "PHQ-9" -> {
-            tvItem1.text = AppConstants.phq9FirstPara+ " " + AppConstants.phq9SecondPara + " " + AppConstants.phq9ThirdPara
-            tvItem2.text = header
-        }
+            "PHQ-9" -> {
+                tvItem1.text =
+                    AppConstants.phq9FirstPara + " " + AppConstants.phq9SecondPara + " " + AppConstants.phq9ThirdPara
+                tvItem2.text = header
+            }
 
+        }
     }
-}
 }
