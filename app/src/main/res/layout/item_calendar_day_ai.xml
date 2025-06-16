@@ -41,7 +41,7 @@
             android:layout_height="3dp"
             android:layout_marginTop="3dp"
             android:visibility="invisible"
-            android:background="@color/meal_log_title"></View>
+            android:background="@color/meal_log_title"/>
 
         <ImageView
             android:id="@+id/imgCheck"

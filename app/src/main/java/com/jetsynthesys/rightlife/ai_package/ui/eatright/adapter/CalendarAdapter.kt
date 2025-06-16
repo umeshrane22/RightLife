@@ -27,6 +27,7 @@ class CalendarAdapter(private val context: Context, private var dataLists: Array
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
+        holder.viewDate.visibility = View.INVISIBLE
         holder.txtDate.text = item.date.toString()
         holder.txtMonth.text = item.month
         if (item.month.contentEquals(item.currentMonth)){

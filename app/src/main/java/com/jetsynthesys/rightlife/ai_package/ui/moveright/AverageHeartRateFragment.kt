@@ -251,36 +251,59 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
     private fun updateChart(entries: List<Entry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = LineDataSet(entries, "Average Heart Rate (bpm)")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
-        dataSet.valueTextColor = Color.BLACK
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
         dataSet.setCircleColor(Color.RED)
         dataSet.circleRadius = 5f
         dataSet.lineWidth = 2f
         dataSet.setDrawValues(entries.size <= 7)
+        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
 
         val lineData = LineData(dataSet)
         lineChart.data = lineData
-        val combinedLabels = labels.zip(labelsDate) { label, date ->
-            val cleanedDate = date.substringBefore(",") // removes ,2025
-            "$label\n$cleanedDate"
-        }
-        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
-        lineChart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        lineChart.xAxis.textSize = 12f
-        lineChart.xAxis.granularity = 1f
-        lineChart.xAxis.setDrawGridLines(false)
-        lineChart.xAxis.textColor = Color.BLACK
-        lineChart.xAxis.yOffset = 15f
-        val description = Description().apply {
-            text = "Average Heart Rate (bpm)"
-            textColor = Color.BLACK
-            textSize = 14f
-            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
-        }
-        lineChart.description = description
-        lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
 
-        // ⛏️ Custom XAxisRenderer set
+        val combinedLabels: List<String> = if (entries.size == 30) {
+            labels
+            /*List(30) { index ->
+                when (index) {
+                    3 -> "1-7\nJun"
+                    10 -> "8-14\nJun"
+                    17 -> "15-21\nJun"
+                    24 -> "22-28\nJun"
+                    28 -> "29-30\nJun"
+                    else -> ""
+                }
+            }*/
+        } else {
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",")
+                "$label\n$cleanedDate"
+            }
+        }
+
+        val xAxis = lineChart.xAxis
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.textSize = 10f
+        xAxis.granularity = 1f
+        xAxis.labelCount = entries.size
+        xAxis.setDrawLabels(true)
+        xAxis.labelRotationAngle = 0f
+        xAxis.setDrawGridLines(false)
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
+        xAxis.yOffset = 15f
+
+        if (entries.size == 30) {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = 29.5f
+            xAxis.setCenterAxisLabels(false)
+        } else {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.setCenterAxisLabels(false)
+        }
+
+        // Custom XAxisRenderer
         val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
             lineChart.viewPortHandler,
             lineChart.xAxis,
@@ -291,11 +314,30 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         // Y-axis customization
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
+        leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
+        leftYAxis.axisMinimum = 0f
+        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f
+        leftYAxis.granularity = 10f
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+
+        // Description
+        val description = Description().apply {
+            text = ""
+            textColor = Color.BLACK
+            textSize = 14f
+            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
+        }
+        lineChart.description = description
+
+        // Extra offsets
+        lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
+
+        // Legend
+        val legend = lineChart.legend
+        legend.setDrawInside(false)
 
         // Chart click listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
@@ -304,18 +346,22 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
                 if (e != null) {
                     val x = e.x.toInt()
                     val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
                     selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
 
             override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
 
+        lineChart.animateY(1000)
         lineChart.invalidate()
     }
+
 
     /** Sample Data for Week */
     private fun getWeekData(): List<Entry> {
@@ -564,7 +610,11 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
             dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (item in dateList) {
+        val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        weeklyLabels.addAll(labelsWithEmpty)
+        labelsDate.addAll(labels)
+       /* for (item in dateList) {
             val dateItem = LocalDate.parse(item)
             val yearItem = dateItem.year       // 2025
             val monthItem = dateItem.monthValue // 4
@@ -592,7 +642,7 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
             }else{
                 labelsDate.add("29-31 $dateLabel")
             }
-        }
+        }*/
         // Aggregate calories by week
         if ( restingHeartRateResponse.activeHeartRateTotals.isNotEmpty()){
             restingHeartRateResponse.activeHeartRateTotals.forEach { calorie ->
@@ -606,6 +656,88 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         setLastAverageValue(restingHeartRateResponse, "% Past Month")
         val entries = hrvMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
     }
     private fun processSixMonthsData(data: HeartRateResponse): Triple<List<Entry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

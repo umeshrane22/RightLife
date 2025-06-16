@@ -20,6 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -334,10 +335,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         getMealsLogList(formattedDate)
 
         //Set Tooltip
+        val isShow = SharedPreferenceManager.getInstance(requireActivity()).isMealCalenderTooltipShowed("MealCalenderTooltip")
+        if (!isShow){
+            showTooltipDialog(layoutToolbar)
+        }
 
         imageCalender.setOnClickListener {
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
-            showTooltipDialog(layoutToolbar)
+            val fragment = MealLogCalenderFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
         }
 
         backButton.setOnClickListener {
@@ -810,15 +822,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         // Auto dismiss after 3 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
-            val fragment = MealLogCalenderFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "mealLog")
-                addToBackStack("mealLog")
-                commit()
-            }
-        }, 3000)
+            SharedPreferenceManager.getInstance(context).saveMealCalenderTooltip("MealCalenderTooltip",true)
+        }, 2000)
     }
 
     fun showLoader(view: View) {

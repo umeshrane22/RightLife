@@ -39,6 +39,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginEnd="12dp"
+            android:visibility="gone"
             android:id="@+id/sleep_download_icon"
             android:src="@drawable/download_sleep_icon"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -56,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/lyt_main_view"
-            android:layout_marginBottom="150dp"
+            android:layout_marginBottom="100dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:orientation="vertical">
@@ -2188,7 +2189,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
+                android:layout_height="60dp"
                 android:id="@+id/btn_sleep_sound"
                 android:visibility="visible"
                 android:weightSum="10"
@@ -2197,7 +2198,6 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginBottom="150dp"
                 android:orientation="horizontal">
 
                 <ImageView

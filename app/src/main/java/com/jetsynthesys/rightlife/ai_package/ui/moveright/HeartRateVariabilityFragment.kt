@@ -16,12 +16,14 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentHeartRateVariabilityBinding
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarEntry
@@ -33,6 +35,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityResponse
 import com.jetsynthesys.rightlife.ai_package.model.RestingHeartRateResponse
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -242,41 +245,98 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
     /** Update chart with new data and X-axis labels */
     private fun updateChart(entries: List<Entry>, labels: List<String>, labelsDate: List<String>) {
-        val dataSet = LineDataSet(entries, "Heart Rate Variability (ms)")
-        dataSet.color = ContextCompat.getColor(requireContext(),R.color.moveright)
-        dataSet.valueTextColor = Color.BLACK
+        val dataSet = LineDataSet(entries, "Heart Rate Variability (bpm)")
+        dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
+        dataSet.valueTextSize = 12f
         dataSet.setCircleColor(Color.RED)
-        if (entries.size > 7){
-            dataSet.setDrawValues(false)
-        }else{
-            dataSet.setDrawValues(true)
-        }
         dataSet.circleRadius = 5f
         dataSet.lineWidth = 2f
-        dataSet.setDrawValues(false) // Hide values on points
+        dataSet.setDrawValues(entries.size <= 7)
+        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
 
         val lineData = LineData(dataSet)
         lineChart.data = lineData
 
-        // Customize X-Axis
-        val xAxis = lineChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 12f
-        xAxis.granularity = 1f
-        xAxis.setDrawGridLines(false)
-        xAxis.textColor = Color.BLACK
-        xAxis.yOffset = 15f // Move labels down
+        // Multiline X-axis labels
+        val combinedLabels: List<String> = if (entries.size == 30) {
+            labels
+          /*  List(30) { index ->
+                when (index) {
+                    3 -> "1-7\nJun"
+                    10 -> "8-14\nJun"
+                    17 -> "15-21\nJun"
+                    24 -> "22-28\nJun"
+                    28 -> "29-30\nJun"
+                    else -> ""
+                }
+            }*/
+        } else {
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",")
+                "$label\n$cleanedDate"
+            }
+        }
 
-        // Customize Y-Axis
+        val xAxis = lineChart.xAxis
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.textSize = 10f
+        xAxis.granularity = 1f
+        xAxis.labelCount = entries.size
+        xAxis.setDrawLabels(true)
+        xAxis.labelRotationAngle = 0f
+        xAxis.setDrawGridLines(false)
+        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
+        xAxis.yOffset = 15f
+
+        if (entries.size == 30) {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = 29.5f
+            xAxis.setCenterAxisLabels(false)
+        } else {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.setCenterAxisLabels(false)
+        }
+
+        // Custom XAxisRenderer for multiline labels
+        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+            lineChart.viewPortHandler,
+            lineChart.xAxis,
+            lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
+        (lineChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
+
+        // Y-axis customization
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
-        leftYAxis.textColor = Color.BLACK
+        leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
+        leftYAxis.axisMinimum = 0f
+        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f
+        leftYAxis.granularity = 10f
 
-        // Disable right Y-axis
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+
+        // Description
+        val description = Description().apply {
+            text = ""
+            textColor = Color.BLACK
+            textSize = 14f
+            setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
+        }
+        lineChart.description = description
+
+        // Extra offsets
+        lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
+
+        // Legend (optional)
+        val legend = lineChart.legend
+        legend.setDrawInside(false)
+
+        // Chart click listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
@@ -284,19 +344,21 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    selectedItemDate.text = labelsDate.get(x)
+                    selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
+
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
 
-        // Refresh chart
+        lineChart.animateY(1000)
         lineChart.invalidate()
     }
+
 
     /** Sample Data for Week */
     private fun getWeekData(): List<Entry> {
@@ -509,6 +571,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         calendar.add(Calendar.DAY_OF_YEAR, -29)
         val dateStrLabel = dateFormat.format(calendar.time)
         val hrvMap = mutableMapOf<String, Float>()
+        val dateList = mutableListOf<String>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
@@ -516,9 +579,14 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             hrvMap[dateStr] = 0f
+            dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until 30) {
+        val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        weeklyLabels.addAll(labelsWithEmpty)
+        labelsDate.addAll(labels)
+       /* for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -541,7 +609,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
             }else{
                 labelsDate.add("29-31 $dateLabel")
             }
-        }
+        }*/
         // Aggregate calories by week
         if ( restingHeartRateResponse.heartRateVariability.isNotEmpty()){
             restingHeartRateResponse.heartRateVariability.forEach { calorie ->
@@ -555,6 +623,87 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         setLastAverageValue(restingHeartRateResponse, "% Past Month")
         val entries = hrvMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
     }
     private fun processSixMonthsData(data: HeartRateVariabilityResponse): Triple<List<Entry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())

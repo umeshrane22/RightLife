@@ -494,5 +494,15 @@ public class SharedPreferenceManager {
         editor.putInt(SharedPreferenceConstants.EAT_RIGHT_MAX_FATS, maxFats);
         editor.apply();
     }
+
+    public void saveMealCalenderTooltip(String prefKey, boolean isShowed) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(prefKey, isShowed);
+        editor.apply();
+    }
+
+    public Boolean isMealCalenderTooltipShowed(String prefKey) {
+        return sharedPreferences.getBoolean(prefKey, false);
+    }
 }
 

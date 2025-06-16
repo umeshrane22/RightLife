@@ -42,6 +42,7 @@ class CarouselAdapter(
         private val lineGraph: LineGraphViewWorkout = itemView.findViewById(R.id.line_graph_workout)
         private val noDataIcon: ImageView = itemView.findViewById(R.id.no_data_workout_icon)
         private val noDataText: TextView = itemView.findViewById(R.id.no_data_text_workout)
+        private val noDataTextWorkoutLoggedManually: TextView = itemView.findViewById(R.id.no_data_text_workout_lpgged_manually)
         private val leftTimeLabel: TextView = itemView.findViewById(R.id.left_time_label)
         private val rightTimeLabel: TextView = itemView.findViewById(R.id.right_time_label)
         private val sourceIcon: ImageView = itemView.findViewById(R.id.sourceIcon)
@@ -61,6 +62,7 @@ class CarouselAdapter(
                 itemView.findViewById<View>(R.id.timeline_layout).visibility = View.VISIBLE
                 noDataIcon.visibility = View.GONE
                 noDataText.visibility = View.GONE
+                noDataTextWorkoutLoggedManually.visibility = View.GONE
                 val heartRates = item.heartRateData.map { it.heartRate.toFloat() }
                 lineGraph.updateData(heartRates)
                 leftTimeLabel.text = item.heartRateData.firstOrNull()?.date?.let { formatTime(it) } ?: "N/A"
@@ -70,6 +72,7 @@ class CarouselAdapter(
                 itemView.findViewById<View>(R.id.timeline_layout).visibility = View.GONE
                 noDataIcon.visibility = View.VISIBLE
                 noDataText.visibility = View.VISIBLE
+                noDataTextWorkoutLoggedManually.visibility = View.VISIBLE
             }
 
             lineGraph.setOnClickListener {
