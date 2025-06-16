@@ -260,7 +260,8 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
         // Multiline X-axis labels
         val combinedLabels: List<String> = if (entries.size == 30) {
-            List(30) { index ->
+            labels
+          /*  List(30) { index ->
                 when (index) {
                     3 -> "1-7\nJun"
                     10 -> "8-14\nJun"
@@ -269,7 +270,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
                     28 -> "29-30\nJun"
                     else -> ""
                 }
-            }
+            }*/
         } else {
             labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
                 val cleanedDate = date.substringBefore(",")
@@ -570,6 +571,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         calendar.add(Calendar.DAY_OF_YEAR, -29)
         val dateStrLabel = dateFormat.format(calendar.time)
         val hrvMap = mutableMapOf<String, Float>()
+        val dateList = mutableListOf<String>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
@@ -577,9 +579,14 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             hrvMap[dateStr] = 0f
+            dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until 30) {
+        val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        weeklyLabels.addAll(labelsWithEmpty)
+        labelsDate.addAll(labels)
+       /* for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -602,7 +609,7 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
             }else{
                 labelsDate.add("29-31 $dateLabel")
             }
-        }
+        }*/
         // Aggregate calories by week
         if ( restingHeartRateResponse.heartRateVariability.isNotEmpty()){
             restingHeartRateResponse.heartRateVariability.forEach { calorie ->
@@ -616,6 +623,87 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         setLastAverageValue(restingHeartRateResponse, "% Past Month")
         val entries = hrvMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
     }
     private fun processSixMonthsData(data: HeartRateVariabilityResponse): Triple<List<Entry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
