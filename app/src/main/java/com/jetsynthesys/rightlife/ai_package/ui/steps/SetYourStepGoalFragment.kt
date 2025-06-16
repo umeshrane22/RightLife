@@ -49,10 +49,16 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
         stepsSliderView.setFillPercentage(currentGoal.toFloat() / maxSteps)
         stepsSliderView.setIntervalColors(ContextCompat.getColor(requireContext(), R.color.green_text))
         stepsSliderView.setOnStepCountChangeListener(object : StepIntake.OnStepCountChangeListener {
-            override fun onStepCountChanged(stepCount: Int) {
-                Log.d("SetYourStepGoalFragment", "Step count changed: $stepCount")
+            override fun onStepCountChanged(stepCount: Int, recommendedSteps: Int) {
+                Log.d("SetYourStepGoalFragment", "Step count changed: $stepCount, Recommended: $recommendedSteps")
                 currentGoal = stepCount
                 updateCurrentGoalText()
+                // Update recommendation text (assuming you have a TextView for it)
+                /*recommendationTextView.text = if (stepCount < 12000) {
+                    "We recommend increasing by 500 steps gradually, at your own pace, until your average is in the optimal range of 12,000 or more. Next target: $recommendedSteps steps."
+                } else {
+                    "Great job! Your step count is in the optimal range of 12,000 or more."
+                }*/
             }
         })
 
@@ -76,8 +82,8 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
     private fun setStepsGoal(stepsGoal: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val userId = /*SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: */"680790d0a8d2c1b4456e5c7d" // Default user ID if not found
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                    ?: "680790d0a8d2c1b4456e5c7d" // Default user ID if not found
                 val source = "samsung" // Hardcoded source as per the API call
 
                 val response = ApiClient.apiServiceFastApi.setStepsGoal(
@@ -136,6 +142,6 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
     }
 
     private fun updateCurrentGoalText() {
-        tvCurrentGoal.text = "${currentGoal / 1000}k steps\nYour Goal"
+        tvCurrentGoal.text = "${currentGoal}"
     }
 }

@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,33 +12,38 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewModel
 import com.jetsynthesys.rightlife.databinding.FragmentSearchWorkoutBinding
 import com.google.android.material.tabs.TabLayout
-import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 
 class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
     private val workoutViewModel: WorkoutViewModel by activityViewModels()
     private lateinit var searchWorkoutBackButton: ImageView
-    private  var  workoutList = ArrayList<WorkoutSessionRecord>()
+    private var workoutList = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchWorkoutBinding
         get() = FragmentSearchWorkoutBinding::inflate
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
+
         val routine = arguments?.getString("routine")
         val routineName = arguments?.getString("routineName")
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
-        val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
+        val selectedTab = arguments?.getInt("selectedTab", 0) ?: 0  // 🔥 get selected tab index
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
+        val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
+
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
         searchWorkoutBackButton.setOnClickListener {
             navigateToYourActivityFragment()
@@ -53,24 +59,24 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             tabLayout.addTab(tab)
         }
 
-        // Initial fragment
+        // Initial fragment load based on selectedTab
         if (savedInstanceState == null) {
-            val allWorkoutFragment = AllWorkoutFragment().apply {
-                arguments = Bundle().apply {
-                    putString("routine", routine)
-                    putString("routineName", routineName)
-                    putParcelableArrayList("workoutList",workoutList)
+            val initialFragment: Fragment = when (selectedTab) {
+                1 -> MyRoutineFragment()
+                2 -> FrequentlyLoggedSearchFragment()
+                else -> AllWorkoutFragment().apply {
+                    arguments = Bundle().apply {
+                        putString("routine", routine)
+                        putString("routineName", routineName)
+                        putParcelableArrayList("workoutList", workoutList)
+                    }
                 }
             }
-            replaceFragment(allWorkoutFragment)
+            replaceFragment(initialFragment)
+            tabLayout.getTabAt(selectedTab)?.select() // ✅ highlight correct tab
         }
 
-        // Handle back press
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                navigateToYourActivityFragment()
-            }
-        })
+        // Handle tab clicks
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
@@ -79,7 +85,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                             arguments = Bundle().apply {
                                 putString("routine", routine)
                                 putString("routineName", routineName)
-                                putParcelableArrayList("workoutList",workoutList)
+                                putParcelableArrayList("workoutList", workoutList)
                             }
                         }
                         replaceFragment(allWorkoutFragment)
@@ -89,11 +95,12 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                 }
                 updateTabColors()
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        // Search text listener
+        // Search listener
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -101,7 +108,16 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                 workoutViewModel.setSearchQuery(query)
                 Log.d("SearchWorkoutFragment", "Search query set in ViewModel: $query")
             }
+
             override fun afterTextChanged(s: Editable?) {}
+        })
+
+        // Handle back press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            override fun handleOnBackPressed() {
+                navigateToYourActivityFragment()
+            }
         })
     }
 
@@ -122,6 +138,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun navigateToYourActivityFragment() {
         val fragment = YourActivityFragment()
         val args = Bundle()

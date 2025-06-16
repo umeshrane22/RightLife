@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -71,6 +73,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         icRightArrow = view.findViewById(R.id.icRightArrow)
         btnClose = view.findViewById(R.id.btnClose)
 
+        recyclerCalendar.overScrollMode = View.OVER_SCROLL_NEVER
         recyclerCalendar.layoutManager = GridLayoutManager(context, 7)
         recyclerCalendar.adapter = calendarAdapter
 
@@ -140,6 +143,19 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         valueLists.addAll(yearList as Collection<CalendarDateModel>)
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
+
+        val now = Calendar.getInstance()
+        val currentYear = now.get(Calendar.YEAR)
+        val currentMonth = now.get(Calendar.MONTH) // 0-11
+        val targetIndex = mealLogYearlyList.indexOfFirst {
+            it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
+        }
+        if (targetIndex != -1) {
+            recyclerCalendar.post {
+                recyclerCalendar.scrollToPosition(targetIndex+50)
+            }
+        }
+        Log.d("CalendarScroll", "Scrolling to index: $targetIndex, month: ${getMonthAbbreviation(currentMonth)}")
     }
 
     private fun onMealLogCalenderSummaryRefresh (){

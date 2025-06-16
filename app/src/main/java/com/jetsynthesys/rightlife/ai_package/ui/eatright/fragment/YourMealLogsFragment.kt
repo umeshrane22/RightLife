@@ -334,18 +334,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         getMealsLogList(formattedDate)
 
         //Set Tooltip
-        showTooltipDialog(layoutToolbar)
 
         imageCalender.setOnClickListener {
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
-            val fragment = MealLogCalenderFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "mealLog")
-                addToBackStack("mealLog")
-                commit()
-            }
+            showTooltipDialog(layoutToolbar)
         }
 
         backButton.setOnClickListener {
@@ -818,6 +810,14 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         // Auto dismiss after 3 seconds
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
+            val fragment = MealLogCalenderFragment()
+            val args = Bundle()
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
         }, 3000)
     }
 

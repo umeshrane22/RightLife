@@ -37,9 +37,13 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
     private lateinit var tvRemindTime: TextView
     private val mContext = requireContext
 
-    private var startTime: LocalTime = LocalTime.of(21, 0)
-    private var endTime: LocalTime = LocalTime.of(5, 30)
+    private var startTime: LocalTime = LocalTime.of(0, 0)
+    private var endTime: LocalTime = LocalTime.of(0, 0)
     private var selectedDate: LocalDate = LocalDate.now()
+    var startHour = 0
+    var startMinute = 0
+    var endHour = 0
+    var endMinute = 0
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -69,10 +73,12 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
         }
 
         view.findViewById<View>(R.id.startTimeContainer).setOnClickListener {
-            TimePickerDialogFragment(9, 0) { hour, minute ->
+            TimePickerDialogFragment(startHour, startMinute) { hour, minute ->
                 // Handle selected time
                 val formatted = LocalTime.of(hour, minute)
                     .format(DateTimeFormatter.ofPattern("hh:mm a"))
+                startHour = hour
+                startMinute = minute
                 tvStartTime.text = formatted
                 startTime = LocalTime.of(hour, minute)
                 updateDuration()
@@ -81,10 +87,12 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
         }
 
         view.findViewById<View>(R.id.endTimeContainer).setOnClickListener {
-            TimePickerDialogFragment(5, 30) { hour, minute ->
+            TimePickerDialogFragment(endHour, endMinute) { hour, minute ->
                 // Handle selected time
                 val formatted = LocalTime.of(hour, minute)
                     .format(DateTimeFormatter.ofPattern("hh:mm a"))
+                endHour = hour
+                endMinute = minute
                 tvEndTime.text = formatted
                 endTime = LocalTime.of(hour, minute)
                 updateDuration()

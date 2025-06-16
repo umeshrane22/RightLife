@@ -334,14 +334,17 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         // Update activityList and adapter
                         activityList.clear()
                         activityList.addAll(newActivities)
+
                         Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
 
                         if (activityList.isNotEmpty()) {
                             myActivityRecyclerView.visibility = View.VISIBLE
+                            btnLogMeal.visibility = View.VISIBLE
                             myActivityAdapter.addAll(activityList, -1, null, false)
                             myActivityAdapter.notifyDataSetChanged() // Force adapter refresh
                             Log.d("FetchCalories", "Adapter updated with ${activityList.size} activities for date $formattedDate")
                         } else {
+                            btnLogMeal.visibility = View.GONE
                             myActivityRecyclerView.visibility = View.GONE
                             Log.d("FetchCalories", "No activities to display for date $formattedDate")
                         }

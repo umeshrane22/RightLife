@@ -286,7 +286,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
     /** Update BarChart with new data and add dotted lines for total_steps_count and total_steps_avg */
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>, stepData: StepTrackerData) {
-        // Log the data for debugging
         Log.d("StepFragment", "Entries size: ${entries.size}, Labels size: ${labels.size}, LabelsDate size: ${labelsDate.size}")
         Log.d("StepFragment", "Entries: $entries")
         Log.d("StepFragment", "Labels: $labels")
@@ -296,53 +295,57 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
-        if (entries.size > 7) {
-            dataSet.setDrawValues(false)
-        } else {
-            dataSet.setDrawValues(true)
-        }
+        dataSet.setDrawValues(entries.size <= 7)
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
+
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
 
-        // Dynamically set Y-axis range to handle step counts
         val leftYAxis: YAxis = barChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
 
-        // Calculate min and max values from entries, including totalStepsCount and totalStepsAvg
-        val minValue = minOf(entries.minOfOrNull { it.y } ?: 0f, stepData.totalStepsCount.toFloat(), stepData.totalStepsAvg.toFloat())
-        val maxValue = maxOf(entries.maxOfOrNull { it.y } ?: 0f, stepData.totalStepsCount.toFloat(), stepData.totalStepsAvg.toFloat())
-        // Set axis range with some padding
+        val minValue = minOf(
+            entries.minOfOrNull { it.y } ?: 0f,
+            stepData.totalStepsCount.toFloat(),
+            stepData.totalStepsAvg.toFloat()
+        )
+
+        val maxValue = maxOf(
+            entries.maxOfOrNull { it.y } ?: 0f,
+            stepData.totalStepsCount.toFloat(),
+            stepData.totalStepsAvg.toFloat()
+        )
+
+        // Include stepsGoal in max check
+        val axisMax = maxOf(maxValue, stepData.stepsGoal.toFloat())
+
         leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
-        leftYAxis.axisMaximum = if (maxValue > 0) maxValue * 1.2f else 10000f // Default max for steps
-        leftYAxis.setDrawZeroLine(true) // Show zero line for clarity
+        leftYAxis.axisMaximum = axisMax * 1.2f
+        leftYAxis.setDrawZeroLine(true)
         leftYAxis.zeroLineColor = Color.BLACK
         leftYAxis.zeroLineWidth = 1f
 
-        // Add dotted line for total_steps_count
         val totalStepsLine = LimitLine(stepData.totalStepsCount.toFloat(), "Total Steps: ${stepData.totalStepsCount.toInt()}")
         totalStepsLine.lineColor = Color.BLUE
         totalStepsLine.lineWidth = 1f
-        totalStepsLine.enableDashedLine(10f, 10f, 0f) // Dotted line: 10f dash length, 10f gap length
+        totalStepsLine.enableDashedLine(10f, 10f, 0f)
         totalStepsLine.textColor = Color.BLUE
         totalStepsLine.textSize = 10f
         totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
-        // Add dotted line for total_steps_avg
         val avgStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "Goal Steps: ${stepData.stepsGoal.toInt()}")
         avgStepsLine.lineColor = Color.GREEN
         avgStepsLine.lineWidth = 1f
-        avgStepsLine.enableDashedLine(10f, 10f, 0f) // Dotted line: 10f dash length, 10f gap length
+        avgStepsLine.enableDashedLine(10f, 10f, 0f)
         avgStepsLine.textColor = Color.GREEN
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
-        // Clear existing limit lines and add new ones
         leftYAxis.removeAllLimitLines()
         leftYAxis.addLimitLine(totalStepsLine)
         leftYAxis.addLimitLine(avgStepsLine)
@@ -362,8 +365,10 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
         barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+
         val legend = barChart.legend
         legend.setDrawInside(false)
+
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
@@ -371,24 +376,26 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Steps: $y, LabelsDate size: ${labelsDate.size}")
-                    // Check if x is within bounds of labelsDate
                     if (x in 0 until labelsDate.size) {
                         selectedItemDate.text = labelsDate[x]
-                        selectedCalorieTv.text = y.toInt().toString() // Display steps
+                        selectedCalorieTv.text = y.toInt().toString()
                     } else {
                         Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
                         selectHeartRateLayout.visibility = View.INVISIBLE
                     }
                 }
             }
+
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
+
         barChart.animateY(1000)
         barChart.invalidate()
     }
+
 
     /** Fetch and update chart with API data */
     private fun fetchStepDetails(period: String) {
