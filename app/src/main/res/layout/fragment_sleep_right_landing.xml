@@ -171,6 +171,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:visibility="gone"
                         android:src="@drawable/apple_icon"
                         android:id="@+id/img_apple_icon"
                         android:layout_marginTop="10dp"
@@ -186,7 +187,7 @@
                         android:layout_marginEnd="15dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/img_apple_icon"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_stage_total_time"
                         android:layout_height="80dp" />
 
                     <TextView
@@ -665,7 +666,7 @@
                         android:textColor="@color/sleep_text_color"
                         android:layout_marginTop="10dp"
                         android:id="@+id/tv_sync_wearable"
-                        android:text="Deep, light, REM-it's all in the details. \nSync your wearable to unlock your sleep stages."
+                        android:text="Deep, light, REM-it's all in the details. \nSync your wearable to unlock your\nsleep stages."
                         android:fontFamily="@font/dmsans_regular"
                         android:textSize="16sp"
                         android:layout_marginStart="15dp"
@@ -673,7 +674,7 @@
                         app:layout_constraintStart_toStartOf="parent" />
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="45dp"
                         android:id="@+id/lyt_sync_with_health"
                         android:layout_marginStart="40dp"
                         android:background="@drawable/blue_curved_bg"
@@ -688,6 +689,7 @@
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:visibility="gone"
                         android:src="@drawable/apple_health_icon"
                         android:id="@+id/img_heart_health" />
 
@@ -1049,19 +1051,18 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
-                        android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                        android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                         android:id="@+id/tv_sleep_mystery_subtitle"
                         android:textSize="16sp"
                         android:fontFamily="@font/dmsans_regular"
                         android:layout_marginStart="15dp"
                         android:layout_marginTop="15dp"
                         app:layout_constraintTop_toBottomOf="@+id/tv_your_sleep_mystery"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"/>
+                        app:layout_constraintStart_toStartOf="parent"/>
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         android:src="@drawable/sleep_right_arrow_btn"
                         android:id="@+id/img_sleep_perform_arrow"
                         android:layout_marginTop="14dp"
@@ -1332,7 +1333,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
-                            android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                            android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                             android:id="@+id/tv_sleep_data_subtitle"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_regular"
@@ -1642,7 +1643,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
-                        android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                        android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                         android:id="@+id/tv_sleep_data_subtitle_"
                         android:textSize="16sp"
                         android:fontFamily="@font/dmsans_regular"
@@ -2038,7 +2039,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/sleep_text_color"
-                            android:text="You might’ve slept great—or not. Log your night or sync your device to reveal your sleep performance."
+                            android:text="You might’ve slept great—or not. Log your\nnight or sync your device to reveal your\nsleep performance."
                             android:id="@+id/tv_sleep_mystery_subtitle_"
                             android:textSize="16sp"
                             android:fontFamily="@font/dmsans_regular"

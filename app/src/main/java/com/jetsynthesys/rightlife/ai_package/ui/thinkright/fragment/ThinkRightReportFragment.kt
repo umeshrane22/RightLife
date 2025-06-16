@@ -164,6 +164,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var emotionDescription: TextView
     private lateinit var emotionIcon: ImageView
     private lateinit var editEmotionIcon: ImageView
+    private lateinit var imgBack: ImageView
     private lateinit var tagFlexbox: FlexboxLayout
     private lateinit var recyclerViewTags : RecyclerView
     private var loadingOverlay : FrameLayout? = null
@@ -194,6 +195,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         lytAffirmation3 = view.findViewById(R.id.lyt_affirmation_3)
         journalingCard = view.findViewById(R.id.lyt_journaling_card)
         tvQuote = view.findViewById(R.id.tv_quote_desc)
+        imgBack = view.findViewById(R.id.img_back)
         mindfullNoDataCard = view.findViewById(R.id.card_mindfull_no_data)
         mindfullDataCard = view.findViewById(R.id.card_mindfull_data)
         cardAddTools = view.findViewById(R.id.add_tools_think_right)
@@ -258,6 +260,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         tvQuote.setOnClickListener {
             navigateToFragment(ViewQuoteFragment(),"ViewQuote")
         }
+        imgBack.setOnClickListener {
+            requireActivity().finish()
+        }
         moodTrackBtn.setOnClickListener {
             navigateToFragment(MoodTrackerFragment("", 0,"ThinkRightReportFragment"),"MoodTracker")
         }
@@ -276,6 +281,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
+            startActivity(Intent(requireContext(), MindAuditActivity::class.java))
+        }
+        reassessYourMental.setOnClickListener {
             startActivity(Intent(requireContext(), MindAuditActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
