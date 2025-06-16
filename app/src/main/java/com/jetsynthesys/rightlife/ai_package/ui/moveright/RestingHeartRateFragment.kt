@@ -290,6 +290,9 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         leftYAxis.textSize = 12f
         leftYAxis.textColor = Color.BLACK
         leftYAxis.setDrawGridLines(true)
+        leftYAxis.axisMinimum = 0f // Set minimum to 0 to avoid negative values
+        leftYAxis.axisMaximum = 150f // Optional: Set max for realistic heart rate range
+        leftYAxis.granularity = 10f // Optional: Set step size for cleaner labels (e.g., 0, 10, 20, ...)
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false

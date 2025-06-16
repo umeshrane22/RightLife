@@ -23,7 +23,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -43,6 +45,7 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.databinding.FragmentBurnBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -259,9 +262,8 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         }
     }
 
-    /** Update BarChart with new data */
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
-        val dataSet = BarDataSet(entries, "Calories Burned")
+        val dataSet = BarDataSet(entries, "")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
@@ -272,37 +274,83 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         }
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
+
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
-        // barChart.renderer = CurvedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-        // val parts = label.split("\n")
-        // val day = parts.getOrNull(0) ?: ""
-        // val date = parts.getOrNull(1) ?: ""
+
+        // Multiline X-axis labels
+        val combinedLabels = if (entries.size == 30) {
+            // Weekly ranges for June when entries.size == 30
+            val weekRanges = listOf("1-7", "8-14", "15-21", "22-28", "29-30")
+            weekRanges.map { range -> "$range\nJun" }
+        } else {
+            // Default labels for other sizes
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",") // removes ,2025
+                "$label\n$cleanedDate"
+            }
+        }
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.textSize = 10f
         xAxis.granularity = 1f
-        xAxis.labelCount = labels.size
+        xAxis.labelCount = if (entries.size == 30) 5 else entries.size // 5 labels for 30 entries
         xAxis.setDrawLabels(true)
-        // xAxis.labelRotationAngle = -45f
-        xAxis.labelRotationAngle = 0f // optional, for vertical display
+        xAxis.labelRotationAngle = 0f // Vertical display
         xAxis.setDrawGridLines(false)
         xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
-        xAxis.yOffset = 15f // Move labels down
-        // barChart.extraBottomOffset = 15f // Adjust as needed
+        xAxis.yOffset = 15f
+        // Fix label alignment for 30 entries
+        if (entries.size == 30) {
+            xAxis.axisMinimum = -0.5f // Start slightly before first bar
+            xAxis.axisMaximum = 4.5f // End slightly after last label
+            xAxis.setCenterAxisLabels(false) // Labels at start of bars
+        } else {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.setCenterAxisLabels(false)
+        }
+
+        // Custom XAxisRenderer for multiline labels
+        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+            barChart.viewPortHandler,
+            barChart.xAxis,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
+        (barChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
+
+        // Y-axis customization
         val leftYAxis: YAxis = barChart.axisLeft
         leftYAxis.textSize = 12f
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
-        leftYAxis.setAxisMinimum(0f) // Ensure Y-axis starts at 0 for positive values
+        leftYAxis.axisMinimum = 0f // No negative values
+        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f // Dynamic max with padding
+        leftYAxis.granularity = 100f // Cleaner labels for calories (e.g., 0, 100, 200, ...)
+
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+
+        // Description
+        val description = Description().apply {
+            text = "Calories Burned"
+            textColor = Color.BLACK
+            textSize = 14f
+            setPosition(barChart.width / 2f, barChart.height.toFloat() - 10f)
+        }
+        barChart.description = description
+
+        // Extra offsets like LineChart
+        barChart.setExtraOffsets(0f, 0f, 0f, 25f)
+
+        // Legend
         val legend = barChart.legend
         legend.setDrawInside(false)
+
+        // Chart click listener
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
@@ -310,7 +358,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    selectedItemDate.text = labelsDate.get(x)
+                    selectedItemDate.text = labelsDate.getOrNull(x) ?: ""
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
@@ -319,6 +367,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
+
         barChart.animateY(1000)
         barChart.invalidate()
     }

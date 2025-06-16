@@ -293,6 +293,9 @@ class AverageHeartRateFragment : BaseFragment<FragmentAverageHeartRateBinding>()
         leftYAxis.textSize = 12f
         leftYAxis.textColor = Color.BLACK
         leftYAxis.setDrawGridLines(true)
+        leftYAxis.axisMinimum = 0f // Set minimum to 0 to avoid negative values
+        leftYAxis.axisMaximum = 150f // Optional: Max for realistic heart rate range
+        leftYAxis.granularity = 10f // Optional: Cleaner labels (0, 10, 20, ...)
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
