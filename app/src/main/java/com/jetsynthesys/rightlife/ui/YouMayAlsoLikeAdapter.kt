@@ -16,6 +16,7 @@ import com.jetsynthesys.rightlife.databinding.RowYouMayAlsoLikeBinding
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
 
 class YouMayAlsoLikeAdapter(
@@ -44,7 +45,7 @@ class YouMayAlsoLikeAdapter(
                     .transform(RoundedCorners(24))
                     .into(itemImage)
             }
-
+            tvLeftTime.text = DateTimeUtils.getLocalTime12HourFormat(item?.createdAt)
             tvModuleName.text = Utils.getModuleText(item?.moduleName)
             val color = Utils.getModuleColor(context, item?.moduleId)
             imageModuleTag.imageTintList = ColorStateList.valueOf(color)

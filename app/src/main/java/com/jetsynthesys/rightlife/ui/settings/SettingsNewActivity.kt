@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.ui.new_design.DataControlActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -66,6 +67,8 @@ class SettingsNewActivity : BaseActivity() {
         binding.btnLogout.setOnClickListener {
             showLogoutBottomSheet()
         }
+        val versionName = BuildConfig.VERSION_NAME
+        binding.tvVersion.text = "Version $versionName"
 
     }
 
