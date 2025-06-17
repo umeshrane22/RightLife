@@ -99,6 +99,28 @@ class MindAuditResultActivity : BaseActivity() {
         //binding.rvSuggestedAssessment.scrollToPosition(0)
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        isFrom = intent.getStringExtra("FROM")
+        val assessmentHeader = intent.getStringExtra("Assessment") ?: "CAS"
+        binding.tvAssessmentTaken.text = assessmentHeader + " " + "Score"
+        selectedAssessment = assessmentHeader
+
+        if (sharedPreferenceManager.userEmotions != null) {
+            val userEmotions = sharedPreferenceManager.userEmotions
+            getSuggestedAssessment(userEmotions)
+        } else {
+            val userEmotions = UserEmotions(userEmotionsString)
+            getSuggestedAssessment(userEmotions)
+        }
+
+        getAssessmentResult(assessmentHeader)
+
+        binding.llOtherSection.visibility = View.GONE
+        binding.scrollviewResult.visibility = View.VISIBLE
+    }
+
     private fun onBackPressHandle() {
         finish()
         if (isFrom != null && isFrom?.isNotEmpty() == true) {
@@ -241,7 +263,8 @@ class MindAuditResultActivity : BaseActivity() {
     }
 
     private fun handleAssessmentScore(response: Response<MindAuditResultResponse?>) {
-        var assessmentTaken = response.body()!!.result[0].assessmentsTaken[0]
+        val assessmentTaken = response.body()!!.result[0].assessmentsTaken[0]
+        sharedPreferenceManager.saveUserEmotions(UserEmotions(response.body()!!.result[0].emotionalState))
         with(binding) {
             when (assessmentTaken.assessment) {
                 "DASS-21" -> {
@@ -493,6 +516,9 @@ class MindAuditResultActivity : BaseActivity() {
     }
 
     private fun handleAssessmentResult(assessments: Assessments?) {
+        allAssessments.clear()
+        suggestedAssessments.clear()
+        binding.chipGroup1.removeAllViews()
         val assessment = assessments!!.allAssessment
 
         if (assessment!!.dass21 != null) {
