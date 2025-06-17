@@ -81,6 +81,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
     private lateinit var averageBurnCalorie : TextView
+    private lateinit var totalCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : TextView
@@ -122,6 +123,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
         lineChart = view.findViewById(R.id.heartLineChart)
         cholesterol_description_heading = view.findViewById(R.id.cholesterol_description_heading)
         cholesterol_description_text = view.findViewById(R.id.cholesterol_description_text)
+        totalCalorie = view.findViewById(R.id.totalCalorie)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -796,6 +798,7 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedCholesterolResponse, type: String) {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgCholesterol.toInt().toString()
+            totalCalorie.text = activeCaloriesResponse.totalCholesterol.toInt().toString()
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 // percentageIc.setImageResource(R.drawable.ic_up)

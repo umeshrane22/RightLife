@@ -81,6 +81,7 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
     private lateinit var averageBurnCalorie : TextView
+    private lateinit var totalCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : TextView
@@ -120,10 +121,10 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
         lineChart = view.findViewById(R.id.heartLineChart)
         magnesium_description_heading = view.findViewById(R.id.magnesium_description_heading)
         magnesium_description_text = view.findViewById(R.id.magnesium_description_text)
+        totalCalorie = view.findViewById(R.id.totalCalorie)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -805,6 +806,7 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedMagnesiumResponse, type: String) {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgMagnesium.toInt().toString()
+            totalCalorie.text = activeCaloriesResponse.totalMagnesium.toInt().toString()
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 // percentageIc.setImageResource(R.drawable.ic_up)

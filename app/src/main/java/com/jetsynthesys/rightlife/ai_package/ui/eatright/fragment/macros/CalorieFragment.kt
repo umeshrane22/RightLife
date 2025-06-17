@@ -1,7 +1,11 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -21,6 +25,7 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -69,6 +74,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private lateinit var averageHeading: TextView
     private lateinit var percentageTv: TextView
     private lateinit var percentageIc: TextView
+    private lateinit var totalCalorie : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
@@ -103,6 +109,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         lineChart = view.findViewById(R.id.heartLineChart)
         calorie_description_heading = view.findViewById(R.id.calorie_description_heading)
         calorie_description_text = view.findViewById(R.id.calorie_description_text)
+        totalCalorie = view.findViewById(R.id.totalCalorie)
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -234,7 +241,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         }
     }
 
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,  activeCaloriesResponse: ConsumedCaloriesResponse) {
         selectHeartRateLayout.visibility = View.INVISIBLE
         val dataSet = BarDataSet(entries, "")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
@@ -289,6 +296,49 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         leftYAxis.axisMinimum = 0f
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
+
+        if (entries.size < 30){
+            val minValue = minOf(
+                entries.minOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalCalories.toFloat(),
+                activeCaloriesResponse.currentAvgCalories.toFloat()
+            )
+            val maxValue = maxOf(
+                entries.maxOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalCalories.toFloat(),
+                activeCaloriesResponse.currentAvgCalories.toFloat()
+            )
+            // Include stepsGoal in max check
+            val axisMax = maxOf(maxValue, activeCaloriesResponse.totalCalories.toFloat())
+
+            leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+            leftYAxis.axisMaximum = axisMax * 1.2f
+            leftYAxis.setDrawZeroLine(true)
+            // leftYAxis.zeroLineColor = Color.BLACK
+            leftYAxis.zeroLineWidth = 1f
+
+            val totalStepsLine = LimitLine(activeCaloriesResponse.totalCalories.toFloat(), "G")
+            totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.lineWidth = 1f
+            totalStepsLine.enableDashedLine(10f, 10f, 0f)
+            totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.textSize = 10f
+            totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            val avgStepsLine = LimitLine(activeCaloriesResponse.currentAvgCalories.toFloat(), "A")
+            avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.lineWidth = 1f
+            avgStepsLine.enableDashedLine(10f, 10f, 0f)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textSize = 10f
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.removeAllLimitLines()
+            leftYAxis.addLimitLine(totalStepsLine)
+            leftYAxis.addLimitLine(avgStepsLine)
+        }else{
+            leftYAxis.removeAllLimitLines()
+        }
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
@@ -414,14 +464,14 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
                         // Ensure all UI updates are on the main thread
                         withContext(Dispatchers.Main) {
                             calorie_description_heading.text = data.heading
-                            calorie_description_text.text = data.description
+                            calorie_description_text.text = formatMarkdownBold(data.description)
                             if (data.consumedCalorieTotals.size > 31) {
                                 barChart.visibility = View.GONE
                                 layoutLineChart.visibility = View.VISIBLE
                             } else {
                                 barChart.visibility = View.VISIBLE
                                 layoutLineChart.visibility = View.GONE
-                                updateChart(entries, labels, labelsDate) // Must be thread-safe (UI updates on main thread)
+                                updateChart(entries, labels, labelsDate, data) // Must be thread-safe (UI updates on main thread)
                             }
                         }
                     }
@@ -447,6 +497,34 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             }
         }
     }
+
+    private fun formatMarkdownBold(input: String): SpannableStringBuilder {
+        val result = SpannableStringBuilder()
+        val regex = Regex("\\*\\*(.*?)\\*\\*") // matches text between ** **
+        var lastIndex = 0
+        regex.findAll(input).forEach { match ->
+            val range = match.range
+            val boldText = match.groupValues[1]
+            // Append text before the bold part
+            result.append(input.substring(lastIndex, range.first))
+            // Apply bold
+            val start = result.length
+            result.append(boldText)
+            result.setSpan(
+                StyleSpan(Typeface.BOLD),
+                start,
+                start + boldText.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            lastIndex = range.last + 1
+        }
+        // Append remaining text after the last match
+        if (lastIndex < input.length) {
+            result.append(input.substring(lastIndex))
+        }
+        return result
+    }
+
 
     /** Process API data for last_weekly (7 days) */
     private fun processWeeklyData(
@@ -719,6 +797,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedCaloriesResponse, type: String) {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgCalories.toInt().toString()
+            totalCalorie.text = activeCaloriesResponse.totalCalories.toInt().toString()
             if (activeCaloriesResponse.progressSign == "plus") {
                 percentageTv.text = "${activeCaloriesResponse.progressPercentage.toInt()} $type"
                 // percentageIc.setImageResource(R.drawable.ic_up)

@@ -81,6 +81,7 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
     private lateinit var selectHeartRateLayout : CardView
     private lateinit var selectedCalorieTv : TextView
     private lateinit var averageBurnCalorie : TextView
+    private lateinit var totalCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : TextView
@@ -121,6 +122,7 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
         lineChart = view.findViewById(R.id.heartLineChart)
         iron_description_heading = view.findViewById(R.id.iron_description_heading)
         iron_description_text = view.findViewById(R.id.iron_description_text)
+        totalCalorie = view.findViewById(R.id.totalCalorie)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels()
@@ -805,6 +807,7 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedIronResponse, type: String) {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgIron.toInt().toString()
+            totalCalorie.text = activeCaloriesResponse.totalIron.toInt().toString()
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 // percentageIc.setImageResource(R.drawable.ic_up)

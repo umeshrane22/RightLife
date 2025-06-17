@@ -192,7 +192,6 @@
                             app:layout_constraintBottom_toBottomOf="@+id/percentage_icon"
                             app:layout_constraintStart_toEndOf="@+id/percentage_icon" />
 
-
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -216,10 +215,10 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/total_number"
+                            android:id="@+id/totalCalorie"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="23,000"
+                            android:text=""
                             android:textColor="@color/black_no_meals"
                             android:textSize="20sp"
                             android:fontFamily="@font/dmsans_bold"
@@ -233,15 +232,15 @@
                             android:textSize="12sp"
                             android:textColor="@color/black_no_meals"
                             android:fontFamily="@font/dmsans_regular"
-                            app:layout_constraintBottom_toBottomOf="@+id/total_number"
-                            app:layout_constraintStart_toEndOf="@+id/total_number" />
+                            app:layout_constraintBottom_toBottomOf="@+id/totalCalorie"
+                            app:layout_constraintStart_toEndOf="@+id/totalCalorie" />
 
                         <ImageView
                             android:id="@+id/totalPercentageUp"
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:src="@drawable/ic_up"
-                            app:layout_constraintTop_toBottomOf="@+id/total_number"
+                            app:layout_constraintTop_toBottomOf="@+id/totalCalorie"
                             app:layout_constraintStart_toStartOf="parent" />
 
                         <TextView
@@ -255,7 +254,6 @@
                             android:textColor="@color/green_text"
                             app:layout_constraintBottom_toBottomOf="@+id/totalPercentageUp"
                             app:layout_constraintStart_toEndOf="@+id/totalPercentageUp" />
-
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

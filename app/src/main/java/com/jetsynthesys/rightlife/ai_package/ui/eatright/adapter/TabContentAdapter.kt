@@ -3,22 +3,25 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 
-class TabContentAdapter(private val onItemClick: (String, Int) -> Unit) : RecyclerView.Adapter<TabContentAdapter.ViewHolder>() {
+class TabContentAdapter(private val onItemClick: (String, Int, Boolean) -> Unit) :
+    RecyclerView.Adapter<TabContentAdapter.ViewHolder>() {
 
     private var items: List<String> = emptyList()
     private var selectedPosition: Int = -1
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.tabText)
+        val iconClose : ImageView = itemView.findViewById(R.id.iconClose)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.custom_tab, parent, false)
+            .inflate(R.layout.recipe_search_custom_tab_content, parent, false)
         return ViewHolder(view)
     }
 
@@ -28,6 +31,11 @@ class TabContentAdapter(private val onItemClick: (String, Int) -> Unit) : Recycl
             holder.textView.text = item.substringBefore("_")
             // Set the selected state based on the selectedPosition
             holder.textView.isSelected = (position == selectedPosition)
+            if (position == selectedPosition){
+                holder.iconClose.visibility = View.VISIBLE
+            }else{
+                holder.iconClose.visibility = View.GONE
+            }
 
             holder.textView.setOnClickListener {
                 if (holder.adapterPosition != RecyclerView.NO_POSITION && holder.adapterPosition < itemCount) {
@@ -36,7 +44,19 @@ class TabContentAdapter(private val onItemClick: (String, Int) -> Unit) : Recycl
                     // Notify changes for the previous and current positions
                     notifyItemChanged(previousPosition)
                     notifyItemChanged(selectedPosition)
-                    onItemClick(item, selectedPosition)
+                    onItemClick(item, selectedPosition, false)
+                }
+            }
+
+            holder.iconClose.setOnClickListener {
+                if (holder.adapterPosition != RecyclerView.NO_POSITION && holder.adapterPosition < itemCount) {
+                    val previousPosition = selectedPosition
+                    selectedPosition = holder.adapterPosition
+                    // Notify changes for the previous and current positions
+                    holder.iconClose.visibility = View.GONE
+                    notifyItemChanged(previousPosition)
+                    notifyItemChanged(selectedPosition)
+                    onItemClick(item, selectedPosition, true)
                 }
             }
         }

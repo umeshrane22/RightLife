@@ -63,6 +63,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     private var foodTypeList: ArrayList<String> = ArrayList()
     private var cuisineList: ArrayList<String> = ArrayList()
     private lateinit var backButton: ImageView
+    private lateinit var tabSelectedTitle : TextView
     private lateinit var mealType: String
     private val tabTitles = arrayOf("Meal Type", "Food Type", "Cuisine")
     private var currentFragmentTag: String? = null
@@ -95,26 +96,63 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
         tabContentCard = view.findViewById(R.id.tabContentCard)
         tabContentRecyclerView = view.findViewById(R.id.tabContentRecyclerView)
         spinner = view.findViewById(R.id.spinner)
+        tabSelectedTitle = view.findViewById(R.id.tabSelectedTitle)
 
         tabContentRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
             false)
-        tabContentAdapter = TabContentAdapter { item, position ->
+        tabContentAdapter = TabContentAdapter { item, position, isClose ->
             if (position < tabContentAdapter.itemCount) {
                 when (currentFragmentTag) {
                     "Meal Type" -> {
-                        selectedMealType = item
-                        getFilterRecipesList(selectedMealType, null, null)
-                        Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
+                        if (isClose){
+                            val fragment = RecipesSearchFragment()
+                            val args = Bundle()
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "landing")
+                                addToBackStack("landing")
+                                commit()
+                            }
+                        }else{
+                            selectedMealType = item
+                            getFilterRecipesList(selectedMealType, null, null)
+                            Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
+                            updateTabColors(true)
+                        }
                     }
                     "Food Type" -> {
-                        selectedFoodType = item
-                        getFilterRecipesList(null, selectedFoodType, null)
-                        Log.d("RecipesSearchFragment", "Selected Food Type: $selectedFoodType")
+                        if (isClose){
+                            val fragment = RecipesSearchFragment()
+                            val args = Bundle()
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "landing")
+                                addToBackStack("landing")
+                                commit()
+                            }
+                        }else{
+                            selectedFoodType = item
+                            getFilterRecipesList(null, selectedFoodType, null)
+                            Log.d("RecipesSearchFragment", "Selected Food Type: $selectedFoodType")
+                            updateTabColors(true)
+                        }
                     }
                     "Cuisine" -> {
-                        selectedCuisine = item
-                        getFilterRecipesList(null, null, selectedCuisine)
-                        Log.d("RecipesSearchFragment", "Selected Cuisine: $selectedCuisine")
+                        if (isClose){
+                            val fragment = RecipesSearchFragment()
+                            val args = Bundle()
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "landing")
+                                addToBackStack("landing")
+                                commit()
+                            }
+                        }else{
+                            selectedCuisine = item
+                            getFilterRecipesList(null, null, selectedCuisine)
+                            Log.d("RecipesSearchFragment", "Selected Cuisine: $selectedCuisine")
+                            updateTabColors(true)
+                        }
                     }
                 }
                 tabContentAdapter.setSelectedPosition(position)
@@ -132,7 +170,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             tabLayout.addTab(tab, false)
         }
         tabLayout.clearOnTabSelectedListeners()
-        updateTabColors()
+        updateTabColors(false)
         tabContentCard.visibility = View.GONE
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -140,7 +178,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
-                    updateTabColors()
+                    updateTabColors(false)
                     tabContentCard.visibility = View.VISIBLE
                     updateCardViewContent(tag)
                 }
@@ -157,7 +195,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                         tabContentCard.visibility = View.VISIBLE
                         updateCardViewContent(tag)
                     }
-                    updateTabColors()
+                    updateTabColors(false)
                 }
             }
         })
@@ -260,7 +298,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateTabColors() {
+    private fun updateTabColors(isTabContentSelected : Boolean) {
         for (i in 0 until tabLayout.tabCount) {
             val tab = tabLayout.getTabAt(i)
             val customView = tab?.customView
@@ -272,18 +310,22 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 val typeface = resources.getFont(R.font.dmsans_bold)
                 tabText?.typeface = typeface
-                circleText?.visibility = View.GONE
-                imageArrow?.setImageResource(R.drawable.ic_up)
-                val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_up)
-                drawable?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
-                imageArrow?.setImageDrawable(drawable)
-
+                if (isTabContentSelected){
+                    circleText?.visibility = View.VISIBLE
+                }else{
+                    circleText?.visibility = View.GONE
+                }
+                tabSelectedTitle.text = tabText?.text.toString()
+                imageArrow?.setImageResource(R.drawable.ic_chevron_up)
+               // val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_up)
+//                drawable?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
+//                imageArrow?.setImageDrawable(drawable)
             } else {
                 val typeface = resources.getFont(R.font.dmsans_regular)
                 tabText?.typeface = typeface
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
                 circleText?.visibility = View.GONE
-                imageArrow?.setImageResource(R.drawable.ic_down)
+                imageArrow?.setImageResource(R.drawable.ic_chevron_down)
             }
         }
     }
