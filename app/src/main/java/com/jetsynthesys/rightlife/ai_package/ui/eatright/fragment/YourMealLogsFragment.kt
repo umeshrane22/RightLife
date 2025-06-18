@@ -63,7 +63,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), DeleteLogDishBottomSheet.OnLogDishDeletedListener {
+class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), DeleteLogDishBottomSheet.OnLogDishDeletedListener,
+    SelectMealTypeBottomSheet.OnMealTypeListener {
 
     private lateinit var layoutToolbar :ConstraintLayout
     private lateinit var mealLogWeeklyDayRecyclerView : RecyclerView
@@ -152,6 +153,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private var selectedDate : String = ""
     private var loadingOverlay : FrameLayout? = null
     private var lastDayOfCurrentWeek : String = ""
+    private var dialogToolTip : Dialog? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
@@ -250,14 +252,14 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val bundle = Bundle()
             bundle.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = bundle
-            activity?.supportFragmentManager?.let { selectMealTypeBottomSheet.show(it, "SelectMealTypeBottomSheet") }
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("EatRightLanding")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
             selectMealTypeBottomSheet.isCancelable = true
             val bundle = Bundle()
             bundle.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = bundle
-            activity?.supportFragmentManager?.let { selectMealTypeBottomSheet.show(it, "SelectMealTypeBottomSheet") }
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
 
         mealLogWeeklyDayRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
@@ -370,7 +372,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val bundle = Bundle()
             bundle.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = bundle
-            activity?.supportFragmentManager?.let { selectMealTypeBottomSheet.show(it, "SelectMealTypeBottomSheet") }
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
 
         breakfastDotMenu.setOnClickListener {
@@ -794,13 +796,13 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     private fun showTooltipDialog(anchorView: View) {
-        val dialog = Dialog(requireContext())
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.tooltip_layout)
-        val tvTooltip = dialog.findViewById<TextView>(R.id.tvTooltipText)
-        tvTooltip.text = "You can access Calender \n view from here."
+        dialogToolTip = Dialog(requireContext())
+        dialogToolTip?.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialogToolTip?.setContentView(R.layout.tooltip_layout)
+        val tvTooltip = dialogToolTip?.findViewById<TextView>(R.id.tvTooltipText)
+        tvTooltip?.text = "You can access Calender \n view from here."
         // Set transparent background for rounded tooltip
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogToolTip?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         // Get screen dimensions
         val displayMetrics = resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
@@ -810,20 +812,20 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         // Tooltip width (adjust as needed)
         val tooltipWidth = 250
         // Set dialog position
-        val params = dialog.window?.attributes
+        val params = dialogToolTip?.window?.attributes
         // Align tooltip to the **right** of the button
         params?.x = (location[0] + anchorView.width) + tooltipWidth
         // Position tooltip **above** the button
         params?.y = location[1] - anchorView.height + 15  // Add some spacing
-        dialog.window?.attributes = params
-        dialog.window?.setGravity(Gravity.TOP)
+        dialogToolTip?.window?.attributes = params
+        dialogToolTip?.window?.setGravity(Gravity.TOP)
         // Show the dialog
-        dialog.show()
+        dialogToolTip?.show()
         // Auto dismiss after 3 seconds
-        Handler(Looper.getMainLooper()).postDelayed({
-            dialog.dismiss()
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            dialog.dismiss()
             SharedPreferenceManager.getInstance(context).saveMealCalenderTooltip("MealCalenderTooltip",true)
-        }, 2000)
+//        }, 3000)
     }
 
     fun showLoader(view: View) {
@@ -1096,5 +1098,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     override fun onLogDishDeleted(mealData: String) {
         getMealsLogList(selectedDate)
+    }
+
+    override fun onMealTypeSelected(mealType: String) {
+        dialogToolTip?.dismiss()
     }
 }

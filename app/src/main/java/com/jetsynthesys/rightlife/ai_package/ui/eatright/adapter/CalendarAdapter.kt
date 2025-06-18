@@ -57,17 +57,17 @@ class CalendarAdapter(private val context: Context, private var dataLists: Array
         if (item.is_available){
             holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
             if (mealLogListData != null){
-                if (clickPos == position && mealLogListData == item && isClickView == true){
-                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
-                }else{
-                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
-                }
+//                if (clickPos == position && mealLogListData == item && isClickView == true){
+//                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
+//                }else{
+//                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
+//                }
             }
         }else{
             //holder.imgCheck.setImageResource(R.drawable.ic_uncheck_circle)
             if (mealLogListData != null){
                 if (clickPos == position && mealLogListData == item && isClickView == true){
-                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
+                    holder.imgCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }else{
                     holder.imgCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }

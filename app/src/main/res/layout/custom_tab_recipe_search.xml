@@ -9,7 +9,7 @@
         android:id="@+id/tabText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="15dp"
+        android:paddingHorizontal="9dp"
         android:paddingVertical="5dp"
         android:textSize="12sp"
         android:fontFamily="@font/dmsans_regular"
@@ -35,14 +35,15 @@
         app:layout_constraintStart_toEndOf="@id/tabText"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="8dp" />
+         />
 
     <ImageView
         android:id="@+id/imageArrow"
-        android:layout_width="8dp"
-        android:layout_height="4dp"
-        android:src="@drawable/ic_down"
+        android:layout_width="10dp"
+        android:layout_height="5dp"
+        android:src="@drawable/ic_chevron_down"
         android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/circleText"
         app:layout_constraintTop_toTopOf="@+id/circleText"

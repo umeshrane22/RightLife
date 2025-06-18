@@ -82,7 +82,7 @@
                     android:background="@null"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="1dp"
                     android:textSize="12sp"
                     android:textColorHint="@color/text_color_kcal"
                     android:textColor="@color/tab_unselected_text"
@@ -94,7 +94,7 @@
                 android:id="@+id/tv_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginStart="60dp"
                 android:layout_marginEnd="10sp"
                 android:visibility="gone"
@@ -138,10 +138,15 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/cardview_recipe_main_heading"
+                    android:id="@+id/tabSelectedTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="17dp"
+                    android:textSize="15sp"
+                    android:textColor="@color/black_no_meals"
+                    android:fontFamily="@font/dmsans_semibold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />
@@ -155,7 +160,7 @@
                     android:layout_marginBottom="20dp"
                     android:layout_marginEnd="5dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/cardview_recipe_main_heading"
+                    app:layout_constraintTop_toBottomOf="@+id/tabSelectedTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -176,7 +181,7 @@
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/black_no_meals"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/cardview_recipe_main_heading"
+                    app:layout_constraintTop_toBottomOf="@+id/tabSelectedTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>

@@ -67,6 +67,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private lateinit var carbs_description_heading : TextView
     private lateinit var carbs_description_text : TextView
     private lateinit var averageBurnCalorie : TextView
+    private lateinit var totalCalorie : TextView
     private lateinit var averageHeading : TextView
     private lateinit var percentageTv : TextView
     private lateinit var percentageIc : TextView
@@ -108,6 +109,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         lineChart = view.findViewById(R.id.heartLineChart)
         carbs_description_heading = view.findViewById(R.id.carbs_description_heading)
         carbs_description_text = view.findViewById(R.id.carbs_description_text)
+        totalCalorie = view.findViewById(R.id.totalCalorie)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -789,6 +791,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private fun setLastAverageValue(activeCaloriesResponse: ConsumedCarbsResponse, type: String) {
         activity?.runOnUiThread {
             averageBurnCalorie.text = activeCaloriesResponse.currentAvgCarbs.toInt().toString()
+            totalCalorie.text = activeCaloriesResponse.totalCarbs.toInt().toString()
             if (activeCaloriesResponse.progressSign.contentEquals("plus")){
                 percentageTv.text = (activeCaloriesResponse.progressPercentage.toInt().toString() + type)
                 // percentageIc.setImageResource(R.drawable.ic_up)

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.R.color.transparent
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,9 +21,23 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
     private lateinit var layoutLunch : LinearLayoutCompat
     private lateinit var layoutEveningSnacks : LinearLayoutCompat
     private lateinit var layoutDinner : LinearLayoutCompat
+    private var listener: OnMealTypeListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    interface OnMealTypeListener {
+        fun onMealTypeSelected(mealType: String)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        listener = when {
+            context is OnMealTypeListener -> context
+            parentFragment is OnMealTypeListener -> parentFragment as OnMealTypeListener
+            else -> throw ClassCastException("$context must implement OnMealTypeListener")
+        }
     }
 
     override fun onCreateView(
@@ -73,6 +88,7 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun callTabMealFragment(mealType: String) {
+        listener?.onMealTypeSelected("selected")
         val fragment = HomeTabMealFragment()
         val args = Bundle()
         args.putString("mealType", mealType)
@@ -82,6 +98,11 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
             addToBackStack("mealLog")
             commit()
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
     }
 
     companion object {
