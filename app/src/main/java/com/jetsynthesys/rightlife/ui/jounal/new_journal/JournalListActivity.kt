@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityJournalListBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -29,6 +31,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -43,17 +47,27 @@ class JournalListActivity : BaseActivity() {
     private lateinit var calendarAdapter: CalendarAdapter
     private val calendar = Calendar.getInstance()
     private var selectedDate: CalendarDay? = null
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalListBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         binding.addEntryButton.setOnClickListener {
-            startActivity(Intent(this, JournalNewActivity::class.java))
+            startActivity(Intent(this, JournalNewActivity::class.java).apply {
+                putExtra("StartDate",startDate)
+            })
         }
 
         binding.btnBack.setOnClickListener {
+            callPostMindFullDataAPI()
+            finish()
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -245,6 +259,7 @@ class JournalListActivity : BaseActivity() {
                     }
                 startActivity(intent.apply {
                     putExtra("JournalEntry", journalEntry)
+                    putExtra("StartDate", startDate)
                 })
             } else {
                 showDeleteBottomSheet(journalEntry)
@@ -349,6 +364,11 @@ class JournalListActivity : BaseActivity() {
             }
 
         })
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
     }
 
 }

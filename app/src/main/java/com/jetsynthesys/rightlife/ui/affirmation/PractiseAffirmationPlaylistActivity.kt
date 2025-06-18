@@ -23,7 +23,7 @@ import android.view.animation.AnimationUtils
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
@@ -35,19 +35,17 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityPratciseAffirmationPlaylistBinding
 import com.jetsynthesys.rightlife.databinding.BottmsheetReminderSelectionBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetReminserSetBinding
 import com.jetsynthesys.rightlife.databinding.DialogPraticeTimeAffirmationBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.WeekDayAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationSelectedCategoryData
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetAffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.GetWatchedAffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.WatchAffirmationPlaylistRequest
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -61,6 +59,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -80,16 +80,23 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
     private var selectedEveningTime: String? = ""
     private var watchedResponse: GetWatchedAffirmationPlaylistResponse? = null
     private var position = 0
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPratciseAffirmationPlaylistBinding.inflate(layoutInflater)
         setChildContentView(binding.getRoot())
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         getAffirmationPlaylist()
         getWatchedAffirmationPlaylist(0)
         setupReminderBottomSheet()
 
         setCardPlaylistAdapter(affirmationList)
+
+        onBackPressedDispatcher.addCallback(this) {
+            callPostMindFullDataAPI()
+            finish()
+        }
 
         binding.ivDownload.setOnClickListener {
             val savedImageUri =
@@ -299,6 +306,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         reminderBottomSheetDialog.setCancelable(false)
 
         dialogBinding.ivDialogClose.setOnClickListener {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -448,6 +456,7 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         reminderSetBottomSheetDialog.setCancelable(false)
 
         dialogBinding.ivDialogClose.setOnClickListener {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -659,6 +668,11 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
             }
 
         })
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Affirmation", startDate, endDate)
     }
 
 }

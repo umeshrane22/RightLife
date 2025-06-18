@@ -10,6 +10,8 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class JournalNewActivity : BaseActivity() {
 
@@ -17,6 +19,7 @@ class JournalNewActivity : BaseActivity() {
     private lateinit var adapter: JournalAdapter
     private var isFromTool = false
     private var whereToGo = ""
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +28,14 @@ class JournalNewActivity : BaseActivity() {
 
         isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
         binding.iconBack.setOnClickListener {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -118,6 +125,12 @@ class JournalNewActivity : BaseActivity() {
             )
         }
         intent.putExtra("Section", journalItem)
+        intent.putExtra("StartDate", startDate)
         startActivity(intent)
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
     }
 }

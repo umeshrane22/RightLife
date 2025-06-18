@@ -20,6 +20,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityTodaysAffirmationBinding
 import com.jetsynthesys.rightlife.databinding.LayoutDiscardBottomsheetBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.affirmation.adapter.AffirmationCardPagerAdapter
 import com.jetsynthesys.rightlife.ui.affirmation.pojo.AffirmationCategoryData
@@ -47,6 +49,8 @@ import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 
@@ -64,6 +68,7 @@ class TodaysAffirmationActivity : BaseActivity() {
 
     private val affirmationList: ArrayList<AffirmationSelectedCategoryData> = ArrayList()
     private lateinit var affirmationCardPagerAdapter: AffirmationCardPagerAdapter
+    private var startDate = ""
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,11 +76,18 @@ class TodaysAffirmationActivity : BaseActivity() {
         binding = ActivityTodaysAffirmationBinding.inflate(layoutInflater)
         setChildContentView(binding.getRoot())
 
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+
         setupCategoryBottomSheet()
         setupCloseBottomSheet()
         setupDiscardBottomSheet()
         getAffirmationPlaylist()
         getCategoryList()
+
+        onBackPressedDispatcher.addCallback(this) {
+            callPostMindFullDataAPI()
+            finish()
+        }
 
         if (sharedPreferenceManager.firstTimeUserForAffirmation)
             showInfoDialog()
@@ -102,8 +114,10 @@ class TodaysAffirmationActivity : BaseActivity() {
                 closeBottomSheetDialog.show()
             else if (affirmationPlaylistRequest.isNotEmpty())
                 discardBottomSheetDialog.show()
-            else
+            else {
+                callPostMindFullDataAPI()
                 finish()
+            }
         }
 
         binding.addAffirmation.setOnClickListener {
@@ -406,6 +420,7 @@ class TodaysAffirmationActivity : BaseActivity() {
         binding.btnYes.setOnClickListener {
             affirmationPlaylist[0].id?.let { removeFromPlaylist(it) }
             bottomSheetDialog.dismiss()
+            callPostMindFullDataAPI()
             finish()
         }
         bottomSheetDialog.show()
@@ -433,6 +448,7 @@ class TodaysAffirmationActivity : BaseActivity() {
             discardBottomSheetDialog.dismiss()
         }
         bottomSheetView.findViewById<Button>(R.id.btnYes).setOnClickListener {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -460,6 +476,7 @@ class TodaysAffirmationActivity : BaseActivity() {
             closeBottomSheetDialog.dismiss()
         }
         bottomSheetView.findViewById<Button>(R.id.btnQuitAnyway).setOnClickListener {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -721,6 +738,7 @@ class TodaysAffirmationActivity : BaseActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             dialog.dismiss()
+            callPostMindFullDataAPI()
             finish()
         }, 1000)
     }
@@ -760,6 +778,11 @@ class TodaysAffirmationActivity : BaseActivity() {
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         startActivity(Intent.createChooser(shareIntent, "Share via"))
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Affirmation", startDate, endDate)
     }
 
 

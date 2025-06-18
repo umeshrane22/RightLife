@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.RetrofitData;
 
 import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest;
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse;
+import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest;
 import com.jetsynthesys.rightlife.apimodel.CheckRegistrationResponse;
 import com.jetsynthesys.rightlife.apimodel.LoginRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginResponse;
@@ -1166,6 +1168,13 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body ToolKitRequest toolKitRequest
     );
+
+    @POST("mindFull")
+    Call<BaseResponse> postMindFull(
+            @Header("Authorization") String authToken,
+            @Body MindfullRequest mindfullData
+    );
+
 
     @POST("user/notification-setting")
     Call<CommonResponse> updateNotificationSettings(
