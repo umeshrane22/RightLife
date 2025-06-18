@@ -153,6 +153,7 @@
         android:layout_height="wrap_content"
         android:text="• If you're just starting, begin with short daily sessions"
         android:textColor="@color/black"
+        android:paddingBottom="30dp"
         android:layout_marginBottom="16dp"/>
 
     <!-- Got It Button -->
@@ -161,6 +162,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:text="GOT IT"
+        android:visibility="gone"
         android:backgroundTint="@color/eatright_text_color"
         android:textColor="@color/white"
         android:textAllCaps="false"

@@ -62,7 +62,7 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
                 if (loggedInUser?.isOnboardingComplete == true) {
-                    val intent = Intent(this, MainAIActivity::class.java)
+                    val intent = Intent(this, HomeDashboardActivity::class.java)
                     startActivity(intent)
                 } else {
                     if (!sharedPreferenceManager.createUserName) {
