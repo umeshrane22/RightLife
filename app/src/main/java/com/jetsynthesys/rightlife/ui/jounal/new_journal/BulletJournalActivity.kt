@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class BulletJournalActivity : AppCompatActivity() {
 
@@ -18,6 +20,7 @@ class BulletJournalActivity : AppCompatActivity() {
     private var journalEntry: JournalEntry? = JournalEntry()
     private var previousText = ""
     private var hasStarted = false
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +32,10 @@ class BulletJournalActivity : AppCompatActivity() {
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+
 
         journalEntry?.let {
             binding.etJournalEntry.setText(it.answer)
@@ -123,6 +130,7 @@ class BulletJournalActivity : AppCompatActivity() {
                     putExtra("Section", journalItem)
                     putExtra("Answer", binding.etJournalEntry.text.toString())
                     putExtra("JournalEntry", journalEntry)
+                    intent.putExtra("StartDate", startDate)
                 }
             startActivity(intent)
 

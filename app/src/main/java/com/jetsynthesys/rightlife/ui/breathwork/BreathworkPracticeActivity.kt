@@ -7,15 +7,16 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.ScaleAnimation
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkPracticeBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetBreathworkCompleteBinding
-import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
-import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.BottomsheetEarlyFinishBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class BreathworkPracticeActivity : BaseActivity() {
 
@@ -29,6 +30,7 @@ class BreathworkPracticeActivity : BaseActivity() {
     private var inhaleTime: Long = 0
     private var exhaleTime: Long = 0
     private var holdTime: Long = 0
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,9 @@ class BreathworkPracticeActivity : BaseActivity() {
 
         // Retrieve the selected breathing practice from the intent
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         val sessionCount = intent.getIntExtra("sessionCount", 3)
         totalSets = sessionCount
@@ -58,7 +63,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         // Set click listeners
         binding.backButton.setOnClickListener { onBackPressed() }
         binding.finishEarlyButton.setOnClickListener {
-            showDeleteBottomSheet();
+            showDeleteBottomSheet()
         }
 
         // Start the breathing session
@@ -90,6 +95,7 @@ class BreathworkPracticeActivity : BaseActivity() {
             startBreathIn()
         } else {
             //finish()
+            CommonAPICall.postWellnessStreak(this, "breathing")
             showCompletedBottomSheet()
         }
     }
@@ -201,6 +207,7 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnYes.setOnClickListener {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
+            callPostMindFullDataAPI()
             finish()
         }
         bottomSheetDialog.show()
@@ -219,7 +226,8 @@ class BreathworkPracticeActivity : BaseActivity() {
 
 
         // Set up the animation
-        val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet2)
+        val bottomSheetLayout =
+            bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet2)
         if (bottomSheetLayout != null) {
             val slideUpAnimation: Animation =
                 AnimationUtils.loadAnimation(this, R.anim.bottom_sheet_slide_up)
@@ -234,25 +242,37 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnSame.text = "same as before"
         dialogBinding.btnWorse.text = "worse than before"
 
+        bottomSheetDialog.setOnDismissListener {
+            callPostMindFullDataAPI()
+            finish()
+        }
+
+        bottomSheetDialog.setOnCancelListener {
+            callPostMindFullDataAPI()
+            finish()
+        }
+
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
 
         dialogBinding.btnBetter.setOnClickListener {
             bottomSheetDialog.dismiss()
-            finish()
         }
 
         dialogBinding.btnSame.setOnClickListener {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
-            finish()
         }
         dialogBinding.btnWorse.setOnClickListener {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
-            finish()
         }
         bottomSheetDialog.show()
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
     }
 }

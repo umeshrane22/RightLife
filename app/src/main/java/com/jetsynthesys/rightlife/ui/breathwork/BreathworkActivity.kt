@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.breathwork
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.recyclerview.widget.GridLayoutManager
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
@@ -13,6 +14,8 @@ import com.jetsynthesys.rightlife.ui.breathwork.pojo.GetBreathingResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class BreathworkActivity : BaseActivity() {
 
@@ -20,6 +23,7 @@ class BreathworkActivity : BaseActivity() {
     private val breathWorks = ArrayList<BreathingData>()
     private var isFromTool = false
     private var whereToGo = ""
+    private var startDate = ""
 
     private lateinit var binding: ActivityBreathworkBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,10 +34,17 @@ class BreathworkActivity : BaseActivity() {
 
         isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
+        startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         getBreathingWork()
 
         binding.icBackDialog.setOnClickListener {
+            callPostMindFullDataAPI()
+            finish()
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            callPostMindFullDataAPI()
             finish()
         }
 
@@ -44,6 +55,7 @@ class BreathworkActivity : BaseActivity() {
                 val intent =
                     Intent(this@BreathworkActivity, BreathworkSessionActivity::class.java).apply {
                         putExtra("BREATHWORK", breathingData)
+                        putExtra("StartDate", startDate)
                     }
                 startActivity(intent)
             }
@@ -85,6 +97,7 @@ class BreathworkActivity : BaseActivity() {
                                         BreathworkSessionActivity::class.java
                                     ).apply {
                                         putExtra("BREATHWORK", breathingDataSend)
+                                        putExtra("StartDate", startDate)
                                     })
                                 finish()
                             } else
@@ -104,5 +117,10 @@ class BreathworkActivity : BaseActivity() {
                     handleNoInternetView(t)
                 }
             })
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
     }
 }

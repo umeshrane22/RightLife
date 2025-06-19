@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityGriefBinding
 import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class GriefJournalActivity : AppCompatActivity() {
 
@@ -18,6 +20,7 @@ class GriefJournalActivity : AppCompatActivity() {
     private var journalEntry: JournalEntry? = JournalEntry()
     private var questionsList: ArrayList<Question>? = ArrayList()
     private var position: Int = 0
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +32,10 @@ class GriefJournalActivity : AppCompatActivity() {
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
         questionsList = intent.getSerializableExtra("QuestionList") as? ArrayList<Question>
         position = intent.getIntExtra("Position", 0)
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+
 
         if (questionsList?.isNotEmpty() == true) {
             binding.tvPrompt.text = questionsList?.get(position)?.question
@@ -100,6 +107,7 @@ class GriefJournalActivity : AppCompatActivity() {
                     else
                         putExtra("QuestionId", questionsList?.get(position)?.id)
                     putExtra("JournalEntry", journalEntry)
+                    putExtra("StartDate", startDate)
                 }
             startActivity(intent)
 

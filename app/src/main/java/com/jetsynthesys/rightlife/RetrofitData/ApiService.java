@@ -2,6 +2,8 @@ package com.jetsynthesys.rightlife.RetrofitData;
 
 import com.google.gson.JsonElement;
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest;
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse;
+import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest;
 import com.jetsynthesys.rightlife.apimodel.CheckRegistrationResponse;
 import com.jetsynthesys.rightlife.apimodel.LoginRequest;
 import com.jetsynthesys.rightlife.apimodel.LoginResponse;
@@ -27,6 +29,7 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse;
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleBookmarkRequest;
 import com.jetsynthesys.rightlife.ui.Articles.requestmodels.ArticleLikeRequest;
+import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.CommonResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse;
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.SleepCategoryResponse;
@@ -469,7 +472,8 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Query("assessment") String assessment
     );
-// get assessment result with id and assessment name
+
+    // get assessment result with id and assessment name
     @Headers("Content-Type: application/json")
     @GET("mind-audit/q/get-assessment-result")
     Call<MindAuditResultResponse> getMindAuditAssessmentResultWithId(
@@ -718,14 +722,6 @@ public interface ApiService {
             @Query("isRecommended") boolean isRecommended,
             @Query("skip") int skip,
             @Query("limit") int limit
-    );
-
-    @Headers("Content-Type: application/json")
-    @POST("wellnessStreak")
-    Call<ResponseBody> postWellnessStreak(
-            @Header("Authorization") String authToken,
-            @Query("serviceName") String serviceName,
-            @Query("status") String status
     );
 
     @Headers("Content-Type: application/json")
@@ -1167,6 +1163,13 @@ public interface ApiService {
             @Body ToolKitRequest toolKitRequest
     );
 
+    @POST("mindFull")
+    Call<BaseResponse> postMindFull(
+            @Header("Authorization") String authToken,
+            @Body MindfullRequest mindfullData
+    );
+
+
     @POST("user/notification-setting")
     Call<CommonResponse> updateNotificationSettings(
             @Header("Authorization") String authToken,
@@ -1233,6 +1236,12 @@ public interface ApiService {
     Call<PaymentIntentResponse> getPaymentIntent(
             @Header("Authorization") String authToken,
             @Path("id") String paymentId
+    );
+
+    @POST("wellnessStreak")
+    Call<BaseResponse> postWellnessStreak(
+            @Header("Authorization") String authToken,
+            @Body CommonAPICall.WellnessStreakRequest wellnessStreakRequest
     );
 }
 

@@ -38,7 +38,7 @@ class OnBoardingModuleListAdapter(
 
     override fun onBindViewHolder(holder: OnBoardingModuleViewHolder, position: Int) {
         val moduleService = moduleServices[position]
-        holder.tvHeader.text = Utils.getModuleText(moduleService.moduleName)
+        holder.tvHeader.text = moduleService.moduleName
         holder.tvDescription.text = moduleService.moduleTitle
 
         holder.tvHeader.setTextColor(Utils.getModuleDarkColor(context, moduleService.moduleName))

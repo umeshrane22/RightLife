@@ -22,6 +22,8 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class JournalPromptActivity : BaseActivity() {
 
@@ -30,6 +32,7 @@ class JournalPromptActivity : BaseActivity() {
     private var questionsList: ArrayList<Question> = ArrayList()
     private var questions4: ArrayList<Question> = ArrayList()
     private var sectionList: ArrayList<Section> = ArrayList()
+    private var startDate = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +43,10 @@ class JournalPromptActivity : BaseActivity() {
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         val journalItem: JournalItem = intent.getSerializableExtra("Section") as JournalItem
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+
 
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
@@ -77,6 +84,7 @@ class JournalPromptActivity : BaseActivity() {
                         putExtra("Answer", question.question)
                         putExtra("QuestionList", questionsList)
                         putExtra("Position", questionsList.indexOf(question))
+                        intent.putExtra("StartDate", startDate)
                     }
                 startActivity(intent)
             }

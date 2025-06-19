@@ -21,6 +21,7 @@ import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.databinding.ActivityHealthcamRecorderBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamFacialScanRequest
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamReportIdResponse
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
@@ -314,19 +315,23 @@ class HealthCamRecorderActivity : BaseActivity() {
 
     private fun submitReport(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
 
-        val call = apiService.submitHealthCamReport(sharedPreferenceManager.accessToken, healthCamFacialScanRequest)
+        val call = apiService.submitHealthCamReport(
+            sharedPreferenceManager.accessToken,
+            healthCamFacialScanRequest
+        )
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 Utils.dismissLoader(this@HealthCamRecorderActivity)
                 if (response.isSuccessful && response.body() != null) {
                     val gson = Gson()
                     val jsonResponse = gson.toJson(response.body()?.string())
+                    CommonAPICall.postWellnessStreak(this@HealthCamRecorderActivity, "faceScan")
                     val intent = Intent(
                         this@HealthCamRecorderActivity,
                         NewHealthCamReportActivity::class.java
                     ).apply {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        putExtra("FROM","RECORDER")
+                        putExtra("FROM", "RECORDER")
                     }
                     startActivity(intent)
                     finish()
@@ -349,7 +354,10 @@ class HealthCamRecorderActivity : BaseActivity() {
 
     private fun submitFacialScan(healthCamFacialScanRequest: HealthCamFacialScanRequest) {
         Utils.showLoader(this)
-        val call = apiService.getHealthCamByReportId(sharedPreferenceManager.accessToken, healthCamFacialScanRequest.reportId)
+        val call = apiService.getHealthCamByReportId(
+            sharedPreferenceManager.accessToken,
+            healthCamFacialScanRequest.reportId
+        )
 
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
