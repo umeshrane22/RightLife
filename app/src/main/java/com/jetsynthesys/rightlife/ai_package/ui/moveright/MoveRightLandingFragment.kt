@@ -1097,7 +1097,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
                         withContext(Dispatchers.Main) {
                             if (allCardItems.isNotEmpty()) {
-                                workoutImageIcon.visibility = View.VISIBLE
+                                val hasValidHeartRate = syncedCardItems.any { item ->
+                                    item.heartRateData.any { it.heartRate > 0 }
+                                }
+
+                                workoutImageIcon.visibility = if (hasValidHeartRate) View.VISIBLE else View.GONE
+
+                               // workoutImageIcon.visibility = View.VISIBLE
                                 dataFilledworkout.visibility = View.VISIBLE
                                 nodataWorkout.visibility = View.GONE
                                 val adapter = CarouselAdapter(allCardItems) { cardItem, position ->

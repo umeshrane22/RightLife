@@ -189,20 +189,20 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tv_stage_total_time"
-                        android:layout_height="80dp" />
+                        android:layout_height="50dp" />
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/sleep_text_color"
-                        android:text=""
                         android:id="@+id/tv_stage_start_sleep_time"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/dmsans_regular"
+                        android:layout_width="5dp"
+                        android:layout_height="11dp"
                         android:layout_marginStart="6dp"
                         android:layout_marginTop="8dp"
-                        app:layout_constraintTop_toBottomOf="@+id/sleepStagesView"
-                        app:layout_constraintStart_toEndOf="@+id/img_bed_icon" />
+                        android:fontFamily="@font/dmsans_regular"
+                        android:text=""
+                        android:textColor="@color/sleep_text_color"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toEndOf="@+id/img_bed_icon"
+                        app:layout_constraintTop_toBottomOf="@+id/sleepStagesView" />
 
                     <ImageView
                         android:layout_width="15dp"

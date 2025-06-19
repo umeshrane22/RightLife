@@ -413,7 +413,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
                 fetchAllHealthData()
-              //  storeHealthData()
+                storeHealthData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions)
             }
@@ -428,7 +428,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
                 fetchAllHealthData()
-              //  storeHealthData()
+                storeHealthData()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
                 }
@@ -437,7 +437,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
                 fetchAllHealthData()
-               // storeHealthData()
+                storeHealthData()
             }
         }
     }
@@ -960,7 +960,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchWakeupData() {
-        val userId = /*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
         val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
@@ -1749,8 +1749,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 }
 
 
-class SleepChartViewLanding(context: android.content.Context, attrs: android.util.AttributeSet? = null) :
-    View(context, attrs) {
+class SleepChartViewLanding(
+    context: android.content.Context,
+    attrs: android.util.AttributeSet? = null
+) : View(context, attrs) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val sleepData = mutableListOf<SleepSegmentModel>()
@@ -1768,19 +1770,29 @@ class SleepChartViewLanding(context: android.content.Context, attrs: android.uti
 
         val baselineY = height * 0.8f
         val maxBarHeight = height * 0.5f
-        val cornerRadius = height * 0.1f
+        val cornerRadiusBase = height * 0.1f
 
         for (segment in sleepData) {
             paint.color = segment.color
             val left = segment.start.coerceIn(0f, 1f) * width
             val right = segment.end.coerceIn(0f, 1f) * width
-            val top = baselineY - (segment.height / maxBarHeight * maxBarHeight)
+
+            val barHeight = segment.height.coerceAtMost(maxBarHeight)
+            val top = baselineY - barHeight
             val bottom = baselineY
 
-            canvas.drawRoundRect(RectF(left, top, right, bottom), cornerRadius, cornerRadius, paint)
+            val cornerRadius = minOf(cornerRadiusBase, barHeight / 2)
+
+            canvas.drawRoundRect(
+                RectF(left, top, right, bottom),
+                cornerRadius,
+                cornerRadius,
+                paint
+            )
         }
     }
 }
+
 
 class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : MarkerView(context, R.layout.marker_view) {
 
