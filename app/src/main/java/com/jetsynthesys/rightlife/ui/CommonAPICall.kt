@@ -8,6 +8,8 @@ import android.widget.Toast
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationData
 import com.jetsynthesys.rightlife.ui.settings.pojo.NotificationsResponse
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
@@ -301,5 +303,45 @@ object CommonAPICall {
             }
         })
     }
+
+    fun postMindFullData(context: Context, type: String, startDate: String, endDate: String) {
+        val mindFullRequest =
+            MindfullRequest(type = type, startDate = startDate, endDate = endDate)
+        val authToken = SharedPreferenceManager.getInstance(context).accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val call = apiService.postMindFull(authToken, mindFullRequest)
+        call.enqueue(object : Callback<BaseResponse> {
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+
+            }
+        })
+    }
+
+    data class WellnessStreakRequest(
+        val status: String,
+        val serviceName: String
+    )
+
+    fun postWellnessStreak(context: Context, serviceName: String, status: String = "COMPLETE") {
+        val wellnessStreakRequest =
+            WellnessStreakRequest(status, serviceName)
+        val authToken = SharedPreferenceManager.getInstance(context).accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val call = apiService.postWellnessStreak(authToken, wellnessStreakRequest)
+        call.enqueue(object : Callback<BaseResponse> {
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+
+            }
+        })
+    }
+
 
 }

@@ -20,8 +20,21 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageClose"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/close"
+                    app:tint="@color/black"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="12dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp">
+                android:layout_marginTop="36dp">
 
                 <RelativeLayout
                     android:id="@+id/rl_consistency"
@@ -250,6 +263,8 @@
                         android:textSize="12sp" />
 
                 </LinearLayout>
+            </RelativeLayout>
+
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>

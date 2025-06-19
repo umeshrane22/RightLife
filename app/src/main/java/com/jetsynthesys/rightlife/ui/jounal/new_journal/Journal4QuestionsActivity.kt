@@ -24,11 +24,14 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityJournalAnswerBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetAddTagBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class Journal4QuestionsActivity : BaseActivity() {
 
@@ -46,6 +49,7 @@ class Journal4QuestionsActivity : BaseActivity() {
     private val journalUpdateRequest = JournalUpdateRequest()
     private var selectedTags: ArrayList<String> = ArrayList()
     private var journalEntry: JournalEntry? = JournalEntry()
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +59,9 @@ class Journal4QuestionsActivity : BaseActivity() {
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         answer = intent.getStringExtra("Answer").toString()
         val questionId = intent.getStringExtra("QuestionId")
@@ -678,7 +685,8 @@ class Journal4QuestionsActivity : BaseActivity() {
         })
     }
 
-    private fun closeActivity(){
+    private fun closeActivity() {
+        callPostMindFullDataAPI()
         finish()
         startActivity(
             Intent(
@@ -688,5 +696,10 @@ class Journal4QuestionsActivity : BaseActivity() {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 putExtra("start_journal", true)
             })
+    }
+
+    private fun callPostMindFullDataAPI() {
+        val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
     }
 }

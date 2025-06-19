@@ -16,6 +16,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
+import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.MindAuditAssessmentQuestions;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.Question;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.ScoringPattern;
@@ -246,7 +247,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
-                        Toast.makeText(MAAssessmentQuestionaireActivity.this, "Submitted successfully", Toast.LENGTH_SHORT).show();
+                        CommonAPICall.INSTANCE.postWellnessStreak(MAAssessmentQuestionaireActivity.this,"mind Audit","COMPLETE");
                         finish();
                         Intent intent = new Intent(MAAssessmentQuestionaireActivity.this, MindAuditResultActivity.class);
                         intent.putExtra("FROM", "MAAssessment");

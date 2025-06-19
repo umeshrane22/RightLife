@@ -11,6 +11,8 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 
 class BreathworkSessionActivity : BaseActivity() {
@@ -19,6 +21,7 @@ class BreathworkSessionActivity : BaseActivity() {
     private lateinit var binding: ActivityBreathworkSessionBinding
     private var sessionCount = 3 // Default session count
     private var breathingData: BreathingData? = null
+    private var startDate = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +31,9 @@ class BreathworkSessionActivity : BaseActivity() {
         // Retrieve the selected breathing practice from the intent
 
         breathingData = intent.getSerializableExtra("BREATHWORK") as BreathingData
+        startDate = intent.getStringExtra("StartDate").toString()
+        if (startDate.isEmpty())
+            startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
         binding.ivPlus.setImageResource(
             if (breathingData?.isAddedToToolKit!!) R.drawable.greentick else R.drawable.ic_breathing_toolkit
@@ -70,6 +76,7 @@ class BreathworkSessionActivity : BaseActivity() {
             val intent = Intent(this, BreathworkPracticeActivity::class.java)
             intent.putExtra("sessionCount", sessionCount)
             intent.putExtra("BREATHWORK", breathingData)
+            intent.putExtra("StartDate", startDate)
             //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
 
             startActivity(intent)
