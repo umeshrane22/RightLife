@@ -973,7 +973,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
     private fun onToolsItem(toolsData: ToolGridData, position: Int, isRefresh: Boolean) {
 
-        if (toolsData.moduleName.contentEquals("Breathing")){
+        if (toolsData.moduleName.contentEquals("Breathwork")){
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
         }else if (toolsData.moduleName.contentEquals("Journalling")){
             startActivity(Intent(requireContext(), JournalListActivity::class.java))

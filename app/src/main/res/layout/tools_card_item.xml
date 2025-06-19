@@ -40,7 +40,7 @@
             android:textAlignment="center"
             android:padding="5dp"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:fontFamily="@font/dmsans_regular"
             android:textColor="#0B1215"
             android:layout_marginTop="4dp"/>

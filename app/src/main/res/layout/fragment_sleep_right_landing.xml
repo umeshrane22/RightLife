@@ -1492,7 +1492,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             android:src="@drawable/resto_line2"
-                            android:layout_marginStart="50dp"
+                            android:layout_marginStart="30dp"
                             android:layout_marginTop="15dp"/>
 
                         <!-- Chart View -->
@@ -1511,7 +1511,7 @@
                             android:id="@+id/img_end_resto_graph"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginEnd="50dp"
+                            android:layout_marginEnd="30dp"
                             android:layout_marginTop="15dp"/>
 
                         <!-- Sleep Icon + Time -->
@@ -1519,7 +1519,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginStart="5dp"
                             android:orientation="horizontal"
                             app:layout_constraintTop_toBottomOf="@id/img_start_resto_graph"
                             app:layout_constraintStart_toStartOf="parent">
@@ -1546,7 +1546,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:layout_marginTop="5dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_marginEnd="5dp"
                             app:layout_constraintTop_toBottomOf="@id/img_start_resto_graph"
                             app:layout_constraintEnd_toEndOf="parent">
 
@@ -1723,9 +1723,9 @@
                         android:id="@+id/sleep_duration_layout"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
-                        android:layout_marginStart="65dp"
+                        android:layout_marginStart="35dp"
                         android:orientation="horizontal"
-                        android:layout_marginEnd="65dp"
+                        android:layout_marginEnd="35dp"
                         android:background="@drawable/view_grey_bg"
                         android:gravity="center"
                         app:layout_constraintTop_toBottomOf="@id/tv_requirement"
@@ -1764,14 +1764,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="2"
+                        android:weightSum="5"
                         app:layout_constraintTop_toBottomOf="@id/sleep_time_line">
 
                         <!-- Sleep Time -->
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="2"
+                            android:layout_marginEnd="5dp"
                             android:orientation="vertical"
                             android:gravity="center">
 
@@ -1804,11 +1805,18 @@
                                     android:textColor="#555555" />
                             </LinearLayout>
                         </LinearLayout>
-
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                    </LinearLayout>
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_marginStart="5dp"
+                            android:layout_weight="2"
                             android:orientation="vertical"
                             android:gravity="center">
 

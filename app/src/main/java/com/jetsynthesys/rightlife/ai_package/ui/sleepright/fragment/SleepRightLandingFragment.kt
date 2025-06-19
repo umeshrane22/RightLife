@@ -67,10 +67,12 @@ import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import com.google.gson.Gson
@@ -99,6 +101,7 @@ import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.AssessmentReviewDialog
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDialogFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -410,7 +413,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
                 fetchAllHealthData()
-                storeHealthData()
+              //  storeHealthData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions)
             }
@@ -425,7 +428,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
                 fetchAllHealthData()
-                storeHealthData()
+              //  storeHealthData()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
                 }
@@ -434,7 +437,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
                 fetchAllHealthData()
-                storeHealthData()
+               // storeHealthData()
             }
         }
     }
@@ -957,7 +960,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun fetchWakeupData() {
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val userId = /*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
         val source = "android"
         val call = ApiClient.apiServiceFastApi.fetchWakeupTime(userId, source)
@@ -1051,7 +1054,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 showLoader(requireView())
             }
         }
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
+        val userId =/*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = getCurrentDate()
         val source = "android"
       //  val source = "apple"
@@ -1224,7 +1227,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
-        val labels = weekRanges
+       // val labels = weekRanges
+        val labels = mutableListOf<String>()
+
+        sleepData?.forEachIndexed { index, (label, durations) ->
+            val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+            val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+            labels.add("$top\n$bottom")
+        }
 
         sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
@@ -1247,11 +1258,25 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         lineChart.data = LineData(idealSet, actualSet)
 
-        lineChart.xAxis.apply {
+        /*lineChart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
             position = XAxis.XAxisPosition.BOTTOM
             textSize = 12f
+        }*/
+
+        lineChart.xAxis.apply {
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    val index = value.toInt()
+                    return if (index in labels.indices) labels[index] else ""
+                }
+            }
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            setDrawGridLines(false)
+            labelRotationAngle = 0f
+            textSize = 10f
         }
 
         lineChart.axisLeft.apply {
@@ -1265,12 +1290,21 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lineChart.description.isEnabled = false
         lineChart.legend.textSize = 12f
         lineChart.setPinchZoom(false)
+        lineChart.setExtraBottomOffset(24f)
         lineChart.setDrawGridBackground(false)
         lineChart.setScaleEnabled(false) // disables pinch and double-tap zoom
         lineChart.isDoubleTapToZoomEnabled = false // disables zoom on double tap
 
         lineChart.isDragEnabled = false
         lineChart.isHighlightPerTapEnabled = false
+
+        lineChart.setXAxisRenderer(
+            MultilineXAxisRenderer(
+                lineChart.viewPortHandler,
+                lineChart.xAxis,
+                lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
+        )
 
         lineChart.invalidate()
     }
@@ -1294,7 +1328,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun formatIdealDate(dateTime: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val outputFormat = SimpleDateFormat("EEE dd MMM", Locale.getDefault())
-        return outputFormat.format(inputFormat.parse(dateTime)!!)
+       // return outputFormat.format(inputFormat.parse(dateTime)!!)
+        return dateTime
     }
 
     private fun formatDate(dateTime: String): String {
