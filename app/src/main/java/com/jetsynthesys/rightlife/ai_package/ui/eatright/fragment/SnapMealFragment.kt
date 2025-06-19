@@ -721,7 +721,13 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
         }
 
         view.findViewById<ImageView>(R.id.captureButton)?.setOnClickListener {
+            view.findViewById<ImageView>(R.id.captureButton)?.isEnabled = false
+            // Your click logic here
             takePhoto()
+            // Re-enable after delay (optional)
+            view.findViewById<ImageView>(R.id.captureButton)?.postDelayed({
+                view.findViewById<ImageView>(R.id.captureButton)?.isEnabled = true
+            }, 700) // 500 ms delay
         }
 
         view.findViewById<ImageView>(R.id.flashToggle)?.setOnClickListener {
@@ -729,7 +735,13 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
         }
 
         view.findViewById<ImageView>(R.id.galleryButton)?.setOnClickListener {
+            view.findViewById<ImageView>(R.id.galleryButton)?.isEnabled = false
+            // Your click logic here
             openGallery()
+            // Re-enable after delay (optional)
+            view.findViewById<ImageView>(R.id.galleryButton)?.postDelayed({
+                view.findViewById<ImageView>(R.id.galleryButton)?.isEnabled = true
+            }, 700) // 500 ms delay
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()

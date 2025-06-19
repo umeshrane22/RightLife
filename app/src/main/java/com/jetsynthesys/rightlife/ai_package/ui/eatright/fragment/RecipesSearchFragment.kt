@@ -324,7 +324,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 val typeface = resources.getFont(R.font.dmsans_regular)
                 tabText?.typeface = typeface
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
-                circleText?.visibility = View.GONE
+               circleText?.visibility = View.GONE
                 imageArrow?.setImageResource(R.drawable.ic_chevron_down)
             }
         }

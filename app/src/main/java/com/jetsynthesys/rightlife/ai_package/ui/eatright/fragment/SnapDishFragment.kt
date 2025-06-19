@@ -624,8 +624,8 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
-            MacroNutrientsModel(protein_g, "g", "Protein", R.drawable.ic_cabs),
-            MacroNutrientsModel(carb_g, "g", "Carbs", R.drawable.ic_protein),
+            MacroNutrientsModel(protein_g, "g", "Protein", R.drawable.ic_protein),
+            MacroNutrientsModel(carb_g, "g", "Carbs", R.drawable.ic_cabs),
             MacroNutrientsModel(fat_g, "g", "Fats", R.drawable.ic_fats),
         )
 

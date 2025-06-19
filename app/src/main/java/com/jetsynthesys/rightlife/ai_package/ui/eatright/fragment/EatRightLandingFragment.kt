@@ -768,7 +768,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(requireActivity())
         var selectedLabel = " kg"
-        var selectedWeight = ""//binding.tvWeight.text.toString()
+        var selectedWeight = weightIntake.text.toString() + " " +  weightIntakeUnit.text.toString()
         if (selectedWeight.isEmpty()) {
             selectedWeight = "50 kg"
         } else {

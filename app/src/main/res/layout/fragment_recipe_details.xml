@@ -288,7 +288,7 @@
                         android:layout_marginStart="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/view_macro"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/carbs_layout">
+                        app:layout_constraintEnd_toStartOf="@id/protein_layout">
 
                         <ImageView
                             android:id="@+id/calorie_image"
@@ -327,54 +327,6 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:id="@+id/carbs_layout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="20dp"
-                        app:layout_constraintTop_toBottomOf="@+id/view_macro"
-                        app:layout_constraintStart_toEndOf="@+id/calorie_layout"
-                        app:layout_constraintEnd_toStartOf="@id/protein_layout">
-
-                        <ImageView
-                            android:id="@+id/carbs_image"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_carbs"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"/>
-
-                        <TextView
-                            android:id="@+id/carbs_value"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:text="82g"
-                            android:textColor="@color/black"
-                            android:textSize="15sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/carbs_image" />
-
-                        <TextView
-                            android:id="@+id/carbs_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="Carbs"
-                            android:textSize="10sp"
-                            android:textColor="@color/black"
-                            android:fontFamily="@font/dmsans_bold"
-                            app:layout_constraintTop_toBottomOf="@+id/carbs_value"
-                            app:layout_constraintStart_toStartOf="@+id/carbs_value"
-                            app:layout_constraintEnd_toEndOf="@+id/carbs_value"/>
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/protein_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -383,14 +335,14 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
                         app:layout_constraintTop_toBottomOf="@+id/view_macro"
-                        app:layout_constraintStart_toEndOf="@+id/carbs_layout"
-                        app:layout_constraintEnd_toStartOf="@id/fat_layout">
+                        app:layout_constraintStart_toEndOf="@+id/calorie_layout"
+                        app:layout_constraintEnd_toStartOf="@id/carbs_layout">
 
                         <ImageView
                             android:id="@+id/protein_image"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_proteins"
+                            android:src="@drawable/ic_protein"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -423,6 +375,54 @@
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/carbs_layout"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="20dp"
+                        app:layout_constraintTop_toBottomOf="@+id/view_macro"
+                        app:layout_constraintStart_toEndOf="@+id/protein_layout"
+                        app:layout_constraintEnd_toStartOf="@id/fat_layout">
+
+                        <ImageView
+                            android:id="@+id/carbs_image"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_cabs"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"/>
+
+                        <TextView
+                            android:id="@+id/carbs_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/dmsans_bold"
+                            android:text="82g"
+                            android:textColor="@color/black"
+                            android:textSize="15sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/carbs_image" />
+
+                        <TextView
+                            android:id="@+id/carbs_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:text="Carbs"
+                            android:textSize="10sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_bold"
+                            app:layout_constraintTop_toBottomOf="@+id/carbs_value"
+                            app:layout_constraintStart_toStartOf="@+id/carbs_value"
+                            app:layout_constraintEnd_toEndOf="@+id/carbs_value"/>
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/fat_layout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -431,7 +431,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="10dp"
-                        app:layout_constraintStart_toEndOf="@id/protein_layout"
+                        app:layout_constraintStart_toEndOf="@id/carbs_layout"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/view_macro"
                         >

@@ -14,6 +14,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +22,7 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -73,6 +75,8 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
     private lateinit var percentageIc : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var averageGoalLayout : LinearLayoutCompat
+    private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
 
@@ -110,6 +114,8 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         fats_description_heading = view.findViewById(R.id.fats_description_heading)
         fats_description_text = view.findViewById(R.id.fats_description_text)
         totalCalorie = view.findViewById(R.id.totalCalorie)
+        goalLayout = view.findViewById(R.id.goalLayout)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -310,7 +316,8 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
 //        barChart.invalidate()
 //    }
 
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,
+                            activeCaloriesResponse: ConsumedFatResponse) {
         val dataSet = BarDataSet(entries, "")
         selectHeartRateLayout.visibility = View.INVISIBLE
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
@@ -350,7 +357,7 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         xAxis.setCenterAxisLabels(false)
 
         // Custom XAxis Renderer (multiline support)
-        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+        val customRenderer = MultilineXAxisRenderer(
             barChart.viewPortHandler,
             barChart.xAxis,
             barChart.getTransformer(YAxis.AxisDependency.LEFT)
@@ -365,6 +372,53 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         leftYAxis.axisMinimum = 0f
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
+
+        if (entries.size < 30){
+            val minValue = minOf(
+                entries.minOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalFat.toFloat(),
+                activeCaloriesResponse.currentAvgFat.toFloat()
+            )
+            val maxValue = maxOf(
+                entries.maxOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalFat.toFloat(),
+                activeCaloriesResponse.currentAvgFat.toFloat()
+            )
+            // Include stepsGoal in max check
+            val axisMax = maxOf(maxValue, activeCaloriesResponse.totalFat.toFloat())
+
+            leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+            leftYAxis.axisMaximum = axisMax * 1.2f
+            leftYAxis.setDrawZeroLine(true)
+            // leftYAxis.zeroLineColor = Color.BLACK
+            leftYAxis.zeroLineWidth = 1f
+
+            val totalStepsLine = LimitLine(activeCaloriesResponse.totalFat.toFloat(), "G")
+            totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.lineWidth = 1f
+            totalStepsLine.enableDashedLine(10f, 10f, 0f)
+            totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.textSize = 10f
+            totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            val avgStepsLine = LimitLine(activeCaloriesResponse.currentAvgFat.toFloat(), "A")
+            avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.lineWidth = 1f
+            avgStepsLine.enableDashedLine(10f, 10f, 0f)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textSize = 10f
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.removeAllLimitLines()
+            leftYAxis.addLimitLine(totalStepsLine)
+            leftYAxis.addLimitLine(avgStepsLine)
+            averageGoalLayout.visibility = View.VISIBLE
+            goalLayout.visibility = View.VISIBLE
+        }else{
+            leftYAxis.removeAllLimitLines()
+            averageGoalLayout.visibility = View.GONE
+            goalLayout.visibility = View.GONE
+        }
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
@@ -490,7 +544,7 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
                                 }else{
                                     barChart.visibility = View.VISIBLE
                                     layoutLineChart.visibility = View.GONE
-                                    updateChart(entries, labels, labelsDate)
+                                    updateChart(entries, labels, labelsDate, data)
                                 }
                             }
                         }
