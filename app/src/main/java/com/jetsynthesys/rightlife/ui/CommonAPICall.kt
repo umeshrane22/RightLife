@@ -321,4 +321,27 @@ object CommonAPICall {
         })
     }
 
+    data class WellnessStreakRequest(
+        val status: String,
+        val serviceName: String
+    )
+
+    fun postWellnessStreak(context: Context, serviceName: String, status: String = "COMPLETE") {
+        val wellnessStreakRequest =
+            WellnessStreakRequest(status, serviceName)
+        val authToken = SharedPreferenceManager.getInstance(context).accessToken
+        val apiService = ApiClient.getClient(context).create(ApiService::class.java)
+        val call = apiService.postWellnessStreak(authToken, wellnessStreakRequest)
+        call.enqueue(object : Callback<BaseResponse> {
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+
+            }
+        })
+    }
+
+
 }

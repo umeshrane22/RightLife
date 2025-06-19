@@ -95,6 +95,7 @@ class BreathworkPracticeActivity : BaseActivity() {
             startBreathIn()
         } else {
             //finish()
+            CommonAPICall.postWellnessStreak(this, "breathing")
             showCompletedBottomSheet()
         }
     }
@@ -241,27 +242,31 @@ class BreathworkPracticeActivity : BaseActivity() {
         dialogBinding.btnSame.text = "same as before"
         dialogBinding.btnWorse.text = "worse than before"
 
+        bottomSheetDialog.setOnDismissListener {
+            callPostMindFullDataAPI()
+            finish()
+        }
+
+        bottomSheetDialog.setOnCancelListener {
+            callPostMindFullDataAPI()
+            finish()
+        }
+
         dialogBinding.ivDialogClose.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
 
         dialogBinding.btnBetter.setOnClickListener {
             bottomSheetDialog.dismiss()
-            callPostMindFullDataAPI()
-            finish()
         }
 
         dialogBinding.btnSame.setOnClickListener {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
-            callPostMindFullDataAPI()
-            finish()
         }
         dialogBinding.btnWorse.setOnClickListener {
             //deleteJournal(journalEntry)
             bottomSheetDialog.dismiss()
-            callPostMindFullDataAPI()
-            finish()
         }
         bottomSheetDialog.show()
     }

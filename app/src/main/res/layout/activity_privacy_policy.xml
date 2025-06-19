@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:fontFamily="@font/dmsans_bold"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:text="Privacy Policy"
             android:textColor="@color/txt_color_mind"
             android:textSize="18sp" />

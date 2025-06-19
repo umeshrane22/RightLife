@@ -649,6 +649,10 @@ class TodaysAffirmationActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
 
                     if (sharedPreferenceManager.firstTimeUserForAffirmation) {
+                        CommonAPICall.postWellnessStreak(
+                            this@TodaysAffirmationActivity,
+                            "Affirmation"
+                        )
                         showCreatedUpdatedDialog("Playlist Created")
                         sharedPreferenceManager.firstTimeUserForAffirmation = false
                     } else {

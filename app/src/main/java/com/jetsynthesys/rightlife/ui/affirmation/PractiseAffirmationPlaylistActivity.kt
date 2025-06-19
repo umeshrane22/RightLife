@@ -610,6 +610,10 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     watchedResponse = response.body()
                     if (type == 1) {
+                        CommonAPICall.postWellnessStreak(
+                            this@PractiseAffirmationPlaylistActivity,
+                            "Affirmation"
+                        )
                         showPracticeCompleteDialog()
                     }
                 } else {

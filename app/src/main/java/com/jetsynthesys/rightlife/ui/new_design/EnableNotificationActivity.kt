@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -18,6 +19,11 @@ class EnableNotificationActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setChildContentView(R.layout.activity_enable_notification)
         val btnEnableNotification = findViewById<Button>(R.id.btn_enable_notification)
+
+        findViewById<ImageView>(R.id.imageClose).setOnClickListener {
+            sharedPreferenceManager.enableNotification = true
+            startActivity(Intent(this, SyncNowActivity::class.java))
+        }
 
         btnEnableNotification.setOnClickListener {
             checkPermission()
@@ -39,15 +45,15 @@ class EnableNotificationActivity : BaseActivity() {
                 )
                 return false
             } else {
-                finishAffinity()
                 sharedPreferenceManager.enableNotification = true
                 startActivity(Intent(this, SyncNowActivity::class.java))
+                finishAffinity()
                 return true
             }
         } else {
-            finishAffinity()
             sharedPreferenceManager.enableNotification = true
             startActivity(Intent(this, SyncNowActivity::class.java))
+            finishAffinity()
             // Permission not required before Android 13
             return true
         }
@@ -70,9 +76,9 @@ class EnableNotificationActivity : BaseActivity() {
                     "Notification permission denied",
                     Toast.LENGTH_SHORT
                 ).show()
-                finish()
                 sharedPreferenceManager.enableNotification = true
                 startActivity(Intent(this, SyncNowActivity::class.java))
+                finish()
             }
         }
     }
