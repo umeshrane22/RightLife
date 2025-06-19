@@ -30,6 +30,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.renderer.BarChartRenderer
@@ -42,6 +43,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.FormattedData
 import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.databinding.FragmentMindfullGraphBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -459,7 +461,15 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val entries = ArrayList<BarEntry>()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(endDate, formatter)
-        val labels = getWeekDayNames(localDate)
+       // val labels = getWeekDayNames(localDate)
+        val labels = mutableListOf<String>()
+
+        data?.forEachIndexed { index, (label, durations) ->
+            val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+            val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+            labels.add("$top\n$bottom")
+        }
 
         data?.forEachIndexed { index, item ->
             entries.add(BarEntry(index.toFloat(), item.duration?.toFloat() ?: 0f))
@@ -475,12 +485,25 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         customRenderer.initBuffers()
         chart.renderer = customRenderer
 
-        chart.xAxis.apply {
+        /*chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)
             granularity = 1f
             position = XAxis.XAxisPosition.BOTTOM
             setDrawGridLines(false)
             labelRotationAngle = -30f
+            textSize = 10f
+        }*/
+        chart.xAxis.apply {
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    val index = value.toInt()
+                    return if (index in labels.indices) labels[index] else ""
+                }
+            }
+            position = XAxis.XAxisPosition.BOTTOM
+            granularity = 1f
+            setDrawGridLines(false)
+            labelRotationAngle = 0f
             textSize = 10f
         }
 
@@ -488,9 +511,17 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
+        chart.setExtraBottomOffset(24f)
         chart.isHighlightPerDragEnabled = false
         chart.legend.isEnabled = false
         chart.setScaleEnabled(false)
+        chart.setXAxisRenderer(
+            MultilineXAxisRenderer(
+                chart.viewPortHandler,
+                chart.xAxis,
+                chart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
+        )
         chart.invalidate()
     }
 

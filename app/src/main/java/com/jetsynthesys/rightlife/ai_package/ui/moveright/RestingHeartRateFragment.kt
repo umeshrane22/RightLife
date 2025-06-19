@@ -47,6 +47,8 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.max
 
 class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>() {
 
@@ -314,15 +316,17 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
         leftYAxis.axisMinimum = 0f
-        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f
-        leftYAxis.granularity = 10f
+        leftYAxis.axisMaximum = max(200f, ceil((entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f) / 50f) * 50f) // Ensure at least 200
+        leftYAxis.granularity = 50f // Labels at 0, 50, 100, 150, 200, ...
+        // Log Y-axis max for debugging
+        Log.d("ChartYAxis", "Y-axis Max: ${leftYAxis.axisMaximum}")
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
 
         // Description
         val description = Description().apply {
-            text = "Resting Heart Rate (bpm)"
+            text = ""
             textColor = Color.BLACK
             textSize = 14f
             setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)

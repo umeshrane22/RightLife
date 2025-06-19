@@ -25,6 +25,7 @@ import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -35,6 +36,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
@@ -58,6 +60,8 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.max
 
 class BurnFragment : BaseFragment<FragmentBurnBinding>() {
 
@@ -279,7 +283,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         // Multiline X-axis labels
         val combinedLabels: List<String> = if (entries.size == 30) {
             labels
-         /*   List(30) { index ->
+            /*List(30) { index ->
                 when (index) {
                     3 -> "1-7\nJun"
                     10 -> "8-14\nJun"
@@ -332,8 +336,16 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
         leftYAxis.axisMinimum = 0f
-        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
-        leftYAxis.granularity = 100f
+        leftYAxis.axisMaximum = max(7000f, ceil((entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f) / 1000f) * 1000f) // Ensure at least 7000
+        leftYAxis.granularity = 1000f // Labels at 0, 1000, 2000, 3000, ...
+        leftYAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                return if (value == 0f) "0" else "${(value / 1000).toInt()}k"
+            }
+        }
+        // Log Y-axis max and entries for debugging
+        Log.d("ChartYAxis", "Y-axis Max: ${leftYAxis.axisMaximum}")
+        entries.forEachIndexed { i, entry -> Log.d("ChartEntry", "Index: $i, X: ${entry.x}, Y: ${entry.y}") }
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false

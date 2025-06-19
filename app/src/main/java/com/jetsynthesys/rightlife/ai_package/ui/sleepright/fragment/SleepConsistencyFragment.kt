@@ -45,6 +45,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.Locale
@@ -408,7 +409,7 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
 
     private val paintText = Paint().apply {
         color = Color.BLACK
-        textSize = 24f
+        textSize = 20f
     }
 
     private val paintLabelText = Paint().apply {
@@ -421,6 +422,11 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
         sleepData.addAll(data)
         invalidate()
     }
+    fun truncateToHour(datetimeStr: String): LocalDateTime {
+        val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        val dateTime = LocalDateTime.parse(datetimeStr, formatter)
+        return dateTime.withMinute(0).withSecond(0).withNano(0)
+    }
 
     val markerView1 = SleepMarkerView1(context, sleepData)
 
@@ -432,11 +438,50 @@ class SleepGraphView(context: Context, attrs: AttributeSet) : View(context, attr
         val heightPerHour = (height - 2 * padding) / 7f // Assuming 12-hour range (from 6 PM to 6 AM)
 
         // Draw grid lines for hours
-        val hours = listOf("8","6","4","2","12","10","8")
-        for (i in hours.indices) {
-            val y = height - padding - (i * heightPerHour)
-            canvas.drawText(hours[i], 10f, y, paintText)
-            canvas.drawLine(padding, y, width - padding, y, paintGrid)
+        if (sleepData.isNotEmpty()) {
+
+            // 1. Find min start and max end datetime
+            val earliest = sleepData.minOf { truncateToHour(it.startDatetime) }
+            val latest = sleepData.maxOf { truncateToHour(it.endDatetime) }.plusHours(1)
+
+            // 2. Adjust total span to fit exactly 8 labels with 2-hour gaps
+            val labelCount = 8
+            val gapHours = 2
+            val totalSpanHours = (labelCount - 1) * gapHours
+
+            // 3. End time is the latest, start time is shifted back by totalSpanHours
+            val endTime = latest
+            val startTime = endTime.minusHours(totalSpanHours.toLong())
+
+            // 4. Generate 8 time labels, spaced 2 hours apart
+            val hourLabels = (0 until labelCount).map { i ->
+                val time = startTime.plusHours(i * gapHours.toLong())
+                val hour = time.hour
+                val suffix = if (hour < 12) "AM" else "PM"
+                val displayHour = when {
+                    hour == 0 || hour == 24 -> 12
+                    hour > 12 -> hour - 12
+                    else -> hour
+                }
+                "$displayHour\n$suffix"
+            }.reversed()  // Reverse so latest is at top, earliest at bottom
+
+            // 5. Draw labels on canvas
+            for (i in hourLabels.indices) {
+                val y = height - padding - (i * heightPerHour)
+
+                val labelLines = hourLabels[i].split("\n")
+                val lineSpacing = paintText.textSize
+
+                // Draw number (e.g., 8)
+                canvas.drawText(labelLines[0], 10f, y - lineSpacing / 2, paintText)
+
+                // Draw AM/PM
+                canvas.drawText(labelLines[1], 10f, y + lineSpacing / 2, paintText)
+
+                // Draw the grid line
+                canvas.drawLine(padding, y, width - padding, y, paintGrid)
+            }
         }
 
         // Draw sleep bars
