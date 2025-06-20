@@ -192,12 +192,16 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDateWeek = currentDateWeek.plusWeeks(1)
-                    loadWeekData()
+                    if (currentDateWeek < LocalDate.now()){
+                        currentDateWeek = currentDateWeek.plusWeeks(1)
+                        loadWeekData()
+                    }
                 }
                 1 -> {
-                    currentDateMonth = currentDateMonth.plusMonths(1)
-                    loadMonthData()
+                    if (currentDateMonth < LocalDate.now()){
+                        currentDateMonth = currentDateMonth.plusMonths(1)
+                        loadMonthData()
+                    }
                 }
                 2 -> {
                     currentDateMonth = currentDateMonth.plusMonths(6)
@@ -392,7 +396,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val startDate = LocalDate.parse(startDateStr, formatter)
         val endDate = LocalDate.parse(endDateStr, formatter)
 
-        val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1
+        /*val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1
         val entries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
 
@@ -410,6 +414,28 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
 
             // Show label only once per 7-day group
             val label = if (i == 0 || i % 7 == 0) labelGroup else ""
+            labels.add(label)
+        }*/
+        val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt() + 1
+        val entries = ArrayList<BarEntry>()
+        val labels = ArrayList<String>()
+
+        for (i in 0 until daysBetween) {
+            val currentDate = startDate.plusDays(i.toLong())
+
+            // Calculate group index (each group is 7 days long)
+            val groupIndex = i / 7
+            val groupStartDate = startDate.plusDays(groupIndex * 7L)
+            val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(endDate)
+
+            // Label for the group (shown only once per 7-day group)
+            val label = if (i % 7 == 0) {
+                val labelText = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
+                labelText
+            } else {
+                ""
+            }
+
             labels.add(label)
         }
         data?.forEachIndexed { index, item ->

@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.RectF
@@ -11,6 +12,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.content.ContextCompat
 import kotlin.math.max
 import kotlin.math.min
 
@@ -20,7 +22,7 @@ class StepIntake : View {
     private var backgroundPaint: Paint? = null
     private var capillaryRect: RectF? = null
     private var fillPercentage = 0f
-    private var intervalColors = IntArray(10) { Color.GREEN } // Green for visibility
+    private var intervalColors = IntArray(10) { Color.GREEN } // Green fill
     private var backgroundColor = Color.LTGRAY
 
     private var minSteps = 0
@@ -36,6 +38,9 @@ class StepIntake : View {
     private val stepIncrement = 500
 
     private var lastStepCount = 0
+    private var markerDrawable: android.graphics.drawable.Drawable? = null
+    private var textPaint: Paint? = null
+    private var dashedLinePaint: Paint? = null
 
     constructor(context: Context?) : super(context) {
         init()
@@ -69,10 +74,26 @@ class StepIntake : View {
             isAntiAlias = true
         }
 
+        // Text paint
+        textPaint = Paint().apply {
+            color = Color.WHITE
+            textSize = 12f * resources.displayMetrics.density // Reduced for better fit
+            textAlign = Paint.Align.LEFT
+            isAntiAlias = true
+        }
+
+        // Dashed line paint
+        dashedLinePaint = Paint().apply {
+            style = Paint.Style.STROKE
+            strokeWidth = 2f * resources.displayMetrics.density
+            pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f) // Dashed pattern
+            isAntiAlias = true
+        }
+
         val density = resources.displayMetrics.density
         lineThickness = 2 * density
         lineGap = 4 * density
-        touchAreaHeight = (lineThickness * 2 + lineGap) * 4f // Max touch sensitivity
+        touchAreaHeight = (lineThickness * 2 + lineGap) * 4f
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -86,6 +107,7 @@ class StepIntake : View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        // Draw background
         canvas.drawRoundRect(
             capillaryRect!!,
             capillaryRect!!.width() / 4,
@@ -93,6 +115,7 @@ class StepIntake : View {
             backgroundPaint!!
         )
 
+        // Draw fill
         val fillHeight = fillPercentage * capillaryRect!!.height()
         val fillRect = RectF(
             capillaryRect!!.left,
@@ -107,6 +130,7 @@ class StepIntake : View {
             fillPaint!!
         )
 
+        // Draw thumb lines
         thumbPaint!!.strokeWidth = lineThickness
         val lineY1 = fillRect.top - lineGap / 2 - lineThickness / 2
         val lineY2 = fillRect.top + lineGap / 2 + lineThickness / 2
@@ -124,6 +148,75 @@ class StepIntake : View {
             lineY2,
             thumbPaint!!
         )
+
+        // Draw "Your Goal" text and step count above fill level
+        val yourGoalY = fillRect.top - lineGap * 2
+        textPaint!!.color = Color.WHITE
+        canvas.drawText(
+            "",
+            capillaryRect!!.centerX(),
+            yourGoalY,
+            textPaint!!
+        )
+        canvas.drawText(
+            "", // Full number, e.g., "10500"
+            capillaryRect!!.centerX(),
+            yourGoalY - textPaint!!.textSize * 1.5f,
+            textPaint!!
+        )
+
+        // Draw 12,000 Steps marker (optimalSteps)
+        val optimalY = calculateYFromSteps(optimalSteps)
+        dashedLinePaint!!.color = Color.RED
+        canvas.drawLine(
+            capillaryRect!!.left, // Start from bar's left edge
+            optimalY,
+            width.toFloat(), // Extend to view's right edge
+            optimalY,
+            dashedLinePaint!!
+        )
+        textPaint!!.color = Color.RED
+        canvas.save() // Save canvas state
+        canvas.translate(capillaryRect!!.right + 5f, 0f) // Move right with small offset
+        canvas.drawText(
+            "12,000 Steps",
+            0f, // Start from new origin
+            optimalY + textPaint!!.textSize * 1.5f, // Below line
+            textPaint!!
+        )
+        canvas.restore() // Restore canvas state
+
+        // Draw 10,000 Steps (Average) marker
+        val averageY = calculateYFromSteps(10000)
+        dashedLinePaint!!.color = Color.GRAY
+        canvas.drawLine(
+            capillaryRect!!.left, // Start from bar's left edge
+            averageY,
+            width.toFloat(), // Extend to view's right edge
+            averageY,
+            dashedLinePaint!!
+        )
+        textPaint!!.color = Color.GRAY
+        canvas.save() // Save canvas state
+        canvas.translate(capillaryRect!!.right + 5f, 0f) // Move right with small offset
+        canvas.drawText(
+            "Average",
+            0f, // Start from new origin
+            averageY + textPaint!!.textSize * 1.5f, // Below line
+            textPaint!!
+        )
+        canvas.restore() // Restore canvas state
+
+        // Optional: Remove if not needed
+        markerDrawable?.let { drawable ->
+            val markerY = calculateYFromSteps(optimalSteps)
+            val markerX = capillaryRect!!.centerX() - drawable.bounds.width() / 2
+            canvas.save()
+            canvas.translate(markerX, markerY - drawable.bounds.height() / 2)
+            drawable.draw(canvas)
+            canvas.restore()
+            Log.d("StepIntake", "Marker drawn at x=$markerX, y=$markerY")
+        }
     }
 
     private fun createGradientShader() {

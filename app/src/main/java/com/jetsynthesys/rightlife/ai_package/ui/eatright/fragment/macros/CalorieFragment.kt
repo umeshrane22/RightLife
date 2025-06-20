@@ -1,6 +1,9 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -18,6 +21,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -35,6 +39,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.renderer.XAxisRenderer
+import com.github.mikephil.charting.renderer.YAxisRenderer
+import com.github.mikephil.charting.utils.MPPointF
+import com.github.mikephil.charting.utils.Transformer
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -77,6 +86,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
     private lateinit var totalCalorie : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var averageGoalLayout : LinearLayoutCompat
+    private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
 
@@ -110,6 +121,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         calorie_description_heading = view.findViewById(R.id.calorie_description_heading)
         calorie_description_text = view.findViewById(R.id.calorie_description_text)
         totalCalorie = view.findViewById(R.id.totalCalorie)
+        goalLayout = view.findViewById(R.id.goalLayout)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -281,7 +294,7 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         xAxis.setCenterAxisLabels(false)
 
         // Custom XAxis Renderer (multiline support)
-        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+        val customRenderer = MultilineXAxisRenderer(
             barChart.viewPortHandler,
             barChart.xAxis,
             barChart.getTransformer(YAxis.AxisDependency.LEFT)
@@ -336,8 +349,12 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
             leftYAxis.removeAllLimitLines()
             leftYAxis.addLimitLine(totalStepsLine)
             leftYAxis.addLimitLine(avgStepsLine)
+            averageGoalLayout.visibility = View.VISIBLE
+            goalLayout.visibility = View.VISIBLE
         }else{
             leftYAxis.removeAllLimitLines()
+            averageGoalLayout.visibility = View.GONE
+            goalLayout.visibility = View.GONE
         }
 
         barChart.axisRight.isEnabled = false
@@ -375,6 +392,8 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         barChart.animateY(1000)
         barChart.invalidate()
     }
+
+
 
     /** Sample Data for Week */
     private fun getWeekData(): List<BarEntry> {
@@ -861,3 +880,88 @@ class CalorieFragment : BaseFragment<FragmentCalorieBinding>() {
         loadingOverlay?.visibility = View.GONE
     }
 }
+
+class MultilineXAxisRenderer(
+    viewPortHandler: ViewPortHandler,
+    xAxis: XAxis,
+    trans: Transformer
+) : XAxisRenderer(viewPortHandler, xAxis, trans) {
+
+    override fun drawLabel(
+        c: Canvas,
+        formattedLabel: String,
+        x: Float,
+        y: Float,
+        anchor: MPPointF,
+        angleDegrees: Float
+    ) {
+        val lines = formattedLabel.split("\n")
+
+        val topMargin = 18f // 👈 Add your desired top margin in pixels
+
+        for ((i, line) in lines.withIndex()) {
+            val offsetY = i * mAxisLabelPaint.textSize * 1.1f
+            c.drawText(line, x, y + topMargin + offsetY, mAxisLabelPaint)
+        }
+    }
+}
+
+class CustomYAxisRenderer(
+    viewPortHandler: ViewPortHandler,
+    yAxis: YAxis,
+    trans: Transformer
+) : YAxisRenderer(viewPortHandler, yAxis, trans) {
+
+    private val labelBgPaint = Paint().apply {
+        style = Paint.Style.FILL
+        color = Color.parseColor("#D0F0C0") // light green background
+        isAntiAlias = true
+    }
+
+    override fun renderLimitLines(c: Canvas) {
+        val limitLines = mYAxis.limitLines
+        if (limitLines == null || limitLines.isEmpty()) return
+
+        for (limitLine in limitLines) {
+            if (!limitLine.isEnabled) continue
+
+            val limit = limitLine.limit
+            val pts = floatArrayOf(0f, limit)
+            mTrans.pointValuesToPixel(pts)
+
+            // draw limit line
+            mLimitLinePaint.style = Paint.Style.STROKE
+            mLimitLinePaint.color = limitLine.lineColor
+            mLimitLinePaint.strokeWidth = limitLine.lineWidth
+            mLimitLinePaint.pathEffect = limitLine.dashPathEffect
+
+            val y = pts[1]
+            c.drawLine(mViewPortHandler.contentLeft(), y, mViewPortHandler.contentRight(), y, mLimitLinePaint)
+
+            val label = limitLine.label ?: continue
+            if (label.isEmpty()) continue
+
+            // setup text paint
+            mLimitLinePaint.style = Paint.Style.FILL
+            mLimitLinePaint.color = limitLine.textColor
+            mLimitLinePaint.textSize = limitLine.textSize
+            mLimitLinePaint.typeface = limitLine.typeface
+
+            // measure text
+            val textWidth = mLimitLinePaint.measureText(label)
+            val textHeight = mLimitLinePaint.fontMetrics.run { descent - ascent }
+
+            // set label position
+            val x = mViewPortHandler.contentRight() - textWidth - 10f
+            val yLabel = y - textHeight / 2
+
+            // draw background rect
+            val rect = RectF(x - 8, yLabel - 4, x + textWidth + 8, yLabel + textHeight + 4)
+            c.drawRoundRect(rect, 8f, 8f, labelBgPaint)
+
+            // draw text
+            c.drawText(label, x, yLabel + textHeight, mLimitLinePaint)
+        }
+    }
+}
+

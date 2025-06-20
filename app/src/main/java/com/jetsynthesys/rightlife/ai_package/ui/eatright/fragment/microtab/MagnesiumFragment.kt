@@ -17,6 +17,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -27,6 +28,7 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -87,6 +89,8 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
     private lateinit var percentageIc : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var averageGoalLayout : LinearLayoutCompat
+    private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private val viewModel: ActiveBurnViewModelMagnesium by viewModels()
     private var loadingOverlay : FrameLayout? = null
@@ -122,6 +126,8 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
         magnesium_description_heading = view.findViewById(R.id.magnesium_description_heading)
         magnesium_description_text = view.findViewById(R.id.magnesium_description_text)
         totalCalorie = view.findViewById(R.id.totalCalorie)
+        goalLayout = view.findViewById(R.id.goalLayout)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
@@ -321,7 +327,8 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
 //        barChart.animateY(1000)
 //        barChart.invalidate()
 //    }
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,
+                            activeCaloriesResponse: ConsumedMagnesiumResponse) {
         val dataSet = BarDataSet(entries, "")
         selectHeartRateLayout.visibility = View.INVISIBLE
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
@@ -361,7 +368,7 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
         xAxis.setCenterAxisLabels(false)
 
         // Custom XAxis Renderer (multiline support)
-        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+        val customRenderer = MultilineXAxisRenderer(
             barChart.viewPortHandler,
             barChart.xAxis,
             barChart.getTransformer(YAxis.AxisDependency.LEFT)
@@ -376,6 +383,42 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
         leftYAxis.axisMinimum = 0f
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
+
+        if (entries.size < 30){
+            val minValue = minOf(
+                entries.minOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalMagnesium.toFloat(),
+                activeCaloriesResponse.currentAvgMagnesium.toFloat()
+            )
+            val maxValue = maxOf(
+                entries.maxOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalMagnesium.toFloat(),
+                activeCaloriesResponse.currentAvgMagnesium.toFloat()
+            )
+            // Include stepsGoal in max check
+            val axisMax = maxOf(maxValue, activeCaloriesResponse.totalMagnesium.toFloat())
+
+            leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+            leftYAxis.axisMaximum = axisMax * 1.2f
+            leftYAxis.setDrawZeroLine(true)
+            // leftYAxis.zeroLineColor = Color.BLACK
+            leftYAxis.zeroLineWidth = 1f
+
+            val avgStepsLine = LimitLine(activeCaloriesResponse.currentAvgMagnesium.toFloat(), "A")
+            avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.lineWidth = 1f
+            avgStepsLine.enableDashedLine(10f, 10f, 0f)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textSize = 10f
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.removeAllLimitLines()
+            leftYAxis.addLimitLine(avgStepsLine)
+            averageGoalLayout.visibility = View.VISIBLE
+        }else{
+            leftYAxis.removeAllLimitLines()
+            averageGoalLayout.visibility = View.GONE
+        }
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
@@ -503,7 +546,7 @@ class MagnesiumFragment : BaseFragment<FragmentMagnesiumBinding>() {
                                 }else{
                                     barChart.visibility = View.VISIBLE
                                     layoutLineChart.visibility = View.GONE
-                                    updateChart(entries, labels, labelsDate)
+                                    updateChart(entries, labels, labelsDate, data)
                                 }
                             }
                         }

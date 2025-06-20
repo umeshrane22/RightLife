@@ -62,10 +62,10 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
             }else{
                 value = 1.0
             }
-            holder.calValue.text = item.nutrients.macros.Calories?.toInt().toString()
-            holder.proteinValue.text = item.nutrients.macros.Protein?.toInt().toString()
-            holder.cabsValue.text = item.nutrients.macros.Carbs?.toInt().toString()
-            holder.fatsValue.text = item.nutrients.macros.Fats?.toInt().toString()
+            holder.calValue.text = String.format("%.1f", item.nutrients.macros.Calories)
+            holder.proteinValue.text = String.format("%.1f", item.nutrients.macros.Protein)
+            holder.cabsValue.text = String.format("%.1f", item.nutrients.macros.Carbs)
+            holder.fatsValue.text = String.format("%.1f", item.nutrients.macros.Fats)
         }else{
           //  holder.servesCount.text = "NA"
             holder.calValue.text = "NA"

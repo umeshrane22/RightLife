@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros
 
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +23,7 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -30,6 +33,10 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.renderer.XAxisRenderer
+import com.github.mikephil.charting.utils.MPPointF
+import com.github.mikephil.charting.utils.Transformer
+import com.github.mikephil.charting.utils.ViewPortHandler
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.R.*
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -73,6 +80,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
     private lateinit var percentageIc : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var averageGoalLayout : LinearLayoutCompat
+    private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
 
@@ -110,10 +119,11 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         carbs_description_heading = view.findViewById(R.id.carbs_description_heading)
         carbs_description_text = view.findViewById(R.id.carbs_description_text)
         totalCalorie = view.findViewById(R.id.totalCalorie)
+        goalLayout = view.findViewById(R.id.goalLayout)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels())
-
 
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
@@ -311,7 +321,8 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
 //        barChart.invalidate()
 //    }
 
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,
+                            activeCaloriesResponse: ConsumedCarbsResponse) {
         val dataSet = BarDataSet(entries, "")
         selectHeartRateLayout.visibility = View.INVISIBLE
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
@@ -351,7 +362,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         xAxis.setCenterAxisLabels(false)
 
         // Custom XAxis Renderer (multiline support)
-        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+        val customRenderer = MultilineXAxisRenderer(
             barChart.viewPortHandler,
             barChart.xAxis,
             barChart.getTransformer(YAxis.AxisDependency.LEFT)
@@ -367,11 +378,58 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
 
+        if (entries.size < 30){
+            val minValue = minOf(
+                entries.minOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalCarbs.toFloat(),
+                activeCaloriesResponse.currentAvgCarbs.toFloat()
+            )
+            val maxValue = maxOf(
+                entries.maxOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalCarbs.toFloat(),
+                activeCaloriesResponse.currentAvgCarbs.toFloat()
+            )
+            // Include stepsGoal in max check
+            val axisMax = maxOf(maxValue, activeCaloriesResponse.totalCarbs.toFloat())
+
+            leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+            leftYAxis.axisMaximum = axisMax * 1.2f
+            leftYAxis.setDrawZeroLine(true)
+            // leftYAxis.zeroLineColor = Color.BLACK
+            leftYAxis.zeroLineWidth = 1f
+
+            val totalStepsLine = LimitLine(activeCaloriesResponse.totalCarbs.toFloat(), "G")
+            totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.lineWidth = 1f
+            totalStepsLine.enableDashedLine(10f, 10f, 0f)
+            totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+            totalStepsLine.textSize = 10f
+            totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            val avgStepsLine = LimitLine(activeCaloriesResponse.currentAvgCarbs.toFloat(), "A")
+            avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.lineWidth = 1f
+            avgStepsLine.enableDashedLine(10f, 10f, 0f)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textSize = 10f
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.removeAllLimitLines()
+            leftYAxis.addLimitLine(totalStepsLine)
+            leftYAxis.addLimitLine(avgStepsLine)
+            averageGoalLayout.visibility = View.VISIBLE
+            goalLayout.visibility = View.VISIBLE
+        }else{
+            leftYAxis.removeAllLimitLines()
+            averageGoalLayout.visibility = View.GONE
+            goalLayout.visibility = View.GONE
+        }
+
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
         // Optional chart description
         val description = Description().apply {
-            text = "Carbs"
+            text = ""
             textColor = Color.BLACK
             textSize = 14f
             setPosition(barChart.width / 2f, barChart.height.toFloat() - 10f)
@@ -498,7 +556,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
                             } else {
                                 barChart.visibility = View.VISIBLE
                                 layoutLineChart.visibility = View.GONE
-                                updateChart(entries, labels, labelsDate) // Must be thread-safe (UI updates on main thread)
+                                updateChart(entries, labels, labelsDate, data) // Must be thread-safe (UI updates on main thread)
                             }
                         }
                     }

@@ -17,6 +17,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -27,6 +28,7 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -87,6 +89,8 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
     private lateinit var percentageIc : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
+    private lateinit var averageGoalLayout : LinearLayoutCompat
+    private lateinit var goalLayout : LinearLayoutCompat
     private lateinit var lineChart: LineChart
     private val viewModel: ActiveBurnViewModelIron by viewModels()
     private var loadingOverlay : FrameLayout? = null
@@ -123,6 +127,8 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
         iron_description_heading = view.findViewById(R.id.iron_description_heading)
         iron_description_text = view.findViewById(R.id.iron_description_text)
         totalCalorie = view.findViewById(R.id.totalCalorie)
+        goalLayout = view.findViewById(R.id.goalLayout)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
 
         // Initial chart setup with sample data
         //updateChart(getWeekData(), getWeekLabels()
@@ -323,7 +329,8 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
 //        barChart.invalidate()
 //    }
 
-    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
+    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,
+                            activeCaloriesResponse: ConsumedIronResponse) {
         val dataSet = BarDataSet(entries, "")
         selectHeartRateLayout.visibility = View.INVISIBLE
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.light_green)
@@ -363,7 +370,7 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
         xAxis.setCenterAxisLabels(false)
 
         // Custom XAxis Renderer (multiline support)
-        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+        val customRenderer = MultilineXAxisRenderer(
             barChart.viewPortHandler,
             barChart.xAxis,
             barChart.getTransformer(YAxis.AxisDependency.LEFT)
@@ -378,6 +385,42 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
         leftYAxis.axisMinimum = 0f
         leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
         leftYAxis.granularity = 1f
+
+        if (entries.size < 30){
+            val minValue = minOf(
+                entries.minOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalIron.toFloat(),
+                activeCaloriesResponse.currentAvgIron.toFloat()
+            )
+            val maxValue = maxOf(
+                entries.maxOfOrNull { it.y } ?: 0f,
+                activeCaloriesResponse.totalIron.toFloat(),
+                activeCaloriesResponse.currentAvgIron.toFloat()
+            )
+            // Include stepsGoal in max check
+            val axisMax = maxOf(maxValue, activeCaloriesResponse.totalIron.toFloat())
+
+            leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+            leftYAxis.axisMaximum = axisMax * 1.2f
+            leftYAxis.setDrawZeroLine(true)
+            // leftYAxis.zeroLineColor = Color.BLACK
+            leftYAxis.zeroLineWidth = 1f
+
+            val avgStepsLine = LimitLine(activeCaloriesResponse.currentAvgIron.toFloat(), "A")
+            avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.lineWidth = 1f
+            avgStepsLine.enableDashedLine(10f, 10f, 0f)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textSize = 10f
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.removeAllLimitLines()
+            leftYAxis.addLimitLine(avgStepsLine)
+            averageGoalLayout.visibility = View.VISIBLE
+        }else{
+            leftYAxis.removeAllLimitLines()
+            averageGoalLayout.visibility = View.GONE
+        }
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
@@ -504,7 +547,7 @@ class IronFragment : BaseFragment<FragmentIronBinding>() {
                                 }else{
                                     barChart.visibility = View.VISIBLE
                                     layoutLineChart.visibility = View.GONE
-                                    updateChart(entries, labels, labelsDate)
+                                    updateChart(entries, labels, labelsDate, data)
                                 }
                             }
                         }
