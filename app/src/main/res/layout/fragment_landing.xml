@@ -908,11 +908,12 @@
                         <androidx.viewpager2.widget.ViewPager2
                             android:id="@+id/carouselViewPager"
                             android:layout_width="match_parent"
-                            android:layout_height="240dp"
-                            android:layout_marginTop="20dp"
-                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent" />
 
                         <LinearLayout
                             android:id="@+id/dotsLayout"

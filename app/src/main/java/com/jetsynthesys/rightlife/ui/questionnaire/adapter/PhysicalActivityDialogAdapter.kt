@@ -31,10 +31,11 @@ class PhysicalActivityDialogAdapter(
             textCount1.text = item.count.toString()
 
             btnPlus1.setOnClickListener {
-                if (item.count < limit)
+                if (item.count < limit) {
                     item.count++
-                textCount1.text = item.count.toString()
-                onPlusMinusClick(item, 1)
+                    textCount1.text = item.count.toString()
+                    onPlusMinusClick(item, 1)
+                }
             }
 
             btnMinus1.setOnClickListener {

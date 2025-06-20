@@ -9,6 +9,8 @@ data class ConsumedFatResponse(
     @SerializedName("end_date") val endDate: String,
     @SerializedName("consumed_fat_totals") val consumedFatTotals: List<FatTotal>,
     @SerializedName("total_fat") val totalFat: Double,
+    @SerializedName("goal")
+    val goal: Double,
     @SerializedName("current_avg_fat") val currentAvgFat: Double,
     @SerializedName("progress_percentage") val progressPercentage: Double,
     @SerializedName("progress_sign") val progressSign: String,

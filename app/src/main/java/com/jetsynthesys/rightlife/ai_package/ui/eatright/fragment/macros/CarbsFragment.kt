@@ -381,16 +381,16 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
         if (entries.size < 30){
             val minValue = minOf(
                 entries.minOfOrNull { it.y } ?: 0f,
-                activeCaloriesResponse.totalCarbs.toFloat(),
+                activeCaloriesResponse.goal.toFloat(),
                 activeCaloriesResponse.currentAvgCarbs.toFloat()
             )
             val maxValue = maxOf(
                 entries.maxOfOrNull { it.y } ?: 0f,
-                activeCaloriesResponse.totalCarbs.toFloat(),
+                activeCaloriesResponse.goal.toFloat(),
                 activeCaloriesResponse.currentAvgCarbs.toFloat()
             )
             // Include stepsGoal in max check
-            val axisMax = maxOf(maxValue, activeCaloriesResponse.totalCarbs.toFloat())
+            val axisMax = maxOf(maxValue, activeCaloriesResponse.goal.toFloat())
 
             leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
             leftYAxis.axisMaximum = axisMax * 1.2f
@@ -398,7 +398,7 @@ class CarbsFragment : BaseFragment<FragmentCarbsBinding>() {
             // leftYAxis.zeroLineColor = Color.BLACK
             leftYAxis.zeroLineWidth = 1f
 
-            val totalStepsLine = LimitLine(activeCaloriesResponse.totalCarbs.toFloat(), "G")
+            val totalStepsLine = LimitLine(activeCaloriesResponse.goal.toFloat(), "G")
             totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
             totalStepsLine.lineWidth = 1f
             totalStepsLine.enableDashedLine(10f, 10f, 0f)

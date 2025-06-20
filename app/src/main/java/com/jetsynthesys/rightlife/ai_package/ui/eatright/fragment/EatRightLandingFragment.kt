@@ -616,8 +616,14 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             weightLastLogDateTv.visibility = View.GONE
         }
 
-        weightIntake.text = landingPageResponse.last_weight_log?.weight?.toFloat().toString()
         weightIntakeUnit.text = landingPageResponse.last_weight_log?.type
+        if (landingPageResponse.last_weight_log?.type.equals("lbs")){
+            val selectedWeight = ConversionUtils.convertLbsToKgs(landingPageResponse.last_weight_log?.weight?.toFloat().toString())
+            weightIntake.text = selectedWeight
+        }else{
+            weightIntake.text = landingPageResponse.last_weight_log?.weight?.toFloat().toString()
+        }
+
         val convertedDate = convertDate(landingPageResponse.last_weight_log?.date.toString())
         weightLastLogDateTv.text = convertedDate
 
@@ -871,6 +877,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
 
+        dialogBinding.rulerView.post {
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.split(" ")[0].toDouble() * 10).toInt())
+        }
+
         dialogBinding.btnConfirm.setOnClickListener {
            // bottomSheetDialog.dismiss()
             dialogBinding.rulerView.adapter = null
@@ -889,12 +899,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
             val request = WeightIntakeRequest(
                 userId = userId,
-                source = "apple",
+                source = "android",
                 type = weightUnit,
                 waterMl = weightValue.toFloat(),
                 date = currentDate
             )
-            val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWeightIntake(request)
+            val call = ApiClient.apiServiceFastApi.logWeightIntake(request)
             call.enqueue(object : Callback<LogWeightResponse> {
                 override fun onResponse(
                     call: Call<LogWeightResponse>,
@@ -908,11 +918,12 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         val parts = fullWeight.split(Regex("\\s+"))
                         val weightValue = parts[0]   // "50.7"
                         val weightUnit = parts.getOrElse(1) { "kg" }
-                        weightIntake.text = response.body()?.waterMl.toString()
+                        weightIntake.text = response.body()?.weight.toString()
                         weightIntakeUnit.text = weightUnit
                         Log.d("LogWaterAPI", "Success: $responseBody")
                         // You can do something with responseBody here
                     } else {
+                        bottomSheetDialog.dismiss()
                         Log.e(
                             "LogWaterAPI",
                             "Error: ${response.code()} - ${response.errorBody()?.string()}"
@@ -921,6 +932,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 }
                 override fun onFailure(call: Call<LogWeightResponse>, t: Throwable) {
                     Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
+                    bottomSheetDialog.dismiss()
                 }
             })
          //   binding.tvWeight.text = selectedWeight
