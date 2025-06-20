@@ -1,5 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.content.Context
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -34,6 +37,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeRespon
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeData
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapRecipeList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.SnapSearchDishesAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.DishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
@@ -157,6 +161,13 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             snapMealLogRequests = selectedSnapMealLogListModels
         }
 
+        searchEditText.post {
+            searchEditText.requestFocus()
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(searchEditText, InputMethodManager.SHOW_IMPLICIT)
+        }
+
+
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
@@ -183,15 +194,24 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             }
         }
 
-        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
-            filterDishes(query)
-        }
+//        dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
+//            filterDishes(query)
+//        }
 
         cancel.setOnClickListener {
             if (searchEditText.text.toString().isNotEmpty()){
                 dishesViewModel.setSearchQuery("")
                 searchEditText.setText("")
                 searchMealList.clear()
+            }
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("mealType", "dinner")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
             }
         }
 
@@ -200,7 +220,35 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 dishesViewModel.setSearchQuery(s.toString())
                 if (s!!.length > 1){
+                    searchResultLayout.visibility = View.VISIBLE
+                    tvSearchResult.visibility = View.VISIBLE
+                    cancel.visibility = View.VISIBLE
                     getSearchMealList(s.toString())
+                }else if (s!!.length == 0){
+                        requireActivity().runOnUiThread {
+                            searchResultLayout.visibility = View.VISIBLE
+                            tvSearchResult.visibility = View.GONE
+                            cancel.visibility = View.GONE
+                            searchMealList.clear()
+                            onSnapSearchDishItemRefresh()
+
+                            view.listenKeyboardVisibility { isVisible ->
+                                if (isVisible) {
+                                    Log.d("Keyboard", "Opened")
+                                } else {
+                                    Log.d("Keyboard", "Closed")
+                                    val fragment = HomeTabMealFragment()
+                                    val args = Bundle()
+                                    args.putString("mealType", "dinner")
+                                    fragment.arguments = args
+                                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                                        replace(R.id.flFragment, fragment, "mealLog")
+                                        addToBackStack("mealLog")
+                                        commit()
+                                    }
+                                }
+                            }
+                        }
                 }
             }
             override fun afterTextChanged(s: Editable?) {}
@@ -214,6 +262,24 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
 //            onSnapSearchDishItemRefresh()
 //        }
     }
+
+    fun View.listenKeyboardVisibility(onChanged: (Boolean) -> Unit) {
+        var isKeyboardVisibleOld = false
+
+        viewTreeObserver.addOnGlobalLayoutListener {
+            val r = Rect()
+            getWindowVisibleDisplayFrame(r)
+            val screenHeight = rootView.height
+            val keypadHeight = screenHeight - r.bottom
+            val isVisible = keypadHeight > screenHeight * 0.15
+
+            if (isVisible != isKeyboardVisibleOld) {
+                onChanged(isVisible)
+                isKeyboardVisibleOld = isVisible
+            }
+        }
+    }
+
 
     private fun onSnapSearchDishItemRefresh() {
 

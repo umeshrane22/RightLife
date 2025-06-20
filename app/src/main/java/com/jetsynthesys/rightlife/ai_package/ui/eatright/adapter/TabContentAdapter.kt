@@ -30,10 +30,11 @@ class TabContentAdapter(private val onItemClick: (String, Int, Boolean) -> Unit)
             val item = items[position]
             holder.textView.text = item.substringBefore("_")
             // Set the selected state based on the selectedPosition
-            holder.textView.isSelected = (position == selectedPosition)
             if (position == selectedPosition){
                 holder.iconClose.visibility = View.VISIBLE
+                holder.textView.isSelected = (position == selectedPosition)
             }else{
+                holder.textView.isSelected = false
                 holder.iconClose.visibility = View.GONE
             }
 
@@ -51,12 +52,12 @@ class TabContentAdapter(private val onItemClick: (String, Int, Boolean) -> Unit)
             holder.iconClose.setOnClickListener {
                 if (holder.adapterPosition != RecyclerView.NO_POSITION && holder.adapterPosition < itemCount) {
                     val previousPosition = selectedPosition
-                    selectedPosition = holder.adapterPosition
+                    selectedPosition = -1//holder.adapterPosition
                     // Notify changes for the previous and current positions
                     holder.iconClose.visibility = View.GONE
-                    notifyItemChanged(previousPosition)
-                    notifyItemChanged(selectedPosition)
-                    onItemClick(item, selectedPosition, true)
+                    notifyItemChanged(-1)
+                    notifyItemChanged(-1)
+                    onItemClick(item, selectedPosition, true) 
                 }
             }
         }
@@ -67,6 +68,15 @@ class TabContentAdapter(private val onItemClick: (String, Int, Boolean) -> Unit)
     fun updateItems(newItems: List<String>) {
         // Only update the items if they are different to avoid unnecessary updates
         if (items != newItems) {
+            items = newItems.toList() // Create a new list to avoid concurrent modification
+            selectedPosition = -1 // Reset selection only if the list changes
+            notifyDataSetChanged() // Notify full data set change since the list has changed
+        }
+    }
+
+    fun deselectedUpdateItems(newItems: List<String>, position: Int) {
+        // Only update the items if they are different to avoid unnecessary updates
+        if (items == newItems) {
             items = newItems.toList() // Create a new list to avoid concurrent modification
             selectedPosition = -1 // Reset selection only if the list changes
             notifyDataSetChanged() // Notify full data set change since the list has changed

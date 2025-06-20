@@ -21,6 +21,9 @@ data class ConsumedCarbsResponse(
     @SerializedName("total_carbs")
     val totalCarbs: Double,
 
+    @SerializedName("goal")
+    val goal: Double,
+
     @SerializedName("current_avg_carbs")
     val currentAvgCarbs: Double,
 

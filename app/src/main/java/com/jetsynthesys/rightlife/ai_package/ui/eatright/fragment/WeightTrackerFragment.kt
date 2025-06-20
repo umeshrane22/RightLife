@@ -372,7 +372,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
        // Create and configure BottomSheetDialog
        val bottomSheetDialog = BottomSheetDialog(requireActivity())
        var selectedLabel = " kg"
-       var selectedWeight = ""//binding.tvWeight.text.toString()
+       var selectedWeight =  weightIntake.text.toString() + " " +  weightIntakeUnit.text.toString()
        if (selectedWeight.isEmpty()) {
            selectedWeight = "50 kg"
        } else {
@@ -475,6 +475,10 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
        }
 
+       dialogBinding.rulerView.post {
+           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.split(" ")[0].toDouble() * 10).toInt())
+       }
+
        dialogBinding.btnConfirm.setOnClickListener {
            // bottomSheetDialog.dismiss()
            dialogBinding.rulerView.adapter = null
@@ -488,12 +492,12 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
            val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
            val request = WeightIntakeRequest(
                userId = userId,
-               source = "apple",
+               source = "android",
                type = weightUnit,
                waterMl = weightValue.toFloat(),
                date = currentDate
            )
-           val call = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.logWeightIntake(request)
+           val call = ApiClient.apiServiceFastApi.logWeightIntake(request)
            call.enqueue(object : Callback<LogWeightResponse> {
                override fun onResponse(
                    call: Call<LogWeightResponse>,
@@ -507,11 +511,12 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                        val parts = fullWeight.split(Regex("\\s+"))
                        val weightValue = parts[0]   // "50.7"
                        val weightUnit = parts.getOrElse(1) { "kg" }
-                      // weightIntake.text = response.body()?.waterMl.toString()
+                       weightIntake.text = response.body()?.weight.toString()
                        weightIntakeUnit.text = response.body()?.type.toString()
                        Log.d("LogWaterAPI", "Success: $responseBody")
                        // You can do something with responseBody here
                    } else {
+                       bottomSheetDialog.dismiss()
                        Log.e(
                            "LogWaterAPI",
                            "Error: ${response.code()} - ${response.errorBody()?.string()}"
@@ -519,6 +524,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                    }
                }
                override fun onFailure(call: Call<LogWeightResponse>, t: Throwable) {
+                   bottomSheetDialog.dismiss()
                    Log.e("LogWaterAPI", "Failure: ${t.localizedMessage}")
                }
            })
@@ -853,7 +859,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
         activity?.runOnUiThread {
-            val dataSet = LineDataSet(entries, "Water Intake (ml)")
+            val dataSet = LineDataSet(entries, "")
             dataSet.color = context?.let { ContextCompat.getColor(it, R.color.border_green) }!!
             dataSet.valueTextColor = Color.BLACK
             dataSet.setCircleColor(context?.let { ContextCompat.getColor(it, R.color.border_green) }!!)
@@ -893,13 +899,10 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     selectHeartRateLayout.visibility = View.INVISIBLE
                 }
             })
-
             lineChart.axisRight.isEnabled = false
             lineChart.description.isEnabled = false
-
             lineChart.invalidate()
         }
-
     }
 
     private suspend fun processWeeklyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {

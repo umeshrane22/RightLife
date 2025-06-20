@@ -33,21 +33,21 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/searchLayout"
-                android:layout_width="250dp"
-                android:layout_height="wrap_content"
+                android:layout_width="240dp"
+                android:layout_height="40dp"
                 android:orientation="horizontal"
                 android:padding="10dp"
-                android:layout_marginEnd="30dp"
                 android:background="@drawable/white_search_bg"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="15dp">
 
                 <ImageView
                     android:id="@+id/image_search"
                     android:layout_width="13dp"
                     android:layout_height="13dp"
+                    android:layout_marginTop="2dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/icon_feather_search"
                     app:layout_constraintEnd_toEndOf="parent"

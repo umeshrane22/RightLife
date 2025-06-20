@@ -298,8 +298,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
-            val bottomSheet = LogYourNapDialogFragment(requireContext())
-            bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+            val dialog = LogYourNapDialogFragment(
+                requireContext = requireContext(),
+                listener = object : OnLogYourNapSelectedListener {
+                    override fun onLogTimeSelected(time: String) {
+                        fetchSleepLandingData()
+                    }
+                }
+            )
+
+            dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
         btnSync.setOnClickListener {
@@ -339,9 +347,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             saveViewAsPdf(requireContext(),mainView,"SleepRight")
         }
 
+
         logYourNap.setOnClickListener {
-            val bottomSheet = LogYourNapDialogFragment(requireContext())
-            bottomSheet.show(parentFragmentManager, "LogYourNapDialogFragment")
+            val dialog = LogYourNapDialogFragment(
+                requireContext = requireContext(),
+                listener = object : OnLogYourNapSelectedListener {
+                    override fun onLogTimeSelected(time: String) {
+                        fetchSleepLandingData()
+                    }
+                }
+            )
+
+            dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
         imgSleepInfo.setOnClickListener {
@@ -436,8 +453,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
-                fetchAllHealthData()
-                storeHealthData()
+               // fetchAllHealthData()
+               // storeHealthData()
             }
         }
     }
@@ -1818,6 +1835,10 @@ class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : M
     override fun getOffset(): MPPointF {
         return MPPointF(-(width / 2).toFloat(), -height.toFloat())
     }
+}
+
+interface OnLogYourNapSelectedListener {
+    fun onLogTimeSelected(time: String)
 }
 
 interface OnWakeUpTimeSelectedListener {
