@@ -16,6 +16,7 @@
         android:id="@+id/btnClose"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_gravity="end"
@@ -26,13 +27,13 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Log Your Nap"
+        android:text="Log Last Night's Sleep"
         android:textColor="#0B1215"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:fontFamily="@font/merriweather_bold"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Date Picker -->
     <LinearLayout
@@ -48,6 +49,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_marginStart="10dp"
             android:src="@drawable/calendar_mini_icon" />
 
         <TextView
@@ -55,6 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="28 February 2025"
+            android:layout_marginEnd="10dp"
             android:fontFamily="@font/dmsans_medium"
             android:textSize="16sp"
             android:textColor="#002C5F"
@@ -101,8 +104,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start Time"
-                android:textSize="16sp"
+                android:text="Set Sleep Time"
+                android:textSize="15sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="#0B1215" />
 
@@ -113,8 +116,8 @@
                 android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:background="@drawable/grey_round_border"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp">
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="4dp">
 
                 <ImageView
                     android:layout_width="25dp"
@@ -131,8 +134,8 @@
                     android:fontFamily="@font/dmsans_medium"
                     android:textColor="#0B1215" />
                 <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="10dp"
+                    android:layout_height="16dp"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/time_selector_icon" />
             </LinearLayout>
@@ -150,8 +153,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="End Time"
-                android:textSize="16sp"
+                android:text="Set Wakeup Time"
+                android:textSize="15sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="#0B1215" />
 
@@ -162,8 +165,8 @@
                 android:gravity="center"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/grey_round_border"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp">
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="4dp">
 
                 <ImageView
                     android:layout_width="25dp"
@@ -180,8 +183,8 @@
                     android:fontFamily="@font/dmsans_medium"
                     android:textColor="#0B1215" />
                 <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="10dp"
+                    android:layout_height="16dp"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/time_selector_icon" />
             </LinearLayout>
