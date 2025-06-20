@@ -327,22 +327,24 @@
 
             <TextView
                 android:id="@+id/heartRateDescriptionHeading"
-                android:layout_width="339dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
                 android:text="RHR – The Pulse of Your Recovery"
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_bold"
                 android:textSize="18sp"
                 app:layout_constraintTop_toBottomOf="@+id/calorie_balance_layout"
-                app:layout_constraintStart_toStartOf="@+id/calorie_balance_layout"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/heartRateDescription"
-                android:layout_width="350dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:textSize="16dp"
                 android:fontFamily="@font/dmsans_regular"
                 android:layout_marginTop="8dp"
@@ -350,7 +352,7 @@
 Several factors influence RHR, including sleep quality, hydration, stress levels, and overall fitness. Tracking your RHR over time can help you understand trends in your health, detect early signs of overtraining, and gauge improvements in your fitness level.
 At RightLife, we use RHR as a foundational metric to assess recovery, overall cardiovascular health, and fitness progress. It also plays a role in refining other key insights, such as Workout Zones and Ideal Sleep, to provide a well-rounded view of your well-being."
                 app:layout_constraintTop_toBottomOf="@+id/heartRateDescriptionHeading"
-                app:layout_constraintStart_toStartOf="@+id/heartRateDescriptionHeading"
+                app:layout_constraintStart_toStartOf="parent"
                 />
 
 

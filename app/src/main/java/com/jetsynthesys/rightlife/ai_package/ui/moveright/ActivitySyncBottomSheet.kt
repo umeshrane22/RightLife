@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -78,6 +79,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var layout_sync_now: LinearLayoutCompat
     private lateinit var progressBar: ProgressBar
+    private lateinit var btn_sync_now: Button
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -117,8 +119,13 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         layout_sync_now = view.findViewById(R.id.layout_sync_now)
+        btn_sync_now = view.findViewById(R.id.btn_sync_now)
         progressBar = view.findViewById(R.id.progress_bar)
             ?: throw IllegalStateException("ProgressBar with ID progress_bar not found in layout")
+
+        btn_sync_now.setOnClickListener {
+            dismiss()
+        }
 
         layout_sync_now.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {

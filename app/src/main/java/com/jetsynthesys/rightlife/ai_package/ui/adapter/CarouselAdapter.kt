@@ -1,10 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.adapter
 
+import android.text.SpannableString
+import android.text.style.AbsoluteSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.CardItem
@@ -49,8 +52,28 @@ class CarouselAdapter(
 
         fun bind(item: CardItem, position: Int) {
             cardTitle.text = item.title
-            durationText.text = item.duration
-            caloriesText.text = item.caloriesBurned
+            //durationText.text = item.duration
+            val durationStr = item.duration
+            val spannable = SpannableString(durationStr)
+            val hrIndex = durationStr.indexOf("hr")
+            val minsIndex = durationStr.indexOf("mins")
+            if (hrIndex != -1) {
+                spannable.setSpan(AbsoluteSizeSpan(10, true), hrIndex, hrIndex + 2, 0) // "hr" 10sp
+            }
+            if (minsIndex != -1) {
+                spannable.setSpan(AbsoluteSizeSpan(10, true), minsIndex, minsIndex + 4, 0) // "mins" 10sp
+            }
+            // Rest of the text (numbers) will remain 19sp (default or set in XML)
+            durationText.text = spannable
+
+           // caloriesText.text = item.caloriesBurned
+            val caloriesStr =  item.caloriesBurned// e.g., "305 cal"
+            val caloriesSpannable = SpannableString(caloriesStr)
+            val calIndex = caloriesStr.indexOf("cal")
+            if (calIndex != -1) {
+                caloriesSpannable.setSpan(AbsoluteSizeSpan(10, true), calIndex, calIndex + 3, 0) // "cal" 10sp
+            }
+            caloriesText.text = caloriesSpannable
             avgHeartRateText.text = item.avgHeartRate
             if(item.isSynced){
                 sourceIcon.visibility = View.VISIBLE
@@ -60,6 +83,8 @@ class CarouselAdapter(
             if (item.heartRateData.isNotEmpty()) {
                 lineGraph.visibility = View.VISIBLE
                 itemView.findViewById<View>(R.id.timeline_layout).visibility = View.VISIBLE
+                itemView.findViewById<View>(R.id.timeline_layout_nodata).visibility = View.GONE
+                itemView.findViewById<CardView>(R.id.avg_heartrate_Layout).visibility = View.VISIBLE
                 noDataIcon.visibility = View.GONE
                 noDataText.visibility = View.GONE
                 noDataTextWorkoutLoggedManually.visibility = View.GONE
@@ -70,6 +95,9 @@ class CarouselAdapter(
             } else {
                 lineGraph.visibility = View.GONE
                 itemView.findViewById<View>(R.id.timeline_layout).visibility = View.GONE
+                itemView.findViewById<View>(R.id.timeline_layout_nodata).visibility = View.VISIBLE
+                itemView.findViewById<CardView>(R.id.avg_heartrate_Layout).visibility = View.GONE
+
                 noDataIcon.visibility = View.VISIBLE
                 noDataText.visibility = View.VISIBLE
                 noDataTextWorkoutLoggedManually.visibility = View.VISIBLE
