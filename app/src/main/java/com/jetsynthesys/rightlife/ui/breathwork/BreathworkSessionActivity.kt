@@ -19,7 +19,7 @@ class BreathworkSessionActivity : BaseActivity() {
 
 
     private lateinit var binding: ActivityBreathworkSessionBinding
-    private var sessionCount = 3 // Default session count
+    private var sessionCount = 1 // Default session count
     private var breathingData: BreathingData? = null
     private var startDate = ""
 
@@ -74,7 +74,7 @@ class BreathworkSessionActivity : BaseActivity() {
 
         binding.btnContinue.setOnClickListener {
             val intent = Intent(this, BreathworkPracticeActivity::class.java)
-            intent.putExtra("sessionCount", sessionCount)
+            intent.putExtra("sessionCount", sessionCount*4)
             intent.putExtra("BREATHWORK", breathingData)
             intent.putExtra("StartDate", startDate)
             //intent.putExtra("ITEM_DESCRIPTION", selectedItem.description)
@@ -119,7 +119,7 @@ class BreathworkSessionActivity : BaseActivity() {
 
         // Set initial values
 
-        updateSessionTimer(sessionDurationSeconds * 1000L)
+        updateSessionTimer(sessionDurationSeconds * 4 * 1000L)
     }
 
     private fun updateSessionTimer(millisUntilFinished: Long) {

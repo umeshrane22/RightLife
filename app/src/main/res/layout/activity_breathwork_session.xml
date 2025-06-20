@@ -24,6 +24,7 @@
             android:layout_height="32dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:visibility="gone"
             android:src="@drawable/ic_breathing_toolkit" />
     </RelativeLayout>
 
@@ -35,7 +36,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:layout_height="match_parent">
             <!-- Breathwork Image -->
             <ImageView
@@ -140,7 +141,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
                         android:gravity="start"
-                        android:text="1 set = 4 breaths  "
+                        android:text="1 set = 4 breath cycles "
                         android:layout_gravity="center_vertical"
                         android:textColor="@color/text_color_breathwork" />
 

@@ -334,7 +334,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
 
     // new Booster ui
     private void setupBoosterTracker(int boosterUsed, int boosterLimit) {
-        if (boosterLimit == 0) {
+        if ((boosterLimit-boosterUsed) == 0) {
             //binding.txtBoosterCount.setText("0");
             binding.txtBoosterCount.setVisibility(View.GONE);
             binding.txtRemainingMsg.setText("Need More Scans? \nBuy booster packs anytime.");
