@@ -29,7 +29,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragment() {
+class LogYourNapDialogFragment(private val requireContext: Context, private val listener: OnLogYourNapSelectedListener) : BottomSheetDialogFragment() {
     private lateinit var tvStartTime: TextView
     private lateinit var tvEndTime: TextView
     private lateinit var tvDuration: TextView
@@ -65,7 +65,6 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
         tvDate = view.findViewById(R.id.tvDate)
         tvRemindTime = view.findViewById(R.id.tvRemindTime)
 
-
         updateDuration()
 
         view.findViewById<View>(R.id.btnDatePicker).setOnClickListener {
@@ -75,8 +74,7 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
         view.findViewById<View>(R.id.startTimeContainer).setOnClickListener {
             TimePickerDialogFragment(startHour, startMinute) { hour, minute ->
                 // Handle selected time
-                val formatted = LocalTime.of(hour, minute)
-                    .format(DateTimeFormatter.ofPattern("hh:mm a"))
+                val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
                 startHour = hour
                 startMinute = minute
                 tvStartTime.text = formatted
@@ -118,6 +116,7 @@ class LogYourNapDialogFragment(requireContext: Context) : BottomSheetDialogFragm
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
                     Toast.makeText(mContext, "Log Saved Successfully!", Toast.LENGTH_SHORT).show()
+                    listener.onLogTimeSelected("OK")
                     dismiss()
 
                 } else {

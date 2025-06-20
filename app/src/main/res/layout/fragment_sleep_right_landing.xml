@@ -690,8 +690,10 @@
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:visibility="gone"
-                        android:src="@drawable/apple_health_icon"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="2dp"
+                        android:visibility="visible"
+                        android:src="@drawable/ic_health_connect"
                         android:id="@+id/img_heart_health" />
 
                     <TextView
@@ -702,7 +704,7 @@
                         android:layout_marginEnd="20dp"
                         android:textSize="14sp"
                         android:id="@+id/tv_sync_with_health"
-                        android:layout_marginStart="10dp" />
+                        android:layout_marginStart="5dp" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>

@@ -65,6 +65,9 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
+    private lateinit var mindfullTitle: TextView
+    private lateinit var mindfullDesc: TextView
+    private lateinit var average: TextView
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -89,6 +92,9 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
         dateRangeText = view.findViewById(R.id.tv_date_range)
+        mindfullTitle = view.findViewById(R.id.tv_mindfull_title)
+        mindfullDesc = view.findViewById(R.id.tv_mindfull_desc)
+        average = view.findViewById(R.id.tv_average_number)
         radioGroup.check(R.id.rbWeek)
         // Show Week data by default
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -369,6 +375,11 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                 if (response.isSuccessful) {
                     mindfullResponse = response.body()!!
                     progressDialog.dismiss()
+                    mindfullTitle.text = mindfullResponse?.data?.title
+                    mindfullDesc.text = mindfullResponse?.data?.description
+                    if (mindfullResponse?.data?.averageDuration != null) {
+                        average.text = mindfullResponse?.data?.averageDuration.toString()
+                    }
                     if (mindfullResponse.data?.formattedData?.isNotEmpty() == true) {
                         if (mindfullResponse.data?.formattedData?.size!! > 8){
                             setupMonthlyBarChart(barChart,mindfullResponse.data?.formattedData,startDate,endDate)
@@ -420,6 +431,8 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         val entries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
 
+        val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
+
         for (i in 0 until daysBetween) {
             val currentDate = startDate.plusDays(i.toLong())
 
@@ -430,8 +443,12 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
 
             // Label for the group (shown only once per 7-day group)
             val label = if (i % 7 == 0) {
-                val labelText = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
-                labelText
+                val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
+                val month = groupEndDate.format(monthFormatter)
+
+                // Center month by adding padding spaces (rough estimation)
+                val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
+                "$dayRange\n$spaces$month"
             } else {
                 ""
             }

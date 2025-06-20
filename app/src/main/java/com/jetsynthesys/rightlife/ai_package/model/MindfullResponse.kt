@@ -19,6 +19,8 @@ data class MindfullData (
     var journalCount     : Int? ,
     @SerializedName("affirmationCount")
     var affirmationCount : Int? ,
+    @SerializedName("averageDuration")
+    var averageDuration : Double? ,
     @SerializedName("title" )
     var title            : String? ,
     @SerializedName("description")
