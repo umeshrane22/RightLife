@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class LogWeightResponse(
     @SerializedName("user_id") val userId: String,
     @SerializedName("source") val source: String,
-    @SerializedName("weight") val waterMl: Double,
+    @SerializedName("weight") val weight: Double,
     @SerializedName("date") val date: String,
     @SerializedName("type") val type: String,
     @SerializedName("created_at") val createdAt: String,

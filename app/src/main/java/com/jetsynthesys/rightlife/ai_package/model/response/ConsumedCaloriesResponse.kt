@@ -20,6 +20,9 @@ data class ConsumedCaloriesResponse(
     @SerializedName("total_calories")
     val totalCalories: Double,
 
+    @SerializedName("goal")
+    val goal: Double,
+
     @SerializedName("current_avg_calories")
     val currentAvgCalories: Double,
 

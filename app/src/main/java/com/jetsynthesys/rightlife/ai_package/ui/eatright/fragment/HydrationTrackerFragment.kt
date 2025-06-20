@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
@@ -547,7 +548,8 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
     }
 
     private fun updateChart(entries: List<Entry>, labels: List<String>) {
-        val dataSet = LineDataSet(entries, "Water Intake (ml)")
+        selectHeartRateLayout.visibility = View.INVISIBLE
+        val dataSet = LineDataSet(entries, "")
         dataSet.color = context?.let { ContextCompat.getColor(it, R.color.border_green) }!!
         dataSet.valueTextColor = Color.BLACK
         dataSet.setCircleColor(context?.let { ContextCompat.getColor(it, R.color.border_green) }!!)
@@ -566,6 +568,44 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
         xAxis.setDrawGridLines(false)
         xAxis.textColor = Color.BLACK
         xAxis.yOffset = 15f
+
+//        if (entries.size < 30){
+//            val minValue = minOf(
+//                entries.minOfOrNull { it.y } ?: 0f,
+//                activeCaloriesResponse.goal.toFloat(),
+//                activeCaloriesResponse.currentAvgCalories.toFloat()
+//            )
+//            val maxValue = maxOf(
+//                entries.maxOfOrNull { it.y } ?: 0f,
+//                activeCaloriesResponse.goal.toFloat(),
+//                activeCaloriesResponse.currentAvgCalories.toFloat()
+//            )
+//            // Include stepsGoal in max check
+//            val axisMax = maxOf(maxValue, activeCaloriesResponse.goal.toFloat())
+//
+//            leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+//            leftYAxis.axisMaximum = axisMax * 1.2f
+//            leftYAxis.setDrawZeroLine(true)
+//            // leftYAxis.zeroLineColor = Color.BLACK
+//            leftYAxis.zeroLineWidth = 1f
+//
+//            val totalStepsLine = LimitLine(activeCaloriesResponse.goal.toFloat(), "G")
+//            totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+//            totalStepsLine.lineWidth = 1f
+//            totalStepsLine.enableDashedLine(10f, 10f, 0f)
+//            totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+//            totalStepsLine.textSize = 10f
+//            totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+//
+//            leftYAxis.removeAllLimitLines()
+//            leftYAxis.addLimitLine(totalStepsLine)
+//            averageGoalLayout.visibility = View.VISIBLE
+//            goalLayout.visibility = View.VISIBLE
+//        }else{
+//            leftYAxis.removeAllLimitLines()
+//            averageGoalLayout.visibility = View.GONE
+//            goalLayout.visibility = View.GONE
+//        }
 
         val leftYAxis: YAxis = lineChart.axisLeft
         leftYAxis.textSize = 12f
@@ -638,11 +678,15 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
 
             val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             val waterMap = mutableMapOf<String, Float>()
+            val dateList = mutableListOf<String>()
+            val weeklyLabels = mutableListOf<String>()
+            val labelsDate = mutableListOf<String>()
 
             // Initialize water map for all days in the month
             repeat(30) {
                 val dateStr = dateFormat.format(calendar.time)
                 waterMap[dateStr] = 0f
+                dateList.add(dateStr)
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
 

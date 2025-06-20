@@ -9,6 +9,8 @@ data class ConsumedProteinResponse(
     @SerializedName("end_date") val endDate: String,
     @SerializedName("consumed_protein_totals") val consumedProteinTotals: List<ProteinTotal>,
     @SerializedName("total_protein") val totalProtein: Double,
+    @SerializedName("goal")
+    val goal: Double,
     @SerializedName("current_avg_protein") val currentAvgProtein: Double,
     @SerializedName("progress_percentage") val progressPercentage: Double,
     @SerializedName("progress_sign") val progressSign: String,
