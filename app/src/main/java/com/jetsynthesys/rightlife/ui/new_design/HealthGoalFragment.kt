@@ -55,7 +55,9 @@ class HealthGoalFragment : Fragment() {
         recyclerView = view.findViewById(R.id.rv_health_goals)
         tvDescription = view.findViewById(R.id.tv_description)
 
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+            (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        }
 
         healthGoalList.add(HealthGoal("0-10 minutes"))
         healthGoalList.add(HealthGoal("10-20 minutes"))

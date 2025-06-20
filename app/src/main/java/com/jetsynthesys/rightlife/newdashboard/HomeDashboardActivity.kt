@@ -667,7 +667,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         if (modules.isNullOrEmpty()) {
             binding.llNodataMain.visibility = View.VISIBLE
-            var moduleId = SharedPreferenceManager.getInstance(this).selectedOnboardingModule
+            var moduleId = sharedPreferenceManager.selectedOnboardingModule
+            sharedPreferenceManager.selectedOnboardingModule = moduleId
             if (moduleId.isEmpty()) {
                 moduleId = "EAT_RIGHT"
             }
@@ -709,7 +710,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             aiDashboardResponseMain.data.updatedModules.forEach { module ->
                 val moduleId = module.moduleId
                 val isSelected = module.isSelectedModule
-
+                if (isSelected == true)
+                    sharedPreferenceManager.selectedOnboardingModule = moduleId
 
                 when (moduleId) {
                     "MOVE_RIGHT" -> {
