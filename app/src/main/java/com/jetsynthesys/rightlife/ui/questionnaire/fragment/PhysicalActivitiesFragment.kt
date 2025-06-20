@@ -63,6 +63,9 @@ class PhysicalActivitiesFragment : Fragment() {
         activities.forEach { physicalActivity ->
             physicalActivity.isSelected = false
         }
+        val noOfSelectedActivities = QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionOne?.answer
+        val headerText = if (noOfSelectedActivities?.toInt() == 1) "Select Top $noOfSelectedActivities activity" else "Select Top $noOfSelectedActivities activities"
+        binding.tvNoOfActivities.text = headerText
     }
 
     override fun onCreateView(
