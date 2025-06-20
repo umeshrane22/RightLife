@@ -17,6 +17,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteRoutineBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
+import kotlin.math.roundToInt
 
 class MyRoutineMainListAdapter(
     private val context: Context,
@@ -40,15 +41,20 @@ class MyRoutineMainListAdapter(
 
         holder.mealTitle.text = item.routineName
         holder.mealName.text = item.activityName
-        holder.servesCount.text = item.duration
-        holder.calValue.text = "${item.caloriesBurned} kcal"
+        val durationStr = item.duration.replace(" min", "").trim() // Remove "min" and extra spaces
+        val durationInMinutes = durationStr.toIntOrNull() ?: 0 // Convert to integer, default 0 if invalid
+        val hours = durationInMinutes / 60
+        val minutes = durationInMinutes % 60
+        holder.min_serves.text = minutes.toString()
+        holder.serves.text = hours.toString()
+        val durationStr1 = item.caloriesBurned
+        val durationInInt = durationStr1.toDouble().roundToInt()
+        holder.calValue.text = "${durationInInt}"
         holder.subtractionValue.text = item.intensity
         holder.baguetteValue.text = ""
         holder.dewpointValue.text = ""
-
         // Set CardView visibility based on selectedItem
         holder.editDeleteLayout.visibility = if (selectedItem == position) View.VISIBLE else View.GONE
-
         holder.edit.setOnClickListener {
             // Implement edit functionality
         }
@@ -103,7 +109,7 @@ class MyRoutineMainListAdapter(
         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
         val serves: TextView = itemView.findViewById(R.id.tv_serves)
-        val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
+        val min_serves: TextView = itemView.findViewById(R.id.min_serves)
         val cal: ImageView = itemView.findViewById(R.id.image_cal)
         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)

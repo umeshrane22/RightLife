@@ -261,16 +261,16 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         // Multiline X-axis labels
         val combinedLabels: List<String> = if (entries.size == 30) {
             labels
-          /*  List(30) { index ->
-                when (index) {
-                    3 -> "1-7\nJun"
-                    10 -> "8-14\nJun"
-                    17 -> "15-21\nJun"
-                    24 -> "22-28\nJun"
-                    28 -> "29-30\nJun"
-                    else -> ""
-                }
-            }*/
+            /*  List(30) { index ->
+                  when (index) {
+                      3 -> "1-7\nJun"
+                      10 -> "8-14\nJun"
+                      17 -> "15-21\nJun"
+                      24 -> "22-28\nJun"
+                      28 -> "29-30\nJun"
+                      else -> ""
+                  }
+              }*/
         } else {
             labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
                 val cleanedDate = date.substringBefore(",")
@@ -314,8 +314,13 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         leftYAxis.setDrawGridLines(true)
         leftYAxis.axisMinimum = 0f
-        leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(20f) ?: 150f
-        leftYAxis.granularity = 10f
+        val maxDataValue = entries.maxByOrNull { it.y }?.y ?: 0f
+        leftYAxis.axisMaximum = if (maxDataValue <= 80f) {
+            80f
+        } else {
+            (kotlin.math.ceil(maxDataValue / 20) * 20).toFloat()
+        }
+        leftYAxis.granularity = 20f
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false

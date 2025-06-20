@@ -377,7 +377,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private fun showTooltipsSequentially() {
         tooltipRunnable1 = Runnable {
             if (isResumed) {
-                showTooltipDialogSync(activitySync, "You can sync to apple \n health / google health \n from here.")
+                showTooltipDialogSync(activitySync, "You can sync to google health connect \n from here.")
             }
         }
         handler.postDelayed(tooltipRunnable1!!, 1000)
