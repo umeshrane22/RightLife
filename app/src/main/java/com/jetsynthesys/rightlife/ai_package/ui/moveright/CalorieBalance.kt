@@ -19,7 +19,9 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -30,6 +32,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.R
@@ -38,6 +41,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.CalorieAnalysisResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.CalorieData
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.databinding.FragmentCalorieBalanceBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -282,18 +286,18 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
     /** Update BarChart with new data */
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = BarDataSet(entries, "")
-        val colors : ArrayList<Int> = ArrayList()
-        entries.forEach{ item ->
-            if (calorieBalanceGoal.equals("weight_loss")){
-                if (item.y.toDouble() > calorieBalanceBurnTarget){
+        val colors: ArrayList<Int> = ArrayList()
+        entries.forEach { item ->
+            if (calorieBalanceGoal.equals("weight_loss")) {
+                if (item.y.toDouble() > calorieBalanceBurnTarget) {
                     colors.add(ContextCompat.getColor(requireContext(), R.color.light_orange))
-                }else{
+                } else {
                     colors.add(ContextCompat.getColor(requireContext(), R.color.color_green))
                 }
-            }else{
-                if (item.y.toDouble() > calorieBalanceBurnTarget){
+            } else {
+                if (item.y.toDouble() > calorieBalanceBurnTarget) {
                     colors.add(ContextCompat.getColor(requireContext(), R.color.color_green))
-                }else{
+                } else {
                     colors.add(ContextCompat.getColor(requireContext(), R.color.light_orange))
                 }
             }
@@ -327,28 +331,79 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         leftYAxis.setDrawZeroLine(true) // Show zero line for clarity
         leftYAxis.zeroLineColor = Color.BLACK
         leftYAxis.zeroLineWidth = 1f
+        // Custom formatter for Y-axis labels (e.g., 2000 -> 2k, -1000 -> -1k)
+        leftYAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                return when {
+                    value == 0f -> "0"
+                    else -> {
+                        val kiloValue = (value / 1000f).toInt()
+                        if (kiloValue != 0) "${kiloValue}k" else ""
+                    }
+                }
+            }
+        }
+
+        // X-axis with multiline labels (from second updateChart)
+        val combinedLabels: List<String> = if (entries.size == 30) {
+            labels
+            /*List(30) { index ->
+                when (index) {
+                    3 -> "1-7\nJun"
+                    10 -> "8-14\nJun"
+                    17 -> "15-21\nJun"
+                    24 -> "22-28\nJun"
+                    28 -> "29-30\nJun"
+                    else -> "" // Empty label for spacing
+                }
+            }*/
+        } else {
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",")
+                "$label\n$cleanedDate"
+            }
+        }
 
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.textSize = 10f
         xAxis.granularity = 1f
-        xAxis.labelCount = labels.size
+        xAxis.labelCount = entries.size
         xAxis.setDrawLabels(true)
         xAxis.labelRotationAngle = 0f
         xAxis.setDrawGridLines(false)
         xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
-        xAxis.yOffset = 15f
+        xAxis.yOffset = 15f // Adjust if needed, but keeping as is
+
+        if (entries.size == 30) {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = 29.5f
+            xAxis.setCenterAxisLabels(false)
+        } else {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.setCenterAxisLabels(false)
+        }
+
+        // Custom XAxisRenderer for multiline labels
+        val customRenderer = RestorativeSleepFragment.MultilineXAxisRenderer(
+            barChart.viewPortHandler,
+            barChart.xAxis,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        )
+        (barChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+        barChart.setExtraOffsets(0f, 0f, 0f, 40f) // Increased bottom offset to prevent cutting
         val legend = barChart.legend
-        legend.isEnabled= false
+        legend.isEnabled = false
         legend.form = Legend.LegendForm.SQUARE  // Keep color box
         legend.textColor = Color.TRANSPARENT    // Hide text
         legend.textSize = 0f
         legend.setDrawInside(false)
+
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
@@ -360,11 +415,13 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     selectedCalorieTv.text = y.toInt().toString()
                 }
             }
+
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
             }
         })
+
         barChart.animateY(1000)
         barChart.invalidate()
     }
@@ -542,14 +599,20 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         val calorieMap = mutableMapOf<String, Float>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
+        val dateList = mutableListOf<String>()
 
         val days = getDaysInMonth(month + 1, year)
         repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
             calorieMap[dateStr] = 0f
+            dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        for (i in 0 until 30) {
+        val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        weeklyLabels.addAll(labelsWithEmpty)
+        labelsDate.addAll(labels)
+       /* for (i in 0 until 30) {
             weeklyLabels.add(
                 when (i) {
                     2 -> "1-7"
@@ -572,7 +635,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             } else {
                 labelsDate.add("29-31 $dateLabel")
             }
-        }
+        }*/
 
         // Aggregate calories by day
         calorieAnalysisResponse.data.calorie_data.forEach { calorie ->
@@ -583,6 +646,87 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         setLastAverageValue(calorieAnalysisResponse, "% Past Month")
         val entries = calorieMap.entries.mapIndexed { index, entry -> BarEntry(index.toFloat(), entry.value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
     }
 
     /** Process API data for last_six_months (6 months) */

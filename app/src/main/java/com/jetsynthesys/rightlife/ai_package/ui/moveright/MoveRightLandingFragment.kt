@@ -493,7 +493,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                                 (parentWidth * 0.4).toInt() // 40% of parent width for Weight Gain Zone
                                             } else {
                                                 weightLossZoneText.text = "Weight Loss Zone"
-                                                (parentWidth * 0.2).toInt() // 20% of parent width for Weight Loss Zone
+                                                (parentWidth * 0.1).toInt() // 20% of parent width for Weight Loss Zone
                                             }
                                             // Update the layout params to set the new width
                                             val layoutParams = overlay.layoutParams
