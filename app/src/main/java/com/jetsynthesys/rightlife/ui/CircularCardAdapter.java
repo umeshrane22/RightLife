@@ -88,7 +88,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                     mContext.startActivity(intent);
 
                 } else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN") ||
-                        item.getCategory().equalsIgnoreCase("Health Cam")) {
+                        item.getCategory().equalsIgnoreCase("Health Cam") || item.getCategory().equalsIgnoreCase("FACE_SCAN")) {
                     Intent intent = new Intent(mContext, HealthCamActivity.class);
                     // Optionally pass data
                     //intent.putExtra("key", "value");
