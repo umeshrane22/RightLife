@@ -51,6 +51,7 @@
                 android:layout_width="match_parent"
                 android:background="#E2E2E2"
                 android:layout_alignParentBottom="true"
+                android:visibility="gone"
                 android:layout_height="3dp"/>
         </RelativeLayout>
 
@@ -535,7 +536,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/dmsans_medium"
-                    android:text="2 Likes"
+                    android:text="2"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/textsize_small" />
 

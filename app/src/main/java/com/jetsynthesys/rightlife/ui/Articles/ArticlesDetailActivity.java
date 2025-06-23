@@ -124,16 +124,24 @@ public class ArticlesDetailActivity extends BaseActivity {
 
         binding.imageLikeArticle.setOnClickListener(v -> {
             binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
+            int currentCount = getCurrentCount();
             if (articleDetailsResponse.getData().getIsLike()) {
                 binding.imageLikeArticle.setImageResource(R.drawable.like_article_inactive);
                 articleDetailsResponse.getData().setIsLike(false);
                 postArticleLike(articleDetailsResponse.getData().getId(), false);
+                int newCount = currentCount - 1;
+                binding.txtLikeCount.setText(String.valueOf(Math.max(0, newCount)));
             } else {
                 binding.imageLikeArticle.setImageResource(R.drawable.like_article_active);
                 articleDetailsResponse.getData().setIsLike(true);
                 postArticleLike(articleDetailsResponse.getData().getId(), true);
+                int newCount = currentCount + 1;
+                binding.txtLikeCount.setText(String.valueOf(Math.max(0, newCount)));
             }
         });
+
+
+
         binding.imageShareArticle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,6 +161,16 @@ public class ArticlesDetailActivity extends BaseActivity {
             intent1.putExtra("ContentId", contentId);
             startActivity(intent1);
         });
+    }
+
+    private int getCurrentCount() {
+        try {
+            String countText = binding.txtLikeCount.getText().toString();
+            String numbersOnly = countText.replaceAll("[^0-9]", "");
+            return numbersOnly.isEmpty() ? 0 : Integer.parseInt(numbersOnly);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
 
@@ -256,8 +274,22 @@ public class ArticlesDetailActivity extends BaseActivity {
     }
 
     private void handleInThisArticle(List<String> tocItems) {
+        // Create a StringBuilder to build the text with bullet points
+        StringBuilder textBuilder = new StringBuilder();
+
+        // Add bullet points (•) before each item
+        for (int i = 0; i < tocItems.size(); i++) {
+            textBuilder.append("• ").append(tocItems.get(i));
+            if (i < tocItems.size() - 1) { // Don't add newline after the last item
+                textBuilder.append("\n\n");
+            }
+        }
+        textBuilder.append("\n"); // Add final newline
+
         // Create a SpannableString to handle multiple spans
-        SpannableString spannableString = new SpannableString(String.join("\n\n", tocItems) + "\n");
+        SpannableString spannableString = new SpannableString(textBuilder.toString());
+
+        //SpannableString spannableString = new SpannableString(String.join("\n\n", tocItems) + "\n");
 
         // Calculate the start and end indices for each item
         int start = 0;
