@@ -43,10 +43,8 @@ data class WeightResponse(
 data class WeightTotal(
     @SerializedName("weight_kg")
     val weight: Double,
-
     @SerializedName("type")
     val type: String,
-
     @SerializedName("date")
     val date: String
 )
@@ -54,10 +52,10 @@ data class WeightTotal(
 data class LastWeightLogData(
     @SerializedName("total_weight")
     val totalWeight: Double,
-
     @SerializedName("date")
     val date: String,
-
+    @SerializedName("type")
+    val type: String,
     @SerializedName("goal")
     val goal: Double
 )
