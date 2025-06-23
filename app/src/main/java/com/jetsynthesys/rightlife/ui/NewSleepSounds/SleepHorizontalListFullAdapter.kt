@@ -24,8 +24,7 @@ class SleepHorizontalListFullAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(service: Service) {
             binding.tvItemName.text = service.title
-            binding.tvItemTime.text = formatDuration(service.meta.duration ?: 0)
-            binding.tvItemTime.text = formatDuration(125)
+            binding.tvItemTime.text = formatDuration(service.meta?.duration ?: 0)
 
             // Load image using Glide/Picasso
 
