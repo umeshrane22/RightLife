@@ -72,6 +72,10 @@ class StressManagementSelectionFragment : Fragment() {
 
         header = arguments?.getString("HEADER").toString()
 
+        if (header.isNullOrEmpty()) {
+            header = SharedPreferenceManager.getInstance(requireContext()).selectedWellnessFocus
+        }
+
         recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
 
         adapter =

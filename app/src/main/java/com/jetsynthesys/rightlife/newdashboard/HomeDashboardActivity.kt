@@ -711,7 +711,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 val moduleId = module.moduleId
                 val isSelected = module.isSelectedModule
                 if (isSelected == true)
-                    sharedPreferenceManager.selectedOnboardingModule = moduleId
+                    sharedPreferenceManager.selectedWellnessFocus = moduleId
 
                 when (moduleId) {
                     "MOVE_RIGHT" -> {
