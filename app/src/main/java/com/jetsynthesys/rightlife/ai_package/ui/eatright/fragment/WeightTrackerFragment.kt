@@ -17,6 +17,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -25,9 +26,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -41,8 +46,10 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.LogWeightResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.WaterIntakeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WeightResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.LogWeightRulerAdapter
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.macros.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentWeightTrackerBinding
@@ -87,6 +94,10 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private val numbers = mutableListOf<Float>()
     private lateinit var weightIntake: TextView
     private lateinit var weightIntakeUnit: TextView
+    private lateinit var averageWaterIntake: TextView
+    private lateinit var averageHeading: TextView
+    private lateinit var percentageTv: TextView
+    private lateinit var averageGoalLayout : LinearLayoutCompat
     private var loadingOverlay : FrameLayout? = null
     private val viewModel: HydrationViewModelNew by viewModels()
 
@@ -120,6 +131,9 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         loss_new_weight_filled = view.findViewById(R.id.loss_new_weight_filled)
         weightIntake = view.findViewById(R.id.weightIntake)
         weightIntakeUnit = view.findViewById(R.id.weightIntakeUnit)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
+        percentageTv = view.findViewById(R.id.percentage_text)
+        averageWaterIntake = view.findViewById(R.id.average_number)
         val backIc = view.findViewById<ImageView>(R.id.backIc)
 
         backIc.setOnClickListener {
@@ -280,94 +294,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             }
         }
     }
-   /* private fun fetchWeightData(period: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = ApiClient.apiServiceFastApi.getLogWeight(
-                    userId = "67f6698fa213d14e22a47c2a",
-                    period = period,
-                    date = "2025-04-22"
-                )
 
-
-                if (response.isSuccessful) {
-                    val weightData = response.body()
-                    weightData?.let { data ->
-                        val (entries, labels) = when (period) {
-                            "last_monthly" -> {
-                                val entries = data.weightTotals.mapIndexed { index, item ->
-                                    Entry(index.toFloat(), item.weight.toFloat())
-                                }
-
-                                // Extract year and month from first item (assuming it's non-empty)
-                                val firstDate = data.weightTotals.firstOrNull()?.date ?: ""
-                                val dateParts = firstDate.split("-")
-                                val year = dateParts.getOrNull(0) ?: ""
-                                val month = dateParts.getOrNull(1) ?: ""
-                                val monthName = convertMonth(month)
-
-                                val labelsDate = mutableListOf<String>()
-                                for (i in data.weightTotals.indices) {
-                                    labelsDate.add(
-                                        when (i) {
-                                            in 0..6 -> "1-7 "
-                                            in 7..13 -> "8-14 "
-                                            in 14..20 -> "15-21 "
-                                            in 21..27 -> "22-28 "
-                                            else -> "29-31 "
-                                        }
-                                    )
-                                }
-
-                                Pair(entries, labelsDate)
-                            }
-
-                            "last_six_months" -> {
-                                val entries = data.weightTotals.mapIndexed { index, item ->
-                                    Entry(index.toFloat(), item.weight.toFloat())
-                                }
-
-                                val labels = data.weightTotals.map { item ->
-                                    val dateParts = item.date.split("-")
-                                    val year = dateParts.getOrNull(0) ?: ""
-                                    val month = dateParts.getOrNull(1) ?: ""
-                                    val monthName = convertMonth(month)
-                                    "$monthName"
-                                }
-
-                                Pair(entries, labels)
-                            }
-
-                            else -> Pair(emptyList(), emptyList())
-                        }
-
-                        val averageWeight = data.weightTotals
-                            .map { it.weight }
-                            .average()
-
-                        withContext(Dispatchers.Main) {
-                            updateChart(entries, labels)
-                            Log.d("AvgWeight", "Average Weight: $averageWeight")
-                        }
-                    } ?: withContext(Dispatchers.Main) {
-                        Toast.makeText(requireContext(), "No weight data received", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Error: ${response.code()} - ${response.message()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }*/
    private fun showLogWeightBottomSheet() {
        // Create and configure BottomSheetDialog
        val bottomSheetDialog = BottomSheetDialog(requireActivity())
@@ -616,23 +543,25 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     }
                     val waterData = response.body()
                     waterData?.let { data ->
-                        val (entries, labels) = when (period) {
+                        val (entries, labels, labelsDate) = when (period) {
                             "last_weekly" -> processWeeklyData(data, selectedDate)
                             "last_monthly" -> processMonthlyData(data, selectedDate)
                             "last_six_months" -> processSixMonthsData(data, selectedDate)
-                            else -> Pair(emptyList(), emptyList())
+                            else -> Triple(emptyList(), emptyList(), emptyList())
                         }
                         withContext(Dispatchers.Main) {
                             weight_description_heading.text = data.heading
                             weight_description_text.text = data.description
-                            weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                            if (data.lastWeightLog != null){
+                                weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                            }
                            // weightIntakeUnit.text = data.lastWeightLog.
                             if (data.weightTotals.size > 31) {
                                 layoutLineChart.visibility = View.VISIBLE
                                 lineChartForSixMonths()
                             } else {
                                 layoutLineChart.visibility = View.VISIBLE
-                                updateChart(entries, labels)
+                                updateChart(entries, labels, labelsDate, data)
                             }
                         }
                     } ?: withContext(Dispatchers.Main) {
@@ -857,32 +786,130 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         return formatter.format(date)
     }
 
-    private fun updateChart(entries: List<Entry>, labels: List<String>) {
+    private fun updateChart(entries: List<Entry>, labels: List<String>, labelsDate: List<String>, data: WeightResponse) {
         activity?.runOnUiThread {
+            selectHeartRateLayout.visibility = View.INVISIBLE
             val dataSet = LineDataSet(entries, "")
             dataSet.color = context?.let { ContextCompat.getColor(it, R.color.border_green) }!!
             dataSet.valueTextColor = Color.BLACK
+            dataSet.valueTextSize = 12f
             dataSet.setCircleColor(context?.let { ContextCompat.getColor(it, R.color.border_green) }!!)
             dataSet.circleRadius = 5f
             dataSet.lineWidth = 2f
-            dataSet.setDrawValues(false)
+            dataSet.setDrawValues(entries.size <= 7)
 
             val lineData = LineData(dataSet)
             lineChart.data = lineData
 
+            // X-axis label handling
+            val combinedLabels = if (entries.size == 30) {
+                labels
+            } else {
+                labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                    val cleanedDate = date.substringBefore(",")
+                    "$label\n$cleanedDate"
+                }
+            }
+
             val xAxis = lineChart.xAxis
-            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
             xAxis.position = XAxis.XAxisPosition.BOTTOM
-            xAxis.textSize = 12f
+            xAxis.textSize = 10f
             xAxis.granularity = 1f
+            xAxis.labelCount =  entries.size
+            xAxis.setDrawLabels(true)
+            xAxis.labelRotationAngle = 0f
             xAxis.setDrawGridLines(false)
-            xAxis.textColor = Color.BLACK
+            xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
             xAxis.yOffset = 15f
 
+            if (entries.size == 30) {
+                xAxis.axisMinimum = -0.5f
+                xAxis.axisMaximum = 29.5f
+                xAxis.setCenterAxisLabels(false)
+            } else {
+                xAxis.axisMinimum = -0.5f
+                xAxis.axisMaximum = entries.size - 0.5f
+                xAxis.setCenterAxisLabels(false)
+            }
+
+            // Custom XAxis Renderer (multiline support)
+            val customRenderer = MultilineXAxisRenderer(
+                lineChart.viewPortHandler,
+                lineChart.xAxis,
+                lineChart.getTransformer(YAxis.AxisDependency.LEFT)
+            )
+            (lineChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
+
+            // Y-axis
             val leftYAxis: YAxis = lineChart.axisLeft
             leftYAxis.textSize = 12f
-            leftYAxis.textColor = Color.BLACK
+            leftYAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
             leftYAxis.setDrawGridLines(true)
+            leftYAxis.axisMinimum = 0f
+          //  leftYAxis.axisMaximum = entries.maxByOrNull { it.y }?.y?.plus(100f) ?: 1000f
+            leftYAxis.granularity = 1f
+
+            if (entries.size == 30){
+                val minValue = minOf(
+                    entries.minOfOrNull { it.y } ?: 0f,
+                    data.totalWeight.toFloat(),
+                    data.currentAvgWeight.toFloat()
+                )
+                val maxValue = maxOf(
+                    entries.maxOfOrNull { it.y } ?: 0f,
+                    data.totalWeight.toFloat(),
+                    data.currentAvgWeight.toFloat()
+                )
+                // Include stepsGoal in max check
+                val axisMax = maxOf(maxValue, data.totalWeight.toFloat())
+
+                leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
+                leftYAxis.axisMaximum = axisMax * 1.2f
+                leftYAxis.setDrawZeroLine(true)
+                // leftYAxis.zeroLineColor = Color.BLACK
+                leftYAxis.zeroLineWidth = 1f
+
+//                val totalStepsLine = LimitLine(data.todaysWaterLog.goal.toFloat(), "G")
+//                totalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+//                totalStepsLine.lineWidth = 1f
+//                totalStepsLine.enableDashedLine(10f, 10f, 0f)
+//                totalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.border_green)
+//                totalStepsLine.textSize = 10f
+//                totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+                val avgStepsLine = LimitLine(data.currentAvgWeight.toFloat(), "A")
+                avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+                avgStepsLine.lineWidth = 1f
+                avgStepsLine.enableDashedLine(10f, 10f, 0f)
+                avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+                avgStepsLine.textSize = 10f
+                avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+                leftYAxis.removeAllLimitLines()
+               // leftYAxis.addLimitLine(totalStepsLine)
+                leftYAxis.addLimitLine(avgStepsLine)
+                averageGoalLayout.visibility = View.VISIBLE
+            }else{
+                leftYAxis.removeAllLimitLines()
+                averageGoalLayout.visibility = View.GONE
+            }
+
+            lineChart.axisRight.isEnabled = false
+            lineChart.description.isEnabled = false
+            // Optional chart description
+            val description = Description().apply {
+                text = ""
+                textColor = Color.BLACK
+                textSize = 14f
+                setPosition(lineChart.width / 2f, lineChart.height.toFloat() - 10f)
+            }
+            lineChart.description = description
+            lineChart.setExtraOffsets(0f, 0f, 0f, 25f)
+            // Legend
+            val legend = lineChart.legend
+            legend.setDrawInside(false)
+
             lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
                 override fun onValueSelected(e: Entry?, h: Highlight?) {
                     selectHeartRateLayout.visibility = View.VISIBLE
@@ -890,7 +917,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                         val x = e.x.toInt()
                         val y = e.y
                         Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                        selectedItemDate.text = labels.get(x)
+                        selectedItemDate.text = labelsDate.get(x)
                         selectedCalorieTv.text = y.toInt().toString()
                     }
                 }
@@ -899,45 +926,55 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                     selectHeartRateLayout.visibility = View.INVISIBLE
                 }
             })
-            lineChart.axisRight.isEnabled = false
-            lineChart.description.isEnabled = false
+            lineChart.animateY(1000)
             lineChart.invalidate()
         }
     }
 
-    private suspend fun processWeeklyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+    private suspend fun processWeeklyData(data: WeightResponse, currentDate: String): Triple<List<Entry>, List<String>,  List<String>> {
         return withContext(Dispatchers.Main) {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val calendar = Calendar.getInstance()
+            val dateString = currentDate
             val date = dateFormat.parse(currentDate)
             calendar.time = date!!
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            calendar.set(year, month, day)
             calendar.add(Calendar.DAY_OF_YEAR, -6)
 
-            val waterMap = mutableMapOf<String, Float>()
+            val weightMap = mutableMapOf<String, Float>()
             val labels = mutableListOf<String>()
+            val labelsDate = mutableListOf<String>()
             val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
 
             repeat(7) {
                 val dateStr = dateFormat.format(calendar.time)
-                waterMap[dateStr] = 0f
-                labels.add(dayFormat.format(calendar.time))
+                weightMap[dateStr] = 0f
+                val dateLabel = "${convertDate(dateStr)}, $year"
+                val dayString = dayFormat.format(calendar.time)
+                labels.add(dayString)
+                labelsDate.add(dateLabel)
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
 
-            data.weightTotals.forEach { intake ->
-                val date = dateFormat.parse(intake.date)
-                if (date != null) {
-                    val dayKey = dateFormat.format(date)
-                    waterMap[dayKey] = intake.weight.toFloat()
+            if (data.weightTotals.isNotEmpty()) {
+                data.weightTotals.forEach { intake ->
+                    val startDate = dateFormat.parse(intake.date)?.let { Date(it.time) }
+                    if (startDate != null) {
+                        val dayKey = dateFormat.format(startDate)
+                        weightMap[dayKey] = weightMap[dayKey]!! + (intake.weight.toFloat() ?: 0f)
+                    }
                 }
             }
-
-            val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-            Pair(entries, labels)
+            setLastAverageValue(data, "% Past Week")
+            val entries = weightMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
+            Triple(entries, labels, labelsDate)
         }
     }
 
-    private suspend fun processMonthlyData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+    private suspend fun processMonthlyData(data: WeightResponse, currentDate: String): Triple<List<Entry>, List<String>,  List<String>> {
         return withContext(Dispatchers.Main) {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             val calendar = Calendar.getInstance()
@@ -950,78 +987,41 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, -29)
 
             val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-            val waterMap = mutableMapOf<String, Float>()
+            val weightMap = mutableMapOf<String, Float>()
+            val dateList = mutableListOf<String>()
+            val weeklyLabels = mutableListOf<String>()
+            val labelsDate = mutableListOf<String>()
 
             // Initialize water map for all days in the month
             repeat(30) {
                 val dateStr = dateFormat.format(calendar.time)
-                waterMap[dateStr] = 0f
+                weightMap[dateStr] = 0f
+                dateList.add(dateStr)
                 calendar.add(Calendar.DAY_OF_YEAR, 1)
             }
 
+            val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+            val labels = generateWeeklyLabelsFor30Days(dateList[0])
+            weeklyLabels.addAll(labelsWithEmpty)
+            labelsDate.addAll(labels)
             // Populate weight data
-            data.weightTotals.forEach { intake ->
-                val date = dateFormat.parse(intake.date)
-                if (date != null) {
-                    val dayKey = dateFormat.format(date)
-                    waterMap[dayKey] = intake.weight.toFloat()
-                }
-            }
-
-            // Group data into weeks (1-7, 8-14, 15-21, 22-28, 29-end)
-            val weeklyWeight = mutableListOf<Float>()
-            val labels = mutableListOf<String>()
-            var weekIndex = 0
-            var weeklySum = 0f
-            var dayCount = 0
-
-            waterMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
-                weeklySum += entry.value
-                dayCount++
-
-                when (index + 1) {
-                    7 -> {
-                        weeklyWeight.add(weeklySum / dayCount) // Average for the week
-                        labels.add("1-7")
-                        weeklySum = 0f
-                        dayCount = 0
-                        weekIndex++
-                    }
-                    14 -> {
-                        weeklyWeight.add(weeklySum / dayCount)
-                        labels.add("8-14")
-                        weeklySum = 0f
-                        dayCount = 0
-                        weekIndex++
-                    }
-                    21 -> {
-                        weeklyWeight.add(weeklySum / dayCount)
-                        labels.add("15-21")
-                        weeklySum = 0f
-                        dayCount = 0
-                        weekIndex++
-                    }
-                    28 -> {
-                        weeklyWeight.add(weeklySum / dayCount)
-                        labels.add("22-28")
-                        weeklySum = 0f
-                        dayCount = 0
-                        weekIndex++
-                    }
-                    30 -> {
-                        weeklyWeight.add(weeklySum / dayCount)
-                        labels.add("29-$30")
+            if (data.weightTotals.isNotEmpty()) {
+                data.weightTotals.forEach { intake ->
+                    val startDate = dateFormat.parse(intake.date)?.let { Date(it.time) }
+                    if (startDate != null) {
+                        val dayKey = dateFormat.format(startDate)
+                        weightMap[dayKey] = weightMap[dayKey]!! + (intake.weight.toFloat() ?: 0f)
                     }
                 }
             }
-
+            setLastAverageValue(data, "% Past Week")
             // Create entries for the chart
-            val entries = weeklyWeight.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-            Pair(entries, labels)
+            val entries = weightMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
+            Triple(entries, weeklyLabels, labels)
         }
     }
 
-    private fun processSixMonthsData(data: WeightResponse, currentDate: String): Pair<List<Entry>, List<String>> {
+    private fun processSixMonthsData(data: WeightResponse, currentDate: String): Triple<List<Entry>, List<String>, List<String>> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
         val calendar = Calendar.getInstance()
@@ -1030,6 +1030,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
         val waterMap = mutableMapOf<Int, Float>()
         val labels = mutableListOf<String>()
+        val labelsDate = mutableListOf<String>()
 
         repeat(6) { month ->
             waterMap[month] = 0f
@@ -1048,9 +1049,8 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 }
             }
         }
-
         val entries = waterMap.values.mapIndexed { index, value -> Entry(index.toFloat(), value) }
-        return Pair(entries, labels)
+        return Triple(entries, labels, labelsDate)
     }
 
     private fun setSelectedDate(selectedWeekDate: String) {
@@ -1097,6 +1097,103 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                 selectedDate.gravity = Gravity.CENTER
             }
         }
+    }
+
+    private fun setLastAverageValue(data: WeightResponse, type: String) {
+        activity?.runOnUiThread {
+            averageWaterIntake.text = data.currentAvgWeight.toInt().toString()
+            // totalCalorie.text = data.totalWater.toInt().toString()
+            if (data.progressSign == "plus") {
+                percentageTv.text = "${data.progressPercentage.toInt()} $type"
+                // percentageIc.setImageResource(R.drawable.ic_up)
+            } else if (data.progressSign == "minus") {
+                percentageTv.text = "${data.progressPercentage.toInt()} $type"
+                // percentageIc.setImageResource(R.drawable.ic_down)
+            }
+        }
+    }
+
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
     }
 
     private fun convertDate(inputDate: String): String {

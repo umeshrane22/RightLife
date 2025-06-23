@@ -1407,6 +1407,7 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:id="@+id/lyt_breathing_card"
                     android:elevation="4dp"
                     android:visibility="gone"
                     android:background="@color/white"
@@ -1458,7 +1459,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginStart="5dp"
                             app:layout_constraintTop_toBottomOf="@id/lyt_breathing"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

@@ -64,6 +64,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ToolGridData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsGridResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.BreathingResponse
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MindfulnessReviewDialog
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.model.AssessmentResult
@@ -116,6 +117,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var mindfullArrowBtn: ImageView
     private lateinit var tvAuthor: TextView
     private lateinit var cardAddTools: CardView
+    private lateinit var breathingCard: CardView
     private lateinit var emotionCardData: CardView
     private lateinit var emotionCardNoData: CardView
     private lateinit var cardAffirmations: CardView
@@ -184,6 +186,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         recyclerViewTags.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         editEmotionIcon = view.findViewById(R.id.editEmotionIcon)
         emotionCardData = view.findViewById(R.id.emotionCard)
+        breathingCard = view.findViewById(R.id.lyt_breathing_card)
         emotionCardNoData = view.findViewById(R.id.lyt_feel)
         cardAffirmations = view.findViewById(R.id.card_affirmations)
         tvJournalDate = view.findViewById(R.id.tv_journaling_date)
@@ -226,6 +229,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchAssessmentResult()
         fetchMindfulData()
         fetchThinkRecomendedData()
+        getBreathingData()
         data = SharedPreferenceManager.getInstance(requireContext()).userProfile
         tvWellnessDays.setText(data.wellnessStreak.toString()+" days")
 
@@ -628,6 +632,45 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             override fun onFailure(call: Call<ToolsGridResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
       //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    private fun getBreathingData() {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.getBreathing(token)
+        call.enqueue(object : Callback<BreathingResponse> {
+            override fun onResponse(call: Call<BreathingResponse>, response: Response<BreathingResponse>) {
+                if (response.isSuccessful) {
+                    breathingCard.visibility = View.VISIBLE
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                } else {
+                    breathingCard.visibility = View.GONE
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<BreathingResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                breathingCard.visibility = View.GONE
                 if (isAdded  && view != null){
                     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
