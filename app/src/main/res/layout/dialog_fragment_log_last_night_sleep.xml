@@ -16,7 +16,7 @@
         android:id="@+id/btnClose"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_gravity="end"

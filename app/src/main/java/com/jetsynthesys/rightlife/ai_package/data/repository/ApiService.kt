@@ -70,6 +70,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.UpdateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateSnapMealRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.BreathingResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.CalorieAnalysisResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
@@ -527,6 +528,9 @@ interface ApiService {
 
     @GET("tools")
     fun thinkTools(@Header("Authorization") authToken: String): Call<ToolsGridResponse>
+
+    @GET("breathing?type=breathing")
+    fun getBreathing(@Header("Authorization") authToken: String): Call<BreathingResponse>
 
     @GET("journalNew/journalAnswer")
     fun fetchJournalAnswer(@Header("Authorization") authToken: String,@Query("date") date: String): Call<JournalAnswerResponse>

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
@@ -71,7 +72,8 @@ class MainAIActivity : BaseActivity() {
                 commit()
             }
         }else if (bottomSeatName.contentEquals("RecordEmotionMoodTracThink")) {
-            supportFragmentManager.beginTransaction().apply {
+            Toast.makeText(this,"Coming Soon", Toast.LENGTH_SHORT).show()
+            /*supportFragmentManager.beginTransaction().apply {
                 val homeBottomTabFragment = MoodTrackerFragment("", 0,"")
                 val args = Bundle()
                 args.putString("ModuleName", "HomeDashboard")
@@ -79,7 +81,7 @@ class MainAIActivity : BaseActivity() {
                 replace(R.id.flFragment, homeBottomTabFragment, "homeBottom")
                 addToBackStack(null)
                 commit()
-            }
+            }*/
         }else{
             supportFragmentManager.beginTransaction().apply {
                 val homeBottomTabFragment = HomeBottomTabFragment()

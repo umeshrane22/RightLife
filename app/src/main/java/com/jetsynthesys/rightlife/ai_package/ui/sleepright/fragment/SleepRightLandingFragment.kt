@@ -179,6 +179,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
     private lateinit var logYourNap : LinearLayout
     private lateinit var actualNoDataCardView : CardView
+    private lateinit var sleepStageCardView : CardView
     private lateinit var stageNoDataCardView : CardView
     private lateinit var performCardView : CardView
     private lateinit var sleepTimeRequirementCardView : CardView
@@ -215,6 +216,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var mWakeupTime = ""
     private var mRecordId = ""
     private var loadingOverlay : FrameLayout? = null
+    private var mEditWakeTime = ""
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -247,6 +249,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         btnSleepSound = view.findViewById(R.id.btn_sleep_sound)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         imgIdealInfo = view.findViewById(R.id.img_ideal_info)
+        sleepStageCardView = view.findViewById(R.id.sleep_stage_layout)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
         downloadView = view.findViewById(R.id.sleep_download_icon)
@@ -1050,6 +1053,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             listener = object : OnWakeUpTimeSelectedListener {
                 override fun onWakeUpTimeSelected(time: String) {
                     todaysWakeupTime.setText(time)
+                    mEditWakeTime = time
+                    val orgSleepTime = todaysSleepRequirement.text
+                    Toast.makeText(requireContext(),"$orgSleepTime", Toast.LENGTH_SHORT).show()
+                 //   todaysSleepRequirement.setText()
                 }
             }
         )
@@ -1165,6 +1172,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             tvStageSleepStartTime.setText(convertTo12HourFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepStartTime!!))
             tvStageSleepEndTime.setText(convertTo12HourFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepEndTime!!))
             tvStageSleepTotalTime.text = convertDecimalMinutesToHrMinFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.totalSleepDurationMinutes!!)
+        }else{
+            stageNoDataCardView.visibility = View.VISIBLE
+            sleepStagesView.visibility = View.GONE
+            sleepStageCardView.visibility = View.GONE
         }
 
         // Set Sleep Performance Data
@@ -1359,6 +1370,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         if (sleepStageResponse.size > 0) {
             stageNoDataCardView.visibility = View.GONE
             sleepStagesView.visibility = View.VISIBLE
+            sleepStageCardView.visibility = View.VISIBLE
             remData.clear()
             awakeData.clear()
             coreData.clear()
@@ -1406,6 +1418,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
             sleepStagesView.visibility = View.GONE
+            sleepStageCardView.visibility = View.GONE
         }
     }
 
@@ -1472,6 +1485,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
             }
+        }else{
+            performNoDataCardView.visibility = View.VISIBLE
+            performCardView.visibility = View.GONE
         }
     }
 
@@ -1494,17 +1510,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun addDeepStageData(sleepStagesData: ArrayList<SleepStagesData>?): String {
         var totalDeepDuration = 0.0
+        if (sleepStagesData?.isNotEmpty() == true) {
+            for (i in 0 until sleepStagesData?.size!!) {
+                val startDateTime =
+                    LocalDateTime.parse(sleepStagesData[i].startDatetime, formatters)
+                val endDateTime = LocalDateTime.parse(sleepStagesData[i].endDatetime, formatters)
+                val duration = Duration.between(startDateTime, endDateTime).toMinutes()
+                    .toFloat() / 60 // Convert to hours
 
-        for (i in 0 until sleepStagesData?.size!!) {
-            val startDateTime = LocalDateTime.parse(sleepStagesData[i].startDatetime, formatters)
-            val endDateTime = LocalDateTime.parse(sleepStagesData[i].endDatetime, formatters)
-            val duration = Duration.between(startDateTime, endDateTime).toMinutes()
-                .toFloat() / 60 // Convert to hours
-
-            when (sleepStagesData[i].stage) {
-                "Deep Sleep" -> {
-                    deepData.add(duration)
-                    totalDeepDuration += duration
+                when (sleepStagesData[i].stage) {
+                    "Deep Sleep" -> {
+                        deepData.add(duration)
+                        totalDeepDuration += duration
+                    }
                 }
             }
         }
@@ -1513,21 +1531,22 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun addRemStageData(sleepStagesData: ArrayList<SleepStagesData>?): String {
         var totalRemDuration = 0.0
+    if (sleepStagesData?.isNotEmpty() == true) {
+      for (i in 0 until sleepStagesData?.size!!) {
+        val startDateTime =
+            LocalDateTime.parse(sleepStagesData[i].startDatetime, formatters)
+        val endDateTime = LocalDateTime.parse(sleepStagesData[i].endDatetime, formatters)
+        val duration = Duration.between(startDateTime, endDateTime).toMinutes()
+            .toFloat() / 60 // Convert to hours
 
-        for (i in 0 until sleepStagesData?.size!!) {
-            val startDateTime =
-                LocalDateTime.parse(sleepStagesData[i].startDatetime, formatters)
-            val endDateTime = LocalDateTime.parse(sleepStagesData[i].endDatetime, formatters)
-            val duration = Duration.between(startDateTime, endDateTime).toMinutes()
-                .toFloat() / 60 // Convert to hours
-
-            when (sleepStagesData[i].stage) {
-                "REM Sleep" -> {
-                    remData.add(duration)
-                    totalRemDuration += duration
-                }
+        when (sleepStagesData[i].stage) {
+            "REM Sleep" -> {
+                remData.add(duration)
+                totalRemDuration += duration
             }
-        }
+          }
+       }
+     }
         return convertDecimalHoursToHrMinFormat(totalRemDuration)
     }
 
