@@ -563,7 +563,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                     if (ResponseObj.userdata.profilePicture != null) {
                         Glide.with(this@HomeDashboardActivity)
                             .load(ApiClient.CDN_URL_QA + ResponseObj.userdata.profilePicture)
-                            .placeholder(R.drawable.profile_man).error(R.drawable.profile_man)
+                            .placeholder(R.drawable.rl_profile).error(R.drawable.rl_profile)
                             .into(binding.profileImage)
                     }
                     binding.userName.text = ResponseObj.userdata.firstName

@@ -74,7 +74,8 @@ public class TestAdapter extends BaseBannerAdapter<SortedService> {
 
             Glide.with(holder.itemView.getContext())
                     .load(ApiClient.CDN_URL_QA + data.getThumbnail().getUrl())
-                    .placeholder(R.drawable.img_logintop1) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .transform(new RoundedCorners(25))
                     .into(img_affirmation);
 

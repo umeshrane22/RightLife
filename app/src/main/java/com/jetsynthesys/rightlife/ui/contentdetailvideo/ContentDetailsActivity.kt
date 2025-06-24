@@ -152,7 +152,8 @@ class ContentDetailsActivity : BaseActivity() {
                         ApiClient.CDN_URL_QA + contentResponseObj.data.artist[0]
                             .profilePicture
                     )
-                    .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_profile)
+                    .error(R.drawable.rl_profile)// Replace with your placeholder image
                     .circleCrop()
                     .into(binding.profileImage)
 
@@ -442,7 +443,8 @@ class ContentDetailsActivity : BaseActivity() {
         if (moduleContentDetail != null) {
             GlideApp.with(this@ContentDetailsActivity)
                 .load(ApiClient.CDN_URL_QA + moduleContentDetail.data.thumbnail.url) //episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(backgroundImage)
         }
 

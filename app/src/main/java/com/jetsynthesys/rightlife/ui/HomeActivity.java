@@ -605,7 +605,10 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         ImageView ivClose = view.findViewById(R.id.iv_close);
         ivClose.setOnClickListener(view1 -> drawer.close());
         if (userdata.getProfilePicture() != null) {
-            Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture()).placeholder(R.drawable.profile_man).error(R.drawable.profile_man).into(ivProfileImage);
+            Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
+                    .placeholder(R.drawable.rl_profile)
+                    .error(R.drawable.rl_profile)
+                    .into(ivProfileImage);
         } else {
 
         }
@@ -976,7 +979,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             if (item0.getThumbnail() != null) {
                 Glide.with(getApplicationContext())
                         .load(ApiClient.CDN_URL_QA + item0.getThumbnail().getUrl())
-                        .placeholder(R.drawable.img_logintop)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .into(img_rledit);
             }
         }
@@ -997,8 +1001,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             if (item1.getThumbnail() != null) {
                 Glide.with(getApplicationContext())
                         .load(ApiClient.CDN_URL_QA + item1.getThumbnail().getUrl())
-                        .placeholder(R.drawable.img_logintop)
-                        .error(R.drawable.img_logintop)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .transform(new RoundedCorners(25))
                         .into(img_rledit1);
             }
@@ -1020,8 +1024,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             if (item2.getThumbnail() != null) {
                 Glide.with(getApplicationContext())
                         .load(ApiClient.CDN_URL_QA + item2.getThumbnail().getUrl())
-                        .placeholder(R.drawable.img_logintop)
-                        .error(R.drawable.img_logintop)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .transform(new RoundedCorners(25))
                         .into(img_rledit2);
             }
@@ -1187,8 +1191,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         if (!isFinishing() && !isDestroyed()) {
             Glide.with(this)
                     .load(ApiClient.CDN_URL_QA + content.getThumbnail().getUrl()) // URL of the thumbnail
-                    .placeholder(R.drawable.img_logintop) // Optional placeholder
-                    .error(R.drawable.img_logintop)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .transform(new RoundedCorners(25))// Optional error image
                     .into(thumbnail);
         }
@@ -1262,7 +1266,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + responseObj.getData().getEvents().get(0).getThumbnail().getUrl())
-                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)// Replace with your placeholder image
                 .into(liveclass_banner_image);
 
         tv_header_lvclass.setText(responseObj.getData().getSectionTitle());
@@ -1694,7 +1699,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
                     setDrawerHeader(navigationView.getHeaderView(0));
                     if (ResponseObj.getUserdata().getProfilePicture() != null) {
-                        Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).placeholder(R.drawable.profile_man).error(R.drawable.profile_man).into(profileImage);
+                        Glide.with(HomeActivity.this).load(ApiClient.CDN_URL_QA + ResponseObj.getUserdata().getProfilePicture()).placeholder(R.drawable.rl_profile).error(R.drawable.rl_profile).into(profileImage);
                     }
                     tvUserName.setText(ResponseObj.getUserdata().getFirstName());
 

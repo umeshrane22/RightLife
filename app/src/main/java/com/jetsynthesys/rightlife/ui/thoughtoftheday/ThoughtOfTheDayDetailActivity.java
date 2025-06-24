@@ -183,7 +183,8 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
                 " " + contentResponseObj.getData().getArtist().get(0).getLastName());
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + contentResponseObj.getData().getArtist().get(0).getProfilePicture())
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_profile)
+                .error(R.drawable.rl_profile)
                 .circleCrop()
                 .into(binding.imgArtist);
 
@@ -214,7 +215,8 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
         binding.rlVideoPlayerMain.setVisibility(View.GONE);
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + contentResponseObj.getData().getThumbnail().getUrl())
-                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(binding.imgContentview);
     }
 
@@ -240,7 +242,6 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
         Uri videoUri = Uri.parse(ApiClient.CDN_URL_QA + ContentResponseObj.getData().getPreviewUrl());// responseObj.getPreviewUrl()
         //MediaItem mediaItem = MediaItem.fromUri(videoUri);
         //player.setMediaItem(mediaItem);
-        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA); //responseObj.getUrl()
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(this))
                 .createMediaSource(MediaItem.fromUri(videoUri));
 
@@ -286,7 +287,8 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
 
         Glide.with(ThoughtOfTheDayDetailActivity.this)
                 .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(binding.backgroundImage);
 
         String previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3";

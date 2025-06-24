@@ -42,6 +42,8 @@ class ArtistContentListAdapter extends RecyclerView.Adapter<ArtistContentListAda
         if (list.getThumbnail().getUrl() != null && !list.getThumbnail().getUrl().isEmpty()) {
             Glide.with(context)
                     .load(ApiClient.CDN_URL_QA + list.getThumbnail().getUrl())
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.imageArtistContent);
         }
 

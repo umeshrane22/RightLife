@@ -34,6 +34,8 @@ class BreathworkAdapter(
 
             Glide.with(imageView.context)
                 .load(ApiClient.CDN_URL_QA + item.thumbnail)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(imageView)
 
             plusButton.setImageResource(

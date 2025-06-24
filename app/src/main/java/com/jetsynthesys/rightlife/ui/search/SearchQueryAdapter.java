@@ -47,7 +47,8 @@ public class SearchQueryAdapter extends RecyclerView.Adapter<SearchQueryAdapter.
                 holder.standingLine.setVisibility(View.GONE);
                 Glide.with(context)
                         .load(ApiClient.CDN_URL_QA + artist.getProfilePicture())
-                        .placeholder(R.drawable.banner_sleep_sounds)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .into(holder.imageView);
                 holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(artist.getId(), artist.getId()));
                 break;
@@ -59,7 +60,8 @@ public class SearchQueryAdapter extends RecyclerView.Adapter<SearchQueryAdapter.
                 holder.tvModuleName.setText(content.getModule());
                 Glide.with(context)
                         .load(ApiClient.CDN_URL_QA + content.getUrl())
-                        .placeholder(R.drawable.banner_sleep_sounds)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .into(holder.imageView);
                 holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(content.getId(), content.getId()));
                 break;
@@ -83,7 +85,8 @@ public class SearchQueryAdapter extends RecyclerView.Adapter<SearchQueryAdapter.
                 holder.standingLine.setVisibility(View.GONE);
                 Glide.with(context)
                         .load(ApiClient.CDN_URL_QA + service.getImageUrl())
-                        .placeholder(R.drawable.banner_sleep_sounds)
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .into(holder.imageView);
                 holder.itemView.setOnClickListener(view -> onItemClickListener.onItemClick(service.getId(), service.getId()));
                 break;

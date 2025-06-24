@@ -53,9 +53,10 @@ public class RLEditDetailMoreAdapter extends RecyclerView.Adapter<RLEditDetailMo
         holder.textView.setText(contentList.get(position).getTitle());
 
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
-            Glide.with(ctx).load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
+            Glide.with(ctx).load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl())
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(holder.imageView);
         }
         //holder.imageView.setImageResource(itemImages[position]);
 

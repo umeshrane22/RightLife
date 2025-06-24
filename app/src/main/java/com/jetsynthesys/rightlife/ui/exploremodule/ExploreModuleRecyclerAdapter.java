@@ -54,31 +54,19 @@ public class ExploreModuleRecyclerAdapter extends RecyclerView.Adapter<ExploreMo
         //holder.item_text1.setText(contentList.get(position).getContentType());
 
         if (contentList.get(position).getImageUrl() != null && !contentList.get(position).getImageUrl().isEmpty()) {
-          //  Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getImageUrl()).into(holder.imageView);
-
 
             GlideApp.with(ctx)
                     .load(ApiClient.CDN_URL_QA+contentList.get(position).getImageUrl())
-                    .error(R.drawable.img_logintop)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.imageView);
-            //
-            // .placeholder(R.drawable.placeholder)
-
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getImageUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getImageUrl());
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
                 Gson gson = new Gson();
                 String json = gson.toJson(contentList);
-              /*  Intent intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);
-                intent.putExtra("Categorytype", contentList.get(position).getId());
-                intent.putExtra("position", position);
-                intent.putExtra("contentId", contentList.get(position).getId());
-                holder.itemView.getContext().startActivity(intent);*/
 
                 Intent intent = new Intent(ctx, CategoryListActivity.class);
                 intent.putExtra("Categorytype", contentList.get(holder.getBindingAdapterPosition()).getCategoryId());

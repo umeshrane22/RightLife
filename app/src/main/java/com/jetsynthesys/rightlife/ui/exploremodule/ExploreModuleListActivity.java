@@ -432,9 +432,9 @@ public class ExploreModuleListActivity extends BaseActivity {
     }
 
     private void handleBannerResponse(PromotionResponse promotionResponse) {
-        Log.d("API Response", "Image Urls: " + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl());
         Glide.with(this).load(ApiClient.CDN_URL_QA + promotionResponse.getPromotiondata().getPromotionList().get(0).getContentUrl())
-                .placeholder(R.drawable.logo_rightlife)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(img_explore_banner);
     }
 

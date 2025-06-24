@@ -53,6 +53,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         }
         Glide.with(context).load(ApiClient.CDN_URL_QA + article.getThumbnail())
                 .transform(new RoundedCorners(1))
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(holder.binding.imageView);
 
 
@@ -68,6 +70,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             //holder.binding.txtBtnBuyNow.setText(article.getRecommendedProduct().getButtonText());
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedProduct().getImage())
                     .transform(new RoundedCorners(20))
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.binding.imgThumbnailProduct);
 
         } else {
@@ -83,9 +87,12 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedService().getImageUrl())
                     .transform(new RoundedCorners(15))
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.binding.imgThumbnailService);
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedService().getModuleImageUrl())
-                    .placeholder(R.drawable.circular_logo)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.binding.imgTagService);
         } else {
             holder.binding.card2.setVisibility(View.GONE);
@@ -101,6 +108,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
                     GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
                             .transform(new RoundedCorners(15))
+                            .placeholder(R.drawable.rl_placeholder)
+                            .error(R.drawable.rl_placeholder)
                             .into(holder.binding.imgThumbnailCard3Video);
                 }
 
@@ -140,6 +149,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
                     GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
                             .transform(new RoundedCorners(15))
+                            .placeholder(R.drawable.rl_placeholder)
+                            .error(R.drawable.rl_placeholder)
                             .into(holder.binding.imgThumbnailSeries);
                 }
 
@@ -178,6 +189,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
                     GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
                             .transform(new RoundedCorners(15))
+                            .placeholder(R.drawable.rl_placeholder)
+                            .error(R.drawable.rl_placeholder)
                             .into(holder.binding.imgThumbnailSeries);
                 }
 

@@ -40,8 +40,8 @@ class ArtistAdapter(
 
         GlideApp.with(holder.itemView.context)
             .load(profileUrl)
-            .placeholder(R.drawable.profile_man)
-            .error(R.drawable.profile_man)
+            .placeholder(R.drawable.rl_profile)
+            .error(R.drawable.rl_profile)
             .into(holder.binding.imageProfile)
 
         holder.itemView.setOnClickListener {

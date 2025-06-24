@@ -45,8 +45,8 @@ class OnBoardingModuleListAdapter(
         holder.tvDescription.setTextColor(Utils.getModuleDarkColor(context, moduleService.moduleName))
 
         Glide.with(context).load(ApiClient.CDN_URL_QA + moduleService.moduleThumbnail)
-            .placeholder(R.drawable.think_right)
-            /*.error(R.drawable.avatar)*/
+            .placeholder(R.drawable.rl_placeholder)
+            .error(R.drawable.rl_placeholder)
             .into(holder.imageView)
 
         val bgDrawable = AppCompatResources.getDrawable(context, R.drawable.bg_gray_border)

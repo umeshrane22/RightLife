@@ -42,7 +42,8 @@ public class SearchCategoryAdapter extends RecyclerView.Adapter<SearchCategoryAd
         holder.tvCategory.setText(searchResult.getName());
         Glide.with(context)
                 .load(ApiClient.CDN_URL_QA + searchResult.getImageUrl())
-                .placeholder(R.drawable.banner_sleep_sounds)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(holder.imgCategory);
 
         ColorStateList colorStateList;

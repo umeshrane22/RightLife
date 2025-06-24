@@ -152,7 +152,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
                 .load(
                     ApiClient.CDN_URL_QA + contentResponseObj.data.artist.firstOrNull()?.profilePicture
                 )
-                .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_profile)
+                .error(R.drawable.rl_profile)
                 .circleCrop()
                 .into(binding.profileImage)
             setModuleColor(contentResponseObj.data.moduleId)
@@ -346,7 +347,8 @@ class NewSeriesDetailsActivity : BaseActivity() {
         if (moduleContentDetail != null) {
             GlideApp.with(this@NewSeriesDetailsActivity)
                 .load(ApiClient.CDN_URL_QA + moduleContentDetail.data.thumbnail.url) //episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(backgroundImage)
         }
 

@@ -67,9 +67,9 @@ public class RLContinueListAdapter extends RecyclerView.Adapter<RLContinueListAd
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
             Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl())
                     .transform(new RoundedCorners(25))
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.imageView);
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
         }
         //holder.imageView.setImageResource(itemImages[position]);
        /* if (contentList.get(position).getContentType().equalsIgnoreCase("TEXT")){

@@ -250,7 +250,8 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
             playerView.setVisibility(View.GONE);
             Glide.with(getApplicationContext())
                     .load(ApiClient.CDN_URL_QA + responseObj.getData().getThumbnail().getUrl())
-                    .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(img_contentview);
 
             Log.d("Received Content type", "Received category type: " + responseObj.getData().getContentType());
@@ -276,7 +277,8 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
                 " " + responseObj.getData().getArtist().get(0).getLastName());
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + responseObj.getData().getArtist().get(0).getProfilePicture())
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .circleCrop()
                 .into(img_artist);
 
@@ -553,9 +555,6 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
         // Set media source (video URL)
         //Uri videoUri = Uri.parse("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4");
         Uri videoUri = Uri.parse(ApiClient.CDN_URL_QA + ContentResponseObj.getData().getPreviewUrl());// responseObj.getPreviewUrl()
-        //MediaItem mediaItem = MediaItem.fromUri(videoUri);
-        //player.setMediaItem(mediaItem);
-        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA); //responseObj.getUrl()
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(this))
                 .createMediaSource(MediaItem.fromUri(videoUri));
 
@@ -622,7 +621,8 @@ public class ModuleContentDetailViewActivity extends BaseActivity {
 
         GlideApp.with(ModuleContentDetailViewActivity.this)
                 .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(backgroundImage);
 
 

@@ -62,9 +62,10 @@ public class HealthCamRecommendationAdapter extends RecyclerView.Adapter<HealthC
         if (recommendation.thumbnail != null && recommendation.thumbnail.url != null && !recommendation.thumbnail.url.isEmpty()) {
             Glide.with(context)
                     .load(ApiClient.CDN_URL_QA + recommendation.thumbnail.url)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .transform(new RoundedCorners(25))
                     .into(holder.thumbnailImageView);
-            Log.d("RecommendationAdapter", "Thumbnail URL: " + ApiClient.CDN_URL_QA + recommendation.thumbnail.url);
         } else {
             holder.thumbnailImageView.setImageResource(R.drawable.image1_rlpage_edit); // Default image
         }
