@@ -132,6 +132,7 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
+import java.time.ZoneId
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
 
@@ -1010,8 +1011,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     fun setWakeupData(wakeupData: WakeupData?){
         todaysSleepRequirement.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
-        todaysSleepStartTime.setText(formatIsoTo12Hour(wakeupData.sleepDatetime!!))
-        todaysWakeupTime.setText(formatIsoTo12Hour(wakeupData.wakeupDatetime!!))
+        todaysSleepStartTime.setText(convertTo12HourFormat(wakeupData.sleepDatetime!!))
+        todaysWakeupTime.setText(convertTo12HourFormat(wakeupData.wakeupDatetime!!))
         mWakeupTime = wakeupData.wakeupDatetime!!
         mRecordId = wakeupData.Id!!
     }
@@ -1054,10 +1055,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             recordId = mRecordId,
             listener = object : OnWakeUpTimeSelectedListener {
                 override fun onWakeUpTimeSelected(time: String) {
-                    todaysWakeupTime.setText(time)
-                    mEditWakeTime = time
-                    val orgSleepTime = todaysSleepRequirement.text
-                    Toast.makeText(requireContext(),"$orgSleepTime", Toast.LENGTH_SHORT).show()
+                 //   todaysWakeupTime.setText(time)
+                //    mEditWakeTime = time
+                //    val orgSleepTime = todaysSleepRequirement.text
+                //    Toast.makeText(requireContext(),"$orgSleepTime", Toast.LENGTH_SHORT).show()
+                    fetchWakeupData()
                  //   todaysSleepRequirement.setText()
                 }
             }
@@ -1177,8 +1179,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
             setSleepRightStageData(sleepStageData)
-            tvStageSleepStartTime.setText(convertTo12HourFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepStartTime!!))
-            tvStageSleepEndTime.setText(convertTo12HourFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepEndTime!!))
+            tvStageSleepStartTime.setText(convertTo12HourZoneFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepStartTime!!))
+            tvStageSleepEndTime.setText(convertTo12HourZoneFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepEndTime!!))
             tvStageSleepTotalTime.text = convertDecimalMinutesToHrMinFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.totalSleepDurationMinutes!!)
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
@@ -1221,7 +1223,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         }!!
                     }
                     val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                    setIdealGraphDataFromSleepList(sleepDataList, weekRanges)
+                    if (sleepDataList != null) {
+                        setIdealGraphDataFromSleepList(sleepDataList, weekRanges)
+                    }
                 } else {
                     actualNoDataCardView.visibility = View.VISIBLE
                     sleepIdeal.visibility = View.GONE
@@ -1268,12 +1272,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
-       // val labels = weekRanges
         val labels = mutableListOf<String>()
 
-        sleepData?.forEachIndexed { index, (label, durations) ->
+        sleepData?.forEachIndexed { index, (label, _) ->
             val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
-            val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+            val top = date.format(DateTimeFormatter.ofPattern("EEE"))
             val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
             labels.add("$top\n$bottom")
         }
@@ -1283,29 +1286,94 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
         }
 
-        val idealSet = LineDataSet(idealEntries, "Ideal").apply {
-            color = Color.parseColor("#00C853") // green
-            circleRadius = 5f
-            setCircleColor(color)
-            valueTextSize = 10f
+        // Line without circles - Ideal
+        if (sleepData?.size!! > 8 ) {
+            val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
+                color = Color.parseColor("#00C853") // green
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Ideal
+            val idealLastPoint = idealEntries.lastOrNull()
+            val idealLastPointSet = LineDataSet(listOfNotNull(idealLastPoint), "").apply {
+                color = Color.parseColor("#00C853")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+
+            // Line without circles - Actual
+            val actualLineSet = LineDataSet(actualEntries, "Actual").apply {
+                color = Color.parseColor("#2979FF") // blue
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Actual
+            val actualLastPoint = actualEntries.lastOrNull()
+            val actualLastPointSet = LineDataSet(listOfNotNull(actualLastPoint), "").apply {
+                color = Color.parseColor("#2979FF")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+            lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
+        }else{
+            val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
+                color = Color.parseColor("#00C853") // green
+                setDrawCircles(true)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Ideal
+            val idealLastPoint = idealEntries.lastOrNull()
+            val idealLastPointSet = LineDataSet(listOfNotNull(idealLastPoint), "").apply {
+                color = Color.parseColor("#00C853")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+
+            // Line without circles - Actual
+            val actualLineSet = LineDataSet(actualEntries, "Actual").apply {
+                color = Color.parseColor("#2979FF") // blue
+                setDrawCircles(true)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Actual
+            val actualLastPoint = actualEntries.lastOrNull()
+            val actualLastPointSet = LineDataSet(listOfNotNull(actualLastPoint), "").apply {
+                color = Color.parseColor("#2979FF")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+            lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
+
         }
 
-        val actualSet = LineDataSet(actualEntries, "Actual").apply {
-            color = Color.parseColor("#2979FF") // blue
-            circleRadius = 5f
-            setCircleColor(color)
-            valueTextSize = 10f
-        }
+        // Combine all data sets
 
-        lineChart.data = LineData(idealSet, actualSet)
 
-        /*lineChart.xAxis.apply {
-            valueFormatter = IndexAxisValueFormatter(labels)
-            granularity = 1f
-            position = XAxis.XAxisPosition.BOTTOM
-            textSize = 12f
-        }*/
-
+        // X Axis
         lineChart.xAxis.apply {
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
@@ -1320,6 +1388,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             textSize = 10f
         }
 
+        // Y Axis Left
         lineChart.axisLeft.apply {
             axisMinimum = 0f
             axisMaximum = 20f
@@ -1327,18 +1396,21 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             textSize = 12f
         }
 
+        // Y Axis Right
         lineChart.axisRight.isEnabled = false
+
+        // Chart Settings
         lineChart.description.isEnabled = false
         lineChart.legend.textSize = 12f
-        lineChart.setPinchZoom(false)
         lineChart.setExtraBottomOffset(24f)
+        lineChart.setPinchZoom(false)
         lineChart.setDrawGridBackground(false)
-        lineChart.setScaleEnabled(false) // disables pinch and double-tap zoom
-        lineChart.isDoubleTapToZoomEnabled = false // disables zoom on double tap
-
+        lineChart.setScaleEnabled(false)
+        lineChart.isDoubleTapToZoomEnabled = false
         lineChart.isDragEnabled = false
         lineChart.isHighlightPerTapEnabled = false
 
+        // Multi-line X axis labels
         lineChart.setXAxisRenderer(
             MultilineXAxisRenderer(
                 lineChart.viewPortHandler,
@@ -1364,6 +1436,23 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val dateTime = LocalDateTime.parse(input, inputFormatter)
         return outputFormatter.format(dateTime)
     }
+
+    fun convertTo12HourZoneFormat(input: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
+
+        // Parse as LocalDateTime (no time zone info)
+        val utcDateTime = LocalDateTime.parse(input, inputFormatter)
+
+        // Convert to UTC ZonedDateTime
+        val utcZoned = utcDateTime.atZone(ZoneId.of("UTC"))
+
+        // Convert to system local time zone
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        return outputFormatter.format(localZoned)
+    }
+
 
 
     private fun formatIdealDate(dateTime: String): String {
@@ -1480,8 +1569,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance!! > 0.0) {
                 performNoDataCardView.visibility = View.GONE
                 performCardView.visibility = View.VISIBLE
-                tvPerformStartTime.text = formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
-                tvPerformWakeTime.text = formatIsoTo12Hour(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+                tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
+                tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
                 tvPerformSleepPercent.text = sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toInt().toString()
                 tvPerformSleepDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
                 tvPerformIdealDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
@@ -1512,8 +1601,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             restroDataCardView.visibility = View.VISIBLE
             tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
             tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
-            tvRestoStartTime.text = formatIsoTo12Hour(sleepRestorativeDetail?.sleepStartTime!!)
-            tvRestoEndTime.text = formatIsoTo12Hour(sleepRestorativeDetail.sleepEndTime!!)
+            tvRestoStartTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail?.sleepStartTime!!)
+            tvRestoEndTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
             restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData)
         }else{
             restroNoDataCardView.visibility = View.VISIBLE
