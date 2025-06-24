@@ -611,7 +611,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             invalidate()
         }
     }
-    class MultilineXAxisRenderer(
+    open class MultilineXAxisRenderer(
         viewPortHandler: ViewPortHandler,
         xAxis: XAxis,
         trans: Transformer

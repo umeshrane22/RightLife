@@ -57,6 +57,8 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -98,10 +100,13 @@ import com.jetsynthesys.rightlife.ai_package.model.SleepStageJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
 import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
+import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.AssessmentReviewDialog
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDialogFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -217,6 +222,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var mRecordId = ""
     private var loadingOverlay : FrameLayout? = null
     private var mEditWakeTime = ""
+    private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
+    private lateinit var recomendationAdapter: RecommendedAdapterSleep
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -250,6 +258,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         imgIdealInfo = view.findViewById(R.id.img_ideal_info)
         sleepStageCardView = view.findViewById(R.id.sleep_stage_layout)
+        recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
         sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
         downloadView = view.findViewById(R.id.sleep_download_icon)
@@ -299,6 +308,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
+        fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val dialog = LogYourNapDialogFragment(
@@ -1431,6 +1441,32 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             "$minutes mins"
         }
     }
+    private fun fetchThinkRecomendedData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","SLEEP_RIGHT")
+        call.enqueue(object : Callback<ThinkRecomendedResponse> {
+            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+                if (response.isSuccessful) {
+                    // progressDialog.dismiss()
+                    thinkRecomendedResponse = response.body()!!
+                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        recomendationRecyclerView.adapter = recomendationAdapter
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()
+                }
+            }
+            override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //progressDialog.dismiss()
+            }
+        })
+    }
 
     private fun setStageGraph(sleepStageResponse: ArrayList<SleepStagesData>) {
         val sleepData: ArrayList<SleepSegmentModel> = arrayListOf()
@@ -1474,6 +1510,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 tvPerformIdealDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
                 if (sleepPerformanceDetail.sleepPerformanceData?.actionStep != null && sleepPerformanceDetail.sleepPerformanceData?.message != null) {
                     tvPerformAction.text = sleepPerformanceDetail.sleepPerformanceData?.actionStep
+                    //tvPerformAction.text = ""
                     tvPerformMessage.text = sleepPerformanceDetail.sleepPerformanceData?.message
                    // imgPerformAction.setImageResource(R.drawable.yellow_info)
                 }else{
