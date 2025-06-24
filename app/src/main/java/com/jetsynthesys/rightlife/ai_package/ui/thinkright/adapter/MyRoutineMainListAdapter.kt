@@ -41,11 +41,12 @@ class MyRoutineMainListAdapter(
 
         holder.mealTitle.text = item.routineName
         holder.mealName.text = item.activityName
-        val durationStr = item.duration.replace(" min", "").trim() // Remove "min" and extra spaces
-        val durationInMinutes = durationStr.toIntOrNull() ?: 0 // Convert to integer, default 0 if invalid
+        val durationStr = item.duration.replace(" min", "").trim() // Remove "min" if present
+        val durationInMinutes = durationStr.toDoubleOrNull()?.roundToInt() ?: 0 // Handle decimal like "1890.6"
         val hours = durationInMinutes / 60
         val minutes = durationInMinutes % 60
         holder.min_serves.text = minutes.toString()
+       // holder.min_serves.text = minutes.toString()
         holder.serves.text = hours.toString()
         val durationStr1 = item.caloriesBurned
         val durationInInt = durationStr1.toDouble().roundToInt()
