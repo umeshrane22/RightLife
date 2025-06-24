@@ -35,7 +35,8 @@ class SleepHorizontalListAdapter(
                         RoundedCorners(30) // Adjust radius as needed
                     )
                 )
-                .placeholder(R.drawable.ic_estore_placeholder)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(binding.itemImage)
 
             binding.root.setOnClickListener {

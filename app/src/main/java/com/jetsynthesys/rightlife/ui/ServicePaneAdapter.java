@@ -71,7 +71,8 @@ public class ServicePaneAdapter extends RecyclerView.Adapter<ServicePaneAdapter.
             holder.llServicePaneEven.setBackgroundTintList(colorStateList);
         } else */ {
             GlideApp.with(context).load(ApiClient.CDN_URL_QA + homeService.getThumbnail().getUrl())
-                    .placeholder(R.drawable.ic_healthcam_logo)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.imgOdd);
 
             holder.tvHeaderOdd.setText(homeService.getTitle());

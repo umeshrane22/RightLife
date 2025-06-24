@@ -134,7 +134,8 @@ class SeriesListActivity : BaseActivity() {
                 binding.authorName.text = artistList[0].firstName + " " + artistList[0].lastName
                 Glide.with(applicationContext)
                     .load(ApiClient.CDN_URL_QA + artistList[0].profilePicture)
-                    .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_profile)
+                    .error(R.drawable.rl_profile)
                     .circleCrop()
                     .into(binding.profileImage)
                 binding.authorName.setOnClickListener {
@@ -148,7 +149,8 @@ class SeriesListActivity : BaseActivity() {
                 .load(
                     ApiClient.CDN_URL_QA + contentResponseObj.data.thumbnail.url
                 )
-                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(binding.imgContentview)
 
             setModuleColor(contentResponseObj.data.moduleId)

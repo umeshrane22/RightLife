@@ -72,7 +72,8 @@ public class ArtistsDetailsActivity extends BaseActivity {
         tvHeader.setText(artistData.getFirstName() + " " + artistData.getLastName());
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + artistData.getProfilePicture())
-                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(ivProfile);
         tvAboutMeContent.setText(artistData.getBio());
 

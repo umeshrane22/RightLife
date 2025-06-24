@@ -206,7 +206,8 @@ public class RLPageActivity extends BaseActivity implements View.OnClickListener
         Userdata userdata = userProfileResponse.getUserdata();
         if (userdata != null) {
             Glide.with(this).load(ApiClient.CDN_URL_QA + userdata.getProfilePicture())
-                    .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_profile)
+                    .error(R.drawable.rl_profile)
                     .circleCrop()
                     .into(ivProfileImage);
 
@@ -273,7 +274,8 @@ public class RLPageActivity extends BaseActivity implements View.OnClickListener
         txt_desc_uniquely.setText(uniquelyYoursResponse.getData().getServices().get(0).getSubtitle());
 
         Glide.with(this).load(ApiClient.CDN_URL_QA + uniquelyYoursResponse.getData().getServices().get(0).getThumbnail().getUrl())
-                .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(img_uniquely);
 
         btn_uniquely_yours.setText(uniquelyYoursResponse.getData().getServices().get(0).getButtonName());

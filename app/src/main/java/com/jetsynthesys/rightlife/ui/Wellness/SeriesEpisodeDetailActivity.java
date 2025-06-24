@@ -198,7 +198,8 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         setArtistname(contentResponseObj);
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + contentResponseObj.data.artist.get(0).profilePicture)
-                .placeholder(R.drawable.profile_man) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_profile)
+                .error(R.drawable.rl_profile)
                 .circleCrop()
                 .into(binding.imgArtist);
 
@@ -216,6 +217,8 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
             binding.itemText.setText(nextEpisode.title); // Use the same TextView for the title
             Glide.with(this)
                     .load(ApiClient.CDN_URL_QA + nextEpisode.thumbnail.url)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(binding.itemImage); // Use the same ImageView for the thumbnail
             // ... (set other views for the next episode using the same IDs)
         } else {
@@ -356,7 +359,6 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
         Uri videoUri = Uri.parse(ContentResponseObj.data.youtubeUrl);// responseObj.getPreviewUrl()
         //MediaItem mediaItem = MediaItem.fromUri(videoUri);
         //player.setMediaItem(mediaItem);
-        Log.d("Received Content type", "Video URL: " + ApiClient.CDN_URL_QA); //responseObj.getUrl()
         MediaSource mediaSource = new ProgressiveMediaSource.Factory(new DefaultDataSourceFactory(this))
                 .createMediaSource(MediaItem.fromUri(videoUri));
 
@@ -400,7 +402,8 @@ public class SeriesEpisodeDetailActivity extends BaseActivity {
 
         GlideApp.with(SeriesEpisodeDetailActivity.this)
                 .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(backgroundImage);
 
 

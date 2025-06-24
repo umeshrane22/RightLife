@@ -52,24 +52,17 @@ public class ExploreTRStaticCardsAdapter extends RecyclerView.Adapter<ExploreTRS
         //holder.item_text1.setText(contentList.get(position).getContentType());
 
         if (contentList.get(position).getBgUrl() != null && !contentList.get(position).getBgUrl().isEmpty()) {
-          //  Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getImageUrl()).into(holder.imageView);
-
             String svgPath = "file:///android_asset/assets/new_theme/icons/journalling_service.svg";
             GlideApp.with(ctx)
                     .load(svgPath)
-                    .error(R.drawable.img_logintop)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.imageView);
-            //
-            // .placeholder(R.drawable.placeholder)
-
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getBgUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getIconUrl());
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Toast.makeText(ctx, "image clicked - "+holder.getBindingAdapterPosition(), Toast.LENGTH_SHORT).show();
                 Gson gson = new Gson();
                 String json = gson.toJson(contentList);
               /*  Intent intent = new Intent(holder.itemView.getContext(), ModuleContentDetailViewActivity.class);

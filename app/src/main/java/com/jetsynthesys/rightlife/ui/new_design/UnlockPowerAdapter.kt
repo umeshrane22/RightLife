@@ -32,8 +32,8 @@ class UnlockPowerAdapter(
         //holder.imageView.setImageResource(unlockPower.imageResource)
 
         Glide.with(context).load(ApiClient.CDN_URL_QA + unlockPower.onboardingModuleThumbnail)
-            .placeholder(R.drawable.visualise_manifest)
-            .error(R.drawable.visualise_manifest)
+            .placeholder(R.drawable.rl_placeholder)
+            .error(R.drawable.rl_placeholder)
             .into(holder.imageView)
 
         holder.tvHeader.text = unlockPower.onboardingModuleTopic

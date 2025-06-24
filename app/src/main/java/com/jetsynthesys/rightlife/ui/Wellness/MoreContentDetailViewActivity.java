@@ -181,7 +181,8 @@ public class MoreContentDetailViewActivity extends BaseActivity {
             playerView.setVisibility(View.GONE);
             Glide.with(getApplicationContext())
                     .load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl())
-                    .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(img_contentview);
 
             Log.d("Received Content type", "Received category type: " + contentList.get(position).getContentType());
@@ -201,7 +202,8 @@ public class MoreContentDetailViewActivity extends BaseActivity {
                     " " + contentList.get(position).getArtist().get(0).getLastName());
             Glide.with(getApplicationContext())
                     .load(ApiClient.CDN_URL_QA + contentList.get(position).getArtist().get(0).getProfilePicture())
-                    .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_profile)
+                    .error(R.drawable.rl_profile)
                     .circleCrop()
                     .into(img_artist);
 

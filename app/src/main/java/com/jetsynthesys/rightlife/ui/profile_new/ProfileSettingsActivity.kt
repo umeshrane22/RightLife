@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
@@ -123,6 +124,8 @@ class ProfileSettingsActivity : BaseActivity() {
             binding.tvProfileLetter.visibility = GONE
             Glide.with(this)
                 .load(ApiClient.CDN_URL_QA + user.profilePicture)
+                .placeholder(R.drawable.rl_profile)
+                .error(R.drawable.rl_profile)
                 .into(binding.ivProfileImage)
         }
         if (user.age != null) {

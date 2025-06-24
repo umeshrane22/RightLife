@@ -197,7 +197,8 @@ public class RLEditDetailViewActivity extends BaseActivity {
                 rl_video_players_layout.setVisibility(View.VISIBLE);
                 Glide.with(getApplicationContext())
                         .load(ApiClient.CDN_URL_QA + rightLifeEditResponse.getData().getTopList().get(position).getThumbnail().getUrl())
-                        .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
                         .into(img_contentview);
             }
         } else {
@@ -214,7 +215,8 @@ public class RLEditDetailViewActivity extends BaseActivity {
                 " " + rightLifeEditResponse.getData().getTopList().get(position).getArtist().get(0).getLastName());
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + rightLifeEditResponse.getData().getTopList().get(position).getArtist().get(0).getProfilePicture())
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .circleCrop()
                 .into(img_artist);
 
@@ -484,7 +486,8 @@ public class RLEditDetailViewActivity extends BaseActivity {
 
         GlideApp.with(RLEditDetailViewActivity.this)
                 .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(backgroundImage);
 
 

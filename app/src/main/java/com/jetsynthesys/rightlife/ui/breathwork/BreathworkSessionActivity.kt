@@ -52,6 +52,8 @@ class BreathworkSessionActivity : BaseActivity() {
 
         Glide.with(this)
             .load(ApiClient.CDN_URL_QA + breathingData?.thumbnail)
+            .placeholder(R.drawable.rl_placeholder)
+            .error(R.drawable.rl_placeholder)
             .into(binding.ivBreathworkImage)
     }
 

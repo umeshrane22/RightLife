@@ -176,8 +176,10 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
             // cardTitle.setText(item.getTitle());
             cardImage.setImageResource(item.getImageResId());
             if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
-                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getImageUrl()).into(cardImage);
-                Log.e("Image URL List", "list : " + ApiClient.CDN_URL_QA + item.getImageUrl());
+                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getImageUrl())
+                        .placeholder(R.drawable.rl_placeholder)
+                        .error(R.drawable.rl_placeholder)
+                        .into(cardImage);
             }
             cardbtntext.setText(item.getButtonText());
             cardTitle.setText(item.getTitle());
@@ -186,7 +188,6 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
             //Drawable drawable = itemView.getContext().getResources().getDrawable(R.drawable.ic_home_black_24dp);
 
-            Log.d("banner", "cardcategory " + item.getCategory());
             if (item.getCategory().equalsIgnoreCase("MIND_AUDIT")) {
                 Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_mindaudit);
                 cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);

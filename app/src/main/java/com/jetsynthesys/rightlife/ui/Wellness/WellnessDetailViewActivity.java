@@ -175,7 +175,8 @@ public class WellnessDetailViewActivity extends BaseActivity {
             playerView.setVisibility(View.GONE);
             Glide.with(getApplicationContext())
                     .load(ApiClient.CDN_URL_QA + wellnessApiResponse.getData().getContentList().get(position).getThumbnail().getUrl())
-                    .placeholder(R.drawable.img_logintop) // Replace with your placeholder image
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(img_contentview);
         } else {
             playerView.setVisibility(View.VISIBLE);
@@ -187,7 +188,8 @@ public class WellnessDetailViewActivity extends BaseActivity {
                 " " + wellnessApiResponse.getData().getContentList().get(position).getArtist().get(0).getLastName());
         Glide.with(getApplicationContext())
                 .load(ApiClient.CDN_URL_QA + wellnessApiResponse.getData().getContentList().get(position).getArtist().get(0).getProfilePicture())
-                .placeholder(R.drawable.imageprofileniks) // Replace with your placeholder image
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .circleCrop()
                 .into(img_artist);
 

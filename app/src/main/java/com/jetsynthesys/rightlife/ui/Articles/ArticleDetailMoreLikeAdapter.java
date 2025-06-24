@@ -48,6 +48,8 @@ public class ArticleDetailMoreLikeAdapter extends RecyclerView.Adapter<ArticleDe
         if (item.getThumbnail() != null && item.getThumbnail().getUrl() != null && !item.getThumbnail().getUrl().isEmpty()) {
             Glide.with(ctx)
                     .load(ApiClient.CDN_URL_QA + item.getThumbnail().getUrl())
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.binding.imgContent);
         }
 

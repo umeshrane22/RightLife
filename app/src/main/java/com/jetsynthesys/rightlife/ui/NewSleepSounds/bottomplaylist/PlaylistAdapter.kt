@@ -26,7 +26,8 @@ class PlaylistAdapter(
             binding.songSubtitle.text = service.desc ?: ""
             Glide.with(binding.root.context)
                 .load(ApiClient.CDN_URL_QA + service.image)
-                .placeholder(R.drawable.logo_rightlife)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(binding.songImage)
 
             if (position == currentIndex) {

@@ -212,6 +212,8 @@ class ProfileNewActivity : BaseActivity() {
             binding.tvProfileLetter.visibility = GONE
             Glide.with(this)
                 .load(ApiClient.CDN_URL_QA + userData.profilePicture)
+                .placeholder(R.drawable.rl_profile)
+                .error(R.drawable.rl_profile)
                 .into(binding.ivProfileImage)
         }
 

@@ -66,13 +66,11 @@ public class SeriesListAdapter extends RecyclerView.Adapter<SeriesListAdapter.Vi
         holder.category.setText(contentList.get(position).getTags().get(0).getName());
         //holder.tv_author_name.setText(contentList.get(position).getArtist().get(0).getFirstName()+" "+contentList.get(position).getArtist().get(0).getLastName());
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
-            //Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl()).transform(new RoundedCorners(15)).into(holder.imageView);
             Glide.with(ctx)
                     .load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl())
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
                     .into(holder.imageView);
-
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
         }
         //holder.imageView.setImageResource(itemImages[position]);
         if (contentList.get(position).getType().equalsIgnoreCase("TEXT")){

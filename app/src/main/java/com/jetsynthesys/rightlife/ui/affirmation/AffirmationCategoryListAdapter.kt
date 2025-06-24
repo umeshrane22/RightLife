@@ -34,7 +34,8 @@ class AffirmationCategoryListAdapter(
         holder.tvCategoryRow.text = category.title
         GlideApp.with(context)
             .load(ApiClient.CDN_URL_QA + category.image)
-            .placeholder(R.drawable.ic_healthaudit_logo)
+            .placeholder(R.drawable.rl_placeholder)
+            .error(R.drawable.rl_placeholder)
             .into(holder.imageCategoryRow)
 
         holder.itemView.setOnClickListener {

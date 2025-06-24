@@ -215,7 +215,8 @@ public class ExploreSleepSoundsActivity extends BaseActivity {
 
         GlideApp.with(ExploreSleepSoundsActivity.this)
                 .load(ApiClient.CDN_URL_QA + imageUrl)//episodes.get(1).getThumbnail().getUrl()
-                .error(R.drawable.img_logintop)
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(backgroundImage);
 
 

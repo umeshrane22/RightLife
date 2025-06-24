@@ -230,6 +230,8 @@ public class ArticlesDetailActivity extends BaseActivity {
             if (!this.isFinishing() && !this.isDestroyed())
                 Glide.with(this).load(ApiClient.CDN_URL_QA + artist.getProfilePicture())
                         .transform(new RoundedCorners(25))
+                        .placeholder(R.drawable.rl_profile)
+                        .error(R.drawable.rl_profile)
                         .into(binding.authorImage);
         }
         binding.txtArticleDate.setText(DateTimeUtils.convertAPIDateMonthFormat(articleDetailsResponse.getData().getCreatedAt()));
@@ -238,6 +240,8 @@ public class ArticlesDetailActivity extends BaseActivity {
         binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime() + " min read");
         Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
                 .transform(new RoundedCorners(1))
+                .placeholder(R.drawable.rl_placeholder)
+                .error(R.drawable.rl_placeholder)
                 .into(binding.articleImageMain);
         //setInThisArticleList(articleDetailsResponse.getData().getArticle());
         HandleArticleListView(articleDetailsResponse.getData().getArticle());

@@ -14,27 +14,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.jetsynthesys.rightlife.R;
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient;
 import com.jetsynthesys.rightlife.apimodel.modulecontentlist.Content;
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
-import com.jetsynthesys.rightlife.ui.moduledetail.ModuleContentDetailViewActivity;
 import com.jetsynthesys.rightlife.ui.therledit.FavouriteRequest;
 import com.jetsynthesys.rightlife.ui.therledit.OnFavouriteClickListener;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
-import com.google.gson.Gson;
 
 import java.util.List;
 
 public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerViewAdapter.ViewHolder> {
 
-    private String[] itemNames;
-    private int[] itemImages;
-    private LayoutInflater inflater;
-    private Context ctx;
-    private List<Content> contentList;
+    private final String[] itemNames;
+    private final int[] itemImages;
+    private final LayoutInflater inflater;
+    private final Context ctx;
+    private final List<Content> contentList;
+
     public GridRecyclerViewAdapter(Context context, String[] itemNames, int[] itemImages, List<Content> contentList) {
         this.ctx = context;
         this.itemNames = itemNames;
@@ -57,18 +57,19 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
         holder.item_text1.setText(contentList.get(position).getContentType());
 
         if (contentList.get(position).getThumbnail().getUrl() != null && !contentList.get(position).getThumbnail().getUrl().isEmpty()) {
-            Glide.with(ctx).load(ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl()).into(holder.imageView);
-            Log.d("Image URL List", "list Url: " + ApiClient.CDN_URL_QA+contentList.get(position).getThumbnail().getUrl());
-            Log.d("Image URL List", "list title: " + contentList.get(position).getTitle());
+            Glide.with(ctx).load(ApiClient.CDN_URL_QA + contentList.get(position).getThumbnail().getUrl())
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(holder.imageView);
         }
         //holder.imageView.setImageResource(itemImages[position]);
-        if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")){
+        if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
             holder.img_iconview.setImageResource(R.drawable.ic_read_category);
-        }else if (contentList.get(position).getContentType().equalsIgnoreCase("AUDIO")){
+        } else if (contentList.get(position).getContentType().equalsIgnoreCase("AUDIO")) {
             holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
-        } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")){
+        } else if (contentList.get(position).getContentType().equalsIgnoreCase("VIDEO")) {
             holder.img_iconview.setImageResource(R.drawable.ic_read_play);
-        }else {
+        } else {
             holder.img_iconview.setImageResource(R.drawable.ic_read_category);
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -109,14 +110,14 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
         } else if (contentList.get(position).getContentType().equalsIgnoreCase("SERIES")) {
             holder.img_iconview.setImageResource(R.drawable.ic_read_play);
             holder.item_text1.setVisibility(View.VISIBLE);
-            holder.item_text1.setText("."+ String.valueOf(contentList.get(position).getEpisodeCount())+"."+ "videos");
+            holder.item_text1.setText("." + contentList.get(position).getEpisodeCount() + "." + "videos");
         } else {
             holder.img_iconview.setImageResource(R.drawable.ic_sound_category);
             holder.item_text1.setVisibility(View.GONE);
         }
         if (contentList.get(position).getIsFavourited()) {
             holder.favorite_image.setImageResource(R.drawable.favstarsolid);
-        }else {
+        } else {
             holder.favorite_image.setImageResource(R.drawable.favstar);
         }
         holder.favorite_image.setOnClickListener(view -> {
@@ -148,8 +149,8 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView,favorite_image,img_iconview;
-        TextView textView,item_text1;
+        ImageView imageView, favorite_image, img_iconview;
+        TextView textView, item_text1;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -158,7 +159,6 @@ public class GridRecyclerViewAdapter extends RecyclerView.Adapter<GridRecyclerVi
             item_text1 = itemView.findViewById(R.id.item_text1);
             img_iconview = itemView.findViewById(R.id.img_iconview);
             favorite_image = itemView.findViewById(R.id.favorite_image);
-
 
 
             //img_iconview.setImageResource(R.drawable.ic_read_category);
