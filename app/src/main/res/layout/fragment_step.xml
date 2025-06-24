@@ -69,7 +69,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/calorie_balance_layout"
                 android:layout_width="match_parent"
-                android:layout_height="550dp"
+                android:layout_height="650dp"
                 android:elevation="4dp"
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
@@ -333,13 +333,23 @@
                         app:layout_constraintTop_toBottomOf="@+id/selectHeartRateLayout"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"/>
+                    <TextView
+                        android:id="@+id/total_steps_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="14sp"
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateChart"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/layout_btn_log_meal"
                         android:layout_width="300dp"
                         android:layout_height="50dp"
                         android:orientation="horizontal"
                         android:layout_marginTop="30dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/total_steps_count"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:background="@drawable/add_cart_button_background"

@@ -20,7 +20,9 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -31,6 +33,7 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.R
@@ -38,6 +41,7 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.StepTrackerData
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.databinding.FragmentStepBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -51,6 +55,7 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class StepFragment : BaseFragment<FragmentStepBinding>() {
@@ -321,14 +326,33 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             stepData.totalStepsAvg.toFloat()
         )
 
-        // Include stepsGoal in max check
-        val axisMax = maxOf(maxValue, stepData.stepsGoal.toFloat())
+        // Set axisMaximum to nearest 5000 multiple, minimum 15000
+        val axisMax = maxOf(maxValue, 15000f)
+        val adjustedMax = ((axisMax / 5000).toInt() + 1) * 5000 // Round up to next 5000 multiple
 
-        leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else 0f
-        leftYAxis.axisMaximum = axisMax * 1.2f
+        // Adjust axisMinimum to shift bars down visually (e.g., -2000f offset)
+        leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else -2000f // Negative offset to move bars down
+        leftYAxis.axisMaximum = adjustedMax.toFloat()
         leftYAxis.setDrawZeroLine(true)
         leftYAxis.zeroLineColor = Color.BLACK
         leftYAxis.zeroLineWidth = 1f
+
+        // Custom formatter for 5000 intervals (0, 5k, 10k, 15k, etc.)
+        leftYAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                return when {
+                    value == 0f -> "0"
+                    value >= 5000f -> {
+                        val kiloValue = (value / 1000f).toInt()
+                        "${kiloValue}k"
+                    }
+                    else -> value.toInt().toString()
+                }
+            }
+        }
+
+        // Set granularity to 5000 for exact intervals
+        leftYAxis.granularity = 5000f
 
         val totalStepsLine = LimitLine(stepData.totalStepsCount.toFloat(), "Total Steps: ${stepData.totalStepsCount.toInt()}")
         totalStepsLine.lineColor = Color.BLUE
@@ -350,17 +374,57 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         leftYAxis.addLimitLine(totalStepsLine)
         leftYAxis.addLimitLine(avgStepsLine)
 
+        // Multiline X-axis labels
+        val combinedLabels: List<String> = if (entries.size == 30) {
+            labels
+            /*List(30) { index ->
+                when (index) {
+                    3 -> "1-7\nJun"
+                    10 -> "8-14\nJun"
+                    17 -> "15-21\nJun"
+                    24 -> "22-28\nJun"
+                    28 -> "29-30\nJun"
+                    else -> "" // Empty label for spacing
+                }
+            }*/
+        } else {
+            labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
+                val cleanedDate = date.substringBefore(",")
+                "$label\n$cleanedDate"
+            }
+        }
+
         val xAxis = barChart.xAxis
-        xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        xAxis.valueFormatter = IndexAxisValueFormatter(combinedLabels)
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.textSize = 10f
         xAxis.granularity = 1f
-        xAxis.labelCount = labels.size
+        xAxis.labelCount = entries.size
         xAxis.setDrawLabels(true)
         xAxis.labelRotationAngle = 0f
         xAxis.setDrawGridLines(false)
         xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         xAxis.yOffset = 15f
+
+        if (entries.size == 30) {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = 29.5f
+            xAxis.setCenterAxisLabels(false)
+        } else {
+            xAxis.axisMinimum = -0.5f
+            xAxis.axisMaximum = entries.size - 0.5f
+            xAxis.setCenterAxisLabels(false)
+        }
+
+        // Custom XAxisRenderer for multiline labels
+        val customRenderer = object : RestorativeSleepFragment.MultilineXAxisRenderer(
+            barChart.viewPortHandler,
+            barChart.xAxis,
+            barChart.getTransformer(YAxis.AxisDependency.LEFT)
+        ) {
+            // Override if needed, but default should work for multiline
+        }
+        (barChart as BarLineChartBase<*>).setXAxisRenderer(customRenderer)
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
@@ -395,8 +459,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         barChart.animateY(1000)
         barChart.invalidate()
     }
-
-
     /** Fetch and update chart with API data */
     private fun fetchStepDetails(period: String) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -553,7 +615,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
     /** Process API data for monthly period (5 weeks) */
     private fun processMonthlyData(stepData: StepTrackerData, currentDate: String): Triple<List<BarEntry>, List<String>, List<String>> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
         val calendar = Calendar.getInstance()
         val dateString = currentDate
         val date = dateFormat.parse(dateString)
@@ -563,66 +625,140 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         calendar.set(year, month, day)
         calendar.add(Calendar.DAY_OF_YEAR, -29)
-        val stepMap = mutableMapOf<String, Float>()
+        val calorieMap = mutableMapOf<String, Float>()
+        val dateList = mutableListOf<String>()
         val weeklyLabels = mutableListOf<String>()
         val labelsDate = mutableListOf<String>()
 
-        val days = getDaysInMonth(month + 1, year)
-        calendar.set(year, month, 1) // Start from the first day of the month
+        val days = getDaysInMonth(month+1, year)
         repeat(30) {
             val dateStr = dateFormat.format(calendar.time)
-            stepMap[dateStr] = 0f
+            calorieMap[dateStr] = 0f
+            dateList.add(dateStr)
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-
-        // Reset calendar to the start of the month
-        calendar.set(year, month, 1)
-        val dateLabel = "${convertMonth(dateString)},$year"
-        repeat(5) { week ->
-            val weekLabel = when (week) {
-                0 -> "1-7"
-                1 -> "8-14"
-                2 -> "15-21"
-                3 -> "22-28"
-                4 -> "29-${days}"
-                else -> ""
-            }
-            if (weekLabel.isNotEmpty()) {
-                weeklyLabels.add(weekLabel)
-                labelsDate.add("$weekLabel $dateLabel")
-            }
-        }
-
-        // Aggregate steps by day using record_details
-        stepData.recordDetails.forEach { record ->
-            val dayKey = record.date
-            stepMap[dayKey] = stepMap[dayKey]?.plus(record.totalStepsCountPerDay.toFloat()) ?: record.totalStepsCountPerDay.toFloat()
-        }
-
-        // Aggregate into weekly buckets
-        val weeklySteps = mutableListOf<Float>()
-        var currentWeekSum = 0f
-        var dayCount = 0
-        var weekIndex = 0
-        stepMap.entries.sortedBy { it.key }.forEachIndexed { index, entry ->
-            currentWeekSum += entry.value
-            dayCount++
-            val isLastDayOfWeek = dayCount == 7 || (weekIndex == 4 && index == stepMap.size - 1)
-            if (isLastDayOfWeek) {
-                weeklySteps.add(currentWeekSum)
-                currentWeekSum = 0f
-                dayCount = 0
-                weekIndex++
+        val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
+        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        weeklyLabels.addAll(labelsWithEmpty)
+        labelsDate.addAll(labels)
+        /* for (i in 0 until 30) {
+             weeklyLabels.add(
+                 when (i) {
+                     2 -> "1-7"
+                     9 -> "8-14"
+                     15 -> "15-21"
+                     22 -> "22-28"
+                     29 -> "29-31"
+                     else -> "" // empty string hides the label
+                 }
+             )
+             val dateLabel = (convertMonth(dateString) + "," + year)
+             if (i < 7){
+                 labelsDate.add("1-7 $dateLabel")
+             }else if (i < 14){
+                 labelsDate.add("8-14 $dateLabel")
+             }else if (i < 21){
+                 labelsDate.add("15-21 $dateLabel")
+             }else if (i < 28){
+                 labelsDate.add("22-28 $dateLabel")
+             }else{
+                 labelsDate.add("29-31 $dateLabel")
+             }
+         }*/
+        // Aggregate calories by week
+        if ( stepData.recordDetails.isNotEmpty()){
+            stepData.recordDetails.forEach { calorie ->
+                val startDate = dateFormat.parse(calorie.date)?.let { Date(it.time) }
+                if (startDate != null) {
+                    val dayKey = dateFormat.format(startDate)
+                    calorieMap[dayKey] = calorieMap[dayKey]!! + (calorie.totalStepsCountPerDay.toFloat() ?: 0f)
+                }
             }
         }
+        //setLastAverageValue(activeCaloriesResponse, "% Past Month")
+        val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
+        return Triple(entries, weeklyLabels, labelsDate)
+    }
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
 
-        // If the last week has fewer than 7 days, add it
-        if (currentWeekSum > 0) {
-            weeklySteps.add(currentWeekSum)
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
         }
+        return fullList
+    }
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
 
-        val entries = weeklySteps.mapIndexed { index, steps -> BarEntry(index.toFloat(), steps) }
-        return Triple(entries, weeklyLabels.take(entries.size), labelsDate.take(entries.size))
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
     }
 
     /** Process API data for six_monthly period (6 months) */

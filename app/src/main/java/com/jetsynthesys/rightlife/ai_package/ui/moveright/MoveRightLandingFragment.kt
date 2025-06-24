@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
@@ -713,16 +714,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                //    Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
+                   // showPermissionDialog()
                 }
-                fetchAllHealthData()
-                storeHealthData()
+
             }
         }
     }
 
     fun convertUtcToInstant(utcString: String): Instant {
         return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+    }
+    private fun showPermissionDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Permission Required")
+            .setMessage("This app needs health permissions to fetch your data. Please grant all permissions to continue.")
+            .setPositiveButton("Grant Permissions") { _, _ ->
+                // Launch permission request again when user clicks "Grant Permissions"
+                requestPermissionsLauncher.launch(allReadPermissions)
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(context, "Permissions denied. Some features may not work.", Toast.LENGTH_SHORT).show()
+            }
+            .setCancelable(false) // Prevent dismissing by back button
+            .show()
     }
 
     private suspend fun fetchAllHealthData() {
