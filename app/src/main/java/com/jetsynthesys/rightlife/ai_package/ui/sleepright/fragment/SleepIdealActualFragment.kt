@@ -31,7 +31,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.google.android.material.snackbar.Snackbar
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.ValueFormatter
@@ -41,11 +40,9 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
-import java.util.Locale
+import java.time.temporal.ChronoUnit
 
 class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBinding>() {
 
@@ -202,12 +199,16 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDateWeek = currentDateWeek.plusWeeks(1)
-                    loadWeekData()
+                    if (currentDateWeek < LocalDate.now()) {
+                        currentDateWeek = currentDateWeek.plusWeeks(1)
+                        loadWeekData()
+                    }
                 }
                 1 -> {
-                    currentDateMonth = currentDateMonth.plusMonths(1)
-                    loadMonthData()
+                    if (currentDateMonth < LocalDate.now()) {
+                        currentDateMonth = currentDateMonth.plusMonths(1)
+                        loadMonthData()
+                    }
                 }
                 2 -> {
                     currentDateMonth = currentDateMonth.plusMonths(6)
@@ -263,38 +264,151 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
       //  setGraphDataFromSleepList(weekList, weekRanges)
     }
 
-    private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
+    fun getOneMonthBack(dateString: String): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val date = LocalDate.parse(dateString, formatter)
+        val oneMonthBack = date.minusMonths(1)
+        return oneMonthBack.format(formatter)
+    }
+
+    private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>?, period: String, endDate: String) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        var startDateStr = ""
+        if (period != "weekly"){
+            startDateStr = getOneMonthBack(endDate)
+        }
+
+        var startDate = LocalDate.parse("2025-05-30")
+        val mEndDate = LocalDate.parse(endDate, formatter)
+        if (startDateStr != ""){
+            startDate = LocalDate.parse(startDateStr, formatter)
+        }
         val idealEntries = ArrayList<Entry>()
         val actualEntries = ArrayList<Entry>()
         val labels = mutableListOf<String>()
-
-        sleepData?.forEachIndexed { index, (label, durations) ->
-            val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
-            val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
-            val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
-            labels.add("$top\n$bottom")
-        }
 
         sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
         }
 
-        val idealSet = LineDataSet(idealEntries, "Ideal").apply {
-            color = Color.parseColor("#00C853") // green
-            circleRadius = 5f
-            setCircleColor(color)
-            valueTextSize = 10f
-        }
 
-        val actualSet = LineDataSet(actualEntries, "Actual").apply {
-            color = Color.parseColor("#2979FF") // blue
-            circleRadius = 5f
-            setCircleColor(color)
-            valueTextSize = 10f
-        }
+        if (sleepData?.size!! > 8 ) {
+            val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate).toInt() + 1
+            val entries = ArrayList<BarEntry>()
+           // val labels = ArrayList<String>()
 
-        lineChart.data = LineData(idealSet, actualSet)
+            val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
+
+            for (i in 0 until daysBetween) {
+                val currentDate = startDate.plusDays(i.toLong())
+
+                // Calculate group index (each group is 7 days long)
+                val groupIndex = i / 7
+                val groupStartDate = startDate.plusDays(groupIndex * 7L)
+                val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(mEndDate)
+
+                // Label for the group (shown only once per 7-day group)
+                val label = if (i % 7 == 0) {
+                    val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
+                    val month = groupEndDate.format(monthFormatter)
+
+                    // Center month by adding padding spaces (rough estimation)
+                    val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
+                    "$dayRange\n$spaces$month"
+                } else {
+                    ""
+                }
+
+                labels.add(label)
+            }
+            val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
+                color = Color.parseColor("#00C853") // green
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Ideal
+            val idealLastPoint = idealEntries.lastOrNull()
+            val idealLastPointSet = LineDataSet(listOfNotNull(idealLastPoint), "").apply {
+                color = Color.parseColor("#00C853")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+
+            // Line without circles - Actual
+            val actualLineSet = LineDataSet(actualEntries, "Actual").apply {
+                color = Color.parseColor("#2979FF") // blue
+                setDrawCircles(false)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Actual
+            val actualLastPoint = actualEntries.lastOrNull()
+            val actualLastPointSet = LineDataSet(listOfNotNull(actualLastPoint), "").apply {
+                color = Color.parseColor("#2979FF")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+            lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
+        }else{
+            sleepData?.forEachIndexed { index, (label, durations) ->
+                val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
+                val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
+                val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
+                labels.add("$top\n$bottom")
+            }
+            val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
+                color = Color.parseColor("#00C853") // green
+                setDrawCircles(true)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Ideal
+            val idealLastPoint = idealEntries.lastOrNull()
+            val idealLastPointSet = LineDataSet(listOfNotNull(idealLastPoint), "").apply {
+                color = Color.parseColor("#00C853")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+
+            // Line without circles - Actual
+            val actualLineSet = LineDataSet(actualEntries, "Actual").apply {
+                color = Color.parseColor("#2979FF") // blue
+                setDrawCircles(true)
+                setDrawValues(false)
+                lineWidth = 2f
+            }
+
+            // Only last point - Actual
+            val actualLastPoint = actualEntries.lastOrNull()
+            val actualLastPointSet = LineDataSet(listOfNotNull(actualLastPoint), "").apply {
+                color = Color.parseColor("#2979FF")
+                setCircleColor(color)
+                circleRadius = 5f
+                setDrawCircles(true)
+                setDrawValues(false)
+                setDrawHighlightIndicators(false)
+                lineWidth = 0f
+            }
+            lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
+
+        }
 
         lineChart.xAxis.apply {
             valueFormatter = object : ValueFormatter() {
@@ -355,7 +469,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 tvIdealMessage.visibility = View.VISIBLE
                                 sleepCard.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
-                                setSleepRightData()
+                                setSleepRightData(period,endDate)
                             }else{
                                 sleepCard.visibility = View.GONE
                                 sleepNoCard.visibility = View.VISIBLE
@@ -424,7 +538,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         return dateTime
     }
 
-    private fun setSleepRightData() {
+    private fun setSleepRightData(period: String, endDate: String) {
         tvIdealTitle.setText(idealActualResponse.data?.sleepInsightDetail?.title)
         tvIdealMessage.setText(idealActualResponse.data?.sleepInsightDetail?.message)
         if (idealActualResponse.data?.averageSleep!=null && idealActualResponse.data?.averageNeeded!=null) {
@@ -447,10 +561,10 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         if (sleepDataList?.isNotEmpty() == true) {
             if (sleepDataList.size < 9 == true) {
                 val weekRanges = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
-                setGraphDataFromSleepList(sleepDataList, weekRanges)
+                setGraphDataFromSleepList(sleepDataList, period,endDate)
             }else{
                 val monthlyRanges = listOf("1", "2", "3", "4", "5","6", "7", "8", "9", "10","11", "12", "13", "14", "15","16", "17", "18", "19", "20","21", "22", "23", "24", "25","26", "27", "28", "29", "30")
-                setGraphDataFromSleepList(sleepDataList, monthlyRanges)
+                setGraphDataFromSleepList(sleepDataList, period, endDate)
             }
         }
     }

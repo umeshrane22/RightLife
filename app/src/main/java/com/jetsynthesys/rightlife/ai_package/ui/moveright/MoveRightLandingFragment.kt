@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
@@ -490,10 +491,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                             val isWeightGainZone = burnedTarget < rangeStart
                                             val overlayWidth = if (isWeightGainZone) {
                                                 weightLossZoneText.text = "Weight Gain Zone"
-                                                (parentWidth * 0.4).toInt() // 40% of parent width for Weight Gain Zone
+                                                (parentWidth * 0.6).toInt() // 40% of parent width for Weight Gain Zone
                                             } else {
                                                 weightLossZoneText.text = "Weight Loss Zone"
-                                                (parentWidth * 0.2).toInt() // 20% of parent width for Weight Loss Zone
+                                                (parentWidth * 0.08).toInt() // 20% of parent width for Weight Loss Zone
                                             }
                                             // Update the layout params to set the new width
                                             val layoutParams = overlay.layoutParams
@@ -713,10 +714,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                //    Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
+                   // showPermissionDialog()
                 }
                 fetchAllHealthData()
                 storeHealthData()
+
             }
         }
     }
@@ -724,38 +726,55 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     fun convertUtcToInstant(utcString: String): Instant {
         return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
     }
+    private fun showPermissionDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Permission Required")
+            .setMessage("This app needs health permissions to fetch your data. Please grant all permissions to continue.")
+            .setPositiveButton("Grant Permissions") { _, _ ->
+                // Launch permission request again when user clicks "Grant Permissions"
+                requestPermissionsLauncher.launch(allReadPermissions)
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(context, "Permissions denied. Some features may not work.", Toast.LENGTH_SHORT).show()
+            }
+            .setCancelable(false) // Prevent dismissing by back button
+            .show()
+    }
 
     private suspend fun fetchAllHealthData() {
-        lifecycleScope.launch {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    recordType = SleepSessionRecord::class,
-                    timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
-                )
-            )
-            for (record in response.records) {
-                val deviceInfo = record.metadata.device
-                if (deviceInfo != null) {
-                    SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
-                    Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
-                } else {
-                    Log.d("Device Info", "No device info available")
-                }
-            }
-        }
-        var endTime = Instant.now()
-        var startTime = Instant.now()
-        val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
-        if (syncTime == "") {
-            endTime = Instant.now()
-             startTime = endTime.minus(Duration.ofDays(30))
-        }else{
-            endTime = Instant.now()
-            startTime = convertUtcToInstant(syncTime)
-        }
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            lifecycleScope.launch {
+                if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
+                    val response = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = SleepSessionRecord::class,
+                            timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
+                        )
+                    )
+                    for (record in response.records) {
+                        val deviceInfo = record.metadata.device
+                        if (deviceInfo != null) {
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                        } else {
+                            Log.d("Device Info", "No device info available")
+                        }
+                    }
+                }
+            }
+            var endTime = Instant.now()
+            var startTime = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
+            if (syncTime == "") {
+                endTime = Instant.now()
+                startTime = endTime.minus(Duration.ofDays(30))
+            }else{
+                endTime = Instant.now()
+                startTime = convertUtcToInstant(syncTime)
+            }
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(

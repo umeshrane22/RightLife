@@ -53,6 +53,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/moduleNameImage"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:scaleType="centerCrop"
@@ -67,6 +68,7 @@
                 android:fontFamily="@font/dmsans_regular"
                 android:textSize="12sp" />
                 <ImageView
+                    android:id="@+id/image_recommended"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:scaleType="centerCrop"

@@ -52,6 +52,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.math.pow
@@ -225,12 +227,16 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDateWeek = currentDateWeek.plusWeeks(1)
-                    loadWeekData()
+                    if (currentDateWeek < LocalDate.now()) {
+                        currentDateWeek = currentDateWeek.plusWeeks(1)
+                        loadWeekData()
+                    }
                 }
                 1 -> {
-                    currentDateMonth = currentDateMonth.plusMonths(1)
-                    loadMonthData()
+                    if (currentDateMonth < LocalDate.now()) {
+                        currentDateMonth = currentDateMonth.plusMonths(1)
+                        loadMonthData()
+                    }
                 }
                 2 -> {
                     currentDateMonth = currentDateMonth.plusMonths(6)
@@ -372,34 +378,56 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         return round(this * factor) / factor
     }
 
-    fun setupMonthlyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, startDateStr:String, endDateStr:String) {
+    fun getOneMonthBack(dateString: String): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val trimmedEndDate = endDateStr.substring(0, 10)  // "2025-05-01"
-        val trimmedStartDate = startDateStr.substring(0, 10)  // "2025-05-01"
-        val startDate = LocalDate.parse(trimmedStartDate, formatter)
-        val endDate = LocalDate.parse(trimmedEndDate, formatter)
+        val date = LocalDate.parse(dateString, formatter)
+        val oneMonthBack = date.minusMonths(1)
+        return oneMonthBack.format(formatter)
+    }
 
-        val daysBetween = ChronoUnit.DAYS.between(startDate, endDate).toInt()
+    fun convertToLocalDate(input: String): LocalDate {
+        val offsetDateTime = OffsetDateTime.parse(input)
+        return offsetDateTime
+            .atZoneSameInstant(ZoneId.systemDefault()) // Convert to local zone
+            .toLocalDate()                             // Extract local date
+    }
+
+    fun setupMonthlyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, startTime:String, endDateStr:String) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+
+        var startDate =convertToLocalDate(startTime)
+        val mEndDate1 =convertToLocalDate(endDateStr)
+
+
+        val labels = mutableListOf<String>()
+
+        val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate1).toInt() + 1
         val entries = ArrayList<BarEntry>()
-        val labels = ArrayList<String>()
+        // val labels = ArrayList<String>()
 
-        for (i in 0..daysBetween) {
+        val monthFormatter = DateTimeFormatter.ofPattern("MMM") // For 'Jun', 'Feb', etc.
+
+        for (i in 0 until daysBetween) {
             val currentDate = startDate.plusDays(i.toLong())
-            val dayOfMonth = currentDate.dayOfMonth
-            val lastDay = endDate.lengthOfMonth()
 
-            val labelGroup = when (dayOfMonth) {
-                in 1..7 -> "1–7"
-                in 8..14 -> "8–14"
-                in 15..21 -> "15–21"
-                in 22..28 -> "22–28"
-                in 29..lastDay -> "29–$lastDay"
-                else -> ""
+            // Calculate group index (each group is 7 days long)
+            val groupIndex = i / 7
+            val groupStartDate = startDate.plusDays(groupIndex * 7L)
+            val groupEndDate = groupStartDate.plusDays(6).coerceAtMost(mEndDate1)
+
+            // Label for the group (shown only once per 7-day group)
+            val label = if (i % 7 == 0) {
+                val dayRange = "${groupStartDate.dayOfMonth}–${groupEndDate.dayOfMonth}"
+                val month = groupEndDate.format(monthFormatter)
+
+                // Center month by adding padding spaces (rough estimation)
+                val spaces = " ".repeat((dayRange.length - month.length).coerceAtLeast(0) / 2)
+                "$dayRange\n$spaces$month"
+            } else {
+                ""
             }
 
-            // Only label the first day in each fixed group
-            val shouldLabel = dayOfMonth == 1 || dayOfMonth == 8 || dayOfMonth == 15 || dayOfMonth == 22 || dayOfMonth == 29
-            labels.add(if (shouldLabel) labelGroup else "")
+            labels.add(label)
         }
         data?.forEachIndexed { index, item ->
             entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
@@ -407,6 +435,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         val dataSet = BarDataSet(entries, "Sleep Performance")
         dataSet.setColors(Color.parseColor("#4593FB"))
+        dataSet.setDrawValues(false)
         dataSet.valueTextSize = 9f
 
         val barData = BarData(dataSet)
@@ -424,11 +453,11 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             position = XAxis.XAxisPosition.BOTTOM
             setDrawGridLines(false)
             labelRotationAngle = -30f
-            textSize = 8f
+            textSize = 10f
         }
 
         chart.axisLeft.axisMinimum = 0f
-        chart.axisLeft.axisMaximum = 100f
+        chart.axisLeft.axisMaximum = 120f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
@@ -437,6 +466,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
         chart.setFitBars(true)
+        chart.setDrawValueAboveBar(false)
         chart.invalidate()
     }
 
@@ -468,6 +498,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
 
         val dataSet = BarDataSet(entries, "SleepPerformance")
         dataSet.setColors(Color.parseColor("#4593FB"))
+        dataSet.setDrawValues(false)
         dataSet.valueTextSize = 12f
 
         val barData = BarData(dataSet)
@@ -499,7 +530,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
-        chart.axisLeft.axisMaximum = 100f
+        chart.axisLeft.axisMaximum = 120f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
