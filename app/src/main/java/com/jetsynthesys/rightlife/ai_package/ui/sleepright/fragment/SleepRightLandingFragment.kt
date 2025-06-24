@@ -465,10 +465,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
+                 //   Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
-               // fetchAllHealthData()
-               // storeHealthData()
+                fetchAllHealthData()
+                storeHealthData()
             }
         }
     }

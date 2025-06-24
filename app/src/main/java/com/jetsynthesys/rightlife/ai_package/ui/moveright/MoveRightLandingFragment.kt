@@ -716,6 +716,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 withContext(Dispatchers.Main) {
                    // showPermissionDialog()
                 }
+                fetchAllHealthData()
+                storeHealthData()
 
             }
         }
