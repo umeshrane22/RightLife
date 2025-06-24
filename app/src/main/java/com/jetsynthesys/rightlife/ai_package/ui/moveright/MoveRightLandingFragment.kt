@@ -726,36 +726,38 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     private suspend fun fetchAllHealthData() {
-        lifecycleScope.launch {
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    recordType = SleepSessionRecord::class,
-                    timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
-                )
-            )
-            for (record in response.records) {
-                val deviceInfo = record.metadata.device
-                if (deviceInfo != null) {
-                    SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
-                    Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
-                } else {
-                    Log.d("Device Info", "No device info available")
-                }
-            }
-        }
-        var endTime = Instant.now()
-        var startTime = Instant.now()
-        val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
-        if (syncTime == "") {
-            endTime = Instant.now()
-             startTime = endTime.minus(Duration.ofDays(30))
-        }else{
-            endTime = Instant.now()
-            startTime = convertUtcToInstant(syncTime)
-        }
         try {
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            lifecycleScope.launch {
+                if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
+                    val response = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = SleepSessionRecord::class,
+                            timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
+                        )
+                    )
+                    for (record in response.records) {
+                        val deviceInfo = record.metadata.device
+                        if (deviceInfo != null) {
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                        } else {
+                            Log.d("Device Info", "No device info available")
+                        }
+                    }
+                }
+            }
+            var endTime = Instant.now()
+            var startTime = Instant.now()
+            val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
+            if (syncTime == "") {
+                endTime = Instant.now()
+                startTime = endTime.minus(Duration.ofDays(30))
+            }else{
+                endTime = Instant.now()
+                startTime = convertUtcToInstant(syncTime)
+            }
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
