@@ -38,12 +38,12 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     private val mContext = requireContext
 
     private var startTime: LocalTime = LocalTime.of(0, 0)
-    private var endTime: LocalTime = LocalTime.of(0, 0)
+    private var endTime: LocalTime = LocalTime.of(7, 30)
     private var selectedDate: LocalDate = LocalDate.now()
     var startHour = 0
     var startMinute = 0
-    var endHour = 0
-    var endMinute = 0
+    var endHour = 7
+    var endMinute = 30
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)

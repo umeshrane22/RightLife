@@ -1422,7 +1422,7 @@
                             <ImageView
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:layout_marginStart="15dp"
+                                android:layout_marginStart="10dp"
                                 android:src="@drawable/rem_icon" />
 
                             <TextView
@@ -1440,7 +1440,7 @@
                                 android:text="2 hr 10 mins"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:id="@+id/tv_resto_rem_time"
-                                android:textSize="9sp"
+                                android:textSize="10sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
@@ -1459,7 +1459,7 @@
                             <ImageView
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:layout_marginStart="15dp"
+                                android:layout_marginStart="10dp"
                                 android:src="@drawable/deep_icon" />
 
                             <TextView
@@ -1477,7 +1477,7 @@
                                 android:text="40 mins"
                                 android:id="@+id/tv_resto_deep_time"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textSize="9sp"
+                                android:textSize="10sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>

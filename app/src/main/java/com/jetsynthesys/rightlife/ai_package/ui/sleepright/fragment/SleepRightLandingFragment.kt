@@ -1009,8 +1009,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     fun setWakeupData(wakeupData: WakeupData?){
         todaysSleepRequirement.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
-        todaysSleepStartTime.setText(formatIsoTo12Hour(wakeupData.sleepDatetime!!))
-        todaysWakeupTime.setText(formatIsoTo12Hour(wakeupData.wakeupDatetime!!))
+        todaysSleepStartTime.setText(convertTo12HourFormat(wakeupData.sleepDatetime!!))
+        todaysWakeupTime.setText(convertTo12HourFormat(wakeupData.wakeupDatetime!!))
         mWakeupTime = wakeupData.wakeupDatetime!!
         mRecordId = wakeupData.Id!!
     }
@@ -1053,10 +1053,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             recordId = mRecordId,
             listener = object : OnWakeUpTimeSelectedListener {
                 override fun onWakeUpTimeSelected(time: String) {
-                    todaysWakeupTime.setText(time)
-                    mEditWakeTime = time
-                    val orgSleepTime = todaysSleepRequirement.text
-                    Toast.makeText(requireContext(),"$orgSleepTime", Toast.LENGTH_SHORT).show()
+                 //   todaysWakeupTime.setText(time)
+                //    mEditWakeTime = time
+                //    val orgSleepTime = todaysSleepRequirement.text
+                //    Toast.makeText(requireContext(),"$orgSleepTime", Toast.LENGTH_SHORT).show()
+                    fetchWakeupData()
                  //   todaysSleepRequirement.setText()
                 }
             }

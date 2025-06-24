@@ -199,12 +199,16 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         btnNext.setOnClickListener {
             when (currentTab) {
                 0 -> {
-                    currentDateWeek = currentDateWeek.plusWeeks(1)
-                    loadWeekData()
+                    if (currentDateWeek < LocalDate.now()) {
+                        currentDateWeek = currentDateWeek.plusWeeks(1)
+                        loadWeekData()
+                    }
                 }
                 1 -> {
-                    currentDateMonth = currentDateMonth.plusMonths(1)
-                    loadMonthData()
+                    if (currentDateMonth < LocalDate.now()) {
+                        currentDateMonth = currentDateMonth.plusMonths(1)
+                        loadMonthData()
+                    }
                 }
                 2 -> {
                     currentDateMonth = currentDateMonth.plusMonths(6)

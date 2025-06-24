@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.NumberPicker
 import android.widget.Toast
@@ -63,6 +64,7 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
         hourPicker = view.findViewById<NumberPicker>(R.id.hourPickerWake)
         minutePicker = view.findViewById<NumberPicker>(R.id.minutePickerWake)
         amPmPicker = view.findViewById<NumberPicker>(R.id.amPmPickerWake)
+        val imgClose = view.findViewById<ImageView>(R.id.img_close)
 
         mHour = getHourFromIso(mWakeupTime)
         mMinute = getMinuteFromIso(mWakeupTime)
@@ -82,6 +84,10 @@ class WakeUpTimeDialogFragment(private val context: Context, private val wakeupT
             amPmPicker.value = 0
         }else{
             amPmPicker.value = 1
+        }
+
+        imgClose.setOnClickListener {
+            dismiss()
         }
 
         val btnSendData = view.findViewById<LinearLayout>(R.id.btn_confirm)

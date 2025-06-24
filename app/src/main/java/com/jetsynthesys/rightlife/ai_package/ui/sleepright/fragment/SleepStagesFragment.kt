@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -159,6 +160,22 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
             })
     }
 
+    fun convertTo12HourZoneFormat(input: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
+
+        // Parse as LocalDateTime (no time zone info)
+        val utcDateTime = LocalDateTime.parse(input, inputFormatter)
+
+        // Convert to UTC ZonedDateTime
+        val utcZoned = utcDateTime.atZone(ZoneId.of("UTC"))
+
+        // Convert to system local time zone
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        return outputFormatter.format(localZoned)
+    }
+
     fun getCurrentDate(): String {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return LocalDate.now().format(formatter)
@@ -223,8 +240,8 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
         remPercent.setText(""+ data?.sleepPercentages?.rem + "%")
         remMinute.setText(convertHoursToHHMMSS(data.sleepSummary?.rem!!))
         totalTime.setText(convertDecimalHoursToHrMinFormat(data?.total_sleep_hours!!))
-        startTime.setText(convertTo12HourFormat(data.start_time!!))
-        endTime.setText(convertTo12HourFormat(data.end_time!!))
+        startTime.setText(convertTo12HourZoneFormat(data.start_time!!))
+        endTime.setText(convertTo12HourZoneFormat(data.end_time!!))
 
         customProgressBar.post {
             val progressBarWidth = customProgressBar.width
