@@ -468,7 +468,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
-        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
         chart.legend.isEnabled = false
 
@@ -558,27 +558,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
-        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
         chart.setExtraBottomOffset(24f)
         chart.legend.isEnabled = false
-        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-            override fun onValueSelected(e: Entry?, h: Highlight?) {
-                cardPercent.visibility = View.VISIBLE
-                if (e != null) {
-                    val x = e.x.toInt()
-                    val y = e.y
-                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    tvBarDate.text = labels.getOrNull(x) ?: ""
-                    tvBarPercent.text = y.toInt().toString()
-                }
-            }
-
-            override fun onNothingSelected() {
-                Log.d("ChartClick", "Nothing selected")
-                cardPercent.visibility = View.INVISIBLE
-            }
-        })
         chart.setScaleEnabled(false)
         chart.setXAxisRenderer(
             MultilineXAxisRenderer(
@@ -588,6 +571,23 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             )
         )
         chart.invalidate()
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                cardPercent.visibility = View.VISIBLE
+                if (e != null) {
+                    val x = e.x.toInt()
+                    val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    tvBarDate.text = labels.getOrNull(x)?.replace("\n", " ") ?: ""
+                    tvBarPercent.text = y.toInt().toString()
+                }
+            }
+
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                cardPercent.visibility = View.INVISIBLE
+            }
+        })
     }
 
     private fun lineChartForSixMonths(){
@@ -762,6 +762,34 @@ class RoundedBarChartRenderer(
             if (drawBorder) {
                 c.drawPath(path, mBarBorderPaint)
             }
+        }
+    }
+    override fun drawHighlighted(c: Canvas, indices: Array<Highlight>) {
+        val barData = mChart.barData ?: return
+
+        for (high in indices) {
+            val set = barData.getDataSetByIndex(high.dataSetIndex) as? IBarDataSet ?: continue
+            if (!set.isHighlightEnabled) continue
+
+            val e = set.getEntryForXValue(high.x, high.y) ?: continue
+
+            val trans = mChart.getTransformer(set.axisDependency)
+
+            mHighlightPaint.color = Color.TRANSPARENT // or any color you want
+            mHighlightPaint.alpha = 0 // fully transparent
+
+            mBarRect.set(e.x - 0.5f + high.stackIndex, 0f, e.x + 0.5f + high.stackIndex, e.y)
+
+            trans.rectValueToPixel(mBarRect)
+
+            // Draw a rounded rect with transparent paint, effectively removing highlight
+            val path = Path()
+            path.addRoundRect(
+                mBarRect,
+                floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f),
+                Path.Direction.CW
+            )
+            c.drawPath(path, mHighlightPaint)
         }
     }
 }

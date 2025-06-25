@@ -102,6 +102,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MyRecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.RecipeResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SetStepsGoalResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.SleepSoundResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealRecipeResponseModel
@@ -538,6 +539,10 @@ interface ApiService {
     @GET("mindFull")
     fun fetchMindFull(@Header("Authorization") authToken: String,@Query("startDate") startDate: String,
                       @Query("endDate") endDate: String): Call<MindfullResponse>
+
+    @GET("sleepSound")
+    fun fetchSleepSound(@Header("Authorization") authToken: String,@Query("id") id: String,
+                      @Query("skip") skip: String,@Query("limit") limit: String,@Query("type") type: String): Call<SleepSoundResponse>
 
     @POST("mindFull")
     fun postMindFull(@Header("Authorization") authToken: String,@Body mindfullData: MindfullRequest): Call<BaseResponse>
