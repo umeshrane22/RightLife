@@ -322,7 +322,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         fetchThinkRecomendedData()
-        fetchSoundSleepData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val dialog = LogYourNapDialogFragment(
@@ -1009,7 +1008,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val skip = "0"
         val limit = "3"
         val type = "playlist"
-        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchSleepSound(token,userId, skip,limit,type)
         call.enqueue(object : Callback<SleepSoundResponse> {
             override fun onResponse(call: Call<SleepSoundResponse>, response: Response<SleepSoundResponse>) {
@@ -1621,7 +1619,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    // progressDialog.dismiss()
+                    // progressDialog.dismiss()F
                 }
             }
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
@@ -1876,6 +1874,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         return bitmap
     }
 
+
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
         val channelId = "download_channel"
@@ -1966,6 +1966,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchSoundSleepData()
     }
 
     private fun loadStepData(): SleepJson {
