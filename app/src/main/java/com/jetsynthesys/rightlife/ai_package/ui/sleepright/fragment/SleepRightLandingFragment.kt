@@ -229,6 +229,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var btnSleepSound : LinearLayout
     private var mWakeupTime = ""
     private var mRecordId = ""
+    private var bottomSeatName = ""
     private var loadingOverlay : FrameLayout? = null
     private var mEditWakeTime = ""
     private lateinit var recomendationRecyclerView: RecyclerView
@@ -257,7 +258,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
         sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
@@ -332,11 +333,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
             )
-
             dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
-        btnSync.setOnClickListener {
+       // btnSync.setOnClickListener {
             val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                 healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
@@ -346,7 +346,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             } else {
                 Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
             }
-        }
+    //    }
         btnSleepSound.setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 //putExtra("PlayList", "PlayList")
@@ -1256,6 +1256,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }else{
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
+            if (!bottomSeatName.contentEquals("LogLastNightSleep")){
+                val dialog = LogYourNapDialogFragment(
+                    requireContext = requireContext(),
+                    listener = object : OnLogYourNapSelectedListener {
+                        override fun onLogTimeSelected(time: String) {
+                            fetchSleepLandingData()
+                        }
+                    }
+                )
+                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+            }
         }
 
         //IdealActualResponse
@@ -1294,7 +1305,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
 
-
         // Set Restorative Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
                 restroNoDataCardView.visibility = View.GONE
@@ -1321,7 +1331,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepConsistencyChart.visibility = View.GONE
                 }
             }
-
         }
 
         // Set Recommended Sound
