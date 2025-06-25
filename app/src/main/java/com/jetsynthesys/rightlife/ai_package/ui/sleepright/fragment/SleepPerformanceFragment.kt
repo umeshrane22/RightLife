@@ -17,6 +17,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.jetsynthesys.rightlife.R
@@ -88,6 +89,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
     private lateinit var percentageIcon: ImageView
     private lateinit var percentageText: TextView
+    private lateinit var averageGoalLayout : LinearLayoutCompat
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -105,6 +107,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         lineChart = view.findViewById(R.id.heartLineChart)
         radioGroup = view.findViewById(R.id.tabGroup)
         btnPrevious = view.findViewById(R.id.btn_prev)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
         btnNext = view.findViewById(R.id.btn_next)
         cardPercent = view.findViewById(R.id.card_percent)
         tvBarPercent = view.findViewById(R.id.tv_bar_percent)
@@ -362,8 +365,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
       //  updateChart()
         if (sleepPerformanceResponse?.sleepPerformanceList?.isNotEmpty() == true) {
             if (sleepPerformanceResponse.sleepPerformanceList.size < 9 ) {
+                averageGoalLayout.visibility = View.GONE
                 setupWeeklyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.endDatetime!!)
             }else{
+                averageGoalLayout.visibility = View.VISIBLE
                 setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
             }
         }
@@ -371,13 +376,12 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             percentageIcon.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_up)
             percentageText.visibility = View.VISIBLE
-            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + " past week"
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }else{
             percentageIcon.visibility = View.VISIBLE
             percentageText.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_down)
-            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
-            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + " past week"
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }
     }
 
