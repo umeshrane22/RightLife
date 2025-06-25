@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.NewSleepSounds
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -11,11 +12,14 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ItemVerticalSongCardBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
+import com.jetsynthesys.rightlife.ui.showBalloonWithDim
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class SleepSoundGridAdapter(
     private val soundList: ArrayList<Service>,
     private val onItemClick: (ArrayList<Service>,position: Int) -> Unit,
-    private val onAddToPlaylistClick: (Service, position: Int) -> Unit // 👈 Added new lambda
+    private val onAddToPlaylistClick: (Service, position: Int) -> Unit,
+    private val isShowList: Boolean = false
 ) : RecyclerView.Adapter<SleepSoundGridAdapter.SoundViewHolder>() {
 
     inner class SoundViewHolder(val binding: ItemVerticalSongCardBinding) :
@@ -42,11 +46,23 @@ class SleepSoundGridAdapter(
             binding.root.setOnClickListener {
                 onItemClick(soundList,adapterPosition)
             }
+
+            binding.ivAddPlaylist.visibility = if (isShowList) View.GONE else View.VISIBLE
+
             binding.ivAddPlaylist.setOnClickListener {
-                // 🔥 Handle add to playlist here
-             //   Toast.makeText(binding.root.context, "Added to playlist", Toast.LENGTH_SHORT).show()
-                binding.ivAddPlaylist.setImageResource(R.drawable.ic_added_to_playlist)
-                onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
+                val sharedPreferenceManager =
+                    SharedPreferenceManager.getInstance(binding.ivAddPlaylist.context)
+                if (!sharedPreferenceManager.isTooltipShowed("SleepSoundAddButton")) {
+                    sharedPreferenceManager.saveTooltip("SleepSoundAddButton", true)
+                    binding.ivAddPlaylist.context.showBalloonWithDim(
+                        binding.ivAddPlaylist,
+                        "Tap to add to your playlist.",
+                        "SleepSoundAdd", xOff = -200, yOff = 20, arrowPosition = 0.9f
+                    )
+                } else {
+                    binding.ivAddPlaylist.setImageResource(R.drawable.ic_added_to_playlist)
+                    onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
+                }
             }
         }
     }
