@@ -41,6 +41,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentRecipeSearchBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.core.view.isVisible
 
 class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
 
@@ -215,7 +216,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
-                    if (tabContentCard.visibility == View.VISIBLE) {
+                    if (tabContentCard.isVisible) {
                         tabContentCard.visibility = View.GONE
                     } else {
                         tabContentCard.visibility = View.VISIBLE

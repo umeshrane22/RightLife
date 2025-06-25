@@ -1095,7 +1095,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val userId =/*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = getCurrentDate()
         val source = "android"
-      //  val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {
