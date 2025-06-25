@@ -59,6 +59,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -443,6 +444,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepStagesView = view.findViewById<SleepChartViewLanding>(R.id.sleepStagesView)
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
+            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
+                putExtra("PlayList", "PlayList")
+            })
+        }
+        view.findViewById<ImageView>(R.id.arrowSleepSound).setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 putExtra("PlayList", "PlayList")
             })
@@ -1018,18 +1024,44 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepSoundCardView.visibility = View.VISIBLE
                     sleepSoundResponse = response.body()!!
                     if (sleepSoundResponse.sleepSoundData != null){
+                        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Your Playlist"
+                        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = ""+ sleepSoundResponse.sleepSoundData?.services?.size + " Sleep sounds saved"
                         if (sleepSoundResponse.sleepSoundData?.services?.size == 1){
                             soundPlay1.visibility = View.VISIBLE
                             soundPlay2.visibility = View.GONE
                             soundPlay3.visibility = View.GONE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
                         }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
                             soundPlay1.visibility = View.VISIBLE
                             soundPlay2.visibility = View.VISIBLE
                             soundPlay3.visibility = View.GONE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay2)
                         }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
                             soundPlay1.visibility = View.VISIBLE
                             soundPlay2.visibility = View.VISIBLE
                             soundPlay3.visibility = View.VISIBLE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay2)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay3)
                         }
                     }
                 } else {
@@ -1326,9 +1358,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         }
 
-        // Set Recommended Sound
-        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Recommended Sound"
-        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = sleepLandingResponse.sleepLandingAllData?.recommendedSound
     }
 
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
@@ -1758,13 +1787,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 parseSleepData.add(sleepEntry)
             }
         }
-        val result = async {
+        val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
+        sleepConsistencyChart.setSleepData(entries)
+        /*val result = async {
             parseSleepData(parseSleepData)
         }.await()
-        sleepConsistencyChart.setSleepData(result)
+        sleepConsistencyChart.setSleepData(result)*/
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
+    /*private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.sleepStartTime ?: ""
@@ -1773,7 +1804,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
-    }
+    }*/
 
     fun convertToTargetFormat(input: String): String {
         val possibleFormats = listOf(

@@ -2084,7 +2084,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="#FFFFFF"
                     android:padding="16dp">
 
@@ -2094,26 +2094,29 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/sleepSound"
                         android:orientation="horizontal"
+                        android:weightSum="11"
                         android:gravity="center_vertical"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
+                            android:layout_weight="1"
                             android:src="@drawable/sleep_music" />
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Sleep Sounds"
+                            android:layout_weight="9"
                             android:textSize="18sp"
                             android:textColor="#082654"
                             android:fontFamily="@font/dmsans_bold"
-                            android:layout_weight="1"
                             android:paddingStart="8dp" />
 
                         <ImageView
                             android:id="@+id/arrowSleepSound"
+                            android:layout_weight="1"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/sleep_right_arrow_btn" />
@@ -2129,7 +2132,7 @@
                         android:textColor="#082654"
                         app:layout_constraintTop_toBottomOf="@id/sleepSound"
                         app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginTop="16dp" />
+                        android:layout_marginTop="10dp" />
 
                     <TextView
                         android:id="@+id/tv_sleep_sound_save"
@@ -2153,29 +2156,47 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_sleep_sound_save">
-
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            app:cardCornerRadius="10dp"
+                            android:layout_weight="1"
+                            app:cardElevation="0dp"
+                            app:cardPreventCornerOverlap="true">
                         <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:id="@+id/sound_play_1"
-                            android:layout_weight="1"
                             android:src="@drawable/sleep_pillow" />
-
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            app:cardCornerRadius="10dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_weight="1"
+                            app:cardElevation="0dp"
+                            app:cardPreventCornerOverlap="true">
                         <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:id="@+id/sound_play_2"
+                            android:src="@drawable/sleep_pillow" />
+                        </androidx.cardview.widget.CardView>
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            app:cardCornerRadius="10dp"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
-                            android:src="@drawable/sleep_pillow" />
-
+                            app:cardElevation="0dp"
+                            app:cardPreventCornerOverlap="true">
                         <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:id="@+id/sound_play_3"
-                            android:layout_marginStart="10dp"
-                            android:layout_weight="1"
                             android:src="@drawable/sleep_pillow" />
+                        </androidx.cardview.widget.CardView>
                     </LinearLayout>
 
                     <LinearLayout
