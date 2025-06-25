@@ -34,7 +34,9 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -79,6 +81,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lytPerformCard: CardView
     private lateinit var lytPerformNoCard: CardView
+    private lateinit var cardPercent: CardView
+    private lateinit var tvBarPercent: TextView
+    private lateinit var tvBarDate: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
     private lateinit var percentageIcon: ImageView
@@ -101,6 +106,9 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         radioGroup = view.findViewById(R.id.tabGroup)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
+        cardPercent = view.findViewById(R.id.card_percent)
+        tvBarPercent = view.findViewById(R.id.tv_bar_percent)
+        tvBarDate = view.findViewById(R.id.tv_bar_date)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
         tvSleepAverage = view.findViewById(R.id.tv_sleep_perform_average)
         performTitle = view.findViewById(R.id.perform_title)
@@ -457,7 +465,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
-        chart.axisLeft.axisMaximum = 120f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
@@ -467,6 +475,23 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
         chart.setFitBars(true)
         chart.setDrawValueAboveBar(false)
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                cardPercent.visibility = View.VISIBLE
+                if (e != null) {
+                    val x = e.x.toInt()
+                    val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    tvBarDate.text = labels.getOrNull(x) ?: ""
+                    tvBarPercent.text = y.toInt().toString()
+                }
+            }
+
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                cardPercent.visibility = View.INVISIBLE
+            }
+        })
         chart.invalidate()
     }
 
@@ -530,13 +555,30 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
-        chart.axisLeft.axisMaximum = 120f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
         chart.isHighlightPerTapEnabled = false
         chart.isHighlightPerDragEnabled = false
         chart.setExtraBottomOffset(24f)
         chart.legend.isEnabled = false
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                cardPercent.visibility = View.VISIBLE
+                if (e != null) {
+                    val x = e.x.toInt()
+                    val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    tvBarDate.text = labels.getOrNull(x) ?: ""
+                    tvBarPercent.text = y.toInt().toString()
+                }
+            }
+
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                cardPercent.visibility = View.INVISIBLE
+            }
+        })
         chart.setScaleEnabled(false)
         chart.setXAxisRenderer(
             MultilineXAxisRenderer(
