@@ -1418,14 +1418,24 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     fun convertTo12HourFormat(input: String): String {
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+         lateinit var inputFormatter : DateTimeFormatter
+        if (input.length > 21) {
+             inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }else{
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        }
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
         val dateTime = LocalDateTime.parse(input, inputFormatter)
         return outputFormatter.format(dateTime)
     }
 
     fun convertTo12HourZoneFormat(input: String): String {
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        lateinit var inputFormatter : DateTimeFormatter
+        if (input.length > 21) {
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }else{
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        }
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
 
         // Parse as LocalDateTime (no time zone info)
