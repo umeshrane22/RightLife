@@ -63,7 +63,7 @@ class CreateUsernameActivity : BaseActivity() {
             btnContinue.isEnabled = false
         }
 
-        "$charLeft/20 ch".also { tvCharLeft.text = it }
+        "$charLeft/20 characters".also { tvCharLeft.text = it }
 
         edtUsername.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -72,7 +72,7 @@ class CreateUsernameActivity : BaseActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
                 val c = edtUsername.text.length
-                "$c/20 ch".also { tvCharLeft.text = it }
+                "$c/20 characters".also { tvCharLeft.text = it }
                 if (validateUsername(p0.toString())) {
                     tvError.visibility = GONE
                     btnContinue.backgroundTintList = colorStateListSelected

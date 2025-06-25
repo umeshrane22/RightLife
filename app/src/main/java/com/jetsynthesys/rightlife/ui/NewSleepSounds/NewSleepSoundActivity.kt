@@ -70,7 +70,7 @@ class NewSleepSoundActivity : BaseActivity() {
                 categoryAdapter.updateSelectedPosition(-1)
             }
         } else {
-            onBackPressedDispatcher.onBackPressed()
+            finish()
         }
     }
 
