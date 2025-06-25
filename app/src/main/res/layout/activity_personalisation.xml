@@ -92,7 +92,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/dmsans_regular"
-                        android:text="Personalised Insights Tailored recommendations based on your preferences and progress."
+                        android:text="Personalised Insights tailored recommendations based on your preferences and progress."
                         android:textColor="@color/txt_color_header"
                         android:textSize="16sp" />
 
@@ -131,7 +131,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/dmsans_regular"
-                        android:text="Better Results Align your wellness journey with your unique goals."
+                        android:text="Better Results align your wellness journey with your unique goals."
                         android:textColor="@color/txt_color_header"
                         android:textSize="16sp" />
 
@@ -170,7 +170,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
                         android:fontFamily="@font/dmsans_regular"
-                        android:text="End-To-End Encryption Your data stays secure and is used only to enhance your experience."
+                        android:text="Your data stays secure and is used only to enhance your experience."
                         android:textColor="@color/txt_color_header"
                         android:textSize="16sp" />
 

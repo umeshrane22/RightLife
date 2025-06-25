@@ -23,7 +23,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/dmsans_regular"
-        android:text="This helps us to curate the best content for you."
+        android:text="This helps us in curating the best content for you."
         android:textColor="@color/txt_color_header"
         android:textSize="16sp" />
 
