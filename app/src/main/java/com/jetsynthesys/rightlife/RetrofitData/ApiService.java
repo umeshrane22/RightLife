@@ -1243,6 +1243,14 @@ public interface ApiService {
             @Header("Authorization") String authToken,
             @Body CommonAPICall.WellnessStreakRequest wellnessStreakRequest
     );
+
+    @GET("move/dashboard_call/")
+    Call<ResponseBody> getLandingDashboardData(
+            @Query("user_id") String userId,
+            @Query("date") String date,
+            @Query("source") String source,
+            @Query("process") boolean process
+    );
 }
 
 

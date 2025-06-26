@@ -175,6 +175,10 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             selectedDate.monthValue - 1,
             selectedDate.dayOfMonth
         )
+        val today = System.currentTimeMillis()
+        val sevenDaysAgo = today - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
+        datePicker.datePicker.maxDate = today
+        datePicker.datePicker.minDate = sevenDaysAgo
         datePicker.show()
     }
 }

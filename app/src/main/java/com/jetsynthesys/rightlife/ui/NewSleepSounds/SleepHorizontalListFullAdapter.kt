@@ -12,6 +12,8 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ItemHorrizontalSongCardFullBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
+import com.jetsynthesys.rightlife.ui.showBalloonWithDim
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class SleepHorizontalListFullAdapter(
     private val soundList: ArrayList<Service>,
@@ -52,11 +54,20 @@ class SleepHorizontalListFullAdapter(
             }
 
             binding.ivAddPlaylist.setOnClickListener {
-                // 🔥 Handle add to playlist here
-                //   Toast.makeText(binding.root.context, "Added to playlist", Toast.LENGTH_SHORT).show()
-                service.isActive = !service.isActive
-                onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
-                notifyDataSetChanged()
+                val sharedPreferenceManager =
+                    SharedPreferenceManager.getInstance(binding.ivAddPlaylist.context)
+                if (!sharedPreferenceManager.isTooltipShowed("SleepSoundAddButton")) {
+                    sharedPreferenceManager.saveTooltip("SleepSoundAddButton", true)
+                    binding.ivAddPlaylist.context.showBalloonWithDim(
+                        binding.ivAddPlaylist,
+                        "Tap to add to your playlist.",
+                        "SleepSoundAdd", xOff = -200, yOff = 20, arrowPosition = 0.9f
+                    )
+                } else {
+                    service.isActive = !service.isActive
+                    onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
+                    notifyDataSetChanged()
+                }
             }
         }
     }

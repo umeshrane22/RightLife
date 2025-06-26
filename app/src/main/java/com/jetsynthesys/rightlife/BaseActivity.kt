@@ -14,6 +14,7 @@ open class BaseActivity : AppCompatActivity() {
     private lateinit var baseBinding: ActivityBaseBinding
     lateinit var sharedPreferenceManager: SharedPreferenceManager
     lateinit var apiService: ApiService
+     lateinit var apiServiceFastApi: ApiService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +23,7 @@ open class BaseActivity : AppCompatActivity() {
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         apiService = ApiClient.getClient(this).create(ApiService::class.java)
+        apiServiceFastApi = ApiClient.getAIClient().create(ApiService::class.java)
     }
 
     fun setChildContentView(layoutResId: Int) {

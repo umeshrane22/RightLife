@@ -59,6 +59,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -230,6 +231,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var btnSleepSound : LinearLayout
     private var mWakeupTime = ""
     private var mRecordId = ""
+    private var bottomSeatName = ""
     private var loadingOverlay : FrameLayout? = null
     private var mEditWakeTime = ""
     private lateinit var recomendationRecyclerView: RecyclerView
@@ -258,7 +260,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
         sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
@@ -323,7 +325,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         fetchThinkRecomendedData()
-        fetchSoundSleepData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val dialog = LogYourNapDialogFragment(
@@ -334,11 +335,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
             )
-
             dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
-        btnSync.setOnClickListener {
+       // btnSync.setOnClickListener {
             val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                 healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
@@ -348,7 +348,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             } else {
                 Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
             }
-        }
+    //    }
         btnSleepSound.setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 //putExtra("PlayList", "PlayList")
@@ -444,6 +444,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepStagesView = view.findViewById<SleepChartViewLanding>(R.id.sleepStagesView)
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
+            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
+                putExtra("PlayList", "PlayList")
+            })
+        }
+        view.findViewById<ImageView>(R.id.arrowSleepSound).setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 putExtra("PlayList", "PlayList")
             })
@@ -1010,7 +1015,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val skip = "0"
         val limit = "3"
         val type = "playlist"
-        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchSleepSound(token,userId, skip,limit,type)
         call.enqueue(object : Callback<SleepSoundResponse> {
             override fun onResponse(call: Call<SleepSoundResponse>, response: Response<SleepSoundResponse>) {
@@ -1019,18 +1023,44 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepSoundCardView.visibility = View.VISIBLE
                     sleepSoundResponse = response.body()!!
                     if (sleepSoundResponse.sleepSoundData != null){
+                        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Your Playlist"
+                        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = ""+ sleepSoundResponse.sleepSoundData?.services?.size + " Sleep sounds saved"
                         if (sleepSoundResponse.sleepSoundData?.services?.size == 1){
                             soundPlay1.visibility = View.VISIBLE
                             soundPlay2.visibility = View.GONE
                             soundPlay3.visibility = View.GONE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
                         }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
                             soundPlay1.visibility = View.VISIBLE
                             soundPlay2.visibility = View.VISIBLE
                             soundPlay3.visibility = View.GONE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay2)
                         }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
                             soundPlay1.visibility = View.VISIBLE
                             soundPlay2.visibility = View.VISIBLE
                             soundPlay3.visibility = View.VISIBLE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay2)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay3)
                         }
                     }
                 } else {
@@ -1260,6 +1290,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }else{
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
+            if (!bottomSeatName.contentEquals("LogLastNightSleep")){
+                val dialog = LogYourNapDialogFragment(
+                    requireContext = requireContext(),
+                    listener = object : OnLogYourNapSelectedListener {
+                        override fun onLogTimeSelected(time: String) {
+                            fetchSleepLandingData()
+                        }
+                    }
+                )
+                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+            }
         }
 
         //IdealActualResponse
@@ -1298,7 +1339,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
 
-
         // Set Restorative Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
                 restroNoDataCardView.visibility = View.GONE
@@ -1325,12 +1365,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepConsistencyChart.visibility = View.GONE
                 }
             }
-
         }
 
-        // Set Recommended Sound
-        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Recommended Sound"
-        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = sleepLandingResponse.sleepLandingAllData?.recommendedSound
     }
 
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
@@ -1674,7 +1710,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    // progressDialog.dismiss()
+                    // progressDialog.dismiss()F
                 }
             }
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
@@ -1811,13 +1847,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 parseSleepData.add(sleepEntry)
             }
         }
-        val result = async {
+        val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
+        sleepConsistencyChart.setSleepData(entries)
+        /*val result = async {
             parseSleepData(parseSleepData)
         }.await()
-        sleepConsistencyChart.setSleepData(result)
+        sleepConsistencyChart.setSleepData(result)*/
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
+    /*private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.sleepStartTime ?: ""
@@ -1826,7 +1864,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
-    }
+    }*/
 
     fun convertToTargetFormat(input: String): String {
         val possibleFormats = listOf(
@@ -1929,6 +1967,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         return bitmap
     }
 
+
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
         val channelId = "download_channel"
@@ -2021,6 +2061,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        fetchSoundSleepData()
+    }
+
     private fun loadStepData(): SleepJson {
         val json = context?.assets?.open("sleep_raw_data.json")
             ?.bufferedReader().use { it?.readText() }
@@ -2098,7 +2143,6 @@ class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : M
             selectedData?.let {
               //  val ideal = it.idealSleep
               //  val actual = it.actualSleep
-
              //   tvContent.text = "Ideal: $ideal hrs\nActual: $actual hrs"
             }
         }

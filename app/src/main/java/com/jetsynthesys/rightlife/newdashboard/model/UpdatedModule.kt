@@ -23,6 +23,7 @@ data class UpdatedModule(
     @SerializedName("fats") val fats: String?,
     @SerializedName("sleepTime") val sleepTime: String?,
     @SerializedName("wakeUpTime") val wakeUpTime: String?,
+    @SerializedName("totalSleepDurationMinutes") val totalSleepDurationMinutes: Double?,
     @SerializedName("rem") val rem: Double?, // numbers in JSON
     @SerializedName("core") val core: Double?,
     @SerializedName("deep") val deep: Double?,

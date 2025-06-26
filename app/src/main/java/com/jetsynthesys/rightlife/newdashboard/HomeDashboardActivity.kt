@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.Animation
@@ -315,7 +316,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
         // Api calls
         getUserDetails("")
-
+        fetchDashboardData()
         getAiDashboard("")
 
       /*  binding.progressBarOnboarding.post {
@@ -504,6 +505,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        fetchDashboardData()
         getDashboardChecklist("")
         getDashboardChecklistStatus()
     }
@@ -1438,19 +1440,20 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
     if (isVisible) {
         binding.cardSleepMainIdeal.visibility = View.VISIBLE
         if (module.sleepTime.equals("00:00")) {
-            binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat("2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
+            binding.tvTodaysSleepStartTime.text = DateTimeUtils.getSleepTime12HourFormat("2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
         } else {
-            binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat(module.sleepTime ?: "2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
+            binding.tvTodaysSleepStartTime.text = DateTimeUtils.getSleepTime12HourFormat(module.sleepTime ?: "2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
         }
         if (module.wakeUpTime.equals("00:00")) {
-            binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat("2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
+            binding.tvTodaysWakeupTime.text = DateTimeUtils.getSleepTime12HourFormat("2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
         } else {
-            binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat(module.wakeUpTime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
+            binding.tvTodaysWakeupTime.text = DateTimeUtils.getSleepTime12HourFormat(module.wakeUpTime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
         }
 
         //binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat(module.sleepTime ?: "2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
         //binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat(module.wakeUpTime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
-        binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.formatSleepDuration(module.sleepPerformanceDetail?.idealSleepDuration ?: 0.0)   //(module.sleepPerformanceDetail?.idealSleepDuration ?: "0min").toString()
+        //binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.formatSleepDuration(module.sleepPerformanceDetail?.idealSleepDuration ?: 0.0)   //(module.sleepPerformanceDetail?.idealSleepDuration ?: "0min").toString()
+        binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.formatSleepDurationforidealSleep(module.totalSleepDurationMinutes ?: 0.0)
 
         binding.cardSleepMainLog.visibility = View.GONE
         binding.cardSleeprightMain.visibility = View.GONE
@@ -1646,4 +1649,33 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
     private fun isVersionOutdated(current: String, latest: String): Boolean {
         return current != latest // or use a version comparator for more complex rules
     }
+
+    // New api Requested by backend team to be added in app need to discuss with them
+    private fun fetchDashboardData() {
+        val userId = sharedPreferenceManager.getUserId() ?: return
+
+        val date = DateTimeUtils.formatDateForOneApi()
+
+        val call = apiServiceFastApi.getLandingDashboardData(userId, date, "android", true)
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val jsonString = response.body()!!.string()
+                    try {
+                        Log.d("DashboardRaw", jsonString)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    // showToast("Failed: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+
 }
