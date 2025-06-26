@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/recommended_layout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
@@ -93,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="The Personal Nature of Meaning"
-                android:fontFamily="@font/dmsans_medium"
+                android:fontFamily="@font/dmsans_bold"
                 android:textColor="@color/black"
                 android:textSize="14sp"
                 android:paddingTop="4dp"
@@ -109,9 +110,10 @@
         android:layout_height="wrap_content"
         android:text="AshmithaVishnu   |   30"
         android:textSize="12sp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="15dp"
         android:textColor="@color/black"
-        android:paddingTop="3dp" />
+        android:paddingTop="1dp"
+        android:paddingBottom="3dp"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
