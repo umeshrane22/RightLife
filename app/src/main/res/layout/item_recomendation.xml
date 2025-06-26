@@ -109,8 +109,9 @@
         android:layout_height="wrap_content"
         android:text="AshmithaVishnu   |   30"
         android:textSize="12sp"
+        android:layout_marginStart="20dp"
         android:textColor="@color/black"
-        android:paddingTop="6dp" />
+        android:paddingTop="3dp" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
