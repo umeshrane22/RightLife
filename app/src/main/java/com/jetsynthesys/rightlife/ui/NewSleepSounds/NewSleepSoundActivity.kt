@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.NewSleepSounds
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,8 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,6 +43,8 @@ class NewSleepSoundActivity : BaseActivity() {
     private var isLoading = false
     private var isLastPage = false
     private var isForPlayList = ""
+    private var isStartFromVerticalList = false
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewSleepSoundBinding.inflate(layoutInflater)
@@ -56,6 +61,23 @@ class NewSleepSoundActivity : BaseActivity() {
         fetchCategories()
         getUserCreatedPlaylist()
         getNewReleases()
+
+        // Register for result
+        resultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val list = result.data?.getSerializableExtra("SOUND_LIST") as ArrayList<Service>
+                    val isShowPlayList = result.data?.getBooleanExtra("ISUSERPLAYLIST", false)
+                    if (isStartFromVerticalList)
+                        setupVerticleRecyclerView(list, isShowPlayList!!)
+                    else {
+                        binding.linearLayoutContainer.removeAllViews()
+                        fetchCategories()
+                        getUserCreatedPlaylist()
+                        getNewReleases()
+                    }
+                }
+            }
     }
 
     private fun handleBackPressed() {
@@ -280,7 +302,8 @@ class NewSleepSoundActivity : BaseActivity() {
                 serviceList,
                 onItemClick = { selectedList, position ->
                     // Handle item click (open player screen)
-                    startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                    isStartFromVerticalList = false
+                    resultLauncher.launch(Intent(this, SleepSoundPlayerActivity::class.java).apply {
                         putExtra("SOUND_LIST", selectedList)
                         putExtra("SELECTED_POSITION", position)
                         putExtra("ISUSERPLAYLIST", false)
@@ -308,13 +331,17 @@ class NewSleepSoundActivity : BaseActivity() {
     }
 
 
-    private fun setupVerticleRecyclerView(services: ArrayList<Service>?, isShowList: Boolean = false) {
+    private fun setupVerticleRecyclerView(
+        services: ArrayList<Service>?,
+        isShowList: Boolean = false
+    ) {
         val adapter = services?.let { serviceList ->
             SleepSoundGridAdapter(
                 serviceList,
                 onItemClick = { selectedList, position ->
                     // Handle item click (open player screen)
-                    startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                    isStartFromVerticalList = true
+                    resultLauncher.launch(Intent(this, SleepSoundPlayerActivity::class.java).apply {
                         putExtra("SOUND_LIST", selectedList)
                         putExtra("SELECTED_POSITION", position)
                         putExtra("ISUSERPLAYLIST", isShowList)
@@ -559,7 +586,8 @@ class NewSleepSoundActivity : BaseActivity() {
         val adapter = SleepHorizontalListAdapter(
             services,
             onItemClick = { selectedList, position ->
-                startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
+                isStartFromVerticalList = false
+                resultLauncher.launch(Intent(this, SleepSoundPlayerActivity::class.java).apply {
                     putExtra("SOUND_LIST", selectedList)
                     putExtra("SELECTED_POSITION", position)
                     putExtra("ISUSERPLAYLIST", false)
