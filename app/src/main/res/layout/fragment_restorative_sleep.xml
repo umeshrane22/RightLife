@@ -299,7 +299,7 @@
                                 android:text="2 hr 10 mins"
                                 android:id="@+id/tv_rem_time"
                                 android:fontFamily="@font/dmsans_bold"
-                                android:textSize="13sp"
+                                android:textSize="11sp"
                                 android:textColor="@color/black"
                                 android:layout_marginStart="5dp" />
                         </LinearLayout>
@@ -309,7 +309,6 @@
                             android:layout_height="45dp"
                             android:gravity="center_vertical"
                             android:layout_weight="1"
-                            android:layout_marginStart="10dp"
                             android:orientation="horizontal">
 
                             <ImageView
@@ -334,7 +333,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="5 hr 20 mins"
-                                android:textSize="13sp"
+                                android:textSize="11sp"
                                 android:id="@+id/tv_deep_time"
                                 android:fontFamily="@font/dmsans_bold"
                                 android:textColor="@color/black"

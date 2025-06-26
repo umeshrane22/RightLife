@@ -34,6 +34,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.snackbar.Snackbar
 import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
@@ -43,9 +44,12 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
+import java.util.Locale
 
 class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBinding>() {
 
@@ -110,7 +114,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         mStartDate = getOneWeekEarlierDate().format(dateFormatter)
         mEndDate = getTodayDate().format(dateFormatter)
         val endOfWeek = currentDateWeek
-        val startOfWeek = endOfWeek.minusDays(6)
+        val startOfWeek = endOfWeek.minusDays(7)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
@@ -155,7 +159,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         return LocalDate.now().minusWeeks(1)
     }
     fun getOneMonthEarlierDate(): LocalDate {
-        return LocalDate.now().minusMonths(1)
+        return LocalDate.now().minusMonths(1).minusDays(1)
     }
     fun getSixMonthsEarlierDate(): LocalDate {
         return LocalDate.now().minusMonths(6)
@@ -286,6 +290,46 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         return oneMonthBack.format(formatter)
     }
 
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
+    }
+
     private fun setGraphDataFromSleepList(sleepData: List<SleepGraphData>?, period: String, endDate: String) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         var startDateStr = ""
@@ -302,6 +346,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         val actualEntries = ArrayList<Entry>()
         val labels = mutableListOf<String>()
 
+
         sleepData?.forEachIndexed { index, data ->
             idealEntries.add(Entry(index.toFloat(), data.idealSleep))
             actualEntries.add(Entry(index.toFloat(), data.actualSleep))
@@ -309,7 +354,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
 
         if (sleepData?.size!! > 8 ) {
-            val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate).toInt() + 1
+            labels.addAll(generateLabeled30DayListWithEmpty(startDateStr))
+            /*val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate).toInt() + 1
             val entries = ArrayList<BarEntry>()
            // val labels = ArrayList<String>()
 
@@ -335,8 +381,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                     ""
                 }
 
-                labels.add(label)
-            }
+                labels.add(label)*/
             val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
                 color = Color.parseColor("#00C853") // green
                 setDrawCircles(false)
@@ -433,7 +478,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
 
         }
 
-        lineChart.xAxis.apply {
+        /*lineChart.xAxis.apply {
             valueFormatter = object : ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
                     val index = value.toInt()
@@ -444,6 +489,15 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
             granularity = 1f
             setDrawGridLines(false)
             labelRotationAngle = 0f
+            textSize = 10f
+        }*/
+        lineChart.xAxis.apply {
+            valueFormatter = IndexAxisValueFormatter(labels)
+            granularity = 1f
+            labelCount = labels.size
+            position = XAxis.XAxisPosition.BOTTOM
+            setDrawGridLines(false)
+            labelRotationAngle = -30f
             textSize = 10f
         }
 
