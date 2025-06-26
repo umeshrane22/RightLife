@@ -141,6 +141,7 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import java.time.ZoneId
+import kotlin.math.roundToInt
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
 
@@ -1789,6 +1790,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
         val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
         sleepConsistencyChart.setSleepData(entries)
+        sleepConsistencyChart.setOnBarClickListener { entry ->
+            tvConsistencyDate.text = entry.startLocal.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy"))
+            val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
+            val hrs = dur.toHours()
+            val mins = dur.minusHours(hrs).toMinutes()
+            tvConsistencyTime.text = "${hrs}hr ${mins}mins"
+        }
         /*val result = async {
             parseSleepData(parseSleepData)
         }.await()

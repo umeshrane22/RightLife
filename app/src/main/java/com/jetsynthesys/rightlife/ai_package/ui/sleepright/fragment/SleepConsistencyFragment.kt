@@ -363,6 +363,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             averageSleepTime.setText(convertTo12HourFormat(detail.averageSleepStartTime!!))
             averageWakeupTime.setText(convertTo12HourFormat(detail.averageWakeTime!!))
         }
+   //     tvConsistencyTime.text = convertDecimalHoursToHrMinFormat(landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours!!)
+   //     tvConsistencyDate.text = convertDateToNormalDate(landingAllData.sleepConsistency?.sleepDetails?.getOrNull(landingAllData.sleepConsistency?.sleepDetails?.size?.minus(1) ?: 0)?.date!!)
+
     }
     fun convertTo12HourFormat(datetimeStr: String): String {
         val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -726,7 +729,8 @@ class SleepGraphView @JvmOverloads constructor(
             val left = leftPad + i * slotW + (slotW - barW) / 2
             val topY = topPad + chartH / 12f * startFrac(e)
             val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
-            val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
+          //  val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
+            val paint =  barPaint
             val rect = RectF(left, topY, left + barW, botY)
             c.drawRoundRect(rect, radius, radius, paint)
             barHits += BarHit(rect, e)        // store for click detection
@@ -763,7 +767,8 @@ class SleepGraphView @JvmOverloads constructor(
             val left = leftPad + i * dayW + wk * gap + (dayW - barW) / 2
             val topY = topPad + chartH / 12f * startFrac(e)
             val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
-            val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
+         //   val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
+            val paint =  barPaint
             val rect = RectF(left, topY, left + barW, botY)
             c.drawRoundRect(rect, radius, radius, paint)
             barHits += BarHit(rect, e)
