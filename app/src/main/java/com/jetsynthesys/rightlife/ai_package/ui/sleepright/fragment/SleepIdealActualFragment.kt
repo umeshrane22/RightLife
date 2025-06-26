@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -34,6 +35,8 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.google.android.material.snackbar.Snackbar
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -59,10 +62,16 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     private lateinit var btnPrevious: ImageView
     private lateinit var btnNext: ImageView
     private lateinit var dateRangeText: TextView
+    private lateinit var percentage_text_average: TextView
+    private lateinit var percentage_text: TextView
     private lateinit var tvAverageSleep: TextView
     private lateinit var tvAverageNeeded: TextView
     private lateinit var tvIdealTitle: TextView
+    private lateinit var sleep_actual_time_box: ConstraintLayout
     private lateinit var tvIdealMessage: TextView
+    private lateinit var tv_ideal_actual_date: TextView
+    private lateinit var tv_ideal_time: TextView
+    private lateinit var tv_actual_time: TextView
     private lateinit var sleepCard: CardView
     private lateinit var sleepNoCard: CardView
     private var currentDateWeek: LocalDate = LocalDate.now() // today
@@ -82,6 +91,12 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         sixMonthGraph = view.findViewById(R.id.sixMonthGraph)
         btnPrevious = view.findViewById(R.id.btn_prev)
         btnNext = view.findViewById(R.id.btn_next)
+        percentage_text_average = view.findViewById(R.id.percentage_text_average)
+        percentage_text = view.findViewById(R.id.percentage_text)
+        sleep_actual_time_box = view.findViewById(R.id.sleep_actual_time_box)
+        tv_ideal_actual_date = view.findViewById(R.id.tv_ideal_actual_date)
+        tv_ideal_time = view.findViewById(R.id.tv_ideal_time)
+        tv_actual_time = view.findViewById(R.id.tv_actual_time)
         tvAverageSleep = view.findViewById(R.id.tv_average_sleep_time)
         tvAverageNeeded = view.findViewById(R.id.tv_average_needed_time)
         tvIdealTitle = view.findViewById(R.id.ideal_title)
@@ -327,6 +342,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawCircles(false)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true
             }
 
             // Only last point - Ideal
@@ -339,6 +355,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawValues(false)
                 setDrawHighlightIndicators(false)
                 lineWidth = 0f
+                isHighlightEnabled = true
             }
 
             // Line without circles - Actual
@@ -347,6 +364,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawCircles(false)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true
             }
 
             // Only last point - Actual
@@ -359,6 +377,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawValues(false)
                 setDrawHighlightIndicators(false)
                 lineWidth = 0f
+                isHighlightEnabled = true
             }
             lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
         }else{
@@ -373,6 +392,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawCircles(true)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true
             }
 
             // Only last point - Ideal
@@ -385,6 +405,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawValues(false)
                 setDrawHighlightIndicators(false)
                 lineWidth = 0f
+                isHighlightEnabled = true
             }
 
             // Line without circles - Actual
@@ -393,6 +414,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawCircles(true)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true
             }
 
             // Only last point - Actual
@@ -405,6 +427,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 setDrawValues(false)
                 setDrawHighlightIndicators(false)
                 lineWidth = 0f
+                isHighlightEnabled = true
             }
             lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
 
@@ -440,8 +463,11 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         lineChart.setScaleEnabled(false) // disables pinch and double-tap zoom
         lineChart.isDoubleTapToZoomEnabled = false // disables zoom on double tap
 
-        lineChart.isDragEnabled = false
-        lineChart.isHighlightPerTapEnabled = false
+        //lineChart.isDragEnabled = false
+        //lineChart.isHighlightPerTapEnabled = false
+        lineChart.isDragEnabled = true // Enable drag for better interaction
+        lineChart.isHighlightPerTapEnabled = true // Enable touch highlighting
+        lineChart.setTouchEnabled(true) // Explicitly enable touch
         lineChart.setXAxisRenderer(
             MultilineXAxisRenderer(
                 lineChart.viewPortHandler,
@@ -449,12 +475,55 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                 lineChart.getTransformer(YAxis.AxisDependency.LEFT)
             )
         )
+        lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                Log.d("TouchEvent", "onValueSelected triggered, e=$e, h=$h")
+
+                if (e != null && h != null) {
+                    val xIndex = e.x.toInt()
+                    val idealValue = idealEntries.getOrNull(xIndex)?.y ?: 0f
+                    val actualValue = actualEntries.getOrNull(xIndex)?.y ?: 0f
+                    val (idealHours, idealMinutes) = idealValue.toHoursAndMinutes()
+                    val (actualHours, actualMinutes) = actualValue.toHoursAndMinutes()
+                    Log.d("TouchEvent", "Selected: xIndex=$xIndex, idealValue=$idealValue, actualValue=$actualValue")
+                    sleep_actual_time_box.visibility = View.VISIBLE
+                    tv_ideal_time.text = String.format("%d hr %d mins", idealHours, idealMinutes)
+                    tv_actual_time.text = String.format("%d hr %d mins", actualHours, actualMinutes)
+                   // Log.d("TouchEvent", "Setting tvIdealTime to ${tvIdealTime.text}, tvActualTime to ${tvActualTime.text}")
+
+                    // Update tv_ideal_actual_date with formatted date
+                    if (xIndex in labels.indices) {
+                        val fullDate = LocalDate.parse(sleepData[xIndex].date, DateTimeFormatter.ISO_LOCAL_DATE)
+                        val formattedDate = fullDate.format(DateTimeFormatter.ofPattern("EEEE dd MMMM, yyyy"))
+                        tv_ideal_actual_date.text = formattedDate
+                        Log.d("TouchEvent", "Setting tv_ideal_actual_date to $formattedDate")
+                    }
+                } else {
+                    Log.d("TouchEvent", "Entry or Highlight is null")
+                }
+            }
+
+            override fun onNothingSelected() {
+                sleep_actual_time_box.visibility = View.GONE
+               /* tvActualTime.text = ""
+                tvIdealTime.text = ""
+                tv_ideal_actual_date.text = ""*/
+                Log.d("TouchEvent", "Nothing selected, cleared TextViews")
+            }
+        })
 
         lineChart.invalidate()
+    }
+    private fun Float.toHoursAndMinutes(): Pair<Int, Int> {
+        val totalMinutes = (this * 60).toInt() // Convert to minutes
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return Pair(hours, minutes)
     }
 
         private fun fetchSleepData(endDate: String,period: String) {
             progressDialog.show()
+            //val userid = "685a482b5e75643139c79905"
             val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
             val source = "android"
             val call = ApiClient.apiServiceFastApi.fetchSleepIdealActual(userid, source, period,endDate)
@@ -469,6 +538,8 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                                 tvIdealMessage.visibility = View.VISIBLE
                                 sleepCard.visibility = View.VISIBLE
                                 sleepNoCard.visibility = View.GONE
+                                percentage_text.text = "${response.body()!!.data?.progress_detail?.actual_sleep?.progress_percentage?.toInt().toString()}% of past week"
+                                percentage_text_average.text = "${response.body()!!.data?.progress_detail?.needed_sleep?.progress_percentage?.toInt().toString()}% of past week"
                                 setSleepRightData(period,endDate)
                             }else{
                                 sleepCard.visibility = View.GONE

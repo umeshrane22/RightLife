@@ -77,6 +77,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.MPPointF
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -230,6 +231,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var btnSleepSound : LinearLayout
     private var mWakeupTime = ""
     private var mRecordId = ""
+    private var bottomSeatName = ""
     private var loadingOverlay : FrameLayout? = null
     private var mEditWakeTime = ""
     private lateinit var recomendationRecyclerView: RecyclerView
@@ -258,7 +260,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomSeatName = arguments?.getString("BottomSeatName").toString()
+        bottomSeatName = arguments?.getString("BottomSeatName").toString()
 
         val sleepChart = view.findViewById<LineChart>(R.id.sleepChart)
         sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
@@ -323,7 +325,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         fetchThinkRecomendedData()
-        fetchSoundSleepData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val dialog = LogYourNapDialogFragment(
@@ -334,11 +335,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
             )
-
             dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
-        btnSync.setOnClickListener {
+       // btnSync.setOnClickListener {
             val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                 healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
@@ -348,7 +348,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             } else {
                 Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
             }
-        }
+    //    }
         btnSleepSound.setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 //putExtra("PlayList", "PlayList")
@@ -1015,7 +1015,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val skip = "0"
         val limit = "3"
         val type = "playlist"
-        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
         val call = ApiClient.apiService.fetchSleepSound(token,userId, skip,limit,type)
         call.enqueue(object : Callback<SleepSoundResponse> {
             override fun onResponse(call: Call<SleepSoundResponse>, response: Response<SleepSoundResponse>) {
@@ -1178,6 +1177,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }
         val userId =/*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
+       // val userId ="685a482b5e75643139c79905"
         val date = getCurrentDate()
         val source = "android"
         val preferences = "nature_sounds"
@@ -1290,6 +1290,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }else{
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
+            if (!bottomSeatName.contentEquals("LogLastNightSleep")){
+                val dialog = LogYourNapDialogFragment(
+                    requireContext = requireContext(),
+                    listener = object : OnLogYourNapSelectedListener {
+                        override fun onLogTimeSelected(time: String) {
+                            fetchSleepLandingData()
+                        }
+                    }
+                )
+                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+            }
         }
 
         //IdealActualResponse
@@ -1328,7 +1339,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
 
-
         // Set Restorative Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
                 restroNoDataCardView.visibility = View.GONE
@@ -1355,7 +1365,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepConsistencyChart.visibility = View.GONE
                 }
             }
-
         }
 
     }
@@ -1378,12 +1387,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         // Line without circles - Ideal
-        if (sleepData?.size!! > 8 ) {
+        if (sleepData?.size!! > 8) {
             val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
                 color = Color.parseColor("#00C853") // green
                 setDrawCircles(false)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
 
             // Only last point - Ideal
@@ -1394,8 +1404,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 circleRadius = 5f
                 setDrawCircles(true)
                 setDrawValues(false)
-                setDrawHighlightIndicators(false)
+                setDrawHighlightIndicators(true)
                 lineWidth = 0f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
 
             // Line without circles - Actual
@@ -1404,6 +1415,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 setDrawCircles(false)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
 
             // Only last point - Actual
@@ -1414,16 +1426,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 circleRadius = 5f
                 setDrawCircles(true)
                 setDrawValues(false)
-                setDrawHighlightIndicators(false)
+                setDrawHighlightIndicators(true)
                 lineWidth = 0f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
             lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
-        }else{
+        } else {
             val idealLineSet = LineDataSet(idealEntries, "Ideal").apply {
                 color = Color.parseColor("#00C853") // green
                 setDrawCircles(true)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
 
             // Only last point - Ideal
@@ -1434,8 +1448,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 circleRadius = 5f
                 setDrawCircles(true)
                 setDrawValues(false)
-                setDrawHighlightIndicators(false)
+                setDrawHighlightIndicators(true)
                 lineWidth = 0f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
 
             // Line without circles - Actual
@@ -1444,6 +1459,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 setDrawCircles(true)
                 setDrawValues(false)
                 lineWidth = 2f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
 
             // Only last point - Actual
@@ -1454,15 +1470,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 circleRadius = 5f
                 setDrawCircles(true)
                 setDrawValues(false)
-                setDrawHighlightIndicators(false)
+                setDrawHighlightIndicators(true)
                 lineWidth = 0f
+                isHighlightEnabled = true // Enable highlighting for this dataset
             }
             lineChart.data = LineData(idealLineSet, actualLineSet, idealLastPointSet, actualLastPointSet)
-
         }
-
-        // Combine all data sets
-
 
         // X Axis
         lineChart.xAxis.apply {
@@ -1498,8 +1511,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lineChart.setDrawGridBackground(false)
         lineChart.setScaleEnabled(false)
         lineChart.isDoubleTapToZoomEnabled = false
-        lineChart.isDragEnabled = false
-        lineChart.isHighlightPerTapEnabled = false
+        lineChart.isDragEnabled = true // Enable drag for better interaction
+        lineChart.isHighlightPerTapEnabled = true // Enable touch highlighting
+        lineChart.setTouchEnabled(true) // Explicitly enable touch
 
         // Multi-line X axis labels
         lineChart.setXAxisRenderer(
@@ -1510,7 +1524,53 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             )
         )
 
+        // Add touch listener for circle selection
+        lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                Log.d("TouchEvent", "onValueSelected triggered, e=$e, h=$h")
+                if (e != null && h != null) {
+                    val xIndex = e.x.toInt()
+                    val idealValue = idealEntries.getOrNull(xIndex)?.y ?: 0f
+                    val actualValue = actualEntries.getOrNull(xIndex)?.y ?: 0f
+                    val (idealHours, idealMinutes) = idealValue.toHoursAndMinutes()
+                    val (actualHours, actualMinutes) = actualValue.toHoursAndMinutes()
+                    Log.d("TouchEvent", "Selected: xIndex=$xIndex, idealValue=$idealValue, actualValue=$actualValue")
+
+                    tvIdealTime.text = String.format("%d hr %d mins", idealHours, idealMinutes)
+                    tvActualTime.text = String.format("%d hr %d mins", actualHours, actualMinutes)
+                    Log.d("TouchEvent", "Setting tvIdealTime to ${tvIdealTime.text}, tvActualTime to ${tvActualTime.text}")
+
+                    // Update tv_ideal_actual_date with formatted date
+                    if (xIndex in labels.indices) {
+                        val dateParts = labels[xIndex].split("\n")
+                        val day = dateParts[0] // e.g., "Wed"
+                        val dayMonth = dateParts[1] // e.g., "25 Jun"
+                        val fullDate = LocalDate.parse(sleepData[xIndex].date.toString(), DateTimeFormatter.ISO_LOCAL_DATE)
+                        val formattedDate = fullDate.format(DateTimeFormatter.ofPattern("EEEE dd MMMM, yyyy"))
+                        tvIdealActualDate.text = formattedDate
+                        Log.d("TouchEvent", "Setting tv_ideal_actual_date to $formattedDate")
+                    }
+                } else {
+                    Log.d("TouchEvent", "Entry or Highlight is null")
+                }
+            }
+
+            override fun onNothingSelected() {
+              //  tvActualTime.text = ""
+               // tvIdealTime.text = ""
+               // tv_ideal_actual_date.text = ""
+                Log.d("TouchEvent", "Nothing selected, cleared TextViews")
+            }
+        })
+
         lineChart.invalidate()
+    }
+    // Helper function to convert float (hours) to hours and minutes
+    private fun Float.toHoursAndMinutes(): Pair<Int, Int> {
+        val totalMinutes = (this * 60).toInt() // Convert to minutes
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return Pair(hours, minutes)
     }
 
     fun convertDateToNormalDate(dateStr: String): String{
@@ -1650,7 +1710,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    // progressDialog.dismiss()
+                    // progressDialog.dismiss()F
                 }
             }
             override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
@@ -1907,6 +1967,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         return bitmap
     }
 
+
+
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
         val channelId = "download_channel"
@@ -1997,6 +2059,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchSoundSleepData()
     }
 
     private fun loadStepData(): SleepJson {

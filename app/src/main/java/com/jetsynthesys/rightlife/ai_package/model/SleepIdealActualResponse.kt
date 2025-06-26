@@ -26,6 +26,8 @@ data class SleepData(
     var averageNeeded     : Double?,
     @SerializedName("sleep_insight_detail" )
     var sleepInsightDetail              : IdealActualInsightDetail?,
+    @SerializedName("progress_detail" )
+    var progress_detail              : ProgressDetail?,
     @SerializedName("time_data_breakdown" )
     var timeDataBreakdown : ArrayList<TimeDataBreakdown> = arrayListOf()
 )
@@ -35,6 +37,19 @@ data class IdealActualInsightDetail(
     var message : String? ,
     @SerializedName("title")
     var title  : String?
+)
+
+data class ProgressInfo(
+    @SerializedName("progress_percentage")
+    val progress_percentage: Float,
+    @SerializedName("progress_sign")
+    val progress_sign: String
+)
+data class ProgressDetail(
+    @SerializedName("actual_sleep")
+    val actual_sleep: ProgressInfo,
+    @SerializedName("needed_sleep")
+    val needed_sleep: ProgressInfo
 )
 
 data class TimeDataBreakdown (
