@@ -248,7 +248,7 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="7"
+                                android:layout_weight="6"
                                 android:id="@+id/tv_sleep_time_title"
                                 android:textSize="14sp"
                                 android:fontFamily="@font/dmsans_medium"
@@ -262,10 +262,10 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="3"
+                                android:layout_weight="4"
                                 android:id="@+id/tv_sleep_time"
                                 android:textSize="14sp"
-                                android:fontFamily="@font/dmsans_regular"
+                                android:fontFamily="@font/dmsans_bold"
                                 android:text="6 hr 20 min"
                                 android:layout_marginTop="7dp"
                                 android:textColor="@color/sleep_text_color"
@@ -277,7 +277,7 @@
                     <com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepGraphView
                         android:id="@+id/sleepConsistencyChart"
                         android:layout_width="match_parent"
-                        android:layout_height="300dp"
+                        android:layout_height="350dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
                         android:layout_marginTop="10dp"
