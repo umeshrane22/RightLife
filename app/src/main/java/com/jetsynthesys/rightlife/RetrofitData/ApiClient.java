@@ -21,7 +21,7 @@ public class ApiClient {
     private static final String BASE_URL = BuildConfig.BASE_URL; // Your API URL //"https://qa.rightlife.com/api/app/api/"; // Your API URL
     private static final String BASE_URL2 = "http://18.159.113.191:8081/app/api/"; // Your API URL
     private static final String BASE_URL3 = "http://18.159.113.191:8080/app/api/"; // Your API URL
-
+    private static final String BASE_URL_FAST_API = BuildConfig.BASE_URL_AI;
     public static final String CDN_URL_QA = BuildConfig.CDN_URL;//"https://d1sacaybzizpm5.cloudfront.net/"; // Your API URL
     public static final String CDN_URL_PROD = "https://d1uxs9zd0apq85.cloudfront.net/"; // Your API URL
 
@@ -92,6 +92,24 @@ public class ApiClient {
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create()) // This converts JSON to Java objects
                     .build();
+        return retrofit;
+    }
+
+    public static Retrofit getAIClient() {
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        // Set logging level (BODY for detailed logging, BASIC for minimal)
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
+        // Add the logging interceptor to OkHttpClient
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
+                .build();
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL_FAST_API)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create()) // This converts JSON to Java objects
+                .build();
         return retrofit;
     }
 

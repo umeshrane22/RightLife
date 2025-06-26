@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ui.utility;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -114,5 +115,29 @@ public class DateTimeUtils {
         int mins = (int) Math.round((hours - hr) * 60);
         return hr + " hr " + mins + " mins";
     }
+    public static String formatSleepDurationforidealSleep(double totalMinutes) {
+        int hours = (int) (totalMinutes / 60);
+        int minutes = (int) Math.round(totalMinutes % 60);
+        return hours + " hr " + minutes + " mins";
+    }
 
+    public static String formatDateForOneApi() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        return dateFormat.format(new Date());
+    }
+
+    public static String getSleepTime12HourFormat(String dateTimeStr) {
+        try {
+            // Parse as LocalDateTime since it has no timezone info
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime localDateTime = LocalDateTime.parse(dateTimeStr, inputFormatter);
+
+            // Convert to desired format
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH);
+            return outputFormatter.format(localDateTime);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }
