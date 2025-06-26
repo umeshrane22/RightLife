@@ -607,7 +607,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
     // get AI Dashboard Data
     private fun getAiDashboard(s: String) {
         // Make the API call
-        val call = apiService.getAiDashboard(sharedPreferenceManager.accessToken)
+        val date = DateTimeUtils.formatDateForOneApi()
+        val call = apiService.getAiDashboard(sharedPreferenceManager.accessToken,date)
         call.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(call: Call<ResponseBody?>, response: Response<ResponseBody?>) {
                 if (response.isSuccessful && response.body() != null) {

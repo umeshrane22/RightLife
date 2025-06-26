@@ -1116,7 +1116,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     @GET("ai_dashboard")
     Call<ResponseBody> getAiDashboard(
-            @Header("Authorization") String authToken
+            @Header("Authorization") String authToken,
+            @Query("date") String date
     );
 
     //dashboardChecklist status
