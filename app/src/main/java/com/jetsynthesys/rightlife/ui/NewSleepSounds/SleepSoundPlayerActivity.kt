@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.NewSleepSounds
 
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
@@ -37,6 +39,7 @@ class SleepSoundPlayerActivity : BaseActivity() {
     private var selectedPosition: Int = 0
     private var isSeekBarUpdating = false
     private var isFromUserPlayList = false
+    private var isListUpdated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +48,10 @@ class SleepSoundPlayerActivity : BaseActivity() {
 
         //back button
         binding.backButton.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            handleBackPressed()
+        }
+        onBackPressedDispatcher.addCallback {
+            handleBackPressed()
         }
         // Retrieve sound list and selected position
         soundList = intent.getSerializableExtra("SOUND_LIST") as ArrayList<Service>
@@ -370,6 +376,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
                 response: Response<AddPlaylistResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    isListUpdated = true
                     showToast(response.body()?.successMessage ?: "Added to Playlist!")
                 } else {
                     showToast("Failed to add to playlist: ${response.code()}")
@@ -391,6 +398,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
                 response: Response<AddPlaylistResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    isListUpdated = true
                     showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
                 } else {
                     showToast("try again!: ${response.code()}")
@@ -406,6 +414,18 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun handleBackPressed(){
+        if (isListUpdated) {
+            val returnIntent = Intent()
+            val list = ArrayList<Service>()
+            list.addAll(soundList)
+            returnIntent.putExtra("SOUND_LIST", list)
+            returnIntent.putExtra("ISUSERPLAYLIST", isFromUserPlayList)
+            setResult(Activity.RESULT_OK, returnIntent)
+        }
+        finish()
     }
 }
 

@@ -48,6 +48,7 @@ class SleepSoundGridAdapter(
             }
 
             binding.ivAddPlaylist.visibility = if (isShowList) View.GONE else View.VISIBLE
+            binding.ivAddPlaylist.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
 
             binding.ivAddPlaylist.setOnClickListener {
                 val sharedPreferenceManager =
@@ -60,8 +61,9 @@ class SleepSoundGridAdapter(
                         "SleepSoundAdd", xOff = -200, yOff = 20, arrowPosition = 0.9f
                     )
                 } else {
-                    binding.ivAddPlaylist.setImageResource(R.drawable.ic_added_to_playlist)
+                    service.isActive = !service.isActive
                     onAddToPlaylistClick(service, adapterPosition) // 👈 Call new lambda
+                    notifyDataSetChanged()
                 }
             }
         }
