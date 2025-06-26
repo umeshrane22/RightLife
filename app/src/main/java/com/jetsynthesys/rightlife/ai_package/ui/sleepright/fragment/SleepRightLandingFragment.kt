@@ -1311,6 +1311,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     consistencyNoDataCardView.visibility = View.VISIBLE
                     consistencySleep.visibility = View.GONE
                     sleepConsistencyChart.visibility = View.GONE
+                    sleepStageCardView.visibility = View.GONE
                 }
                 if (!isRepeat){
                     val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
