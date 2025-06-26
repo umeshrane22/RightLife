@@ -20,7 +20,13 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivitySleepSoundPlayerBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.bottomplaylist.PlaylistBottomSheetDialogFragment
+import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.AddPlaylistResponse
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.newsleepmodel.Service
+import com.jetsynthesys.rightlife.ui.showBalloonWithDim
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SleepSoundPlayerActivity : BaseActivity() {
 
@@ -49,6 +55,24 @@ class SleepSoundPlayerActivity : BaseActivity() {
         if (isFromUserPlayList) {
             binding.playlistButton.visibility = View.VISIBLE
             binding.myPlaylist.visibility = View.VISIBLE
+            showBalloonWithDim(
+                binding.playlistButton,
+                "Tap to view the queue.",
+                "SleepSoundPlayList",
+                xOff = -200,
+                yOff = 20
+            )
+            binding.imageAddToPlayList.visibility = View.GONE
+        } else {
+            showBalloonWithDim(
+                binding.imageAddToPlayList,
+                "Tap to add to your playlist.",
+                "SleepSoundPlayListAddButton",
+                xOff = -200,
+                yOff = 20
+            )
+            binding.imageAddToPlayList.visibility = View.VISIBLE
+            updateAddButtonUI(soundList[selectedPosition])
         }
         // Initialize ExoPlayer
         player = ExoPlayer.Builder(this).build()
@@ -250,6 +274,7 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             binding.seekBar.max = player.duration.toInt()
             binding.songDuration.text = formatDuration(player.duration)
         }
+        updateAddButtonUI(service)
     }
 
 
@@ -321,6 +346,66 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
         }
 
         startActivity(Intent.createChooser(intent, "Share"))
+    }
+
+    private fun updateAddButtonUI(service: Service) {
+        binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+        binding.imageAddToPlayList.setOnClickListener {
+            if (service.isActive)
+                removeFromPlaylist(service._id)
+            else
+                addToPlaylist(service._id)
+            service.isActive = !service.isActive
+            binding.imageAddToPlayList.setImageResource(if (service.isActive) R.drawable.ic_added_to_playlist else R.drawable.ic_add_playlist)
+        }
+    }
+
+    // Add Sleep sound to using playlist api
+    private fun addToPlaylist(songId: String) {
+        val call = apiService.addToPlaylist(sharedPreferenceManager.accessToken, songId)
+
+        call.enqueue(object : Callback<AddPlaylistResponse> {
+            override fun onResponse(
+                call: Call<AddPlaylistResponse>,
+                response: Response<AddPlaylistResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast(response.body()?.successMessage ?: "Added to Playlist!")
+                } else {
+                    showToast("Failed to add to playlist: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<AddPlaylistResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+    private fun removeFromPlaylist(songId: String) {
+        val call = apiService.removeFromPlaylist(sharedPreferenceManager.accessToken, songId)
+
+        call.enqueue(object : Callback<AddPlaylistResponse> {
+            override fun onResponse(
+                call: Call<AddPlaylistResponse>,
+                response: Response<AddPlaylistResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    showToast(response.body()?.successMessage ?: "Song removed from Playlist!")
+                } else {
+                    showToast("try again!: ${response.code()}")
+                }
+
+            }
+
+            override fun onFailure(call: Call<AddPlaylistResponse>, t: Throwable) {
+                showToast("Network Error: ${t.message}")
+            }
+        })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
 

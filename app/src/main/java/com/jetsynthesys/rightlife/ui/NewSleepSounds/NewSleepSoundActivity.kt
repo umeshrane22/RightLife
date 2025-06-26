@@ -308,7 +308,7 @@ class NewSleepSoundActivity : BaseActivity() {
     }
 
 
-    private fun setupVerticleRecyclerView(services: ArrayList<Service>?) {
+    private fun setupVerticleRecyclerView(services: ArrayList<Service>?, isShowList: Boolean = false) {
         val adapter = services?.let { serviceList ->
             SleepSoundGridAdapter(
                 serviceList,
@@ -317,7 +317,7 @@ class NewSleepSoundActivity : BaseActivity() {
                     startActivity(Intent(this, SleepSoundPlayerActivity::class.java).apply {
                         putExtra("SOUND_LIST", selectedList)
                         putExtra("SELECTED_POSITION", position)
-                        putExtra("ISUSERPLAYLIST", false)
+                        putExtra("ISUSERPLAYLIST", isShowList)
                     })
                 },
                 onAddToPlaylistClick = { service, position ->
@@ -326,7 +326,8 @@ class NewSleepSoundActivity : BaseActivity() {
                         addToPlaylist(service._id, position)
                     else
                         removeFromPlaylist(service._id, position)
-                }
+                },
+                isShowList
             )
 
         }
@@ -464,7 +465,7 @@ class NewSleepSoundActivity : BaseActivity() {
                             binding.llMusicHome.visibility = View.GONE
                             binding.layouthorizontalMusicList.visibility = View.GONE
                             binding.layoutVerticalCategoryList.visibility = View.VISIBLE
-                            setupVerticleRecyclerView(useplaylistdata)
+                            setupVerticleRecyclerView(useplaylistdata, isShowList)
                         }
 
                         if (useplaylistdata.size > 0) {
