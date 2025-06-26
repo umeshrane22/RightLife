@@ -46,7 +46,8 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val artist = item.artist.getOrNull(0)
         val hasValidName = !artist?.firstName.isNullOrBlank() && !artist?.lastName.isNullOrBlank()
         val artistName = if (hasValidName) "${artist?.firstName} ${artist?.lastName}" else ""
-        holder.author.text = if (hasValidName) "$artistName   |   $formattedTime" else formattedTime
+        //holder.author.text = if (hasValidName) "$artistName   |   $formattedTime" else formattedTime
+        holder.author.text = "${item.moduleName}  |  ${item.createdAt}"
         Glide.with(context)
             .load( "https://d1sacaybzizpm5.cloudfront.net/"+item.thumbnail?.url)
             .placeholder(R.drawable.ic_galory)
