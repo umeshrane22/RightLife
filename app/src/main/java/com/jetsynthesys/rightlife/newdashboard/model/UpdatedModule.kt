@@ -32,7 +32,8 @@ data class UpdatedModule(
     @SerializedName("goal") val goal: String?,
     @SerializedName("calorieRange") val calorieRange: List<Double>?,
     @SerializedName("sleepStages") val sleepStages: List<SleepStage>?,
-    @SerializedName("sleepPerformanceDetail") val sleepPerformanceDetail: SleepPerformanceDetail?
+    @SerializedName("sleepPerformanceDetail") val sleepPerformanceDetail: SleepPerformanceDetail?,
+    @SerializedName("idealSleepRequirementData") val idealSleepRequirementData: IdealSleepRequirementData?
 ) : Serializable
 
 data class SleepStage(
@@ -60,6 +61,16 @@ data class SleepPerformanceData(
     @SerializedName("action_step") val actionStep: String?
 ) : Serializable
 
+
+data class IdealSleepRequirementData(
+    @SerializedName("_id") val id: String?,
+    @SerializedName("sleep_type") val sleepType: String?,
+    @SerializedName("current_requirement") val currentRequirement: Double?,
+    @SerializedName("sleep_datetime") val sleepDatetime: String?,
+    @SerializedName("wakeup_datetime") val wakeupDatetime: String?,
+    @SerializedName("is_default") val isDefault: Boolean?,
+    @SerializedName("date") val date: String?
+) : Serializable
 
 /*data class UpdatedModule(
     @SerializedName("moduleId") val moduleId: String?,
