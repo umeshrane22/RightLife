@@ -59,6 +59,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -86,6 +87,7 @@ import com.jetsynthesys.rightlife.ai_package.model.Distance
 import com.jetsynthesys.rightlife.ai_package.model.EnergyBurnedRequest
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateRequest
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityRequest
+import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.OxygenSaturation
 import com.jetsynthesys.rightlife.ai_package.model.RespiratoryRate
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
@@ -104,6 +106,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.WakeupData
 import com.jetsynthesys.rightlife.ai_package.model.WakeupTimeResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.SleepSoundResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter
@@ -182,7 +185,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var wakeupTimeResponse: WakeupTimeResponse
     private lateinit var sleepStagesView: SleepChartViewLanding
     private lateinit var sleepConsistencyChart: SleepGraphView
-    private lateinit var sleepConsistencyResponse: SleepConsistencyResponse
+    private lateinit var sleepSoundResponse: SleepSoundResponse
     private lateinit var logYourNap : LinearLayout
     private lateinit var actualNoDataCardView : CardView
     private lateinit var sleepStageCardView : CardView
@@ -193,8 +196,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var restroDataCardView : CardView
     private lateinit var restroNoDataCardView : CardView
     private lateinit var consistencyNoDataCardView : CardView
+    private lateinit var sleepSoundCardView : CardView
     private lateinit var mainView : LinearLayout
     private lateinit var downloadView: ImageView
+    private lateinit var soundPlay1: ImageView
+    private lateinit var soundPlay2: ImageView
+    private lateinit var soundPlay3: ImageView
     private lateinit var sleepArrowView: ImageView
     private lateinit var sleepPerformView: ImageView
     private lateinit var imgSleepInfo: ImageView
@@ -258,6 +265,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         btnSync = view.findViewById(R.id.lyt_sync_with_health)
         btnSleepSound = view.findViewById(R.id.btn_sleep_sound)
+        sleepSoundCardView = view.findViewById(R.id.lyt_sleep_sound_card)
+        soundPlay1 = view.findViewById(R.id.sound_play_1)
+        soundPlay2 = view.findViewById(R.id.sound_play_2)
+        soundPlay3 = view.findViewById(R.id.sound_play_3)
         lineChart = view.findViewById(R.id.sleepIdealActualChart)
         imgIdealInfo = view.findViewById(R.id.img_ideal_info)
         sleepStageCardView = view.findViewById(R.id.sleep_stage_layout)
@@ -312,6 +323,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         fetchThinkRecomendedData()
+        fetchSoundSleepData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
             val dialog = LogYourNapDialogFragment(
@@ -432,6 +444,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepStagesView = view.findViewById<SleepChartViewLanding>(R.id.sleepStagesView)
 
         view.findViewById<LinearLayout>(R.id.play_now).setOnClickListener {
+            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
+                putExtra("PlayList", "PlayList")
+            })
+        }
+        view.findViewById<ImageView>(R.id.arrowSleepSound).setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 putExtra("PlayList", "PlayList")
             })
@@ -992,6 +1009,74 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
     }
 
+    private fun fetchSoundSleepData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val skip = "0"
+        val limit = "3"
+        val type = "playlist"
+        //  val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
+        val call = ApiClient.apiService.fetchSleepSound(token,userId, skip,limit,type)
+        call.enqueue(object : Callback<SleepSoundResponse> {
+            override fun onResponse(call: Call<SleepSoundResponse>, response: Response<SleepSoundResponse>) {
+                if (response.isSuccessful) {
+                    btnSleepSound.visibility = View.GONE
+                    sleepSoundCardView.visibility = View.VISIBLE
+                    sleepSoundResponse = response.body()!!
+                    if (sleepSoundResponse.sleepSoundData != null){
+                        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Your Playlist"
+                        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = ""+ sleepSoundResponse.sleepSoundData?.services?.size + " Sleep sounds saved"
+                        if (sleepSoundResponse.sleepSoundData?.services?.size == 1){
+                            soundPlay1.visibility = View.VISIBLE
+                            soundPlay2.visibility = View.GONE
+                            soundPlay3.visibility = View.GONE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                        }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
+                            soundPlay1.visibility = View.VISIBLE
+                            soundPlay2.visibility = View.VISIBLE
+                            soundPlay3.visibility = View.GONE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay2)
+                        }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
+                            soundPlay1.visibility = View.VISIBLE
+                            soundPlay2.visibility = View.VISIBLE
+                            soundPlay3.visibility = View.VISIBLE
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay1)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay2)
+                            Glide.with(requireContext())
+                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
+                                .placeholder(R.drawable.sleep_pillow)
+                                .into(soundPlay3)
+                        }
+                    }
+                } else {
+                    btnSleepSound.visibility = View.VISIBLE
+                    sleepSoundCardView.visibility = View.GONE
+                }
+            }
+            override fun onFailure(call: Call<SleepSoundResponse>, t: Throwable) {
+                btnSleepSound.visibility = View.VISIBLE
+                sleepSoundCardView.visibility = View.GONE
+                Log.e("Error", "API call failed: ${t.message}")
+            }
+        })
+    }
+
     private fun fetchWakeupData() {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val date = getCurrentDate()
@@ -1095,7 +1180,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val userId =/*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = getCurrentDate()
         val source = "android"
-      //  val source = "apple"
         val preferences = "nature_sounds"
         val call = ApiClient.apiServiceFastApi.fetchSleepLandingPage(userId, source, date, preferences)
         call.enqueue(object : Callback<SleepLandingResponse> {
@@ -1274,9 +1358,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         }
 
-        // Set Recommended Sound
-        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Recommended Sound"
-        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = sleepLandingResponse.sleepLandingAllData?.recommendedSound
     }
 
     private fun setIdealGraphDataFromSleepList(sleepData: List<SleepGraphData>?, weekRanges: List<String>) {
@@ -1441,14 +1522,24 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     fun convertTo12HourFormat(input: String): String {
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+         lateinit var inputFormatter : DateTimeFormatter
+        if (input.length > 21) {
+             inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }else{
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        }
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
         val dateTime = LocalDateTime.parse(input, inputFormatter)
         return outputFormatter.format(dateTime)
     }
 
     fun convertTo12HourZoneFormat(input: String): String {
-        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        lateinit var inputFormatter : DateTimeFormatter
+        if (input.length > 21) {
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }else{
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        }
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
 
         // Parse as LocalDateTime (no time zone info)
@@ -1696,13 +1787,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 parseSleepData.add(sleepEntry)
             }
         }
-        val result = async {
+        val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
+        sleepConsistencyChart.setSleepData(entries)
+        /*val result = async {
             parseSleepData(parseSleepData)
         }.await()
-        sleepConsistencyChart.setSleepData(result)
+        sleepConsistencyChart.setSleepData(result)*/
     }
 
-    private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
+    /*private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
         val sleepSegments = mutableListOf<SleepEntry>()
         for (sleepEntry in sleepDetails) {
             val startTime = sleepEntry.sleepStartTime ?: ""
@@ -1711,7 +1804,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             sleepSegments.add(SleepEntry(startTime, endTime, duration))
         }
         return sleepSegments
-    }
+    }*/
 
     fun convertToTargetFormat(input: String): String {
         val possibleFormats = listOf(

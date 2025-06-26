@@ -17,6 +17,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.jetsynthesys.rightlife.R
@@ -34,7 +35,9 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -79,10 +82,14 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lytPerformCard: CardView
     private lateinit var lytPerformNoCard: CardView
+    private lateinit var cardPercent: CardView
+    private lateinit var tvBarPercent: TextView
+    private lateinit var tvBarDate: TextView
     private lateinit var progressDialog: ProgressDialog
     private lateinit var sleepPerformanceResponse: SleepPerformanceResponse
     private lateinit var percentageIcon: ImageView
     private lateinit var percentageText: TextView
+    private lateinit var averageGoalLayout : LinearLayoutCompat
     private var currentTab = 0 // 0 = Week, 1 = Month, 2 = 6 Months
     private var currentDateWeek: LocalDate = LocalDate.now() // today
     private var currentDateMonth: LocalDate = LocalDate.now() // today
@@ -100,7 +107,11 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         lineChart = view.findViewById(R.id.heartLineChart)
         radioGroup = view.findViewById(R.id.tabGroup)
         btnPrevious = view.findViewById(R.id.btn_prev)
+        averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
         btnNext = view.findViewById(R.id.btn_next)
+        cardPercent = view.findViewById(R.id.card_percent)
+        tvBarPercent = view.findViewById(R.id.tv_bar_percent)
+        tvBarDate = view.findViewById(R.id.tv_bar_date)
         dateRangeText = view.findViewById(R.id.tv_selected_date)
         tvSleepAverage = view.findViewById(R.id.tv_sleep_perform_average)
         performTitle = view.findViewById(R.id.perform_title)
@@ -354,8 +365,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
       //  updateChart()
         if (sleepPerformanceResponse?.sleepPerformanceList?.isNotEmpty() == true) {
             if (sleepPerformanceResponse.sleepPerformanceList.size < 9 ) {
+                averageGoalLayout.visibility = View.GONE
                 setupWeeklyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.endDatetime!!)
             }else{
+                averageGoalLayout.visibility = View.VISIBLE
                 setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
             }
         }
@@ -363,13 +376,12 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             percentageIcon.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_up)
             percentageText.visibility = View.VISIBLE
-            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + " past week"
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }else{
             percentageIcon.visibility = View.VISIBLE
             percentageText.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_down)
-            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
-            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + " past week"
+            percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }
     }
 
@@ -457,16 +469,33 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
-        chart.axisLeft.axisMaximum = 120f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
-        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
         chart.legend.isEnabled = false
 
         chart.setVisibleXRangeMaximum(labels.size.toFloat()) // Show all bars
         chart.setFitBars(true)
         chart.setDrawValueAboveBar(false)
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                cardPercent.visibility = View.VISIBLE
+                if (e != null) {
+                    val x = e.x.toInt()
+                    val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    tvBarDate.text = labels.getOrNull(x) ?: ""
+                    tvBarPercent.text = y.toInt().toString()
+                }
+            }
+
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                cardPercent.visibility = View.INVISIBLE
+            }
+        })
         chart.invalidate()
     }
 
@@ -530,10 +559,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         }
 
         chart.axisLeft.axisMinimum = 0f
-        chart.axisLeft.axisMaximum = 120f
+        chart.axisLeft.axisMaximum = 100f
         chart.axisRight.isEnabled = false
         chart.description.isEnabled = false
-        chart.isHighlightPerTapEnabled = false
+        chart.isHighlightPerTapEnabled = true
         chart.isHighlightPerDragEnabled = false
         chart.setExtraBottomOffset(24f)
         chart.legend.isEnabled = false
@@ -546,6 +575,23 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             )
         )
         chart.invalidate()
+        chart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+            override fun onValueSelected(e: Entry?, h: Highlight?) {
+                cardPercent.visibility = View.VISIBLE
+                if (e != null) {
+                    val x = e.x.toInt()
+                    val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    tvBarDate.text = labels.getOrNull(x)?.replace("\n", " ") ?: ""
+                    tvBarPercent.text = y.toInt().toString()
+                }
+            }
+
+            override fun onNothingSelected() {
+                Log.d("ChartClick", "Nothing selected")
+                cardPercent.visibility = View.INVISIBLE
+            }
+        })
     }
 
     private fun lineChartForSixMonths(){
@@ -720,6 +766,34 @@ class RoundedBarChartRenderer(
             if (drawBorder) {
                 c.drawPath(path, mBarBorderPaint)
             }
+        }
+    }
+    override fun drawHighlighted(c: Canvas, indices: Array<Highlight>) {
+        val barData = mChart.barData ?: return
+
+        for (high in indices) {
+            val set = barData.getDataSetByIndex(high.dataSetIndex) as? IBarDataSet ?: continue
+            if (!set.isHighlightEnabled) continue
+
+            val e = set.getEntryForXValue(high.x, high.y) ?: continue
+
+            val trans = mChart.getTransformer(set.axisDependency)
+
+            mHighlightPaint.color = Color.TRANSPARENT // or any color you want
+            mHighlightPaint.alpha = 0 // fully transparent
+
+            mBarRect.set(e.x - 0.5f + high.stackIndex, 0f, e.x + 0.5f + high.stackIndex, e.y)
+
+            trans.rectValueToPixel(mBarRect)
+
+            // Draw a rounded rect with transparent paint, effectively removing highlight
+            val path = Path()
+            path.addRoundRect(
+                mBarRect,
+                floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f),
+                Path.Direction.CW
+            )
+            c.drawPath(path, mHighlightPaint)
         }
     }
 }
