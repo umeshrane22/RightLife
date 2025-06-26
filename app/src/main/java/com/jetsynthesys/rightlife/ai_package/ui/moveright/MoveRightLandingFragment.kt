@@ -146,8 +146,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var yourMovementSummary : ImageView
     private lateinit var yourVitals : ImageView
     private lateinit var yourHeartRateZone : ImageView
+    private lateinit var recyclerView : RecyclerView
+    private lateinit var adapter : GridAdapter
     private var totalIntakeCaloriesSum: Int = 0
     private var loadingOverlay : FrameLayout? = null
+    private var isRepeat : Boolean = false
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -233,7 +236,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
         setupRecyclerView(view)
 
-
         moveRightImageBack.setOnClickListener {
             activity?.finish()
         }
@@ -310,16 +312,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             parentFragment.let { yourHeartRateZonesInfoBottomSheet.show(childFragmentManager, "YourHeartRateZonesInfoBottomSheet") }
         }
 
-        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
-        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-            lifecycleScope.launch {
-                requestPermissionsAndReadAllData()
-            }
-        } else {
-            Toast.makeText(context, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
-        }
-
         progressBarCalorieBalance.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 progressBarCalorieBalance.viewTreeObserver.removeOnGlobalLayoutListener(this)
@@ -341,18 +333,24 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 requireActivity().finish()
             }
         })
-        loadStepData()
         fetchUserWorkouts()
-      //  storeHealthData()
 
         syncWithHealthConnectButton.setOnClickListener {
-            storeHealthData()
+            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                lifecycleScope.launch {
+                    requestPermissionsAndReadAllData()
+                }
+            } else {
+                Toast.makeText(context, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
     private fun setupRecyclerView(view: View) {
-        val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
-        val adapter = GridAdapter(emptyList()) { itemName ->
+         recyclerView = view.findViewById(R.id.recyclerView)
+         adapter = GridAdapter(emptyList()) { itemName ->
             when (itemName) {
                 "RHR" -> navigateToFragment(RestingHeartRateFragment(), "RestingHeartRateFragment")
                 "Avg HR" -> navigateToFragment(AverageHeartRateFragment(), "AverageHeartRateFragment")
@@ -362,7 +360,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
         recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView.adapter = adapter
-        fetchMoveLanding(recyclerView, adapter)
+        if (!isRepeat){
+            fetchMoveLanding(recyclerView, adapter)
+        }
     }
 
     private fun fetchMoveLanding(recyclerView: RecyclerView, adapter: GridAdapter) {
@@ -627,6 +627,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         }
                         Toast.makeText(requireContext(), "No data received from API", Toast.LENGTH_SHORT).show()
                     }
+                    if (!isRepeat){
+                        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                            lifecycleScope.launch {
+                                requestPermissionsAndReadAllData()
+                            }
+                        } else {
+                            Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 } else {
                     withContext(Dispatchers.Main) {
                         if (isAdded  && view != null){
@@ -635,6 +646,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             }
                         }
                         Toast.makeText(requireContext(), "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        if (!isRepeat){
+                            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                                lifecycleScope.launch {
+                                    requestPermissionsAndReadAllData()
+                                }
+                            } else {
+                                Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
@@ -645,6 +667,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         }
                     }
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    if (!isRepeat){
+                        val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                            healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                            lifecycleScope.launch {
+                                requestPermissionsAndReadAllData()
+                            }
+                        } else {
+                            Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
             }
         }
@@ -693,7 +726,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
                 fetchAllHealthData()
-                storeHealthData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions)
             }
@@ -708,17 +740,13 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
                 fetchAllHealthData()
-                storeHealthData()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                   // showPermissionDialog()
                 }
                 fetchAllHealthData()
-                storeHealthData()
-
             }
         }
     }
@@ -1013,6 +1041,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
             withContext(Dispatchers.Main) {
               //  Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
+                storeHealthData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1398,13 +1427,17 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     //    val syncTime = convertToTargetFormat(zdt.toString())
                         SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime.toString())
                       //  Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
+                        isRepeat = true
+                        fetchMoveLanding(recyclerView, adapter)
                     } else {
                        // Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        isRepeat = true
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    isRepeat = true
                 }
             }
         }
@@ -1424,7 +1457,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 source_name = "google"
             )
         }
-        // storeJsonHealthData(sleepJsonRequest)
         return bodyFatList
     }
 
@@ -1528,10 +1560,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
         permissionLauncher.launch(permissions)
-    }
-
-    fun loadStepData() {
-        // Placeholder for loading step data from assets if needed
     }
 
     fun showLoader(view: View) {

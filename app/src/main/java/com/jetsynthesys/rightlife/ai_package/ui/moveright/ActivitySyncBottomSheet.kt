@@ -156,7 +156,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
                     Log.d("ActivitySyncBottomSheet", "Starting sync process")
                     requestPermissionsAndReadAllData()
-                    storeHealthData()
 
                     if (isAdded) {
                         withContext(Dispatchers.Main) {
@@ -229,7 +228,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 }
             }
             fetchAllHealthData()
-            storeHealthData() // Move storeHealthData here to ensure it runs after fetch
         }
     }
 
@@ -260,29 +258,30 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
 
         try {
             // Fetch device info
+            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             try {
-                val response = healthConnectClient.readRecords(
-                    ReadRecordsRequest(
-                        recordType = SleepSessionRecord::class,
-                        timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
+                if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
+                    val response = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = SleepSessionRecord::class,
+                            timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
+                        )
                     )
-                )
-                Log.d("ActivitySyncBottomSheet", "Fetched ${response.records.size} sleep session records for device info")
-                for (record in response.records) {
-                    val deviceInfo = record.metadata.device
-                    if (deviceInfo != null && isAdded) {
-                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
-                        Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                            Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
-                    } else {
-                        Log.d("Device Info", "No device info available")
+                    for (record in response.records) {
+                        val deviceInfo = record.metadata.device
+                        if (deviceInfo != null) {
+                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                        } else {
+                            Log.d("Device Info", "No device info available")
+                        }
                     }
                 }
             } catch (e: Exception) {
                 Log.e("HealthData", "Error fetching device info: ${e.message}", e)
             }
 
-            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
                 val stepsResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -517,6 +516,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
                 }
             }
+            storeHealthData()
             Log.d("ActivitySyncBottomSheet", "Health data fetch completed")
         } catch (e: Exception) {
             e.printStackTrace()
