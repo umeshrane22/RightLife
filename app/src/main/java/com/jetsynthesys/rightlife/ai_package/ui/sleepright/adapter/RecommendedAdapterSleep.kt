@@ -38,7 +38,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
 
     override fun onBindViewHolder(holder: RecommendationViewHolder, position: Int) {
         val item = items[position]
-        holder.title.text = item.desc
+        holder.title.text = item.title
         holder.tag.text = "${item.subCategories.getOrNull(0)?.name}"
         holder.tag1.text = "${item.moduleName}"
         val inputTime = item.createdAt.toString()
