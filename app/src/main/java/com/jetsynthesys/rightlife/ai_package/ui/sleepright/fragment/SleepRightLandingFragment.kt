@@ -150,7 +150,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         get() = FragmentSleepRightLandingBinding::inflate
 
     private lateinit var todaysSleepRequirement: TextView
+    private lateinit var tv_todays_sleep_time_requirement_top: TextView
     private lateinit var todaysSleepStartTime: TextView
+    private lateinit var tv_todays_sleep_start_time_top: TextView
     private lateinit var tvStageSleepStartTime: TextView
     private lateinit var tvStageSleepEndTime: TextView
     private lateinit var tvStageSleepTotalTime: TextView
@@ -170,6 +172,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var tvIdealActualDate: TextView
     private lateinit var tvActualTime: TextView
     private lateinit var tvIdealTime: TextView
+    private lateinit var tv_todays_wakeup_time_top: TextView
     private lateinit var tvRestoRemTime: TextView
     private lateinit var tvRestoDeepTime: TextView
     private lateinit var tvRestoStartTime: TextView
@@ -190,9 +193,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var sleepSoundResponse: SleepSoundResponse
     private lateinit var logYourNap : LinearLayout
     private lateinit var actualNoDataCardView : CardView
+    private lateinit var cardSleepTimeRequirementTop : CardView
     private lateinit var sleepStageCardView : CardView
     private lateinit var stageNoDataCardView : CardView
     private lateinit var performCardView : CardView
+    private lateinit var headerTop : LinearLayout
+    private lateinit var imgIdealInfoTop : ImageView
+    private lateinit var img_edit_wakeup_time_top : ImageView
+    private lateinit var tvRequirementTop : TextView
     private lateinit var sleepTimeRequirementCardView : CardView
     private lateinit var performNoDataCardView : CardView
     private lateinit var restroDataCardView : CardView
@@ -268,7 +276,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
         sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         btnSync = view.findViewById(R.id.lyt_sync_with_health)
+        cardSleepTimeRequirementTop = view.findViewById(R.id.card_sleep_time_requirement_top)
         btnSleepSound = view.findViewById(R.id.btn_sleep_sound)
+        headerTop = view.findViewById(R.id.header_top)
+        img_edit_wakeup_time_top = view.findViewById(R.id.img_edit_wakeup_time_top)
+        tv_todays_wakeup_time_top = view.findViewById(R.id.tv_todays_wakeup_time_top)
+        tv_todays_sleep_time_requirement_top = view.findViewById(R.id.tv_todays_sleep_time_requirement_top)
+        imgIdealInfoTop = view.findViewById(R.id.img_ideal_info_top)
+        tvRequirementTop = view.findViewById(R.id.tv_requirement_top)
         sleepSoundCardView = view.findViewById(R.id.lyt_sleep_sound_card)
         soundPlay1 = view.findViewById(R.id.sound_play_1)
         soundPlay2 = view.findViewById(R.id.sound_play_2)
@@ -301,6 +316,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         todaysWakeupTime = view.findViewById(R.id.tv_todays_wakeup_time)
         todaysSleepRequirement = view.findViewById(R.id.tv_todays_sleep_time_requirement)
         todaysSleepStartTime = view.findViewById(R.id.tv_todays_sleep_start_time)
+        tv_todays_sleep_start_time_top = view.findViewById(R.id.tv_todays_sleep_start_time_top)
         tvStageSleepStartTime = view.findViewById(R.id.tv_stage_start_sleep_time)
         tvStageSleepEndTime = view.findViewById(R.id.tv_stage_end_sleep_time)
         tvPerformStartTime = view.findViewById(R.id.tv_perform_start_time)
@@ -326,6 +342,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
+
         fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
@@ -369,6 +386,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         imgIdealInfo.setOnClickListener {
+            val dialog = IdealInfoDialogFragment.newInstance()
+            dialog.show(parentFragmentManager, "IdealInfoDialogFragment")
+        }
+        imgIdealInfoTop.setOnClickListener {
             val dialog = IdealInfoDialogFragment.newInstance()
             dialog.show(parentFragmentManager, "IdealInfoDialogFragment")
         }
@@ -441,6 +462,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         fetchWakeupData()
 
         editWakeup.setOnClickListener {
+            openBottomSheet()
+        }
+        img_edit_wakeup_time_top.setOnClickListener {
             openBottomSheet()
         }
 
@@ -1100,14 +1124,55 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
-                    sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    val currentTime = LocalDateTime.now(ZoneId.systemDefault()) // Device ke default time zone use
+                    val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
+                    val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
+                    val currentMinutes = currentTime.hour * 60 + currentTime.minute
+
+// Check if current time is between 06:00 PM and 02:00 AM
+                    if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
+                        cardSleepTimeRequirementTop.visibility = View.VISIBLE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    } else {
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    }
+                    //sleepTimeRequirementCardView.visibility = View.VISIBLE
                     wakeupTimeResponse = response.body()!!
                     setWakeupData(wakeupTimeResponse.data.getOrNull(0))
                 }else if(response.code() == 400){
-                    sleepTimeRequirementCardView.visibility = View.GONE
+                    //sleepTimeRequirementCardView.visibility = View.GONE
+                    val currentTime = LocalDateTime.now(ZoneId.systemDefault()) // Device ke default time zone use
+                    val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
+                    val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
+                    val currentMinutes = currentTime.hour * 60 + currentTime.minute
+
+// Check if current time is between 06:00 PM and 02:00 AM
+                    if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
+                        //view.visibility = View.GONE
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    } else {
+                        //view.visibility = View.VISIBLE
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    }
                   //  Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
-                    sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    val currentTime = LocalDateTime.now(ZoneId.systemDefault()) // Device ke default time zone use
+                    val sixPM = 18 * 60
+                    val twoAM = 2 * 60
+                    val currentMinutes = currentTime.hour * 60 + currentTime.minute
+
+                    if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
+                        //view.visibility = View.GONE
+                        cardSleepTimeRequirementTop.visibility = View.VISIBLE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    } else {
+                        //view.visibility = View.VISIBLE
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    }
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                //     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
@@ -1120,8 +1185,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     fun setWakeupData(wakeupData: WakeupData?){
         todaysSleepRequirement.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
+        tv_todays_sleep_time_requirement_top.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
         todaysSleepStartTime.setText(convertTo12HourFormat(wakeupData.sleepDatetime!!))
+        tv_todays_sleep_start_time_top.setText(convertTo12HourFormat(wakeupData.sleepDatetime!!))
         todaysWakeupTime.setText(convertTo12HourFormat(wakeupData.wakeupDatetime!!))
+        tv_todays_wakeup_time_top.setText(convertTo12HourFormat(wakeupData.wakeupDatetime!!))
         mWakeupTime = wakeupData.wakeupDatetime!!
         mRecordId = wakeupData.Id!!
     }
