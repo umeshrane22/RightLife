@@ -19,12 +19,14 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepPerformanceBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
@@ -129,7 +131,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         mStartDate = getOneWeekEarlierDate().format(dateFormatter)
         mEndDate = getTodayDate().format(dateFormatter)
         val endOfWeek = currentDateWeek
-        val startOfWeek = endOfWeek.minusDays(6)
+        val startOfWeek = endOfWeek.minusDays(7)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
@@ -179,7 +181,7 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         return LocalDate.now().minusWeeks(1)
     }
     fun getOneMonthEarlierDate(): LocalDate {
-        return LocalDate.now().minusMonths(1)
+        return LocalDate.now().minusMonths(1).minusDays(1)
     }
     fun getSixMonthsEarlierDate(): LocalDate {
         return LocalDate.now().minusMonths(6)
@@ -365,10 +367,10 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
       //  updateChart()
         if (sleepPerformanceResponse?.sleepPerformanceList?.isNotEmpty() == true) {
             if (sleepPerformanceResponse.sleepPerformanceList.size < 9 ) {
-                averageGoalLayout.visibility = View.GONE
+                averageGoalLayout.visibility = View.VISIBLE
                 setupWeeklyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.endDatetime!!)
             }else{
-                averageGoalLayout.visibility = View.VISIBLE
+                averageGoalLayout.visibility = View.GONE
                 setupMonthlyBarChart(barChart, sleepPerformanceResponse.sleepPerformanceList, sleepPerformanceResponse.startDatetime!!,sleepPerformanceResponse.endDatetime!!)
             }
         }
@@ -535,6 +537,37 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val customRenderer = RoundedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
         customRenderer.initBuffers()
         chart.renderer = customRenderer
+        val leftYAxis: YAxis = barChart.axisLeft
+
+        if (entries.size < 30){
+            val minValue = minOf(
+                entries.minOfOrNull { it.y } ?: 0f,
+              //  sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage?.toFloat(),
+                sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage!!.toFloat()
+            )
+            val maxValue = maxOf(
+                entries.maxOfOrNull { it.y } ?: 0f,
+                //activeCaloriesResponse.goal.toFloat(),
+                sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage!!.toFloat()
+            )
+            // Include stepsGoal in max check
+            val axisMax = maxOf(maxValue, sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage!!.toFloat())
+
+            val avgStepsLine = LimitLine(sleepPerformanceResponse.sleepPerformanceAllData?.sleepPerformanceAverage!!.toFloat(), "A")
+            avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.lineWidth = 1f
+            avgStepsLine.enableDashedLine(10f, 10f, 0f)
+            avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
+            avgStepsLine.textSize = 10f
+            avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+            leftYAxis.removeAllLimitLines()
+            leftYAxis.addLimitLine(avgStepsLine)
+            averageGoalLayout.visibility = View.VISIBLE
+        }else{
+            leftYAxis.removeAllLimitLines()
+            averageGoalLayout.visibility = View.GONE
+        }
 
         /*chart.xAxis.apply {
             valueFormatter = IndexAxisValueFormatter(labels)

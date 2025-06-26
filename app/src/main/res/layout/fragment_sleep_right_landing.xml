@@ -104,8 +104,8 @@
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -388,8 +388,8 @@
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="20dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -465,8 +465,8 @@
                 android:weightSum="10"
                 android:gravity="center_vertical"
                 android:background="@drawable/blue_sleep_btn_bg"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
