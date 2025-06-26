@@ -2143,7 +2143,6 @@ class SleepMarkerView1(context: Context, private val data: List<SleepEntry>) : M
             selectedData?.let {
               //  val ideal = it.idealSleep
               //  val actual = it.actualSleep
-
              //   tvContent.text = "Ideal: $ideal hrs\nActual: $actual hrs"
             }
         }
