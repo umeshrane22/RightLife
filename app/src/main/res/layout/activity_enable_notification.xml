@@ -170,7 +170,7 @@
                             android:layout_toEndOf="@id/image_correct2"
                             android:layout_marginStart="16dp"
                             android:fontFamily="@font/dmsans_bold"
-                            android:text="Personalised"
+                            android:text="Personalised Tips"
                             android:textColor="@color/txt_color_header"
                             android:textSize="20sp" />
 
@@ -184,7 +184,7 @@
                             android:layout_marginTop="8dp"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="@font/dmsans_regular"
-                            android:text="Tips Get curated content tailored to your goals."
+                            android:text="Get curated content tailored to your goals."
                             android:textColor="@color/txt_color_header"
                             android:textSize="18sp" />
 
@@ -258,7 +258,7 @@
                         android:layout_marginEnd="16dp"
                         android:fontFamily="@font/dmsans_regular"
                         android:gravity="center"
-                        android:text="You Are 2.4X More Likely To Achieve Your Goals."
+                        android:text="You are 2.4x more likely to achieve your goals."
                         android:textColor="@color/txt_color_header"
                         android:textSize="12sp" />
 

@@ -23,7 +23,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
         android:fontFamily="@font/dmsans_regular"
-        android:text="Your age helps me tailor recommendations that fit your life stage perfectly."
+        android:text="Your age helps RightLife tailor recommendations to fit your life perfectly."
         android:textColor="@color/txt_color_header"
         android:textSize="16sp" />
 

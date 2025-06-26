@@ -266,7 +266,7 @@ class StressManagementSelectionFragment : Fragment() {
                 stressManagementList.add(
                     StressManagement(
                         "Beginner",
-                        "I rarely exercise or engage in physical activity",
+                        "I rarely exercise or engage in physical activity.",
                         R.drawable.beginer
                     )
                 )
@@ -282,7 +282,7 @@ class StressManagementSelectionFragment : Fragment() {
                 stressManagementList.add(
                     StressManagement(
                         "Advanced",
-                        "I work out regularly and have a structured fitness routine.",
+                        "I workout regularly and have a structured fitness routine.",
                         R.drawable.advance
                     )
                 )
@@ -290,7 +290,7 @@ class StressManagementSelectionFragment : Fragment() {
                 stressManagementList.add(
                     StressManagement(
                         "Expert",
-                        "I work out regularly and have a structured fitness routine.",
+                        "I craft my own progressive workouts, track key metrics, and tweak my training as results come in.",
                         R.drawable.expert
                     )
                 )

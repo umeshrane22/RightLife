@@ -2070,8 +2070,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="4dp"
+                android:id="@+id/lyt_sleep_sound_card"
                 android:background="@color/white"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
                 android:layout_marginBottom="30dp"
@@ -2154,12 +2155,14 @@
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="100dp"
+                            android:id="@+id/sound_play_1"
                             android:layout_weight="1"
                             android:src="@drawable/sleep_pillow" />
 
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="100dp"
+                            android:id="@+id/sound_play_2"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:src="@drawable/sleep_pillow" />
@@ -2167,6 +2170,7 @@
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="100dp"
+                            android:id="@+id/sound_play_3"
                             android:layout_marginStart="10dp"
                             android:layout_weight="1"
                             android:src="@drawable/sleep_pillow" />
@@ -2185,8 +2189,7 @@
                         <ImageView
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:background="@color/white"
-                            android:src="@drawable/play_icon" />
+                            android:src="@drawable/play_sound_icon" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -2210,7 +2213,7 @@
                 android:background="@drawable/dark_blue_bg"
                 android:layout_marginStart="15dp"
                 android:layout_marginEnd="15dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:orientation="horizontal">
 
                 <ImageView
