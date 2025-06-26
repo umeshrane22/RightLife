@@ -6,11 +6,13 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -41,6 +43,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -55,6 +58,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>() {
 
@@ -72,6 +76,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private lateinit var averageBedTime: TextView
     private lateinit var averageSleepTime: TextView
     private lateinit var averageWakeupTime: TextView
+    private lateinit var sleepTime: TextView
+    private lateinit var sleepDate: TextView
     private lateinit var consistencyTitle: TextView
     private lateinit var consistencyMessage: TextView
     private lateinit var percentageIcon: ImageView
@@ -103,6 +109,9 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         percentageIcon = view.findViewById(R.id.percentage_icon)
         percentageText = view.findViewById(R.id.percentage_text)
         consistencyCard = view.findViewById(R.id.lyt_consistency_card)
+        consistencyNoDataCard = view.findViewById(R.id.lyt_consistency_nocard)
+        sleepTime = view.findViewById(R.id.tv_sleep_time)
+        sleepDate = view.findViewById(R.id.tv_date)
         consistencyNoDataCard = view.findViewById(R.id.lyt_consistency_nocard)
         progressDialog = ProgressDialog(activity)
         progressDialog.setTitle("Loading")
@@ -376,6 +385,13 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         barChart.setSleepData(result)*/
         val entries = parseSleepData.toSleepEntries()               // skips the 0-hour rows
         barChart.setSleepData(entries)
+        barChart.setOnBarClickListener { entry ->
+            sleepDate.text = entry.startLocal.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy"))
+            val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
+            val hrs = dur.toHours()
+            val mins = dur.minusHours(hrs).toMinutes()
+            sleepTime.text = "${hrs}hr ${mins}mins"
+        }
     }
 
    /* private fun parseSleepData(sleepDetails: List<SleepDetails>): List<SleepEntry> {
@@ -647,70 +663,58 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     }
 }*/
 
+fun interface OnBarClickListener {
+    fun onBarClick(entry: SleepEntry)
+}
+
 class SleepGraphView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    /* ─── Paints ─────────────────────────────────────────── */
-    private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E5E5E5")
-        strokeWidth = dp(1f)
-    }
-    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#70A1FF")
-        style = Paint.Style.FILL
-    }
-    private val lastBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#007BFF")
-        style = Paint.Style.FILL
-    }
-    private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#7A7A7A")
-        textSize = sp(12f)
-        textAlign = Paint.Align.CENTER
-    }
-    private val hourPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#9B9B9B")
-        textSize = sp(11f)
-        textAlign = Paint.Align.LEFT
-    }
-    private val weekDividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E5E5E5")
-        strokeWidth = dp(1f)
-    }
-    private val todayDashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#9B9B9B")
-        strokeWidth = dp(1f)
-        pathEffect = DashPathEffect(floatArrayOf(8f, 8f), 0f)
-    }
+    /* ── paints (unchanged from previous version) ─────────────────── */
+    private val gridPaint       = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#E5E5E5"); strokeWidth = dp(1f) }
+    private val barPaint        = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#70A1FF"); style = Paint.Style.FILL }
+    private val lastBarPaint    = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#007BFF"); style = Paint.Style.FILL }
+    private val labelPaint      = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#7A7A7A"); textSize = sp(12f); textAlign = Paint.Align.CENTER }
+    private val hourPaint       = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#9B9B9B"); textSize = sp(11f); textAlign = Paint.Align.LEFT }
+    private val weekDividerPaint= Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#E5E5E5"); strokeWidth = dp(1f) }
+    private val todayDashPaint  = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#9B9B9B"); strokeWidth = dp(1f); pathEffect = DashPathEffect(floatArrayOf(8f, 8f), 0f) }
 
-    /* ─── Data ───────────────────────────────────────────── */
+    /* ── data ─────────────────────────────────────────────────────── */
     private val entries = mutableListOf<SleepEntry>()
-
-    /** Call from your fragment/activity. */
     fun setSleepData(list: List<SleepEntry>) {
         entries.clear()
         entries.addAll(list.sortedBy { it.startLocal })
         invalidate()
     }
 
-    /* ─── Layout paddings (in px) ────────────────────────── */
-    private val leftPad       = dp(48f)
-    private val topPad        = dp(12f)
-    private val bottomPadWeek = dp(40f)
-    private val bottomPadMon  = dp(36f)
+    /* register an optional listener */
+    private var barClickListener: OnBarClickListener? = null
+    fun setOnBarClickListener(l: OnBarClickListener?) { barClickListener = l }
+
+    /* keep track of each bar’s hit-box */
+    private data class BarHit(val rect: RectF, val entry: SleepEntry)
+    private val barHits = mutableListOf<BarHit>()
+
+    /* paddings */
+    private val leftPad     = dp(18f)
+    private val topPad      = dp(12f)
+    private val bottomPadW  = dp(40f)
+    private val bottomPadM  = dp(36f)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (entries.isEmpty()) return
+
+        barHits.clear()                       // rebuild hit-boxes each frame
         if (entries.size <= 7) drawWeek(canvas) else drawMonth(canvas)
     }
 
-    /* ────────────────── WEEK (≤7 nights) ────────────────── */
+    /* ───────────────────────── WEEK ─────────────────────────────── */
     private fun drawWeek(c: Canvas) {
-        val chartH = height - topPad - bottomPadWeek
+        val chartH = height - topPad - bottomPadW
         val chartW = width  - leftPad
         val slotW  = chartW / entries.size
         val barW   = slotW * .6f
@@ -722,24 +726,24 @@ class SleepGraphView @JvmOverloads constructor(
             val left = leftPad + i * slotW + (slotW - barW) / 2
             val topY = topPad + chartH / 12f * startFrac(e)
             val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
-
             val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
-            c.drawRoundRect(left, topY, left + barW, botY, radius, radius, paint)
+            val rect = RectF(left, topY, left + barW, botY)
+            c.drawRoundRect(rect, radius, radius, paint)
+            barHits += BarHit(rect, e)        // store for click detection
 
             val day  = e.startLocal.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
             val date = e.startLocal.format(DateTimeFormatter.ofPattern("d MMM"))
-            val cx   = left + barW / 2
-            c.drawText(day,  cx, height - bottomPadWeek / 1.6f, labelPaint)
-            c.drawText(date, cx, height - dp(4f),               labelPaint)
+            val cx   = rect.centerX()
+            c.drawText(day,  cx, height - bottomPadW / 1.6f, labelPaint)
+            c.drawText(date, cx, height - dp(4f),           labelPaint)
         }
     }
 
-    /* ────────────────── MONTH (>7 nights) ───────────────── */
+    /* ───────────────────────── MONTH ────────────────────────────── */
     private fun drawMonth(c: Canvas) {
-        val chartH = height - topPad - bottomPadMon
+        val chartH = height - topPad - bottomPadM
         val chartW = width  - leftPad
-
-        val weekCnt = (entries.size + 6) / 7         // ceiling
+        val weekCnt = (entries.size + 6) / 7
         val gap     = dp(8f)
         val dayW    = (chartW - gap * (weekCnt - 1)) / entries.size
         val barW    = dayW * .5f
@@ -747,7 +751,7 @@ class SleepGraphView @JvmOverloads constructor(
 
         drawHourGrid(c, chartH)
 
-        /* vertical week dividers */
+        /* week guides */
         repeat(weekCnt - 1) { wk ->
             val x = leftPad + (wk + 1) * 7 * dayW + wk * gap
             c.drawLine(x, topPad, x, topPad + chartH, weekDividerPaint)
@@ -760,10 +764,12 @@ class SleepGraphView @JvmOverloads constructor(
             val topY = topPad + chartH / 12f * startFrac(e)
             val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
             val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
-            c.drawRoundRect(left, topY, left + barW, botY, radius, radius, paint)
+            val rect = RectF(left, topY, left + barW, botY)
+            c.drawRoundRect(rect, radius, radius, paint)
+            barHits += BarHit(rect, e)
         }
 
-        /* dashed marker on latest night */
+        /* dashed marker */
         entries.lastOrNull()?.let {
             val idx = entries.lastIndex
             val wk  = idx / 7
@@ -783,40 +789,64 @@ class SleepGraphView @JvmOverloads constructor(
             val blockL = leftPad + first * dayW + wk * gap
             val blockR = leftPad + (last + 1) * dayW + wk * gap
             val cx     = (blockL + blockR) / 2
-            c.drawText(range, cx, height - bottomPadMon / 1.6f, labelPaint)
-            c.drawText(month, cx, height - dp(4f),              labelPaint)
+            c.drawText(range, cx, height - bottomPadM / 1.6f, labelPaint)
+            c.drawText(month, cx, height - dp(4f),            labelPaint)
         }
     }
 
-    /* ───────────── helper: horizontal grid & labels ─────── */
+    /* ───────── helper: hour grid + AM/PM labels ─────────── */
     private fun drawHourGrid(c: Canvas, chartH: Float) {
         for (step in 0..12 step 2) {
             val y = topPad + chartH / 12f * step
             c.drawLine(leftPad, y, width.toFloat(), y, gridPaint)
 
-            val h24 = (20 + step) % 24           // 20-22-00-02-…-08
-            val h12 = when {
-                h24 == 0  -> 12
-                h24 > 12  -> h24 - 12
-                else      -> h24
-            }
-            val ampm = if (h24 < 12) "am" else "pm"
-            c.drawText("$h12", dp(4f), y + hourPaint.textSize / 3, hourPaint)
-            c.drawText(ampm,  dp(4f), y + hourPaint.textSize * 1.4f, hourPaint)
+            val h24 = (20 + step) % 24
+            val h12 = if (h24 == 0) 12 else if (h24 > 12) h24 - 12 else h24
+            val ampm= if (h24 < 12) "am" else "pm"
+            c.drawText("$h12", dp(4f), y + hourPaint.textSize / 3,   hourPaint)
+            c.drawText(ampm,   dp(4f), y + hourPaint.textSize * 1.4f, hourPaint)
         }
     }
 
-    /** 0‥12 h offset from the 20 : 00 grid line where the bar begins. */
+    /** Offset (0‥12) from the 20:00 grid line where the bar starts. */
     private fun startFrac(e: SleepEntry): Float {
         val h = e.startLocal.hour + e.startLocal.minute / 60f
         return when {
-            h >= 20f -> h - 20f        // 20:00–23:59  ➜ 0–4
-            h < 8f   -> h + 4f         // 00:00–07:59  ➜ 4–12
-            else     -> 0f             // 08:00–19:59  ➜ clamp to top
+            h >= 20f -> h - 20f   // 20:00-23:59
+            h < 8f   -> h + 4f    // 00:00-07:59
+            else     -> 0f        // clamp (08:00-19:59)
         }
     }
 
-    /* dp / sp */
+    /* ───────── TOUCH HANDLING ───────── */
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+        when (e.action) {
+            MotionEvent.ACTION_UP -> {
+                val x = e.x
+                val y = e.y
+                barHits.firstOrNull { it.rect.contains(x, y) }?.let { hit ->
+                    barClickListener?.onBarClick(hit.entry) ?: showToast(hit.entry)
+                    return true
+                }
+            }
+        }
+        return true            // allow further events if needed
+    }
+
+    private fun showToast(entry: SleepEntry) {
+        // "Sunday 9 Feb, 2025"
+        val dateStr = entry.startLocal.format(
+            DateTimeFormatter.ofPattern("EEEE d MMM, yyyy", Locale.getDefault())
+        )
+        val dur = Duration.ofMinutes((entry.durationHrs * 60).roundToInt().toLong())
+        val hrs = dur.toHours()
+        val mins = dur.minusHours(hrs).toMinutes()
+        //val msg = "$dateStr · ${hrs}hr ${mins}mins"
+
+
+    }
+
+    /* px helpers */
     private fun dp(v: Float) = v * resources.displayMetrics.density
     private fun sp(v: Float) = v * resources.displayMetrics.scaledDensity
 }
