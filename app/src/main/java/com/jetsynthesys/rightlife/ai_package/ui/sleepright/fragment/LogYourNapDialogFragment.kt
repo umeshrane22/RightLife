@@ -142,10 +142,14 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         val hours = duration.toHours()
         val minutes = duration.minusHours(hours).toMinutes()
 
-        tvStartTime.text = startTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
-        tvEndTime.text = endTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
-        tvDuration.text = "$hours hr $minutes mins"
-        tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        if (hours <= 15) {
+            tvStartTime.text = startTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            tvEndTime.text = endTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            tvDuration.text = "$hours hr $minutes mins"
+            tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        }else{
+            Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun showTimePicker(isStart: Boolean) {
