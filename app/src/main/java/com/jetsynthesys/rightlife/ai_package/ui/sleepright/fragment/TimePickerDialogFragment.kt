@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
@@ -15,12 +16,19 @@ import android.widget.ImageView
 import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.TimePicker
+import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
+import java.time.LocalDate
+import java.time.LocalTime
 
-class TimePickerDialogFragment(private val initialHour: Int, private val initialMinute: Int,
-                               private val onTimeSelected: (hour: Int, minute: Int) -> Unit)  : BottomSheetDialogFragment() {
+class TimePickerDialogFragment(
+    val requireContext: Context, private val initialHour: Int,
+    private val initialMinute: Int, private val selectedDate: LocalDate,
+    val onTimeSelected1: Int,
+    private val onTimeSelected: (hour: Int, minute: Int) -> Unit
+)  : BottomSheetDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -49,8 +57,20 @@ class TimePickerDialogFragment(private val initialHour: Int, private val initial
         view.findViewById<TextView>(R.id.btnConfirm).setOnClickListener {
             val selectedHour = timePicker.hour
             val selectedMinute = timePicker.minute
-            onTimeSelected(selectedHour, selectedMinute)
-            dismiss()
+            val selectedTime = LocalTime.of(selectedHour,selectedMinute)
+            val selectDate = LocalDate.now()
+            val currentTime = LocalTime.now()
+            if (selectedDate != selectDate){
+                onTimeSelected(selectedHour, selectedMinute)
+                dismiss()
+            }else if (selectedDate == selectDate){
+                if (selectedTime > currentTime && onTimeSelected1 ==0){
+                    Toast.makeText(requireContext,"Sleep time cannot be future time.", Toast.LENGTH_SHORT).show()
+                }else{
+                    onTimeSelected(selectedHour, selectedMinute)
+                    dismiss()
+                }
+            }
         }
 
         btnLeft.setOnClickListener {
@@ -61,11 +81,6 @@ class TimePickerDialogFragment(private val initialHour: Int, private val initial
         btnRight.setOnClickListener {
             val currentHour = timePicker.hour
             timePicker.hour = (currentHour + 1) % 12   // Increment hour with wrap-around
-        }
-
-        view.findViewById<TextView>(R.id.btnConfirm).setOnClickListener {
-            onTimeSelected(timePicker.hour, timePicker.minute)
-            dismiss()
         }
 
         view.findViewById<ImageView>(R.id.btnClose).setOnClickListener {
