@@ -45,16 +45,16 @@ class YouMayAlsoLikeAdapter(
                     .transform(RoundedCorners(24))
                     .into(itemImage)
             }
-            tvLeftTime.text = DateTimeUtils.getLocalTime12HourFormat(item?.createdAt)
+            tvdateTime.text = DateTimeUtils.convertAPIDateMonthFormat(item?.createdAt)
             tvModuleName.text = Utils.getModuleText(item?.moduleName)
             val color = Utils.getModuleColor(context, item?.moduleId)
             imageModuleTag.imageTintList = ColorStateList.valueOf(color)
-            tvCategory.text = item?.categoryName
+            tvName.text = item?.categoryName
             tvHeader.text = item?.title
-            tvName.text =
+            /*tvName.text =
                 if (item?.artist != null && item.artist?.size!! > 0) item.artist?.get(0)?.firstName + " " + item.artist?.get(
                     0
-                )?.lastName else ""
+                )?.lastName else ""*/
 
             //Module Name
             val moduleId = item?.moduleId
