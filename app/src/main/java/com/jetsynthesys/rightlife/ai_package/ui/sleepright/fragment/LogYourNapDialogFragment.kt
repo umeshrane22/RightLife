@@ -72,7 +72,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.startTimeContainer).setOnClickListener {
-            TimePickerDialogFragment(startHour, startMinute) { hour, minute ->
+            TimePickerDialogFragment(requireContext,startHour, startMinute,selectedDate,0) { hour, minute ->
                 // Handle selected time
                 val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
                 startHour = hour
@@ -85,7 +85,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.endTimeContainer).setOnClickListener {
-            TimePickerDialogFragment(endHour, endMinute) { hour, minute ->
+            TimePickerDialogFragment(requireContext,endHour, endMinute,selectedDate,1) { hour, minute ->
                 // Handle selected time
                 val formatted = LocalTime.of(hour, minute)
                     .format(DateTimeFormatter.ofPattern("hh:mm a"))
