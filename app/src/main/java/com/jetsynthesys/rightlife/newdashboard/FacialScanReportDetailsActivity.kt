@@ -1,15 +1,19 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.PopupMenu
+import android.view.ViewGroup
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -177,7 +181,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         }
         binding.rlWitelsSelection.setOnClickListener {
             if (unifiedList != null) {
-                openPopup(unifiedList)
+                showPopupWithRecycler(it, unifiedList)
             }
         }
 
@@ -349,21 +353,30 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun openPopup(healthCamItems: ArrayList<ParameterModel>?) {
-        val popupMenu = PopupMenu(this, binding.rlWitelsSelection)
+    private fun dpToPx(context: Context, v: Int): Int {
+        return (v * context.resources.displayMetrics.density).toInt()
+    }
 
-        // Dynamically add menu items
-        if (healthCamItems != null) {
-            healthCamItems.forEachIndexed { index, item ->
-                popupMenu.menu.add(0, index, 0, item.name)
-            }
-        }
+    private fun showPopupWithRecycler(anchor: View, options: ArrayList<ParameterModel>) {
+        val context = anchor.context
+        val popupView = LayoutInflater.from(context).inflate(R.layout.popup_vitals, null)
 
-        popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            val selectedItem = healthCamItems!![menuItem.itemId]
-            binding.tvWitale.text = selectedItem.name
+        val popupWindow = PopupWindow(
+            popupView,
+            dpToPx(this, 290), // Fixed width in pixels,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
 
-            vitalKey = selectedItem.key
+        popupWindow.isOutsideTouchable = true
+        popupWindow.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+        val recyclerView = popupView.findViewById<RecyclerView>(R.id.recyclerOptions)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = PopupMenuAdapter(this, options) { selectedOption ->
+            binding.tvWitale.text = selectedOption.name
+
+            vitalKey = selectedOption.key
             fetchPastFacialScanReport(
                 vitalKey,
                 startDateAPI,
@@ -375,66 +388,11 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                 .placeholder(R.drawable.ic_db_report_heart_rate)
                 .error(R.drawable.ic_db_report_heart_rate)
                 .into(binding.imgPopupMenu)
-            true
+            popupWindow.dismiss()
         }
 
-        popupMenu.show()
+        popupWindow.showAsDropDown(anchor, 0, -110)
     }
-
-
-    /*private fun openPopup() {
-        val popupMenu = PopupMenu(this, binding.rlWitelsSelection)
-        popupMenu.menuInflater.inflate(R.menu.witals_menu, popupMenu.menu)
-        popupMenu.setOnMenuItemClickListener { menuItem: MenuItem ->
-            binding.tvWitale.text = menuItem.title
-            val date = dateRange.split("-")
-            fetchPastFacialScanReport(
-                convertVitalNameToKey(menuItem.title.toString()),
-                startDateAPI,
-                endDateAPI
-            )
-            //2025-04-09&endDate=2025-04-02&key=PULSE_RATE
-            when (menuItem.itemId) {
-                R.id.navPulseRate -> {
-
-                }
-
-                R.id.navBreathingRate -> {
-
-                }
-
-                R.id.nav_BloodPressure -> {
-
-                }
-
-                R.id.nav_HeartRateVariability -> {
-
-                }
-
-                R.id.nav_CardiacWorkload -> {
-
-                }
-
-                R.id.nav_StressIndex -> {
-
-                }
-
-                R.id.nav_BodyMassIndex -> {
-
-                }
-
-                R.id.navCardiovascularDiseaseRisks -> {
-
-                }
-
-                R.id.navOverallWellnessScore -> {
-
-                }
-            }
-            true
-        }
-        popupMenu.show()
-    }*/
 
     private fun convertVitalNameToKey(vitalName: String): String {
         return when (vitalName) {
@@ -836,10 +794,12 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             "BMI_CALC" -> R.drawable.ic_db_report_bmi
             "BP_RPP" -> R.drawable.ic_db_report_cardiak_workload
             "BP_SYSTOLIC" -> R.drawable.ic_db_report_bloodpressure
+            "BP_DIASTOLIC" -> R.drawable.ic_db_report_bloodpressure
             "BP_CVD" -> R.drawable.ic_db_report_cvdrisk
             "MSI" -> R.drawable.ic_db_report_stresslevel
             "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
             "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
+            "HEALTH_SCORE" -> R.drawable.ic_wellness_man
             else -> R.drawable.ic_db_report_heart_rate
         }
     }
