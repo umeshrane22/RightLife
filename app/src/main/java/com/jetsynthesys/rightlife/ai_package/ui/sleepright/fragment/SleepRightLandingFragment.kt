@@ -150,7 +150,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         get() = FragmentSleepRightLandingBinding::inflate
 
     private lateinit var todaysSleepRequirement: TextView
+    private lateinit var tv_todays_sleep_time_requirement_top: TextView
     private lateinit var todaysSleepStartTime: TextView
+    private lateinit var tv_todays_sleep_start_time_top: TextView
     private lateinit var tvStageSleepStartTime: TextView
     private lateinit var tvStageSleepEndTime: TextView
     private lateinit var tvStageSleepTotalTime: TextView
@@ -170,6 +172,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var tvIdealActualDate: TextView
     private lateinit var tvActualTime: TextView
     private lateinit var tvIdealTime: TextView
+    private lateinit var tv_todays_wakeup_time_top: TextView
     private lateinit var tvRestoRemTime: TextView
     private lateinit var tvRestoDeepTime: TextView
     private lateinit var tvRestoStartTime: TextView
@@ -190,9 +193,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var sleepSoundResponse: SleepSoundResponse
     private lateinit var logYourNap : LinearLayout
     private lateinit var actualNoDataCardView : CardView
+    private lateinit var cardSleepTimeRequirementTop : CardView
     private lateinit var sleepStageCardView : CardView
     private lateinit var stageNoDataCardView : CardView
     private lateinit var performCardView : CardView
+    private lateinit var headerTop : LinearLayout
+    private lateinit var imgIdealInfoTop : ImageView
+    private lateinit var img_edit_wakeup_time_top : ImageView
+    private lateinit var tvRequirementTop : TextView
     private lateinit var sleepTimeRequirementCardView : CardView
     private lateinit var performNoDataCardView : CardView
     private lateinit var restroDataCardView : CardView
@@ -238,6 +246,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
+    private var isRepeat : Boolean = false
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -267,7 +276,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepArrowView = view.findViewById(R.id.img_sleep_arrow)
         sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         btnSync = view.findViewById(R.id.lyt_sync_with_health)
+        cardSleepTimeRequirementTop = view.findViewById(R.id.card_sleep_time_requirement_top)
         btnSleepSound = view.findViewById(R.id.btn_sleep_sound)
+        headerTop = view.findViewById(R.id.header_top)
+        img_edit_wakeup_time_top = view.findViewById(R.id.img_edit_wakeup_time_top)
+        tv_todays_wakeup_time_top = view.findViewById(R.id.tv_todays_wakeup_time_top)
+        tv_todays_sleep_time_requirement_top = view.findViewById(R.id.tv_todays_sleep_time_requirement_top)
+        imgIdealInfoTop = view.findViewById(R.id.img_ideal_info_top)
+        tvRequirementTop = view.findViewById(R.id.tv_requirement_top)
         sleepSoundCardView = view.findViewById(R.id.lyt_sleep_sound_card)
         soundPlay1 = view.findViewById(R.id.sound_play_1)
         soundPlay2 = view.findViewById(R.id.sound_play_2)
@@ -277,7 +293,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepStageCardView = view.findViewById(R.id.sleep_stage_layout)
         recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
         val backButton = view.findViewById<ImageView>(R.id.img_back)
-        sleepConsistencyChart = view.findViewById<SleepGraphView>(R.id.sleepConsistencyChart)
+        sleepConsistencyChart = view.findViewById(R.id.sleepConsistencyChart)
         downloadView = view.findViewById(R.id.sleep_download_icon)
         mainView = view.findViewById(R.id.lyt_main_view)
         logYourNap = view.findViewById(R.id.btn_log_nap)
@@ -290,16 +306,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val restoSleepNoData = view.findViewById<ImageView>(R.id.img_resto_sleep_nodata)
         consistencySleep = view.findViewById(R.id.img_consistency_right)
         val openConsistency = view.findViewById<ImageView>(R.id.consistency_right_arrow)
-         actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
-         restroNoDataCardView = view.findViewById(R.id.restro_nodata_layout)
+        actualNoDataCardView = view.findViewById(R.id.ideal_actual_nodata_layout)
+        restroNoDataCardView = view.findViewById(R.id.restro_nodata_layout)
         restroDataCardView = view.findViewById(R.id.lyt_restorative_card)
-         performNoDataCardView = view.findViewById(R.id.perform_nodata_layout)
+        performNoDataCardView = view.findViewById(R.id.perform_nodata_layout)
         performCardView = view.findViewById(R.id.sleep_perform_layout)
-         stageNoDataCardView = view.findViewById(R.id.lyt_sleep_stage_no_data)
+        stageNoDataCardView = view.findViewById(R.id.lyt_sleep_stage_no_data)
         consistencyNoDataCardView = view.findViewById(R.id.consistency_nodata_layout)
         todaysWakeupTime = view.findViewById(R.id.tv_todays_wakeup_time)
         todaysSleepRequirement = view.findViewById(R.id.tv_todays_sleep_time_requirement)
         todaysSleepStartTime = view.findViewById(R.id.tv_todays_sleep_start_time)
+        tv_todays_sleep_start_time_top = view.findViewById(R.id.tv_todays_sleep_start_time_top)
         tvStageSleepStartTime = view.findViewById(R.id.tv_stage_start_sleep_time)
         tvStageSleepEndTime = view.findViewById(R.id.tv_stage_end_sleep_time)
         tvPerformStartTime = view.findViewById(R.id.tv_perform_start_time)
@@ -325,6 +342,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
+
         fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogLastNightSleep")){
@@ -340,15 +358,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
        // btnSync.setOnClickListener {
-            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
-            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-                lifecycleScope.launch {
-                    requestPermissionsAndReadAllData()
-                }
-            } else {
-                Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
-            }
+//            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+//            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+//                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+//                lifecycleScope.launch {
+//                    requestPermissionsAndReadAllData()
+//                }
+//            } else {
+//                Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+//            }
     //    }
         btnSleepSound.setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
@@ -368,6 +386,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
 
         imgIdealInfo.setOnClickListener {
+            val dialog = IdealInfoDialogFragment.newInstance()
+            dialog.show(parentFragmentManager, "IdealInfoDialogFragment")
+        }
+        imgIdealInfoTop.setOnClickListener {
             val dialog = IdealInfoDialogFragment.newInstance()
             dialog.show(parentFragmentManager, "IdealInfoDialogFragment")
         }
@@ -434,10 +456,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 //            navigateToFragment(SleepConsistencyFragment(), "SleepConsistencyFragment")
 //        }
 
-        fetchSleepLandingData()
+        if (!isRepeat){
+            fetchSleepLandingData()
+        }
         fetchWakeupData()
 
         editWakeup.setOnClickListener {
+            openBottomSheet()
+        }
+        img_edit_wakeup_time_top.setOnClickListener {
             openBottomSheet()
         }
 
@@ -462,7 +489,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
                 fetchAllHealthData()
-                storeHealthData()
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions)
             }
@@ -477,7 +503,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
                 fetchAllHealthData()
-                storeHealthData()
+//                storeHealthData()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
                 }
@@ -486,7 +512,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                  //   Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
                 fetchAllHealthData()
-                storeHealthData()
+               // storeHealthData()
             }
         }
     }
@@ -766,11 +792,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
             withContext(Dispatchers.Main) {
                 //  Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
+                storeHealthData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         }
     }
@@ -998,13 +1030,20 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime.toString())
                           Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
                         fetchSleepLandingData()
+                        isRepeat = true
                     } else {
                          Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    isRepeat = true
                 }
             }
         }
@@ -1085,17 +1124,57 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<WakeupTimeResponse> {
             override fun onResponse(call: Call<WakeupTimeResponse>, response: Response<WakeupTimeResponse>) {
                 if (response.isSuccessful) {
-                    sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    val currentTime = LocalDateTime.now(ZoneId.systemDefault()) // Device ke default time zone use
+                    val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
+                    val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
+                    val currentMinutes = currentTime.hour * 60 + currentTime.minute
+
+// Check if current time is between 06:00 PM and 02:00 AM
+                    if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
+                        cardSleepTimeRequirementTop.visibility = View.VISIBLE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    } else {
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    }
+                    //sleepTimeRequirementCardView.visibility = View.VISIBLE
                     wakeupTimeResponse = response.body()!!
                     setWakeupData(wakeupTimeResponse.data.getOrNull(0))
                 }else if(response.code() == 400){
-                    sleepTimeRequirementCardView.visibility = View.GONE
+                    //sleepTimeRequirementCardView.visibility = View.GONE
+                    val currentTime = LocalDateTime.now(ZoneId.systemDefault()) // Device ke default time zone use
+                    val sixPM = 18 * 60 // 1080 minutes (06:00 PM)
+                    val twoAM = 2 * 60 // 120 minutes (02:00 AM next day)
+                    val currentMinutes = currentTime.hour * 60 + currentTime.minute
+
+// Check if current time is between 06:00 PM and 02:00 AM
+                    if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
+                        //view.visibility = View.GONE
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    } else {
+                        //view.visibility = View.VISIBLE
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    }
                   //  Toast.makeText(activity, "Record Not Found", Toast.LENGTH_SHORT).show()
                 } else {
-                    sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    val currentTime = LocalDateTime.now(ZoneId.systemDefault()) // Device ke default time zone use
+                    val sixPM = 18 * 60
+                    val twoAM = 2 * 60
+                    val currentMinutes = currentTime.hour * 60 + currentTime.minute
+
+                    if (currentMinutes >= sixPM && currentMinutes < twoAM + 24 * 60) {
+                        //view.visibility = View.GONE
+                        cardSleepTimeRequirementTop.visibility = View.VISIBLE
+                        sleepTimeRequirementCardView.visibility = View.GONE
+                    } else {
+                        //view.visibility = View.VISIBLE
+                        cardSleepTimeRequirementTop.visibility = View.GONE
+                        sleepTimeRequirementCardView.visibility = View.VISIBLE
+                    }
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                //     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-
                 }
             }
             override fun onFailure(call: Call<WakeupTimeResponse>, t: Throwable) {
@@ -1106,8 +1185,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     fun setWakeupData(wakeupData: WakeupData?){
         todaysSleepRequirement.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
+        tv_todays_sleep_time_requirement_top.setText(convertDecimalHoursToHrMinFormat(wakeupData?.currentRequirement!!))
         todaysSleepStartTime.setText(convertTo12HourFormat(wakeupData.sleepDatetime!!))
+        tv_todays_sleep_start_time_top.setText(convertTo12HourFormat(wakeupData.sleepDatetime!!))
         todaysWakeupTime.setText(convertTo12HourFormat(wakeupData.wakeupDatetime!!))
+        tv_todays_wakeup_time_top.setText(convertTo12HourFormat(wakeupData.wakeupDatetime!!))
         mWakeupTime = wakeupData.wakeupDatetime!!
         mRecordId = wakeupData.Id!!
     }
@@ -1159,7 +1241,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }
         )
-
         dialog.show(parentFragmentManager, "WakeUpTimeDialog")
     }
 
@@ -1177,8 +1258,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 showLoader(requireView())
             }
         }
-        val userId =/*"68502ce06532ad59ab89441f"*/ SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-       // val userId ="685a482b5e75643139c79905"
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = getCurrentDate()
         val source = "android"
         val preferences = "nature_sounds"
@@ -1231,9 +1311,20 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     consistencyNoDataCardView.visibility = View.VISIBLE
                     consistencySleep.visibility = View.GONE
                     sleepConsistencyChart.visibility = View.GONE
+                    sleepStageCardView.visibility = View.GONE
+                }
+                if (!isRepeat){
+                    val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                    if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                        healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                        lifecycleScope.launch {
+                            requestPermissionsAndReadAllData()
+                        }
+                    } else {
+                        Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
-
             override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 if (isAdded  && view != null){
@@ -1253,6 +1344,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 consistencyNoDataCardView.visibility = View.VISIBLE
                 consistencySleep.visibility = View.GONE
                 sleepConsistencyChart.visibility = View.GONE
+                if (!isRepeat){
+                    val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                    if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                        healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                        lifecycleScope.launch {
+                            requestPermissionsAndReadAllData()
+                        }
+                    } else {
+                        Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         })
     }
@@ -1264,6 +1366,27 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         landingAllData.endDate = sleepLandingResponse.sleepLandingAllData?.endDate ?: ""
         landingAllData.startDate = sleepLandingResponse.sleepLandingAllData?.startDate ?: ""
         landingAllData.recommendedSound = sleepLandingResponse.sleepLandingAllData?.recommendedSound ?: ""
+
+        // Set Sleep Performance Data
+        if (sleepLandingResponse.sleepLandingAllData?.sleepPerformanceDetail != null) {
+            performNoDataCardView.visibility = View.GONE
+            performCardView.visibility = View.VISIBLE
+            setSleepPerformanceData(sleepLandingResponse.sleepLandingAllData?.sleepPerformanceDetail!!)
+        }else{
+            performNoDataCardView.visibility = View.VISIBLE
+            performCardView.visibility = View.GONE
+            if (!bottomSeatName.contentEquals("LogLastNightSleep")){
+                val dialog = LogYourNapDialogFragment(
+                    requireContext = requireContext(),
+                    listener = object : OnLogYourNapSelectedListener {
+                        override fun onLogTimeSelected(time: String) {
+                            fetchSleepLandingData()
+                        }
+                    }
+                )
+                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+            }
+        }
 
         // Set Sleep Stages Data
         val sleepStageData: ArrayList<SleepStagesData> = arrayListOf()
@@ -1281,27 +1404,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             stageNoDataCardView.visibility = View.VISIBLE
             sleepStagesView.visibility = View.GONE
             sleepStageCardView.visibility = View.GONE
-        }
-
-        // Set Sleep Performance Data
-        if (sleepLandingResponse.sleepLandingAllData?.sleepPerformanceDetail != null) {
-                performNoDataCardView.visibility = View.GONE
-                performCardView.visibility = View.VISIBLE
-                setSleepPerformanceData(sleepLandingResponse.sleepLandingAllData?.sleepPerformanceDetail!!)
-        }else{
-                performNoDataCardView.visibility = View.VISIBLE
-                performCardView.visibility = View.GONE
-            if (!bottomSeatName.contentEquals("LogLastNightSleep")){
-                val dialog = LogYourNapDialogFragment(
-                    requireContext = requireContext(),
-                    listener = object : OnLogYourNapSelectedListener {
-                        override fun onLogTimeSelected(time: String) {
-                            fetchSleepLandingData()
-                        }
-                    }
-                )
-                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
-            }
         }
 
         //IdealActualResponse
@@ -1342,7 +1444,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         // Set Restorative Sleep Data
         if (sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail != null) {
-                restroNoDataCardView.visibility = View.GONE
+              //  restroNoDataCardView.visibility = View.GONE
             restroDataCardView.visibility = View.VISIBLE
                 setRestorativeSleepData(sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail)
             } else{
@@ -1635,6 +1737,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             stageNoDataCardView.visibility = View.GONE
             sleepStagesView.visibility = View.VISIBLE
             sleepStageCardView.visibility = View.VISIBLE
+            restroNoDataCardView.visibility = View.GONE
+            restroDataCardView.visibility = View.VISIBLE
             remData.clear()
             awakeData.clear()
             coreData.clear()
@@ -1755,6 +1859,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private fun setSleepPerformanceData(sleepPerformanceDetail: SleepPerformanceDetail) {
         if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance != null) {
             if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance!! > 0.0) {
+                restroNoDataCardView.visibility = View.GONE
+                restroDataCardView.visibility = View.GONE
                 performNoDataCardView.visibility = View.GONE
                 performCardView.visibility = View.VISIBLE
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
@@ -1775,6 +1881,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             } else {
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
+                restroNoDataCardView.visibility = View.VISIBLE
+                restroDataCardView.visibility = View.GONE
             }
         }else{
             performNoDataCardView.visibility = View.VISIBLE
@@ -1794,7 +1902,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             tvRestoEndTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
             restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData)
         }else{
-            restroNoDataCardView.visibility = View.VISIBLE
+          //  restroNoDataCardView.visibility = View.VISIBLE
             restroDataCardView.visibility = View.GONE
         }
         }

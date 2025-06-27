@@ -122,7 +122,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         mStartDate = getOneWeekEarlierDate().format(dateFormatter)
         mEndDate = getTodayDate().format(dateFormatter)
         val endOfWeek = currentDateWeek
-        val startOfWeek = endOfWeek.minusDays(6)
+        val startOfWeek = endOfWeek.minusDays(7)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
@@ -167,7 +167,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         return LocalDate.now().minusWeeks(1)
     }
     fun getOneMonthEarlierDate(): LocalDate {
-        return LocalDate.now().minusMonths(1)
+        return LocalDate.now().minusMonths(1).minusDays(1)
     }
     fun getSixMonthsEarlierDate(): LocalDate {
         return LocalDate.now().minusMonths(6)
@@ -319,6 +319,8 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                                     setData(it)
                                 }
                             }
+                            sleepTime.text = convertDecimalHoursToHrMinFormat(sleepConsistencyResponse.data?.sleepConsistencyDetail?.averageSleepDurationHours!!)
+                            sleepDate.text = convertDateToNormalDate(sleepConsistencyResponse.data?.sleepDetails?.getOrNull(sleepConsistencyResponse.data?.sleepDetails?.size?.minus(1) ?: 0)?.date!!)
                             setSleepAverageData(sleepConsistencyResponse.data?.sleepConsistencyDetail)
                             consistencyTitle.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.title)
                             consistencyMessage.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.message)
@@ -355,6 +357,14 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         })
     }
 
+    fun convertDateToNormalDate(dateStr: String): String{
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val outputFormatter = DateTimeFormatter.ofPattern("EEEE dd MMM, yyyy", Locale.ENGLISH)
+        val date = LocalDate.parse(dateStr, inputFormatter)
+        val formatted = date.format(outputFormatter)
+        return formatted
+    }
+
     private fun setSleepAverageData(detail: SleepConsistencyDetail?) {
         if (detail?.averageSleepDurationHours != 0.0 && detail?.averageSleepDurationHours != null) {
             averageBedTime.setText(convertDecimalHoursToHrMinFormat(detail.averageSleepDurationHours!!))
@@ -363,8 +373,6 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             averageSleepTime.setText(convertTo12HourFormat(detail.averageSleepStartTime!!))
             averageWakeupTime.setText(convertTo12HourFormat(detail.averageWakeTime!!))
         }
-   //     tvConsistencyTime.text = convertDecimalHoursToHrMinFormat(landingAllData.sleepConsistency?.sleepConsistencyDetail?.averageSleepDurationHours!!)
-   //     tvConsistencyDate.text = convertDateToNormalDate(landingAllData.sleepConsistency?.sleepDetails?.getOrNull(landingAllData.sleepConsistency?.sleepDetails?.size?.minus(1) ?: 0)?.date!!)
 
     }
     fun convertTo12HourFormat(datetimeStr: String): String {
@@ -706,6 +714,12 @@ class SleepGraphView @JvmOverloads constructor(
     private val topPad      = dp(12f)
     private val bottomPadW  = dp(40f)
     private val bottomPadM  = dp(36f)
+    private var selectedEntry: SleepEntry? = null
+
+    private val selectedBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#007BFF")
+        style = Paint.Style.FILL
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -725,12 +739,17 @@ class SleepGraphView @JvmOverloads constructor(
 
         drawHourGrid(c, chartH)
 
+
         entries.forEachIndexed { i, e ->
             val left = leftPad + i * slotW + (slotW - barW) / 2
             val topY = topPad + chartH / 12f * startFrac(e)
             val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
           //  val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
-            val paint =  barPaint
+            val paint = when {
+                e == selectedEntry     -> selectedBarPaint   // NEW
+               // i == entries.lastIndex -> lastBarPaint
+                else                       -> barPaint
+            }
             val rect = RectF(left, topY, left + barW, botY)
             c.drawRoundRect(rect, radius, radius, paint)
             barHits += BarHit(rect, e)        // store for click detection
@@ -768,7 +787,11 @@ class SleepGraphView @JvmOverloads constructor(
             val topY = topPad + chartH / 12f * startFrac(e)
             val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
          //   val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
-            val paint =  barPaint
+            val paint = when {
+                e == selectedEntry     -> selectedBarPaint   // NEW
+                // i == entries.lastIndex -> lastBarPaint
+                else                       -> barPaint
+            }
             val rect = RectF(left, topY, left + barW, botY)
             c.drawRoundRect(rect, radius, radius, paint)
             barHits += BarHit(rect, e)
@@ -815,16 +838,20 @@ class SleepGraphView @JvmOverloads constructor(
 
     /** Offset (0‥12) from the 20:00 grid line where the bar starts. */
     private fun startFrac(e: SleepEntry): Float {
-        val h = e.startLocal.hour + e.startLocal.minute / 60f
-        return when {
-            h >= 20f -> h - 20f   // 20:00-23:59
-            h < 8f   -> h + 4f    // 00:00-07:59
-            else     -> 0f        // clamp (08:00-19:59)
-        }
+        // minutes since midnight, including seconds as a fraction
+        val minutesOfDay =
+            e.startLocal.hour * 60 +
+                    e.startLocal.minute +
+                    e.startLocal.second / 60f          // keep the fraction for :30, :45 …
+
+        // 20 : 00 is the chart’s origin (= 1 200 minutes)
+        val offsetMin = (minutesOfDay - 20 * 60 + 24 * 60) % (12 * 60)
+        // convert back to hours as a float → 0‥11.99
+        return offsetMin / 60f
     }
 
     /* ───────── TOUCH HANDLING ───────── */
-    override fun onTouchEvent(e: MotionEvent): Boolean {
+    /*override fun onTouchEvent(e: MotionEvent): Boolean {
         when (e.action) {
             MotionEvent.ACTION_UP -> {
                 val x = e.x
@@ -836,6 +863,24 @@ class SleepGraphView @JvmOverloads constructor(
             }
         }
         return true            // allow further events if needed
+    }*/
+    override fun onTouchEvent(e: MotionEvent): Boolean {
+        when (e.action) {
+            MotionEvent.ACTION_UP -> {
+                barHits.firstOrNull { it.rect.contains(e.x, e.y) }?.let { hit ->
+                    selectedEntry = hit.entry          // NEW
+                    invalidate()                       // NEW
+                    barClickListener?.onBarClick(hit.entry) ?: showToast(hit.entry)
+                    return true
+                }
+                // tap in empty space → clear selection
+                if (selectedEntry != null) {
+                    selectedEntry = null
+                    invalidate()
+                }
+            }
+        }
+        return true
     }
 
     private fun showToast(entry: SleepEntry) {

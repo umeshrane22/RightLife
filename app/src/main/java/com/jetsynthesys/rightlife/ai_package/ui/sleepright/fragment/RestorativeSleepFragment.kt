@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Path
 import android.graphics.RectF
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +15,6 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
@@ -29,10 +27,13 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.interfaces.dataprovider.BarDataProvider
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.renderer.BarChartRenderer
 import com.github.mikephil.charting.renderer.XAxisRenderer
 import com.github.mikephil.charting.utils.MPPointF
@@ -51,13 +52,12 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.round
-import kotlin.time.Duration
 
 class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>() {
 
@@ -122,7 +122,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         mStartDate = getOneWeekEarlierDate().format(dateFormatter)
         mEndDate = getTodayDate().format(dateFormatter)
         val endOfWeek = currentDateWeek
-        val startOfWeek = endOfWeek.minusDays(6)
+        val startOfWeek = endOfWeek.minusDays(7)
 
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
@@ -180,7 +180,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         return LocalDate.now().minusWeeks(1)
     }
     fun getOneMonthEarlierDate(): LocalDate {
-        return LocalDate.now().minusMonths(1)
+        return LocalDate.now().minusMonths(1).minusDays(1)
     }
     fun getSixMonthsEarlierDate(): LocalDate {
         return LocalDate.now().minusMonths(6)
@@ -320,7 +320,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             val rem = stages?.remSleep?.toFloat() ?: 0f
             val deep = stages?.deepSleep?.toFloat() ?: 0f
 
-            chartData.add(dayCounter.toString() to SleepStageDurations(rem,deep))
+            chartData.add(dateKey to SleepStageDurations(rem,deep))
 
             startCal.add(Calendar.DATE, 1)
             dayCounter++
@@ -424,7 +424,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             tvAveragePercentage.setText(""+restorativeSleepResponse?.averageRestorativeSleepPercentage?.roundToDecimals(2)+"%")
             if (restorativeSleepResponse.restorativeSleepDetails.size > 8){
                 val formattedData = mapToMonthlySleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
-                renderMonthStackedChart(formattedData)
+                renderMonthStackedChart(formattedData,restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!)
             }else {
                 val formattedData = mapToSleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
                 renderStackedChart(formattedData)
@@ -473,9 +473,99 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         }
     }
 
-    private fun renderMonthStackedChart(mappedData: List<Pair<String, SleepStageDurations>>) {
+    fun convertToLocalDate1(input: String): LocalDate {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
+        return LocalDate.parse(input, formatter)
+    }
+
+    private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29)
+        }.time
+
+        val result = mutableListOf<String>()
+
+        while (calendar.time <= endDate) {
+            val weekStart = calendar.time
+            val weekStartIndex = result.size
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val dateItem = LocalDate.parse(startDateStr)
+            val yearItem = dateItem.year
+
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay $startMonth"+"," + yearItem.toString()
+            } else {
+                "$startDay $startMonth–$endDay $endMonth"+"," + yearItem.toString()
+            }
+            val daysInThisWeek = 7.coerceAtMost(30 - result.size)
+            repeat(daysInThisWeek) {
+                result.add(label)
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move to next week start
+        }
+        return result
+    }
+
+    private fun generateLabeled30DayListWithEmpty(startDateStr: String): List<String> {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val dayFormat = SimpleDateFormat("d", Locale.getDefault())
+        val monthFormat = SimpleDateFormat("MMM", Locale.getDefault())
+
+        val startDate = dateFormat.parse(startDateStr)!!
+        val calendar = Calendar.getInstance()
+        calendar.time = startDate
+
+        val endDate = Calendar.getInstance().apply {
+            time = startDate
+            add(Calendar.DAY_OF_MONTH, 29) // total 30 days
+        }.time
+
+        val fullList = MutableList(30) { "" } // default 30 items with empty strings
+        var labelIndex = 0
+        var startIndex = 0
+
+        while (calendar.time <= endDate && startIndex < 30) {
+            val weekStart = calendar.time
+            calendar.add(Calendar.DAY_OF_MONTH, 6)
+            val weekEnd = if (calendar.time.after(endDate)) endDate else calendar.time
+            val startDay = dayFormat.format(weekStart)
+            val endDay = dayFormat.format(weekEnd)
+            val startMonth = monthFormat.format(weekStart)
+            val endMonth = monthFormat.format(weekEnd)
+            val newLine = "\n"
+            val label = if (startMonth == endMonth) {
+                "$startDay–$endDay$newLine$startMonth"
+            } else {
+                "$startDay$startMonth–$endDay$newLine$endMonth"
+            }
+            fullList[startIndex] = label // set label at start of week
+            // Move to next start index
+            startIndex += 7
+            calendar.add(Calendar.DAY_OF_MONTH, 1) // move past last week end
+        }
+        return fullList
+    }
+
+    private fun renderMonthStackedChart(mappedData: List<Pair<String, SleepStageDurations>>, startDate1: String, endDate: String) {
         val entries = mutableListOf<BarEntry>()
-        val xLabels = mutableListOf<String>()
+        val labelEmpty = mutableListOf<String>()
+
+        labelEmpty.addAll(generateLabeled30DayListWithEmpty(startDate1))
 
         mappedData.forEachIndexed { index, (label, durations) ->
             val stackedValues = floatArrayOf(
@@ -483,12 +573,6 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
                 durations.deep / 60f
             )
             entries.add(BarEntry(index.toFloat(), stackedValues))
-            xLabels.add(label)
-          //  val date = LocalDate.parse(label, DateTimeFormatter.ISO_LOCAL_DATE)
-
-          //  val top = date.format(DateTimeFormatter.ofPattern("EEE"))      // e.g., "Fri"
-          //  val bottom = date.format(DateTimeFormatter.ofPattern("d MMM"))
-          //  xLabels.add("$top\n$bottom")
         }
 
         val dataSet = BarDataSet(entries, "Sleep Stages").apply {
@@ -505,12 +589,12 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler, stageColorMap)
         )
 
-        barChart.apply {
+        barChart.run {
             data = BarData(dataSet)
             description.isEnabled = false
             axisLeft.axisMinimum = 0f
             axisRight.isEnabled = false
-            isHighlightPerTapEnabled = false
+            isHighlightPerTapEnabled = true
             isHighlightPerDragEnabled = false
             legend.isEnabled = false
             setScaleEnabled(false)
@@ -518,18 +602,23 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
             // ✅ Add bottom offset for multi-line X labels
             setExtraBottomOffset(24f)
+            /*chart.xAxis.apply {
+                valueFormatter = IndexAxisValueFormatter(labels)
+                granularity = 1f
+                labelCount = labels.size
+                position = XAxis.XAxisPosition.BOTTOM
+                setDrawGridLines(false)
+                labelRotationAngle = -30f
+                textSize = 10f
+            }*/
 
             xAxis.apply {
-                valueFormatter = object : ValueFormatter() {
-                    override fun getFormattedValue(value: Float): String {
-                        val index = value.toInt()
-                        return if (index in xLabels.indices) xLabels[index] else ""
-                    }
-                }
-                position = XAxis.XAxisPosition.BOTTOM
+                valueFormatter = IndexAxisValueFormatter(labelEmpty)
                 granularity = 1f
+                labelCount = labelEmpty.size
+                position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
-                labelRotationAngle = 0f
+                labelRotationAngle = -30f
                 textSize = 10f
             }
 
@@ -540,6 +629,30 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
                     getTransformer(YAxis.AxisDependency.LEFT)
                 )
             )
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    if (e !is BarEntry) return
+                    val idx = e.x.toInt()
+                    if (idx !in labelEmpty.indices) return
+
+                    // original date label in "yyyy-MM-dd" we stored in mappedData
+                    val dateIso = mappedData[idx].first                     // "2025-06-23"
+                    val date = LocalDate.parse(dateIso)
+                    val dateStr = date.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy", Locale.getDefault()))
+
+                    val rem  = e.yVals?.getOrNull(0)?.toDouble() ?: 0.0
+                    val deep = e.yVals?.getOrNull(1)?.toDouble() ?: 0.0
+                  //  val total = rem + deep
+
+                   // val msg = "$dateStr · %.1fh (REM %.1f, Deep %.1f)"
+                   //     .format(total, rem, deep)
+                    tvRestoDate.setText(dateStr)
+                    tvRemSleep.setText(convertDecimalHoursToHrMinFormat(rem))
+                    tvDeepSleep.setText(convertDecimalHoursToHrMinFormat(deep))
+                  //  Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                }
+                override fun onNothingSelected() = Unit
+            })
 
             invalidate()
         }
@@ -576,12 +689,12 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             RestorativeBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler, stageColorMap)
         )
 
-        barChart.apply {
+        barChart.run {
             data = BarData(dataSet)
             description.isEnabled = false
             axisLeft.axisMinimum = 0f
             axisRight.isEnabled = false
-            isHighlightPerTapEnabled = false
+            isHighlightPerTapEnabled = true
             isHighlightPerDragEnabled = false
             legend.isEnabled = false
             setScaleEnabled(false)
@@ -611,6 +724,31 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
                     getTransformer(YAxis.AxisDependency.LEFT)
                 )
             )
+
+            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(e: Entry?, h: Highlight?) {
+                    if (e !is BarEntry) return
+                    val idx = e.x.toInt()
+                    if (idx !in xLabels.indices) return
+
+                    // original date label in "yyyy-MM-dd" we stored in mappedData
+                    val dateIso = mappedData[idx].first                     // "2025-06-23"
+                    val date = LocalDate.parse(dateIso)
+                    val dateStr = date.format(DateTimeFormatter.ofPattern("EEEE d MMM, yyyy", Locale.getDefault()))
+
+                    val rem  = e.yVals?.getOrNull(0)?.toDouble() ?: 0.0
+                    val deep = e.yVals?.getOrNull(1)?.toDouble() ?: 0.0
+                    //  val total = rem + deep
+
+                    // val msg = "$dateStr · %.1fh (REM %.1f, Deep %.1f)"
+                    //     .format(total, rem, deep)
+                    tvRestoDate.setText(dateStr)
+                    tvRemSleep.setText(convertDecimalHoursToHrMinFormat(rem))
+                    tvDeepSleep.setText(convertDecimalHoursToHrMinFormat(deep))
+                    //  Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                }
+                override fun onNothingSelected() = Unit
+            })
 
             invalidate()
         }
