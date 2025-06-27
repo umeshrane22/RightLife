@@ -2537,7 +2537,7 @@
                                     android:maxLines="1"
                                     android:ellipsize="end"
                                     android:autoSizeTextType="uniform"
-                                    android:autoSizeMinTextSize="8sp"
+                                    android:autoSizeMinTextSize="12sp"
                                     android:autoSizeMaxTextSize="14sp"
                                     android:autoSizeStepGranularity="1sp"/>
 

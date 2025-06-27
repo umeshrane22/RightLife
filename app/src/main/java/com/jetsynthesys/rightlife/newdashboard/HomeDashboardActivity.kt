@@ -733,7 +733,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -759,7 +759,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -809,7 +809,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                            binding.tvModuleValueSleepright,DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -832,7 +832,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, module.sleepDuration?.toString()
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -1449,13 +1449,13 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
         if (module.wakeUpTime.equals("00:00")) {
             binding.tvTodaysWakeupTime.text = DateTimeUtils.getSleepTime12HourFormat("2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
         } else {
-            binding.tvTodaysWakeupTime.text = DateTimeUtils.getSleepTime12HourFormat(module.idealSleepRequirementData?.sleepDatetime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
+            binding.tvTodaysWakeupTime.text = DateTimeUtils.getSleepTime12HourFormat(module.idealSleepRequirementData?.wakeupDatetime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
         }
 
         //binding.tvTodaysSleepStartTime.text = DateTimeUtils.getLocalTime12HourFormat(module.sleepTime ?: "2025-05-14T15:30:00.000Z")  //module.sleepTime ?: "00:00"
         //binding.tvTodaysWakeupTime.text = DateTimeUtils.getLocalTime12HourFormat(module.wakeUpTime ?:"2025-05-15T23:30:00.000Z") //module.wakeUpTime ?: "00:00"
         //binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.formatSleepDuration(module.sleepPerformanceDetail?.idealSleepDuration ?: 0.0)   //(module.sleepPerformanceDetail?.idealSleepDuration ?: "0min").toString()
-        binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.formatSleepDurationforidealSleep(
+        binding.tvTodaysSleepTimeRequirement.text = DateTimeUtils.convertDecimalHoursToHrMinFormat(
             module.idealSleepRequirementData?.currentRequirement ?: 0.0)
 
         binding.cardSleepMainLog.visibility = View.GONE

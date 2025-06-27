@@ -120,6 +120,18 @@ public class DateTimeUtils {
         int minutes = (int) Math.round(totalMinutes % 60);
         return hours + " hr " + minutes + " mins";
     }
+    public static String formatSleepDurationint(int totalMinutes) {
+        int hours = (int) (totalMinutes / 60);
+        int minutes = (int) Math.round(totalMinutes % 60);
+        return hours + " hr " + minutes + " mins";
+    }
+
+    public static String convertDecimalHoursToHrMinFormat(double hoursDecimal) {
+        int totalMinutes = (int) (hoursDecimal * 60);
+        int hours = totalMinutes / 60;
+        int minutes = totalMinutes % 60;
+        return String.format("%02dhr %02dmins", hours, minutes);
+    }
 
     public static String formatDateForOneApi() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
