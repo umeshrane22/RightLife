@@ -140,4 +140,24 @@ public class DateTimeUtils {
             return "";
         }
     }
+
+    public static String formatDuration(Integer seconds) {
+        if (seconds == null || seconds <= 0) {
+            return "0 sec";
+        }
+
+        if (seconds < 60) {
+            return seconds + " sec";
+        } else {
+            int minutes = seconds / 60;
+            int remainingSec = seconds % 60;
+            if (remainingSec == 0) {
+                return minutes + " min";
+            } else {
+                double decimalMinutes = seconds / 60.0;
+                return String.format("%.1f min", decimalMinutes);
+            }
+        }
+    }
+
 }

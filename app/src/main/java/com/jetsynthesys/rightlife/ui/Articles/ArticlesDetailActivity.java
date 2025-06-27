@@ -238,11 +238,13 @@ public class ArticlesDetailActivity extends BaseActivity {
         binding.txtCategoryArticle.setText(articleDetailsResponse.getData().getTags().get(0).getName());
         setModuleColor(binding.imageTag, articleDetailsResponse.getData().getModuleId());
         binding.txtReadtime.setText(articleDetailsResponse.getData().getReadingTime() + " min read");
-        Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
-                .transform(new RoundedCorners(1))
-                .placeholder(R.drawable.rl_placeholder)
-                .error(R.drawable.rl_placeholder)
-                .into(binding.articleImageMain);
+        if (!isFinishing() && !isDestroyed()) {
+            Glide.with(this).load(ApiClient.CDN_URL_QA + articleDetailsResponse.getData().getUrl())
+                    .transform(new RoundedCorners(1))
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(binding.articleImageMain);
+        }
         //setInThisArticleList(articleDetailsResponse.getData().getArticle());
         HandleArticleListView(articleDetailsResponse.getData().getArticle());
         if (articleDetailsResponse.getData().getTableOfContents() != null) {
