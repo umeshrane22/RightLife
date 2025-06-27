@@ -357,17 +357,22 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
         }
 
-       // btnSync.setOnClickListener {
-//            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
-//            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-//                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
-//                lifecycleScope.launch {
-//                    requestPermissionsAndReadAllData()
-//                }
-//            } else {
-//                Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
-//            }
-    //    }
+        val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
+        if (syncTime != "") {
+            btnSync.visibility = View.GONE
+        }
+
+        btnSync.setOnClickListener {
+            val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                lifecycleScope.launch {
+                    requestPermissionsAndReadAllData()
+                }
+            } else {
+                Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+            }
+        }
         btnSleepSound.setOnClickListener {
             startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
                 //putExtra("PlayList", "PlayList")
@@ -553,6 +558,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }else{
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
+                btnSync.visibility = View.GONE
             }
             if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
                 val stepsResponse = healthConnectClient.readRecords(
@@ -1284,7 +1290,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
                     performCardView.visibility = View.GONE
-                    restroNoDataCardView.visibility = View.VISIBLE
+                    restroNoDataCardView.visibility = View.GONE
                     restroDataCardView.visibility = View.GONE
                     actualNoDataCardView.visibility = View.VISIBLE
                     sleepIdeal.visibility = View.GONE
@@ -1303,7 +1309,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     sleepStagesView.visibility = View.GONE
                     performNoDataCardView.visibility = View.VISIBLE
                     performCardView.visibility = View.GONE
-                    restroNoDataCardView.visibility = View.VISIBLE
+                    restroNoDataCardView.visibility = View.GONE
                     restroDataCardView.visibility = View.GONE
                     actualNoDataCardView.visibility = View.VISIBLE
                     lineChart.visibility = View.GONE
@@ -1336,7 +1342,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 sleepStagesView.visibility = View.GONE
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
-                restroNoDataCardView.visibility = View.VISIBLE
+                restroNoDataCardView.visibility = View.GONE
                 restroDataCardView.visibility = View.GONE
                 actualNoDataCardView.visibility = View.VISIBLE
                 sleepIdeal.visibility = View.GONE
@@ -1375,17 +1381,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }else{
             performNoDataCardView.visibility = View.VISIBLE
             performCardView.visibility = View.GONE
-            if (!bottomSeatName.contentEquals("LogLastNightSleep")){
-                val dialog = LogYourNapDialogFragment(
-                    requireContext = requireContext(),
-                    listener = object : OnLogYourNapSelectedListener {
-                        override fun onLogTimeSelected(time: String) {
-                            fetchSleepLandingData()
-                        }
-                    }
-                )
-                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
-            }
         }
 
         // Set Sleep Stages Data
@@ -1448,7 +1443,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             restroDataCardView.visibility = View.VISIBLE
                 setRestorativeSleepData(sleepLandingResponse.sleepLandingAllData?.sleepRestorativeDetail)
             } else{
-                restroNoDataCardView.visibility = View.VISIBLE
+                restroNoDataCardView.visibility = View.GONE
             restroDataCardView.visibility = View.GONE
             }
 
@@ -1881,8 +1876,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             } else {
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
-                restroNoDataCardView.visibility = View.VISIBLE
+                restroNoDataCardView.visibility = View.GONE
                 restroDataCardView.visibility = View.GONE
+                if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                    val dialog = LogYourNapDialogFragment(
+                        requireContext = requireContext(),
+                        listener = object : OnLogYourNapSelectedListener {
+                            override fun onLogTimeSelected(time: String) {
+                                fetchSleepLandingData()
+                            }
+                        }
+                    )
+                    dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+                }
             }
         }else{
             performNoDataCardView.visibility = View.VISIBLE
