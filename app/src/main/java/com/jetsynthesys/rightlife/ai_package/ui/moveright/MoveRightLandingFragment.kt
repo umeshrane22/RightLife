@@ -613,7 +613,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             // Update RecyclerView
                             adapter.updateItems(items)
                             recyclerView.adapter = adapter
-                            recyclerView.setHasFixedSize(true)
+                           // recyclerView.setHasFixedSize(true)
 
                             // Add ItemDecoration for spacing
                             val spacingInPixels = resources.getDimensionPixelSize(R.dimen.grid_spacing) // Define in res/values/dimens.xml
