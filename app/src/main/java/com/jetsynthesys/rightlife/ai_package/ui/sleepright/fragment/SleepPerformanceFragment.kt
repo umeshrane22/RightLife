@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 import android.app.ProgressDialog
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
@@ -61,6 +62,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Locale
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -406,14 +408,29 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             .toLocalDate()                             // Extract local date
     }
 
+    fun getDateLabels(
+        startDate: LocalDate,                // already a LocalDate
+        days: Int = 30,
+        locale: Locale = Locale.getDefault() // use Locale.ENGLISH for fixed English names
+    ): List<String> {
+        val formatter = DateTimeFormatter.ofPattern("EEE dd MMM", locale)
+        return List(days) { offset ->
+            startDate.plusDays(offset.toLong()).format(formatter)
+        }
+    }
+
     fun setupMonthlyBarChart(chart: BarChart, data: List<SleepPerformanceList>?, startTime:String, endDateStr:String) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
         var startDate =convertToLocalDate(startTime)
         val mEndDate1 =convertToLocalDate(endDateStr)
 
-
+        var selectedEntry: SleepEntry? = null
         val labels = mutableListOf<String>()
+        val monthLabel = getDateLabels(startDate,32)
+
+        val defaultColor   = Color.parseColor("#70A1FF")
+        val highlightColor = Color.parseColor("#007BFF")
 
         val daysBetween = ChronoUnit.DAYS.between(startDate, mEndDate1).toInt() + 1
         val entries = ArrayList<BarEntry>()
@@ -447,10 +464,12 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
         }
 
-        val dataSet = BarDataSet(entries, "Sleep Performance")
-        dataSet.setColors(Color.parseColor("#4593FB"))
-        dataSet.setDrawValues(false)
-        dataSet.valueTextSize = 9f
+        val dataSet = BarDataSet(entries, "Sleep Performance").apply {
+            setColors(List(entries.size) { defaultColor })      // one color per bar
+            setDrawValues(false)
+            valueTextSize = 9f
+            highLightAlpha = 0                                  // hide the grey overlay
+        }
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
@@ -485,17 +504,24 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 cardPercent.visibility = View.VISIBLE
                 if (e != null) {
+                    val index = h?.x?.toInt() ?: return
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    tvBarDate.text = labels.getOrNull(x) ?: ""
+                    val newColors = MutableList(entries.size) { defaultColor }
+                    newColors[index] = highlightColor
+                    dataSet.colors = newColors
+
+                    chart.invalidate()
+                    tvBarDate.text = monthLabel.getOrNull(x) ?: ""
                     tvBarPercent.text = y.toInt().toString()
                 }
             }
-
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 cardPercent.visibility = View.INVISIBLE
+                dataSet.colors = List(entries.size) { defaultColor }
+                chart.invalidate()
             }
         })
         chart.invalidate()
@@ -522,15 +548,19 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(trimmedDate, formatter)
         val labels = getWeekDayNames(localDate)
+        val defaultColor   = Color.parseColor("#70A1FF")
+        val highlightColor = Color.parseColor("#007BFF")
 
         data?.forEachIndexed { index, item ->
             entries.add(BarEntry(index.toFloat(), item.sleepPerformanceData?.sleepPerformance?.toFloat() ?: 0f))
         }
 
-        val dataSet = BarDataSet(entries, "SleepPerformance")
-        dataSet.setColors(Color.parseColor("#4593FB"))
-        dataSet.setDrawValues(false)
-        dataSet.valueTextSize = 12f
+        val dataSet = BarDataSet(entries, "Sleep Performance").apply {
+            setColors(List(entries.size) { defaultColor })      // one color per bar
+            setDrawValues(false)
+            valueTextSize = 11f
+            highLightAlpha = 0                                  // hide the grey overlay
+        }
 
         val barData = BarData(dataSet)
         chart.data = barData
@@ -612,9 +642,15 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 cardPercent.visibility = View.VISIBLE
                 if (e != null) {
+                    val index = h?.x?.toInt() ?: return
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    val newColors = MutableList(entries.size) { defaultColor }
+                    newColors[index] = highlightColor
+                    dataSet.colors = newColors
+
+                    chart.invalidate()
                     tvBarDate.text = labels.getOrNull(x)?.replace("\n", " ") ?: ""
                     tvBarPercent.text = y.toInt().toString()
                 }
@@ -623,6 +659,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 cardPercent.visibility = View.INVISIBLE
+                dataSet.colors = List(entries.size) { defaultColor }
+                chart.invalidate()
             }
         })
     }
