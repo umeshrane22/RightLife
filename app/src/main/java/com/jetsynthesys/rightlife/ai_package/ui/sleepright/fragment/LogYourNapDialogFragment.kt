@@ -28,6 +28,9 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class LogYourNapDialogFragment(private val requireContext: Context, private val listener: OnLogYourNapSelectedListener) : BottomSheetDialogFragment() {
     private lateinit var tvStartTime: TextView
@@ -99,19 +102,34 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
-            logNap()
+            val sleepTime = tvStartTime.text.toString()
+            val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
+            val outputFmt = DateTimeFormatter.ofPattern("HH:mm:ss")
+            val time24h = LocalTime.parse(sleepTime, inputFmt).format(outputFmt)
+            val formatStartDate = "$selectedDate"+"T"+"$time24h"
+            val deviceZone  = ZoneId.systemDefault()          // phone / emulator zone
+            val ldt         = LocalDateTime.parse(formatStartDate)      // parses without zone
+            val instantStart     = ldt.atZone(deviceZone).toInstant().toString()
+            val wakeTime =  tvEndTime.text.toString()
+            val inputFmt1  = DateTimeFormatter.ofPattern("hh:mm a")
+            val outputFmt1 = DateTimeFormatter.ofPattern("HH:mm:ss")
+            val time24h1 = LocalTime.parse(wakeTime, inputFmt1).format(outputFmt1)
+            val formatWakeDate = "$selectedDate"+"T"+"$time24h1"
+            val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
+            val instantEnd     = ldt1.atZone(deviceZone).toInstant().toString()
+            logNap(instantStart,instantEnd)
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             dismiss()
         }
     }
 
-    private fun logNap() {
+    private fun logNap(sleepTime: String, wakeTime: String) {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val source = "android"
         val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val date = selectedDate.format(dateFormatter)
-          val call = ApiClient.apiServiceFastApi.logNap(userId, source, date, LogNapRequest(sleep_time = tvStartTime.text.toString(), wakeup_time = tvEndTime.text.toString(), set_reminder = 0, reminder_value = tvRemindTime.text.toString()))
+          val call = ApiClient.apiServiceFastApi.logNap(userId, source, date, LogNapRequest(sleepTime, wakeTime, set_reminder = 0, reminder_value = tvRemindTime.text.toString()))
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
